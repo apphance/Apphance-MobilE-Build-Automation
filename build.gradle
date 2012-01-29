@@ -1,0 +1,98 @@
+apply {
+    plugin 'java'
+    plugin 'groovy'
+    plugin 'maven'
+    plugin 'signing'
+    plugin 'eclipse'
+}
+apply from:'file:emma.gradle'
+
+group = 'com.apphance.ameba'
+version = "0.99.0-SNAPSHOT"
+
+artifacts {
+    archives jar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+              authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+              authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+               name 'ameba'
+               packaging 'jar'
+               description 'AMEBA stands for Apphance MobilE Build Automation - it is gradle plugin to automate builds for mobile applications'
+               url 'http://ameba.apphance.com/'
+
+               scm {
+                   url 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
+                   connection 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
+                   developerConnection 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
+               }
+
+               licenses {
+                   license {
+                       name 'NewBSD Licence'
+                       url 'http://www.opensource.org/licenses/bsd-license.php'
+                       distribution 'repo'
+                   }
+               }
+
+               developers {
+                   developer {
+                       id 'jarek.potiuk.apphance'
+                       name 'Jarek Potiuk'
+                   }
+               }
+           }
+
+        }
+    }
+}
+
+//compileGroovy.options.optimize = false
+//compileGroovy.options.debug = true
+//compileGroovy.options.debugOptions.debugLevel = 'lines,source,vars'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+  mail
+}
+
+emma{
+   reportPath = "emma"
+   verbosityLevel =  "verbose"
+}
+
+dependencies {
+   emma 'emma:emma:2.1.5320', 'emma:emma_ant:2.1.5320'
+   testCompile 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
+   testRuntime 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
+   mail 'org.apache.ant:ant-javamail:1.8.2',  'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1'
+   compile 'javax.mail:mail:1.4', gradleApi()
+   groovy localGroovy()
+}
+
+task cleanTmp << {
+   project.ant.delete(dir: "tmp")
+}
+cleanTmp.description = 'Cleans tmp directory'
+project.clean.dependsOn(cleanTmp)
+
+

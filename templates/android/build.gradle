@@ -1,0 +1,19 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots")
+    }
+
+    dependencies {
+        classpath ('com.apphance.ameba:amebaplugin:0.99.0-SNAPSHOT')
+    }
+}
+
+apply plugin: 'ameba-project-configuration'
+apply plugin: 'ameba-mercurial'
+//apply plugin: 'ameba-git'
+apply plugin: 'ameba-android-build'
+apply plugin: 'ameba-android-apphance'
+apply plugin: 'ameba-android-analysis'
+apply plugin: 'ameba-android-test'
+apply plugin: 'ameba-android-reports'

@@ -1,0 +1,58 @@
+package com.apphance.ameba.applyPlugins.android;
+
+import static org.junit.Assert.*
+
+import org.gradle.api.Project
+import org.junit.Test
+
+import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.android.plugins.AndroidPlugin
+
+class TestBasicAndroidTasks extends BaseAndroidTaskTest {
+    protected Project getProject() {
+        Project project = super.getProject()
+        project.project.plugins.apply(AndroidPlugin.class)
+        return project
+    }
+
+    @Test
+    public void testBuildTasksAvailable() {
+        verifyTasksInGroup(getProject(),[
+            'cleanAndroid',
+            'cleanClasses',
+            'compileAndroid',
+            'buildAll',
+            'buildDebug',
+            'buildRelease',
+            'buildDebug-test',
+            'buildRelease-market',
+            'checkTests',
+            'installDebug-test',
+            'installRelease-market',
+            'replacePackage',
+            'updateProject',
+        ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
+    }
+
+    @Test
+    public void testConfigurationTasksAvailable() {
+        verifyTasksInGroup(getProject(),[
+            'cleanConfiguration',
+            'copyGalleryFiles',
+            'readAndroidProjectConfiguration',
+            'readAndroidVersionAndProjectName',
+            'readProjectConfiguration',
+            'showProjectConfiguration',
+            'verifyReleaseNotes'
+        ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
+    }
+
+    @Test
+    public void testReleaseTasksAvailable() {
+        verifyTasksInGroup(getProject(),[
+            'cleanRelease',
+            'preRelease',
+            'updateVersion',
+        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
+    }
+}

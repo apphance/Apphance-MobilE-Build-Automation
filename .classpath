@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="build/classes/main" path="src/main/groovy"/>
+	<classpathentry kind="src" output="build/resources/main" path="src/main/resources"/>
+	<classpathentry kind="src" path="src/test/groovy"/>
+	<classpathentry kind="src" path="src/test/resources"/>
+	<classpathentry exported="true" kind="con" path="GROOVY_SUPPORT"/>
+	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/ant-1.8.2.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/ant-launcher-1.8.2.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/asm-all-3.3.1.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/commons-codec-1.2.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/commons-io-1.4.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/commons-lang-2.6.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-cli-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-core-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-launcher-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-native-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-open-api-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-tooling-api-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-ui-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-wrapper-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/groovy-all-1.8.4.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/guava-10.0.1.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/ivy-2.2.0.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/jansi-1.2.1.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/jaxen-1.1.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/jcip-annotations-1.0.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/jcl-over-slf4j-1.6.4.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/jna-3.2.2.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/jna-posix-1.0.3.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/jsch-0.1.42.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/jul-to-slf4j-1.6.4.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/jzlib-1.0.7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/log4j-over-slf4j-1.6.4.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/logback-classic-1.0.0.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/logback-core-1.0.0.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/slf4j-api-1.6.4.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/webdavlib-2.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

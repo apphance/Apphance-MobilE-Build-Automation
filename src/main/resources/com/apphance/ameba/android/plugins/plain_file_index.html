@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>${title}</title>
+  </head>
+  <body>
+    <h1>${title}</h1>
+     ${rb.getString('Version')} ${version}<br>
+     ${rb.getString('Released')} ${currentDate}
+     <h2>${rb.getString('Application_files')}</h2>
+     <ul>
+        <% androidConf.variants.each { variant -> %>
+          <% if (androidConf.apkFiles[variant] != null) { %>
+             <li><b>${variant}</b> : <a href="${androidConf.apkFiles[variant].getRelativeUrl(baseUrl)}" rel="external">${androidConf.apkFiles[variant].url}</a></li>
+          <% } %>
+        <% } %>
+     </ul>
+     <h2>${rb.getString('Other')}</h2>
+     <ul>
+       <% if (conf.mailMessageFile != null) { %>
+         <li>${rb.getString('Mail_message')} <a href="${conf.mailMessageFile.getRelativeUrl(baseUrl)}" rel="external">${conf.mailMessageFile.url}</a></li>
+       <% } %>
+       <% if (conf.imageMontageFile != null) { %>
+         <li>${rb.getString('Image_montage')} <a href="${conf.imageMontageFile.getRelativeUrl(baseUrl)}" rel="external">${conf.imageMontageFile.url}</a></li>
+       <% } %>
+       <% if (conf.qrCodeFile != null) { %>
+         <li>${rb.getString('QR_code')} <a href="${conf.qrCodeFile.getRelativeUrl(baseUrl)}" rel="external">${conf.qrCodeFile.url}</a></li>
+       <% } %>
+     </ul>
+  </body>
+</html>
