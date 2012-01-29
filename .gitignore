@@ -1,0 +1,10 @@
+testProjects/android/test/Robotium/gen
+Colleagues/test/roboelectric/emma
+MalyszRacing.xcodeproj/xcuserdata
+log
+testProjects/android-novariants/gen
+testProjects/android/avds
+testProjects/android/gen
+testProjects/android/subproject/gen
+testProjects/android/subproject/subsubproject/gen
+local.properties
