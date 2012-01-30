@@ -1,13 +1,15 @@
 buildscript {
     repositories {
         mavenCentral()
-        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots")
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
     }
-
     dependencies {
-        classpath ('com.apphance.ameba:amebaplugin:0.99.0-SNAPSHOT')
+        classpath ('com.apphance.ameba:Ameba:0.99.0-SNAPSHOT')
     }
 }
+
 
 apply plugin: 'ameba-project-configuration'
 apply plugin: 'ameba-mercurial'
