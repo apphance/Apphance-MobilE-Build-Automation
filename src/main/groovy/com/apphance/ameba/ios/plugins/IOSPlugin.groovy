@@ -7,6 +7,7 @@ import java.util.Collection
 
 import javax.xml.parsers.DocumentBuilderFactory
 
+import org.apache.tools.ant.filters.StringInputStream;
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -173,14 +174,21 @@ class IOSPlugin implements Plugin<Project> {
 
     private org.w3c.dom.Element getParsedPlist(Project project) {
         def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-        def inputStream = new FileInputStream("${project.rootDir}/${pListFileName}")
-        return builder.parse(inputStream).documentElement
+        File pListFile = new File("${project.rootDir}/${pListFileName}")
+        CharsetToolkit toolkit = new CharsetToolkit(pListFile)
+        BufferedReader reader = toolkit.getReader();
+        String xml = reader.text
+        StringInputStream xmlStream = new StringInputStream(xml)
+        return builder.parse(xmlStream).documentElement
     }
 
     private org.w3c.dom.Element getParsedPlist(File file) {
         def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-        def inputStream = new FileInputStream(file)
-        return builder.parse(inputStream).documentElement
+        CharsetToolkit toolkit = new CharsetToolkit(file)
+        BufferedReader reader = toolkit.getReader();
+        String xml = reader.text
+        StringInputStream xmlStream = new StringInputStream(xml)
+        return builder.parse(xmlStream).documentElement
     }
 
 
