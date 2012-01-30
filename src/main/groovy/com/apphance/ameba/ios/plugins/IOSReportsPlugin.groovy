@@ -141,6 +141,7 @@ class IOSReportsPlugin implements Plugin<Project> {
                         releaseMailFlags : conf.releaseMailFlags,
                         rb :rb
                     ]
+            logger.lifecycle("Runnning template with ${binding}")
             def result = engine.createTemplate(mailTemplate).make(binding)
             conf.mailMessageFile.location.write(result.toString(), "utf-8")
             logger.lifecycle("Mail message file created: ${conf.mailMessageFile}")
