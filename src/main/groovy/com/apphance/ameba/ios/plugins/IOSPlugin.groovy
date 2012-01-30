@@ -7,7 +7,6 @@ import java.util.Collection
 
 import javax.xml.parsers.DocumentBuilderFactory
 
-import org.apache.tools.ant.filters.StringInputStream;
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -17,6 +16,7 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSBuildAllSimulatorsTask
@@ -173,22 +173,15 @@ class IOSPlugin implements Plugin<Project> {
 
 
     private org.w3c.dom.Element getParsedPlist(Project project) {
-        def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
         File pListFile = new File("${project.rootDir}/${pListFileName}")
-        CharsetToolkit toolkit = new CharsetToolkit(pListFile)
-        BufferedReader reader = toolkit.getReader();
-        String xml = reader.text
-        StringInputStream xmlStream = new StringInputStream(xml)
-        return builder.parse(xmlStream).documentElement
+        logger.debug("Reading file " + pListFile)
+        return new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
     }
+
 
     private org.w3c.dom.Element getParsedPlist(File file) {
         def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-        CharsetToolkit toolkit = new CharsetToolkit(file)
-        BufferedReader reader = toolkit.getReader();
-        String xml = reader.text
-        StringInputStream xmlStream = new StringInputStream(xml)
-        return builder.parse(xmlStream).documentElement
+        return new XMLBomAwareFileReader().readXMLFileIncludingBom(file)
     }
 
 

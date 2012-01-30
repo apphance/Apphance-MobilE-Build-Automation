@@ -10,8 +10,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import com.apphance.ameba.XMLBomAwareFileReader
 import com.sun.org.apache.xpath.internal.XPathAPI
-
 
 class MPParser {
     static Logger logger = Logging.getLogger(MPParser.class)
@@ -32,12 +32,7 @@ class MPParser {
 
     static String readBundleIdFromPlist(URL pListUrl) {
         File pListFile = new File(new URI(pListUrl.toString()))
-        CharsetToolkit toolkit = new CharsetToolkit(pListFile)
-        BufferedReader reader = toolkit.getReader();
-        String xml = reader.text
-        def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-        InputStream is = new ByteArrayInputStream(xml.getBytes("UTF-8"))
-        def root        = builder.parse(is).documentElement
+        def root = new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
         String bundleId;
         XPathAPI.selectNodeList(root,
                 '/plist/dict/key[text()="CFBundleIdentifier"]').each{
