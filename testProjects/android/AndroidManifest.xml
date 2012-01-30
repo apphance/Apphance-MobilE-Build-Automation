@@ -1,22 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="42" android:versionName="1.0.1" package="com.apphance.amebaTest.android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:apphance="http://apphance.com/android"
+    package="com.apphance.amebaTest.android"
+    android:versionCode="42"
+    android:versionName="1.0.1" >
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.CHANGE_WIFI_STATE"
+        apphance:only="true" />
 
-    
+    <instrumentation android:name="com.apphance.android.ApphanceInstrumentation"
+        android:targetPackage="com.apphance.amebaTest.android" apphance:only="true"/>
 
-    <application android:label="@string/app_name">
-        <activity android:label="@string/app_name" android:name="TestActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+    <application android:label="@string/app_name" >
+        <activity
+            android:label="@string/app_name"
+            android:name="TestActivity" >
+            <intent-filter >
+                <action android:name="com.apphance.android.LAUNCH" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
-        
+        <activity-alias
+            android:label="@string/app_name"
+            android:name="AliasTestActivity"
+            apphance:only="true"
+            android:targetActivity="TestActivity" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
 
-        
+        <activity
+            android:label="@string/app_name"
+            android:name="AnotherActivity"
+            apphance:only="true" >
+        </activity>
     </application>
 
 </manifest>
