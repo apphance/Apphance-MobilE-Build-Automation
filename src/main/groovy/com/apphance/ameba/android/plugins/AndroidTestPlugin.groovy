@@ -54,6 +54,7 @@ class AndroidTestPlugin implements Plugin<Project>{
         } else {
             androidTestDirectory = new File(project.rootDir,"test/android")
         }
+		rawDir = new File(project.rootDir, 'res/raw')
         prepareEmmaConfiguration(project)
         prepareCreateAvdTask(project)
         prepareAndroidTestingTask(project)
@@ -61,7 +62,6 @@ class AndroidTestPlugin implements Plugin<Project>{
         prepareStartEmulatorTask(project)
         prepareStopAllEmulatorsTask(project)
     }
-
 
     static int findFreeEmulatorPort() {
         int START_PORT = 5554
@@ -109,7 +109,6 @@ class AndroidTestPlugin implements Plugin<Project>{
         coverageDir = new File(project.rootDir,'tmp/coverage')
         coverageEmFile = new File(coverageDir,'coverage.em')
         coverageEcFile = new File(coverageDir,'coverage.ec')
-        rawDir = new File(project.rootDir, 'res/raw')
         adbBinary = new File(androidConf.sdkDirectory,'platform-tools/adb')
         avdDir = new File(project.rootDir,AVD_PATH)
     }
@@ -196,17 +195,18 @@ class AndroidTestPlugin implements Plugin<Project>{
         task.dependsOn(project.createAVD)
     }
 
-    private void deleteNonEmptyDirectory(File path) {
+    private boolean deleteNonEmptyDirectory(File path) {
         if (path.isDirectory()) {
             String[] children = path.list();
             for (int i=0; i<children.length; i++) {
                 boolean success = deleteNonEmptyDirectory(new File(path, children[i]));
                 if (!success) {
-                    return;
+                    return false
                 }
             }
         }
         path.delete()
+		return true
     }
 
     private prepareTestBuilds(Project project) {
@@ -217,6 +217,7 @@ class AndroidTestPlugin implements Plugin<Project>{
         if (rawDir.exists()) {
             deleteNonEmptyDirectory(rawDir)
         }
+		rawDir.mkdir()
         String [] commandAndroid = [
             "android",
             "update",
@@ -249,7 +250,7 @@ class AndroidTestPlugin implements Plugin<Project>{
             logger.lifecycle("No ${localEmFile}. Not renaming to ${coverageEmFile}")
         }
     }
-
+	
     private void installTestBuilds(Project project) {
         projectHelper.executeCommand(project, androidTestDirectory,[
             adbBinary,
