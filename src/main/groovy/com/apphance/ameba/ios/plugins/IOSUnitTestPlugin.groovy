@@ -62,7 +62,7 @@ class IOSUnitTestPlugin implements Plugin<Project> {
     }
 
     class IOSUnitTestConvention {
-        def String target = 'Tests'
+        def String target = 'UnitTests'
         def String configuration = 'Release'
 
         def iosUnitTests(Closure close) {
