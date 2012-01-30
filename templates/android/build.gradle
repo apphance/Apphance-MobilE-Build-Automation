@@ -6,7 +6,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath ('com.apphance.ameba:Ameba:0.99.0-SNAPSHOT')
+        classpath ('com.apphance.ameba:Ameba:0.99.0')
     }
 }
 
