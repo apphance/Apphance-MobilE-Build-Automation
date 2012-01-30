@@ -1,5 +1,6 @@
 package com.apphance.ameba.ios
 
+import java.io.File;
 import java.net.URL
 import java.util.Collection
 
@@ -30,7 +31,10 @@ class MPParser {
     }
 
     static String readBundleIdFromPlist(URL pListUrl) {
-        String xml = pListUrl.text
+        File pListFile = new File(new URI(pListUrl.toString()))
+        CharsetToolkit toolkit = new CharsetToolkit(pListFile)
+        BufferedReader reader = toolkit.getReader();
+        String xml = reader.text
         def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
         InputStream is = new ByteArrayInputStream(xml.getBytes("UTF-8"))
         def root        = builder.parse(is).documentElement
