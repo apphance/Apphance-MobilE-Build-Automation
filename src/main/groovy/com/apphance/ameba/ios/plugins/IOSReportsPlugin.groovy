@@ -142,9 +142,11 @@ class IOSReportsPlugin implements Plugin<Project> {
                         rb :rb
                     ]
             logger.lifecycle("Runnning template with ${binding}")
-            this.iosConf.families.each { family ->
-                if (this.iosConf.dmgImageFiles ["${family}-${this.iosConf.mainTarget}"] == null) {
-                    throw new GradleException("Wrongly configured family or target: ${family}-${this.iosConf.mainTarget} missing")
+            if (this.iosConf.dmgImageFiles.size() > 0) {
+                this.iosConf.families.each { family ->
+                    if (this.iosConf.dmgImageFiles ["${family}-${this.iosConf.mainTarget}"] == null) {
+                        throw new GradleException("Wrongly configured family or target: ${family}-${this.iosConf.mainTarget} missing")
+                    }
                 }
             }
             def result = engine.createTemplate(mailTemplate).make(binding)
