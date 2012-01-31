@@ -68,6 +68,10 @@ uploadArchives {
                        id 'jarek.potiuk.apphance'
                        name 'Jarek Potiuk'
                    }
+                   developer {
+                       id 'blazej.marcinkiewicz'
+                       name 'Blazej Marcinkiewicz'
+                   }
                }
            }
 
