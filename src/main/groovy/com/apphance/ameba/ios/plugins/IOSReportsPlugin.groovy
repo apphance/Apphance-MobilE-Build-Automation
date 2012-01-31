@@ -141,6 +141,14 @@ class IOSReportsPlugin implements Plugin<Project> {
                         releaseMailFlags : conf.releaseMailFlags,
                         rb :rb
                     ]
+            logger.lifecycle("Runnning template with ${binding}")
+            if (this.iosConf.dmgImageFiles.size() > 0) {
+                this.iosConf.families.each { family ->
+                    if (this.iosConf.dmgImageFiles ["${family}-${this.iosConf.mainTarget}"] == null) {
+                        throw new GradleException("Wrongly configured family or target: ${family}-${this.iosConf.mainTarget} missing")
+                    }
+                }
+            }
             def result = engine.createTemplate(mailTemplate).make(binding)
             conf.mailMessageFile.location.write(result.toString(), "utf-8")
             logger.lifecycle("Mail message file created: ${conf.mailMessageFile}")

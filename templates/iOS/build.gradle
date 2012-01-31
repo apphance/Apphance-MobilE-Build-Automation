@@ -1,12 +1,18 @@
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
         maven {
             url "https://oss.sonatype.org/content/repositories/snapshots"
         }
     }
     dependencies {
-        classpath ('com.apphance.ameba:Ameba:0.99.0')
+        classpath ('com.apphance.ameba:Ameba:0.99.1-SNAPSHOT') {
+            changing = true
+        }
+    }
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
 }
 

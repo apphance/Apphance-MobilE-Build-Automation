@@ -137,7 +137,7 @@ class ProjectHelper {
         if (jenkinsURL == null) {
             logger.lifecycle("OUTPUT: ${outFile}")
         } else {
-            String resultUrl = jenkinsURL + '/' + outFileName
+            String resultUrl = jenkinsURL + '/' + logDir.getName() + '/' + outFileName
             logger.lifecycle("OUTPUT: ${resultUrl}")
         }
         return new FileSystemOutput(outFile)

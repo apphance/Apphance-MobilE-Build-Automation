@@ -16,6 +16,7 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSBuildAllSimulatorsTask
@@ -172,15 +173,15 @@ class IOSPlugin implements Plugin<Project> {
 
 
     private org.w3c.dom.Element getParsedPlist(Project project) {
-        def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-        def inputStream = new FileInputStream("${project.rootDir}/${pListFileName}")
-        return builder.parse(inputStream).documentElement
+        File pListFile = new File("${project.rootDir}/${pListFileName}")
+        logger.debug("Reading file " + pListFile)
+        return new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
     }
+
 
     private org.w3c.dom.Element getParsedPlist(File file) {
         def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-        def inputStream = new FileInputStream(file)
-        return builder.parse(inputStream).documentElement
+        return new XMLBomAwareFileReader().readXMLFileIncludingBom(file)
     }
 
 
