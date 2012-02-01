@@ -32,7 +32,7 @@ class AndroidTestPlugin implements Plugin<Project>{
     AndroidProjectConfiguration androidConf
     File androidTestDirectory
     AndroidManifestHelper androidManifestHelper
-    def testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
+    def testProjectManifest
     String emmaDumpFile
     String xmlJUnitDir
     File coverageDir
@@ -54,6 +54,7 @@ class AndroidTestPlugin implements Plugin<Project>{
         } else {
             androidTestDirectory = new File(project.rootDir,"test/android")
         }
+        this.testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
         rawDir = new File(project.rootDir, 'res/raw')
         testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
         androidConf.testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
