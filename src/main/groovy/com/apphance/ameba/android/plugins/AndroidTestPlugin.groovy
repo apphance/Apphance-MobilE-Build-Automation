@@ -32,8 +32,7 @@ class AndroidTestPlugin implements Plugin<Project>{
     AndroidProjectConfiguration androidConf
     File androidTestDirectory
     AndroidManifestHelper androidManifestHelper
-    org.w3c.dom.Element testProjectManifest
-    org.w3c.dom.Element mainProjectManifest
+    def testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
     String emmaDumpFile
     String xmlJUnitDir
     File coverageDir
@@ -56,6 +55,9 @@ class AndroidTestPlugin implements Plugin<Project>{
             androidTestDirectory = new File(project.rootDir,"test/android")
         }
         rawDir = new File(project.rootDir, 'res/raw')
+        testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
+        androidConf.testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
+        androidConf.testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
         prepareEmmaConfiguration(project)
         prepareCreateAvdTask(project)
         prepareAndroidTestingTask(project)
@@ -99,12 +101,6 @@ class AndroidTestPlugin implements Plugin<Project>{
         project.dependencies.add('emma',project.files([
             new File(androidConf.sdkDirectory,'tools/lib/emma_ant.jar')
         ]))
-        mainProjectManifest = androidManifestHelper.getParsedManifest(project.rootDir)
-        testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
-        androidConf.mainProjectPackage = XPathAPI.selectSingleNode(mainProjectManifest, "/manifest/@package").nodeValue
-        androidConf.testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
-        androidConf.mainProjectName = buildXmlHelper.readProjectName(project.rootDir)
-        androidConf.testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
         emmaDumpFile = "/data/data/${androidConf.mainProjectPackage}/coverage.ec"
         xmlJUnitDir = "/data/data/${androidConf.mainProjectPackage}/files/"
         coverageDir = new File(project.rootDir,'tmp/coverage')
