@@ -9,6 +9,7 @@ apply from:'file:emma.gradle'
 
 group = 'com.apphance.ameba'
 version = "0.99.1-SNAPSHOT"
+artifactId = 'Ameba'
 
 task sourcesJar(type: Jar, dependsOn:classes) {
     classifier = 'sources'
@@ -30,6 +31,12 @@ signing {
     sign configurations.archives
 }
 
+configure(install.repositories.mavenInstaller) {
+	pom.project {
+		artifactId "$artifactId"
+	}
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -43,11 +50,13 @@ uploadArchives {
               authentication(userName: sonatypeUsername, password: sonatypePassword)
             }
 
+			pom.artifactId = "$artifactId"
             pom.project {
                name 'ameba'
                packaging 'jar'
                description 'AMEBA stands for Apphance MobilE Build Automation - it is gradle plugin to automate builds for mobile applications'
                url 'http://ameba.apphance.com/'
+			   artifactId = "$artifactId"
 
                scm {
                    url 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'

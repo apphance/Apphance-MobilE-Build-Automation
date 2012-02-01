@@ -12,7 +12,7 @@ import org.gradle.api.tasks.TaskAction
 class VerifyBaseSetupTask extends DefaultTask {
     Logger logger = Logging.getLogger(VerifyBaseSetupTask.class)
 
-    VerifyBaseSetupTask() {
+	VerifyBaseSetupTask() {
         this.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
         this.description = 'Verifies if base properties of the project have been setup properly'
         //inject myself as dependency for umbrella verifySetup
@@ -37,10 +37,6 @@ class VerifyBaseSetupTask extends DefaultTask {
         checkProperty(projectProperties, 'project.directory.name')
         checkProperty(projectProperties, 'project.language')
         checkProperty(projectProperties, 'project.country')
-        checkProperty(projectProperties, 'release.mail.from')
-        checkProperty(projectProperties, 'release.mail.to')
-        checkProperty(projectProperties, 'release.mail.subject')
-        checkProperty(projectProperties, 'release.mail.flags')
         logger.lifecycle("GOOD!!! ALL PROJECT PROPERTIES SET CORRECTLY!!!")
         project['gradleProperties'] = projectProperties
     }
