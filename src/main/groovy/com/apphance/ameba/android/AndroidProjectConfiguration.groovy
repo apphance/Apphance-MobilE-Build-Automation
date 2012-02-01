@@ -33,6 +33,7 @@ class AndroidProjectConfiguration {
     boolean emulatorNoWindow
     boolean emulatorUseVNC
     boolean useEmma
+    boolean testPerPackage
     String emulatorName
     int emulatorPort
     Process emulatorProcess

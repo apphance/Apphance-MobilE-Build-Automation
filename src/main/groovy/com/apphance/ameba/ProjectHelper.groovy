@@ -1,11 +1,12 @@
 package com.apphance.ameba
 
+import groovy.io.FileType;
+
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Collection
 import java.util.Map
-import java.util.ResourceBundle
 
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.api.GradleException
@@ -56,7 +57,6 @@ class FileSystemOutput implements Appendable{
 
 class ProjectHelper {
     static Logger logger = Logging.getLogger(ProjectHelper.class)
-
     def replacePasswordsWithStars(originalArray) {
         def newList = []
         def nextPassword = false
@@ -121,6 +121,18 @@ class ProjectHelper {
         f.delete()
         f << (number + 1)
         return String.format('%04d',number)
+    }
+
+    void findAllPackages(String currentPackage, File directory, currentPackageList) {
+        boolean empty = true
+        directory.eachFile(FileType.FILES, { empty = false })
+        if (!empty) {
+            currentPackageList << currentPackage
+        }
+        boolean rootDirectory = (currentPackage == '')
+        directory.eachDir {
+            findAllPackages(rootDirectory ? it.name : (currentPackage + '.' + it.name), it, currentPackageList)
+        }
     }
 
     String getFileNameFromCommand(Project project, File logDir, String command, String postFix) {

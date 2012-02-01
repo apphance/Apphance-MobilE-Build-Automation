@@ -29,6 +29,8 @@ public class AndroidProjectConfigurationRetriever {
         androidConf.emulatorUseVNC = project.hasProperty('android.test.emulator.useVNC') ?
                 Boolean.parseBoolean(project['android.test.emulator.withVNC']) : true
         androidConf.emulatorName= new File('.').getAbsolutePath().replaceAll('[\\\\ /]','_')
+        androidConf.testPerPackage = project.hasProperty('android.test.perPackage') ?
+                Boolean.parseBoolean(project['android.test.perPackage']) : false
         androidConf.useEmma = project.hasProperty('android.useEmma') ?
                 Boolean.parseBoolean(project['android.useEmma']) : true
     }
