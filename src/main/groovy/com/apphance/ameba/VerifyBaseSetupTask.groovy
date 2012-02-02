@@ -17,6 +17,7 @@ class VerifyBaseSetupTask extends DefaultTask {
         this.description = 'Verifies if base properties of the project have been setup properly'
         //inject myself as dependency for umbrella verifySetup
         project.verifySetup.dependsOn(this)
+		this.dependsOn(project.readProjectConfiguration)
     }
 
 
@@ -30,15 +31,15 @@ class VerifyBaseSetupTask extends DefaultTask {
         }
         projectProperties.load(projectPropertiesFile.newInputStream())
         logger.lifecycle(projectProperties.toString())
-        checkProperty(projectProperties, 'project.name')
-        checkProperty(projectProperties, "project.icon.file")
-        checkIconFile(projectProperties)
-        checkProperty(projectProperties, 'project.url.base')
-        checkProperty(projectProperties, 'project.directory.name')
-        checkProperty(projectProperties, 'project.language')
-        checkProperty(projectProperties, 'project.country')
+        for (ProjectBaseProperty property : ProjectBaseProperty.values()) {
+			if (!property.isOptional() && project[property.getName()] == null) {
+				throw new GradleException("""Property ${propertyName} should be defined in gradle.properties.
+				!!!!! Please run "gradle prepareSetup" to correct it """)
+			}
+		}
+		checkIconFile(projectProperties)
         logger.lifecycle("GOOD!!! ALL PROJECT PROPERTIES SET CORRECTLY!!!")
-        project['gradleProperties'] = projectProperties
+//        project['gradleProperties'] = projectProperties
     }
 
     void checkIconFile(Properties projectProperties) {
@@ -46,12 +47,6 @@ class VerifyBaseSetupTask extends DefaultTask {
         if (!iconFile.exists() || !iconFile.isFile()) {
             throw new GradleException("""The icon file (${iconFile}) does not exist
 or is not a file. Please run 'gradle prepareSetup' to correct it.""")
-        }
-    }
-    void checkProperty(Properties projectProperties, String propertyName) {
-        if (projectProperties.getProperty(propertyName) == null) {
-            throw new GradleException("""Property ${propertyName} should be defined in gradle.properties.
-!!!!! Please run "gradle prepareSetup" to correct it """)
         }
     }
 }

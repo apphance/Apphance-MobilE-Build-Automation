@@ -6,6 +6,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.logging.Logging
 
 
 class VerifyReleaseSetupTask extends DefaultTask {
@@ -29,12 +30,12 @@ class VerifyReleaseSetupTask extends DefaultTask {
 		}
 		projectProperties.load(projectPropertiesFile.newInputStream())
 		logger.lifecycle(projectProperties.toString())
-		checkProperty(projectProperties, 'release.mail.from')
-		checkProperty(projectProperties, 'release.mail.to')
-		checkProperty(projectProperties, 'release.mail.subject')
-		checkProperty(projectProperties, 'release.mail.flags')
+		for (ProjectReleaseProperty property : ProjectReleaseProperty.values()) {
+			if (!property.isOptional()) {
+				checkProperty(projectProperties, property.getName())
+			}
+		}
 		logger.lifecycle("GOOD!!! ALL PROJECT PROPERTIES SET CORRECTLY!!!")
-		project['gradleProperties'] = projectProperties
 	}
 	
 	void checkProperty(Properties projectProperties, String propertyName) {

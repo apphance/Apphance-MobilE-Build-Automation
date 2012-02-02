@@ -13,7 +13,10 @@ import com.apphance.ameba.ImageNameFilter
 import com.apphance.ameba.PrepareBaseSetupTask
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.ShowBasePropertiesTask;
+import com.apphance.ameba.ShowReleasePropertiesTask;
 import com.apphance.ameba.VerifyBaseSetupTask
+import com.apphance.ameba.VerifyReleaseSetupTask;
 
 
 /**
@@ -31,12 +34,13 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         prepareMailConfiguration(project)
         prepareRepositories(project)
         prepareVerifySetupTask(project)
+		readProjectConfigurationTask(project)
         project.task('verifyBaseSetup', type: VerifyBaseSetupTask.class)
         preparePrepareSetupTask(project)
         project.task('prepareBaseSetup', type: PrepareBaseSetupTask.class)
-        readProjectConfigurationTask(project)
         project.task('checkTests', type: CheckTestsTask.class)
-        showProjectConfigurationTask(project)
+        showProjectConfigurationTask(project)						
+		project.task('verifyReleaseSetup', type: VerifyReleaseSetupTask.class)
         prepareVerifyReleaseNotesTask(project)
         prepareImageMontageTask(project)
         prepareSendMailMessageTask(project)
@@ -44,6 +48,9 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         prepareCleanConfigurationTask(project)
         prepareCopyGalleryFilesTask(project)
         prepareSourcesZipTask(project)
+		prepareShowPropertiesTask(project)
+		project.task('showBaseProperties', type: ShowBasePropertiesTask.class)
+		project.task('showReleaseProperties', type: ShowReleasePropertiesTask.class)
     }
 
     void prepareMailConfiguration(Project project) {
@@ -118,11 +125,6 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
                 location : new File(conf.targetDirectory,"message_file.html"))
         conf.releaseMailFrom = projectHelper.getExpectedProperty(project, "release.mail.from")
         conf.releaseMailTo = projectHelper.getExpectedProperty(project, "release.mail.to")
-        conf.releaseMailSubject  = "${conf.projectName} ${conf.fullVersionString} is ready to install"
-        if (project.hasProperty('release.mail.subject')) {
-            def subject = project['release.mail.subject']
-            conf.releaseMailSubject = Eval.me("conf",conf,/"$subject"/)
-        }
         conf.releaseMailFlags = []
         if (project.hasProperty('release.mail.flags')){
             String flags = project['release.mail.flags']
@@ -316,4 +318,13 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
         }
         task.dependsOn(project.readProjectConfiguration)
     }
+	
+	void prepareShowPropertiesTask(Project project) {
+		def task = project.task('showProperties')
+		task.description = "Shows all available project properties"
+		task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
+		task << {
+			// this task does nothing. It is there to serve as umbrella task for other setup tasks
+		}
+	}
 }

@@ -51,6 +51,9 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
             'prepareSetup',
             'verifyBaseSetup',
             'verifySetup',
+			'showBaseProperties',
+			'verifyReleaseSetup',
+			'showProperties',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
     }
 }
