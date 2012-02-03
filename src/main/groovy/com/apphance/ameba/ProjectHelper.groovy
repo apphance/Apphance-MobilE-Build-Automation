@@ -180,7 +180,7 @@ class ProjectHelper {
             try {
                 proc = command.execute(envp, runDirectory)
             } catch (IOException e) {
-                if (e.getMessage().contains("No such file or directory")) {
+                if (e.getMessage().contains("error=2")) {
                     if (command instanceof GString) {
                         command = (command.toString()).replaceFirst(/(\w*)/) { all, name ->
                             return "${name}.bat"
@@ -233,7 +233,7 @@ class ProjectHelper {
         try {
             proc = command.execute(envp, runDirectory)
         } catch (IOException e) {
-            if (e.getMessage().contains("No such file or directory")) {
+            if (e.getMessage().contains("error=2")) {
                 if (command instanceof GString) {
                     command = (command.toString()).replaceFirst(/(\w*)/) { all, name ->
                         return "${name}.bat"
