@@ -47,7 +47,7 @@ test{
 	doFirst{
 		ant.taskdef( resource:"emma_ant.properties", classpath: configurations.emma.asPath)
 		ant.path(id:"run.classpath"){
-			pathelement(location:output.main.classesDir.absolutePath )
+			pathelement(location:sourceSets.main.classesDir.absolutePath )
 		}
 		ant.emma(verbosity:"${emmaConvention.verbosityLevel}"){
 			instr(merge:"true", destdir:"${emmaConvention.instrDir}", instrpathref:"run.classpath", metadatafile:"${emmaConvention.metaDataFilePath}"){
