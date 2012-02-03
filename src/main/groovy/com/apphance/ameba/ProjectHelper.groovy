@@ -180,7 +180,7 @@ class ProjectHelper {
             try {
                 proc = command.execute(envp, runDirectory)
             } catch (IOException e) {
-                if (e.getMessage() == "No such file or directory") {
+                if (e.getMessage().contains("No such file or directory")) {
                     if (command instanceof GString) {
                         command = (command.toString()).replaceFirst(/(\w*)/) { all, name ->
                             return "${name}.bat"
@@ -192,6 +192,8 @@ class ProjectHelper {
                     } else {
                         command[0] = command[0] + '.bat'
                     }
+                    commandToDisplay = getCommandToDisplay(command)
+                    logger.lifecycle("Command failed. Trying to execute .bat version: ${commandToDisplay}")
                     proc = command.execute(envp, runDirectory)
                 } else {
                     throw e
@@ -228,7 +230,28 @@ class ProjectHelper {
         logger.lifecycle("Standard output/error is stored in ${outErrFile}")
         def standardOut = new FileSystemOutput(outErrFile)
         def standardErr = new FileSystemOutput(outErrFile, System.err)
-        Process proc = command.execute(envp, runDirectory)
+        try {
+            proc = command.execute(envp, runDirectory)
+        } catch (IOException e) {
+            if (e.getMessage().contains("No such file or directory")) {
+                if (command instanceof GString) {
+                    command = (command.toString()).replaceFirst(/(\w*)/) { all, name ->
+                        return "${name}.bat"
+                    }
+                } else if (command instanceof String) {
+                    command = command.replaceFirst(/(\w*)/) { all, name ->
+                        return "${name}.bat"
+                    }
+                } else {
+                    command[0] = command[0] + '.bat'
+                }
+                commandToDisplay = getCommandToDisplay(command)
+                logger.lifecycle("Command failed. Trying to execute .bat version: ${commandToDisplay}")
+                proc = command.execute(envp, runDirectory)
+            } else {
+                throw e
+            }
+        }
         addWriter(proc, input)
         Thread errorThread = ProcessGroovyMethods.consumeProcessErrorStream(proc, standardErr)
         Thread outputThread = ProcessGroovyMethods.consumeProcessOutputStream(proc, standardOut)
