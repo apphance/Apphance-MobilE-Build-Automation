@@ -20,14 +20,20 @@ task javadocJar(type: Jar, dependsOn:groovydoc) {
     from javadoc.destinationDir
 }
 
+isReleaseVersion = !version.endsWith("SNAPSHOT")
+
 artifacts {
-    archives sourcesJar
-    archives javadocJar
-    archives jar
+    if (isReleaseVersion) {
+        archives sourcesJar
+        archives javadocJar
+        archives jar
+    }
 }
 
 signing {
-    sign configurations.archives
+    if (isReleaseVersion) {
+         sign configurations.archives
+    }
 }
 
 uploadArchives {
