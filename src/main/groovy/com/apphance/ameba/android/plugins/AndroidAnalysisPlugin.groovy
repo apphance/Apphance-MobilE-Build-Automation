@@ -2,7 +2,6 @@ package com.apphance.ameba.android.plugins
 
 import groovy.util.XmlSlurper
 
-
 import java.io.File
 
 import org.gradle.api.GradleException
@@ -118,7 +117,9 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
         while( (bytesRead = content.read(contents)) != -1){
             strFileContents = new String(contents, 0, bytesRead);
         }
-        def modules = new XmlSlurper().parseText(strFileContents)
+        def xmlSlurper = new XmlSlurper()
+        xmlSlurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        def modules = xmlSlurper.parseText(strFileContents)
         def suppressionFilters = modules.module.findAll {it.@name.text().contains("SuppressionFilter")}
         def configFilter = suppressionFilters.findAll{it.property.@value.text().contains('config/analysis')}
         configFilter.each {it -> it.property.@value = it.property.@value.text().replaceFirst('config/analysis', project.androidAnalysis.configAnalysisDirectory)}
