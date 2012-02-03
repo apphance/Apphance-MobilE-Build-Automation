@@ -1,18 +1,15 @@
 package com.apphance.ameba
 
-import groovy.io.FileType;
 
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.Collection
-import java.util.Map
 
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+import org.gradle.api.logging.Logging;
+import org.gradle.api.logging.Logger;
 
 
 class FileSystemOutput implements Appendable{
@@ -179,7 +176,27 @@ class ProjectHelper {
                 standardOut = getSystemOutput(project, logDir, commandToDisplay, '-output.txt', jenkinsURL)
                 standardErr = new FileSystemOutput(standardOut.file, System.err)
             }
-            Process proc = command.execute(envp, runDirectory)
+            Process proc = null
+            try {
+                proc = command.execute(envp, runDirectory)
+            } catch (IOException e) {
+                if (e.getMessage() == "No such file or directory") {
+                    if (command instanceof GString) {
+                        command = (command.toString()).replaceFirst(/(\w*)/) { all, name ->
+                            return "${name}.bat"
+                        }
+                    } else if (command instanceof String) {
+                        command = command.replaceFirst(/(\w*)/) { all, name ->
+                            return "${name}.bat"
+                        }
+                    } else {
+                        command[0] = command[0] + '.bat'
+                    }
+                    proc = command.execute(envp, runDirectory)
+                } else {
+                    throw e
+                }
+            }
             addWriter(proc, input)
             Thread errorThread = ProcessGroovyMethods.consumeProcessErrorStream(proc, standardErr)
             Thread outputThread = ProcessGroovyMethods.consumeProcessOutputStream(proc, standardOut)
