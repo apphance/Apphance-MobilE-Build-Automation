@@ -1,6 +1,8 @@
 package com.apphance.ameba
 
 
+import groovy.io.FileType;
+
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
