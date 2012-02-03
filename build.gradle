@@ -6,9 +6,9 @@ apply {
     plugin 'eclipse'
 }
 apply from:'file:emma.gradle'
+apply from: "http://launchpad.net/gradle-release/trunk/latest/+download/apply.groovy"
 
 group = 'com.apphance.ameba'
-version = "0.99.2.7-SNAPSHOT"
 
 task sourcesJar(type: Jar, dependsOn:classes) {
     classifier = 'sources'
@@ -109,6 +109,5 @@ task cleanTmp << {
    project.ant.delete(dir: "tmp")
 }
 cleanTmp.description = 'Cleans tmp directory'
-project.clean.dependsOn(cleanTmp)
-
-
+clean.dependsOn(cleanTmp)
+createReleaseTag.dependsOn uploadArchives
