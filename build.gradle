@@ -6,6 +6,7 @@ apply {
     plugin 'eclipse'
 }
 
+
 apply from:'file:emma.gradle'
 apply from: "http://launchpad.net/gradle-release/trunk/latest/+download/apply.groovy"
 
@@ -50,7 +51,7 @@ uploadArchives {
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
               authentication(userName: sonatypeUsername, password: sonatypePassword)
             }
-            
+
             pom.artifactId = artifactId
 
             pom.project {
