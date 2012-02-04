@@ -7,12 +7,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath ('com.apphance.ameba:Ameba:0.99.1-SNAPSHOT') {
-            changing = true
-        }
-    }
-    configurations.all {
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        classpath ('com.apphance.ameba:Ameba:0.99.2.13')
     }
 }
 
