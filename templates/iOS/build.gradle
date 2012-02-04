@@ -1,10 +1,6 @@
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots"
-        }
     }
     dependencies {
         classpath ('com.apphance.ameba:Ameba:0.99.2.13')
