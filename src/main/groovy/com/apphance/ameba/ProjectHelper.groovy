@@ -232,6 +232,7 @@ class ProjectHelper {
         logger.lifecycle("Standard output/error is stored in ${outErrFile}")
         def standardOut = new FileSystemOutput(outErrFile)
         def standardErr = new FileSystemOutput(outErrFile, System.err)
+        Process proc = null
         try {
             proc = command.execute(envp, runDirectory)
         } catch (IOException e) {
