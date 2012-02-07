@@ -62,6 +62,7 @@ class TestBasicIOSTasks extends BaseIOSTaskTest {
 			'verifyReleaseSetup',
 			'showBaseProperties',
 			'showProperties',
+			'showReleaseProperties'
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
     }
 }
