@@ -15,9 +15,11 @@ abstract class VCSPlugin implements Plugin<Project> {
         cleanVCSTask(project)
         saveReleaseInfoInVCSTask(project)
         getVCSExcludes(project).each { conf.sourceExcludes << it }
+		prepareShowPropertiesTask(project)
     }
 
     abstract void cleanVCSTask(Project project)
     abstract void saveReleaseInfoInVCSTask(Project project)
     abstract String[] getVCSExcludes(Project project)
+	abstract void prepareShowPropertiesTask(Project project)
 }

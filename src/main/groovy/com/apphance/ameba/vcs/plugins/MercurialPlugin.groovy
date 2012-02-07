@@ -12,6 +12,33 @@ import com.apphance.ameba.AmebaCommonBuildTaskGroups
  */
 class MercurialPlugin extends VCSPlugin {
 
+	enum MercurialProperty {
+		
+		COMMIT_USER(false, "hg.commit.user", "Mail of commit user")
+		
+		private final boolean optional
+		private final String name
+		private final String description
+	
+		MercurialProperty(boolean optional, String name, String description) {
+			this.optional = optional
+			this.name = name
+			this.description = description
+		}
+	
+		public boolean isOptional() {
+			return optional
+		}
+	
+		public String getName() {
+			return name
+		}
+		
+		public String getDescription() {
+			return description
+		}
+	}
+	
     static Logger logger = Logging.getLogger(MercurialPlugin.class)
     def void cleanVCSTask(Project project) {
         def task = project.task('cleanVCS')
@@ -74,4 +101,34 @@ class MercurialPlugin extends VCSPlugin {
     def String [] getVCSExcludes(Project project) {
         return ["**/.hg/**", "**/.hg*/**"]as String[]
     }
+
+	@Override
+	public void prepareShowPropertiesTask(Project project) {
+		def task = project.task('showMercurialProperties')
+		task.description = "Prints Mercurial properties"
+		task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
+		task << {
+			System.out.println("""###########################################################
+# Mercurial properties
+###########################################################""")
+			for (MercurialProperty property : MercurialProperty.values()) {
+				String comment = '# ' + property.getDescription()
+				String propString = property.getName() + '='
+				if (property.isOptional()) {
+					comment = comment + ' [optional]'
+				} else {
+					comment = comment + ' [required]'
+				}
+				if (project.hasProperty(property.getName())) {
+					propString = propString +  project[property.getName()]
+				}
+
+				if (project.showProperties.showComments == true) {
+					System.out.println(comment)
+				}
+				System.out.println(propString)
+			}
+		}
+		project.showProperties.dependsOn(task)
+	}
 }

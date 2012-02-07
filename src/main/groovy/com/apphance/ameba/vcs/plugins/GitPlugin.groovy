@@ -100,4 +100,8 @@ class GitPlugin extends VCSPlugin {
     def String [] getVCSExcludes(Project project) {
         return ["**/.git/*"]as String[]
     }
+	
+	void prepareShowPropertiesTask(Project arg0) {
+		// no properties to show
+	}
 }
