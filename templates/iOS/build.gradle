@@ -1,18 +1,9 @@
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots"
-        }
     }
     dependencies {
-        classpath ('com.apphance.ameba:Ameba:0.99.1-SNAPSHOT') {
-            changing = true
-        }
-    }
-    configurations.all {
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        classpath ('com.apphance.ameba:Ameba:0.99.2.13')
     }
 }
 
@@ -22,5 +13,6 @@ apply plugin: 'ameba-mercurial'
 apply plugin: 'ameba-ios-build'
 apply plugin: 'ameba-ios-ocunit'
 apply plugin: 'ameba-ios-fonemonkey'
+apply plugin: 'ameba-ios-kif'
 apply plugin: 'ameba-ios-cedar'
 apply plugin: 'ameba-ios-reports'

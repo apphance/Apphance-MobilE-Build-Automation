@@ -1,17 +1,17 @@
 package com.apphance.ameba
 
+
+import groovy.io.FileType;
+
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.Collection
-import java.util.Map
-import java.util.ResourceBundle
 
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+import org.gradle.api.logging.Logging;
+import org.gradle.api.logging.Logger;
 
 
 class FileSystemOutput implements Appendable{
@@ -56,7 +56,6 @@ class FileSystemOutput implements Appendable{
 
 class ProjectHelper {
     static Logger logger = Logging.getLogger(ProjectHelper.class)
-
     def replacePasswordsWithStars(originalArray) {
         def newList = []
         def nextPassword = false
@@ -123,6 +122,18 @@ class ProjectHelper {
         return String.format('%04d',number)
     }
 
+    void findAllPackages(String currentPackage, File directory, currentPackageList) {
+        boolean empty = true
+        directory.eachFile(FileType.FILES, { empty = false })
+        if (!empty) {
+            currentPackageList << currentPackage
+        }
+        boolean rootDirectory = (currentPackage == '')
+        directory.eachDir {
+            findAllPackages(rootDirectory ? it.name : (currentPackage + '.' + it.name), it, currentPackageList)
+        }
+    }
+
     String getFileNameFromCommand(Project project, File logDir, String command, String postFix) {
         String fileAbleCommandName = command.replaceAll(' |\\p{Punct}',"_")
         fileAbleCommandName = fileAbleCommandName.substring(0,Math.min(80, fileAbleCommandName.length()))
@@ -167,7 +178,29 @@ class ProjectHelper {
                 standardOut = getSystemOutput(project, logDir, commandToDisplay, '-output.txt', jenkinsURL)
                 standardErr = new FileSystemOutput(standardOut.file, System.err)
             }
-            Process proc = command.execute(envp, runDirectory)
+            Process proc = null
+            try {
+                proc = command.execute(envp, runDirectory)
+            } catch (IOException e) {
+                if (e.getMessage().contains("error=2")) {
+                    if (command instanceof GString) {
+                        command = (command.toString()).replaceFirst(/(\w*)/) { all, name ->
+                            return "${name}.bat"
+                        }
+                    } else if (command instanceof String) {
+                        command = command.replaceFirst(/(\w*)/) { all, name ->
+                            return "${name}.bat"
+                        }
+                    } else {
+                        command[0] = command[0] + '.bat'
+                    }
+                    commandToDisplay = getCommandToDisplay(command)
+                    logger.lifecycle("Command failed. Trying to execute .bat version: ${commandToDisplay}")
+                    proc = command.execute(envp, runDirectory)
+                } else {
+                    throw e
+                }
+            }
             addWriter(proc, input)
             Thread errorThread = ProcessGroovyMethods.consumeProcessErrorStream(proc, standardErr)
             Thread outputThread = ProcessGroovyMethods.consumeProcessOutputStream(proc, standardOut)
@@ -199,7 +232,29 @@ class ProjectHelper {
         logger.lifecycle("Standard output/error is stored in ${outErrFile}")
         def standardOut = new FileSystemOutput(outErrFile)
         def standardErr = new FileSystemOutput(outErrFile, System.err)
-        Process proc = command.execute(envp, runDirectory)
+        Process proc = null
+        try {
+            proc = command.execute(envp, runDirectory)
+        } catch (IOException e) {
+            if (e.getMessage().contains("error=2")) {
+                if (command instanceof GString) {
+                    command = (command.toString()).replaceFirst(/(\w*)/) { all, name ->
+                        return "${name}.bat"
+                    }
+                } else if (command instanceof String) {
+                    command = command.replaceFirst(/(\w*)/) { all, name ->
+                        return "${name}.bat"
+                    }
+                } else {
+                    command[0] = command[0] + '.bat'
+                }
+                commandToDisplay = getCommandToDisplay(command)
+                logger.lifecycle("Command failed. Trying to execute .bat version: ${commandToDisplay}")
+                proc = command.execute(envp, runDirectory)
+            } else {
+                throw e
+            }
+        }
         addWriter(proc, input)
         Thread errorThread = ProcessGroovyMethods.consumeProcessErrorStream(proc, standardErr)
         Thread outputThread = ProcessGroovyMethods.consumeProcessOutputStream(proc, standardOut)

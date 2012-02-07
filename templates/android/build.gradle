@@ -1,21 +1,11 @@
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots"
-        }
     }
     dependencies {
-        classpath ('com.apphance.ameba:Ameba:0.99.1-SNAPSHOT') {
-            changing = true
-        }
-    }
-    configurations.all {
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        classpath ('com.apphance.ameba:Ameba:0.99.2.13')
     }
 }
-
 
 apply plugin: 'ameba-project-configuration'
 apply plugin: 'ameba-mercurial'
@@ -25,3 +15,4 @@ apply plugin: 'ameba-android-apphance'
 apply plugin: 'ameba-android-analysis'
 apply plugin: 'ameba-android-test'
 apply plugin: 'ameba-android-reports'
+//apply plugin: 'ameba-android-jarlibrary'

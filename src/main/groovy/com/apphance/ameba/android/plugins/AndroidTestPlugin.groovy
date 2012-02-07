@@ -1,20 +1,21 @@
 package com.apphance.ameba.android.plugins
 
-import java.io.File
 
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.ProjectHelper;
 import com.apphance.ameba.android.AndroidBuildXmlHelper
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.sun.org.apache.xpath.internal.XPathAPI
+
+
 
 /**
  * Performs standard android testing.
@@ -31,8 +32,7 @@ class AndroidTestPlugin implements Plugin<Project>{
     AndroidProjectConfiguration androidConf
     File androidTestDirectory
     AndroidManifestHelper androidManifestHelper
-    org.w3c.dom.Element testProjectManifest
-    org.w3c.dom.Element mainProjectManifest
+    def testProjectManifest
     String emmaDumpFile
     String xmlJUnitDir
     File coverageDir
@@ -54,7 +54,11 @@ class AndroidTestPlugin implements Plugin<Project>{
         } else {
             androidTestDirectory = new File(project.rootDir,"test/android")
         }
-		rawDir = new File(project.rootDir, 'res/raw')
+        this.testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
+        rawDir = new File(project.rootDir, 'res/raw')
+        testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
+        androidConf.testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
+        androidConf.testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
         prepareEmmaConfiguration(project)
         prepareCreateAvdTask(project)
         prepareAndroidTestingTask(project)
@@ -98,12 +102,6 @@ class AndroidTestPlugin implements Plugin<Project>{
         project.dependencies.add('emma',project.files([
             new File(androidConf.sdkDirectory,'tools/lib/emma_ant.jar')
         ]))
-        mainProjectManifest = androidManifestHelper.getParsedManifest(project.rootDir)
-        testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
-        androidConf.mainProjectPackage = XPathAPI.selectSingleNode(mainProjectManifest, "/manifest/@package").nodeValue
-        androidConf.testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
-        androidConf.mainProjectName = buildXmlHelper.readProjectName(project.rootDir)
-        androidConf.testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
         emmaDumpFile = "/data/data/${androidConf.mainProjectPackage}/coverage.ec"
         xmlJUnitDir = "/data/data/${androidConf.mainProjectPackage}/files/"
         coverageDir = new File(project.rootDir,'tmp/coverage')
@@ -145,7 +143,7 @@ class AndroidTestPlugin implements Plugin<Project>{
                         'list',
                         'avd',
                         '-c'
-                    ]).any { it == androidConf.emulatorName}
+                    ]).any { it == androidConf.emulatorName }
             if (!avdDir.exists() || !emulatorExists) {
                 avdDir.mkdirs()
                 logger.lifecycle("Creating emulator avd: ${androidConf.emulatorName}")
@@ -206,7 +204,7 @@ class AndroidTestPlugin implements Plugin<Project>{
             }
         }
         path.delete()
-		return true
+        return true
     }
 
     private prepareTestBuilds(Project project) {
@@ -217,7 +215,7 @@ class AndroidTestPlugin implements Plugin<Project>{
         if (rawDir.exists()) {
             deleteNonEmptyDirectory(rawDir)
         }
-		rawDir.mkdir()
+        rawDir.mkdir()
         String [] commandAndroid = [
             "android",
             "update",
@@ -250,7 +248,7 @@ class AndroidTestPlugin implements Plugin<Project>{
             logger.lifecycle("No ${localEmFile}. Not renaming to ${coverageEmFile}")
         }
     }
-	
+
     private void installTestBuilds(Project project) {
         projectHelper.executeCommand(project, androidTestDirectory,[
             adbBinary,
@@ -324,71 +322,99 @@ class AndroidTestPlugin implements Plugin<Project>{
 
     void runAndroidTests(Project project) {
         logger.lifecycle("Running tests on ${androidConf.emulatorName}")
-        String [] commandRunTests
+        if (androidConf.testPerPackage) {
+            def allPackages = []
+            projectHelper.findAllPackages("", new File(androidTestDirectory,"src"), allPackages)
+            logger.lifecycle("Running tests on packages ${allPackages}")
+            allPackages.each {
+                logger.lifecycle("Running tests for package ${it}")
+                def commandRunTests = prepareTestCommandLine(it)
+                logger.lifecycle("Running  ${commandRunTests}")
+                projectHelper.executeCommand(project, androidTestDirectory, commandRunTests)
+            }
+        } else {
+            def commandRunTests = prepareTestCommandLine(null)
+            projectHelper.executeCommand(project, androidTestDirectory, commandRunTests)
+        }
         if (androidConf.useEmma) {
-            commandRunTests =[
-                adbBinary,
-                '-s',
-                "emulator-${androidConf.emulatorPort}",
-                'shell',
-                'am',
-                'instrument',
-                '-w',
+            extractEmmaCoverage(project)
+            prepareCoverageReport(project)
+        }
+        extractXMLJUnitFiles(project)
+    }
+
+    String [] prepareTestCommandLine(String packageName) {
+        def commandLine = [
+            adbBinary,
+            '-s',
+            "emulator-${androidConf.emulatorPort}",
+            'shell',
+            'am',
+            'instrument',
+            '-w'
+        ]
+        if (packageName != null) {
+            commandLine += [
+                '-e',
+                'package',
+                packageName
+            ]
+        }
+        if (androidConf.useEmma) {
+            commandLine += [
                 '-e',
                 'coverage',
                 'true',
                 '-e',
                 'coverageFile',
                 emmaDumpFile,
-                "${androidConf.testProjectPackage}/${TEST_RUNNER}"
-            ]
-        } else {
-            commandRunTests =[
-                adbBinary,
-                '-s',
-                "emulator-${androidConf.emulatorPort}",
-                'shell',
-                'am',
-                'instrument',
-                '-w',
-                "${androidConf.testProjectPackage}/${TEST_RUNNER}"
             ]
         }
-        projectHelper.executeCommand(project, androidTestDirectory, commandRunTests)
-        if (androidConf.useEmma) {
-            logger.lifecycle("Extracting coverage report from ${androidConf.emulatorName}")
-            String [] commandDownloadXmlFile =[
-                adbBinary,
-                '-s',
-                "emulator-${androidConf.emulatorPort}",
-                'pull',
-                xmlJUnitDir
-            ]
-            projectHelper.executeCommand(project, coverageDir, commandDownloadXmlFile)
-            String [] commandDownloadCoverageFile =[
-                adbBinary,
-                '-s',
-                "emulator-${androidConf.emulatorPort}",
-                'pull',
-                emmaDumpFile,
-                coverageEcFile
-            ]
-            projectHelper.executeCommand(project, androidTestDirectory, commandDownloadCoverageFile)
-            project.ant.taskdef( resource:"emma_ant.properties",
-                    classpath: project.configurations.emma.asPath)
-            project.ant.emma {
-                report(sourcepath : "${project.rootDir}/src") {
-                    fileset(dir : coverageDir) {
-                        include(name : 'coverage.ec')
-                        include(name : 'coverage.em')
-                    }
-                    xml(outfile : "${coverageDir}/android_coverage.xml")
-                    txt(outfile : "${coverageDir}/android_coverage.txt")
-                    html(outfile : "${coverageDir}/android_coverage.html")
+        commandLine<< "${androidConf.testProjectPackage}/${TEST_RUNNER}"
+        return (String[]) commandLine
+    }
+
+    void extractEmmaCoverage(Project project) {
+        logger.lifecycle("Extracting coverage report from ${androidConf.emulatorName}")
+        String [] commandDownloadCoverageFile =[
+            adbBinary,
+            '-s',
+            "emulator-${androidConf.emulatorPort}",
+            'pull',
+            emmaDumpFile,
+            coverageEcFile
+        ]
+        projectHelper.executeCommand(project, androidTestDirectory, commandDownloadCoverageFile)
+        logger.lifecycle("Pulled coverage report from ${androidConf.emulatorName} to ${coverageDir}...")
+    }
+
+    void extractXMLJUnitFiles(Project project) {
+        logger.lifecycle("Extracting coverage report from ${androidConf.emulatorName}")
+        String [] commandDownloadXmlFile =[
+            adbBinary,
+            '-s',
+            "emulator-${androidConf.emulatorPort}",
+            'pull',
+            xmlJUnitDir
+        ]
+        projectHelper.executeCommand(project, coverageDir, commandDownloadXmlFile)
+    }
+
+    void prepareCoverageReport(Project project) {
+        project.ant.taskdef( resource:"emma_ant.properties",
+                classpath: project.configurations.emma.asPath)
+        project.ant.emma {
+            report(sourcepath : "${project.rootDir}/src") {
+                fileset(dir : coverageDir) {
+                    include(name : 'coverage.ec*')
+                    include(name : 'coverage.em')
                 }
+                xml(outfile : "${coverageDir}/android_coverage.xml")
+                txt(outfile : "${coverageDir}/android_coverage.txt")
+                html(outfile : "${coverageDir}/android_coverage.html")
             }
-            logger.lifecycle("Extracted coverage report from ${androidConf.emulatorName} to ${coverageDir}...")
         }
+        logger.lifecycle("Prepared coverage report from ${androidConf.emulatorName} to ${coverageDir}...")
     }
 
     void startEmulator(Project project, boolean noWindow, boolean useVnc) {

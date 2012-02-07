@@ -1,12 +1,16 @@
 package com.apphance.ameba.android;
 
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
+
+import com.sun.org.apache.xpath.internal.XPathAPI
 
 
 public class AndroidProjectConfigurationRetriever {
     static Logger logger = Logging.getLogger(AndroidProjectConfigurationRetriever.class)
+    AndroidManifestHelper androidManifestHelper = new AndroidManifestHelper()
+    AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
     AndroidProjectConfiguration getAndroidProjectConfiguration(final Project project){
         if (!project.hasProperty('android.project.configuration')) {
             project['android.project.configuration'] = new AndroidProjectConfiguration()
@@ -29,7 +33,12 @@ public class AndroidProjectConfigurationRetriever {
         androidConf.emulatorUseVNC = project.hasProperty('android.test.emulator.useVNC') ?
                 Boolean.parseBoolean(project['android.test.emulator.withVNC']) : true
         androidConf.emulatorName= new File('.').getAbsolutePath().replaceAll('[\\\\ /]','_')
+        androidConf.testPerPackage = project.hasProperty('android.test.perPackage') ?
+                Boolean.parseBoolean(project['android.test.perPackage']) : false
         androidConf.useEmma = project.hasProperty('android.useEmma') ?
                 Boolean.parseBoolean(project['android.useEmma']) : true
+        def mainProjectManifest = androidManifestHelper.getParsedManifest(project.rootDir)
+        androidConf.mainProjectPackage = XPathAPI.selectSingleNode(mainProjectManifest, "/manifest/@package").nodeValue
+        androidConf.mainProjectName = buildXmlHelper.readProjectName(project.rootDir)
     }
 }

@@ -5,10 +5,11 @@ apply {
     plugin 'signing'
     plugin 'eclipse'
 }
+
 apply from:'file:emma.gradle'
+apply from: "http://launchpad.net/gradle-release/trunk/latest/+download/apply.groovy"
 
 group = 'com.apphance.ameba'
-version = "0.99.1-SNAPSHOT"
 artifactId = 'Ameba'
 
 task sourcesJar(type: Jar, dependsOn:classes) {
@@ -21,20 +22,20 @@ task javadocJar(type: Jar, dependsOn:groovydoc) {
     from javadoc.destinationDir
 }
 
+isReleaseVersion = !version.endsWith("SNAPSHOT")
+
 artifacts {
-    archives sourcesJar
-    archives javadocJar
-    archives jar
+    if (isReleaseVersion) {
+        archives sourcesJar
+        archives javadocJar
+        archives jar
+    }
 }
 
 signing {
-    sign configurations.archives
-}
-
-configure(install.repositories.mavenInstaller) {
-	pom.project {
-		artifactId "$artifactId"
-	}
+    if (isReleaseVersion) {
+         sign configurations.archives
+    }
 }
 
 uploadArchives {
@@ -50,13 +51,13 @@ uploadArchives {
               authentication(userName: sonatypeUsername, password: sonatypePassword)
             }
 
-			pom.artifactId = "$artifactId"
+            pom.artifactId = artifactId
+
             pom.project {
                name 'ameba'
                packaging 'jar'
                description 'AMEBA stands for Apphance MobilE Build Automation - it is gradle plugin to automate builds for mobile applications'
                url 'http://ameba.apphance.com/'
-			   artifactId = "$artifactId"
 
                scm {
                    url 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
@@ -85,6 +86,12 @@ uploadArchives {
            }
 
         }
+    }
+}
+
+configure(install.repositories.mavenInstaller) {
+    pom.project {
+        artifactId artifactId
     }
 }
 
@@ -117,7 +124,7 @@ dependencies {
 task cleanTmp << {
    project.ant.delete(dir: "tmp")
 }
+
 cleanTmp.description = 'Cleans tmp directory'
-project.clean.dependsOn(cleanTmp)
-
-
+clean.dependsOn(cleanTmp)
+createReleaseTag.dependsOn uploadArchives
