@@ -44,7 +44,7 @@ class MercurialPlugin extends VCSPlugin {
                 "hg",
                 "commit",
                 "-m",
-                "Incrementing application version to ${conf.versionString} (${conf.versionCode}",
+                "Incrementing application version to ${conf.versionString} (${conf.versionCode})",
                 "-u",
                 "${commitUser}"
             ]
