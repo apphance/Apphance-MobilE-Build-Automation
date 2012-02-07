@@ -323,6 +323,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
 		def task = project.task('showProperties')
 		task.description = "Shows all available project properties"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
+		task.showComments = true
 		task << {
 			// this task does nothing. It is there to serve as umbrella task for other setup tasks
 		}

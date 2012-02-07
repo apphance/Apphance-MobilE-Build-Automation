@@ -30,7 +30,9 @@ class ShowReleasePropertiesTask extends DefaultTask {
 			if (project.hasProperty(property.getName())) {
 				propString = propString +  project[property.getName()]
 			}
-			System.out.println(comment)
+			if (project.showProperties.showComments == true) {
+				System.out.println(comment)
+			}
 			System.out.println(propString)
 		}
 	}

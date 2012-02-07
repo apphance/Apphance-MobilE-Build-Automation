@@ -20,6 +20,7 @@ import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSBuildAllSimulatorsTask
+import com.apphance.ameba.ios.IOSShowPropertiesTask;
 import com.apphance.ameba.ios.IOSSingleReleaseBuilder
 import com.apphance.ameba.ios.IOSVerifySetupTask
 import com.sun.org.apache.xpath.internal.XPathAPI
@@ -54,11 +55,12 @@ class IOSPlugin implements Plugin<Project> {
         prepareCopyMobileProvisionTask(project)
         prepareBuildSingleReleaseTask(project)
         project.task('buildAllSimulators', type: IOSBuildAllSimulatorsTask)
-        project.task('verifyIOSSetup',type: IOSVerifySetupTask)
+        project.task('verifyIOSSetup', type: IOSVerifySetupTask)
         prepareBuildAllTask(project)
         preparePreReleaseTask(project)
         prepareReplaceBundleIdPrefixTask(project)
         addIosSourceExcludes()
+		project.task('showIOSProperties', type:IOSShowPropertiesTask)
     }
 
     private addIosSourceExcludes() {
