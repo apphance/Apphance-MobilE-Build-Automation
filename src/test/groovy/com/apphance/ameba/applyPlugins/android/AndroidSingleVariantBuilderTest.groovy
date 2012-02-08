@@ -40,9 +40,9 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
         assertEquals('Debug', ai.debugRelease)
         assertEquals(new File("testProjects/android/bin").absolutePath, ai.buildDirectory.absolutePath)
         assertEquals(new File("testProjects/android/bin/TestAndroidProject-debug.apk").absolutePath, ai.originalFile.absolutePath)
-        assertEquals('TestAndroidProject-debug-test-1.0.1_42', ai.fullReleaseName)
-        assertEquals('AdadalkjsaTest/1.0.1_42', ai.folderPrefix)
-        assertEquals('TestAndroidProject-debug-test-1.0.1_42', ai.filePrefix)
+        assertEquals('TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42', ai.fullReleaseName)
+        assertEquals('AdadalkjsaTest/1.0.1-SNAPSHOT_42', ai.folderPrefix)
+        assertEquals('TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42', ai.filePrefix)
     }
 
     public void testArtifactBuilderInfoVariantedRelease() throws Exception {
@@ -53,9 +53,9 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
         assertEquals('Release', ai.debugRelease)
         assertEquals(new File("testProjects/android/bin").absolutePath, ai.buildDirectory.absolutePath)
         assertEquals(new File("testProjects/android/bin/TestAndroidProject-release.apk").absolutePath, ai.originalFile.absolutePath)
-        assertEquals('TestAndroidProject-release-market-1.0.1_42', ai.fullReleaseName)
-        assertEquals('AdadalkjsaTest/1.0.1_42', ai.folderPrefix)
-        assertEquals('TestAndroidProject-release-market-1.0.1_42', ai.filePrefix)
+        assertEquals('TestAndroidProject-release-market-1.0.1-SNAPSHOT_42', ai.fullReleaseName)
+        assertEquals('AdadalkjsaTest/1.0.1-SNAPSHOT_42', ai.folderPrefix)
+        assertEquals('TestAndroidProject-release-market-1.0.1-SNAPSHOT_42', ai.filePrefix)
     }
 
     public void testArtifactBuilderInfoNotVariantedDebug() throws Exception {
@@ -66,9 +66,9 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
         assertEquals('Debug', ai.debugRelease)
         assertEquals(new File("testProjects/android-novariants/bin").absolutePath, ai.buildDirectory.absolutePath)
         assertEquals(new File("testProjects/android-novariants/bin/TestAndroidProject-debug.apk").absolutePath, ai.originalFile.absolutePath)
-        assertEquals('TestAndroidProject-debug-1.0.1_42', ai.fullReleaseName)
-        assertEquals('asdlakjljsdTest/1.0.1_42', ai.folderPrefix)
-        assertEquals('TestAndroidProject-debug-1.0.1_42', ai.filePrefix)
+        assertEquals('TestAndroidProject-debug-1.0.1-SNAPSHOT_42', ai.fullReleaseName)
+        assertEquals('asdlakjljsdTest/1.0.1-SNAPSHOT_42', ai.folderPrefix)
+        assertEquals('TestAndroidProject-debug-1.0.1-SNAPSHOT_42', ai.filePrefix)
     }
 
     public void testArtifactBuilderInfoNotVariantedRelease() throws Exception {
@@ -79,8 +79,8 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
         assertEquals('Release', ai.debugRelease)
         assertEquals(new File("testProjects/android-novariants/bin").absolutePath, ai.buildDirectory.absolutePath)
         assertEquals(new File("testProjects/android-novariants/bin/TestAndroidProject-release.apk").absolutePath, ai.originalFile.absolutePath)
-        assertEquals('TestAndroidProject-release-1.0.1_42', ai.fullReleaseName)
-        assertEquals('asdlakjljsdTest/1.0.1_42', ai.folderPrefix)
-        assertEquals('TestAndroidProject-release-1.0.1_42', ai.filePrefix)
+        assertEquals('TestAndroidProject-release-1.0.1-SNAPSHOT_42', ai.fullReleaseName)
+        assertEquals('asdlakjljsdTest/1.0.1-SNAPSHOT_42', ai.folderPrefix)
+        assertEquals('TestAndroidProject-release-1.0.1-SNAPSHOT_42', ai.filePrefix)
     }
 }
