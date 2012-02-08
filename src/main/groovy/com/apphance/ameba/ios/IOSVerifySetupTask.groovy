@@ -25,37 +25,36 @@ class IOSVerifySetupTask extends DefaultTask {
 
     @TaskAction
     void verifySetup() {
-        Properties projectProperties = project['gradleProperties']
 		for (IOSProjectProperty p : IOSProjectProperty.values()) {
 			if (!p.isOptional()) {
-				checkProperty(projectProperties, p.getName())
+				checkProperty(p.getName())
 			}
 		}
-		checkPlistFile(projectProperties)
-		checkFamilies(projectProperties)
-        checkDistributionDir(projectProperties)
-		checkTargets(projectProperties)
+		checkPlistFile()
+		checkFamilies()
+        checkDistributionDir()
+		checkTargets()
         logger.lifecycle("GOOD!!! ALL IOS PROJECT PROPERTIES SET CORRECTLY!!!")
     }
 
-    void checkPlistFile(Properties projectProperties) {
-        File plistFile = new File(project.rootDir,projectProperties.getProperty('ios.plist.file'))
+    void checkPlistFile() {
+        File plistFile = new File(project.rootDir,project.getProperty('ios.plist.file'))
         if (!plistFile.exists() || !plistFile.isFile()) {
             throw new GradleException("""The plist file (${plistFile}) does not exist
 or is not a file. Please run 'gradle prepareSetup' to correct it.""")
         }
     }
 
-    void checkDistributionDir(Properties projectProperties) {
-        File distributionResourcesDir = new File(project.rootDir,projectProperties.getProperty('ios.distribution.resources.dir'))
+    void checkDistributionDir() {
+        File distributionResourcesDir = new File(project.rootDir,project.getProperty('ios.distribution.resources.dir'))
         if (!distributionResourcesDir.exists() || !distributionResourcesDir.isDirectory()) {
             throw new GradleException("""The distribution resources directory (${distributionResourcesDir})
 does not exist or is not a directory. Please run 'gradle prepareSetup' to correct it.""")
         }
     }
 
-    void checkFamilies(Properties projectProperties) {
-        String[] families = projectProperties.getProperty('ios.families').split(',')
+    void checkFamilies() {
+        String[] families = project.getProperty('ios.families').split(',')
         def validFamilies = ['iPad', 'iPhone']
         families.each { family ->
             if (!validFamilies.contains(family)) {
@@ -64,14 +63,14 @@ does not exist or is not a directory. Please run 'gradle prepareSetup' to correc
         }
     }
 
-    void checkProperty(Properties projectProperties, String propertyName) {
-        if (projectProperties.getProperty(propertyName) == null) {
+    void checkProperty(String propertyName) {
+        if (project.getProperty(propertyName) == null) {
             throw new GradleException("""Property ${propertyName} should be defined in gradle.properties.
 !!!!! Please run "gradle prepareSetup" to correct project's configuration !!!!!""")
         }
     }
 	
-	void checkTargets(Properties projectProperties) {
+	void checkTargets() {
 		ProjectHelper projectHelper = new ProjectHelper();
 		def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
 		def trimmed = lines*.trim()
@@ -89,14 +88,14 @@ does not exist or is not a directory. Please run 'gradle prepareSetup' to correc
 		if (iosConf.excludedBuilds != ['.*'] && iosConf.excludedBuilds.size != ios.targets.size * ios.configurations.size) {
 			def mainTarget
 			if (!project.hasProperty(IosProperty.MAIN_TARGET.getName())) {
-				mainTarget = projectProperties.getProperty(IosProperty.MAIN_TARGET.getName())
+				mainTarget = project.getProperty(IosProperty.MAIN_TARGET.getName())
 			} else {
 				mainTarget = iosConf.targets[0]
 			}
 			
 			def mainConfiguration
 			if (!project.hasProperty(IosProperty.MAIN_CONFIGURATION.getName())) {
-				mainConfiguration = projectProperties.getProperty(IosProperty.MAIN_CONFIGURATION.getName())
+				mainConfiguration = project.getProperty(IosProperty.MAIN_CONFIGURATION.getName())
 			} else {
 				mainConfiguration = iosConf.configurations[0]
 			}

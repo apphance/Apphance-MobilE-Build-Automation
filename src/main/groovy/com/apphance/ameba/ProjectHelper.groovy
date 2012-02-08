@@ -400,4 +400,31 @@ class ProjectHelper {
         String subject = resourceBundle.getString('Subject')
         conf.releaseMailSubject = Eval.me("conf",conf,/"$subject"/)
     }
+	
+	public static String getProjectPropertyFromUser(Project project, String name, String description, ArrayList defaultValues, boolean useDefault, BufferedReader br) {
+		String s = name + ' (' + description + ')'
+		if (useDefault) {
+			s = s + '. Proposed values: ' + defaultValues
+		}
+		if (project.hasProperty(name)) {
+			s = s + '. Current value=' + project[name] + '. Leave blank to don\'t change'
+			System.out.println(s)
+			String newValue = br.readLine()
+			if (newValue.isEmpty() && !useDefault) {
+				// don't change
+			} else if (newValue.isEmpty() && useDefault) {
+				project[name] = defaultValues[0]
+			} else {
+				project[name] = newValue
+			}
+		} else {
+			System.out.println(s)
+			String newValue = br.readLine()
+			if (newValue.isEmpty() && useDefault) {
+				project[name] = defaultValues[0]
+			} else {
+				project[name] = newValue
+			}
+		}
+	}
 }

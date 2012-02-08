@@ -6,11 +6,13 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.logging.LogLevel
 
 import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ImageNameFilter
 import com.apphance.ameba.PrepareBaseSetupTask
+import com.apphance.ameba.PrepareReleaseSetupTask;
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.ShowBasePropertiesTask;
@@ -51,6 +53,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
 		prepareShowPropertiesTask(project)
 		project.task('showBaseProperties', type: ShowBasePropertiesTask.class)
 		project.task('showReleaseProperties', type: ShowReleasePropertiesTask.class)
+		project.task('prepareReleaseSetup', type: PrepareReleaseSetupTask.class)
     }
 
     void prepareMailConfiguration(Project project) {
@@ -77,6 +80,8 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         def task = project.task('prepareSetup')
         task.description = "Walk-throug wizard for preparing project's configuration"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
+		project.logging.setLevel(LogLevel.QUIET)
+		task.logging.setLevel(LogLevel.QUIET)
         task << {
             // this task does nothing. It is there to serve as umbrella task for other setup tasks
         }

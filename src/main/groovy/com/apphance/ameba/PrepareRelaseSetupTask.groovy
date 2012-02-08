@@ -7,14 +7,14 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 import groovy.io.FileType
 
-class PrepareBaseSetupTask extends DefaultTask {
+class PrepareReleaseSetupTask extends DefaultTask {
 
     Logger logger = Logging.getLogger(PrepareBaseSetupTask.class)
     ProjectConfiguration conf
 
-    PrepareBaseSetupTask() {
+    PrepareReleaseSetupTask() {
         this.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        this.description = 'Walks you through the base part of setup of the project.'
+        this.description = 'Walks you through the release part of setup of the project.'
         this.conf = new ProjectConfiguration()
         //inject myself as dependency for umbrella prepareSetup
         project.prepareSetup.dependsOn(this)
@@ -25,28 +25,16 @@ class PrepareBaseSetupTask extends DefaultTask {
     @TaskAction
     void prepareSetup() {
         System.out.println("""#######################
-# Preparing base setup
+# Preparing release setup
 #######################""")
-		def files = []
-		new File('.').eachFileRecurse(FileType.FILES) {
-			if (it.name.equals('Icon.png') || it.name.equals('icon.png')) {
-				def path = it.path
-				files << path
-			}
-		}
 		System.out.println('Type values for properties')
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
 		
-		for (ProjectBaseProperty property : ProjectBaseProperty.values()) {
-			if (property == ProjectBaseProperty.PROJECT_ICON_FILE) {
-				// will be handled separetly
-				continue;
-			}
+		for (ProjectReleaseProperty property : ProjectReleaseProperty.values()) {
 			ProjectHelper.getProjectPropertyFromUser(project, property.getName(), property.getDescription(), null, false, br)
 		}
-		ProjectHelper.getProjectPropertyFromUser(project, ProjectBaseProperty.PROJECT_ICON_FILE.getName(), ProjectBaseProperty.PROJECT_ICON_FILE.getDescription(), files, true, br)
-		File file = new File('gradle.props')
-		file.delete()
-		file << ProjectBaseProperty.printProperties(project, false)
+		
+		File propsFile = new File('gradle.props')
+		propsFile << ProjectReleaseProperty.printProperties(project, false)
     }
 }

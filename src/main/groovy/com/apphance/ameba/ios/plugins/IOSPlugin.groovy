@@ -18,6 +18,7 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
+import com.apphance.ameba.ios.IOSPrepareSetupTask;
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSBuildAllSimulatorsTask
 import com.apphance.ameba.ios.IOSShowPropertiesTask;
@@ -46,8 +47,8 @@ class IOSPlugin implements Plugin<Project> {
         this.conf = projectHelper.getProjectConfiguration(project)
         this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
         this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
-        readIosProjectConfiguration(project)
-        readIosTargetsAndConfigurations(project)
+        prepareReadIosProjectConfigurationTask(project)
+        prepareReadIosTargetsAndConfigurationsTask(project)
         prepareReadIosProjectVersionsTask(project)
         prepareUpdateVersionTask(project)
         prepareCleanTask(project)
@@ -61,58 +62,71 @@ class IOSPlugin implements Plugin<Project> {
         prepareReplaceBundleIdPrefixTask(project)
         addIosSourceExcludes()
 		project.task('showIOSProperties', type:IOSShowPropertiesTask)
+		project.task('prepareIOSSetup', type:IOSPrepareSetupTask)
     }
 
     private addIosSourceExcludes() {
         conf.sourceExcludes << '**/build/**'
     }
 
-    private readIosProjectConfiguration(Project project) {
-        this.pListFileName = project['ios.plist.file']
-        iosConf.mainTarget = project.hasProperty('ios.mainTarget')  ? project['ios.mainTarget'] :  null
-        iosConf.mainConfiguration = project.hasProperty('ios.mainConfiguration')  ? project['ios.mainConfiguration'] : null
-        iosConf.sdk = project.hasProperty('ios.sdk') ? project['ios.sdk'] : 'iphoneos'
-        iosConf.simulatorsdk = project.hasProperty('ios.simulator.sdk') ? project['ios.simulator.sdk'] : 'iphonesimulator'
-        iosConf.plistFile = new File(this.pListFileName)
-        iosConf.distributionDirectory =  new File(project.rootDir, project['ios.distribution.resources.dir'])
-        iosConf.families = project.hasProperty('ios.families') ? project['ios.families'].split(",")*.trim() : ["iPhone", "iPad"]
-        iosConf.excludedBuilds = project.hasProperty('ios.excluded.builds') ? project['ios.excluded.builds'].split(",")*.trim() : []
-        iosConf.foneMonkeyConfiguration = project.hasProperty('ios.fonemonkey.configuration') ? project['ios.fonemonkey.configuration'] : "Debug"
-        iosConf.KIFConfiguration = project.hasProperty('ios.kif.configuration') ? project['ios.kif.configuration'] : "Debug"
-        if (iosConf.plistFile != null) {
-            conf.commitFilesOnVCS << iosConf.plistFile.absolutePath
-        }
+    private prepareReadIosProjectConfigurationTask(Project project) {
+		def task = project.task('readIOSProjectConfiguration')
+		task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+		task.description = 'Reads iOS project configuration'
+		task << {
+			this.pListFileName = project['ios.plist.file']
+			iosConf.mainTarget = project.hasProperty('ios.mainTarget')  ? project['ios.mainTarget'] :  null
+			iosConf.mainConfiguration = project.hasProperty('ios.mainConfiguration')  ? project['ios.mainConfiguration'] : null
+			iosConf.sdk = project.hasProperty('ios.sdk') ? project['ios.sdk'] : 'iphoneos'
+			iosConf.simulatorsdk = project.hasProperty('ios.simulator.sdk') ? project['ios.simulator.sdk'] : 'iphonesimulator'
+			iosConf.plistFile = new File(this.pListFileName)
+			iosConf.distributionDirectory =  new File(project.rootDir, project['ios.distribution.resources.dir'])
+			iosConf.families = project.hasProperty('ios.families') ? project['ios.families'].split(",")*.trim() : ["iPhone", "iPad"]
+			iosConf.excludedBuilds = project.hasProperty('ios.excluded.builds') ? project['ios.excluded.builds'].split(",")*.trim() : []
+			iosConf.foneMonkeyConfiguration = project.hasProperty('ios.fonemonkey.configuration') ? project['ios.fonemonkey.configuration'] : "Debug"
+			iosConf.KIFConfiguration = project.hasProperty('ios.kif.configuration') ? project['ios.kif.configuration'] : "Debug"
+			if (iosConf.plistFile != null) {
+				conf.commitFilesOnVCS << iosConf.plistFile.absolutePath
+			}
+		}
+		project.readProjectConfiguration.dependsOn(task)
     }
 
-    def void readIosTargetsAndConfigurations(Project project) {
-        project.file("bin").mkdirs()
-        def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
-        def trimmed = lines*.trim()
-        IOSProjectConfiguration iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
-        iosConf.targets = iosConfigurationAndTargetRetriever.readBuildableTargets(trimmed)
-        iosConf.configurations = iosConfigurationAndTargetRetriever.readBuildableConfigurations(trimmed)
-        iosConf.alltargets = iosConfigurationAndTargetRetriever.readBaseTargets(trimmed, { true })
-        iosConf.allconfigurations = iosConfigurationAndTargetRetriever.readBaseConfigurations(trimmed, { true })
-        if (iosConf.targets == ['']) {
-            logger.lifecycle("Please specify at least one target")
-            iosConf.targets = []
-        }
-        if (iosConf.configurations == ['']) {
-            logger.lifecycle("Please specify at least one configuration")
-            iosConf.configurations = []
-        }
-        if (iosConf.mainTarget == null) {
-            iosConf.mainTarget = iosConf.targets.empty? null : iosConf.targets[0]
-        }
-        if (iosConf.mainConfiguration == null) {
-            iosConf.mainConfiguration = iosConf.configurations.empty ? null : iosConf.configurations[0]
-        }
-        logger.lifecycle("Standard buildable targets: " + iosConf.targets)
-        logger.lifecycle("Standard buildable configurations : " + iosConf.configurations)
-        logger.lifecycle("Main target: " + iosConf.mainTarget)
-        logger.lifecycle("Main configuration : " + iosConf.mainConfiguration)
-        logger.lifecycle("All targets: " + iosConf.alltargets)
-        logger.lifecycle("All configurations : " + iosConf.allconfigurations)
+    def void prepareReadIosTargetsAndConfigurationsTask(Project project) {
+		def task = project.task('readIOSProjectTargetAndConfiguration')
+		task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+		task.description = 'Reads iOS targets and configurations'
+		task << {
+	        project.file("bin").mkdirs()
+	        def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
+	        def trimmed = lines*.trim()
+	        IOSProjectConfiguration iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+	        iosConf.targets = iosConfigurationAndTargetRetriever.readBuildableTargets(trimmed)
+	        iosConf.configurations = iosConfigurationAndTargetRetriever.readBuildableConfigurations(trimmed)
+	        iosConf.alltargets = iosConfigurationAndTargetRetriever.readBaseTargets(trimmed, { true })
+	        iosConf.allconfigurations = iosConfigurationAndTargetRetriever.readBaseConfigurations(trimmed, { true })
+	        if (iosConf.targets == ['']) {
+	            logger.lifecycle("Please specify at least one target")
+	            iosConf.targets = []
+	        }
+	        if (iosConf.configurations == ['']) {
+	            logger.lifecycle("Please specify at least one configuration")
+	            iosConf.configurations = []
+	        }
+	        if (iosConf.mainTarget == null) {
+	            iosConf.mainTarget = iosConf.targets.empty? null : iosConf.targets[0]
+	        }
+	        if (iosConf.mainConfiguration == null) {
+	            iosConf.mainConfiguration = iosConf.configurations.empty ? null : iosConf.configurations[0]
+	        }
+	        logger.lifecycle("Standard buildable targets: " + iosConf.targets)
+	        logger.lifecycle("Standard buildable configurations : " + iosConf.configurations)
+	        logger.lifecycle("Main target: " + iosConf.mainTarget)
+	        logger.lifecycle("Main configuration : " + iosConf.mainConfiguration)
+	        logger.lifecycle("All targets: " + iosConf.alltargets)
+	        logger.lifecycle("All configurations : " + iosConf.allconfigurations)
+		}
+		project.readProjectConfiguration.dependsOn(task)
     }
 
 

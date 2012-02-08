@@ -1,5 +1,7 @@
 package com.apphance.ameba
 
+import org.gradle.api.Project;
+
 enum ProjectReleaseProperty {
 
 	RELEASE_MAIL_FROM(false, 'release.mail.from', 'Sender email address'),
@@ -27,4 +29,29 @@ enum ProjectReleaseProperty {
 	public String getDescription() {
 		return description
 	}
+	
+			public static String printProperties(Project project, boolean useComments) {
+			
+			String s = """###########################################################
+# Project release properties
+###########################################################\n"""
+			for (ProjectReleaseProperty property : ProjectReleaseProperty.values()) {
+				String comment = '# ' + property.getDescription()
+				String propString = property.getName() + '='
+				if (property.isOptional()) {
+					comment = comment + ' [optional]'
+				} else {
+					comment = comment + ' [required]'
+				}
+				if (project.hasProperty(property.getName())) {
+					propString = propString +  project[property.getName()]
+				}
+	
+				if (useComments == true) {
+					s += comment + '\n'
+				}
+				s += propString + '\n'
+			}
+			return s
+		}
 }

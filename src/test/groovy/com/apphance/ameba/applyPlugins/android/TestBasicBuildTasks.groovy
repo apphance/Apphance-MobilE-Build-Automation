@@ -49,6 +49,7 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
         verifyTasksInGroup(getProject(),[
             'prepareBaseSetup',
             'prepareSetup',
+			'prepareReleaseSetup',
             'verifyBaseSetup',
             'verifySetup',
 			'showBaseProperties',

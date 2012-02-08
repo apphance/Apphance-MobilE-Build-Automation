@@ -1,5 +1,7 @@
 package com.apphance.ameba.ios
 
+import org.gradle.api.Project
+
 enum IOSProjectProperty {
 
 	PLIST_FILE(false, 'ios.plist.file', 'Path to plist file'),
@@ -33,5 +35,29 @@ enum IOSProjectProperty {
 	
 	public String getDescription() {
 		return description
+	}
+	
+	public static String printProperties(Project project, boolean useComments) {
+		String s
+		s = """###########################################################
+# IOS properties properties
+###########################################################\n"""
+		for (IOSProjectProperty property : IOSProjectProperty.values()) {
+			String comment = '# ' + property.getDescription()
+			String propString = property.getName() + '='
+			if (property.isOptional()) {
+				comment = comment + ' [optional]'
+			} else {
+				comment = comment + ' [required]'
+			}
+			if (project.hasProperty(property.getName())) {
+				propString = propString +  project[property.getName()]
+			}
+			if (useComments == true) {
+				s = s + comment
+			}
+			s = s + propString + '\n'
+		}
+		return s
 	}
 }

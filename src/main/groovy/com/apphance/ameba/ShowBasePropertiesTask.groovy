@@ -18,25 +18,6 @@ class ShowBasePropertiesTask extends DefaultTask {
 	
 	@TaskAction
 	void showProperties() {
-		System.out.println("""###########################################################
-# Project properties
-###########################################################""")
-		for (ProjectBaseProperty property : ProjectBaseProperty.values()) {
-			String comment = '# ' + property.getDescription()
-			String propString = property.getName() + '='
-			if (property.isOptional()) {
-				comment = comment + ' [optional]'
-			} else {
-				comment = comment + ' [required]'
-			}
-			if (project.hasProperty(property.getName())) {
-				propString = propString +  project[property.getName()]
-			}
-			
-			if (project.showProperties.showComments == true) {
-				System.out.println(comment)
-			}
-			System.out.println(propString)
-		}
+		System.out.print(ProjectBaseProperty.printProperties(project, true))
 	}
 }
