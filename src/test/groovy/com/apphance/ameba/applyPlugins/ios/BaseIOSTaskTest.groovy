@@ -11,7 +11,7 @@ import com.apphance.ameba.plugins.ProjectConfigurationPlugin
 abstract class BaseIOSTaskTest extends BaseTaskTest {
     protected Project getProject() {
         ProjectBuilder projectBuilder = ProjectBuilder.builder()
-        projectBuilder.withProjectDir(new File("testProjects/ios"))
+        projectBuilder.withProjectDir(new File("testProjects/ios/GradleXCode"))
         Project project = projectBuilder.build()
         project['ios.plist.file'] = 'Test.plist'
         project['ios.distribution.resources.dir'] = 'release/distribution_resources'
