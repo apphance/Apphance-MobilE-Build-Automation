@@ -22,6 +22,7 @@ class TestBasicIOSTasks extends BaseIOSTaskTest {
             'clean',
             'buildAll',
             'buildAllSimulators',
+            'buildFramework',
             'buildSingleRelease',
             'checkTests',
             'copyMobileProvision',

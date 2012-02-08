@@ -43,6 +43,12 @@ class IOSConfigurationAndTargetRetriever {
         return onlyTargets.findAll(filter)
     }
 
+    String readProjectName(List trimmed) {
+        String firstLine = trimmed[0]
+        def matcher = firstLine =~ /.*"(.*)"/
+        return matcher[0][1]
+    }
+
     File findMobileProvisionFile(Project project, String target, String configuration) {
         IOSProjectConfiguration iosConf = getIosProjectConfiguration(project)
         File f = new File(iosConf.distributionDirectory,"${target}-${configuration}.mobileprovision")

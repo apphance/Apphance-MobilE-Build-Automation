@@ -14,7 +14,7 @@ class IOSConfigurationAndTargetRetrieverTest {
 
     @Before
     public void setUp() {
-        this.trimmed = """
+        this.trimmed = """Information about project "Project name0":
     Targets:
         Some
         UnitTests
@@ -54,5 +54,10 @@ This project has a wrapper workspace:
             'QAWithApphance',
             'QAWithoutApphance'
         ]))
+    }
+
+    @Test
+    public void testProjectName() {
+        assertThat(iosConfigurationAndTargetRetriever.readProjectName(this.trimmed), new IsEqual('Project name0'))
     }
 }

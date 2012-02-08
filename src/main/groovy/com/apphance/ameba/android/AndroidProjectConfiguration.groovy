@@ -12,6 +12,9 @@ import org.gradle.util.GUtil
 import com.apphance.ameba.AmebaArtifact
 
 
+/**
+ * TODO: This class should be split into independent pieces. This is "god" class of Android.
+ */
 class AndroidProjectConfiguration {
     File sdkDirectory
     String targetName

@@ -87,6 +87,7 @@ class IOSPlugin implements Plugin<Project> {
         def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
         def trimmed = lines*.trim()
         IOSProjectConfiguration iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+        conf.projectName =  iosConfigurationAndTargetRetriever.readProjectName(trimmed)
         iosConf.targets = iosConfigurationAndTargetRetriever.readBuildableTargets(trimmed)
         iosConf.configurations = iosConfigurationAndTargetRetriever.readBuildableConfigurations(trimmed)
         iosConf.alltargets = iosConfigurationAndTargetRetriever.readBaseTargets(trimmed, { true })
@@ -136,7 +137,7 @@ class IOSPlugin implements Plugin<Project> {
                         }
                     }
             if (!projectHelper.isPropertyOrEnvironmentVariableDefined(project, 'version.string')) {
-                conf.versionString = conf.versionString + "-DEVEL-"
+                conf.versionString = conf.versionString + "-SNAPSHOT"
             }
         }
         project.readProjectConfiguration.dependsOn(task)

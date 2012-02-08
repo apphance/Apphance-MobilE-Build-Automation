@@ -38,17 +38,26 @@ signing {
     }
 }
 
+def uploadUser = ''
+def uploadPassword = ''
+if (project.hasProperty('sonatypeUser')) {
+   uploadUser = project['sonatypeUser']
+}
+if (project.hasProperty('sonatypePassword')) {
+    uploadPassword = project['sonatypePassword']
+ }
+
 uploadArchives {
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
 
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
-              authentication(userName: sonatypeUsername, password: sonatypePassword)
+              authentication(userName: uploadUser, password: uploadPassword)
             }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-              authentication(userName: sonatypeUsername, password: sonatypePassword)
+              authentication(userName: uploadUser, password: uploadPassword)
             }
 
             pom.artifactId = artifactId
