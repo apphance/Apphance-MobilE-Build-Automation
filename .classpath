@@ -42,5 +42,51 @@
 	<classpathentry kind="var" path="GRADLE_HOME/lib/logback-core-1.0.0.jar"/>
 	<classpathentry kind="var" path="GRADLE_HOME/lib/slf4j-api-1.6.4.jar"/>
 	<classpathentry kind="var" path="GRADLE_HOME/lib/webdavlib-2.0.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/ant-antlr-1.8.2.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/antlr-2.7.7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/bcpg-jdk15-1.46.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/bcprov-jdk15-1.46.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/bndlib-1.50.0.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/bsh-2.0b4.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/checkstyle-5.5.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/CodeNarc-0.16.1.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/commons-beanutils-core-1.8.3.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/commons-cli-1.2.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/core-3.1.1.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/geronimo-annotation_1.0_spec-1.0.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/GMetrics-0.4.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-announce-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-antlr-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-code-quality-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-core-impl-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-cpp-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-ear-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-ide-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-jetty-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-maven-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-osgi-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-plugins-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-scala-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-signing-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-sonar-1.0-milestone-7.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/hamcrest-core-1.1.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/jcommander-1.12.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/jetty-6.1.25.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/jetty-annotations-6.1.25.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/jetty-naming-6.1.25.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/jetty-plus-6.1.25.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/jetty-util-6.1.25.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/jsp-2.1-6.1.14.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/jsp-api-2.1-6.1.14.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/junit-4.10.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/maven-ant-tasks-2.1.3.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/plexus-component-annotations-1.5.2.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/pmaven-common-0.8-20100325.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/pmaven-groovy-0.8-20100325.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/servlet-api-2.5-20081211.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/snakeyaml-1.6.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/sonar-batch-bootstrapper-2.9.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/testng-6.3.1.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/wharf-core-1.0-20111007143103.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

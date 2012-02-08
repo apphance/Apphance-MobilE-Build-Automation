@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 apply {
     plugin 'java'
     plugin 'groovy'
@@ -137,3 +138,135 @@ task cleanTmp << {
 cleanTmp.description = 'Cleans tmp directory'
 clean.dependsOn(cleanTmp)
 createReleaseTag.dependsOn uploadArchives
+=======
+apply {
+    plugin 'java'
+    plugin 'groovy'
+    plugin 'maven'
+    plugin 'signing'
+    plugin 'eclipse'
+}
+
+apply from:'file:emma.gradle'
+apply from: "http://launchpad.net/gradle-release/trunk/latest/+download/apply.groovy"
+
+group = 'com.apphance.ameba'
+artifactId = 'Ameba'
+
+task sourcesJar(type: Jar, dependsOn:classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn:groovydoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+artifacts {
+    if (isReleaseVersion) {
+        archives sourcesJar
+        archives javadocJar
+        archives jar
+    }
+}
+
+signing {
+    if (isReleaseVersion) {
+         sign configurations.archives
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+              authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+              authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.artifactId = artifactId
+
+            pom.project {
+               name 'ameba'
+               packaging 'jar'
+               description 'AMEBA stands for Apphance MobilE Build Automation - it is gradle plugin to automate builds for mobile applications'
+               url 'http://ameba.apphance.com/'
+
+               scm {
+                   url 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
+                   connection 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
+                   developerConnection 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
+               }
+
+               licenses {
+                   license {
+                       name 'NewBSD Licence'
+                       url 'http://www.opensource.org/licenses/bsd-license.php'
+                       distribution 'repo'
+                   }
+               }
+
+               developers {
+                   developer {
+                       id 'jarek.potiuk.apphance'
+                       name 'Jarek Potiuk'
+                   }
+                   developer {
+                       id 'blazej.marcinkiewicz'
+                       name 'Blazej Marcinkiewicz'
+                   }
+               }
+           }
+
+        }
+    }
+}
+
+configure(install.repositories.mavenInstaller) {
+    pom.project {
+        artifactId artifactId
+    }
+}
+
+//compileGroovy.options.optimize = false
+//compileGroovy.options.debug = true
+//compileGroovy.options.debugOptions.debugLevel = 'lines,source,vars'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+  mail
+}
+
+emma{
+   reportPath = "emma"
+   verbosityLevel =  "verbose"
+}
+
+dependencies {
+   emma 'emma:emma:2.1.5320', 'emma:emma_ant:2.1.5320'
+   testCompile 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
+   testRuntime 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
+   mail 'org.apache.ant:ant-javamail:1.8.2',  'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1'
+   compile 'javax.mail:mail:1.4', gradleApi()
+   groovy localGroovy()
+}
+
+task cleanTmp << {
+   project.ant.delete(dir: "tmp")
+}
+
+cleanTmp.description = 'Cleans tmp directory'
+clean.dependsOn(cleanTmp)
+createReleaseTag.dependsOn uploadArchives
+>>>>>>> 66287835ee909b9955bb6613aab48371aab55ad3

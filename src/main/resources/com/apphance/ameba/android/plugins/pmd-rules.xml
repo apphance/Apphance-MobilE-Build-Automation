@@ -137,8 +137,8 @@
         ref="rulesets/optimizations.xml/AvoidInstantiatingObjectsInLoops" />
     -->
     <rule ref="rulesets/optimizations.xml/UseArrayListInsteadOfVector" />
-	<!--     <rule ref="rulesets/optimizations.xml/SimplifyStartsWith" /> -->
-	<!-- <rule ref="rulesets/optimizations.xml/UseStringBufferForStringAppends" /> -->
+  <!--     <rule ref="rulesets/optimizations.xml/SimplifyStartsWith" /> -->
+  <!-- <rule ref="rulesets/optimizations.xml/UseStringBufferForStringAppends" /> -->
     <rule ref="rulesets/optimizations.xml/UseArraysAsList" />
     <rule ref="rulesets/optimizations.xml/AvoidArrayLoops" />
     <rule ref="rulesets/optimizations.xml/UnnecessaryWrapperObjectCreation" />
