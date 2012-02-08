@@ -374,7 +374,7 @@ class ProjectHelper {
         }
     }
 
-    String isPropertyOrEnvironmentVariableDefined(Project project, String property) {
+    boolean isPropertyOrEnvironmentVariableDefined(Project project, String property) {
         if (project.hasProperty(property)) {
             return true
         } else if (System.getProperty(property) != null){
