@@ -297,8 +297,11 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
         task.group = AmebaCommonBuildTaskGroups.AMEBA_REPORTS
         task << {
             File destZip = projectHelper.getProjectConfiguration(project).sourcesZip.location
+            logger.lifecycle("Removing empty symlinks")
+            projectHelper.removeMissingSymlinks(project.rootDir)
             destZip.parentFile.mkdirs()
             destZip.delete()
+            logger.lifecycle("Compressing sources")
             ant.zip(destfile: destZip ) {
                 fileset(dir: project.rootDir) {
                     exclude(name: "build/**")

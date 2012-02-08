@@ -400,4 +400,16 @@ class ProjectHelper {
         String subject = resourceBundle.getString('Subject')
         conf.releaseMailSubject = Eval.me("conf",conf,/"$subject"/)
     }
+
+
+    public void removeMissingSymlinks(File baseDirectory) {
+        baseDirectory.traverse {
+            if (!it.isDirectory()) {
+                File canonicalFile = it.getCanonicalFile()
+                if (!canonicalFile.exists()) {
+                    it.delete()
+                }
+            }
+        }
+    }
 }
