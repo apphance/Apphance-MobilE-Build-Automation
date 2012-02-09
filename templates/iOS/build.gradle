@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath ('com.apphance.ameba:Ameba:0.99.2.13')
+        classpath ('com.apphance.ameba:Ameba:0.99.2.15')
     }
 }
 
@@ -11,8 +11,9 @@ apply plugin: 'ameba-project-configuration'
 apply plugin: 'ameba-mercurial'
 //apply plugin: 'ameba-git'
 apply plugin: 'ameba-ios-build'
-apply plugin: 'ameba-ios-ocunit'
-apply plugin: 'ameba-ios-fonemonkey'
-apply plugin: 'ameba-ios-kif'
-apply plugin: 'ameba-ios-cedar'
+//apply plugin: 'ameba-ios-ocunit'
+//apply plugin: 'ameba-ios-fonemonkey'
+//apply plugin: 'ameba-ios-framework'
+//apply plugin: 'ameba-ios-kif'
+//apply plugin: 'ameba-ios-cedar'
 apply plugin: 'ameba-ios-reports'

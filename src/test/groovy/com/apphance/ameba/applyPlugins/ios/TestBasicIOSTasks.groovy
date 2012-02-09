@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.ios.plugins.IOSFrameworkPlugin;
 import com.apphance.ameba.ios.plugins.IOSPlugin
 
 class TestBasicIOSTasks extends BaseIOSTaskTest {
@@ -13,6 +14,7 @@ class TestBasicIOSTasks extends BaseIOSTaskTest {
     protected Project getProject() {
         Project project = super.getProject()
         project.project.plugins.apply(IOSPlugin.class)
+        project.project.plugins.apply(IOSFrameworkPlugin.class)
         return project
     }
 
@@ -22,6 +24,8 @@ class TestBasicIOSTasks extends BaseIOSTaskTest {
             'clean',
             'buildAll',
             'buildAllSimulators',
+            'buildFramework',
+            'build-GradleXCode-BasicConfiguration',
             'buildSingleRelease',
             'checkTests',
             'copyMobileProvision',

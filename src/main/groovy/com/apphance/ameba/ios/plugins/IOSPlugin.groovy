@@ -72,7 +72,7 @@ class IOSPlugin implements Plugin<Project> {
     private prepareReadIosProjectConfigurationTask(Project project) {
 		def task = project.task('readIOSProjectConfiguration')
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
-		task.description = 'Reads iOS project configuration'
+		task.description = 'Reads iOS project configurationaaaaaa'
 		task << {
 			this.pListFileName = project['ios.plist.file']
 			iosConf.mainTarget = project.hasProperty('ios.mainTarget')  ? project['ios.mainTarget'] :  null
@@ -101,6 +101,7 @@ class IOSPlugin implements Plugin<Project> {
 	        def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
 	        def trimmed = lines*.trim()
 	        IOSProjectConfiguration iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+			conf.projectName =  iosConfigurationAndTargetRetriever.readProjectName(trimmed)
 	        iosConf.targets = iosConfigurationAndTargetRetriever.readBuildableTargets(trimmed)
 	        iosConf.configurations = iosConfigurationAndTargetRetriever.readBuildableConfigurations(trimmed)
 	        iosConf.alltargets = iosConfigurationAndTargetRetriever.readBaseTargets(trimmed, { true })
@@ -152,7 +153,10 @@ class IOSPlugin implements Plugin<Project> {
                         }
                     }
             if (!projectHelper.isPropertyOrEnvironmentVariableDefined(project, 'version.string')) {
-                conf.versionString = conf.versionString + "-DEVEL-"
+                logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
+                conf.versionString = conf.versionString + "-SNAPSHOT"
+            } else {
+                logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
             }
         }
         project.readProjectConfiguration.dependsOn(task)
@@ -161,7 +165,12 @@ class IOSPlugin implements Plugin<Project> {
     void prepareBuildAllTask(Project project) {
         def task = project.task('buildAll')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        task.description = 'Builds all target/configuration combinations and produces all artifacts (zip, ipa, messages, etc)'
+        task.description = 'Builds all target/configuration combinations and produces all artifacts (zip, ipa, messages, etc) aaaaa'
+		def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
+		def trimmed = lines*.trim()
+		iosConf.targets = iosConfigurationAndTargetRetriever.readBuildableTargets(trimmed)
+		iosConf.configurations = iosConfigurationAndTargetRetriever.readBuildableConfigurations(trimmed)
+		System.out.println("aaaaaa" + iosConf.targets + " " + iosConf.configurations)
         def targets = iosConf.targets
         def configurations = iosConf.configurations
         logger.lifecycle("Building all builds")
@@ -185,6 +194,7 @@ class IOSPlugin implements Plugin<Project> {
                 }
             }
         }
+		task.dependsOn(project.readProjectConfiguration)
     }
 
 

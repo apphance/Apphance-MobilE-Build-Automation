@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath ('com.apphance.ameba:Ameba:0.99.2.13')
+        classpath ('com.apphance.ameba:Ameba:0.99.2.15')
     }
 }
 

@@ -419,7 +419,10 @@ class AndroidPlugin implements Plugin<Project> {
         task << {
             manifestHelper.readVersion(project.rootDir, conf)
             if (!projectHelper.isPropertyOrEnvironmentVariableDefined(project, 'version.string')) {
-                conf.versionString = conf.versionString + "-DEVEL-"
+                logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
+                conf.versionString = conf.versionString + "-SNAPSHOT"
+            } else {
+                logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
             }
             AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
             project['project.name'] = buildXmlHelper.readProjectName(project.rootDir)

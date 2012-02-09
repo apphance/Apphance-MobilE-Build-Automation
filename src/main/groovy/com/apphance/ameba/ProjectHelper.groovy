@@ -374,7 +374,7 @@ class ProjectHelper {
         }
     }
 
-    String isPropertyOrEnvironmentVariableDefined(Project project, String property) {
+    boolean isPropertyOrEnvironmentVariableDefined(Project project, String property) {
         if (project.hasProperty(property)) {
             return true
         } else if (System.getProperty(property) != null){
@@ -399,6 +399,18 @@ class ProjectHelper {
         ProjectConfiguration conf = getProjectConfiguration(project)
         String subject = resourceBundle.getString('Subject')
         conf.releaseMailSubject = Eval.me("conf",conf,/"$subject"/)
+    }
+
+
+    public void removeMissingSymlinks(File baseDirectory) {
+        baseDirectory.traverse {
+            if (!it.isDirectory()) {
+                File canonicalFile = it.getCanonicalFile()
+                if (!canonicalFile.exists()) {
+                    it.delete()
+                }
+            }
+        }
     }
 	
 	public static String getProjectPropertyFromUser(Project project, String name, String description, ArrayList defaultValues, boolean useDefault, BufferedReader br) {

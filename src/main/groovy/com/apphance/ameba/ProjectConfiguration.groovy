@@ -5,6 +5,9 @@ import java.net.URL
 import java.util.Collection
 import java.util.Locale
 
+/**
+ * TODO: This class should be split. This is "god" class of configuration.
+ */
 class ProjectConfiguration  {
     String projectName
     String projectDirectoryName

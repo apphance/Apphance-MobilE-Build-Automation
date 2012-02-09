@@ -19,3 +19,6 @@ apply plugin: 'ameba-android-test'
 apply plugin: 'ameba-android-reports'
 apply plugin: 'ameba-android-jarlibrary'
 
+clean << {
+    ant.delete(dir: 'build')
+}

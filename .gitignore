@@ -9,3 +9,6 @@ testProjects/android/subproject/gen
 testProjects/android/subproject/subsubproject/gen
 local.properties
 emma
+/.gradle
+/build
+/tmp

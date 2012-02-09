@@ -15,6 +15,7 @@ apply plugin: 'ameba-ios-build'
 apply plugin: 'ameba-ios-ocunit'
 apply plugin: 'ameba-ios-fonemonkey'
 apply plugin: 'ameba-ios-cedar'
+apply plugin: 'ameba-ios-framework'
 apply plugin: 'ameba-ios-reports'
 
 iosUnitTests {

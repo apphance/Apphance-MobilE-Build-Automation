@@ -9,6 +9,10 @@ import java.util.regex.Pattern
 
 import com.apphance.ameba.AmebaArtifact
 
+/**
+ * TODO This class should be split into independent pieces.
+ * This is the "god" class of IOS.
+ */
 class IOSProjectConfiguration {
     String sdk
     String simulatorsdk
@@ -37,6 +41,13 @@ class IOSProjectConfiguration {
     def monkeyTestResults = [:]
     Map<String, HashMap<String, Collection<AmebaArtifact>>> monkeyTestImages = [:]
     List<String> excludedBuilds = []
+    String frameworkTarget
+    String frameworkConfiguration
+    String frameworkVersion
+    String frameworkCurrentVersion
+    String frameworkCompatibilityVersion
+    List<String> frameworkHeaders
+    List<String> frameworkResources
 
     @Override
     public String toString() {
