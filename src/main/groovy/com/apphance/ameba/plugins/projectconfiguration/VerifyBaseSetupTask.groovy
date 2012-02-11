@@ -1,53 +1,35 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
-import java.util.Properties
-
-import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.api.tasks.TaskAction
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups;
+import com.apphance.ameba.AbstractVerifySetupTask
+import com.apphance.ameba.PropertyCategory
 
-
-class VerifyBaseSetupTask extends DefaultTask {
+class VerifyBaseSetupTask extends  AbstractVerifySetupTask<ProjectBaseProperty> {
     Logger logger = Logging.getLogger(VerifyBaseSetupTask.class)
 
     VerifyBaseSetupTask() {
-        this.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        this.description = 'Verifies if base properties of the project have been setup properly'
-        //inject myself as dependency for umbrella verifySetup
-        project.verifySetup.dependsOn(this)
-        this.dependsOn(project.readProjectConfiguration)
+        super(ProjectBaseProperty.class)
     }
-
 
     @TaskAction
     void verifySetup() {
-        def projectProperties = new Properties()
-        def projectPropertiesFile = new File(project.rootDir,'gradle.properties')
-        if (!projectPropertiesFile.exists()) {
-            throw new GradleException("""The gradle.properties file does not exist.
-!!!!! Please run "gradle prepareSetup" to correct project's configuration !!!!!""")
-        }
-        projectProperties.load(projectPropertiesFile.newInputStream())
-        ProjectBaseProperty.each {
-            if (!it.optional && project[it.propertyName] == null) {
-                throw new GradleException("""Property ${it.propertyName} should be defined in gradle.properties.
-                !!!!! Please run "gradle prepareSetup" to correct it """)
-            }
-        }
+        def projectProperties = readProperties()
+        ProjectBaseProperty.each { checkProperty(projectProperties, it) }
         checkIconFile(projectProperties)
-        logger.lifecycle("GOOD!!! PROJECT PROPERTIES SET CORRECTLY!!!")
-        //        project['gradleProperties'] = projectProperties
+        allPropertiesOK()
     }
 
     void checkIconFile(Properties projectProperties) {
-        File iconFile = new File(project.rootDir,projectProperties['project.icon.file'])
-        if (!iconFile.exists() || !iconFile.isFile()) {
-            throw new GradleException("""The icon file (${iconFile}) does not exist
-or is not a file. Please run 'gradle prepareSetup' to correct it.""")
+        use (PropertyCategory) {
+            File iconFile = new File(project.rootDir,project.readProperty(ProjectBaseProperty.PROJECT_ICON_FILE))
+            if (!iconFile.exists() || !iconFile.isFile()) {
+                throw new GradleException("""The icon file (${iconFile}) does not exist
+    or is not a file. Please run 'gradle prepareSetup' to correct it.""")
+            }
         }
     }
 }

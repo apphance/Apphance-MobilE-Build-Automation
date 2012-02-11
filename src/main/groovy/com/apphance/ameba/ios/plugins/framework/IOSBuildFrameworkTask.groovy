@@ -1,6 +1,8 @@
 package com.apphance.ameba.ios.plugins.framework
 
 
+import java.util.List;
+
 import org.gradle.api.DefaultTask
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -10,7 +12,6 @@ import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory;
-import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 
 
@@ -25,7 +26,13 @@ class IOSBuildFrameworkTask extends DefaultTask {
     ProjectHelper projectHelper
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
-    IOSConfigurationAndTargetRetriever iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
+
+    String frameworkTarget
+    String frameworkConfiguration
+    String frameworkVersion
+    List<String> frameworkHeaders
+    List<String> frameworkResources
+
     File frameworkAppDir
     File frameworkMainDir
     File frameworkVersionsDir
@@ -50,14 +57,12 @@ class IOSBuildFrameworkTask extends DefaultTask {
     @TaskAction
     void buildIOSFramework() {
         use (PropertyCategory) {
-            iosConf = project['ios.project.configuration']
-            iosConf.frameworkTarget = project['ios.framework.target']
-            iosConf.frameworkConfiguration = project['ios.framework.configuration']
-            iosConf.frameworkVersion = project.readExpectedProperty('ios.framework.version')
-            iosConf.frameworkCurrentVersion =  project.readExpectedProperty('ios.framework.currentVersion')
-            iosConf.frameworkCompatibilityVersion = project.readExpectedProperty('ios.framework.compatibilityVersion')
-            iosConf.frameworkHeaders = project.readExpectedProperty('ios.framework.headers').split(',')
-            iosConf.frameworkResources = project.readExpectedProperty('ios.framework.resources').split(',')
+            iosConf = project.getProjectConfiguration()
+            frameworkTarget = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
+            frameworkConfiguration = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
+            frameworkVersion = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_VERSION)
+            frameworkHeaders = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_HEADERS).split(',')
+            frameworkResources = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_RESOURCES).split(',')
         }
         xcodeBuilds()
         cleanFrameworkDir()
@@ -96,7 +101,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
 
     private copyingResources() {
         logger.lifecycle("Copying resources")
-        iosConf.frameworkResources.each {
+        frameworkResources.each {
             if (it != '') {
                 project.ant.copy(file: it, toDir: this.frameworkVersionsVersionResourcesDir)
             }
@@ -105,7 +110,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
 
     private copyingHeaders() {
         logger.lifecycle("Copying headers")
-        iosConf.frameworkHeaders.each {
+        frameworkHeaders.each {
             if (it != '') {
                 project.ant.copy(file: it, toDir: this.frameworkVersionsVersionHeadersDir)
             }
@@ -114,9 +119,9 @@ class IOSBuildFrameworkTask extends DefaultTask {
 
     private setLinkLibraries() {
         logger.lifecycle("Set link libraries")
-        this.iphoneosLibrary = new File(project.buildDir, iosConf.frameworkConfiguration + '-' +
+        this.iphoneosLibrary = new File(project.buildDir, frameworkConfiguration + '-' +
                 'iphoneos/lib' +  conf.projectName + '.a')
-        this.iphonesimulatorLibrary = new File(project.buildDir, iosConf.frameworkConfiguration + '-' +
+        this.iphonesimulatorLibrary = new File(project.buildDir, frameworkConfiguration + '-' +
                 'iphonesimulator/lib' +  conf.projectName + '.a')
     }
 
@@ -125,7 +130,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
         projectHelper.executeCommand(project, frameworkVersionsDir, [
             "ln",
             "-s",
-            iosConf.frameworkVersion,
+            frameworkVersion,
             "Current"
         ])
         projectHelper.executeCommand(project, frameworkAppDir, [
@@ -162,7 +167,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
         this.frameworkAppDir.mkdirs()
         this.frameworkVersionsDir = new File(frameworkAppDir, "Versions")
         this.frameworkVersionsDir.mkdirs()
-        this.frameworkVersionsVersionDir = new File(frameworkVersionsDir, iosConf.frameworkVersion)
+        this.frameworkVersionsVersionDir = new File(frameworkVersionsDir, frameworkVersion)
         this.frameworkVersionsVersionDir.mkdirs()
         this.frameworkVersionsVersionResourcesDir = new File(frameworkVersionsVersionDir, "Resources")
         this.frameworkVersionsVersionResourcesDir.mkdirs()
@@ -174,9 +179,9 @@ class IOSBuildFrameworkTask extends DefaultTask {
         projectHelper.executeCommand(project, [
             "xcodebuild" ,
             "-target",
-            iosConf.frameworkTarget,
+            frameworkTarget,
             "-configuration",
-            iosConf.frameworkConfiguration,
+            frameworkConfiguration,
             "-sdk",
             iosConf.simulatorsdk,
             "-arch",
@@ -187,9 +192,9 @@ class IOSBuildFrameworkTask extends DefaultTask {
         projectHelper.executeCommand(project, [
             "xcodebuild" ,
             "-target",
-            iosConf.frameworkTarget,
+            frameworkTarget,
             "-configuration",
-            iosConf.frameworkConfiguration,
+            frameworkConfiguration,
             "-sdk",
             iosConf.
             sdk,

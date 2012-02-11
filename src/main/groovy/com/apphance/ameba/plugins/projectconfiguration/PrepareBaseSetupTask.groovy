@@ -1,30 +1,20 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
-import org.gradle.api.DefaultTask;
 import org.gradle.api.logging.LogLevel;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups;
-import com.apphance.ameba.ProjectConfiguration;
+import com.apphance.ameba.AbstractPrepareSetupTask;
 import com.apphance.ameba.PropertyCategory;
 
 import groovy.io.FileType
 
-class PrepareBaseSetupTask extends DefaultTask {
-
+class PrepareBaseSetupTask extends AbstractPrepareSetupTask<ProjectBaseProperty> {
     Logger logger = Logging.getLogger(PrepareBaseSetupTask.class)
-    ProjectConfiguration conf
 
     PrepareBaseSetupTask() {
-        this.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        this.description = 'Walks you through the base part of setup of the project.'
-        this.conf = new ProjectConfiguration()
-        //inject myself as dependency for umbrella prepareSetup
-        project.prepareSetup.dependsOn(this)
-        //		this.logLevel = LogLevel.QUIET
-        this.logging.setLevel(LogLevel.QUIET)
+        super(ProjectBaseProperty.class)
     }
 
     @TaskAction

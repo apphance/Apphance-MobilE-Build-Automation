@@ -155,7 +155,7 @@ class PropertyCategory {
         conf.projectDirectoryName = readExpectedProperty(project,ProjectBaseProperty.PROJECT_DIRECTORY)
         conf.baseUrl = new URL(readExpectedProperty(project,ProjectBaseProperty.PROJECT_URL))
         conf.iconFile = new File(project.rootDir,readExpectedProperty(project,ProjectBaseProperty.PROJECT_ICON_FILE))
-        retrieveLocale(project, conf)
+        retrieveLocale(project)
         conf.releaseNotes = readReleaseNotes(project)?.tokenize(",")
     }
 

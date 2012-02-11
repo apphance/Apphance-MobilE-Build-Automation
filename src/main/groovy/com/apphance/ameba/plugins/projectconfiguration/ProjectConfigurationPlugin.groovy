@@ -1,12 +1,14 @@
 package com.apphance.ameba.plugins.projectconfiguration;
 
 
+import java.util.LinkedList
+
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.logging.LogLevel;
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-import org.gradle.api.logging.LogLevel
 
 import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
@@ -24,6 +26,7 @@ import com.apphance.ameba.plugins.release.VerifyReleaseSetupTask;
  *
  */
 class ProjectConfigurationPlugin implements Plugin<Project> {
+
     static Logger logger = Logging.getLogger(ProjectConfigurationPlugin.class)
 
     ProjectHelper projectHelper
@@ -35,12 +38,9 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         prepareRepositories(project)
         prepareVerifySetupTask(project)
         readProjectConfigurationTask(project)
-        project.task('verifyBaseSetup', type: VerifyBaseSetupTask.class)
         preparePrepareSetupTask(project)
-        project.task('prepareBaseSetup', type: PrepareBaseSetupTask.class)
         project.task('checkTests', type: CheckTestsTask.class)
         showProjectConfigurationTask(project)
-        project.task('verifyReleaseSetup', type: VerifyReleaseSetupTask.class)
         prepareVerifyReleaseNotesTask(project)
         prepareImageMontageTask(project)
         prepareSendMailMessageTask(project)
@@ -49,38 +49,12 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         prepareCopyGalleryFilesTask(project)
         prepareSourcesZipTask(project)
         prepareShowPropertiesTask(project)
-        prepareShowBasePropertiesTask(project)
-        prepareShowReleasePropertiesTask(project)
+        project.task('verifyBaseSetup', type: VerifyBaseSetupTask.class)
+        project.task('prepareBaseSetup', type: PrepareBaseSetupTask.class)
+        project.task('showBaseSetup', type: ShowBaseSetupTask.class)
+        project.task('verifyReleaseSetup', type: VerifyReleaseSetupTask.class)
         project.task('prepareReleaseSetup', type: PrepareReleaseSetupTask.class)
     }
-
-    private prepareShowBasePropertiesTask(Project project) {
-        def task =  project.task('showBaseProperties')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        task.description = 'Prints all base properties'
-        task.dependsOn(project.readProjectConfiguration)
-        project.showProperties.dependsOn(task)
-        task << {
-            use(PropertyCategory) {
-                System.out.println(project.listPropertiesAsString(ProjectBaseProperty.class, true))
-            }
-        }
-    }
-
-
-    private prepareShowReleasePropertiesTask(Project project) {
-        def task =  project.task('showReleaseProperties')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        task.description = 'Prints all release properties'
-        task.dependsOn(project.readProjectConfiguration)
-        project.showProperties.dependsOn(task)
-        task << {
-            use (PropertyCategory) {
-                System.out.println(project.listPropertiesAsString(ProjectReleaseProperty.class, true))
-            }
-        }
-    }
-
 
     void prepareMailConfiguration(Project project) {
         project.configurations.add('mail')
@@ -123,7 +97,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
                 // NOTE! conf.versionString and conf.versionCode need to
                 // be read before project configuration task -> task reading the version
                 // should be injected here
-                project.retrieveBasicProjectData(project)
+                project.retrieveBasicProjectData()
                 prepareGeneratedDirectories(project)
                 prepareSourcesAndDocumentationArtifacts()
                 prepareMailArtifacts(project)

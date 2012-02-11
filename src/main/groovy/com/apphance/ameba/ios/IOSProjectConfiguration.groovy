@@ -40,13 +40,6 @@ class IOSProjectConfiguration {
     def monkeyTestResults = [:]
     Map<String, HashMap<String, Collection<AmebaArtifact>>> monkeyTestImages = [:]
     List<String> excludedBuilds = []
-    String frameworkTarget
-    String frameworkConfiguration
-    String frameworkVersion
-    String frameworkCurrentVersion
-    String frameworkCompatibilityVersion
-    List<String> frameworkHeaders
-    List<String> frameworkResources
 
     @Override
     public String toString() {

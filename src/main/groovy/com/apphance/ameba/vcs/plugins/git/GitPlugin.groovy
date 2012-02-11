@@ -1,4 +1,4 @@
-package com.apphance.ameba.vcs.plugins;
+package com.apphance.ameba.vcs.plugins.git;
 
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -6,6 +6,7 @@ import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.vcs.plugins.VCSPlugin;
 
 
 /**

@@ -1,4 +1,4 @@
-package com.apphance.ameba.vcs.plugins;
+package com.apphance.ameba.vcs.plugins.mercurial;
 
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -6,41 +6,21 @@ import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.PropertyCategory;
+import com.apphance.ameba.vcs.plugins.VCSPlugin;
 
 /**
  * Plugin for Mercurial implementation of VCS system
  *
  */
 class MercurialPlugin extends VCSPlugin {
+    static Logger logger = Logging.getLogger(MercurialPlugin.class)
 
-    enum MercurialProperty {
 
-        COMMIT_USER(false, "hg.commit.user", "Mail of commit user")
-
-        private final boolean optional
-        private final String name
-        private final String description
-
-        MercurialProperty(boolean optional, String name, String description) {
-            this.optional = optional
-            this.name = name
-            this.description = description
-        }
-
-        public boolean isOptional() {
-            return optional
-        }
-
-        public String getName() {
-            return name
-        }
-
-        public String getDescription() {
-            return description
-        }
+    @Override
+    public void apply(Project project) {
+        super.apply(project)
     }
 
-    static Logger logger = Logging.getLogger(MercurialPlugin.class)
     def void cleanVCSTask(Project project) {
         def task = project.task('cleanVCS')
         task.description = "Restores workspace to original state"
@@ -103,35 +83,5 @@ class MercurialPlugin extends VCSPlugin {
 
     def String [] getVCSExcludes(Project project) {
         return ["**/.hg/**", "**/.hg*/**"]as String[]
-    }
-
-    @Override
-    public void prepareShowPropertiesTask(Project project) {
-        def task = project.task('showMercurialProperties')
-        task.description = "Prints Mercurial properties"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        task << {
-            System.out.println("""###########################################################
-# Mercurial properties
-###########################################################""")
-            for (MercurialProperty property : MercurialProperty.values()) {
-                String comment = '# ' + property.getDescription()
-                String propString = property.getName() + '='
-                if (property.isOptional()) {
-                    comment = comment + ' [optional]'
-                } else {
-                    comment = comment + ' [required]'
-                }
-                if (project.hasProperty(property.getName())) {
-                    propString = propString +  project[property.getName()]
-                }
-
-                if (project.showProperties.showComments == true) {
-                    System.out.println(comment)
-                }
-                System.out.println(propString)
-            }
-        }
-        project.showProperties.dependsOn(task)
     }
 }

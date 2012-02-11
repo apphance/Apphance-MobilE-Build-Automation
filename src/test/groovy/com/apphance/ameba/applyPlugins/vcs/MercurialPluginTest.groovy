@@ -7,7 +7,7 @@ import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.applyPlugins.android.BaseTaskTest
-import com.apphance.ameba.vcs.plugins.MercurialPlugin
+import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin;
 
 class MercurialPluginTest extends BaseTaskTest {
 
