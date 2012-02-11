@@ -8,7 +8,7 @@ import org.junit.Test
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.android.plugins.AndroidPlugin
+import com.apphance.ameba.android.plugins.build.AndroidPlugin;
 
 
 class AndroidDependencyDetectionTest extends BaseAndroidTaskTest {

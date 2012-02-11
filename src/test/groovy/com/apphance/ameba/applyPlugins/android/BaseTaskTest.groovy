@@ -8,7 +8,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
 
-import com.apphance.ameba.plugins.ProjectConfigurationPlugin
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin;
 
 abstract class BaseTaskTest extends TestCase{
     protected Project getProject() {

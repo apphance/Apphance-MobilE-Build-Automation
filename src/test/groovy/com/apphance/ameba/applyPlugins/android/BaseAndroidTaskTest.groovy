@@ -3,7 +3,7 @@ package com.apphance.ameba.applyPlugins.android
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 
-import com.apphance.ameba.plugins.ProjectConfigurationPlugin
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin;
 
 abstract class BaseAndroidTaskTest extends BaseTaskTest {
 

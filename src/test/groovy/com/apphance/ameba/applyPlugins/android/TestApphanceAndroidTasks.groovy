@@ -6,8 +6,8 @@ import org.gradle.api.Project
 import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.android.plugins.AndroidApphancePlugin
-import com.apphance.ameba.android.plugins.AndroidPlugin
+import com.apphance.ameba.android.plugins.apphance.AndroidApphancePlugin;
+import com.apphance.ameba.android.plugins.build.AndroidPlugin;
 
 class TestApphanceAndroidTasks extends BaseAndroidTaskTest {
     protected Project getProject() {

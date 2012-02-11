@@ -6,8 +6,8 @@ import org.gradle.api.Project
 import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.android.plugins.AndroidAnalysisPlugin
-import com.apphance.ameba.android.plugins.AndroidPlugin
+import com.apphance.ameba.android.plugins.analysis.AndroidAnalysisPlugin;
+import com.apphance.ameba.android.plugins.build.AndroidPlugin;
 
 class AndroidAnalysisTest extends BaseAndroidTaskTest {
 

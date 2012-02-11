@@ -5,8 +5,8 @@ import static org.junit.Assert.*
 import org.gradle.api.Project
 import org.junit.Test
 
-import com.apphance.ameba.ios.plugins.KIFPlugin
-import com.apphance.ameba.ios.plugins.IOSPlugin
+import com.apphance.ameba.ios.plugins.build.IOSPlugin;
+import com.apphance.ameba.ios.plugins.kif.KIFPlugin;
 
 class IOSKIFTest extends BaseIOSTaskTest {
 

@@ -6,8 +6,8 @@ import org.gradle.api.Project
 import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ios.plugins.IOSPlugin
-import com.apphance.ameba.ios.plugins.IOSReportsPlugin
+import com.apphance.ameba.ios.plugins.build.IOSPlugin;
+import com.apphance.ameba.ios.plugins.reports.IOSReportsPlugin;
 
 class IOSReportsTest extends BaseIOSTaskTest {
 

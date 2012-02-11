@@ -6,8 +6,8 @@ import org.gradle.api.Project
 import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.android.plugins.AndroidPlugin
-import com.apphance.ameba.android.plugins.AndroidReportsPlugin
+import com.apphance.ameba.android.plugins.build.AndroidPlugin;
+import com.apphance.ameba.android.plugins.reports.AndroidReportsPlugin;
 
 class TestReportAndroidTasks extends BaseAndroidTaskTest {
     protected Project getProject() {

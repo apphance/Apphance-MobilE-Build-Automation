@@ -6,7 +6,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 
 import com.apphance.ameba.applyPlugins.android.BaseTaskTest;
-import com.apphance.ameba.plugins.ProjectConfigurationPlugin
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin;
 
 abstract class BaseIOSTaskTest extends BaseTaskTest {
     protected Project getProject() {
