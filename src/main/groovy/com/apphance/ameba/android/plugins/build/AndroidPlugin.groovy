@@ -13,6 +13,7 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidArtifactBuilderInfo
 import com.apphance.ameba.android.AndroidBuildXmlHelper
 import com.apphance.ameba.android.AndroidEnvironment
@@ -37,30 +38,32 @@ class AndroidPlugin implements Plugin<Project> {
     AndroidEnvironment androidEnvironment
 
     def void apply (Project project) {
-        this.projectHelper = new ProjectHelper();
-        this.conf = projectHelper.getProjectConfiguration(project)
-        this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
-        this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
-        this.manifestHelper = new AndroidManifestHelper()
-        this.androidBuilder = new AndroidSingleVariantBuilder(project, this.androidConf)
-        prepareAndroidEnvironment(project)
-        prepareJavaEnvironment(project)
-        prepareCompileAndroidTask(project)
-        prepareUpdateProjectTask(project)
-        prepareCleanTask(project)
-        prepareCleanClassesTask(project)
-        prepareReadAndroidVersionAndProjectNameTask(project)
-        prepareReadAndroidProjectConfigurationTask(project)
-        prepareAllInstallTasks(project)
-        prepareUpdateVersionTask(project)
-        preparePreReleaseTask(project)
-        prepareBuildDebugOnlyTask(project)
-        prepareBuildReleaseOnlyTask(project)
-        prepareAllVariants(project)
-        prepareBuildAllTask(project)
-        prepareReplacePackageTask(project)
-        addAndroidSourceExcludes()
-        addAndroidVCSCommits()
+        use (PropertyCategory) {
+            this.projectHelper = new ProjectHelper();
+            this.conf = project.getProjectConfiguration()
+            this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
+            this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
+            this.manifestHelper = new AndroidManifestHelper()
+            this.androidBuilder = new AndroidSingleVariantBuilder(project, this.androidConf)
+            prepareAndroidEnvironment(project)
+            prepareJavaEnvironment(project)
+            prepareCompileAndroidTask(project)
+            prepareUpdateProjectTask(project)
+            prepareCleanTask(project)
+            prepareCleanClassesTask(project)
+            prepareReadAndroidVersionAndProjectNameTask(project)
+            prepareReadAndroidProjectConfigurationTask(project)
+            prepareAllInstallTasks(project)
+            prepareUpdateVersionTask(project)
+            preparePreReleaseTask(project)
+            prepareBuildDebugOnlyTask(project)
+            prepareBuildReleaseOnlyTask(project)
+            prepareAllVariants(project)
+            prepareBuildAllTask(project)
+            prepareReplacePackageTask(project)
+            addAndroidSourceExcludes()
+            addAndroidVCSCommits()
+        }
     }
 
     private addAndroidSourceExcludes() {
@@ -418,14 +421,16 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = 'Reads Android version data from android manifest'
         task << {
             manifestHelper.readVersion(project.rootDir, conf)
-            if (!projectHelper.isPropertyOrEnvironmentVariableDefined(project, 'version.string')) {
-                logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
-                conf.versionString = conf.versionString + "-SNAPSHOT"
-            } else {
-                logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
+            use (PropertyCategory) {
+                if (!project.isPropertyOrEnvironmentVariableDefined('version.string')) {
+                    logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
+                    conf.versionString = conf.versionString + "-SNAPSHOT"
+                } else {
+                    logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
+                }
+                AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
+                project['project.name'] = buildXmlHelper.readProjectName(project.rootDir)
             }
-            AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
-            project['project.name'] = buildXmlHelper.readProjectName(project.rootDir)
         }
         project.readProjectConfiguration.dependsOn(task)
     }
@@ -447,11 +452,13 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = """Updates version stored in manifest file of the project.
            Numeric version is (incremented), String version is set from version.string property"""
         task << {
-            conf.versionString = projectHelper.readPropertyOrEnvironmentVariable(project,'version.string')
-            manifestHelper.updateVersion(project.rootDir, conf)
-            logger.lifecycle("New version code: ${conf.versionCode}")
-            logger.lifecycle("Updated version string to ${conf.versionString}")
-            logger.lifecycle("Configuration : ${conf}")
+            use (PropertyCategory) {
+                conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
+                manifestHelper.updateVersion(project.rootDir, conf)
+                logger.lifecycle("New version code: ${conf.versionCode}")
+                logger.lifecycle("Updated version string to ${conf.versionString}")
+                logger.lifecycle("Configuration : ${conf}")
+            }
         }
         task.dependsOn(project.readAndroidProjectConfiguration)
     }
@@ -462,35 +469,37 @@ class AndroidPlugin implements Plugin<Project> {
            parameters. Optionally it takes newLabel or newName parameters if application's label/name is to be replaced"""
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            def oldPackage = projectHelper.getExpectedProperty(project, "oldPackage")
-            logger.lifecycle("Old package ${oldPackage}")
-            def newPackage = projectHelper.getExpectedProperty(project, "newPackage")
-            logger.lifecycle("New package ${newPackage}")
-            def newLabel = projectHelper.getOptionalProperty(project, "newLabel")
-            logger.lifecycle("New label ${newLabel}")
-            def newName= projectHelper.getOptionalProperty(project, "newLabel")
-            logger.lifecycle("New name ${newName}")
-            manifestHelper.replacePackage(project.getRootDir(), conf, oldPackage, newPackage, newLabel)
-            logger.lifecycle("Replaced the package from ${oldPackage} to ${newPackage}")
-            if (newLabel != null) {
-                logger.lifecycle("Also replaced label with ${newLabel}")
+            use(PropertyCategory) {
+                def oldPackage = project.readExpectedProperty("oldPackage")
+                logger.lifecycle("Old package ${oldPackage}")
+                def newPackage = project.readExpectedProperty("newPackage")
+                logger.lifecycle("New package ${newPackage}")
+                def newLabel = project.readProperty("newLabel")
+                logger.lifecycle("New label ${newLabel}")
+                def newName= project.readProperty("newLabel")
+                logger.lifecycle("New name ${newName}")
+                manifestHelper.replacePackage(project.getRootDir(), conf, oldPackage, newPackage, newLabel)
+                logger.lifecycle("Replaced the package from ${oldPackage} to ${newPackage}")
+                if (newLabel != null) {
+                    logger.lifecycle("Also replaced label with ${newLabel}")
+                }
+                if (newName != null) {
+                    logger.lifecycle("Replacing name with ${newName}")
+                    AndroidBuildXmlHelper buildXMLHelper = new AndroidBuildXmlHelper()
+                    buildXMLHelper.replaceProjectName(project.rootDir, newName)
+                }
+                File sourceFolder = new File("src/" + oldPackage.replaceAll('\\.', '/'))
+                File targetFolder = new File("src/" + newPackage.replaceAll('\\.', '/'))
+                logger.lifecycle("Moving ${sourceFolder} to ${targetFolder}")
+                project.ant.move(file: sourceFolder, tofile : targetFolder, failonerror : false)
+                logger.lifecycle("Replacing remaining references in AndroidManifest ")
+                project.ant.replace(casesensitive: 'true', token : "${oldPackage}",
+                        value: "${newPackage}", summary: true) {
+                            fileset(dir: 'src') { include (name : '**/*.java') }
+                            fileset(dir: 'res') { include (name : '**/*.xml') }
+                            fileset(dir: '.') { include (name: 'AndroidManifest.xml')}
+                        }
             }
-            if (newName != null) {
-                logger.lifecycle("Replacing name with ${newName}")
-                AndroidBuildXmlHelper buildXMLHelper = new AndroidBuildXmlHelper()
-                buildXMLHelper.replaceProjectName(project.rootDir, newName)
-            }
-            File sourceFolder = new File("src/" + oldPackage.replaceAll('\\.', '/'))
-            File targetFolder = new File("src/" + newPackage.replaceAll('\\.', '/'))
-            logger.lifecycle("Moving ${sourceFolder} to ${targetFolder}")
-            project.ant.move(file: sourceFolder, tofile : targetFolder, failonerror : false)
-            logger.lifecycle("Replacing remaining references in AndroidManifest ")
-            project.ant.replace(casesensitive: 'true', token : "${oldPackage}",
-                    value: "${newPackage}", summary: true) {
-                        fileset(dir: 'src') { include (name : '**/*.java') }
-                        fileset(dir: 'res') { include (name : '**/*.xml') }
-                        fileset(dir: '.') { include (name: 'AndroidManifest.xml')}
-                    }
         }
     }
 }

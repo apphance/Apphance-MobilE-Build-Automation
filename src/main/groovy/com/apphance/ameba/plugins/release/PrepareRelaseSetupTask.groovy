@@ -8,13 +8,11 @@ import org.gradle.api.tasks.TaskAction
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups;
 import com.apphance.ameba.ProjectConfiguration;
-import com.apphance.ameba.ProjectHelper;
-import com.apphance.ameba.PropertyManager;
-import com.apphance.ameba.plugins.projectconfiguration.PrepareBaseSetupTask;
+import com.apphance.ameba.PropertyCategory;
 
 class PrepareReleaseSetupTask extends DefaultTask {
 
-    Logger logger = Logging.getLogger(PrepareBaseSetupTask.class)
+    Logger logger = Logging.getLogger(PrepareReleaseSetupTask.class)
     ProjectConfiguration conf
 
     PrepareReleaseSetupTask() {
@@ -29,17 +27,14 @@ class PrepareReleaseSetupTask extends DefaultTask {
 
     @TaskAction
     void prepareSetup() {
-        System.out.println("""#######################
-# Preparing release setup
-#######################""")
-        System.out.println('Type values for properties')
+        logger.lifecycle('Preparing release setup')
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
-
-        for (ProjectReleaseProperty property : ProjectReleaseProperty.values()) {
-            ProjectHelper.getProjectPropertyFromUser(project, property.propertyName, property.description, null, false, br)
+        use (PropertyCategory) {
+            ProjectReleaseProperty.each {
+                project.getProjectPropertyFromUser(it, null, false, br)
+            }
+            File propsFile = new File('gradle.props')
+            propsFile << project.listPropertiesAsString(ProjectReleaseProperty.class, true)
         }
-
-        File propsFile = new File('gradle.props')
-        propsFile << PropertyManager.listPropertiesAsString(project, ProjectReleaseProperty.class, true)
     }
 }

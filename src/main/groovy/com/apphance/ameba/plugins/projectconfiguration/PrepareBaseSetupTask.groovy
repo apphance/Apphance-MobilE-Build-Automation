@@ -8,7 +8,7 @@ import org.gradle.api.tasks.TaskAction
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups;
 import com.apphance.ameba.ProjectConfiguration;
-import com.apphance.ameba.ProjectHelper;
+import com.apphance.ameba.PropertyCategory;
 
 import groovy.io.FileType
 
@@ -29,9 +29,7 @@ class PrepareBaseSetupTask extends DefaultTask {
 
     @TaskAction
     void prepareSetup() {
-        System.out.println("""#######################
-# Preparing base setup
-#######################""")
+        logger.lifecycle("Preparing base setup")
         def files = []
         new File('.').eachFileRecurse(FileType.FILES) {
             if (it.name.equals('Icon.png') || it.name.equals('icon.png')) {
@@ -41,17 +39,17 @@ class PrepareBaseSetupTask extends DefaultTask {
         }
         System.out.println('Type values for properties')
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
-
-        for (ProjectBaseProperty property : ProjectBaseProperty.values()) {
-            if (property == ProjectBaseProperty.PROJECT_ICON_FILE) {
-                // will be handled separetly
-                continue;
+        use(PropertyCategory) {
+            ProjectBaseProperty.each {
+                if (it == ProjectBaseProperty.PROJECT_ICON_FILE) {
+                    project.getProjectPropertyFromUser(it, files, true, br)
+                } else {
+                    project.getProjectPropertyFromUser(it, null, false, br)
+                }
             }
-            ProjectHelper.getProjectPropertyFromUser(project, property.propertyName, property.description, null, false, br)
+            File file = new File('gradle.props')
+            file.delete()
+            file << project.listPropertiesAsString(ProjectBaseProperty.class, false)
         }
-        ProjectHelper.getProjectPropertyFromUser(project, ProjectBaseProperty.PROJECT_ICON_FILE.propertyName, ProjectBaseProperty.PROJECT_ICON_FILE.description, files, true, br)
-        File file = new File('gradle.props')
-        file.delete()
-        file << ProjectBaseProperty.printProperties(project, false)
     }
 }

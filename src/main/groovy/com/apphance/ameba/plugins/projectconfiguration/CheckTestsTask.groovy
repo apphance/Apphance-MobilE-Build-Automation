@@ -9,6 +9,7 @@ import org.slf4j.Logger
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 
 /**
@@ -25,11 +26,13 @@ class CheckTestsTask extends DefaultTask{
     IOSProjectConfiguration iosConf
 
     CheckTestsTask() {
-        this.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        this.description = 'Checks if there are any failed junit test results in the project and fails if therea are'
-        this.projectHelper = new ProjectHelper()
-        this.conf = projectHelper.getProjectConfiguration(project)
-        this.dependsOn(project.readProjectConfiguration)
+        use (PropertyCategory) {
+            this.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+            this.description = 'Checks if there are any failed junit test results in the project and fails if therea are'
+            this.projectHelper = new ProjectHelper()
+            this.conf = project.getProjectConfiguration()
+            this.dependsOn(project.readProjectConfiguration)
+        }
     }
 
 

@@ -15,7 +15,7 @@ import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyManager
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
 
@@ -33,17 +33,19 @@ class FoneMonkeyPlugin implements Plugin<Project> {
     IOSProjectConfiguration iosConf
 
     void apply(Project project) {
-        this.project = project
-        this.projectHelper = new ProjectHelper()
-        this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
-        this.conf = projectHelper.getProjectConfiguration(project)
-        this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
-        prepareFoneMonkeyTemplatesTask()
-        prepareBuildFoneMonkeyReleaseTask()
-        prepareRunMonkeyTestsTask()
-        prepareRunSingleFoneMonkeyTestTask()
-        prepareFoneMonkeyReportTask()
-        prepareShowIOSFoneMonkeyPropertiesTask()
+        use (PropertyCategory) {
+            this.project = project
+            this.projectHelper = new ProjectHelper()
+            this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
+            this.conf = project.getProjectConfiguration()
+            this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            prepareFoneMonkeyTemplatesTask()
+            prepareBuildFoneMonkeyReleaseTask()
+            prepareRunMonkeyTestsTask()
+            prepareRunSingleFoneMonkeyTestTask()
+            prepareFoneMonkeyReportTask()
+            prepareShowIOSFoneMonkeyPropertiesTask()
+        }
     }
 
     Collection<String> findAllTests(String family) {
@@ -232,18 +234,20 @@ class FoneMonkeyPlugin implements Plugin<Project> {
         task.description = "Builds fone monkey release. Requires RunMonkeyTests target defined in the project"
         task.group = AMEBA_IOS_FONEMONKEY
         task << {
-            def configuration = "${iosConf.foneMonkeyConfiguration}"
-            def target = "RunMonkeyTests"
-            logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
-            projectHelper.executeCommand(project, [
-                "xcodebuild" ,
-                "-target",
-                target,
-                "-configuration",
-                configuration,
-                "-sdk",
-                this.iosConf.simulatorsdk
-            ])
+            use (PropertyCategory) {
+                def configuration = project.readProperty(IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION,'Debug')
+                def target = "RunMonkeyTests"
+                logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
+                projectHelper.executeCommand(project, [
+                    "xcodebuild" ,
+                    "-target",
+                    target,
+                    "-configuration",
+                    configuration,
+                    "-sdk",
+                    this.iosConf.simulatorsdk
+                ])
+            }
         }
         task.dependsOn(project.prepareFoneMonkeyTemplates)
         task.dependsOn(project.readProjectConfiguration)
@@ -275,9 +279,11 @@ class FoneMonkeyPlugin implements Plugin<Project> {
         task.description = "Executes single test with FoneMonkey. Requires fonemonkey.test.family (iPad, iPhone) and fonemonkey.test.name project property"
         task.group = AMEBA_IOS_FONEMONKEY
         task << {
-            def test = projectHelper.getExpectedProperty(project, "fonemonkey.test.name")
-            def family = projectHelper.getExpectedProperty(project, "fonemonkey.test.family")
-            runSingleFoneMonkeyTest(test, family)
+            use (PropertyCategory) {
+                def test = project.readExpectedProperty("fonemonkey.test.name")
+                def family = project.readExpectedProperty("fonemonkey.test.family")
+                runSingleFoneMonkeyTest(test, family)
+            }
         }
         task.dependsOn(project.buildFoneMonkeyRelease)
     }
@@ -289,7 +295,9 @@ class FoneMonkeyPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
         project.showProperties.dependsOn(task)
         task << {
-            System.out.println(PropertyManager.listPropertiesAsString(project, IOSFoneMonkeyProperty.class, true))
+            use (PropertyCategory) {
+                System.out.println(project.listPropertiesAsString(IOSFoneMonkeyProperty.class, true))
+            }
         }
     }
 }

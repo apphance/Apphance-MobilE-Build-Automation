@@ -10,6 +10,7 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration;
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
@@ -30,17 +31,19 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
     String jarLibraryPrefix
 
     public void apply(Project project) {
-        this.projectHelper = new ProjectHelper()
-        this.conf = this.projectHelper.getProjectConfiguration(project)
-        this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
-        this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
-        manifestHelper = new AndroidManifestHelper()
-        if (project.hasProperty('android.jarLibrary.resPrefix')) {
-            jarLibraryPrefix = project['android.jarLibrary.resPrefix']
-        } else {
-            jarLibraryPrefix = this.androidConf.mainProjectName
+        use (PropertyCategory) {
+            this.projectHelper = new ProjectHelper()
+            this.conf = project.getProjectConfiguration()
+            this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
+            this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
+            manifestHelper = new AndroidManifestHelper()
+            if (project.hasProperty('android.jarLibrary.resPrefix')) {
+                jarLibraryPrefix = project['android.jarLibrary.resPrefix']
+            } else {
+                jarLibraryPrefix = this.androidConf.mainProjectName
+            }
+            prepareJarLibraryTask(project)
         }
-        prepareJarLibraryTask(project)
     }
 
     public void prepareJarLibraryTask(Project project) {

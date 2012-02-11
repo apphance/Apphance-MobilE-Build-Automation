@@ -17,6 +17,7 @@ import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidEnvironment
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
@@ -37,14 +38,16 @@ class IOSReportsPlugin implements Plugin<Project> {
     IOSProjectConfiguration iosConf
 
     def void apply (Project project) {
-        this.projectHelper = new ProjectHelper();
-        this.conf = projectHelper.getProjectConfiguration(project)
-        this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
-        this.iosConf = this.iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
-        prepareBuildDocumentationZipTask(project)
-        prepareAvailableArtifactsInfoTask(project)
-        prepareMailMessageTask(project)
-        preparePostReleaseTask(project)
+        use (PropertyCategory) {
+            this.projectHelper = new ProjectHelper();
+            this.conf = project.getProjectConfiguration()
+            this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
+            this.iosConf = this.iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            prepareBuildDocumentationZipTask(project)
+            prepareAvailableArtifactsInfoTask(project)
+            prepareMailMessageTask(project)
+            preparePostReleaseTask(project)
+        }
     }
 
     def void prepareBuildDocumentationZipTask(Project project) {
@@ -52,7 +55,7 @@ class IOSReportsPlugin implements Plugin<Project> {
         task.description = "Builds documentation .zip file."
         task.group = AmebaCommonBuildTaskGroups.AMEBA_REPORTS
         task << {
-            File destZip = projectHelper.getProjectConfiguration(project).documentationZip.location
+            File destZip = conf.documentationZip.location
             destZip.mkdirs()
             destZip.delete()
             throw new GradleException("Documentation not yet implemented!")

@@ -1,10 +1,11 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
+
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction;
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups;
-import com.apphance.ameba.PropertyManager;
+import com.apphance.ameba.PropertyCategory;
 
 class ShowBasePropertiesTask extends DefaultTask {
 
@@ -16,9 +17,10 @@ class ShowBasePropertiesTask extends DefaultTask {
         this.dependsOn(project.readProjectConfiguration)
     }
 
-
     @TaskAction
     void showProperties() {
-        System.out.print(PropertyManager.listPropertiesAsString(project, ProjectBaseProperty.class, true))
+        use (PropertyCategory) {
+            System.out.print(project.listPropertiesAsString(ProjectBaseProperty.class, true))
+        }
     }
 }

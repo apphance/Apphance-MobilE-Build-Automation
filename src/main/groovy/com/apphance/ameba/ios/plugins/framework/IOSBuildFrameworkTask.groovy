@@ -9,6 +9,7 @@ import org.gradle.api.tasks.TaskAction
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 
@@ -36,24 +37,28 @@ class IOSBuildFrameworkTask extends DefaultTask {
     File destinationZipFile
 
     IOSBuildFrameworkTask() {
-        this.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        this.description = 'Builds iOS framework project'
-        this.projectHelper = new ProjectHelper();
-        this.conf = projectHelper.getProjectConfiguration(project)
-        this.dependsOn(project.readProjectConfiguration)
-        this.dependsOn(project.copyMobileProvision)
+        use (PropertyCategory) {
+            this.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+            this.description = 'Builds iOS framework project'
+            this.projectHelper = new ProjectHelper();
+            this.conf = project.getProjectConfiguration()
+            this.dependsOn(project.readProjectConfiguration)
+            this.dependsOn(project.copyMobileProvision)
+        }
     }
 
     @TaskAction
     void buildIOSFramework() {
-        iosConf = project['ios.project.configuration']
-        iosConf.frameworkTarget = project['ios.framework.target']
-        iosConf.frameworkConfiguration = project['ios.framework.configuration']
-        iosConf.frameworkVersion = projectHelper.getExpectedProperty(project, 'ios.framework.version')
-        iosConf.frameworkCurrentVersion =  projectHelper.getExpectedProperty(project, 'ios.framework.currentVersion')
-        iosConf.frameworkCompatibilityVersion = projectHelper.getExpectedProperty(project, 'ios.framework.compatibilityVersion')
-        iosConf.frameworkHeaders = projectHelper.getExpectedProperty(project, 'ios.framework.headers').split(',')
-        iosConf.frameworkResources = projectHelper.getExpectedProperty(project, 'ios.framework.resources').split(',')
+        use (PropertyCategory) {
+            iosConf = project['ios.project.configuration']
+            iosConf.frameworkTarget = project['ios.framework.target']
+            iosConf.frameworkConfiguration = project['ios.framework.configuration']
+            iosConf.frameworkVersion = project.readExpectedProperty('ios.framework.version')
+            iosConf.frameworkCurrentVersion =  project.readExpectedProperty('ios.framework.currentVersion')
+            iosConf.frameworkCompatibilityVersion = project.readExpectedProperty('ios.framework.compatibilityVersion')
+            iosConf.frameworkHeaders = project.readExpectedProperty('ios.framework.headers').split(',')
+            iosConf.frameworkResources = project.readExpectedProperty('ios.framework.resources').split(',')
+        }
         xcodeBuilds()
         cleanFrameworkDir()
         createDirectoryStructure()

@@ -11,6 +11,7 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 
 
 class AndroidSingleVariantBuilder {
@@ -23,11 +24,13 @@ class AndroidSingleVariantBuilder {
     File variantsDir
 
     AndroidSingleVariantBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration) {
-        this.project = project
-        this.projectHelper = new ProjectHelper()
-        this.conf = projectHelper.getProjectConfiguration(project)
-        this.androidConf = androidProjectConfiguration
-        this.variantsDir = new File(project.rootDir, "variants")
+        use (PropertyCategory) {
+            this.project = project
+            this.projectHelper = new ProjectHelper()
+            this.conf = project.getProjectConfiguration()
+            this.androidConf = androidProjectConfiguration
+            this.variantsDir = new File(project.rootDir, "variants")
+        }
     }
 
     void updateAndroidConfigurationWithVariants() {

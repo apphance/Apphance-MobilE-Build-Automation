@@ -15,9 +15,9 @@ enum ProjectBaseProperty {
     private final String propertyName
     private final String description
 
-    ProjectBaseProperty(boolean optional, String proeprtyName, String description) {
+    ProjectBaseProperty(boolean optional, String propertyName, String description) {
         this.optional = optional
-        this.propertyName = name
+        this.propertyName = propertyName
         this.description = description
     }
 }

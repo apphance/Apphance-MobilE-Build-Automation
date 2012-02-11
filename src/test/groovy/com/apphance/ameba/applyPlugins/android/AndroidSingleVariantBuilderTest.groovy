@@ -4,7 +4,7 @@ import static org.junit.Assert.*
 
 import org.gradle.api.Project
 
-import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidArtifactBuilderInfo
 import com.apphance.ameba.android.AndroidBuildXmlHelper
 import com.apphance.ameba.android.AndroidManifestHelper
@@ -14,22 +14,23 @@ import com.apphance.ameba.android.AndroidSingleVariantBuilder
 class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
 
     private AndroidSingleVariantBuilder prepareEnvironment(Project project) {
-        AndroidProjectConfigurationRetriever confRetriever = new AndroidProjectConfigurationRetriever()
-        AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
-        ProjectHelper projectHelper = new ProjectHelper()
-        manifestHelper.readVersion(project.rootDir, projectHelper.getProjectConfiguration(project))
-        AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
-        Properties props = new Properties()
-        props.load(new FileInputStream(new File(project.rootDir,"gradle.properties")))
-        props.keys().each { key->
-            project[key]=props.getProperty(key)
+        use (PropertyCategory) {
+            AndroidProjectConfigurationRetriever confRetriever = new AndroidProjectConfigurationRetriever()
+            AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
+            manifestHelper.readVersion(project.rootDir, project.getProjectConfiguration())
+            AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
+            Properties props = new Properties()
+            props.load(new FileInputStream(new File(project.rootDir,"gradle.properties")))
+            props.keys().each { key->
+                project[key]=props.getProperty(key)
+            }
+            project['project.name'] = buildXmlHelper.readProjectName(project.rootDir)
+            project.retrieveBasicProjectData()
+            AndroidSingleVariantBuilder builder = new AndroidSingleVariantBuilder(project,confRetriever.getAndroidProjectConfiguration(project))
+            builder.updateAndroidConfigurationWithVariants()
+            confRetriever.readAndroidProjectConfiguration(project)
+            return builder
         }
-        project['project.name']=buildXmlHelper.readProjectName(project.rootDir)
-        projectHelper.readBasicProjectData(project)
-        AndroidSingleVariantBuilder builder = new AndroidSingleVariantBuilder(project,confRetriever.getAndroidProjectConfiguration(project))
-        builder.updateAndroidConfigurationWithVariants()
-        confRetriever.readAndroidProjectConfiguration(project)
-        return builder
     }
 
     public void testArtifactBuilderInfoVariantedDebug() throws Exception {

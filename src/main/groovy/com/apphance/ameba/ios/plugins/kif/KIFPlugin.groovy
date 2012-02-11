@@ -12,7 +12,7 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration;
 import com.apphance.ameba.ProjectHelper;
-import com.apphance.ameba.PropertyManager
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 
@@ -30,16 +30,18 @@ class KIFPlugin implements Plugin<Project> {
     IOSProjectConfiguration iosConf
 
     void apply(Project project) {
-        this.project = project
-        this.projectHelper = new ProjectHelper()
-        this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
-        this.conf = projectHelper.getProjectConfiguration(project)
-        this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
-        prepareKIFTemplatesTask()
-        prepareBuildKIFReleaseTask()
-        prepareRunKIFTestsTask()
-        prepareRunSingleKIFTestTask()
-        prepareShowIOSKifPropertiesTask()
+        use (PropertyCategory) {
+            this.project = project
+            this.projectHelper = new ProjectHelper()
+            this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
+            this.conf = project.getProjectConfiguration()
+            this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            prepareKIFTemplatesTask()
+            prepareBuildKIFReleaseTask()
+            prepareRunKIFTestsTask()
+            prepareRunSingleKIFTestTask()
+            prepareShowIOSKifPropertiesTask()
+        }
     }
 
     Collection<String> findAllTests(String family) {
@@ -186,9 +188,11 @@ class KIFPlugin implements Plugin<Project> {
         task.description = "Executes single test with KIF. Requires KIF.test.family (iPad, iPhone) and KIF.test.name project property"
         task.group = AMEBA_IOS_KIF
         task << {
-            def test = projectHelper.getExpectedProperty(project, "KIF.test.name")
-            def family = projectHelper.getExpectedProperty(project, "KIF.test.family")
-            runSingleKIFTest(test, family)
+            use(PropertyCategory) {
+                def test = project.readExpectedProperty("KIF.test.name")
+                def family = project.readExpectedProperty("KIF.test.family")
+                runSingleKIFTest(test, family)
+            }
         }
         task.dependsOn(project.buildKIFRelease)
     }
@@ -200,7 +204,9 @@ class KIFPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
         project.showProperties.dependsOn(task)
         task << {
-            System.out.println(PropertyManager.listPropertiesAsString(project, IOSKifProperty.class, true))
+            use (PropertyCategory) {
+                System.out.println(project.listPropertiesAsString(IOSKifProperty.class, true))
+            }
         }
     }
 }

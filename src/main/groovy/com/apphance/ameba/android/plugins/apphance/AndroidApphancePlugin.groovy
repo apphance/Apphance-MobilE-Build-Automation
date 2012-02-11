@@ -10,6 +10,7 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidManifestHelper
 
 class AndroidApphancePlugin implements Plugin<Project>{
@@ -22,14 +23,16 @@ class AndroidApphancePlugin implements Plugin<Project>{
     AndroidManifestHelper manifestHelper
 
     public void apply(Project project) {
-        this.projectHelper = new ProjectHelper()
-        this.conf = this.projectHelper.getProjectConfiguration(project)
-        manifestHelper = new AndroidManifestHelper()
-        preprocessBuildsWithApphance(project)
-        prepareConvertLogsToApphance(project)
-        prepareConvertLogsToAndroid(project)
-        prepareRemoveApphaceFromManifest(project)
-        prepareRestoreManifestBeforeApphance(project)
+        use (PropertyCategory) {
+            this.projectHelper = new ProjectHelper()
+            this.conf = project.getProjectConfiguration()
+            manifestHelper = new AndroidManifestHelper()
+            preprocessBuildsWithApphance(project)
+            prepareConvertLogsToApphance(project)
+            prepareConvertLogsToAndroid(project)
+            prepareRemoveApphaceFromManifest(project)
+            prepareRestoreManifestBeforeApphance(project)
+        }
     }
 
     void prepareConvertLogsToApphance(project) {

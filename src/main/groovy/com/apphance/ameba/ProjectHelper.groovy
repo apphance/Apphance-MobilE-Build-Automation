@@ -5,7 +5,6 @@ import groovy.io.FileType;
 
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
 
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.api.GradleException
@@ -296,97 +295,6 @@ class ProjectHelper {
         }
     }
 
-    @Override
-    def String getExpectedProperty(Project project, String property) {
-        if (!project.hasProperty(property)) {
-            throw new GradleException("I need ${property} property to be set on project")
-        }
-        return project[property]
-    }
-
-    @Override
-    def String getOptionalProperty(Project project, String property) {
-        if (!project.hasProperty(property)) {
-            return null
-        }
-        return project[property]
-    }
-
-    ProjectConfiguration getProjectConfiguration(Project project){
-        if (!project.hasProperty('project.configuration')) {
-            project['project.configuration'] = new ProjectConfiguration()
-        }
-        return project['project.configuration']
-    }
-
-    private readBasicProjectData(Project project) {
-        ProjectConfiguration conf = getProjectConfiguration(project)
-        if (conf.projectName == null) {
-            conf.projectName = getExpectedProperty(project,'project.name')
-        }
-        conf.projectDirectoryName = getExpectedProperty(project,'project.directory.name')
-        conf.baseUrl = new URL(getExpectedProperty(project,'project.url.base'))
-        conf.iconFile = new File(project.rootDir,getExpectedProperty(project,'project.icon.file'))
-        retrieveLocale(project, conf)
-        conf.releaseNotes = readReleaseNotes(project)?.tokenize(",")
-    }
-
-    private void retrieveLocale(Project project, ProjectConfiguration conf) {
-        String language = getOptionalProperty(project, 'project.language')
-        String country = getOptionalProperty(project, 'project.country')
-        if (language == null) {
-            conf.locale = Locale.getDefault()
-        } else {
-            if (country == null) {
-                conf.locale = new Locale(language)
-            } else {
-                conf.locale = new Locale(language,country)
-            }
-        }
-        conf.buildDate = new SimpleDateFormat("dd-MM-yyyy HH:mm zzz", conf.locale).format(new Date())
-    }
-
-    def String readReleaseNotes(Project project) {
-        if (project.hasProperty('release.notes')) {
-            return project['release.notes']
-        } else {
-            def notes =  System.getenv('RELEASE_NOTES')
-            if (notes == null || notes == "") {
-                return null
-            }
-            project['release.notes'] = notes
-            return notes
-        }
-    }
-
-    String readPropertyOrEnvironmentVariable(Project project, String property) {
-        if (project.hasProperty(property)) {
-            return project[property]
-        } else if (System.getProperty(property) != null){
-            return System.getProperty(property)
-        } else {
-            def envVariable = property.toUpperCase().replace(".","_")
-            def val = System.getenv(envVariable)
-            if (val == null) {
-                throw new GradleException("The property ${property} was not defined (neither in project nor system) and ${envVariable} environment variable is missing.")
-            }
-            return val
-        }
-    }
-
-    boolean isPropertyOrEnvironmentVariableDefined(Project project, String property) {
-        if (project.hasProperty(property)) {
-            return true
-        } else if (System.getProperty(property) != null){
-            return true
-        } else {
-            def envVariable = property.toUpperCase().replace(".","_")
-            def val = System.getenv(envVariable)
-            return (val != null)
-        }
-    }
-
-
     String getHumanReadableSize(long byteSize) {
         if (byteSize >= 1024L*1024L) {
             return String.format("%.2f",byteSize*1.0/1024.0/1024.0) + " MB"
@@ -396,9 +304,11 @@ class ProjectHelper {
     }
 
     private void fillMailSubject(Project project, ResourceBundle resourceBundle) {
-        ProjectConfiguration conf = getProjectConfiguration(project)
-        String subject = resourceBundle.getString('Subject')
-        conf.releaseMailSubject = Eval.me("conf",conf,/"$subject"/)
+        use (PropertyCategory) {
+            ProjectConfiguration conf = project.getProjectConfiguration()
+            String subject = resourceBundle.getString('Subject')
+            conf.releaseMailSubject = Eval.me("conf",conf,/"$subject"/)
+        }
     }
 
 
@@ -412,31 +322,4 @@ class ProjectHelper {
             }
         }
     }
-	
-	public static String getProjectPropertyFromUser(Project project, String name, String description, ArrayList defaultValues, boolean useDefault, BufferedReader br) {
-		String s = name + ' (' + description + ')'
-		if (useDefault) {
-			s = s + '. Proposed values: ' + defaultValues
-		}
-		if (project.hasProperty(name)) {
-			s = s + '. Current value=' + project[name] + '. Leave blank to don\'t change'
-			System.out.println(s)
-			String newValue = br.readLine()
-			if (newValue.isEmpty() && !useDefault) {
-				// don't change
-			} else if (newValue.isEmpty() && useDefault) {
-				project[name] = defaultValues[0]
-			} else {
-				project[name] = newValue
-			}
-		} else {
-			System.out.println(s)
-			String newValue = br.readLine()
-			if (newValue.isEmpty() && useDefault) {
-				project[name] = defaultValues[0]
-			} else {
-				project[name] = newValue
-			}
-		}
-	}
 }

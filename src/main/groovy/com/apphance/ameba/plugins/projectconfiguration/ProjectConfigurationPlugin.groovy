@@ -13,7 +13,7 @@ import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ImageNameFilter
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyManager;
+import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.plugins.release.PrepareReleaseSetupTask;
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty;
 import com.apphance.ameba.plugins.release.VerifyReleaseSetupTask;
@@ -61,7 +61,9 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
         project.showProperties.dependsOn(task)
         task << {
-            System.out.println(PropertyManager.listPropertiesAsString(project, ProjectBaseProperty.class, true))
+            use(PropertyCategory) {
+                System.out.println(project.listPropertiesAsString(ProjectBaseProperty.class, true))
+            }
         }
     }
 
@@ -73,7 +75,9 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
         project.showProperties.dependsOn(task)
         task << {
-            System.out.println(PropertyManager.listPropertiesAsString(project, ProjectReleaseProperty.class, true))
+            use (PropertyCategory) {
+                System.out.println(project.listPropertiesAsString(ProjectReleaseProperty.class, true))
+            }
         }
     }
 
@@ -114,15 +118,17 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.description = "Reads project's configuration and sets it up in projectConfiguration property of project"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task << {
-            this.conf = projectHelper.getProjectConfiguration(project)
-            // NOTE! conf.versionString and conf.versionCode need to
-            // be read before project configuration task -> task reading the version
-            // should be injected here
-            projectHelper.readBasicProjectData(project)
-            prepareGeneratedDirectories(project)
-            prepareSourcesAndDocumentationArtifacts()
-            prepareMailArtifacts(project)
-            prepareGalleryArtifacts()
+            use (PropertyCategory) {
+                this.conf = project.getProjectConfiguration()
+                // NOTE! conf.versionString and conf.versionCode need to
+                // be read before project configuration task -> task reading the version
+                // should be injected here
+                project.retrieveBasicProjectData(project)
+                prepareGeneratedDirectories(project)
+                prepareSourcesAndDocumentationArtifacts()
+                prepareMailArtifacts(project)
+                prepareGalleryArtifacts()
+            }
         }
     }
 
@@ -150,12 +156,14 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
                 name : "Mail message file",
                 url : new URL(conf.versionedApplicationUrl, "message_file.html"),
                 location : new File(conf.targetDirectory,"message_file.html"))
-        conf.releaseMailFrom = projectHelper.getExpectedProperty(project, "release.mail.from")
-        conf.releaseMailTo = projectHelper.getExpectedProperty(project, "release.mail.to")
-        conf.releaseMailFlags = []
-        if (project.hasProperty('release.mail.flags')){
-            String flags = project['release.mail.flags']
-            conf.releaseMailFlags = flags.tokenize(",").collect { it.trim() }
+        use (PropertyCategory) {
+            conf.releaseMailFrom = project.readExpectedProperty(ProjectReleaseProperty.RELEASE_MAIL_FROM)
+            conf.releaseMailTo = project.readExpectedProperty(ProjectReleaseProperty.RELEASE_MAIL_TO)
+            conf.releaseMailFlags = []
+            String flags = project.readProperty(ProjectReleaseProperty.RELEASE_MAIL_FLAGS)
+            if (flags != null){
+                conf.releaseMailFlags = flags.tokenize(",").collect { it.trim() }
+            }
         }
     }
 
@@ -190,7 +198,6 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.group= AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task.description = "Verifies that release notes are set for the build"
         task << {
-            ProjectConfiguration conf = projectHelper.getProjectConfiguration(project)
             if (conf.releaseNotes == null) {
                 throw new GradleException("""Release notes of the project have not been set.... Please enter non-empty notes!\n
 Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES environment variable""")
@@ -277,30 +284,32 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
         task.group = AmebaCommonBuildTaskGroups.AMEBA_MESSAGING
 
         task << {
-            def mailServer = projectHelper.readPropertyOrEnvironmentVariable(project,"mail.server")
-            def mailPort = projectHelper.readPropertyOrEnvironmentVariable(project,"mail.port")
-            ProjectConfiguration conf = projectHelper.getProjectConfiguration(project)
-            Properties props = System.getProperties();
-            props.put("mail.smtp.host", mailServer);
-            props.put("mail.smtp.port", mailPort);
-            project.configurations.mail.each {
-                org.apache.tools.ant.Project.class.classLoader.addURL(it.toURI().toURL())
+            use (PropertyCategory) {
+                def mailServer = project.readPropertyOrEnvironmentVariable("mail.server")
+                def mailPort = project.readPropertyOrEnvironmentVariable("mail.port")
+                ProjectConfiguration conf = project.getProjectConfiguration()
+                Properties props = System.getProperties();
+                props.put("mail.smtp.host", mailServer);
+                props.put("mail.smtp.port", mailPort);
+                project.configurations.mail.each {
+                    org.apache.tools.ant.Project.class.classLoader.addURL(it.toURI().toURL())
+                }
+                ant.mail(
+                        mailhost: mailServer,
+                        mailport: mailPort,
+                        subject: conf.releaseMailSubject,
+                        charset: "UTF-8",
+                        tolist : conf.releaseMailTo){
+                            from(address: conf.releaseMailFrom)
+                            message(mimetype:"text/html", conf.mailMessageFile.location.text)
+                            if (conf.releaseMailFlags.contains("qrCode")) {
+                                fileset(file: conf.qrCodeFile.location)
+                            }
+                            if (conf.releaseMailFlags.contains("imageMontage") && conf.imageMontageFile != null) {
+                                fileset(file: conf.imageMontageFile.location)
+                            }
+                        }
             }
-            ant.mail(
-                    mailhost: mailServer,
-                    mailport: mailPort,
-                    subject: conf.releaseMailSubject,
-                    charset: "UTF-8",
-                    tolist : conf.releaseMailTo){
-                        from(address: conf.releaseMailFrom)
-                        message(mimetype:"text/html", conf.mailMessageFile.location.text)
-                        if (conf.releaseMailFlags.contains("qrCode")) {
-                            fileset(file: conf.qrCodeFile.location)
-                        }
-                        if (conf.releaseMailFlags.contains("imageMontage") && conf.imageMontageFile != null) {
-                            fileset(file: conf.imageMontageFile.location)
-                        }
-                    }
         }
         task.dependsOn(project.readProjectConfiguration)
         task.dependsOn(project.verifyReleaseNotes)
@@ -325,7 +334,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
         task.description = "Builds sources .zip file."
         task.group = AmebaCommonBuildTaskGroups.AMEBA_REPORTS
         task << {
-            File destZip = projectHelper.getProjectConfiguration(project).sourcesZip.location
+            File destZip = conf.sourcesZip.location
             logger.lifecycle("Removing empty symlinks")
             projectHelper.removeMissingSymlinks(project.rootDir)
             destZip.parentFile.mkdirs()

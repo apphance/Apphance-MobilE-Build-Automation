@@ -10,9 +10,11 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSArtifactBuilderInfo;
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
+import com.apphance.ameba.ios.MPParser
 
 class IOSSingleReleaseBuilder {
 
@@ -24,11 +26,13 @@ class IOSSingleReleaseBuilder {
     AntBuilder ant
 
     IOSSingleReleaseBuilder(Project project, AntBuilder ant) {
-        this.projectHelper = new ProjectHelper()
-        this.conf = projectHelper.getProjectConfiguration(project)
-        this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
-        this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
-        this.ant = ant
+        use (PropertyCategory) {
+            this.projectHelper = new ProjectHelper()
+            this.conf = project.getProjectConfiguration()
+            this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
+            this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            this.ant = ant
+        }
     }
 
     void buildRelease(Project project, String target, String configuration) {

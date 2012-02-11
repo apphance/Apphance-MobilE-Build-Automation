@@ -1,9 +1,6 @@
 package com.apphance.ameba.ios.plugins.build;
 
-import groovy.io.FileType
 
-import java.io.File
-import java.util.Collection
 
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -16,7 +13,7 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyManager;
+import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
@@ -40,26 +37,28 @@ class IOSPlugin implements Plugin<Project> {
     IOSConfigurationAndTargetRetriever iosConfigurationAndTargetRetriever
 
     def void apply (Project project) {
-        this.projectHelper = new ProjectHelper();
-        this.conf = projectHelper.getProjectConfiguration(project)
-        this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
-        this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
-        prepareReadIosProjectConfigurationTask(project)
-        prepareReadIosTargetsAndConfigurationsTask(project)
-        prepareReadIosProjectVersionsTask(project)
-        prepareUpdateVersionTask(project)
-        prepareCleanTask(project)
-        prepareUnlockKeyChainTask(project)
-        prepareCopyMobileProvisionTask(project)
-        prepareBuildSingleReleaseTask(project)
-        project.task('buildAllSimulators', type: IOSBuildAllSimulatorsTask)
-        project.task('verifyIOSSetup', type: IOSVerifySetupTask)
-        prepareBuildAllTask(project)
-        preparePreReleaseTask(project)
-        prepareReplaceBundleIdPrefixTask(project)
-        addIosSourceExcludes()
-        prepareShowIOSPropertiesTask(project)
-        project.task('prepareIOSSetup', type:IOSPrepareSetupTask)
+        use (PropertyCategory) {
+            this.projectHelper = new ProjectHelper();
+            this.conf = project.getProjectConfiguration()
+            this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
+            this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            prepareReadIosProjectConfigurationTask(project)
+            prepareReadIosTargetsAndConfigurationsTask(project)
+            prepareReadIosProjectVersionsTask(project)
+            prepareUpdateVersionTask(project)
+            prepareCleanTask(project)
+            prepareUnlockKeyChainTask(project)
+            prepareCopyMobileProvisionTask(project)
+            prepareBuildSingleReleaseTask(project)
+            project.task('buildAllSimulators', type: IOSBuildAllSimulatorsTask)
+            project.task('verifyIOSSetup', type: IOSVerifySetupTask)
+            prepareBuildAllTask(project)
+            preparePreReleaseTask(project)
+            prepareReplaceBundleIdPrefixTask(project)
+            addIosSourceExcludes()
+            prepareShowIOSPropertiesTask(project)
+            project.task('prepareIOSSetup', type:IOSPrepareSetupTask)
+        }
     }
 
     private prepareShowIOSPropertiesTask(Project project) {
@@ -69,7 +68,9 @@ class IOSPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
         project.showProperties.dependsOn(task)
         task << {
-            System.out.println(PropertyManager.listPropertiesAsString(project, IOSProjectProperty.class, true))
+            use (PropertyCategory) {
+                System.out.println(project.listPropertiesAsString(IOSProjectProperty.class, true))
+            }
         }
     }
 
@@ -82,19 +83,20 @@ class IOSPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task.description = 'Reads iOS project configuration'
         task << {
-            this.pListFileName = project['ios.plist.file']
-            iosConf.mainTarget = project.hasProperty('ios.mainTarget')  ? project['ios.mainTarget'] :  null
-            iosConf.mainConfiguration = project.hasProperty('ios.mainConfiguration')  ? project['ios.mainConfiguration'] : null
-            iosConf.sdk = project.hasProperty('ios.sdk') ? project['ios.sdk'] : 'iphoneos'
-            iosConf.simulatorsdk = project.hasProperty('ios.simulator.sdk') ? project['ios.simulator.sdk'] : 'iphonesimulator'
-            iosConf.plistFile = new File(this.pListFileName)
-            iosConf.distributionDirectory =  new File(project.rootDir, project['ios.distribution.resources.dir'])
-            iosConf.families = project.hasProperty('ios.families') ? project['ios.families'].split(",")*.trim() : ["iPhone", "iPad"]
-            iosConf.excludedBuilds = project.hasProperty('ios.excluded.builds') ? project['ios.excluded.builds'].split(",")*.trim() : []
-            iosConf.foneMonkeyConfiguration = project.hasProperty('ios.fonemonkey.configuration') ? project['ios.fonemonkey.configuration'] : "Debug"
-            iosConf.KIFConfiguration = project.hasProperty('ios.kif.configuration') ? project['ios.kif.configuration'] : "Debug"
-            if (iosConf.plistFile != null) {
-                conf.commitFilesOnVCS << iosConf.plistFile.absolutePath
+            use (PropertyCategory) {
+                this.pListFileName = project.readProperty(IOSProjectProperty.PLIST_FILE)
+                iosConf.mainTarget = project.readProperty(IOSProjectProperty.MAIN_TARGET)
+                iosConf.mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
+                iosConf.sdk = project.readProperty(IOSProjectProperty.IOS_SDK,'iphoneos')
+                iosConf.simulatorsdk = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK, 'iphonesimulator')
+                iosConf.plistFile = new File(this.pListFileName)
+                iosConf.distributionDirectory =  new File(project.rootDir, project.readProperty(IOSProjectProperty.DISTRIBUTION_DIR))
+                iosConf.families = project.readProperty(IOSProjectProperty.IOS_FAMILIES, 'iPhone,iPad').split(",")*.trim()
+                iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS,'').split(",")*.trim()
+                iosConf.KIFConfiguration = project.hasProperty('ios.kif.configuration') ? project['ios.kif.configuration'] : "Debug"
+                if (iosConf.plistFile != null) {
+                    conf.commitFilesOnVCS << iosConf.plistFile.absolutePath
+                }
             }
         }
         project.readProjectConfiguration.dependsOn(task)
@@ -144,27 +146,29 @@ class IOSPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task.description = 'Reads iOS project version information'
         task << {
-            this.pListFileName = project['ios.plist.file']
-            def root = getParsedPlist(project)
-            XPathAPI.selectNodeList(root,
-                    '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
-                        conf.versionString =  it.nextSibling.nextSibling.textContent
-                    }
-            XPathAPI.selectNodeList(root,
-                    '/plist/dict/key[text()="CFBundleVersion"]').each{
-                        def versionCodeString = it.nextSibling.nextSibling.textContent
-                        try {
-                            conf.versionCode = versionCodeString.toInteger()
-                        } catch (NumberFormatException e) {
-                            logger.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
-                            conf.versionCode = 0
+            use (PropertyCategory) {
+                this.pListFileName = project['ios.plist.file']
+                def root = getParsedPlist(project)
+                XPathAPI.selectNodeList(root,
+                        '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
+                            conf.versionString =  it.nextSibling.nextSibling.textContent
                         }
-                    }
-            if (!projectHelper.isPropertyOrEnvironmentVariableDefined(project, 'version.string')) {
-                logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
-                conf.versionString = conf.versionString + "-SNAPSHOT"
-            } else {
-                logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
+                XPathAPI.selectNodeList(root,
+                        '/plist/dict/key[text()="CFBundleVersion"]').each{
+                            def versionCodeString = it.nextSibling.nextSibling.textContent
+                            try {
+                                conf.versionCode = versionCodeString.toInteger()
+                            } catch (NumberFormatException e) {
+                                logger.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
+                                conf.versionCode = 0
+                            }
+                        }
+                if (!project.isPropertyOrEnvironmentVariableDefined('version.string')) {
+                    logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
+                    conf.versionString = conf.versionString + "-SNAPSHOT"
+                } else {
+                    logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
+                }
             }
         }
         project.readProjectConfiguration.dependsOn(task)
@@ -224,20 +228,22 @@ class IOSPlugin implements Plugin<Project> {
         task.description = """Updates version stored in plist file of the project.
            Numeric version is (incremented), String version is set from version.string property"""
         task << {
-            conf.versionString = projectHelper.readPropertyOrEnvironmentVariable(project,'version.string')
-            def root = getParsedPlist(project)
-            XPathAPI.selectNodeList(root,
-                    '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
-                        it.nextSibling.nextSibling.textContent = conf.versionString
-                    }
-            conf.versionCode += 1
-            XPathAPI.selectNodeList(root,
-                    '/plist/dict/key[text()="CFBundleVersion"]').each{
-                        it.nextSibling.nextSibling.textContent = conf.versionCode
-                    }
-            new File("${project.rootDir}/${pListFileName}").write(root as String)
-            logger.lifecycle("New version code: ${conf.versionCode}")
-            logger.lifecycle("Updated version string to ${conf.versionString}")
+            use (PropertyCategory) {
+                conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
+                def root = getParsedPlist(project)
+                XPathAPI.selectNodeList(root,
+                        '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
+                            it.nextSibling.nextSibling.textContent = conf.versionString
+                        }
+                conf.versionCode += 1
+                XPathAPI.selectNodeList(root,
+                        '/plist/dict/key[text()="CFBundleVersion"]').each{
+                            it.nextSibling.nextSibling.textContent = conf.versionCode
+                        }
+                new File("${project.rootDir}/${pListFileName}").write(root as String)
+                logger.lifecycle("New version code: ${conf.versionCode}")
+                logger.lifecycle("Updated version string to ${conf.versionString}")
+            }
         }
         task.dependsOn(project.readProjectConfiguration)
     }
@@ -247,10 +253,12 @@ class IOSPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task.description = "Builds single release for iOS. Requires ios.target and ios.configuration properties"
         task << {
-            def singleReleaseBuilder = new IOSSingleReleaseBuilder(project, this.ant)
-            String target = projectHelper.getExpectedProperty(project, "ios.target")
-            String configuration = projectHelper.getExpectedProperty(project, "ios.configuration")
-            singleReleaseBuilder.buildRelease(project, target, configuration)
+            use (PropertyCategory) {
+                def singleReleaseBuilder = new IOSSingleReleaseBuilder(project, this.ant)
+                String target = project.readExpectedProperty("ios.target")
+                String configuration = project.readExpectedProperty("ios.configuration")
+                singleReleaseBuilder.buildRelease(project, target, configuration)
+            }
         }
         task.dependsOn(project.readProjectConfiguration)
     }
@@ -277,15 +285,17 @@ class IOSPlugin implements Plugin<Project> {
               or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION"""
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            def keychainPassword = projectHelper.readPropertyOrEnvironmentVariable(project, "osx.keychain.password")
-            def keychainLocation = projectHelper.readPropertyOrEnvironmentVariable(project, "osx.keychain.location")
-            projectHelper.executeCommand(project, [
-                "security",
-                "unlock-keychain",
-                "-p",
-                keychainPassword,
-                keychainLocation
-            ])
+            use(PropertyCategory) {
+                def keychainPassword = project.readPropertyOrEnvironmentVariable("osx.keychain.password")
+                def keychainLocation = project.readPropertyOrEnvironmentVariable("osx.keychain.location")
+                projectHelper.executeCommand(project, [
+                    "security",
+                    "unlock-keychain",
+                    "-p",
+                    keychainPassword,
+                    keychainLocation
+                ])
+            }
         }
         task.dependsOn(project.readProjectConfiguration)
     }
@@ -324,15 +334,17 @@ class IOSPlugin implements Plugin<Project> {
            parameters. The .mobileprovision files need to be in 'newBundleIdPrefix' sub-directory of distribution directory"""
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            def oldBundleIdPrefix = projectHelper.getExpectedProperty(project, "oldBundleIdPrefix")
-            logger.lifecycle("Old bundleId ${oldBundleIdPrefix}")
-            def newBundleIdPrefix = projectHelper.getExpectedProperty(project, "newBundleIdPrefix")
-            logger.lifecycle("New bundleId ${newBundleIdPrefix}")
-            replaceBundleInAllPlists(project, newBundleIdPrefix, oldBundleIdPrefix)
-            replaceBundleInAllSourceFiles(project, newBundleIdPrefix, oldBundleIdPrefix)
-            iosConf.distributionDirectory = new File(iosConf.distributionDirectory, newBundleIdPrefix)
-            logger.lifecycle("New distribution directory: ${iosConf.distributionDirectory}")
-            logger.lifecycle("Replaced the bundleIdprefix everywhere")
+            use (PropertyCategory) {
+                def oldBundleIdPrefix = project.readExpectedProperty("oldBundleIdPrefix")
+                logger.lifecycle("Old bundleId ${oldBundleIdPrefix}")
+                def newBundleIdPrefix = project.readExpectedProperty("newBundleIdPrefix")
+                logger.lifecycle("New bundleId ${newBundleIdPrefix}")
+                replaceBundleInAllPlists(project, newBundleIdPrefix, oldBundleIdPrefix)
+                replaceBundleInAllSourceFiles(project, newBundleIdPrefix, oldBundleIdPrefix)
+                iosConf.distributionDirectory = new File(iosConf.distributionDirectory, newBundleIdPrefix)
+                logger.lifecycle("New distribution directory: ${iosConf.distributionDirectory}")
+                logger.lifecycle("Replaced the bundleIdprefix everywhere")
+            }
         }
     }
 

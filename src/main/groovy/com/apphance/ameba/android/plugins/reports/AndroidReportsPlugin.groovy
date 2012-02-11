@@ -15,6 +15,7 @@ import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidEnvironment
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
@@ -31,15 +32,17 @@ class AndroidReportsPlugin implements Plugin<Project>{
     AndroidProjectConfiguration androidConf
 
     public void apply(Project project) {
-        this.project = project
-        this.projectHelper = new ProjectHelper();
-        this.conf = projectHelper.getProjectConfiguration(project)
-        this.androidProjectConfigurationRetriever = new AndroidProjectConfigurationRetriever()
-        this.androidConf = this.androidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
-        prepareBuildDocumentationZipTask(project)
-        prepareAvailableArtifactsInfoTask(project)
-        prepareMailMessageTask(project)
-        preparePostReleaseTask(project)
+        use (PropertyCategory) {
+            this.project = project
+            this.projectHelper = new ProjectHelper();
+            this.conf = project.getProjectConfiguration()
+            this.androidProjectConfigurationRetriever = new AndroidProjectConfigurationRetriever()
+            this.androidConf = this.androidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
+            prepareBuildDocumentationZipTask(project)
+            prepareAvailableArtifactsInfoTask(project)
+            prepareMailMessageTask(project)
+            preparePostReleaseTask(project)
+        }
     }
 
     def void prepareBuildDocumentationZipTask(Project project) {
@@ -47,7 +50,7 @@ class AndroidReportsPlugin implements Plugin<Project>{
         task.description = "Builds documentation .zip file."
         task.group = AmebaCommonBuildTaskGroups.AMEBA_REPORTS
         task << {
-            File destZip = projectHelper.getProjectConfiguration(project).documentationZip.location
+            File destZip = conf.documentationZip.location
             destZip.mkdirs()
             destZip.delete()
             File javadocDir = new File(project.rootDir,"build/docs/javadoc")

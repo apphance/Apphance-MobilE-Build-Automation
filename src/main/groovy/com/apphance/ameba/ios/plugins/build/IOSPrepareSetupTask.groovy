@@ -7,8 +7,7 @@ import org.gradle.api.tasks.TaskAction
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyManager;
+import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.ios.IOSProjectProperty;
 
 import groovy.io.FileType
@@ -27,28 +26,26 @@ class IOSPrepareSetupTask extends DefaultTask {
 
     @TaskAction
     void prepareSetup() {
-        System.out.println("""#######################
-# Preparing iOS setup
-#######################""")
-        System.out.println('Type values for properties')
+        logger.lifecycle("Preparing iOS setup")
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+        use (PropertyCategory) {
+            def files = []
+            new File('.').eachFileRecurse(FileType.FILES) {
+                if (it.name.endsWith(".plist")) {
+                    def path = it.path
+                    files << path
+                }
+            }
+            IOSProjectProperty.each {
+                if (property == IOSProjectProperty.PLIST_FILE) {
+                    project.getProjectPropertyFromUser(property, files, true, br)
+                } else {
+                    project.getProjectPropertyFromUser(property, null, false, br)
+                }
+            }
+            File file = new File('gradle.props')
 
-        for (IOSProjectProperty property : IOSProjectProperty.values()) {
-            if (property == IOSProjectProperty.PLIST_FILE) {
-                // handled separetly
-                continue;
-            }
-            ProjectHelper.getProjectPropertyFromUser(project, property.propertyName, property.getDescription(), null, false, br)
+            file << project.listPropertiesAsString(IOSProjectProperty.class, false)
         }
-        def files = []
-        new File('.').eachFileRecurse(FileType.FILES) {
-            if (it.name.endsWith(".plist")) {
-                def path = it.path
-                files << path
-            }
-        }
-        ProjectHelper.getProjectPropertyFromUser(project, IOSProjectProperty.PLIST_FILE.propertyName, IOSProjectProperty.PLIST_FILE.description, files, true, br)
-        File file = new File('gradle.props')
-        file << PropertyManager.listPropertiesAsString(project, IOSProjectProperty.class, false)
     }
 }

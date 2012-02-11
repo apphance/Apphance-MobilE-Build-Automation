@@ -5,6 +5,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.PropertyCategory
 
 
 /**
@@ -34,7 +35,10 @@ class GitPlugin extends VCSPlugin {
         task.description = "Commits and pushes changes to repository."
         task.group = AmebaCommonBuildTaskGroups.AMEBA_VERSION_CONTROL
         task << {
-            def gitBranch = projectHelper.getOptionalProperty(project, "git.branch")
+            def gitBranch
+            use (PropertyCategory) {
+                gitBranch = project.readProperty("git.branch")
+            }
             if (gitBranch == null) {
                 gitBranch = "master"
             }
@@ -100,8 +104,8 @@ class GitPlugin extends VCSPlugin {
     def String [] getVCSExcludes(Project project) {
         return ["**/.git/*"]as String[]
     }
-	
-	void prepareShowPropertiesTask(Project arg0) {
-		// no properties to show
-	}
+
+    void prepareShowPropertiesTask(Project arg0) {
+        // no properties to show
+    }
 }

@@ -12,9 +12,11 @@ import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSArtifactBuilderInfo;
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
+import com.apphance.ameba.ios.MPParser
 
 /**
  * Builds iOS simulator projects
@@ -28,12 +30,14 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
     IOSConfigurationAndTargetRetriever iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
 
     IOSBuildAllSimulatorsTask() {
-        this.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        this.description = 'Builds all simulators for the project'
-        this.projectHelper = new ProjectHelper();
-        this.conf = projectHelper.getProjectConfiguration(project)
-        this.dependsOn(project.readProjectConfiguration)
-        this.dependsOn(project.copyMobileProvision)
+        use (PropertyCategory) {
+            this.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+            this.description = 'Builds all simulators for the project'
+            this.projectHelper = new ProjectHelper();
+            this.conf = project.getProjectConfiguration()
+            this.dependsOn(project.readProjectConfiguration)
+            this.dependsOn(project.copyMobileProvision)
+        }
     }
 
     @TaskAction

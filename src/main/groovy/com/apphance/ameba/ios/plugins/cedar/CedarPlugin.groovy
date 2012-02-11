@@ -9,6 +9,7 @@ import org.gradle.api.logging.Logging;
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
 
@@ -25,14 +26,16 @@ class CedarPlugin implements Plugin<Project> {
     IOSProjectConfiguration iosConf
 
     void apply(Project project) {
-        this.project = project
-        this.projectHelper = new ProjectHelper()
-        this.iosConfigurationAndTargetRetriever  = new IOSConfigurationAndTargetRetriever()
-        this.conf = projectHelper.getProjectConfiguration(project)
-        this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
-        prepareCedarTemplatesTask()
-        prepareBuildCedarReleasesTask()
-        prepareRunCedarTasks()
+        use (PropertyCategory) {
+            this.project = project
+            this.projectHelper = new ProjectHelper()
+            this.iosConfigurationAndTargetRetriever  = new IOSConfigurationAndTargetRetriever()
+            this.conf = project.getProjectConfiguration()
+            this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            prepareCedarTemplatesTask()
+            prepareBuildCedarReleasesTask()
+            prepareRunCedarTasks()
+        }
     }
 
     private void prepareCedarTemplatesTask() {
