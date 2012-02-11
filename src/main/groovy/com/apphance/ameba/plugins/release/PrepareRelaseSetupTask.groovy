@@ -40,6 +40,7 @@ class PrepareReleaseSetupTask extends DefaultTask {
         }
 
         File propsFile = new File('gradle.props')
-        propsFile << PropertyManager.listPropertiesAsString(project, ProjectReleaseProperty.class, true, 'Release properties')
+        propsFile << PropertyManager.listPropertiesAsString(project, ProjectReleaseProperty.class, true,
+                ProjectReleaseProperty.DESCRIPTION)
     }
 }

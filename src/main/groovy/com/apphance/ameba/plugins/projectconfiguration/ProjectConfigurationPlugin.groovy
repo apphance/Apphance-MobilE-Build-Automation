@@ -75,7 +75,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         project.showProperties.dependsOn(task)
         task << {
             System.out.println(PropertyManager.listPropertiesAsString(project, ProjectReleaseProperty.class, true,
-                    'Release properties'))
+                    ProjectReleaseProperty.DESCRIPTION))
         }
     }
 

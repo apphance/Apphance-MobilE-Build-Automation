@@ -27,7 +27,8 @@ class IOSPropertyTest {
         project['ios.simulator.sdk'] = "iphonesimulator"
         project['ios.fonemonkey.configuration'] = "FoneMonkey"
         project['ios.kif.configuration'] = "Kif"
-        def s = PropertyManager.listProperties(project, IOSProjectProperty.class, false, "iOS properties")
+        def s = PropertyManager.listProperties(project, IOSProjectProperty.class, false,
+                IOSProjectProperty.DESCRIPTION)
         String stringVersion = ""
         s.each { stringVersion = stringVersion + it +'\n'}
         assertEquals('''###########################################################
@@ -57,7 +58,8 @@ ios.simulator.sdk=iphonesimulator
         project['ios.simulator.sdk'] = "iphonesimulator"
         project['ios.fonemonkey.configuration'] = "FoneMonkey"
         project['ios.kif.configuration'] = "Kif"
-        def s = PropertyManager.listProperties(project, IOSProjectProperty.class, true, "iOS properties")
+        def s = PropertyManager.listProperties(project, IOSProjectProperty.class, true,
+                IOSProjectProperty.DESCRIPTION)
         String stringVersion = ""
         s.each { stringVersion = stringVersion + it +'\n'}
         println stringVersion
@@ -88,7 +90,8 @@ ios.simulator.sdk=iphonesimulator
         ProjectBuilder projectBuilder = ProjectBuilder.builder()
         Project project = projectBuilder.build()
         project['ios.kif.configuration'] = "Kif"
-        def s = PropertyManager.listProperties(project, IOSKifProperty.class, false, "iOS KIF properties")
+        def s = PropertyManager.listProperties(project, IOSKifProperty.class, false,
+                IOSKifProperty.DESCRIPTION)
         String stringVersion = ""
         s.each { stringVersion = stringVersion + it +'\n'}
         assertEquals('''###########################################################
@@ -103,7 +106,8 @@ ios.kif.configuration=Kif
         ProjectBuilder projectBuilder = ProjectBuilder.builder()
         Project project = projectBuilder.build()
         project['ios.kif.configuration'] = "Kif"
-        def s = PropertyManager.listProperties(project, IOSKifProperty.class, true, "iOS KIF properties")
+        def s = PropertyManager.listProperties(project, IOSKifProperty.class, true,
+                IOSKifProperty.DESCRIPTION)
         String stringVersion = ""
         s.each { stringVersion = stringVersion + it +'\n'}
         assertEquals('''###########################################################
@@ -118,7 +122,8 @@ ios.kif.configuration=Kif
         ProjectBuilder projectBuilder = ProjectBuilder.builder()
         Project project = projectBuilder.build()
         project['ios.fonemonkey.configuration'] = "FoneMonkey"
-        def s = PropertyManager.listProperties(project, IOSFoneMonkeyProperty.class, false, "iOS FoneMonkey properties")
+        def s = PropertyManager.listProperties(project, IOSFoneMonkeyProperty.class, false,
+                IOSFoneMonkeyProperty.DESCRIPTION)
         String stringVersion = ""
         s.each { stringVersion = stringVersion + it +'\n'}
         assertEquals('''###########################################################
@@ -133,7 +138,8 @@ ios.fonemonkey.configuration=FoneMonkey
         ProjectBuilder projectBuilder = ProjectBuilder.builder()
         Project project = projectBuilder.build()
         project['ios.fonemonkey.configuration'] = "FoneMonkey"
-        def s = PropertyManager.listProperties(project, IOSFoneMonkeyProperty.class, true, "iOS FoneMonkey properties")
+        def s = PropertyManager.listProperties(project, IOSFoneMonkeyProperty.class, true,
+                IOSFoneMonkeyProperty.DESCRIPTION)
         String stringVersion = ""
         s.each { stringVersion = stringVersion + it +'\n'}
         assertEquals('''###########################################################

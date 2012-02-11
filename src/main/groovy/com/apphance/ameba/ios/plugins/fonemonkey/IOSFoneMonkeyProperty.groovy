@@ -6,6 +6,8 @@ public enum IOSFoneMonkeyProperty {
     final String propertyName
     final String description
 
+    public static final String DESCRIPTION = 'iOS FoneMonkey properties'
+
     IOSFoneMonkeyProperty(boolean optional, String propertyName, String description) {
         this.optional = optional
         this.propertyName = propertyName

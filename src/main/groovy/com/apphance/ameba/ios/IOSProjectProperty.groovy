@@ -9,6 +9,7 @@ public enum IOSProjectProperty {
     IOS_SDK(true, 'ios.sdk', 'List of iOS SDKs'),
     IOS_SIMULATOR_SDK(true, 'ios.simulator.sdk', 'List of iOS simulator SDKs'),
 
+    public static final DESCRIPTION = 'iOS properties'
     final boolean optional
     final String propertyName
     final String description
