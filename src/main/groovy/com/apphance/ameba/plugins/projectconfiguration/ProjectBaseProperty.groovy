@@ -10,6 +10,7 @@ enum ProjectBaseProperty {
     PROJECT_LANGUAGE(false, 'project.language', 'Language of project'),
     PROJECT_COUNTRY(false, 'project.country', 'Project country');
 
+    public static final DESCRIPTION = "Base properties"
     private final boolean optional
     private final String propertyName
     private final String description

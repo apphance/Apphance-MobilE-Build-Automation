@@ -25,17 +25,16 @@ class VerifyBaseSetupTask extends DefaultTask {
 
     @TaskAction
     void verifySetup() {
-        projectProperties = new Properties()
+        def projectProperties = new Properties()
         def projectPropertiesFile = new File(project.rootDir,'gradle.properties')
         if (!projectPropertiesFile.exists()) {
             throw new GradleException("""The gradle.properties file does not exist.
 !!!!! Please run "gradle prepareSetup" to correct project's configuration !!!!!""")
         }
         projectProperties.load(projectPropertiesFile.newInputStream())
-        logger.lifecycle(projectProperties.toString())
-        for (ProjectBaseProperty property : ProjectBaseProperty.values()) {
-            if (!property.isOptional() && project[property.getName()] == null) {
-                throw new GradleException("""Property ${propertyName} should be defined in gradle.properties.
+        ProjectBaseProperty.each {
+            if (!it.optional && project[it.propertyName] == null) {
+                throw new GradleException("""Property ${it.propertyName} should be defined in gradle.properties.
                 !!!!! Please run "gradle prepareSetup" to correct it """)
             }
         }
@@ -45,7 +44,7 @@ class VerifyBaseSetupTask extends DefaultTask {
     }
 
     void checkIconFile(Properties projectProperties) {
-        File iconFile = new File(project.rootDir,projectProperties.getProperty('project.icon.file'))
+        File iconFile = new File(project.rootDir,projectProperties['project.icon.file'])
         if (!iconFile.exists() || !iconFile.isFile()) {
             throw new GradleException("""The icon file (${iconFile}) does not exist
 or is not a file. Please run 'gradle prepareSetup' to correct it.""")
