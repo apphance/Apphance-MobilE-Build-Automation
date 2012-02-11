@@ -27,7 +27,7 @@ class RunShowProperties {
     }
 
     @Test
-    public void testShowProperties() {
-        runTests('showProperties')
+    public void testShowSetup() {
+        runTests('showSetup')
     }
 }

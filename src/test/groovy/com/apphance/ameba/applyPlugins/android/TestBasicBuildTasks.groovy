@@ -49,13 +49,13 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
         verifyTasksInGroup(getProject(),[
             'prepareBaseSetup',
             'prepareSetup',
-			'prepareReleaseSetup',
+            'prepareReleaseSetup',
             'verifyBaseSetup',
             'verifySetup',
-			'showBaseProperties',
-			'verifyReleaseSetup',
-			'showProperties',
-			'showReleaseProperties',
+            'showBaseProperties',
+            'verifyReleaseSetup',
+            'showSetup',
+            'showReleaseSetup',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
     }
 }

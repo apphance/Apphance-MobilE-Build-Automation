@@ -202,7 +202,7 @@ class KIFPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
         task.description = 'Prints all ios KIF project properties'
         task.dependsOn(project.readProjectConfiguration)
-        project.showProperties.dependsOn(task)
+        project.showSetup.dependsOn(task)
         task << {
             use (PropertyCategory) {
                 System.out.println(project.listPropertiesAsString(IOSKifProperty.class, true))

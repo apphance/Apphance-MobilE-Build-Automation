@@ -293,7 +293,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
         task.description = 'Prints all ios FoneMonkey project properties'
         task.dependsOn(project.readProjectConfiguration)
-        project.showProperties.dependsOn(task)
+        project.showSetup.dependsOn(task)
         task << {
             use (PropertyCategory) {
                 System.out.println(project.listPropertiesAsString(IOSFoneMonkeyProperty.class, true))

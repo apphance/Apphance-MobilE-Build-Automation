@@ -87,6 +87,14 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         }
     }
 
+    void prepareShowPropertiesTask(Project project) {
+        def task = project.task('showSetup')
+        task.description = "Shows all available project properties"
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
+        task << {
+            // this task does nothing. It is there to serve as umbrella task for other setup tasks
+        }
+    }
     def void readProjectConfigurationTask(Project project) {
         def task = project.task('readProjectConfiguration')
         task.description = "Reads project's configuration and sets it up in projectConfiguration property of project"
@@ -330,15 +338,5 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
             logger.lifecycle("Created source files at ${destZip}")
         }
         task.dependsOn(project.readProjectConfiguration)
-    }
-
-    void prepareShowPropertiesTask(Project project) {
-        def task = project.task('showProperties')
-        task.description = "Shows all available project properties"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        task.showComments = true
-        task << {
-            // this task does nothing. It is there to serve as umbrella task for other setup tasks
-        }
     }
 }

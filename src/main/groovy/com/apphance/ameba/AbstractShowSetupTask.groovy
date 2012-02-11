@@ -18,11 +18,11 @@ abstract class AbstractShowSetupTask<T extends Enum> extends DefaultTask{
         this.description = "Shows ${propertyDescription} of the project"
         // inject myself before the default
         this.dependsOn(project.readProjectConfiguration)
-        project.showProperties.dependsOn(this)
+        project.showSetup.dependsOn(this)
     }
 
     @TaskAction
-    public void showProperties() {
+    public void showSetup() {
         use (PropertyCategory) {
             System.out.print(project.listPropertiesAsString(clazz, true))
         }

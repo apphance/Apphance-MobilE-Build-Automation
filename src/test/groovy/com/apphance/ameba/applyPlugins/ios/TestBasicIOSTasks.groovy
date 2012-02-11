@@ -40,8 +40,8 @@ class TestBasicIOSTasks extends BaseIOSTaskTest {
             'cleanConfiguration',
             'copyGalleryFiles',
             'readProjectConfiguration',
-			'readIOSProjectConfiguration',
-			'readIOSProjectTargetAndConfiguration',
+            'readIOSProjectConfiguration',
+            'readIOSProjectTargetAndConfiguration',
             'readIOSProjectVersions',
             'showProjectConfiguration',
             'verifyReleaseNotes'
@@ -62,16 +62,16 @@ class TestBasicIOSTasks extends BaseIOSTaskTest {
         verifyTasksInGroup(getProject(),[
             'prepareBaseSetup',
             'prepareSetup',
-			'prepareReleaseSetup',
-			'prepareIOSSetup',
+            'prepareReleaseSetup',
+            'prepareIOSSetup',
             'verifyBaseSetup',
             'verifySetup',
             'verifyIOSSetup',
-			'verifyReleaseSetup',
-			'showBaseProperties',
-			'showProperties',
-			'showIOSProperties',
-			'showReleaseProperties'
+            'verifyReleaseSetup',
+            'showBaseProperties',
+            'showSetup',
+            'showIOSProperties',
+            'showReleaseProperties'
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
     }
 }
