@@ -200,8 +200,7 @@ class KIFPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
         project.showProperties.dependsOn(task)
         task << {
-            System.out.println(PropertyManager.listPropertiesAsString(project, IOSKifProperty.class, true,
-                    IOSKifProperty.DESCRIPTION))
+            System.out.println(PropertyManager.listPropertiesAsString(project, IOSKifProperty.class, true))
         }
     }
 }

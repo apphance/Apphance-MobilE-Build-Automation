@@ -19,7 +19,6 @@ class ShowBasePropertiesTask extends DefaultTask {
 
     @TaskAction
     void showProperties() {
-        System.out.print(PropertyManager.listPropertiesAsString(project, ProjectBaseProperty.class, true,
-                ProjectBaseProperty.DESCRIPTION))
+        System.out.print(PropertyManager.listPropertiesAsString(project, ProjectBaseProperty.class, true))
     }
 }

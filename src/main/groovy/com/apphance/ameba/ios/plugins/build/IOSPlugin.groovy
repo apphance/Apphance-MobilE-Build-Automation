@@ -69,8 +69,7 @@ class IOSPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
         project.showProperties.dependsOn(task)
         task << {
-            System.out.println(PropertyManager.listPropertiesAsString(project, IOSProjectProperty.class, true,
-                    IOSProjectProperty.DESCRIPTION))
+            System.out.println(PropertyManager.listPropertiesAsString(project, IOSProjectProperty.class, true))
         }
     }
 

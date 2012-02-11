@@ -4,7 +4,8 @@ import org.gradle.api.Project
 
 class PropertyManager {
 
-    public static List<String> listProperties(Project project, def properties, boolean useComments, String description) {
+    public static List<String> listProperties(Project project, def properties, boolean useComments) {
+        String description = properties.getField('DESCRIPTION').get(null)
         List<String> s = []
         s << "###########################################################"
         s << "# ${description}"
@@ -24,9 +25,9 @@ class PropertyManager {
         return s
     }
 
-    public static String listPropertiesAsString(Project project, def properties, boolean useComments, String description) {
+    public static String listPropertiesAsString(Project project, def properties, boolean useComments) {
         StringBuffer sb = new StringBuffer()
-        listProperties(project, properties, useComments, description).each { sb << it + '\n' }
+        listProperties(project, properties, useComments).each { sb << it + '\n' }
         return sb.toString()
     }
 }

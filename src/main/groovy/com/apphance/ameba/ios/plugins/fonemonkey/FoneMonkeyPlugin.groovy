@@ -289,8 +289,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
         project.showProperties.dependsOn(task)
         task << {
-            System.out.println(PropertyManager.listPropertiesAsString(project, IOSFoneMonkeyProperty.class, true,
-                    IOSFoneMonkeyProperty.DESCRIPTION))
+            System.out.println(PropertyManager.listPropertiesAsString(project, IOSFoneMonkeyProperty.class, true))
         }
     }
 }

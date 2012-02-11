@@ -49,7 +49,6 @@ class IOSPrepareSetupTask extends DefaultTask {
         }
         ProjectHelper.getProjectPropertyFromUser(project, IOSProjectProperty.PLIST_FILE.propertyName, IOSProjectProperty.PLIST_FILE.description, files, true, br)
         File file = new File('gradle.props')
-        file << PropertyManager.listPropertiesAsString(project, IOSProjectProperty.class, false,
-                IOSProjectProperty.DESCRIPTION)
+        file << PropertyManager.listPropertiesAsString(project, IOSProjectProperty.class, false)
     }
 }

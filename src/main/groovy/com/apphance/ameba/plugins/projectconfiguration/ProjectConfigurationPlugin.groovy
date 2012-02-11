@@ -61,8 +61,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
         project.showProperties.dependsOn(task)
         task << {
-            System.out.println(PropertyManager.listPropertiesAsString(project, ProjectBaseProperty.class, true,
-                    ProjectBaseProperty.DESCRIPTION))
+            System.out.println(PropertyManager.listPropertiesAsString(project, ProjectBaseProperty.class, true))
         }
     }
 
@@ -74,8 +73,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
         project.showProperties.dependsOn(task)
         task << {
-            System.out.println(PropertyManager.listPropertiesAsString(project, ProjectReleaseProperty.class, true,
-                    ProjectReleaseProperty.DESCRIPTION))
+            System.out.println(PropertyManager.listPropertiesAsString(project, ProjectReleaseProperty.class, true))
         }
     }
 
