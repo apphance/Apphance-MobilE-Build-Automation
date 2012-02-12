@@ -8,7 +8,7 @@ import org.junit.Test
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
 
-class TestBasicIOSTasks extends BaseIOSTaskTest {
+class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
 
     protected Project getProject() {
         Project project = super.getProject()

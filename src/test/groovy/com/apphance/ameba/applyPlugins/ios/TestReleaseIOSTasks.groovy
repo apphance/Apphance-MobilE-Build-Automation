@@ -10,7 +10,7 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
 import com.apphance.ameba.ios.plugins.release.IOSReleasePlugin
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin;
 
-class TestReleaseIOSTasks extends BaseIOSTaskTest {
+class TestReleaseIOSTasks extends AbstractBaseIOSTaskTest {
 
     protected Project getProject() {
         Project project = super.getProject()

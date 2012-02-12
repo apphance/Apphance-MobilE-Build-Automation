@@ -24,4 +24,19 @@ class MercurialPluginTest extends BaseTaskTest {
             'saveReleaseInfoInVCS',
         ],AmebaCommonBuildTaskGroups.AMEBA_VERSION_CONTROL)
     }
+
+    @Test
+    public void testSetupTasksAvailable() {
+        verifyTasksInGroup(getProject(),[
+            'prepareBaseSetup',
+            'prepareSetup',
+            'prepareMercurialSetup',
+            'verifyBaseSetup',
+            'verifySetup',
+            'verifyMercurialSetup',
+            'showBaseSetup',
+            'showSetup',
+            'showMercurialSetup',
+        ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
+    }
 }

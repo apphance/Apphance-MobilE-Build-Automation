@@ -24,4 +24,19 @@ class GitPluginTest extends BaseTaskTest {
             'saveReleaseInfoInVCS',
         ],AmebaCommonBuildTaskGroups.AMEBA_VERSION_CONTROL)
     }
+
+    @Test
+    public void testSetupTasksAvailable() {
+        verifyTasksInGroup(getProject(),[
+            'prepareBaseSetup',
+            'prepareSetup',
+            'prepareGitSetup',
+            'verifyBaseSetup',
+            'verifySetup',
+            'verifyGitSetup',
+            'showBaseSetup',
+            'showSetup',
+            'showGitSetup',
+        ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
+    }
 }

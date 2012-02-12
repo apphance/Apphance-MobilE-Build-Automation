@@ -8,7 +8,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import com.apphance.ameba.applyPlugins.android.BaseTaskTest;
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin;
 
-abstract class BaseIOSTaskTest extends BaseTaskTest {
+abstract class AbstractBaseIOSTaskTest extends BaseTaskTest {
     protected Project getProject() {
         ProjectBuilder projectBuilder = ProjectBuilder.builder()
         projectBuilder.withProjectDir(new File("testProjects/ios/GradleXCode"))

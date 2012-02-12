@@ -9,7 +9,7 @@ import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkPlugin
 
-class TestFrameworkIOSTasks extends BaseIOSTaskTest {
+class TestFrameworkIOSTasks extends AbstractBaseIOSTaskTest {
 
     protected Project getProject() {
         Project project = super.getProject()

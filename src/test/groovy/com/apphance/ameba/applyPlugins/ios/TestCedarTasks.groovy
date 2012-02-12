@@ -6,24 +6,23 @@ import org.gradle.api.Project
 import org.junit.Test
 
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
-import com.apphance.ameba.ios.plugins.fonemonkey.FoneMonkeyPlugin;
+import com.apphance.ameba.ios.plugins.cedar.CedarPlugin;
 
-class IOSFoneMonkeyTest extends BaseIOSTaskTest {
+class TestCedarTasks extends AbstractBaseIOSTaskTest {
 
     protected Project getProject() {
         Project project = super.getProject()
         project.project.plugins.apply(IOSPlugin.class)
-        project.project.plugins.apply(FoneMonkeyPlugin.class)
+        project.project.plugins.apply(CedarPlugin.class)
         return project
     }
 
     @Test
-    public void testMonkeyTasksAvailable() {
+    public void testCedarTasksAvailable() {
         verifyTasksInGroup(getProject(),[
-            'buildFoneMonkeyRelease',
-            'prepareFoneMonkeyTemplates',
-            'runMonkeyTests',
-            'runSingleFoneMonkeyTest',
-        ],FoneMonkeyPlugin.AMEBA_IOS_FONEMONKEY)
+            'buildCedarReleases',
+            'prepareCedarTemplates',
+            'runCedarTests',
+        ],CedarPlugin.AMEBA_IOS_CEDAR)
     }
 }

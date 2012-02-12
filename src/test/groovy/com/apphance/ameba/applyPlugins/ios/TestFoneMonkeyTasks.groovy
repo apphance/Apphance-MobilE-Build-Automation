@@ -9,7 +9,7 @@ import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
 import com.apphance.ameba.ios.plugins.fonemonkey.FoneMonkeyPlugin
 
-class TestFoneMonkeyTasks extends BaseIOSTaskTest {
+class TestFoneMonkeyTasks extends AbstractBaseIOSTaskTest {
 
     protected Project getProject() {
         Project project = super.getProject()
