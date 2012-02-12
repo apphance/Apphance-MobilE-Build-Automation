@@ -20,11 +20,11 @@ class PrepareFoneMonkeySetupTask extends AbstractPrepareSetupTask {
 
     @TaskAction
     void prepareSetup() {
-        logger.lifecycle('Preparing ${propertyDescription}')
+        logger.lifecycle("Preparing ${propertyDescription}")
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
         use (PropertyCategory) {
             IOSFoneMonkeyProperty.each {
-                project.getProjectPropertyFromUser(it, null, false, br)
+                project.getProjectPropertyFromUser(it, null, br)
             }
             appendToGeneratedPropertyString(project.listPropertiesAsString(IOSFoneMonkeyProperty.class, false))
         }

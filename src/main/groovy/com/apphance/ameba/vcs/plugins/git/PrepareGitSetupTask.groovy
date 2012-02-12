@@ -22,7 +22,7 @@ class PrepareGitSetupTask extends AbstractPrepareSetupTask {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
         use(PropertyCategory) {
             GitProperty.each {
-                project.getProjectPropertyFromUser(it, null, false, br)
+                project.getProjectPropertyFromUser(it, null, br)
             }
             appendToGeneratedPropertyString(project.listPropertiesAsString(GitProperty.class, false))
         }

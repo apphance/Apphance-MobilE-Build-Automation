@@ -2,6 +2,8 @@ package com.apphance.ameba.ios.plugins.buildplugin;
 
 
 
+import groovy.io.FileType
+
 import javax.xml.parsers.DocumentBuilderFactory
 
 import org.gradle.api.GradleException
@@ -35,6 +37,8 @@ class IOSPlugin implements Plugin<Project> {
     IOSProjectConfiguration iosConf
 
     IOSXCodeOutputParser iosXcodeOutputParser
+
+    public static final List<String> FAMILIES = ['iPad', 'iPhone']
 
     def void apply (Project project) {
         use (PropertyCategory) {

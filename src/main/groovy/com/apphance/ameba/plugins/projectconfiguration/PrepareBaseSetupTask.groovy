@@ -38,9 +38,9 @@ class PrepareBaseSetupTask extends AbstractPrepareSetupTask {
         use(PropertyCategory) {
             BaseProperty.each {
                 if (it == BaseProperty.PROJECT_ICON_FILE) {
-                    project.getProjectPropertyFromUser(it, files, true, br)
+                    project.getProjectPropertyFromUser(it, files, br)
                 } else {
-                    project.getProjectPropertyFromUser(it, null, false, br)
+                    project.getProjectPropertyFromUser(it, null, br)
                 }
             }
             appendToGeneratedPropertyString(project.listPropertiesAsString(BaseProperty.class, false))

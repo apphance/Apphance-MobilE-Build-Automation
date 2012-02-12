@@ -22,6 +22,7 @@ class AbstractPrepareSetupTask extends DefaultTask {
             this.description = "Walks you through setup of the ${propertyDescription} of the project."
             //inject myself as dependency for umbrella prepareSetup
             project.prepareSetup.dependsOn(this)
+            this.dependsOn(project.readProjectConfiguration)
         }
     }
 

@@ -22,7 +22,7 @@ class PrepareMercurialSetupTask extends AbstractPrepareSetupTask {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
         use(PropertyCategory) {
             MercurialProperty.each {
-                project.getProjectPropertyFromUser(it, null, false, br)
+                project.getProjectPropertyFromUser(it, null, br)
             }
             appendToGeneratedPropertyString(project.listPropertiesAsString(MercurialProperty.class, false))
         }

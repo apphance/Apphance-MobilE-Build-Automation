@@ -20,11 +20,11 @@ class PrepareReleaseSetupTask extends AbstractPrepareSetupTask {
 
     @TaskAction
     void prepareSetup() {
-        logger.lifecycle('Preparing ${propertyDescription}')
+        logger.lifecycle("Preparing ${propertyDescription}")
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
         use (PropertyCategory) {
             ProjectReleaseProperty.each {
-                project.getProjectPropertyFromUser(it, null, false, br)
+                project.getProjectPropertyFromUser(it, null, br)
             }
             appendToGeneratedPropertyString(project.listPropertiesAsString(ProjectReleaseProperty.class, false))
         }

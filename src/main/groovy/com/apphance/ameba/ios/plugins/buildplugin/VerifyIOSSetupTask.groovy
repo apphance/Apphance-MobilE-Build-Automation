@@ -76,10 +76,9 @@ should contain at least one .mobileprovision file. """)
     void checkFamilies() {
         use (PropertyCategory) {
             String[] families = project.readProperty(IOSProjectProperty.IOS_FAMILIES).split(',')
-            def validFamilies = ['iPad', 'iPhone']
             families.each { family ->
-                if (!validFamilies.contains(family)) {
-                    throw new GradleException("""The family in ${families} can only be one of ${validFamilies}""")
+                if (!IOSPlugin.FAMILIES.contains(family)) {
+                    throw new GradleException("""The family in ${families} can only be one of ${IOSPlugin.FAMILIES}""")
                 }
             }
         }

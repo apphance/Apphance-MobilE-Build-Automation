@@ -53,36 +53,26 @@ class PropertyCategory {
     }
 
     public static String getProjectPropertyFromUser(Project project, Enum property,
-    ArrayList options, boolean useDefault, BufferedReader br) {
-        return getProjectPropertyFromUser(project, property.propertyName, property.description, options, useDefault, br)
-    }
-
-    public static String getProjectPropertyFromUser(Project project, String propertyName, String description,
-    ArrayList options, boolean useDefault, BufferedReader br) {
-        String s = "Enter ${propertyName}\n${description}"
-        if (useDefault) {
+    ArrayList options, BufferedReader br) {
+        String s = "Enter ${property.propertyName}\n${property.description}"
+        if (options != null) {
             s = s + '\nProposed values: ' + options
         }
-        if (project.hasProperty(propertyName)) {
-            System.out.println(s)
-            System.out.print("Current value [${project[propertyName]}] > ")
-            System.out.flush()
-            String newValue = br.readLine()
-            if (newValue.isEmpty() && !useDefault) {
-                // don't change
-            } else if (newValue.isEmpty() && useDefault) {
-                project[propertyName] = options[0]
-            } else {
-                project[propertyName] = newValue
-            }
-        } else {
-            System.out.println(s)
-            String newValue = br.readLine()
-            if (newValue.isEmpty() && useDefault) {
-                project[propertyName] = options[0]
-            } else {
-                project[propertyName] = newValue
-            }
+        if (project.hasProperty(property.propertyName)) {
+            // skip setting = we already have some value
+        } else if (options != null) {
+            // if we have some options - choose first
+            project[property.propertyName] = options[0]
+        } else if (property.defaultValue != null) {
+            // or choose default if none of the above
+            project[property.propertyName] = property.defaultValue
+        }
+        System.out.println(s)
+        System.out.print("[${project[property.propertyName]}] > ")
+        System.out.flush()
+        String newValue = br.readLine()
+        if (!newValue.isEmpty()) {
+            project[property.propertyName] = newValue
         }
     }
 
