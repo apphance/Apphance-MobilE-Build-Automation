@@ -8,6 +8,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 import com.apphance.ameba.plugins.projectconfiguration.BaseProperty;
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
 class PropertyCategory {
     public static List<String> listProperties(Project project, Class<Enum> properties, boolean useComments) {
@@ -153,7 +154,7 @@ class PropertyCategory {
     public static void retrieveBasicProjectData(Project project) {
         use (PropertyCategory) {
             ProjectConfiguration conf = getProjectConfiguration(project)
-            conf.projectName = project.readExpectedProperty('project.name')
+            conf.projectName = project.readExpectedProperty(ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY)
             conf.projectDirectoryName = project.readExpectedProperty(BaseProperty.PROJECT_DIRECTORY)
             conf.baseUrl = new URL(project.readExpectedProperty(BaseProperty.PROJECT_URL))
             conf.iconFile = new File(project.rootDir,project.readExpectedProperty(BaseProperty.PROJECT_ICON_FILE))

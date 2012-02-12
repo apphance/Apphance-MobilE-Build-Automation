@@ -10,6 +10,7 @@ import com.apphance.ameba.android.AndroidBuildXmlHelper
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.AndroidSingleVariantBuilder
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
 class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
 
@@ -24,7 +25,7 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
             props.keys().each { key->
                 project[key]=props.getProperty(key)
             }
-            project['project.name'] = buildXmlHelper.readProjectName(project.rootDir)
+            project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.readProjectName(project.rootDir)
             project.retrieveBasicProjectData()
             AndroidSingleVariantBuilder builder = new AndroidSingleVariantBuilder(project,confRetriever.getAndroidProjectConfiguration(project))
             builder.updateAndroidConfigurationWithVariants()

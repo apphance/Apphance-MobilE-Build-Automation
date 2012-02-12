@@ -9,7 +9,7 @@ import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.Test;
 
-class RunShowProperties {
+class RunShowPropertiesTest {
     File testIosProject = new File("testProjects/ios/GradleXCode")
 
     void runTests(String ... tasks) {

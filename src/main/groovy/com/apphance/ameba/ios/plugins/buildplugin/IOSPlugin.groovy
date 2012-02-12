@@ -17,6 +17,7 @@ import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**
@@ -86,15 +87,15 @@ class IOSPlugin implements Plugin<Project> {
     }
 
     def void prepareReadIosTargetsAndConfigurationsTask(Project project) {
-        def task = project.task('readIOSProjectTargetAndConfiguration')
+        def task = project.task('readIOSParametersFromXcode')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
-        task.description = 'Reads iOS targets and configurations'
+        task.description = 'Reads iOS xCode project parameters'
         task << {
             project.file("bin").mkdirs()
             def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
             def trimmed = lines*.trim()
             IOSProjectConfiguration iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
-            conf.projectName =  iosConfigurationAndTargetRetriever.readProjectName(trimmed)
+            project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  iosConfigurationAndTargetRetriever.readProjectName(trimmed)
             iosConf.targets = iosConfigurationAndTargetRetriever.readBuildableTargets(trimmed)
             iosConf.configurations = iosConfigurationAndTargetRetriever.readBuildableConfigurations(trimmed)
             iosConf.alltargets = iosConfigurationAndTargetRetriever.readBaseTargets(trimmed, { true })

@@ -38,7 +38,7 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
             'copyGalleryFiles',
             'readProjectConfiguration',
             'readIOSProjectConfiguration',
-            'readIOSProjectTargetAndConfiguration',
+            'readIOSParametersFromXcode',
             'readIOSProjectVersions',
             'showProjectConfiguration'
         ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)

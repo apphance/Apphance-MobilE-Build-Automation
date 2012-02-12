@@ -21,6 +21,7 @@ import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.AndroidSingleVariantBuilder
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin;
 
 /**
  * Plugin for various Android related tasks.
@@ -414,7 +415,7 @@ class AndroidPlugin implements Plugin<Project> {
                     logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
                 }
                 AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
-                project['project.name'] = buildXmlHelper.readProjectName(project.rootDir)
+                project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.readProjectName(project.rootDir)
             }
         }
         project.readProjectConfiguration.dependsOn(task)

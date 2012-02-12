@@ -23,6 +23,8 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
 
     static Logger logger = Logging.getLogger(ProjectConfigurationPlugin.class)
 
+    static final String PROJECT_NAME_PROPERTY = 'project.name'
+
     ProjectHelper projectHelper
     ProjectConfiguration conf
 
