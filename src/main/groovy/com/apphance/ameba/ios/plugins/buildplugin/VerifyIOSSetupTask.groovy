@@ -12,7 +12,6 @@ import com.apphance.ameba.ProjectHelper;
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.IOSProjectProperty
 
 
 class VerifyIOSSetupTask extends AbstractVerifySetupTask {

@@ -17,7 +17,6 @@ import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.IOSProjectProperty
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**

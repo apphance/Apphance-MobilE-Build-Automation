@@ -14,7 +14,7 @@ class PrepareBaseSetupTask extends AbstractPrepareSetupTask {
     Logger logger = Logging.getLogger(PrepareBaseSetupTask.class)
 
     PrepareBaseSetupTask() {
-        super(ProjectBaseProperty.class)
+        super(BaseProperty.class)
     }
 
     @TaskAction
@@ -36,14 +36,14 @@ class PrepareBaseSetupTask extends AbstractPrepareSetupTask {
         }
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
         use(PropertyCategory) {
-            ProjectBaseProperty.each {
-                if (it == ProjectBaseProperty.PROJECT_ICON_FILE) {
+            BaseProperty.each {
+                if (it == BaseProperty.PROJECT_ICON_FILE) {
                     project.getProjectPropertyFromUser(it, files, true, br)
                 } else {
                     project.getProjectPropertyFromUser(it, null, false, br)
                 }
             }
-            appendToGeneratedPropertyString(project.listPropertiesAsString(ProjectBaseProperty.class, false))
+            appendToGeneratedPropertyString(project.listPropertiesAsString(BaseProperty.class, false))
         }
     }
 }

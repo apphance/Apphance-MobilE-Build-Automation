@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import com.apphance.ameba.PropertyCategory;
-import com.apphance.ameba.plugins.projectconfiguration.ProjectBaseProperty
+import com.apphance.ameba.plugins.projectconfiguration.BaseProperty
 
 public class ReadPropertyTest {
 
@@ -44,8 +44,8 @@ public class ReadPropertyTest {
         use(PropertyCategory) {
             final ProjectBuilder builder = ProjectBuilder.builder()
             final Project project = builder.build()
-            project[ProjectBaseProperty.PROJECT_COUNTRY.propertyName] = 'aaaa'
-            assertEquals('aaaa',project.readProperty(ProjectBaseProperty.PROJECT_COUNTRY))
+            project[BaseProperty.PROJECT_COUNTRY.propertyName] = 'aaaa'
+            assertEquals('aaaa',project.readProperty(BaseProperty.PROJECT_COUNTRY))
         }
     }
 }

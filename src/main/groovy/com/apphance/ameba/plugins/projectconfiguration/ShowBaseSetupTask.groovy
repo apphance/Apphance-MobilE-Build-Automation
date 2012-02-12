@@ -4,7 +4,7 @@ import com.apphance.ameba.AbstractShowSetupTask;
 
 class ShowBaseSetupTask extends AbstractShowSetupTask {
     ShowBaseSetupTask() {
-        super(ProjectBaseProperty.class)
+        super(BaseProperty.class)
     }
 }
 

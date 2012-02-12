@@ -9,7 +9,6 @@ import org.gradle.api.tasks.TaskAction;
 import com.apphance.ameba.AbstractPrepareSetupTask
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSProjectProperty;
 
 
 class PrepareIOSSetupTask extends AbstractPrepareSetupTask {

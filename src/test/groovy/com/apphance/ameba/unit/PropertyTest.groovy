@@ -9,7 +9,7 @@ import org.junit.Test
 
 
 import com.apphance.ameba.PropertyCategory;
-import com.apphance.ameba.plugins.projectconfiguration.ProjectBaseProperty;
+import com.apphance.ameba.plugins.projectconfiguration.BaseProperty;
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty
 
 class PropertyTest {
@@ -23,7 +23,7 @@ class PropertyTest {
             project['project.directory.name'] = "subproject"
             project['project.language'] = "pl"
             project['project.country'] = "PL"
-            String s = project.listPropertiesAsString(ProjectBaseProperty.class, false)
+            String s = project.listPropertiesAsString(BaseProperty.class, false)
             assertEquals('''###########################################################
 # Base properties
 ###########################################################
@@ -46,7 +46,7 @@ project.country=PL
             project['project.directory.name'] = "subproject"
             project['project.language'] = "pl"
             project['project.country'] = "PL"
-            String s = project.listPropertiesAsString(ProjectBaseProperty.class, true)
+            String s = project.listPropertiesAsString(BaseProperty.class, true)
             println s
             assertEquals('''###########################################################
 # Base properties

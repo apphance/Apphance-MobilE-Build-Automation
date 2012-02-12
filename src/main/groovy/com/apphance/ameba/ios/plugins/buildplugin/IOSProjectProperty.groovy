@@ -1,4 +1,4 @@
-package com.apphance.ameba.ios
+package com.apphance.ameba.ios.plugins.buildplugin
 public enum IOSProjectProperty {
     PLIST_FILE('ios.plist.file', 'Path to plist file of the project'),
     EXCLUDED_BUILDS('ios.excluded.builds', 'List of excluded builds. These are coma-separated regular expressions (matched against target-configuration)',''),

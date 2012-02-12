@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectBaseProperty;
+import com.apphance.ameba.plugins.projectconfiguration.BaseProperty;
 
 class PropertyCategory {
     public static List<String> listProperties(Project project, Class<Enum> properties, boolean useComments) {
@@ -154,9 +154,9 @@ class PropertyCategory {
         use (PropertyCategory) {
             ProjectConfiguration conf = getProjectConfiguration(project)
             conf.projectName = project.readExpectedProperty('project.name')
-            conf.projectDirectoryName = project.readExpectedProperty(ProjectBaseProperty.PROJECT_DIRECTORY)
-            conf.baseUrl = new URL(project.readExpectedProperty(ProjectBaseProperty.PROJECT_URL))
-            conf.iconFile = new File(project.rootDir,project.readExpectedProperty(ProjectBaseProperty.PROJECT_ICON_FILE))
+            conf.projectDirectoryName = project.readExpectedProperty(BaseProperty.PROJECT_DIRECTORY)
+            conf.baseUrl = new URL(project.readExpectedProperty(BaseProperty.PROJECT_URL))
+            conf.iconFile = new File(project.rootDir,project.readExpectedProperty(BaseProperty.PROJECT_ICON_FILE))
             project.retrieveLocale()
             conf.releaseNotes = project.readReleaseNotes()?.tokenize(",")
         }
@@ -164,8 +164,8 @@ class PropertyCategory {
 
     public static void retrieveLocale(Project project) {
         ProjectConfiguration conf = getProjectConfiguration(project)
-        String language = readProperty(project, ProjectBaseProperty.PROJECT_LANGUAGE)
-        String country = readProperty(project, ProjectBaseProperty.PROJECT_COUNTRY)
+        String language = readProperty(project, BaseProperty.PROJECT_LANGUAGE)
+        String country = readProperty(project, BaseProperty.PROJECT_COUNTRY)
         if (language == null) {
             conf.locale = Locale.getDefault()
         } else {

@@ -9,7 +9,7 @@ import org.junit.Test
 
 
 import com.apphance.ameba.PropertyCategory;
-import com.apphance.ameba.ios.IOSProjectProperty;
+import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty;
 import com.apphance.ameba.ios.plugins.fonemonkey.IOSFoneMonkeyProperty;
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty;
 import com.apphance.ameba.ios.plugins.kif.IOSKifProperty;
