@@ -7,13 +7,13 @@ import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.android.plugins.build.AndroidPlugin;
-import com.apphance.ameba.android.plugins.reports.AndroidReportsPlugin;
+import com.apphance.ameba.android.plugins.release.AndroidReleasePlugin
 
-class TestReportAndroidTasks extends BaseAndroidTaskTest {
+class TestReleaseAndroidTasks extends BaseAndroidTaskTest {
     protected Project getProject() {
         Project project = super.getProject(false)
         project.project.plugins.apply(AndroidPlugin.class)
-        project.project.plugins.apply(AndroidReportsPlugin.class)
+        project.project.plugins.apply(AndroidReleasePlugin.class)
         return project
     }
 
@@ -23,7 +23,7 @@ class TestReportAndroidTasks extends BaseAndroidTaskTest {
             'buildDocumentationZip',
             'buildSourcesZip',
             'prepareImageMontage'
-        ],AmebaCommonBuildTaskGroups.AMEBA_REPORTS)
+        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }
 
 
@@ -33,7 +33,7 @@ class TestReportAndroidTasks extends BaseAndroidTaskTest {
             'prepareAvailableArtifactsInfo',
             'prepareMailMessage',
             'sendMailMessage'
-        ],AmebaCommonBuildTaskGroups.AMEBA_MESSAGING)
+        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }
 
 

@@ -1,4 +1,4 @@
-package com.apphance.ameba.ios.plugins.reports;
+package com.apphance.ameba.ios.plugins.release;
 
 import groovy.text.SimpleTemplateEngine
 
@@ -23,13 +23,14 @@ import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.MPParser
 import com.apphance.ameba.ios.plugins.build.IOSSingleReleaseBuilder;
+import com.apphance.ameba.ios.plugins.release.IOSReleasePlugin;
 
 /**
  * Plugin for preparing reports after successful build.
  *
  */
-class IOSReportsPlugin implements Plugin<Project> {
-    static Logger logger = Logging.getLogger(IOSReportsPlugin.class)
+class IOSReleasePlugin implements Plugin<Project> {
+    static Logger logger = Logging.getLogger(IOSReleasePlugin.class)
 
     String pListFileName
     ProjectHelper projectHelper
@@ -53,7 +54,7 @@ class IOSReportsPlugin implements Plugin<Project> {
     def void prepareBuildDocumentationZipTask(Project project) {
         def task = project.task('buildDocumentationZip')
         task.description = "Builds documentation .zip file."
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_REPORTS
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
         task << {
             File destZip = conf.documentationZip.location
             destZip.mkdirs()
@@ -67,7 +68,7 @@ class IOSReportsPlugin implements Plugin<Project> {
     private void prepareAvailableArtifactsInfoTask(Project project) {
         def task = project.task('prepareAvailableArtifactsInfo')
         task.description = "Prepares information about available artifacts for mail message to include"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_MESSAGING
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
         AndroidEnvironment androidEnvironment = new AndroidEnvironment(project)
         task << {
             def targets = iosConf.targets
@@ -110,7 +111,7 @@ class IOSReportsPlugin implements Plugin<Project> {
     private void prepareMailMessageTask(Project project) {
         def task = project.task('prepareMailMessage')
         task.description = "Prepares mail message which summarises the release"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_MESSAGING
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
         task << {
             conf.mailMessageFile.location.parentFile.mkdirs()
             conf.mailMessageFile.location.delete()

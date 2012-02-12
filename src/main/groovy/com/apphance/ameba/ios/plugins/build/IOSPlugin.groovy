@@ -51,13 +51,13 @@ class IOSPlugin implements Plugin<Project> {
             prepareCopyMobileProvisionTask(project)
             prepareBuildSingleReleaseTask(project)
             project.task('buildAllSimulators', type: IOSBuildAllSimulatorsTask)
-            project.task('verifyIOSSetup', type: IOSVerifySetupTask)
             prepareBuildAllTask(project)
             preparePreReleaseTask(project)
             prepareReplaceBundleIdPrefixTask(project)
             addIosSourceExcludes()
             prepareShowIOSPropertiesTask(project)
             project.task('prepareIOSSetup', type:IOSPrepareSetupTask)
+            project.task('verifyIOSSetup', type: IOSVerifySetupTask)
         }
     }
 
@@ -87,13 +87,12 @@ class IOSPlugin implements Plugin<Project> {
                 this.pListFileName = project.readProperty(IOSProjectProperty.PLIST_FILE)
                 iosConf.mainTarget = project.readProperty(IOSProjectProperty.MAIN_TARGET)
                 iosConf.mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
-                iosConf.sdk = project.readProperty(IOSProjectProperty.IOS_SDK,'iphoneos')
-                iosConf.simulatorsdk = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK, 'iphonesimulator')
+                iosConf.sdk = project.readProperty(IOSProjectProperty.IOS_SDK)
+                iosConf.simulatorsdk = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK)
                 iosConf.plistFile = new File(this.pListFileName)
                 iosConf.distributionDirectory =  new File(project.rootDir, project.readProperty(IOSProjectProperty.DISTRIBUTION_DIR))
-                iosConf.families = project.readProperty(IOSProjectProperty.IOS_FAMILIES, 'iPhone,iPad').split(",")*.trim()
-                iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS,'').split(",")*.trim()
-                iosConf.KIFConfiguration = project.hasProperty('ios.kif.configuration') ? project['ios.kif.configuration'] : "Debug"
+                iosConf.families = project.readProperty(IOSProjectProperty.IOS_FAMILIES).split(",")*.trim()
+                iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
                 if (iosConf.plistFile != null) {
                     conf.commitFilesOnVCS << iosConf.plistFile.absolutePath
                 }

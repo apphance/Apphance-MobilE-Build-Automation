@@ -3,11 +3,12 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath ('com.apphance.ameba:Ameba:0.99.2.15')
+        classpath ('com.apphance.ameba:Ameba:0.99.3')
     }
 }
 
 apply plugin: 'ameba-project-configuration'
+apply plugin: 'ameba-project-release'
 apply plugin: 'ameba-mercurial'
 //apply plugin: 'ameba-git'
 apply plugin: 'ameba-ios-build'

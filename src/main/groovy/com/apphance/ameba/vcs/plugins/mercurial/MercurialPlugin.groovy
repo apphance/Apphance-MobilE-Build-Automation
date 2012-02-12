@@ -19,6 +19,9 @@ class MercurialPlugin extends VCSPlugin {
     @Override
     public void apply(Project project) {
         super.apply(project)
+        project.task('verifyMercurialSetup', type: VerifyMercurialSetupTask.class)
+        project.task('prepareMercurialSetup', type: PrepareMercurialSetupTask.class)
+        project.task('showMercurialSetup', type: ShowMercurialSetupTask.class)
     }
 
     def void cleanVCSTask(Project project) {

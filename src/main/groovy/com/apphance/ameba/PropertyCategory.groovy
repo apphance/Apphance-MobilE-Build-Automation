@@ -20,6 +20,9 @@ class PropertyCategory {
             String comment = '# ' + it.description
             String propString = it.propertyName + '='
             comment = comment + (it.optional ? ' [optional]':  ' [required]')
+            if (it.defaultValue != null) {
+                comment = comment + ", default: ${it.defaultValue}"
+            }
             if (project.hasProperty(it.propertyName)) {
                 propString = propString + project[it.propertyName]
             }
@@ -45,20 +48,20 @@ class PropertyCategory {
         }
     }
 
-    public static Object readProperty(Project project, Enum property, Object defaultValue = null) {
-        return readProperty(project, property.propertyName, defaultValue)
+    public static Object readProperty(Project project, Enum property) {
+        return readProperty(project, property.propertyName, property.defaultValue)
     }
 
     public static String getProjectPropertyFromUser(Project project, Enum property,
-    ArrayList defaultValues, boolean useDefault, BufferedReader br) {
-        return getProjectPropertyFromUser(project, property.propertyName, property.description, useDefault, br)
+    ArrayList options, boolean useDefault, BufferedReader br) {
+        return getProjectPropertyFromUser(project, property.propertyName, property.description, options, useDefault, br)
     }
 
     public static String getProjectPropertyFromUser(Project project, String propertyName, String description,
-    ArrayList defaultValues, boolean useDefault, BufferedReader br) {
+    ArrayList options, boolean useDefault, BufferedReader br) {
         String s = propertyName + ' (' + description + ')'
         if (useDefault) {
-            s = s + '. Proposed values: ' + defaultValues
+            s = s + '. Proposed values: ' + options
         }
         if (project.hasProperty(propertyName)) {
             s = s + '. Current value=' + project[propertyName] + '. Leave blank to don\'t change'
@@ -67,7 +70,7 @@ class PropertyCategory {
             if (newValue.isEmpty() && !useDefault) {
                 // don't change
             } else if (newValue.isEmpty() && useDefault) {
-                project[propertyName] = defaultValues[0]
+                project[propertyName] = options[0]
             } else {
                 project[propertyName] = newValue
             }
@@ -75,7 +78,7 @@ class PropertyCategory {
             System.out.println(s)
             String newValue = br.readLine()
             if (newValue.isEmpty() && useDefault) {
-                project[propertyName] = defaultValues[0]
+                project[propertyName] = options[0]
             } else {
                 project[propertyName] = newValue
             }

@@ -7,7 +7,7 @@ import org.gradle.api.tasks.TaskAction
 import com.apphance.ameba.AbstractVerifySetupTask
 
 
-class VerifyIosKIFSetupTask extends AbstractVerifySetupTask<IOSKifProperty> {
+class VerifyIosKIFSetupTask extends AbstractVerifySetupTask {
     VerifyIosKIFSetupTask() {
         super(IOSKifProperty.class)
     }

@@ -28,6 +28,8 @@ class KIFPlugin implements Plugin<Project> {
     IOSConfigurationAndTargetRetriever iosConfigurationAndTargetRetriever
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
+    String KIFConfiguration
+
 
     void apply(Project project) {
         use (PropertyCategory) {
@@ -36,6 +38,7 @@ class KIFPlugin implements Plugin<Project> {
             this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
             this.conf = project.getProjectConfiguration()
             this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            this.KIFConfiguration = project.readProperty(IOSKifProperty.KIF_CONFIGURATION)
             prepareKIFTemplatesTask()
             prepareBuildKIFReleaseTask()
             prepareRunKIFTestsTask()
@@ -83,7 +86,7 @@ class KIFPlugin implements Plugin<Project> {
         baseScript += """
     echo Running test ${test} in directory ${cfFixedDirectory}
     export TEST_CLASS_NAME=${test}
-    iphonesim launch ${project.rootDir}/build/${iosConf.KIFConfiguration}-iphonesimulator/KIFTests.app ${simulatorSdk} ${family.toLowerCase()}  >${KIFOutput} 2>&1
+    iphonesim launch ${project.rootDir}/build/${KIFConfiguration}-iphonesimulator/KIFTests.app ${simulatorSdk} ${family.toLowerCase()}  >${KIFOutput} 2>&1
     cat ${KIFOutput}
     XMLS=`find ${cfFixedDirectory} -name 'TEST-*.xml' | wc -l | sed 's/^[ \\n\\t]*//g' | sed 's/[ \\n\\t]*\$//g'`
     echo Number of xmls: \$XMLS
@@ -105,7 +108,7 @@ class KIFPlugin implements Plugin<Project> {
             "${runTestScript}"
         ])
 
-        File applicationAppFile = new File(project.rootDir, "build/${iosConf.KIFConfiguration}-iphonesimulator/KIFTests.app")
+        File applicationAppFile = new File(project.rootDir, "build/${KIFConfiguration}-iphonesimulator/KIFTests.app")
         projectHelper.executeCommand(project, [
             "/bin/bash",
             "${runTestScript}"
@@ -142,7 +145,7 @@ class KIFPlugin implements Plugin<Project> {
         task.description = "Builds KIF release. Requires KIFTests target defined in the project"
         task.group = AMEBA_IOS_KIF
         task << {
-            def configuration = "${iosConf.KIFConfiguration}"
+            def configuration = "${KIFConfiguration}"
             def target = "KIFTests"
             logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
             projectHelper.executeCommand(project, [

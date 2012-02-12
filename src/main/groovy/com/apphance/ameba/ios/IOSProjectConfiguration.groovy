@@ -18,7 +18,6 @@ class IOSProjectConfiguration {
     String simulatorsdk
     String mainTarget
     String mainConfiguration
-    String KIFConfiguration
     File distributionDirectory
     List<String> targets = []
     List<String> configurations = []

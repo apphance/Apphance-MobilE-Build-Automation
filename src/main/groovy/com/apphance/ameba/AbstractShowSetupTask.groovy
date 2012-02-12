@@ -6,12 +6,12 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction;
 
-abstract class AbstractShowSetupTask<T extends Enum> extends DefaultTask{
+abstract class AbstractShowSetupTask extends DefaultTask{
     Logger logger = Logging.getLogger(AbstractShowSetupTask.class)
     final String propertyDescription
-    final Class<T> clazz
+    final Class<? extends Enum> clazz
 
-    public AbstractShowSetupTask(Class<T> clazz) {
+    public AbstractShowSetupTask(Class<? extends Enum> clazz) {
         this.propertyDescription = clazz.getField('DESCRIPTION').get(null)
         this.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
         this.clazz = clazz

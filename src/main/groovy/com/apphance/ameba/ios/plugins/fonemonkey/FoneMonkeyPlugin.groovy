@@ -223,7 +223,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
     private void prepareFoneMonkeyReportTask() {
         def task = project.task('prepareFoneMonkeyReport')
         task.description = "Prepares report out of FoneMonkey test execution"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_REPORTS
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
         task << { prepareAllMonkeyArtifacts() }
         task.dependsOn(project.readProjectConfiguration)
         task.dependsOn(project.copyGalleryFiles)
@@ -235,7 +235,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
         task.group = AMEBA_IOS_FONEMONKEY
         task << {
             use (PropertyCategory) {
-                def configuration = project.readProperty(IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION,'Debug')
+                def configuration = project.readProperty(IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
                 def target = "RunMonkeyTests"
                 logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
                 projectHelper.executeCommand(project, [

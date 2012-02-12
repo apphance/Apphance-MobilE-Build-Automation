@@ -10,7 +10,7 @@ import com.apphance.ameba.PropertyCategory;
 
 import groovy.io.FileType
 
-class PrepareBaseSetupTask extends AbstractPrepareSetupTask<ProjectBaseProperty> {
+class PrepareBaseSetupTask extends AbstractPrepareSetupTask {
     Logger logger = Logging.getLogger(PrepareBaseSetupTask.class)
 
     PrepareBaseSetupTask() {
@@ -19,7 +19,7 @@ class PrepareBaseSetupTask extends AbstractPrepareSetupTask<ProjectBaseProperty>
 
     @TaskAction
     void prepareSetup() {
-        logger.lifecycle("Preparing base setup")
+        logger.lifecycle("Preparing ${propertyDescription}")
         def files = []
         new File('.').eachFileRecurse(FileType.FILES) {
             if (it.name.equals('Icon.png') || it.name.equals('icon.png')) {
@@ -27,7 +27,6 @@ class PrepareBaseSetupTask extends AbstractPrepareSetupTask<ProjectBaseProperty>
                 files << path
             }
         }
-        System.out.println('Type values for properties')
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
         use(PropertyCategory) {
             ProjectBaseProperty.each {

@@ -7,12 +7,14 @@ import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-abstract class AbstractVerifySetupTask<T extends Enum> extends DefaultTask{
+abstract class AbstractVerifySetupTask extends DefaultTask{
 
     Logger logger = Logging.getLogger(AbstractVerifySetupTask.class)
     final String propertyDescription
+    final Class<? extends Enum> clazz
 
-    public AbstractVerifySetupTask(Class<T> clazz) {
+    public AbstractVerifySetupTask(Class<? extends Enum> clazz) {
+        this.clazz = clazz
         this.propertyDescription = clazz.getField('DESCRIPTION').get(null)
         this.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
         this.description = "Verifies if ${propertyDescription} of the project are setup properly"

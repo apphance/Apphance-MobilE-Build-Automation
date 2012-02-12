@@ -7,14 +7,14 @@ import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ios.plugins.build.IOSPlugin;
-import com.apphance.ameba.ios.plugins.reports.IOSReportsPlugin;
+import com.apphance.ameba.ios.plugins.release.IOSReleasePlugin;
 
 class IOSReportsTest extends BaseIOSTaskTest {
 
     protected Project getProject() {
         Project project = super.getProject()
         project.project.plugins.apply(IOSPlugin.class)
-        project.project.plugins.apply(IOSReportsPlugin.class)
+        project.project.plugins.apply(IOSReleasePlugin.class)
         return project
     }
 
@@ -24,7 +24,7 @@ class IOSReportsTest extends BaseIOSTaskTest {
             'buildDocumentationZip',
             'buildSourcesZip',
             'prepareImageMontage',
-        ],AmebaCommonBuildTaskGroups.AMEBA_REPORTS)
+        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }
 
     @Test
@@ -33,7 +33,7 @@ class IOSReportsTest extends BaseIOSTaskTest {
             'prepareAvailableArtifactsInfo',
             'prepareMailMessage',
             'sendMailMessage',
-        ],AmebaCommonBuildTaskGroups.AMEBA_MESSAGING)
+        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }
 
     @Test

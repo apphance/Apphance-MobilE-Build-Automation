@@ -8,7 +8,7 @@ import org.gradle.api.tasks.TaskAction
 import com.apphance.ameba.AbstractVerifySetupTask
 import com.apphance.ameba.PropertyCategory
 
-class VerifyBaseSetupTask extends  AbstractVerifySetupTask<ProjectBaseProperty> {
+class VerifyBaseSetupTask extends  AbstractVerifySetupTask {
     Logger logger = Logging.getLogger(VerifyBaseSetupTask.class)
 
     VerifyBaseSetupTask() {

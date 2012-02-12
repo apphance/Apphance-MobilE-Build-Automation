@@ -33,7 +33,7 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
     public void testMessagingTasksAvailable() {
         verifyTasksInGroup(getProject(),[
             'sendMailMessage'
-        ],AmebaCommonBuildTaskGroups.AMEBA_MESSAGING)
+        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }
 
     @Test
@@ -41,7 +41,7 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
         verifyTasksInGroup(getProject(),[
             'buildSourcesZip',
             'prepareImageMontage'
-        ],AmebaCommonBuildTaskGroups.AMEBA_REPORTS)
+        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }
 
     @Test

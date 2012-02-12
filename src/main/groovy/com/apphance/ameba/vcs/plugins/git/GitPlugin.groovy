@@ -16,6 +16,16 @@ import com.apphance.ameba.vcs.plugins.VCSPlugin;
 class GitPlugin extends VCSPlugin {
 
     static Logger logger = Logging.getLogger(GitPlugin.class)
+
+    @Override
+    public void apply(Project project) {
+        super.apply(project);
+        project.task('verifyGitSetup', type: VerifyGitSetupTask.class)
+        project.task('prepareGitSetup', type: PrepareGitSetupTask.class)
+        project.task('showGitSetup', type: ShowGitSetupTask.class)
+    }
+
+
     def void cleanVCSTask(Project project) {
         def task = project.task('cleanVCS')
         task.description = "Restores workspace to original state"
