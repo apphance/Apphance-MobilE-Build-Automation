@@ -30,4 +30,9 @@ class RunShowProperties {
     public void testShowSetup() {
         runTests('showSetup')
     }
+
+    @Test
+    public void testVerifySetup() {
+        runTests('verifySetup')
+    }
 }

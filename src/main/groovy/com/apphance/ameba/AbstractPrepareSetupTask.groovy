@@ -12,8 +12,8 @@ class AbstractPrepareSetupTask extends DefaultTask {
 
     public static final String GENERATED_GRADLE_PROPERTIES = 'generated.gradle.properties'
     Logger logger = Logging.getLogger(AbstractPrepareSetupTask.class)
-    final String propertyDescription
-    final Class<? extends Enum> clazz
+    String propertyDescription
+    Class<? extends Enum> clazz
 
     AbstractPrepareSetupTask(Class<? extends Enum> clazz) {
         use (PropertyCategory) {

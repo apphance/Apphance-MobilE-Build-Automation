@@ -26,9 +26,9 @@ class IOSVerifySetupTask extends DefaultTask {
 
     @TaskAction
     void verifySetup() {
-        for (IOSProjectProperty p : IOSProjectProperty.values()) {
-            if (!p.isOptional()) {
-                checkProperty(p.propertyName)
+        IOSProjectProperty.each{
+            if (!it.defaultValue != null) {
+                checkProperty(it.propertyName)
             }
         }
         checkPlistFile()
@@ -87,7 +87,7 @@ does not exist or is not a directory. Please run 'gradle prepareSetup' to correc
         if (iosConf.configurations == ['']) {
             throw new GradleException("You must specify at least one configuration")
         }
-        if (iosConf.excludedBuilds != ['.*']&& iosConf.excludedBuilds.size != ios.targets.size * ios.configurations.size) {
+        if (iosConf.excludedBuilds != ['.*']&& iosConf.excludedBuilds.size != iosConf.targets.size * iosConf.configurations.size) {
             def mainTarget
             if (!project.hasProperty(IOSProjectProperty.MAIN_TARGET.propertyName)) {
                 mainTarget = project[IOSProjectProperty.MAIN_TARGET.propertyName]
