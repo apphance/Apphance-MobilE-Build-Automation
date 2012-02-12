@@ -62,21 +62,21 @@ ios.simulator.sdk=iphonesimulator
             assertEquals('''###########################################################
 # iOS properties
 ###########################################################
-# Path to plist file [required]
+# Path to plist file of the project
 ios.plist.file=test
-# List of excluded builds [required]
+# List of excluded builds. These are coma-separated regular expressions (matched against target-configuration) [optional] default: <>
 ios.excluded.builds=.*
-# List of iOS families [required]
+# List of iOS families used (iPhone/iPad) [optional] default: <iPhone,iPad>
 ios.families=iPhone,iPad
-# Path to distribution resources directory [required]
+# Path to distribution resources directory. In this directory mobile provision file should be placed.
 ios.distribution.resources.dir=release/distribution_resources
-# Main target for release build [optional]
+# Main target for releaseable build
 ios.mainTarget=MainTarget
-# Main configuration for release build [optional]
+# Main configuration for releaseable build
 ios.mainConfiguration=MainConfiguration
-# List of iOS SDKs [optional]
+# SDK used to build iOS targets (-sdk option of xcodebuild) [optional] default: <iphoneos>
 ios.sdk=iphoneos
-# List of iOS simulator SDKs [optional]
+# SDK used to build simulator targets (-sdk option of xcodebuild) [optional] default: <iphonesimulator>
 ios.simulator.sdk=iphonesimulator
 ''',s)
         }
@@ -107,7 +107,7 @@ ios.kif.configuration=Kif
             assertEquals('''###########################################################
 # iOS KIF properties
 ###########################################################
-# KIF build configuration [optional]
+# KIF build configuration [optional] default: <Debug>
 ios.kif.configuration=Kif
 ''',s)
         }
@@ -137,7 +137,7 @@ ios.fonemonkey.configuration=FoneMonkey
             assertEquals('''###########################################################
 # iOS FoneMonkey properties
 ###########################################################
-# FoneMonkey build configuration [optional]
+# FoneMonkey build configuration [optional] default: <Debug>
 ios.fonemonkey.configuration=FoneMonkey
 ''',s)
         }

@@ -6,13 +6,13 @@ import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.PropertyCategory;
-import com.apphance.ameba.vcs.plugins.VCSPlugin;
+import com.apphance.ameba.vcs.plugins.AbstractVCSPlugin;
 
 /**
  * Plugin for Mercurial implementation of VCS system
  *
  */
-class MercurialPlugin extends VCSPlugin {
+class MercurialPlugin extends AbstractVCSPlugin {
     static Logger logger = Logging.getLogger(MercurialPlugin.class)
 
 

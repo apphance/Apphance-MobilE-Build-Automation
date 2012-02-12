@@ -6,14 +6,14 @@ import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.vcs.plugins.VCSPlugin;
+import com.apphance.ameba.vcs.plugins.AbstractVCSPlugin;
 
 
 /**
  * Plugin for Git implementation of VCS system
  *
  */
-class GitPlugin extends VCSPlugin {
+class GitPlugin extends AbstractVCSPlugin {
 
     static Logger logger = Logging.getLogger(GitPlugin.class)
 

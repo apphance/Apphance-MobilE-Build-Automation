@@ -6,7 +6,7 @@ import org.gradle.api.Project
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 
-abstract class VCSPlugin implements Plugin<Project> {
+abstract class AbstractVCSPlugin implements Plugin<Project> {
     ProjectConfiguration conf
 
     def void apply (Project project) {

@@ -16,7 +16,7 @@ class VerifyIosKIFSetupTask extends AbstractVerifySetupTask {
     void verifySetup() {
         def projectProperties = readProperties()
         IOSKifProperty.each {
-            if (!it.optional) {
+            if (!it.defaultValue == null) {
                 checkProperty(projectProperties, it)
             }
         }

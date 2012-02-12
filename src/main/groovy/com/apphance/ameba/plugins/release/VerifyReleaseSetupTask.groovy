@@ -17,7 +17,7 @@ class VerifyReleaseSetupTask extends AbstractVerifySetupTask {
     void verifySetup() {
         def projectProperties = readProperties()
         ProjectReleaseProperty.each {
-            if (!it.optional) {
+            if (!it.defaultValue != null) {
                 checkProperty(projectProperties, it)
             }
         }

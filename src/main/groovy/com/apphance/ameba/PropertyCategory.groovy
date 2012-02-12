@@ -19,9 +19,8 @@ class PropertyCategory {
         properties.each {
             String comment = '# ' + it.description
             String propString = it.propertyName + '='
-            comment = comment + (it.optional ? ' [optional]':  ' [required]')
             if (it.defaultValue != null) {
-                comment = comment + ", default: ${it.defaultValue}"
+                comment = comment + " [optional] default: <${it.defaultValue}>"
             }
             if (project.hasProperty(it.propertyName)) {
                 propString = propString + project[it.propertyName]
