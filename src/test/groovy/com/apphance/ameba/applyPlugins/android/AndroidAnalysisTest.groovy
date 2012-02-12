@@ -7,7 +7,7 @@ import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.android.plugins.analysis.AndroidAnalysisPlugin;
-import com.apphance.ameba.android.plugins.build.AndroidPlugin;
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin;
 
 class AndroidAnalysisTest extends BaseAndroidTaskTest {
 

@@ -6,7 +6,7 @@ import org.gradle.api.Project
 import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.android.plugins.build.AndroidPlugin;
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin;
 import com.apphance.ameba.android.plugins.jarlibrary.AndroidJarLibraryPlugin;
 
 class AndroidJarLibraryTest extends BaseAndroidTaskTest {

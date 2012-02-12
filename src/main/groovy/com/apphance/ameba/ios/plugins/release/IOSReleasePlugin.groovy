@@ -23,7 +23,7 @@ import com.apphance.ameba.android.AndroidEnvironment
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.MPParser
-import com.apphance.ameba.ios.plugins.build.IOSSingleReleaseBuilder;
+import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleReleaseBuilder;
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**

@@ -5,7 +5,7 @@ import static org.junit.Assert.*
 import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.android.plugins.build.AndroidPlugin
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 
 
 class TestBasicBuildTasks extends BaseAndroidTaskTest{

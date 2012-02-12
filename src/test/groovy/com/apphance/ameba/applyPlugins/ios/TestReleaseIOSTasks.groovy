@@ -6,7 +6,7 @@ import org.gradle.api.Project
 import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ios.plugins.build.IOSPlugin;
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
 import com.apphance.ameba.ios.plugins.release.IOSReleasePlugin
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin;
 

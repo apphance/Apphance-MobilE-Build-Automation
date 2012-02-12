@@ -1,4 +1,4 @@
-package com.apphance.ameba.ios.plugins.build
+package com.apphance.ameba.ios.plugins.buildplugin
 
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging

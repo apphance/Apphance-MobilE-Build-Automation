@@ -1,4 +1,4 @@
-package com.apphance.ameba.ios.plugins.build
+package com.apphance.ameba.ios.plugins.buildplugin
 
 import groovy.text.SimpleTemplateEngine
 import groovy.util.AntBuilder

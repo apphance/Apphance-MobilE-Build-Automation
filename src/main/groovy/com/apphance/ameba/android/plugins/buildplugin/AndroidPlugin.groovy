@@ -1,4 +1,4 @@
-package com.apphance.ameba.android.plugins.build;
+package com.apphance.ameba.android.plugins.buildplugin;
 
 import groovy.lang.Closure
 

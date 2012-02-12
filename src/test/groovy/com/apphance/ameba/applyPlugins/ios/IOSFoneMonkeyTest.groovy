@@ -5,7 +5,7 @@ import static org.junit.Assert.*
 import org.gradle.api.Project
 import org.junit.Test
 
-import com.apphance.ameba.ios.plugins.build.IOSPlugin;
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
 import com.apphance.ameba.ios.plugins.fonemonkey.FoneMonkeyPlugin;
 
 class IOSFoneMonkeyTest extends BaseIOSTaskTest {
