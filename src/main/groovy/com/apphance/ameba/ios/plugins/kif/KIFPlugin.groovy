@@ -9,7 +9,6 @@ import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration;
 import com.apphance.ameba.ProjectHelper;
 import com.apphance.ameba.PropertyCategory
@@ -43,7 +42,9 @@ class KIFPlugin implements Plugin<Project> {
             prepareBuildKIFReleaseTask()
             prepareRunKIFTestsTask()
             prepareRunSingleKIFTestTask()
-            prepareShowIOSKifPropertiesTask()
+            project.task('verifyKIFSetup', type: VerifyIosKIFSetupTask.class)
+            project.task('prepareKIFSetup', type: PrepareIosKIFSetupTask.class)
+            project.task('showKIFSetup', type: ShowIosKIFSetupTask.class)
         }
     }
 
@@ -198,18 +199,5 @@ class KIFPlugin implements Plugin<Project> {
             }
         }
         task.dependsOn(project.buildKIFRelease)
-    }
-
-    private prepareShowIOSKifPropertiesTask() {
-        def task =  project.task('showIOSKifProperties')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        task.description = 'Prints all ios KIF project properties'
-        task.dependsOn(project.readProjectConfiguration)
-        project.showSetup.dependsOn(task)
-        task << {
-            use (PropertyCategory) {
-                System.out.println(project.listPropertiesAsString(IOSKifProperty.class, true))
-            }
-        }
     }
 }
