@@ -35,6 +35,7 @@ class TestBasicIOSTasks extends BaseIOSTaskTest {
     public void testConfigurationTasksAvailable() {
         verifyTasksInGroup(getProject(),[
             'cleanConfiguration',
+            'copyGalleryFiles',
             'readProjectConfiguration',
             'readIOSProjectConfiguration',
             'readIOSProjectTargetAndConfiguration',

@@ -39,7 +39,6 @@ class ProjectReleasePlugin implements Plugin<Project> {
         prepareImageMontageTask(project)
         prepareSendMailMessageTask(project)
         prepareCleanReleaseTask(project)
-        prepareCopyGalleryFilesTask(project)
         prepareSourcesZipTask(project)
         project.task('verifyReleaseSetup', type: VerifyReleaseSetupTask.class)
         project.task('prepareReleaseSetup', type: PrepareReleaseSetupTask.class)
@@ -218,20 +217,6 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
             }
         }
         task.dependsOn(project.readProjectConfiguration, project.prepareForRelease,project.verifyReleaseNotes)
-    }
-
-    def void prepareCopyGalleryFilesTask(Project project) {
-        def task = project.task('copyGalleryFiles')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task.description = "Copy files required by swipe jquerymobile gallery"
-        task << {
-            conf.galleryCss.location.parentFile.mkdirs()
-            conf.galleryJs.location.parentFile.mkdirs()
-            conf.galleryCss.location.setText(this.class.getResourceAsStream("swipegallery/_css/jquery.swipegallery.css").text,"utf-8")
-            conf.galleryJs.location.setText(this.class.getResourceAsStream("swipegallery/_res/jquery.swipegallery.js").text,"utf-8")
-            conf.galleryTrans.location.setText(this.class.getResourceAsStream("swipegallery/_res/trans.png").text,"utf-8")
-        }
-        task.dependsOn(project.readProjectConfiguration, project.prepareForRelease)
     }
 
     def void prepareSourcesZipTask(Project project) {

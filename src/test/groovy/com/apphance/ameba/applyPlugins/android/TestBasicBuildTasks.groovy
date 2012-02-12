@@ -5,9 +5,16 @@ import static org.junit.Assert.*
 import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.android.plugins.build.AndroidPlugin
 
 
 class TestBasicBuildTasks extends BaseAndroidTaskTest{
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp()
+        project.project.plugins.apply(AndroidPlugin.class)
+    }
 
     @Test
     public void testBuildTasksAvailable() {
@@ -16,7 +23,7 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
 
     @Test
     public void testReleaseTasksAvailable() {
-        verifyTasksInGroup(getProject(),['cleanRelease'],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
+        verifyTasksInGroup(getProject(),[],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }
 
     @Test
@@ -26,36 +33,17 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
             'copyGalleryFiles',
             'readProjectConfiguration',
             'showProjectConfiguration',
-            'verifyReleaseNotes'
         ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
     }
-    @Test
-    public void testMessagingTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'sendMailMessage'
-        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
-    }
-
-    @Test
-    public void testReportingTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'buildSourcesZip',
-            'prepareImageMontage'
-        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
-    }
-
     @Test
     public void testSetupTasksAvailable() {
         verifyTasksInGroup(getProject(),[
             'prepareBaseSetup',
             'prepareSetup',
-            'prepareReleaseSetup',
             'verifyBaseSetup',
             'verifySetup',
-            'showBaseProperties',
-            'verifyReleaseSetup',
+            'showBaseSetup',
             'showSetup',
-            'showReleaseSetup',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
     }
 }

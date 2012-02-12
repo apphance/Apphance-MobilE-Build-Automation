@@ -36,6 +36,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         showProjectConfigurationTask(project)
         prepareCleanConfigurationTask(project)
         prepareShowPropertiesTask(project)
+        prepareCopyGalleryFilesTask(project)
         project.task('verifyBaseSetup', type: VerifyBaseSetupTask.class)
         project.task('prepareBaseSetup', type: PrepareBaseSetupTask.class)
         project.task('showBaseSetup', type: ShowBaseSetupTask.class)
@@ -119,6 +120,20 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
             conf.buildDirectory.mkdirs()
             conf.logDirectory.mkdirs()
             conf.tmpDirectory.mkdirs()
+        }
+        task.dependsOn(project.readProjectConfiguration)
+    }
+
+    def void prepareCopyGalleryFilesTask(Project project) {
+        def task = project.task('copyGalleryFiles')
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+        task.description = "Copy files required by swipe jquerymobile gallery"
+        task << {
+            conf.galleryCss.location.parentFile.mkdirs()
+            conf.galleryJs.location.parentFile.mkdirs()
+            conf.galleryCss.location.setText(this.class.getResourceAsStream("swipegallery/_css/jquery.swipegallery.css").text,"utf-8")
+            conf.galleryJs.location.setText(this.class.getResourceAsStream("swipegallery/_res/jquery.swipegallery.js").text,"utf-8")
+            conf.galleryTrans.location.setText(this.class.getResourceAsStream("swipegallery/_res/trans.png").text,"utf-8")
         }
         task.dependsOn(project.readProjectConfiguration)
     }

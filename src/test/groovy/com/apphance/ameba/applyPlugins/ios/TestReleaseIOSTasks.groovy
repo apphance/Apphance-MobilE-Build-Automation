@@ -27,7 +27,6 @@ class TestReleaseIOSTasks extends BaseIOSTaskTest {
             'updateVersion',
             'buildDocumentationZip',
             'buildSourcesZip',
-            'copyGalleryFiles',
             'prepareAvailableArtifactsInfo',
             'prepareForRelease',
             'prepareImageMontage',

@@ -150,12 +150,15 @@ class PropertyCategory {
     }
 
     public static void retrieveBasicProjectData(Project project) {
-        ProjectConfiguration conf = getProjectConfiguration(project)
-        conf.projectDirectoryName = readExpectedProperty(project,ProjectBaseProperty.PROJECT_DIRECTORY)
-        conf.baseUrl = new URL(readExpectedProperty(project,ProjectBaseProperty.PROJECT_URL))
-        conf.iconFile = new File(project.rootDir,readExpectedProperty(project,ProjectBaseProperty.PROJECT_ICON_FILE))
-        retrieveLocale(project)
-        conf.releaseNotes = readReleaseNotes(project)?.tokenize(",")
+        use (PropertyCategory) {
+            ProjectConfiguration conf = getProjectConfiguration(project)
+            conf.projectName = project.readExpectedProperty('project.name')
+            conf.projectDirectoryName = project.readExpectedProperty(ProjectBaseProperty.PROJECT_DIRECTORY)
+            conf.baseUrl = new URL(project.readExpectedProperty(ProjectBaseProperty.PROJECT_URL))
+            conf.iconFile = new File(project.rootDir,project.readExpectedProperty(ProjectBaseProperty.PROJECT_ICON_FILE))
+            project.retrieveLocale()
+            conf.releaseNotes = project.readReleaseNotes()?.tokenize(",")
+        }
     }
 
     public static void retrieveLocale(Project project) {

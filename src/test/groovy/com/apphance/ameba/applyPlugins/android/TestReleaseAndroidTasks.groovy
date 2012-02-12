@@ -20,16 +20,18 @@ class TestReleaseAndroidTasks extends BaseAndroidTaskTest {
     }
 
     @Test
-    public void testReportsTasksAvailable() {
+    public void testReleaseTasksAvailable() {
         verifyTasksInGroup(getProject(),[
+            'cleanRelease',
+            'updateVersion',
             'buildDocumentationZip',
             'buildSourcesZip',
-            'prepareImageMontage',
             'prepareAvailableArtifactsInfo',
+            'prepareForRelease',
+            'prepareImageMontage',
             'prepareMailMessage',
             'sendMailMessage',
-            'cleanRelease',
-            'updateVersion'
+            'verifyReleaseNotes'
         ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }
 }
