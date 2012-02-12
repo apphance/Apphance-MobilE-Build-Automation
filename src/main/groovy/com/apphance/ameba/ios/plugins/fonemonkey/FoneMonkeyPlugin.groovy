@@ -16,7 +16,7 @@ import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
+import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
 
 class FoneMonkeyPlugin implements Plugin<Project> {
@@ -26,7 +26,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
     Logger logger = Logging.getLogger(FoneMonkeyPlugin.class)
     Project project
     ProjectHelper projectHelper
-    IOSConfigurationAndTargetRetriever iosConfigurationAndTargetRetriever
+    IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
 
@@ -34,7 +34,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
         use (PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
-            this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
+            this.iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
             this.conf = project.getProjectConfiguration()
             this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
             prepareFoneMonkeyTemplatesTask()

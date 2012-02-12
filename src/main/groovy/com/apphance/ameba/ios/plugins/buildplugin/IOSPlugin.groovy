@@ -15,7 +15,7 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.XMLBomAwareFileReader
-import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
+import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import com.sun.org.apache.xpath.internal.XPathAPI
@@ -34,14 +34,14 @@ class IOSPlugin implements Plugin<Project> {
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
 
-    IOSConfigurationAndTargetRetriever iosConfigurationAndTargetRetriever
+    IOSXCodeOutputParser iosXcodeOutputParser
 
     def void apply (Project project) {
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
-            this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
-            this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            this.iosXcodeOutputParser = new IOSXCodeOutputParser()
+            this.iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
             prepareReadIosProjectConfigurationTask(project)
             prepareReadIosTargetsAndConfigurationsTask(project)
             prepareReadIosProjectVersionsTask(project)
@@ -92,14 +92,16 @@ class IOSPlugin implements Plugin<Project> {
         task.description = 'Reads iOS xCode project parameters'
         task << {
             project.file("bin").mkdirs()
-            def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
-            def trimmed = lines*.trim()
-            IOSProjectConfiguration iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
-            project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  iosConfigurationAndTargetRetriever.readProjectName(trimmed)
-            iosConf.targets = iosConfigurationAndTargetRetriever.readBuildableTargets(trimmed)
-            iosConf.configurations = iosConfigurationAndTargetRetriever.readBuildableConfigurations(trimmed)
-            iosConf.alltargets = iosConfigurationAndTargetRetriever.readBaseTargets(trimmed, { true })
-            iosConf.allconfigurations = iosConfigurationAndTargetRetriever.readBaseConfigurations(trimmed, { true })
+            def trimmedListOutput = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)*.trim()
+            IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
+            project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  iosXcodeOutputParser.readProjectName(trimmedListOutput)
+            iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmedListOutput)
+            iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmedListOutput)
+            iosConf.alltargets = iosXcodeOutputParser.readBaseTargets(trimmedListOutput, { true })
+            iosConf.allconfigurations = iosXcodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
+            def trimmedSdkOutput = projectHelper.executeCommand(project, ["xcodebuild", "-showsdks"]as String[],false, null, null, 1, true)*.trim()
+            iosConf.allIphoneSDKs = iosXcodeOutputParser.readIphoneSdks(trimmedSdkOutput)
+            iosConf.allIphoneSimulatorSDKs = iosXcodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
             if (iosConf.targets == ['']) {
                 logger.lifecycle("Please specify at least one target")
                 iosConf.targets = []
@@ -164,8 +166,8 @@ class IOSPlugin implements Plugin<Project> {
         task.description = 'Builds all target/configuration combinations and produces all artifacts (zip, ipa, messages, etc)'
         def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
         def trimmed = lines*.trim()
-        iosConf.targets = iosConfigurationAndTargetRetriever.readBuildableTargets(trimmed)
-        iosConf.configurations = iosConfigurationAndTargetRetriever.readBuildableConfigurations(trimmed)
+        iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmed)
+        iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmed)
         def targets = iosConf.targets
         def configurations = iosConf.configurations
         logger.lifecycle("Building all builds")

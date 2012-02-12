@@ -12,7 +12,7 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSArtifactBuilderInfo;
-import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever;
+import com.apphance.ameba.ios.IOSXCodeOutputParser;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.MPParser
 
@@ -21,7 +21,7 @@ class IOSSingleReleaseBuilder {
     static Logger logger = Logging.getLogger(IOSSingleReleaseBuilder.class)
     ProjectHelper projectHelper
     ProjectConfiguration conf
-    IOSConfigurationAndTargetRetriever iosConfigurationAndTargetRetriever
+    IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     IOSProjectConfiguration iosConf
     AntBuilder ant
 
@@ -29,7 +29,7 @@ class IOSSingleReleaseBuilder {
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
-            this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
+            this.iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
             this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
             this.ant = ant
         }

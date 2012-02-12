@@ -12,7 +12,7 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.ProjectConfiguration;
 import com.apphance.ameba.ProjectHelper;
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever;
+import com.apphance.ameba.ios.IOSXCodeOutputParser;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 
 class KIFPlugin implements Plugin<Project> {
@@ -24,7 +24,7 @@ class KIFPlugin implements Plugin<Project> {
     Logger logger = Logging.getLogger(KIFPlugin.class)
     Project project
     ProjectHelper projectHelper
-    IOSConfigurationAndTargetRetriever iosConfigurationAndTargetRetriever
+    IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
     String KIFConfiguration
@@ -34,7 +34,7 @@ class KIFPlugin implements Plugin<Project> {
         use (PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
-            this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
+            this.iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
             this.conf = project.getProjectConfiguration()
             this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
             this.KIFConfiguration = project.readProperty(IOSKifProperty.KIF_CONFIGURATION)

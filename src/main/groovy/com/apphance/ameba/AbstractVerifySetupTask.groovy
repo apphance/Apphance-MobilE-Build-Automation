@@ -20,6 +20,7 @@ abstract class AbstractVerifySetupTask extends DefaultTask{
         this.description = "Verifies if ${propertyDescription} of the project are setup properly"
         // inject myself before the default
         project.verifySetup.dependsOn(this)
+        this.dependsOn(project.readProjectConfiguration)
     }
 
     protected Properties readProperties() {

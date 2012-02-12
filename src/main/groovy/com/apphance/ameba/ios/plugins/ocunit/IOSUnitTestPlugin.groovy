@@ -10,7 +10,7 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
+import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
 
 class IOSUnitTestPlugin implements Plugin<Project> {
@@ -21,14 +21,14 @@ class IOSUnitTestPlugin implements Plugin<Project> {
     Project project
     ProjectConfiguration conf
     ProjectHelper projectHelper
-    IOSConfigurationAndTargetRetriever iosConfigurationAndTargetRetriever
+    IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     IOSProjectConfiguration iosConf
 
     void apply(Project project) {
         use (PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
-            this.iosConfigurationAndTargetRetriever  = new IOSConfigurationAndTargetRetriever()
+            this.iosConfigurationAndTargetRetriever  = new IOSXCodeOutputParser()
             this.conf = project.getProjectConfiguration()
             this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
             project.extensions.iosUnitTests = new IOSUnitTestConvention()

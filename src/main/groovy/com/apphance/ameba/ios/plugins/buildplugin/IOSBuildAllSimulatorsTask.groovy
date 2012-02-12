@@ -14,7 +14,7 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSArtifactBuilderInfo;
-import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever;
+import com.apphance.ameba.ios.IOSXCodeOutputParser;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.MPParser
 
@@ -27,7 +27,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
     ProjectHelper projectHelper
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
-    IOSConfigurationAndTargetRetriever iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
+    IOSXCodeOutputParser iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
 
     IOSBuildAllSimulatorsTask() {
         use (PropertyCategory) {

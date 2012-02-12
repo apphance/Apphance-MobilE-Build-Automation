@@ -67,7 +67,7 @@ hg.commit.user=Test Apphance <test@apphance.com>
             assertEquals('''###########################################################
 # Mercurial properties
 ###########################################################
-# Commit user - usually in form of "Name <e-mail>"
+# Commit user for mercurial - usually in form of "Name <e-mail>"
 hg.commit.user=Test Apphance <test@apphance.com>
 ''',s)
         }

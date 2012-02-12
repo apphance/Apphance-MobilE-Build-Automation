@@ -20,7 +20,7 @@ import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.android.AndroidEnvironment
-import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
+import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.MPParser
 import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleReleaseBuilder;
@@ -36,14 +36,14 @@ class IOSReleasePlugin implements Plugin<Project> {
     String pListFileName
     ProjectHelper projectHelper
     ProjectConfiguration conf
-    IOSConfigurationAndTargetRetriever iosConfigurationAndTargetRetriever
+    IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     IOSProjectConfiguration iosConf
 
     def void apply (Project project) {
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
-            this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
+            this.iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
             this.iosConf = this.iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
             prepareUpdateVersionTask(project)
             prepareBuildDocumentationZipTask(project)

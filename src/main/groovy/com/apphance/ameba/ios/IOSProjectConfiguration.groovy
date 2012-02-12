@@ -23,6 +23,8 @@ class IOSProjectConfiguration {
     List<String> configurations = []
     List<String> alltargets = []
     List<String> allconfigurations = []
+    List<String> allIphoneSDKs = []
+    List<String> allIphoneSimulatorSDKs = []
     Map<String,AmebaArtifact> distributionZipFiles = [:]
     Map<String,AmebaArtifact> dSYMZipFiles = [:]
     Map<String,AmebaArtifact> ipaFiles = [:]
