@@ -151,9 +151,6 @@ class PropertyCategory {
 
     public static void retrieveBasicProjectData(Project project) {
         ProjectConfiguration conf = getProjectConfiguration(project)
-        if (conf.projectName == null) {
-            conf.projectName = readExpectedProperty(project,ProjectBaseProperty.PROJECT_NAME)
-        }
         conf.projectDirectoryName = readExpectedProperty(project,ProjectBaseProperty.PROJECT_DIRECTORY)
         conf.baseUrl = new URL(readExpectedProperty(project,ProjectBaseProperty.PROJECT_URL))
         conf.iconFile = new File(project.rootDir,readExpectedProperty(project,ProjectBaseProperty.PROJECT_ICON_FILE))

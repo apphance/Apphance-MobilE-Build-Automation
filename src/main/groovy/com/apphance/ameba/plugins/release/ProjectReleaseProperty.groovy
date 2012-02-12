@@ -5,7 +5,7 @@ enum ProjectReleaseProperty {
 
     RELEASE_MAIL_FROM('release.mail.from', 'Sender email address'),
     RELEASE_MAIL_TO('release.mail.to', 'Recipient of release email'),
-    RELEASE_MAIL_FLAGS('release.mail.flags', 'Flags for release email');
+    RELEASE_MAIL_FLAGS('release.mail.flags', 'Flags for release email', 'qrCode,imageMontage');
 
     public static final DESCRIPTION = 'Release properties'
 
