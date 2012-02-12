@@ -21,8 +21,6 @@ import com.apphance.ameba.ios.IOSProjectConfiguration
 
 class FoneMonkeyPlugin implements Plugin<Project> {
 
-    static final String AMEBA_IOS_FONEMONKEY = 'Ameba iOS Fonemonkey'
-
     static final String IPHONESIMULATOR = 'iphonesimulator'
 
     Logger logger = Logging.getLogger(FoneMonkeyPlugin.class)
@@ -44,7 +42,9 @@ class FoneMonkeyPlugin implements Plugin<Project> {
             prepareRunMonkeyTestsTask()
             prepareRunSingleFoneMonkeyTestTask()
             prepareFoneMonkeyReportTask()
-            prepareShowIOSFoneMonkeyPropertiesTask()
+            project.task('verifyFoneMonkeySetup', type: VerifyFoneMonkeySetupTask.class)
+            project.task('prepareFoneMonkeySetup', type: PrepareFoneMonkeySetupTask.class)
+            project.task('showFoneMonkeySetup', type: ShowFoneMonkeySetupTask.class)
         }
     }
 
@@ -206,7 +206,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
     private void prepareFoneMonkeyTemplatesTask() {
         def task = project.task('prepareFoneMonkeyTemplates')
         task.description = "Prepares templates for foneMonkey directories"
-        task.group = AMEBA_IOS_FONEMONKEY
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_FONEMONKEY
         task << {
             iosConf.families.each { family ->
                 def instream = this.getClass().getResourceAsStream("/com/apphance/ameba/ios/plugins/${family}_workspace.zip")
@@ -215,24 +215,22 @@ class FoneMonkeyPlugin implements Plugin<Project> {
                 outFile << instream
             }
         }
-        task.dependsOn(project.readProjectConfiguration)
-        task.dependsOn(project.copyGalleryFiles)
+        task.dependsOn(project.readProjectConfiguration, project.copyGalleryFiles)
     }
 
 
     private void prepareFoneMonkeyReportTask() {
         def task = project.task('prepareFoneMonkeyReport')
         task.description = "Prepares report out of FoneMonkey test execution"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_FONEMONKEY
         task << { prepareAllMonkeyArtifacts() }
-        task.dependsOn(project.readProjectConfiguration)
-        task.dependsOn(project.copyGalleryFiles)
+        task.dependsOn(project.readProjectConfiguration, project.copyGalleryFiles)
     }
 
     void prepareBuildFoneMonkeyReleaseTask() {
         def task = project.task('buildFoneMonkeyRelease')
         task.description = "Builds fone monkey release. Requires RunMonkeyTests target defined in the project"
-        task.group = AMEBA_IOS_FONEMONKEY
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_FONEMONKEY
         task << {
             use (PropertyCategory) {
                 def configuration = project.readProperty(IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
@@ -249,15 +247,14 @@ class FoneMonkeyPlugin implements Plugin<Project> {
                 ])
             }
         }
-        task.dependsOn(project.prepareFoneMonkeyTemplates)
-        task.dependsOn(project.readProjectConfiguration)
+        task.dependsOn(project.prepareFoneMonkeyTemplates, project.readProjectConfiguration)
     }
 
 
     private void prepareRunMonkeyTestsTask() {
         def task = project.task('runMonkeyTests')
         task.description = "Build and executes FoneMonkey tests. Requires RunMonkeyTests target. Produces result in tmp directory"
-        task.group = AMEBA_IOS_FONEMONKEY
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_FONEMONKEY
         task << {
             iosConf.families.each { family ->
                 findAllTests(family).each { test ->
@@ -277,7 +274,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
     private void prepareRunSingleFoneMonkeyTestTask() {
         def task = project.task('runSingleFoneMonkeyTest')
         task.description = "Executes single test with FoneMonkey. Requires fonemonkey.test.family (iPad, iPhone) and fonemonkey.test.name project property"
-        task.group = AMEBA_IOS_FONEMONKEY
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_FONEMONKEY
         task << {
             use (PropertyCategory) {
                 def test = project.readExpectedProperty("fonemonkey.test.name")
@@ -286,18 +283,5 @@ class FoneMonkeyPlugin implements Plugin<Project> {
             }
         }
         task.dependsOn(project.buildFoneMonkeyRelease)
-    }
-
-    private prepareShowIOSFoneMonkeyPropertiesTask() {
-        def task =  project.task('showIOSFoneMonkeyProperties')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        task.description = 'Prints all ios FoneMonkey project properties'
-        task.dependsOn(project.readProjectConfiguration)
-        project.showSetup.dependsOn(task)
-        task << {
-            use (PropertyCategory) {
-                System.out.println(project.listPropertiesAsString(IOSFoneMonkeyProperty.class, true))
-            }
-        }
     }
 }
