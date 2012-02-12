@@ -18,12 +18,13 @@ import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.android.AndroidEnvironment
 import com.apphance.ameba.ios.IOSConfigurationAndTargetRetriever
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.MPParser
 import com.apphance.ameba.ios.plugins.build.IOSSingleReleaseBuilder;
-import com.apphance.ameba.ios.plugins.release.IOSReleasePlugin;
+import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**
  * Plugin for preparing reports after successful build.
@@ -44,10 +45,10 @@ class IOSReleasePlugin implements Plugin<Project> {
             this.conf = project.getProjectConfiguration()
             this.iosConfigurationAndTargetRetriever = new IOSConfigurationAndTargetRetriever()
             this.iosConf = this.iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            prepareUpdateVersionTask(project)
             prepareBuildDocumentationZipTask(project)
             prepareAvailableArtifactsInfoTask(project)
             prepareMailMessageTask(project)
-            preparePostReleaseTask(project)
         }
     }
 
@@ -164,19 +165,6 @@ class IOSReleasePlugin implements Plugin<Project> {
         sendMailTask.description += ",installableSimulator"
     }
 
-    private void preparePostReleaseTask(Project project) {
-        def task = project.task('postRelease')
-        task.description = "Performs standard post-release operations"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task << { logger.lifecycle("Performed post-release operations") }
-        task.dependsOn(project.buildSourcesZip)
-        task.dependsOn(project.prepareMailMessage)
-        if (project.hasProperty('saveReleaseInfoInVCS')){
-            task.dependsOn(project.saveReleaseInfoInVCS)
-        }
-        task.dependsOn(project.sendMailMessage)
-    }
-
     private prepareFileIndexArtifact(String otaFolderPrefix) {
         AmebaArtifact fileIndexFile = new AmebaArtifact(
                 name : "The file index file: ${conf.projectName}",
@@ -221,6 +209,39 @@ class IOSReleasePlugin implements Plugin<Project> {
         iosConf.fileIndexFile.location.write(result.toString(), "utf-8")
         logger.lifecycle("File index created: ${iosConf.fileIndexFile}")
     }
+
+    private org.w3c.dom.Element getParsedPlist(Project project) {
+        File pListFile = new File("${project.rootDir}/${pListFileName}")
+        logger.debug("Reading file " + pListFile)
+        return new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
+    }
+
+    def void prepareUpdateVersionTask(Project project) {
+        def task = project.task('updateVersion')
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+        task.description = """Updates version stored in plist file of the project.
+           Numeric version is (incremented), String version is set from version.string property"""
+        task << {
+            use (PropertyCategory) {
+                conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
+                def root = getParsedPlist(project)
+                XPathAPI.selectNodeList(root,
+                        '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
+                            it.nextSibling.nextSibling.textContent = conf.versionString
+                        }
+                conf.versionCode += 1
+                XPathAPI.selectNodeList(root,
+                        '/plist/dict/key[text()="CFBundleVersion"]').each{
+                            it.nextSibling.nextSibling.textContent = conf.versionCode
+                        }
+                new File("${project.rootDir}/${pListFileName}").write(root as String)
+                logger.lifecycle("New version code: ${conf.versionCode}")
+                logger.lifecycle("Updated version string to ${conf.versionString}")
+            }
+        }
+        task.dependsOn(project.readProjectConfiguration)
+    }
+
 
 
     private void preparePlainFileIndexFile(Project project,

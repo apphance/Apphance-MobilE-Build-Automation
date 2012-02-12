@@ -34,7 +34,7 @@ abstract class AbstractVerifySetupTask extends DefaultTask{
     }
 
     protected static void checkProperty(Properties projectProperties, Enum property) {
-        if (projectProperties.getProperty(property.propertyName) == null) {
+        if (projectProperties.getProperty(property.propertyName) == null && property.defaultValue == null) {
             throw new GradleException("""Property ${property.propertyName} should be defined in gradle.properties.
 !!!!! Please run "gradle prepareSetup" to correct it """)
         }

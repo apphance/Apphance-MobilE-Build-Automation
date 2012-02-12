@@ -40,8 +40,6 @@ class IOSReportsTest extends BaseIOSTaskTest {
     public void testRelaseTasksAvailable() {
         verifyTasksInGroup(getProject(),[
             'cleanRelease',
-            'postRelease',
-            'preRelease',
             'updateVersion',
         ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }

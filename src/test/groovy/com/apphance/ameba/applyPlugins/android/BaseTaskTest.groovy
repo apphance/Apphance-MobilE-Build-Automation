@@ -24,7 +24,7 @@ abstract class BaseTaskTest extends TestCase{
             assertEquals("Task ${task} should be in ${group}", group, task.group)
         }
         def currentGroupTasks = project.tasks.findAll { it.group == group }
-        assertEquals("There are more tasks than exepected (${taskNames} vs. ${currentGroupTasks}" ,
+        assertEquals("There are more tasks than expected (${taskNames} vs. ${currentGroupTasks}" ,
                 taskNames.size(), currentGroupTasks.size())
     }
 }

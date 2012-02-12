@@ -137,7 +137,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
             conf.otaDirectory.mkdirs()
             conf.tmpDirectory.mkdirs()
         }
-        task.dependsOn(project.readProjectConfiguration)
+        task.dependsOn(project.readProjectConfiguration, project.clean)
     }
 
     def void prepareImageMontageTask(Project project) {

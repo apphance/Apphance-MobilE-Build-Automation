@@ -7,14 +7,12 @@ import org.junit.Test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ios.plugins.build.IOSPlugin;
-import com.apphance.ameba.ios.plugins.framework.IOSFrameworkPlugin;
 
 class TestBasicIOSTasks extends BaseIOSTaskTest {
 
     protected Project getProject() {
         Project project = super.getProject()
         project.project.plugins.apply(IOSPlugin.class)
-        project.project.plugins.apply(IOSFrameworkPlugin.class)
         return project
     }
 
@@ -24,7 +22,6 @@ class TestBasicIOSTasks extends BaseIOSTaskTest {
             'clean',
             'buildAll',
             'buildAllSimulators',
-            'buildFramework',
             'build-GradleXCode-BasicConfiguration',
             'buildSingleRelease',
             'checkTests',
@@ -38,23 +35,17 @@ class TestBasicIOSTasks extends BaseIOSTaskTest {
     public void testConfigurationTasksAvailable() {
         verifyTasksInGroup(getProject(),[
             'cleanConfiguration',
-            'copyGalleryFiles',
             'readProjectConfiguration',
             'readIOSProjectConfiguration',
             'readIOSProjectTargetAndConfiguration',
             'readIOSProjectVersions',
-            'showProjectConfiguration',
-            'verifyReleaseNotes'
+            'showProjectConfiguration'
         ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
     }
 
     @Test
     public void testReleaseTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'cleanRelease',
-            'preRelease',
-            'updateVersion',
-        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
+        verifyTasksInGroup(getProject(),[],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }
 
     @Test
@@ -62,16 +53,13 @@ class TestBasicIOSTasks extends BaseIOSTaskTest {
         verifyTasksInGroup(getProject(),[
             'prepareBaseSetup',
             'prepareSetup',
-            'prepareReleaseSetup',
             'prepareIOSSetup',
             'verifyBaseSetup',
             'verifySetup',
             'verifyIOSSetup',
-            'verifyReleaseSetup',
-            'showBaseProperties',
+            'showBaseSetup',
             'showSetup',
-            'showIOSProperties',
-            'showReleaseProperties'
+            'showIOSSetup'
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
     }
 }

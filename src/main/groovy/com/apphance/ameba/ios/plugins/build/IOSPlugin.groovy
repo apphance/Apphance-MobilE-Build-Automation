@@ -45,32 +45,17 @@ class IOSPlugin implements Plugin<Project> {
             prepareReadIosProjectConfigurationTask(project)
             prepareReadIosTargetsAndConfigurationsTask(project)
             prepareReadIosProjectVersionsTask(project)
-            prepareUpdateVersionTask(project)
             prepareCleanTask(project)
             prepareUnlockKeyChainTask(project)
             prepareCopyMobileProvisionTask(project)
             prepareBuildSingleReleaseTask(project)
             project.task('buildAllSimulators', type: IOSBuildAllSimulatorsTask)
             prepareBuildAllTask(project)
-            preparePreReleaseTask(project)
             prepareReplaceBundleIdPrefixTask(project)
             addIosSourceExcludes()
-            prepareShowIOSPropertiesTask(project)
-            project.task('prepareIOSSetup', type:IOSPrepareSetupTask)
-            project.task('verifyIOSSetup', type: IOSVerifySetupTask)
-        }
-    }
-
-    private prepareShowIOSPropertiesTask(Project project) {
-        def task =  project.task('showIOSProperties')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        task.description = 'Prints all ios project properties'
-        task.dependsOn(project.readProjectConfiguration)
-        project.showSetup.dependsOn(task)
-        task << {
-            use (PropertyCategory) {
-                System.out.println(project.listPropertiesAsString(IOSProjectProperty.class, true))
-            }
+            project.task('prepareIOSSetup', type:PrepareIOSSetupTask)
+            project.task('verifyIOSSetup', type: VerifyIOSSetupTask)
+            project.task('showIOSSetup', type: ShowIOSSetupTask)
         }
     }
 
@@ -220,33 +205,6 @@ class IOSPlugin implements Plugin<Project> {
         return new XMLBomAwareFileReader().readXMLFileIncludingBom(file)
     }
 
-
-    def void prepareUpdateVersionTask(Project project) {
-        def task = project.task('updateVersion')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task.description = """Updates version stored in plist file of the project.
-           Numeric version is (incremented), String version is set from version.string property"""
-        task << {
-            use (PropertyCategory) {
-                conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
-                def root = getParsedPlist(project)
-                XPathAPI.selectNodeList(root,
-                        '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
-                            it.nextSibling.nextSibling.textContent = conf.versionString
-                        }
-                conf.versionCode += 1
-                XPathAPI.selectNodeList(root,
-                        '/plist/dict/key[text()="CFBundleVersion"]').each{
-                            it.nextSibling.nextSibling.textContent = conf.versionCode
-                        }
-                new File("${project.rootDir}/${pListFileName}").write(root as String)
-                logger.lifecycle("New version code: ${conf.versionCode}")
-                logger.lifecycle("Updated version string to ${conf.versionString}")
-            }
-        }
-        task.dependsOn(project.readProjectConfiguration)
-    }
-
     def void prepareBuildSingleReleaseTask(Project project) {
         def task = project.task('buildSingleRelease')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
@@ -273,7 +231,6 @@ class IOSPlugin implements Plugin<Project> {
             ant.delete(dir: project.file("bin"), verbose: true)
             ant.delete(dir: project.file("documentation"), verbose: true)
         }
-        project.cleanRelease.dependsOn(task)
         task.dependsOn(project.cleanConfiguration)
     }
 
@@ -312,19 +269,6 @@ class IOSPlugin implements Plugin<Project> {
             }
         }
         task.dependsOn(project.readProjectConfiguration)
-    }
-
-
-    private void preparePreReleaseTask(Project project) {
-        def task = project.task('preRelease')
-        task.description = "Performs standard pre-release operations"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task << { logger.lifecycle("Performed pre-release operations") }
-        task.dependsOn(project.verifyReleaseNotes)
-        if (project.hasProperty('cleanVCS')) {
-            task.dependsOn(project.cleanVCS)
-        }
-        task.dependsOn(project.updateVersion)
     }
 
     private void prepareReplaceBundleIdPrefixTask(Project project) {

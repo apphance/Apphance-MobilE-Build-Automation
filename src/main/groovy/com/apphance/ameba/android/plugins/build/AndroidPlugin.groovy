@@ -54,8 +54,6 @@ class AndroidPlugin implements Plugin<Project> {
             prepareReadAndroidVersionAndProjectNameTask(project)
             prepareReadAndroidProjectConfigurationTask(project)
             prepareAllInstallTasks(project)
-            prepareUpdateVersionTask(project)
-            preparePreReleaseTask(project)
             prepareBuildDebugOnlyTask(project)
             prepareBuildReleaseOnlyTask(project)
             prepareAllVariants(project)
@@ -96,18 +94,6 @@ class AndroidPlugin implements Plugin<Project> {
         }
         project.javadoc.dependsOn(task)
         project.compileJava.dependsOn(task)
-    }
-
-    private void preparePreReleaseTask(Project project) {
-        def task = project.task('preRelease')
-        task.description = "Performs standard pre-release operations"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task << { logger.lifecycle("Performed pre-release operations") }
-        task.dependsOn(project.verifyReleaseNotes)
-        if (project.hasProperty('cleanVCS')) {
-            task.dependsOn(project.cleanVCS)
-        }
-        task.dependsOn(project.updateVersion)
     }
 
     private void prepareJavaEnvironment(Project project) {
@@ -290,7 +276,6 @@ class AndroidPlugin implements Plugin<Project> {
             project.ant.delete(dir: tmpDir)
         }
         project.clean.dependsOn(task)
-        project.cleanRelease.dependsOn(project.clean)
         task.dependsOn(project.cleanConfiguration)
     }
 
@@ -446,22 +431,6 @@ class AndroidPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
     }
 
-    void prepareUpdateVersionTask(Project project) {
-        def task = project.task('updateVersion')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task.description = """Updates version stored in manifest file of the project.
-           Numeric version is (incremented), String version is set from version.string property"""
-        task << {
-            use (PropertyCategory) {
-                conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
-                manifestHelper.updateVersion(project.rootDir, conf)
-                logger.lifecycle("New version code: ${conf.versionCode}")
-                logger.lifecycle("Updated version string to ${conf.versionString}")
-                logger.lifecycle("Configuration : ${conf}")
-            }
-        }
-        task.dependsOn(project.readAndroidProjectConfiguration)
-    }
 
     private void prepareReplacePackageTask(Project project) {
         def task = project.task('replacePackage')

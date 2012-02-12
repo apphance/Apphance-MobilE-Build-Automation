@@ -8,11 +8,13 @@ import org.junit.Test
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.android.plugins.build.AndroidPlugin;
 import com.apphance.ameba.android.plugins.release.AndroidReleasePlugin
+import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 
 class TestReleaseAndroidTasks extends BaseAndroidTaskTest {
     protected Project getProject() {
         Project project = super.getProject(false)
         project.project.plugins.apply(AndroidPlugin.class)
+        project.project.plugins.apply(ProjectReleasePlugin.class)
         project.project.plugins.apply(AndroidReleasePlugin.class)
         return project
     }
@@ -22,27 +24,11 @@ class TestReleaseAndroidTasks extends BaseAndroidTaskTest {
         verifyTasksInGroup(getProject(),[
             'buildDocumentationZip',
             'buildSourcesZip',
-            'prepareImageMontage'
-        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
-    }
-
-
-    @Test
-    public void testMessagingTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
+            'prepareImageMontage',
             'prepareAvailableArtifactsInfo',
             'prepareMailMessage',
-            'sendMailMessage'
-        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
-    }
-
-
-    @Test
-    public void testReleaseTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
+            'sendMailMessage',
             'cleanRelease',
-            'postRelease',
-            'preRelease',
             'updateVersion'
         ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }

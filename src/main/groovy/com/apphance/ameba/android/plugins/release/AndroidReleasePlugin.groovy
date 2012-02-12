@@ -17,6 +17,7 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidEnvironment
+import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.AndroidSingleVariantBuilder
@@ -30,6 +31,7 @@ class AndroidReleasePlugin implements Plugin<Project>{
     ProjectConfiguration conf
     AndroidProjectConfigurationRetriever androidProjectConfigurationRetriever
     AndroidProjectConfiguration androidConf
+    AndroidManifestHelper manifestHelper
 
     public void apply(Project project) {
         use (PropertyCategory) {
@@ -38,10 +40,11 @@ class AndroidReleasePlugin implements Plugin<Project>{
             this.conf = project.getProjectConfiguration()
             this.androidProjectConfigurationRetriever = new AndroidProjectConfigurationRetriever()
             this.androidConf = this.androidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
+            this.manifestHelper = new AndroidManifestHelper()
+            prepareUpdateVersionTask(project)
             prepareBuildDocumentationZipTask(project)
             prepareAvailableArtifactsInfoTask(project)
             prepareMailMessageTask(project)
-            preparePostReleaseTask(project)
         }
     }
 
@@ -126,19 +129,6 @@ class AndroidReleasePlugin implements Plugin<Project>{
         task.dependsOn(project.prepareAvailableArtifactsInfo)
         def sendMailTask = project.sendMailMessage
         sendMailTask.dependsOn(task)
-    }
-
-    private void preparePostReleaseTask(Project project) {
-        def task = project.task('postRelease')
-        task.description = "Performs standard post-release operations"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task << { logger.lifecycle("Performed post-release operations") }
-        task.dependsOn(project.buildSourcesZip)
-        task.dependsOn(project.prepareMailMessage)
-        if (project.hasProperty('saveReleaseInfoInVCS')){
-            task.dependsOn(project.saveReleaseInfoInVCS)
-        }
-        task.dependsOn(project.sendMailMessage)
     }
 
     private prepareFileIndexArtifact(String otaFolderPrefix) {
@@ -246,6 +236,24 @@ class AndroidReleasePlugin implements Plugin<Project>{
         conf.qrCodeFile  = qrCodeArtifact
         logger.lifecycle("QRCode created: ${qrCodeArtifact.location}")
     }
+
+    void prepareUpdateVersionTask(Project project) {
+        def task = project.task('updateVersion')
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+        task.description = """Updates version stored in manifest file of the project.
+           Numeric version is (incremented), String version is set from version.string property"""
+        task << {
+            use (PropertyCategory) {
+                conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
+                manifestHelper.updateVersion(project.rootDir, conf)
+                logger.lifecycle("New version code: ${conf.versionCode}")
+                logger.lifecycle("Updated version string to ${conf.versionString}")
+                logger.lifecycle("Configuration : ${conf}")
+            }
+        }
+        task.dependsOn(project.readAndroidProjectConfiguration)
+    }
+
 
     void downloadFile(Project project, URL url, File file) {
         logger.info("Downloading file from ${url} to ${file}")
