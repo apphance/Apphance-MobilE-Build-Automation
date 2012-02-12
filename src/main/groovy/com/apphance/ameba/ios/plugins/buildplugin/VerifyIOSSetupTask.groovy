@@ -1,7 +1,5 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
-
-
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
@@ -29,7 +27,7 @@ class VerifyIOSSetupTask extends AbstractVerifySetupTask {
         checkPlistFile()
         checkFamilies()
         checkDistributionDir()
-        checkTargets()
+        checkTargetsAndConfigurations()
         allPropertiesOK()
     }
 
@@ -50,6 +48,16 @@ class VerifyIOSSetupTask extends AbstractVerifySetupTask {
                 throw new GradleException("""The distribution resources directory (${distributionResourcesDir})
 does not exist or is not a directory. Please run 'gradle prepareSetup' to correct it.""")
             }
+            boolean hasMobileProvision = false
+            distributionResourcesDir.list().each {
+                if (it.endsWith('.mobileprovision')) {
+                    hasMobileProvision = true
+                }
+            }
+            if (!hasMobileProvision) {
+                throw new GradleException("""The distribution resources directory (${distributionResourcesDir})
+should contain at least one .mobileprovision file. """)
+            }
         }
     }
 
@@ -65,7 +73,7 @@ does not exist or is not a directory. Please run 'gradle prepareSetup' to correc
         }
     }
 
-    void checkTargets() {
+    void checkTargetsAndConfigurations() {
         use (PropertyCategory) {
             ProjectHelper projectHelper = new ProjectHelper();
             def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
@@ -82,26 +90,39 @@ does not exist or is not a directory. Please run 'gradle prepareSetup' to correc
                 throw new GradleException("You must specify at least one configuration")
             }
             if (iosConf.excludedBuilds != ['.*']&& iosConf.excludedBuilds.size != iosConf.targets.size * iosConf.configurations.size) {
-                def mainTarget
-                if (!project.hasProperty(IOSProjectProperty.MAIN_TARGET.propertyName)) {
-                    mainTarget = project.readProperty(IOSProjectProperty.MAIN_TARGET)
-                } else {
-                    mainTarget = iosConf.targets[0]
+                def mainTarget = readMainTarget(iosConf)
+                if (!iosConf.targets.contains(mainTarget)) {
+                    throw new GradleException("Main target ${mainTarget} is not on the list of targets ${iosConf.targets}")
                 }
-
-                def mainConfiguration
-                if (!project.hasProperty(IOSProjectProperty.MAIN_CONFIGURATION.propertyName)) {
-                    mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
-                } else {
-                    mainConfiguration = iosConf.configurations[0]
+                def mainConfiguration = readMainConfiguration(iosConf)
+                if (!iosConf.configurations.contains(mainConfiguration)) {
+                    throw new GradleException("Main configuration ${mainConfiguration} is not on the list of targets ${iosConf.configurations}")
                 }
-
                 def id = "${mainTarget}-${mainConfiguration}".toString()
-
                 if (iosConf.isBuildExcluded(id)) {
-                    throw new GradleException("Main target/configuration ${id} is excluded from build")
+                    throw new GradleException("Main target-configuration pair (${id}) is excluded from build by ${iosConf.excludedBuilds}")
                 }
             }
         }
+    }
+
+    private String readMainConfiguration(IOSProjectConfiguration iosConf) {
+        def mainConfiguration
+        if (!project.hasProperty(IOSProjectProperty.MAIN_CONFIGURATION.propertyName)) {
+            mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
+        } else {
+            mainConfiguration = iosConf.configurations[0]
+        }
+        return mainConfiguration
+    }
+
+    private String readMainTarget(IOSProjectConfiguration iosConf) {
+        def mainTarget
+        if (!project.hasProperty(IOSProjectProperty.MAIN_TARGET.propertyName)) {
+            mainTarget = project.readProperty(IOSProjectProperty.MAIN_TARGET)
+        } else {
+            mainTarget = iosConf.targets[0]
+        }
+        return mainTarget
     }
 }
