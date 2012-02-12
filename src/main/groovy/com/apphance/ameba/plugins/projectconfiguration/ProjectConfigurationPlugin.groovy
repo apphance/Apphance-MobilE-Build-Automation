@@ -64,8 +64,19 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task << {
             use(PropertyCategory) {
                 String propertiesToWrite = project.readProperty(AbstractPrepareSetupTask.GENERATED_GRADLE_PROPERTIES,'')
+                System.out.println("About to write new properties to gradle.properties:")
+                System.out.println(propertiesToWrite)
+                System.out.println("Are you sure y/n?")
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+                String answer = br.readLine()
                 File f = new File('gradle.properties')
-                f << propertiesToWrite
+                if (answer == 'y') {
+                    f.delete()
+                    f << propertiesToWrite
+                    System.out.println("File written: ${f}")
+                } else {
+                    System.out.println("Skipped writing to file: ${f}")
+                }
             }
         }
     }

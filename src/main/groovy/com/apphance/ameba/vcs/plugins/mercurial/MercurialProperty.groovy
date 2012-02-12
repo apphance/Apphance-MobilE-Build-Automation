@@ -1,7 +1,7 @@
 package com.apphance.ameba.vcs.plugins.mercurial
 
 enum MercurialProperty {
-    COMMIT_USER("hg.commit.user", "Commit user - usually in form of \"Name <e-mail>\"")
+    COMMIT_USER("hg.commit.user", "Commit user for mercurial - usually in form of \"Name <e-mail>\"")
     public static final String DESCRIPTION = "Mercurial properties"
     private final String propertyName
     private final String description

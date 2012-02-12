@@ -58,13 +58,14 @@ class PropertyCategory {
 
     public static String getProjectPropertyFromUser(Project project, String propertyName, String description,
     ArrayList options, boolean useDefault, BufferedReader br) {
-        String s = propertyName + ' (' + description + ')'
+        String s = "Enter ${propertyName}\n${description}"
         if (useDefault) {
-            s = s + '. Proposed values: ' + options
+            s = s + '\nProposed values: ' + options
         }
         if (project.hasProperty(propertyName)) {
-            s = s + '. Current value=' + project[propertyName] + '. Leave blank to don\'t change'
             System.out.println(s)
+            System.out.print("Current value [${project[propertyName]}] > ")
+            System.out.flush()
             String newValue = br.readLine()
             if (newValue.isEmpty() && !useDefault) {
                 // don't change

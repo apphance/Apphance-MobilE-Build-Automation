@@ -1,5 +1,7 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
+import groovy.io.FileType;
+
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction;
@@ -26,18 +28,18 @@ class PrepareIOSSetupTask extends AbstractPrepareSetupTask {
             def files = []
             new File('.').eachFileRecurse(FileType.FILES) {
                 if (it.name.endsWith(".plist")) {
-                    def path = it.path
+                    def path = it.path.startsWith("./") ? it.path.substring(2) : it.path
                     files << path
                 }
             }
             IOSProjectProperty.each {
-                if (property == IOSProjectProperty.PLIST_FILE) {
-                    project.getProjectPropertyFromUser(property, files, true, br)
+                if (it == IOSProjectProperty.PLIST_FILE) {
+                    project.getProjectPropertyFromUser(it, files, true, br)
                 } else {
-                    project.getProjectPropertyFromUser(property, null, false, br)
+                    project.getProjectPropertyFromUser(it, null, false, br)
                 }
             }
-            appendToGeneratedPropertyString(project.listPropertiesAsString)(IOSProjectProperty.class, false)
+            appendToGeneratedPropertyString(project.listPropertiesAsString(IOSProjectProperty.class, false))
         }
     }
 }
