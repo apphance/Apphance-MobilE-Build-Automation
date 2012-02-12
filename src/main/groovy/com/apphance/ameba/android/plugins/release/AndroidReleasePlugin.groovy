@@ -60,8 +60,7 @@ class AndroidReleasePlugin implements Plugin<Project>{
             project.ant.zip(destfile: destZip, basedir : javadocDir)
             logger.lifecycle("Zipped documentation to ${destZip}")
         }
-        task.dependsOn(project.javadoc)
-        task.dependsOn(project.readProjectConfiguration)
+        task.dependsOn(project.javadoc, project.readProjectConfiguration, project.prepareForRelease)
     }
 
     private void prepareAvailableArtifactsInfoTask(Project project) {
@@ -125,10 +124,8 @@ class AndroidReleasePlugin implements Plugin<Project>{
             conf.mailMessageFile.location.write(result.toString(), "utf-8")
             logger.lifecycle("Mail message file created: ${conf.mailMessageFile}")
         }
-        task.dependsOn(project.readProjectConfiguration)
-        task.dependsOn(project.prepareAvailableArtifactsInfo)
-        def sendMailTask = project.sendMailMessage
-        sendMailTask.dependsOn(task)
+        task.dependsOn(project.readProjectConfiguration, project.prepareAvailableArtifactsInfo, project.prepareForRelease)
+        project.sendMailMessage.dependsOn(task)
     }
 
     private prepareFileIndexArtifact(String otaFolderPrefix) {

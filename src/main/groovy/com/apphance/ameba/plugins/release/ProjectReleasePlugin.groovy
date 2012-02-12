@@ -33,8 +33,11 @@ class ProjectReleasePlugin implements Plugin<Project> {
 
     void apply(Project project) {
         projectHelper = new ProjectHelper()
+        use (PropertyCategory) {
+            conf = project.getProjectConfiguration()
+        }
         prepareMailConfiguration(project)
-        preparePrepareReleaseTask(project)
+        preparePrepareForReleaseTask(project)
         prepareVerifyReleaseNotesTask(project)
         prepareImageMontageTask(project)
         prepareSendMailMessageTask(project)
@@ -101,7 +104,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
                 location : new File(conf.targetDirectory, "_res/trans.png"))
     }
 
-    def void preparePrepareReleaseTask(Project project) {
+    def void preparePrepareForReleaseTask(Project project) {
         def task = project.task('prepareForRelease')
         task.group= AmebaCommonBuildTaskGroups.AMEBA_RELEASE
         task.description = "Prepares project for release"
