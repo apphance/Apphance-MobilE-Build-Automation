@@ -100,7 +100,7 @@ ios.kif.configuration=Kif
     }
 
     @Test
-    void testIOSFoneMonkeyPropertyComments () {
+    void testIOSKIFPropertyComments () {
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
@@ -114,6 +114,7 @@ ios.kif.configuration=Kif
 ''',s)
         }
     }
+
     @Test
     void testIOSFoneMonkeyPropertyNoComments () {
         use (PropertyCategory) {
@@ -129,8 +130,9 @@ ios.fonemonkey.configuration=FoneMonkey
         }
     }
 
+
     @Test
-    void testIOSKIFPropertyComments () {
+    void testIOSFoneMonkeyPropertyComments () {
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
@@ -141,6 +143,30 @@ ios.fonemonkey.configuration=FoneMonkey
 ###########################################################
 # FoneMonkey build configuration [optional] default: <Debug>
 ios.fonemonkey.configuration=FoneMonkey
+''',s)
+        }
+    }
+
+    @Test
+    void testIOSFrameworkPropertyNoComments () {
+        use (PropertyCategory) {
+            ProjectBuilder projectBuilder = ProjectBuilder.builder()
+            Project project = projectBuilder.build()
+            project['ios.framework.target'] = "Target"
+            project['ios.framework.configuration'] = "Debug"
+            project['ios.framework.version'] = "A"
+            project['ios.framework.headers'] = "Headers/test.h, Headers/test2.h"
+            project['ios.framework.resources'] = "Resources/x.png"
+            String s = project.listPropertiesAsString(IOSFrameworkProperty.class, false)
+            println s
+            assertEquals('''###########################################################
+# iOS Framework properties
+###########################################################
+ios.framework.target=Target
+ios.framework.configuration=Debug
+ios.framework.version=A
+ios.framework.headers=Headers/test.h, Headers/test2.h
+ios.framework.resources=Resources/x.png
 ''',s)
         }
     }
