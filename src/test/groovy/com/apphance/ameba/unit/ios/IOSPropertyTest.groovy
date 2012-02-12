@@ -2,14 +2,16 @@ package com.apphance.ameba.unit.ios;
 
 import static org.junit.Assert.*;
 
-import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.Test;
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Test
+
 
 
 import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.ios.IOSProjectProperty;
 import com.apphance.ameba.ios.plugins.fonemonkey.IOSFoneMonkeyProperty;
+import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty;
 import com.apphance.ameba.ios.plugins.kif.IOSKifProperty;
 
 class IOSPropertyTest {
@@ -139,6 +141,35 @@ ios.fonemonkey.configuration=FoneMonkey
 ###########################################################
 # FoneMonkey build configuration [optional] default: <Debug>
 ios.fonemonkey.configuration=FoneMonkey
+''',s)
+        }
+    }
+
+    @Test
+    void testIOSFrameworkPropertyComments () {
+        use (PropertyCategory) {
+            ProjectBuilder projectBuilder = ProjectBuilder.builder()
+            Project project = projectBuilder.build()
+            project['ios.framework.target'] = "Target"
+            project['ios.framework.configuration'] = "Debug"
+            project['ios.framework.version'] = "A"
+            project['ios.framework.headers'] = "Headers/test.h, Headers/test2.h"
+            project['ios.framework.resources'] = "Resources/x.png"
+            String s = project.listPropertiesAsString(IOSFrameworkProperty.class, true)
+            println s
+            assertEquals('''###########################################################
+# iOS Framework properties
+###########################################################
+# Target to build framework project with
+ios.framework.target=Target
+# Configuration to build framework project with [optional] default: <Debug>
+ios.framework.configuration=Debug
+# Version of framework (usually single alphabet letter A) [optional] default: <A>
+ios.framework.version=A
+# List of headers (coma separated) that should be copied to the framework
+ios.framework.headers=Headers/test.h, Headers/test2.h
+# List of resources (coma separated) that should be copied to the framework
+ios.framework.resources=Resources/x.png
 ''',s)
         }
     }
