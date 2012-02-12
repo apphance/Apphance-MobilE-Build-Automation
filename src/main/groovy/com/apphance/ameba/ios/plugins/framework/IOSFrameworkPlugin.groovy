@@ -8,6 +8,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 
+
 /**
  * Plugin for preparing reports after successful build.
  *
@@ -17,5 +18,8 @@ class IOSFrameworkPlugin implements Plugin<Project> {
 
     def void apply (Project project) {
         project.task('buildFramework', type: IOSBuildFrameworkTask)
+        project.task('verifyFrameworkSetup', type: VerifyFrameworkSetupTask.class)
+        project.task('prepareFrameworkSetup', type: PrepareFrameworkSetupTask.class)
+        project.task('showFrameworkSetup', type: ShowFrameworkSetupTask.class)
     }
 }
