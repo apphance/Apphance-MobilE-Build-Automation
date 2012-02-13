@@ -53,7 +53,7 @@ project.country=PL
 ###########################################################
 # Path to project's icon file
 project.icon.file=Icon.png
-# Base project URL where the artifacts will be available when released (for example http://example.com/) [optional] default: <>
+# Base project URL where the artifacts will be available when released (for example http://example.com/)
 project.url.base=http://example.com
 # Name of subdirectory (at base url) where the artifacts will be placed (for example "testproject" leads to http://example.com/testproject)
 project.directory.name=subproject
