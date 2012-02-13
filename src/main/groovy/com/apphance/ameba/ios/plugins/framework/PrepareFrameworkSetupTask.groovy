@@ -48,7 +48,7 @@ class PrepareFrameworkSetupTask extends AbstractPrepareSetupTask {
                         project.getProjectPropertyFromUser(it, null, br)
                 }
             }
-            appendToGeneratedPropertyString(project.listPropertiesAsString(IOSFrameworkProperty.class, false))
+            appendProperties()
         }
     }
 

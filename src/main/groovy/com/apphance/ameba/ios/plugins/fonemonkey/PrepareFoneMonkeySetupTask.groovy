@@ -36,7 +36,7 @@ class PrepareFoneMonkeySetupTask extends AbstractPrepareSetupTask {
                         project.getProjectPropertyFromUser(it, null, br)
                 }
             }
-            appendToGeneratedPropertyString(project.listPropertiesAsString(IOSFoneMonkeyProperty.class, false))
+            appendProperties()
         }
     }
 }

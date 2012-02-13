@@ -17,6 +17,7 @@ class AbstractPrepareSetupTask extends DefaultTask {
 
     AbstractPrepareSetupTask(Class<? extends Enum> clazz) {
         use (PropertyCategory) {
+            this.clazz = clazz
             this.propertyDescription = clazz.getField('DESCRIPTION').get(null)
             this.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
             this.description = "Walks you through setup of the ${propertyDescription} of the project."
@@ -26,8 +27,9 @@ class AbstractPrepareSetupTask extends DefaultTask {
         }
     }
 
-    void appendToGeneratedPropertyString(String propertyString) {
+    void appendProperties() {
         use (PropertyCategory) {
+            String propertyString = project.listPropertiesAsString(clazz, false)
             String oldValue = project.readProperty(GENERATED_GRADLE_PROPERTIES, '')
             String newValue = oldValue + propertyString
             project[GENERATED_GRADLE_PROPERTIES] = newValue

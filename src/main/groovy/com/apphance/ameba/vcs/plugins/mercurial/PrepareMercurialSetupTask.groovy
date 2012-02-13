@@ -24,7 +24,7 @@ class PrepareMercurialSetupTask extends AbstractPrepareSetupTask {
             MercurialProperty.each {
                 project.getProjectPropertyFromUser(it, null, br)
             }
-            appendToGeneratedPropertyString(project.listPropertiesAsString(MercurialProperty.class, false))
+            appendProperties()
         }
     }
 }

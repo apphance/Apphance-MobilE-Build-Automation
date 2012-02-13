@@ -22,38 +22,36 @@ class PrepareIOSSetupTask extends AbstractPrepareSetupTask {
     @TaskAction
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
+        def plistFiles = getPlistFiles()
         use (PropertyCategory) {
             IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
             IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
-            def plistFiles = getPlistFiles()
-            use (PropertyCategory) {
-                IOSProjectProperty.each {
-                    switch (it) {
-                        case IOSProjectProperty.PLIST_FILE:
-                            project.getProjectPropertyFromUser(it, plistFiles, br)
-                            break
-                        case IOSProjectProperty.IOS_FAMILIES:
-                            project.getProjectPropertyFromUser(it, IOSPlugin.FAMILIES, br)
-                            break
-                        case IOSProjectProperty.IOS_SDK:
-                            project.getProjectPropertyFromUser(it, iosConf.allIphoneSDKs, br)
-                            break
-                        case IOSProjectProperty.IOS_SIMULATOR_SDK:
-                            project.getProjectPropertyFromUser(it, iosConf.allIphoneSimulatorSDKs, br)
-                            break
-                        case IOSProjectProperty.MAIN_TARGET:
-                            project.getProjectPropertyFromUser(it, iosConf.targets, br)
-                            break
-                        case IOSProjectProperty.MAIN_CONFIGURATION:
-                            project.getProjectPropertyFromUser(it, iosConf.configurations, br)
-                            break
-                        default:
-                            project.getProjectPropertyFromUser(it, null, br)
-                    }
+            IOSProjectProperty.each {
+                switch (it) {
+                    case IOSProjectProperty.PLIST_FILE:
+                        project.getProjectPropertyFromUser(it, plistFiles, br)
+                        break
+                    case IOSProjectProperty.IOS_FAMILIES:
+                        project.getProjectPropertyFromUser(it, IOSPlugin.FAMILIES, br)
+                        break
+                    case IOSProjectProperty.IOS_SDK:
+                        project.getProjectPropertyFromUser(it, iosConf.allIphoneSDKs, br)
+                        break
+                    case IOSProjectProperty.IOS_SIMULATOR_SDK:
+                        project.getProjectPropertyFromUser(it, iosConf.allIphoneSimulatorSDKs, br)
+                        break
+                    case IOSProjectProperty.MAIN_TARGET:
+                        project.getProjectPropertyFromUser(it, iosConf.targets, br)
+                        break
+                    case IOSProjectProperty.MAIN_CONFIGURATION:
+                        project.getProjectPropertyFromUser(it, iosConf.configurations, br)
+                        break
+                    default:
+                        project.getProjectPropertyFromUser(it, null, br)
                 }
-                appendToGeneratedPropertyString(project.listPropertiesAsString(IOSProjectProperty.class, false))
             }
+            appendProperties()
         }
     }
 

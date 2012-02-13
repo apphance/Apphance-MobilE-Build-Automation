@@ -26,7 +26,7 @@ class PrepareReleaseSetupTask extends AbstractPrepareSetupTask {
             ProjectReleaseProperty.each {
                 project.getProjectPropertyFromUser(it, null, br)
             }
-            appendToGeneratedPropertyString(project.listPropertiesAsString(ProjectReleaseProperty.class, false))
+            appendProperties()
         }
     }
 }

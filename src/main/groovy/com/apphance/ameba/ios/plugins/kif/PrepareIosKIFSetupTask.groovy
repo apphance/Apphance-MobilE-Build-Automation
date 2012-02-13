@@ -35,7 +35,7 @@ class PrepareIosKIFSetupTask extends AbstractPrepareSetupTask {
                         project.getProjectPropertyFromUser(it, null, br)
                 }
             }
-            appendToGeneratedPropertyString(project.listPropertiesAsString(IOSKifProperty.class, false))
+            appendProperties()
         }
     }
 }

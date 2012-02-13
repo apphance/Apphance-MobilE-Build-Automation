@@ -24,7 +24,7 @@ class PrepareGitSetupTask extends AbstractPrepareSetupTask {
             GitProperty.each {
                 project.getProjectPropertyFromUser(it, null, br)
             }
-            appendToGeneratedPropertyString(project.listPropertiesAsString(GitProperty.class, false))
+            appendProperties()
         }
     }
 }
