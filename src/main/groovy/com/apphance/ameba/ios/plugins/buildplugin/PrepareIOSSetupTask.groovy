@@ -27,13 +27,7 @@ class PrepareIOSSetupTask extends AbstractPrepareSetupTask {
             IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
             use (PropertyCategory) {
-                def plistFiles = []
-                new File('.').eachFileRecurse(FileType.FILES) {
-                    if (it.name.endsWith(".plist")) {
-                        def path = it.path.startsWith("./") ? it.path.substring(2) : it.path
-                        plistFiles << path
-                    }
-                }
+                def plistFiles = getPlistFiles()
                 IOSProjectProperty.each {
                     switch (it) {
                         case IOSProjectProperty.PLIST_FILE:
@@ -61,5 +55,16 @@ class PrepareIOSSetupTask extends AbstractPrepareSetupTask {
                 appendToGeneratedPropertyString(project.listPropertiesAsString(IOSProjectProperty.class, false))
             }
         }
+    }
+
+    private List getPlistFiles() {
+        def plistFiles = []
+        new File('.').eachFileRecurse(FileType.FILES) {
+            if (it.name.endsWith(".plist")) {
+                def path = it.path.startsWith("./") ? it.path.substring(2) : it.path
+                plistFiles << path
+            }
+        }
+        return plistFiles
     }
 }
