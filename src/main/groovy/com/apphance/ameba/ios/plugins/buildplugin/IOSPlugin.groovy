@@ -2,7 +2,6 @@ package com.apphance.ameba.ios.plugins.buildplugin;
 
 
 
-import groovy.io.FileType
 
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -78,8 +77,9 @@ class IOSPlugin implements Plugin<Project> {
                 iosConf.mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
                 iosConf.sdk = project.readProperty(IOSProjectProperty.IOS_SDK)
                 iosConf.simulatorsdk = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK)
-                iosConf.plistFile = new File(this.pListFileName)
-                iosConf.distributionDirectory =  new File(project.rootDir, project.readProperty(IOSProjectProperty.DISTRIBUTION_DIR))
+                iosConf.plistFile = pListFileName == null ? null : new File(this.pListFileName)
+                String distDirName = project.readProperty(IOSProjectProperty.DISTRIBUTION_DIR)
+                iosConf.distributionDirectory = distDirName == null ? null : new File(project.rootDir, distDirName)
                 iosConf.families = project.readProperty(IOSProjectProperty.IOS_FAMILIES).split(",")*.trim()
                 iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
                 if (iosConf.plistFile != null) {
@@ -137,27 +137,29 @@ class IOSPlugin implements Plugin<Project> {
         task.description = 'Reads iOS project version information'
         task << {
             use (PropertyCategory) {
-                this.pListFileName = project['ios.plist.file']
+                this.pListFileName = project.readProperty(IOSProjectProperty.PLIST_FILE)
                 def root = getParsedPlist(project)
-                XPathAPI.selectNodeList(root,
-                        '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
-                            conf.versionString =  it.nextSibling.nextSibling.textContent
-                        }
-                XPathAPI.selectNodeList(root,
-                        '/plist/dict/key[text()="CFBundleVersion"]').each{
-                            def versionCodeString = it.nextSibling.nextSibling.textContent
-                            try {
-                                conf.versionCode = versionCodeString.toInteger()
-                            } catch (NumberFormatException e) {
-                                logger.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
-                                conf.versionCode = 0
+                if (root != null) {
+                    XPathAPI.selectNodeList(root,
+                            '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
+                                conf.versionString =  it.nextSibling.nextSibling.textContent
                             }
-                        }
-                if (!project.isPropertyOrEnvironmentVariableDefined('version.string')) {
-                    logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
-                    conf.versionString = conf.versionString + "-SNAPSHOT"
-                } else {
-                    logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
+                    XPathAPI.selectNodeList(root,
+                            '/plist/dict/key[text()="CFBundleVersion"]').each{
+                                def versionCodeString = it.nextSibling.nextSibling.textContent
+                                try {
+                                    conf.versionCode = versionCodeString.toInteger()
+                                } catch (NumberFormatException e) {
+                                    logger.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
+                                    conf.versionCode = 0
+                                }
+                            }
+                    if (!project.isPropertyOrEnvironmentVariableDefined('version.string')) {
+                        logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
+                        conf.versionString = conf.versionString + "-SNAPSHOT"
+                    } else {
+                        logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
+                    }
                 }
             }
         }
@@ -200,8 +202,10 @@ class IOSPlugin implements Plugin<Project> {
 
 
     private org.w3c.dom.Element getParsedPlist(Project project) {
+        if (pListFileName == null) {
+            return null
+        }
         File pListFile = new File("${project.rootDir}/${pListFileName}")
-        logger.debug("Reading file " + pListFile)
         return new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
     }
 

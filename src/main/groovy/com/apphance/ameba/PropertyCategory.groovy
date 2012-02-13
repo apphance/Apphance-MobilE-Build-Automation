@@ -68,8 +68,13 @@ class PropertyCategory {
             project[property.propertyName] = property.defaultValue
         }
         System.out.println(s)
-        System.out.print("[${project[property.propertyName]}] > ")
-        System.out.flush()
+        if (project.hasProperty(property.propertyName)) {
+            System.out.print("[${project[property.propertyName]}] > ")
+            System.out.flush()
+        } else {
+            System.out.print(" > ")
+            System.out.flush()
+        }
         String newValue = br.readLine()
         if (!newValue.isEmpty()) {
             project[property.propertyName] = newValue
@@ -144,10 +149,12 @@ class PropertyCategory {
     public static void retrieveBasicProjectData(Project project) {
         use (PropertyCategory) {
             ProjectConfiguration conf = getProjectConfiguration(project)
-            conf.projectName = project.readExpectedProperty(ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY)
-            conf.projectDirectoryName = project.readExpectedProperty(BaseProperty.PROJECT_DIRECTORY)
-            conf.baseUrl = new URL(project.readExpectedProperty(BaseProperty.PROJECT_URL))
-            conf.iconFile = new File(project.rootDir,project.readExpectedProperty(BaseProperty.PROJECT_ICON_FILE))
+            conf.projectName = project.readProperty(ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY)
+            conf.projectDirectoryName = project.readProperty(BaseProperty.PROJECT_DIRECTORY)
+            def url = project.readProperty(BaseProperty.PROJECT_URL)
+            conf.baseUrl = url == null ? null : new URL(url)
+            def iconFile = project.readProperty(BaseProperty.PROJECT_ICON_FILE)
+            conf.iconFile = iconFile == null ? null : new File(project.rootDir,iconFile)
             project.retrieveLocale()
             conf.releaseNotes = project.readReleaseNotes()?.tokenize(",")
         }
