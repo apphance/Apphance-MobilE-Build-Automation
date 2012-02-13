@@ -25,9 +25,9 @@ class PrepareFrameworkSetupTask extends AbstractPrepareSetupTask {
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+        def headerFiles = getHeaderFiles()
+        def resourceFiles = getResourceFiles()
         use (PropertyCategory) {
-            def headerFiles = getHeaderFiles()
-            def resourceFiles = getResourceFiles()
             IOSFrameworkProperty.each {
                 IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
                 IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)

@@ -26,8 +26,8 @@ class PrepareIOSSetupTask extends AbstractPrepareSetupTask {
             IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
             IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+            def plistFiles = getPlistFiles()
             use (PropertyCategory) {
-                def plistFiles = getPlistFiles()
                 IOSProjectProperty.each {
                     switch (it) {
                         case IOSProjectProperty.PLIST_FILE:

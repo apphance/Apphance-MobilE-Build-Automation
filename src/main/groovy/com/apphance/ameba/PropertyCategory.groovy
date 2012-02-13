@@ -60,12 +60,12 @@ class PropertyCategory {
         }
         if (project.hasProperty(property.propertyName)) {
             // skip setting = we already have some value
-        } else if (options != null) {
-            // if we have some options - choose first
-            project[property.propertyName] = options[0]
         } else if (property.defaultValue != null) {
-            // or choose default if none of the above
+            // or choose default if exists
             project[property.propertyName] = property.defaultValue
+        } else if (options != null) {
+            // or pre-select first option if present
+            project[property.propertyName] = options[0]
         }
         System.out.println(s)
         if (project.hasProperty(property.propertyName)) {
