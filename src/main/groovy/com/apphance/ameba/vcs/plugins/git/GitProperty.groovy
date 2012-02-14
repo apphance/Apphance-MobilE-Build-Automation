@@ -1,7 +1,7 @@
 package com.apphance.ameba.vcs.plugins.git
 
 enum GitProperty {
-    COMMIT_USER("git.branch", "Branch which is used for git operations", 'master')
+    GIT_BRANCH("git.branch", "Branch which is used for git operations", 'master')
     public static final String DESCRIPTION = "Git properties"
     private final String propertyName
     private final String description
