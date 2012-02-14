@@ -172,12 +172,16 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
                 "gravity southwest fill black text 0,12 '${conf.projectName} Version: ${conf.fullVersionString} Generated: ${conf.buildDate}'",
                 imageMontageFile
             ]
-            projectHelper.executeCommand(project,convertCommand)
-            def imageMontageFileArtifact = new AmebaArtifact(
-                    name : "Image Montage",
-                    url : new URL(conf.versionedApplicationUrl, "${imageMontageFile.name}"),
-                    location : imageMontageFile)
-            conf.imageMontageFile = imageMontageFileArtifact
+            try {
+                projectHelper.executeCommand(project,convertCommand)
+                def imageMontageFileArtifact = new AmebaArtifact(
+                        name : "Image Montage",
+                        url : new URL(conf.versionedApplicationUrl, "${imageMontageFile.name}"),
+                        location : imageMontageFile)
+                conf.imageMontageFile = imageMontageFileArtifact
+            } catch (Exception e) {
+                logger.lifecycle("The convert binary execution failed: skipping image montage preparation. Add convert (ImageMagick) binary to the path to get image montage.")
+            }
         }
         task.dependsOn(project.readProjectConfiguration, project.prepareForRelease)
     }
