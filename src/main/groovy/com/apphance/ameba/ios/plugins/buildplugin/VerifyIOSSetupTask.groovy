@@ -34,6 +34,8 @@ class VerifyIOSSetupTask extends AbstractVerifySetupTask {
             checkDistributionDir()
             checkTargetsAndConfigurations()
             checkSDKs()
+            checkMainTarget()
+            checkMainConfiguration()
             allPropertiesOK()
         }
     }
@@ -42,34 +44,37 @@ class VerifyIOSSetupTask extends AbstractVerifySetupTask {
         use (PropertyCategory) {
             File plistFile = new File(project.rootDir,project.readExpectedProperty(IOSProjectProperty.PLIST_FILE))
             if (!plistFile.exists() || !plistFile.isFile()) {
-                throw new GradleException("""The plist file (${plistFile}) does not exist
- or is not a file. Please run 'gradle prepareSetup' to correct it.""")
+                throw new GradleException("""The plist file ${IOSProjectProperty.PLIST_FILE.propertyName}:${plistFile}) does not exist or is not a file. Please run 'gradle prepareSetup' to correct it.""")
             }
         }
     }
     void checkSDKs() {
-        if (!iosConf.allIphoneSDKs.contains(iosConf.sdk)) {
-            throw new GradleException("iPhone sdk ${iosConf.sdk} is not on the list of sdks ${iosConf.allIphoneSDKs}")
-        }
-        if (!iosConf.allIphoneSimulatorSDKs.contains(iosConf.simulatorsdk)) {
-            throw new GradleException("iPhone sdk ${iosConf.simulatorsdk} is not on the list of sdks ${iosConf.allIphoneSimulatorSDKs}")
+        use (PropertyCategory){
+            String sdk = project.readProperty(IOSProjectProperty.IOS_SDK)
+            if (!iosConf.allIphoneSDKs.contains(sdk)) {
+                throw new GradleException("iPhone sdk ${IOSProjectProperty.IOS_SDK.propertyName}:${sdk} is not on the list of sdks ${iosConf.allIphoneSDKs}")
+            }
+            String simulatorsdk = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK)
+            if (!iosConf.allIphoneSimulatorSDKs.contains(simulatorsdk)) {
+                throw new GradleException("iPhone simulator sdk ${IOSProjectProperty.IOS_SIMULATOR_SDK.propertyName}: ${simulatorsdk} is not on the list of sdks ${iosConf.allIphoneSimulatorSDKs}")
+            }
         }
     }
 
     void checkDistributionDir() {
-        if (!iosConf.distributionDirectory.exists() || !iosConf.distributionDirectory.isDirectory()) {
-            throw new GradleException("""The distribution resources directory (${iosConf.distributionDirectory})
-does not exist or is not a directory. Please run 'gradle prepareSetup' to correct it.""")
-        }
-        boolean hasMobileProvision = false
-        iosConf.distributionDirectory.list().each {
-            if (it.endsWith('.mobileprovision')) {
-                hasMobileProvision = true
+        use (PropertyCategory) {
+            if (!iosConf.distributionDirectory.exists() || !iosConf.distributionDirectory.isDirectory()) {
+                throw new GradleException("""The distribution resources directory (${iosConf.distributionDirectory}) does not exist or is not a directory. Please run 'gradle prepareSetup' to correct it.""")
             }
-        }
-        if (!hasMobileProvision) {
-            throw new GradleException("""The distribution resources directory (${iosConf.distributionDirectory})
-should contain at least one .mobileprovision file. """)
+            boolean hasMobileProvision = false
+            iosConf.distributionDirectory.list().each {
+                if (it.endsWith('.mobileprovision')) {
+                    hasMobileProvision = true
+                }
+            }
+            if (!hasMobileProvision) {
+                throw new GradleException("""The distribution resources directory (${iosConf.distributionDirectory}) should contain at least one .mobileprovision file. """)
+            }
         }
     }
 
@@ -78,8 +83,26 @@ should contain at least one .mobileprovision file. """)
             String[] families = project.readProperty(IOSProjectProperty.IOS_FAMILIES).split(',')
             families.each { family ->
                 if (!IOSPlugin.FAMILIES.contains(family)) {
-                    throw new GradleException("""The family in ${families} can only be one of ${IOSPlugin.FAMILIES}""")
+                    throw new GradleException("""The family in ${IOSProjectProperty.IOS_FAMILIES.propertyName}: ${families} can only be one of ${IOSPlugin.FAMILIES}""")
                 }
+            }
+        }
+    }
+
+    void checkMainTarget() {
+        use (PropertyCategory) {
+            String mainTarget = project.readProperty(IOSProjectProperty.MAIN_TARGET)
+            if (!iosConf.alltargets.contains(mainTarget)) {
+                throw new GradleException("""The main target in ${IOSProjectProperty.MAIN_TARGET.propertyName}: ${mainTarget} can only be one of ${iosConf.alltargets}""")
+            }
+        }
+    }
+
+    void checkMainConfiguration() {
+        use (PropertyCategory) {
+            String mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
+            if (!iosConf.allconfigurations.contains(mainConfiguration)) {
+                throw new GradleException("""The main configuration in ${IOSProjectProperty.MAIN_CONFIGURATION.propertyName}: ${mainConfiguration} can only be one of ${iosConf.allconfigurations}""")
             }
         }
     }

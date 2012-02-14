@@ -206,6 +206,9 @@ class IOSPlugin implements Plugin<Project> {
             return null
         }
         File pListFile = new File("${project.rootDir}/${pListFileName}")
+        if (!pListFile.exists()) {
+            return null
+        }
         return new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
     }
 

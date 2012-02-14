@@ -19,9 +19,10 @@ class RunShowVerifySetupTest {
             ByteArrayOutputStream os = new ByteArrayOutputStream()
             BuildLauncher bl = connection.newBuild().forTasks(tasks);
             bl.setStandardOutput(os)
-            bl.run();
+            bl.run()
             def res = os.toString("UTF-8")
             println res
+            assertTrue(res.contains('BUILD SUCCESSFUL'))
             return res
         } finally {
             connection.close();
