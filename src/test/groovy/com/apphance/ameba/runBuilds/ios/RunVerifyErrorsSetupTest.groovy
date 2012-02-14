@@ -140,4 +140,9 @@ class RunVerifyErrorsSetupTest {
     void testFrameworkHeaders() {
         runErrorScenario(/^(ios\.framework\.headers.*)=(.*)$/,'$1=build.gradle,missing_header.h', 'The file is missing')
     }
+
+    @Test
+    void testKIFConfiguration() {
+        runErrorScenario(/^(ios\.kif\.configuration.*)=(.*)$/,'$1=missingconfiguration', 'kif configuration')
+    }
 }
