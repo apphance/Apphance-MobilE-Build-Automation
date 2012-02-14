@@ -145,4 +145,20 @@ class RunVerifyErrorsSetupTest {
     void testKIFConfiguration() {
         runErrorScenario(/^(ios\.kif\.configuration.*)=(.*)$/,'$1=missingconfiguration', 'kif configuration')
     }
+
+
+    @Test
+    void testMailFrom() {
+        runErrorScenario(/^(release\.mail\.from.*)=(.*)$/,'$1=wrongmail@test', 'The email in')
+    }
+
+    @Test
+    void testMailTo() {
+        runErrorScenario(/^(release\.mail\.to.*)=(.*)$/,'$1=wrongmail@test', 'The email in')
+    }
+
+    @Test
+    void testMailFlags() {
+        runErrorScenario(/^(release\.mail\.flags.*)=(.*)$/,'$1=qrCode,zzzz', 'flags')
+    }
 }
