@@ -1,4 +1,4 @@
-package com.apphance.ameba.android.plugins.buildplugin
+package com.apphance.ameba.android.plugins.test
 
 
 import org.gradle.api.logging.Logger
@@ -9,11 +9,11 @@ import com.apphance.ameba.AbstractPrepareSetupTask
 import com.apphance.ameba.PropertyCategory
 
 
-class PrepareAndroidSetupTask extends AbstractPrepareSetupTask {
-    Logger logger = Logging.getLogger(PrepareAndroidSetupTask.class)
+class PrepareAndroidTestSetupTask extends AbstractPrepareSetupTask {
+    Logger logger = Logging.getLogger(PrepareAndroidTestSetupTask.class)
 
-    PrepareAndroidSetupTask() {
-        super(AndroidProjectProperty.class)
+    PrepareAndroidTestSetupTask() {
+        super(AndroidTestProperty.class)
     }
 
     @TaskAction
@@ -22,7 +22,7 @@ class PrepareAndroidSetupTask extends AbstractPrepareSetupTask {
         def plistFiles = getPlistFiles()
         use (PropertyCategory) {
             BufferedReader br = getReader()
-            AndroidProjectProperty.each {
+            AndroidTestProperty.each {
                 switch (it) {
                     default:
                         project.getProjectPropertyFromUser(it, null, br)
