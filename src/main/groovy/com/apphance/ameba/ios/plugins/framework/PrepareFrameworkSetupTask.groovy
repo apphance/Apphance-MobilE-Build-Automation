@@ -24,7 +24,7 @@ class PrepareFrameworkSetupTask extends AbstractPrepareSetupTask {
     @TaskAction
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+        BufferedReader br = getReader()
         def headerFiles = getHeaderFiles()
         def resourceFiles = getResourceFiles()
         use (PropertyCategory) {

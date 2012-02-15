@@ -23,7 +23,7 @@ class PrepareFoneMonkeySetupTask extends AbstractPrepareSetupTask {
     @TaskAction
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+        BufferedReader br = getReader()
         use (PropertyCategory) {
             IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
             IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)

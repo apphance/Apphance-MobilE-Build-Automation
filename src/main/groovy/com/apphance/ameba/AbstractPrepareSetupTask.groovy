@@ -10,6 +10,14 @@ import com.apphance.ameba.PropertyCategory;
 
 class AbstractPrepareSetupTask extends DefaultTask {
 
+    private static BufferedReader br = null
+    public static BufferedReader getReader() {
+        if (br == null) {
+            br = new BufferedReader(new InputStreamReader(System.in))
+        }
+        return br
+    }
+
     public static final String GENERATED_GRADLE_PROPERTIES = 'generated.gradle.properties'
     Logger logger = Logging.getLogger(AbstractPrepareSetupTask.class)
     String propertyDescription

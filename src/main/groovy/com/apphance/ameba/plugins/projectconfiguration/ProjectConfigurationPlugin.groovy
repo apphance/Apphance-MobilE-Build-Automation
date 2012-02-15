@@ -69,9 +69,9 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
                 System.out.println("About to write new properties to gradle.properties:")
                 System.out.println(propertiesToWrite)
                 System.out.println("Are you sure y/n?")
-                BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+                BufferedReader br = AbstractPrepareSetupTask.getReader()
                 String answer = br.readLine()
-                File f = new File('gradle.properties')
+                File f = new File(project.rootDir,'gradle.properties')
                 if (answer == 'y') {
                     f.delete()
                     f << propertiesToWrite

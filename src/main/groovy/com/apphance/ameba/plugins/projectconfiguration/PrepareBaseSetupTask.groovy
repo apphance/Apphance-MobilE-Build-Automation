@@ -35,7 +35,7 @@ class PrepareBaseSetupTask extends AbstractPrepareSetupTask {
                 files << path
             }
         }
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+        BufferedReader br = getReader()
         use(PropertyCategory) {
             BaseProperty.each {
                 if (it == BaseProperty.PROJECT_ICON_FILE) {
