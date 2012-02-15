@@ -94,7 +94,7 @@ class AndroidTestPlugin implements Plugin<Project>{
             emulatorSnapshotsEnabled = project.readProperty(AndroidTestProperty.EMULATOR_SNAPSHOT_ENABLED).toBoolean()
             useEmma =  project.readProperty(AndroidTestProperty.USE_EMMA).toBoolean()
             testPerPackage = project.readProperty(AndroidTestProperty.TEST_PER_PACKAGE).toBoolean()
-            emulatorNoWindow project.readProperty(AndroidTestProperty.EMULATOR_NO_WINDOW).toBoolean()
+            emulatorNoWindow = project.readProperty(AndroidTestProperty.EMULATOR_NO_WINDOW).toBoolean()
         }
     }
 
