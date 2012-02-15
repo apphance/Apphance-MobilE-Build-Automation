@@ -11,6 +11,8 @@ import com.apphance.ameba.plugins.projectconfiguration.BaseProperty;
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
 class PropertyCategory {
+
+    public static final String PROJECT_CONFIGURATION_KEY = 'project.configuration'
     public static List<String> listProperties(Project project, Class<Enum> properties, boolean useComments) {
         String description = properties.getField('DESCRIPTION').get(null)
         List<String> s = []
@@ -140,10 +142,10 @@ class PropertyCategory {
     }
 
     public static ProjectConfiguration getProjectConfiguration(Project project){
-        if (!project.hasProperty('project.configuration')) {
-            project['project.configuration'] = new ProjectConfiguration()
+        if (!project.hasProperty(PROJECT_CONFIGURATION_KEY)) {
+            project[PROJECT_CONFIGURATION_KEY] = new ProjectConfiguration()
         }
-        return project['project.configuration']
+        return project[PROJECT_CONFIGURATION_KEY]
     }
 
     public static void retrieveBasicProjectData(Project project) {

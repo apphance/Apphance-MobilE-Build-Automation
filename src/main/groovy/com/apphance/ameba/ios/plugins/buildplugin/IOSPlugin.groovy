@@ -28,6 +28,10 @@ import com.sun.org.apache.xpath.internal.XPathAPI
  *
  */
 class IOSPlugin implements Plugin<Project> {
+
+    static final String IOS_CONFIGURATION_LOCAL_PROPERTY = 'ios.configuration'
+    static final String IOS_TARGET_LOCAL_PROPERTY = 'ios.target'
+
     static Logger logger = Logging.getLogger(IOSPlugin.class)
 
     String pListFileName
@@ -225,8 +229,8 @@ class IOSPlugin implements Plugin<Project> {
         task << {
             use (PropertyCategory) {
                 def singleReleaseBuilder = new IOSSingleReleaseBuilder(project, this.ant)
-                String target = project.readExpectedProperty("ios.target")
-                String configuration = project.readExpectedProperty("ios.configuration")
+                String target = project.readExpectedProperty(IOS_TARGET_LOCAL_PROPERTY)
+                String configuration = project.readExpectedProperty(IOS_CONFIGURATION_LOCAL_PROPERTY)
                 singleReleaseBuilder.buildRelease(project, target, configuration)
             }
         }

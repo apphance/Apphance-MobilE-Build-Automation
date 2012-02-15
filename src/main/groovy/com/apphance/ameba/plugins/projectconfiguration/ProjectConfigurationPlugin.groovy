@@ -117,7 +117,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task.description = "Shows project's configuration"
         task << {
-            logger.lifecycle( "Configuration: " + project['project.configuration'])
+            logger.lifecycle( "Configuration: " + project[PropertyCategory.PROJECT_CONFIGURATION_KEY])
         }
         task.dependsOn(project.readProjectConfiguration)
     }
