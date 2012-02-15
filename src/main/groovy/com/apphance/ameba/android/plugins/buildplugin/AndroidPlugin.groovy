@@ -1,8 +1,9 @@
 package com.apphance.ameba.android.plugins.buildplugin;
 
-import groovy.lang.Closure
+import groovy.util.FileNameFinder
 
-import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
 
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -64,6 +65,9 @@ class AndroidPlugin implements Plugin<Project> {
             prepareReplacePackageTask(project)
             addAndroidSourceExcludes()
             addAndroidVCSCommits()
+            project.task('prepareAndroidSetup', type:PrepareAndroidSetupTask)
+            project.task('verifyAndroidSetup', type: VerifyAndroidSetupTask)
+            project.task('showAndroidSetup', type: ShowAndroidSetupTask)
         }
     }
 
