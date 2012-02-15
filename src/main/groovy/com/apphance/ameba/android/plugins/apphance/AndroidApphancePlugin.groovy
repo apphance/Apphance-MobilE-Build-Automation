@@ -2,6 +2,7 @@ package com.apphance.ameba.android.plugins.apphance
 
 import java.io.File
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -71,10 +72,13 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     public void preprocessBuildsWithApphance(Project project) {
         project.tasks.each {  task ->
-            if (task.name.startsWith('buildDebug-')) {
-                task.doFirst { replaceLogsWithApphance(project) }
+            if (task.name.startsWith('buildDebug')) {
+                task.doFirst { 
+					replaceLogsWithApphance(project) 
+					addApphanceInit(project)	
+				}
             }
-            if (task.name.startsWith('buildRelease-')) {
+            if (task.name.startsWith('buildRelease')) {
                 task.doFirst {
                     removeApphanceFromManifest(project)
                     replaceLogsWithAndroid(project)
@@ -112,4 +116,32 @@ class AndroidApphancePlugin implements Plugin<Project>{
         apphanceRemovedManifest.delete()
         apphanceRemovedManifest << new File(project.rootDir,"AndroidManifest.xml").text
     }
+	
+	private addApphanceInit(Project project) {
+		String applicationName = manifestHelper.getApplicationName(project.rootDir)
+		applicationName = applicationName.replace('.', '/')
+		applicationName = applicationName + '.java'
+		applicationName = 'src//' + applicationName
+		if (new File(applicationName).exists()) {
+			System.out.println("Application found")
+		} else {
+			String mainActivityName = manifestHelper.getMainActivityName(project.rootDir)
+			mainActivityName = mainActivityName.replace('.', '/')
+			mainActivityName = mainActivityName + '.java'
+			mainActivityName = 'src/' + mainActivityName
+			if (!(new File(mainActivityName)).exists()) {
+				throw new GradleException("Application class and main activity not defined in Android manifest")
+			}
+			File activityFile = new File(mainActivityName)
+			
+			def lineToModification = []
+			activityFile.eachLine { line, lineNumber ->
+				if (line.contains('public void onCreate()')) {
+					lineToModification << lineNumber
+				}
+			}
+			System.out.println(lineToModification)
+		}
+		
+	}
 }

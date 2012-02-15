@@ -343,19 +343,15 @@ class AndroidPlugin implements Plugin<Project> {
     }
 
     void prepareBuildDebugOnlyTask(Project project) {
-        if (androidBuilder.hasVariants()) {
-            def task = project.task('buildDebug')
-            task.description = "Builds only debug variants"
-            task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        }
+        def task = project.task('buildAllDebug')
+        task.description = "Builds only debug variants"
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
     }
 
     void prepareBuildReleaseOnlyTask(Project project) {
-        if (androidBuilder.hasVariants()) {
-            def task = project.task('buildRelease')
-            task.description = "Builds only release variants"
-            task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        }
+        def task = project.task('buildAllRelease')
+        task.description = "Builds only release variants"
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
     }
 
     void prepareSingleVariant(Project project, String variant, String debugRelease) {
@@ -386,7 +382,7 @@ class AndroidPlugin implements Plugin<Project> {
         def task = project.task('buildAll')
         task.description = "Builds all variants"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        task.dependsOn(project.tasks['buildDebug'],project.tasks['buildRelease'])
+        task.dependsOn(project.tasks['buildAllDebug'],project.tasks['buildAllRelease'])
     }
 
     void prepareAllVariants(Project project) {

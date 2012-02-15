@@ -162,6 +162,52 @@ class AndroidManifestHelper {
         fileAgain.delete()
         fileAgain.write(root as String)
     }
+	
+	public String getMainActivityName(File projectDirectory) {
+		def file = new File("${projectDirectory}/AndroidManifest.xml")
+		
+		def manifest = new XmlSlurper().parse(file)
+		
+		String className = manifest.@package
+		String intentFilter = "intent-filter"
+		String androidName = "android:name"
+		
+		def mainActivity = manifest.application.activity.findAll {
+			if (it."${intentFilter}".size() > 0 && it."${intentFilter}".action.size() > 0 && it."${intentFilter}".category.size() > 0) {
+				it."${intentFilter}".action.@"${androidName}".text().equals('android.intent.action.MAIN')  &&
+				it."${intentFilter}".category.@"${androidName}".text().equals('android.intent.category.LAUNCHER')
+			}
+		}
+		if (mainActivity.size() > 0) {
+			if (!mainActivity[0].@"${androidName}".text().startsWith(".")) {
+				className = className + "."
+			}
+			if (mainActivity[0].@"${androidName}".text().startsWith(manifest.@package.text())) {
+				className = ""
+			}
+			className = className + mainActivity[0].@"${androidName}".text()
+		}
+
+		return className
+	}
+	
+	public String getApplicationName(File projectDirectory) {
+		def file = new File("${projectDirectory}/AndroidManifest.xml")
+		
+		def manifest = new XmlSlurper().parse(file)
+		String className = manifest.@package
+		
+		String androidName = "android:name"
+		String applicationName = manifest.application.@"${androidName}".text()
+		if (!applicationName.startsWith(".")) {
+			className = className + "."
+		}
+		if (applicationName.contains(manifest.@package.text())) {
+			className = ""
+		}
+		className = className + applicationName
+		return className
+	}
 
     void restoreOriginalManifest(File projectDirectory) {
         def file = new File("${projectDirectory}/AndroidManifest.xml")
