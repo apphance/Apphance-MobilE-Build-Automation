@@ -13,6 +13,7 @@ import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.apphance.ShowApphancePropertiesTask;
+import com.apphance.ameba.apphance.VerifyApphanceSetupTask;
 
 class AndroidApphancePlugin implements Plugin<Project>{
 
@@ -34,6 +35,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
             prepareRemoveApphaceFromManifest(project)
             prepareRestoreManifestBeforeApphance(project)
 			project.task('showApphanceProperties', type:ShowApphancePropertiesTask)
+			project.task('verifyApphanceSetup', type:VerifyApphanceSetupTask) 
         }
     }
 
