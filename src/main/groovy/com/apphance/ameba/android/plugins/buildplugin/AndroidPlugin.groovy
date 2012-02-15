@@ -30,6 +30,8 @@ import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugi
 class AndroidPlugin implements Plugin<Project> {
     static Logger logger = Logging.getLogger(AndroidPlugin.class)
 
+    static final String PROJECT_PROPERTIES_KEY = 'project.properties'
+
     ProjectHelper projectHelper
     ProjectConfiguration conf
     AndroidProjectConfigurationRetriever androidConfRetriever
@@ -123,45 +125,41 @@ class AndroidPlugin implements Plugin<Project> {
     }
 
     private void prepareAndroidEnvironment(Project project) {
-        logger.lifecycle("Running android update")
-        runUpdateRecursively(project, project.rootDir, false, true)
-        androidEnvironment = new AndroidEnvironment(project)
-        androidConf.sdkDirectory = new File(androidEnvironment.getAndroidProperty('sdk.dir'))
-        if (androidConf.sdkDirectory == null) {
-            def androidHome = System.getenv("ANDROID_HOME")
-            if (androidHome != null) {
-                androidConf.sdkDirectory = new File(androidHome)
+        use (PropertyCategory) {
+            logger.lifecycle("Running android update")
+            runUpdateRecursively(project, project.rootDir, false, true)
+            androidEnvironment = new AndroidEnvironment(project)
+            androidConf.sdkDirectory = new File(androidEnvironment.getAndroidProperty('sdk.dir'))
+            if (androidConf.sdkDirectory == null) {
+                def androidHome = System.getenv("ANDROID_HOME")
+                if (androidHome != null) {
+                    androidConf.sdkDirectory = new File(androidHome)
+                }
             }
-        }
-        if (androidConf.sdkDirectory == null) {
-            throw new GradleException('Unable to find location of Android SDK, either\
- set it in local.properties or in ANDROID_HOME environment variable')
-        }
-        androidConf.excludedBuilds = project.hasProperty('android.excluded.builds') ? project['android.excluded.builds'].split(",")*.trim() : []
-        def target = androidEnvironment.getAndroidProperty('target')
-        if (target == null) {
-            throw new GradleException("target is not defined. Please run 'android update project' or 'android create project' as appropriate")
-        }
-        androidConf.targetName = target
-        if (project.hasProperty('android.minSdk.target') && !project['android.minSdk.target'].empty) {
-            androidConf.minSdkTargetName = project['android.minSdk.target']
-        } else {
-            AndroidManifestHelper helper = new AndroidManifestHelper()
-            def targetVersion = helper.readMinSdkVersion(project.rootDir)
-            if (targetVersion != null) {
-                androidConf.minSdkTargetName = 'android-' + targetVersion
-            } else {
-                androidConf.minSdkTargetName = androidConf.targetName
+            if (androidConf.sdkDirectory == null) {
+                throw new GradleException('Unable to find location of Android SDK, either\
+     set it in local.properties or in ANDROID_HOME environment variable')
             }
+            androidConf.excludedBuilds = project.readProperty(AndroidProjectProperty.EXCLUDED_BUILDS)*.trim()
+            def target = androidEnvironment.getAndroidProperty('target')
+            if (target == null) {
+                throw new GradleException("target is not defined. Please run 'android update project' or 'android create project' as appropriate")
+            }
+            androidConf.targetName = target
+            androidConf.minSdkTargetName = project.readProperty(AndroidProjectProperty.MIN_SDK_TARGET)
+            if (androidConf.minSdkTargetName.empty) {
+                AndroidManifestHelper helper = new AndroidManifestHelper()
+                def targetVersion = helper.readMinSdkVersion(project.rootDir)
+                if (targetVersion != null) {
+                    androidConf.minSdkTargetName = 'android-' + targetVersion
+                } else {
+                    androidConf.minSdkTargetName = androidConf.targetName
+                }
+            }
+            logger.lifecycle("Min SDK target name = " + androidConf.minSdkTargetName)
+            updateSdkJars()
+            updateLibraryProjects(project.rootDir)
         }
-        logger.lifecycle("Min SDK target name = " + androidConf.minSdkTargetName)
-        if (project.hasProperty('android.test.emulator.target') && !project['android.test.emulator.target'].empty) {
-            androidConf.emulatorTargetName = project['android.test.emulator.target']
-        } else {
-            androidConf.emulatorTargetName = androidConf.targetName
-        }
-        updateSdkJars()
-        updateLibraryProjects(project.rootDir)
     }
 
     private void updateSdkJars() {
@@ -206,7 +204,7 @@ class AndroidPlugin implements Plugin<Project> {
             }
         }
         Properties prop = new Properties()
-        prop.load (new FileInputStream(new File(projectDir,'project.properties')))
+        prop.load (new FileInputStream(new File(projectDir,PROJECT_PROPERTIES_KEY)))
         prop.each { key, value ->
             if (key.startsWith('android.library.reference.')) {
                 File libraryProject = new File(projectDir, value)
@@ -236,7 +234,7 @@ class AndroidPlugin implements Plugin<Project> {
     private void runUpdateRecursively(Project project, File currentDir, boolean reRun, boolean silentLogging = false) {
         runUpdateProject(project, currentDir,reRun)
         Properties prop = new Properties()
-        prop.load (new FileInputStream(new File(currentDir,'project.properties')))
+        prop.load (new FileInputStream(new File(currentDir,PROJECT_PROPERTIES_KEY)))
         prop.each { key, value ->
             if (key.startsWith('android.library.reference.')) {
                 File libraryProject = new File(currentDir, value)

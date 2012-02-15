@@ -37,9 +37,8 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
             this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
             this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
             manifestHelper = new AndroidManifestHelper()
-            if (project.hasProperty('android.jarLibrary.resPrefix')) {
-                jarLibraryPrefix = project['android.jarLibrary.resPrefix']
-            } else {
+            jarLibraryPrefix = project.readProperty(AndroidJarLibraryProperty.RES_PREFIX)
+            if (jarLibraryPrefix == null) {
                 jarLibraryPrefix = this.androidConf.mainProjectName
             }
             prepareJarLibraryTask(project)

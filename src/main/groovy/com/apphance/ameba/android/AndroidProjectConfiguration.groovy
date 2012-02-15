@@ -18,7 +18,6 @@ import com.apphance.ameba.AmebaArtifact
 class AndroidProjectConfiguration {
     File sdkDirectory
     String targetName
-    String emulatorTargetName
     String minSdkTargetName
     String mainVariant
     Collection<String> variants
@@ -30,21 +29,8 @@ class AndroidProjectConfiguration {
     AmebaArtifact otaIndexFile
     AmebaArtifact fileIndexFile
     AmebaArtifact plainFileIndexFile
-    String emulatorSkin
-    String emulatorCardSize
-    boolean emulatorSnapshotsEnabled
-    boolean emulatorNoWindow
-    boolean emulatorUseVNC
-    boolean useEmma
-    boolean testPerPackage
-    String emulatorName
-    int emulatorPort
-    Process emulatorProcess
-    Process logcatProcess
     String mainProjectPackage
-    String testProjectPackage
     String mainProjectName
-    String testProjectName
     List<String> excludedBuilds = []
 
     public Set<File> getAllJars() {

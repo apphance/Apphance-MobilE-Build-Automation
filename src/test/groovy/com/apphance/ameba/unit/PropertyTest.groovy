@@ -18,11 +18,11 @@ class PropertyTest {
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
-            project['project.icon.file'] = "Icon.png"
-            project['project.url.base'] = "http://example.com"
-            project['project.directory.name'] = "subproject"
-            project['project.language'] = "pl"
-            project['project.country'] = "PL"
+            project[BaseProperty.PROJECT_ICON_FILE.propertyName] = "Icon.png"
+            project[BaseProperty.PROJECT_URL.propertyName] = "http://example.com"
+            project[BaseProperty.PROJECT_DIRECTORY.propertyName] = "subproject"
+            project[BaseProperty.PROJECT_LANGUAGE.propertyName] = "pl"
+            project[BaseProperty.PROJECT_COUNTRY.propertyName] = "PL"
             String s = project.listPropertiesAsString(BaseProperty.class, false)
             assertEquals('''###########################################################
 # Base properties
@@ -41,11 +41,11 @@ project.country=PL
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
-            project['project.icon.file'] = "Icon.png"
-            project['project.url.base'] = "http://example.com"
-            project['project.directory.name'] = "subproject"
-            project['project.language'] = "pl"
-            project['project.country'] = "PL"
+            project[BaseProperty.PROJECT_ICON_FILE.propertyName] = "Icon.png"
+            project[BaseProperty.PROJECT_URL.propertyName] = "http://example.com"
+            project[BaseProperty.PROJECT_DIRECTORY.propertyName] = "subproject"
+            project[BaseProperty.PROJECT_LANGUAGE.propertyName] = "pl"
+            project[BaseProperty.PROJECT_COUNTRY.propertyName] = "PL"
             String s = project.listPropertiesAsString(BaseProperty.class, true)
             println s
             assertEquals('''###########################################################
@@ -70,9 +70,9 @@ project.country=PL
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
-            project['release.mail.from'] = "test@apphance.com"
-            project['release.mail.to'] = "no-reply@apphance.com"
-            project['release.mail.flags'] = "qrCode,imageMontage"
+            project[ProjectReleaseProperty.RELEASE_MAIL_FROM.propertyName] = "test@apphance.com"
+            project[ProjectReleaseProperty.RELEASE_MAIL_TO.propertyName] = "no-reply@apphance.com"
+            project[ProjectReleaseProperty.RELEASE_MAIL_FLAGS.propertyName] = "qrCode,imageMontage"
             String s = project.listPropertiesAsString(ProjectReleaseProperty.class, false)
             assertEquals('''###########################################################
 # Release properties
@@ -89,9 +89,9 @@ release.mail.flags=qrCode,imageMontage
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
-            project['release.mail.from'] = "test@apphance.com"
-            project['release.mail.to'] = "no-reply@apphance.com"
-            project['release.mail.flags'] = "qrCode,imageMontage"
+            project[ProjectReleaseProperty.RELEASE_MAIL_FROM.propertyName] = "test@apphance.com"
+            project[ProjectReleaseProperty.RELEASE_MAIL_TO.propertyName] = "no-reply@apphance.com"
+            project[ProjectReleaseProperty.RELEASE_MAIL_FLAGS.propertyName] = "qrCode,imageMontage"
             String s = project.listPropertiesAsString(ProjectReleaseProperty.class, true)
             assertEquals('''###########################################################
 # Release properties
