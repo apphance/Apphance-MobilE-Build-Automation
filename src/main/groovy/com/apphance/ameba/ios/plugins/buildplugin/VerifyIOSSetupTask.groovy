@@ -19,6 +19,7 @@ class VerifyIOSSetupTask extends AbstractVerifySetupTask {
 
     VerifyIOSSetupTask() {
         super(IOSProjectProperty.class)
+        this.dependsOn(project.verifyBaseSetup)
     }
 
 

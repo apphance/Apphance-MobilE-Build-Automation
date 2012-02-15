@@ -7,6 +7,9 @@ import org.gradle.api.Project
 import org.gradle.api.logging.LogLevel;
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.logging.StyledTextOutput;
+import org.gradle.logging.StyledTextOutput.Style;
+import org.gradle.logging.StyledTextOutputFactory;
 
 import com.apphance.ameba.AbstractPrepareSetupTask;
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
@@ -66,9 +69,16 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task << {
             use(PropertyCategory) {
                 String propertiesToWrite = project.readProperty(AbstractPrepareSetupTask.GENERATED_GRADLE_PROPERTIES,'')
-                System.out.println("About to write new properties to gradle.properties:")
-                System.out.println(propertiesToWrite)
-                System.out.println("Are you sure y/n?")
+                StyledTextOutput o = task.services.get(StyledTextOutputFactory).create(task.class)
+                o.withStyle(Style.Normal).println("About to write new properties to gradle.properties:")
+                propertiesToWrite.split('\n').each {
+                    if (it.startsWith('#')) {
+                        o.withStyle(Style.Info).println(it)
+                    } else {
+                        o.withStyle(Style.Identifier).println(it)
+                    }
+                }
+                o.withStyle(Style.Normal).println("Are you sure y/n?")
                 BufferedReader br = AbstractPrepareSetupTask.getReader()
                 String answer = br.readLine()
                 File f = new File(project.rootDir,'gradle.properties')

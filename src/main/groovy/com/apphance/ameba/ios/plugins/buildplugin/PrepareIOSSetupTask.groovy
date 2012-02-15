@@ -17,6 +17,7 @@ class PrepareIOSSetupTask extends AbstractPrepareSetupTask {
 
     PrepareIOSSetupTask() {
         super(IOSProjectProperty.class)
+        this.dependsOn(project.prepareBaseSetup)
     }
 
     @TaskAction

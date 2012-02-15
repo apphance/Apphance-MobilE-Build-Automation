@@ -14,6 +14,7 @@ class VerifyFoneMonkeySetupTask extends AbstractVerifySetupTask {
 
     VerifyFoneMonkeySetupTask() {
         super(IOSFoneMonkeyProperty.class)
+        this.dependsOn(project.verifyIOSSetup)
     }
 
     @TaskAction

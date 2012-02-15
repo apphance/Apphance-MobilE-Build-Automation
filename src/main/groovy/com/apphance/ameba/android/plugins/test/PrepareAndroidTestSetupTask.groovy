@@ -14,12 +14,12 @@ class PrepareAndroidTestSetupTask extends AbstractPrepareSetupTask {
 
     PrepareAndroidTestSetupTask() {
         super(AndroidTestProperty.class)
+        this.dependsOn(project.prepareAndroidSetup)
     }
 
     @TaskAction
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        def plistFiles = getPlistFiles()
         use (PropertyCategory) {
             BufferedReader br = getReader()
             AndroidTestProperty.each {

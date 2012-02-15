@@ -5,6 +5,7 @@ import com.apphance.ameba.AbstractShowSetupTask;
 class ShowGitSetupTask extends AbstractShowSetupTask {
     ShowGitSetupTask() {
         super(GitProperty.class)
+        this.dependsOn(project.showBaseSetup)
     }
 }
 

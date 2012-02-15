@@ -17,6 +17,7 @@ class VerifyFrameworkSetupTask extends AbstractVerifySetupTask {
 
     VerifyFrameworkSetupTask() {
         super(IOSFrameworkProperty.class)
+        this.dependsOn(project.verifyIOSSetup)
     }
 
     @TaskAction

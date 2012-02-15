@@ -13,6 +13,7 @@ class VerifyAndroidTestSetupTask extends AbstractVerifySetupTask {
 
     VerifyAndroidTestSetupTask() {
         super(AndroidTestProperty.class)
+        this.dependsOn(project.verifyAndroidSetup)
     }
 
     @TaskAction

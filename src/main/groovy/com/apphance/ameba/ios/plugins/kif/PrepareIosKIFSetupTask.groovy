@@ -17,6 +17,7 @@ class PrepareIosKIFSetupTask extends AbstractPrepareSetupTask {
 
     PrepareIosKIFSetupTask() {
         super(IOSKifProperty.class)
+        this.dependsOn(project.prepareIOSSetup)
     }
 
     @TaskAction

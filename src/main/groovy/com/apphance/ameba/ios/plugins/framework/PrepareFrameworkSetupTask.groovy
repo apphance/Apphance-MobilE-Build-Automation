@@ -19,6 +19,7 @@ class PrepareFrameworkSetupTask extends AbstractPrepareSetupTask {
 
     PrepareFrameworkSetupTask() {
         super(IOSFrameworkProperty.class)
+        this.dependsOn(project.prepareIOSSetup)
     }
 
     @TaskAction

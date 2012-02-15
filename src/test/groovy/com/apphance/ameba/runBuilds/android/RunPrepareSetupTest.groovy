@@ -1,4 +1,4 @@
-package com.apphance.ameba.runBuilds.ios;
+package com.apphance.ameba.runBuilds.android;
 
 import static org.junit.Assert.*;
 
@@ -10,9 +10,9 @@ import org.junit.Before
 import org.junit.Test
 
 class RunPrepareSetupTest {
-    File testIosProject = new File("testProjects/ios/GradleXCode")
-    File gradleProperties = new File(testIosProject,"gradle.properties")
-    File gradlePropertiesOrig = new File(testIosProject,"gradle.properties.orig")
+    File testProject = new File("testProjects/android")
+    File gradleProperties = new File(testProject,"gradle.properties")
+    File gradlePropertiesOrig = new File(testProject,"gradle.properties.orig")
 
     @Before
     void before() {
@@ -28,7 +28,7 @@ class RunPrepareSetupTest {
     }
 
     String runTests(String input, String ... tasks) {
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testIosProject).connect();
+        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream()
             BuildLauncher bl = connection.newBuild().forTasks(tasks);
@@ -46,7 +46,7 @@ class RunPrepareSetupTest {
 
     @Test
     public void testGenerateNoChange() throws Exception {
-        String res = runTests('\n'*24 + 'y\n', 'prepareSetup')
+        String res = runTests('\n'*21 + 'y\n', 'prepareSetup')
         String text = gradleProperties.text
         String originalText = gradlePropertiesOrig.text
         assertEquals(originalText, text)
@@ -56,7 +56,7 @@ class RunPrepareSetupTest {
     @Test
     public void testGenerateDefaults() throws Exception {
         gradleProperties.delete()
-        String res = runTests('\n'*24 + 'y\n', 'prepareSetup')
+        String res = runTests('\n'*21 + 'y\n', 'prepareSetup')
         assertTrue(gradleProperties.exists())
         String text = gradleProperties.text
         String originalText = gradlePropertiesOrig.text
@@ -75,32 +75,26 @@ project.directory.name=
 project.language=en
 project.country=US
 ###########################################################
-# iOS properties
+# Android properties
 ###########################################################
-ios.plist.file=bin/com/apphance/ameba/unit/ios/Test.plist
-ios.excluded.builds=
-ios.families=iPhone,iPad
-ios.distribution.resources.dir=
-ios.mainTarget=GradleXCode
-ios.mainConfiguration=BasicConfiguration
-ios.sdk=iphoneos
-ios.simulator.sdk=iphonesimulator
+android.mainVariant=
+android.excluded.builds=
+android.minSdk.target=
 ###########################################################
-# iOS FoneMonkey properties
+# Android jar library properties
 ###########################################################
-ios.fonemonkey.configuration=Debug
+android.jarLibrary.resPrefix=
 ###########################################################
-# iOS Framework properties
+# Android test properties
 ###########################################################
-ios.framework.target=GradleXCode
-ios.framework.configuration=Debug
-ios.framework.version=A
-ios.framework.headers=testProjects/ios/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h
-ios.framework.resources=build/resources/main/com/apphance/ameba/plugins/swipegallery/_res/trans.png
-###########################################################
-# iOS KIF properties
-###########################################################
-ios.kif.configuration=Debug
+android.test.emulator.skin=WVGA800
+android.test.emulator.cardSize=200M
+android.test.emulator.snapshotEnabled=true
+android.test.emulator.noWindow=true
+android.test.emulator.target=
+android.test.directory=test/android
+android.test.perPackage=false
+android.useEmma=true
 ###########################################################
 # Mercurial properties
 ###########################################################

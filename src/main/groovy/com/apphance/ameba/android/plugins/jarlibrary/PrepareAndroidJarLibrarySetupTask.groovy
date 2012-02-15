@@ -14,12 +14,12 @@ class PrepareAndroidJarLibrarySetupTask extends AbstractPrepareSetupTask {
 
     PrepareAndroidJarLibrarySetupTask() {
         super(AndroidJarLibraryProperty.class)
+        this.dependsOn(project.prepareAndroidSetup)
     }
 
     @TaskAction
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        def plistFiles = getPlistFiles()
         use (PropertyCategory) {
             BufferedReader br = getReader()
             AndroidJarLibraryProperty.each {

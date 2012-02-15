@@ -14,6 +14,7 @@ class PrepareMercurialSetupTask extends AbstractPrepareSetupTask {
 
     PrepareMercurialSetupTask() {
         super(MercurialProperty.class)
+        this.dependsOn(project.prepareBaseSetup)
     }
 
     @TaskAction

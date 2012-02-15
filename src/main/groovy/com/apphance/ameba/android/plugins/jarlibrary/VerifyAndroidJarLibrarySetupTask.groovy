@@ -13,13 +13,14 @@ class VerifyAndroidJarLibrarySetupTask extends AbstractVerifySetupTask {
 
     VerifyAndroidJarLibrarySetupTask() {
         super(AndroidJarLibraryProperty.class)
+        this.dependsOn(project.verifyAndroidSetup)
     }
 
     @TaskAction
     void verifySetup() {
         use (PropertyCategory) {
             def projectProperties = readProperties()
-            PrepareAndroidJarLibrarySetupTask.each{ checkProperty(projectProperties, it) }
+            AndroidJarLibraryProperty.each{ checkProperty(projectProperties, it) }
             allPropertiesOK()
         }
     }

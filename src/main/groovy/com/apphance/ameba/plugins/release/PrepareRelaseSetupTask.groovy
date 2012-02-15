@@ -16,6 +16,7 @@ class PrepareReleaseSetupTask extends AbstractPrepareSetupTask {
 
     PrepareReleaseSetupTask() {
         super(ProjectReleaseProperty.class)
+        this.dependsOn(project.prepareBaseSetup)
     }
 
     @TaskAction

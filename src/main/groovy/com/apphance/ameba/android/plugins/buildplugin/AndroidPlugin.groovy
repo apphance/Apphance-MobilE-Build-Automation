@@ -172,27 +172,30 @@ class AndroidPlugin implements Plugin<Project> {
             String version= target.split("-")[1]
             androidConf.sdkJars << new File(androidConf.sdkDirectory,"platforms/android-" + version + "/android.jar")
         } else {
-            String version= target.split(':')[2]
-            Integer numVersion = version as Integer
-            androidConf.sdkJars << new File(androidConf.sdkDirectory,"platforms/android-" + version + "/android.jar")
-            if (target.startsWith('Google')) {
-                def mapJarFiles = new FileNameFinder().getFileNames(androidConf.sdkDirectory.path,
-                        "add-ons/addon*google*apis*google*inc*${version}/libs/maps.jar")
-                for (path in mapJarFiles) {
-                    androidConf.sdkJars << new File(path)
+            List splitTarget = target.split(':')
+            if (splitTarget.size() > 2) {
+                String version= splitTarget[2]
+                Integer numVersion = version as Integer
+                androidConf.sdkJars << new File(androidConf.sdkDirectory,"platforms/android-" + version + "/android.jar")
+                if (target.startsWith('Google')) {
+                    def mapJarFiles = new FileNameFinder().getFileNames(androidConf.sdkDirectory.path,
+                            "add-ons/addon*google*apis*google*inc*${version}/libs/maps.jar")
+                    for (path in mapJarFiles) {
+                        androidConf.sdkJars << new File(path)
+                    }
                 }
-            }
-            if (target.startsWith('KYOCERA Corporation:DTS')) {
-                androidConf.sdkJars << new File(androidConf.sdkDirectory,"add-ons/addon_dual_screen_apis_kyocera_corporation_" +
-                        version + "/libs/dualscreen.jar")
-            }
-            if (target.startsWith('LGE:Real3D')) {
-                androidConf.sdkJars << new File(androidConf.sdkDirectory,"add-ons/addon_real3d_lge_" +
-                        version + "/libs/real3d.jar")
-            }
-            if (target.startsWith('Sony Ericsson Mobile Communications AB:EDK')) {
-                androidConf.sdkJars << new File(androidConf.sdkDirectory,"add-ons/addon_edk_sony_ericsson_mobile_communications_ab_" +
-                        version + "/libs/com.sonyericsson.eventstream_1.jar")
+                if (target.startsWith('KYOCERA Corporation:DTS')) {
+                    androidConf.sdkJars << new File(androidConf.sdkDirectory,"add-ons/addon_dual_screen_apis_kyocera_corporation_" +
+                            version + "/libs/dualscreen.jar")
+                }
+                if (target.startsWith('LGE:Real3D')) {
+                    androidConf.sdkJars << new File(androidConf.sdkDirectory,"add-ons/addon_real3d_lge_" +
+                            version + "/libs/real3d.jar")
+                }
+                if (target.startsWith('Sony Ericsson Mobile Communications AB:EDK')) {
+                    androidConf.sdkJars << new File(androidConf.sdkDirectory,"add-ons/addon_edk_sony_ericsson_mobile_communications_ab_" +
+                            version + "/libs/com.sonyericsson.eventstream_1.jar")
+                }
             }
         }
         logger.lifecycle("Android SDK jars = " + androidConf.sdkJars)

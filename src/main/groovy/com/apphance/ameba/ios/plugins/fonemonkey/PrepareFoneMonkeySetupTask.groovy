@@ -18,6 +18,7 @@ class PrepareFoneMonkeySetupTask extends AbstractPrepareSetupTask {
 
     PrepareFoneMonkeySetupTask() {
         super(IOSFoneMonkeyProperty.class)
+        this.dependsOn(project.prepareIOSSetup)
     }
 
     @TaskAction

@@ -14,6 +14,7 @@ class PrepareGitSetupTask extends AbstractPrepareSetupTask {
 
     PrepareGitSetupTask() {
         super(GitProperty.class)
+        this.dependsOn(project.prepareBaseSetup)
     }
 
     @TaskAction

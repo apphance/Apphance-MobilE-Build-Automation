@@ -16,6 +16,7 @@ class VerifyIosKIFSetupTask extends AbstractVerifySetupTask {
 
     VerifyIosKIFSetupTask() {
         super(IOSKifProperty.class)
+        this.dependsOn(project.verifyBaseSetup)
     }
 
     @TaskAction

@@ -1,5 +1,6 @@
 package com.apphance.ameba.android
 
+import java.util.List;
 import java.util.Properties
 
 import org.gradle.api.Project
@@ -34,5 +35,18 @@ class AndroidEnvironment {
 
     boolean isLibrary() {
         return(getAndroidProperty('android.library') == 'true')
+    }
+
+    private List extractTargets(String text) {
+        List targets = []
+        text.split('\n').each {
+            if (it.startsWith('id:') ) {
+                def matcher =  (it =~ /id:.*"(.*)"/)
+                if (matcher.matches()) {
+                    targets << matcher[0][1]
+                }
+            }
+        }
+        return targets
     }
 }
