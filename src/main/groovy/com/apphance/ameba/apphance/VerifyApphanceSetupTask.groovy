@@ -5,7 +5,7 @@ import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.AbstractVerifySetupTask
 
 class VerifyApphanceSetupTask extends AbstractVerifySetupTask {
-
+	
 	VerifyApphanceSetupTask() {
 		super(ApphanceProperty.class)
 	}
