@@ -1,5 +1,7 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
+
+
 import groovy.io.FileType;
 
 import org.gradle.api.logging.Logger
@@ -57,13 +59,13 @@ class PrepareIOSSetupTask extends AbstractPrepareSetupTask {
     }
 
     private List getPlistFiles() {
-        def BIN_PATH = new File(project.rootDir,'bin').getAbsolutePath()
-        def BUILD_PATH = new File(project.rootDir,'build').getAbsolutePath()
+        def BIN_PATH = new File(project.rootDir,'bin').path
+        def BUILD_PATH = new File(project.rootDir,'build').path
         def plistFiles = []
-        new File('.').eachFileRecurse(FileType.FILES) {
-            if (it.name.endsWith(".plist") && ! (it.absolutePath.startsWith(BIN_PATH)) && !(it.absolutePath.startsWith(BUILD_PATH))) {
-                def path = it.path.startsWith("./") ? it.path.substring(2) : it.path
-                plistFiles << path
+        project.rootDir.eachFileRecurse(FileType.FILES) {
+            def thePath = it.path
+            if (it.name.endsWith(".plist") && !thePath.startsWith(BIN_PATH) && !thePath.startsWith(BUILD_PATH)) {
+                plistFiles << thePath
             }
         }
         return plistFiles

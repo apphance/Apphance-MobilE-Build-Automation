@@ -12,7 +12,7 @@ import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.plugins.projectconfiguration.BaseProperty;
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty
 
-class IOSPropertyTest {
+class BasePropertyTest {
     @Test
     void testBasePropertyNoComments () {
         use (PropertyCategory) {
