@@ -350,12 +350,10 @@ class ProjectHelper {
         int count = 0
         plugins.each {
             if (project.plugins.collect{plugin -> plugin.class}.contains(it)) {
-                anyPluginLoaded = true
+                count ++
             }
         }
-        if (project.plugins.collect{plugin -> plugin.class}.contains(myPlugin)) {
-        }
-        if (count != 1) {
+        if (count > 1) {
             throw new GradleException("There is more than one plugin loaded from the list: ${plugins}, but there should be only one. Please make sure one of them remains")
         }
     }
