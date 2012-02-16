@@ -78,6 +78,9 @@ class PropertyCategory {
             System.out.flush()
         }
         String newValue = br.readLine()
+        if (newValue == null) {
+            throw new GradleException("Entering data has been stopped at reading ${property.propertyName}")
+        }
         if (!newValue.isEmpty()) {
             project[property.propertyName] = newValue
         }

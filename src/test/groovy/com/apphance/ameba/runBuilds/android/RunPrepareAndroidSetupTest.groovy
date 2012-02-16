@@ -46,7 +46,7 @@ class RunPrepareAndroidSetupTest {
 
     @Test
     public void testGenerateNoChange() throws Exception {
-        String res = runTests('\n'*21 + 'y\n', 'prepareSetup')
+        String res = runTests('\n'*50 + 'y\n', 'prepareSetup')
         String text = gradleProperties.text
         String originalText = gradlePropertiesOrig.text
         assertEquals(originalText, text)
@@ -56,7 +56,7 @@ class RunPrepareAndroidSetupTest {
     @Test
     public void testGenerateDefaults() throws Exception {
         gradleProperties.delete()
-        String res = runTests('\n'*21 + 'y\n', 'prepareSetup')
+        String res = runTests('\n'*50 + 'y\n', 'prepareSetup')
         assertTrue(gradleProperties.exists())
         String text = gradleProperties.text
         String originalText = gradlePropertiesOrig.text
@@ -69,7 +69,7 @@ class RunPrepareAndroidSetupTest {
 ###########################################################
 # Base properties
 ###########################################################
-project.icon.file=ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/icon.png
+project.icon.file=res/drawable-hdpi/icon.png
 project.url.base=
 project.directory.name=
 project.language=en

@@ -2,20 +2,23 @@ package com.apphance.ameba.plugins.projectconfiguration;
 
 
 
+
+import java.io.BufferedReader
+
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.LogLevel;
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-import org.gradle.logging.StyledTextOutput;
-import org.gradle.logging.StyledTextOutput.Style;
-import org.gradle.logging.StyledTextOutputFactory;
+import org.gradle.logging.StyledTextOutput
+import org.gradle.logging.StyledTextOutputFactory
+import org.gradle.logging.StyledTextOutput.Style
 
-import com.apphance.ameba.AbstractPrepareSetupTask;
+import com.apphance.ameba.AbstractPrepareSetupTask
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyCategory;
+import com.apphance.ameba.PropertyCategory
 
 
 /**
@@ -80,8 +83,11 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
                 }
                 o.withStyle(Style.Normal).println("Are you sure y/n?")
                 BufferedReader br = AbstractPrepareSetupTask.getReader()
-                String answer = br.readLine()
                 File f = new File(project.rootDir,'gradle.properties')
+                String answer = ''
+                while (!(answer in ['y', 'n'])) {
+                    answer = br.readLine()
+                }
                 if (answer == 'y') {
                     f.delete()
                     f << propertiesToWrite

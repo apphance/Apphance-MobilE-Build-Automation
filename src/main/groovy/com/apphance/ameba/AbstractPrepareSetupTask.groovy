@@ -49,13 +49,19 @@ class AbstractPrepareSetupTask extends DefaultTask {
     }
 
     List getFiles(Closure filter) {
-        def BIN_PATH = new File(project.rootDir,'bin').path
-        def BUILD_PATH = new File(project.rootDir,'build').path
+        List paths = [
+            new File(project.rootDir,'bin').absolutePath,
+            new File(project.rootDir,'build').absolutePath,
+            new File(project.rootDir,'ota').absolutePath,
+            new File(project.rootDir,'tmp').absolutePath,
+        ]
         def plistFiles = []
         project.rootDir.eachFileRecurse(FileType.FILES) {
-            def thePath = it.path
-            if (filter(it) && !thePath.startsWith(BIN_PATH) && !thePath.startsWith(BUILD_PATH)) {
-                plistFiles << thePath.substring(project.rootDir.path.length() + 1)
+            def thePath = it.absolutePath
+            if (filter(it)) {
+                if (!paths.any {path -> thePath.startsWith(path)}) {
+                    plistFiles << thePath.substring(project.rootDir.path.length() + 1)
+                }
             }
         }
         return plistFiles
