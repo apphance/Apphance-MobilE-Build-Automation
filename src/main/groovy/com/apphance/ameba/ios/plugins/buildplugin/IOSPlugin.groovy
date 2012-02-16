@@ -196,8 +196,7 @@ class IOSPlugin implements Plugin<Project> {
                         singleReleaseBuilder.buildRelease(project, target, configuration)
                     }
                     task.dependsOn(singleTask)
-                    singleTask.dependsOn(project.readProjectConfiguration)
-                    singleTask.dependsOn(project.copyMobileProvision)
+                    singleTask.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.verifySetup)
                 } else {
                     logger.lifecycle("Skipping build ${id} - it is excluded in configuration (${iosConf.excludedBuilds})")
                 }
@@ -236,7 +235,7 @@ class IOSPlugin implements Plugin<Project> {
                 singleReleaseBuilder.buildRelease(project, target, configuration)
             }
         }
-        task.dependsOn(project.readProjectConfiguration)
+        task.dependsOn(project.readProjectConfiguration, project.verifySetup)
     }
 
 

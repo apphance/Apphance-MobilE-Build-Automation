@@ -380,7 +380,7 @@ class AndroidPlugin implements Plugin<Project> {
                 androidBuilder.buildSingleApk(bi)
             }
         }
-        task.dependsOn(project.readAndroidProjectConfiguration)
+        task.dependsOn(project.readAndroidProjectConfiguration, project.verifySetup)
         if (variant != null) {
             project.tasks["build${debugRelease}"].dependsOn(task)
         }
