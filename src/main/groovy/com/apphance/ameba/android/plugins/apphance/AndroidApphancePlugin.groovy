@@ -13,9 +13,11 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidManifestHelper
+import com.apphance.ameba.apphance.ApphanceProperty;
 import com.apphance.ameba.apphance.PrepareApphanceSetup;
 import com.apphance.ameba.apphance.ShowApphancePropertiesTask;
 import com.apphance.ameba.apphance.VerifyApphanceSetupTask;
+import com.apphance.ameba.apphance.ApphanceProperty;
 
 class AndroidApphancePlugin implements Plugin<Project>{
 
@@ -121,9 +123,10 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		String applicationName = manifestHelper.getApplicationName(project.rootDir)
 		applicationName = applicationName.replace('.', '/')
 		applicationName = applicationName + '.java'
-		applicationName = 'src//' + applicationName
+		applicationName = 'src/' + applicationName
+		File f
 		if (new File(applicationName).exists()) {
-			System.out.println("Application found")
+			f = new File(applicationName)
 		} else {
 			String mainActivityName = manifestHelper.getMainActivityName(project.rootDir)
 			mainActivityName = mainActivityName.replace('.', '/')
@@ -132,16 +135,35 @@ class AndroidApphancePlugin implements Plugin<Project>{
 			if (!(new File(mainActivityName)).exists()) {
 				throw new GradleException("Application class and main activity not defined in Android manifest")
 			}
-			File activityFile = new File(mainActivityName)
-			
-			def lineToModification = []
-			activityFile.eachLine { line, lineNumber ->
-				if (line.contains('public void onCreate()')) {
-					lineToModification << lineNumber
-				}
-			}
-			System.out.println(lineToModification)
+			f = new File(mainActivityName)
 		}
 		
+		def lineToModification = []
+		f.eachLine { line, lineNumber ->
+			if (line.contains('super.onCreate')) {
+				lineToModification << lineNumber
+			}
+		}
+		File newMainClass = new File("newMainClassFile.java")
+		def mode
+		if (project[ApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
+			mode = "Apphance.QA"
+		} else {
+			mode = "Apphance.SILENT"
+		}
+		String appKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
+		String startSession = "Apphance.startNewSession(this, \"${appKey}\", ${mode});"
+		String importApphance = 'import com.apphance.android.Apphance;'
+		newMainClass.withWriter { out ->
+			f.eachLine { line ->
+				if (line.contains('super.onCreate')) {
+					out.println(line << startSession)
+				} else if (line.contains('package')) {
+					out.println(line << importApphance)
+				} else {
+					out.println(line)
+				}
+			}
+		}
 	}
 }
