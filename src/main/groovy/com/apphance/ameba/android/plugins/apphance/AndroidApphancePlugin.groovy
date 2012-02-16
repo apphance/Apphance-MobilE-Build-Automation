@@ -78,6 +78,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
                 task.doFirst { 
 					replaceLogsWithApphance(project) 
 					addApphanceInit(project)	
+					copyApphanceJar(project)
 				}
             }
             if (task.name.startsWith('buildRelease')) {
@@ -165,5 +166,11 @@ class AndroidApphancePlugin implements Plugin<Project>{
 				}
 			}
 		}
+	}
+	
+	private copyApphanceJar(Project project) {
+		File libsApphance = new File(project.rootDir, '/libs/apphance.jar')
+		URL apphanceUrl = this.class.getResource("apphance-android-library_1.4.2.1.jar")
+		libsApphance << apphanceUrl.getContent()
 	}
 }
