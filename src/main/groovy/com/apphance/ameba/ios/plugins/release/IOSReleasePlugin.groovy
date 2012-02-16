@@ -23,7 +23,9 @@ import com.apphance.ameba.android.AndroidEnvironment
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.MPParser
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleReleaseBuilder;
+import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**
@@ -40,6 +42,7 @@ class IOSReleasePlugin implements Plugin<Project> {
     IOSProjectConfiguration iosConf
 
     def void apply (Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class, ProjectReleasePlugin.class)
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()

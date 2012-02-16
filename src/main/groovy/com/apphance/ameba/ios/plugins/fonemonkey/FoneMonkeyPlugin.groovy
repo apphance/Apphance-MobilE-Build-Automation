@@ -18,6 +18,7 @@ import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 
 class FoneMonkeyPlugin implements Plugin<Project> {
 
@@ -31,6 +32,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
     IOSProjectConfiguration iosConf
 
     void apply(Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
         use (PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()

@@ -11,7 +11,7 @@ import org.junit.Before
 import org.junit.Test;
 
 
-class CheckPluginDependenciesTest {
+class CheckAndroidPluginDependenciesTest {
     File testProject = new File("testProjects/test-dependencies")
     File gradleBuild = new File(testProject,"build.gradle")
 
@@ -59,6 +59,12 @@ class CheckPluginDependenciesTest {
     @Test
     public void testAndroidPluginDependencies() throws Exception {
         String res = runTests(new File(testProject, 'android-plugin.gradle'), 'ProjectConfigurationPlugin has not been loaded yet')
+        println res
+    }
+
+    @Test
+    public void testIosPluginDependencies() throws Exception {
+        String res = runTests(new File(testProject, 'ios-plugin.gradle'), 'ProjectConfigurationPlugin has not been loaded yet')
         println res
     }
 
