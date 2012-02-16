@@ -70,7 +70,7 @@ class PropertyCategory {
             project[property.propertyName] = options[0]
         }
         System.out.println(s)
-        if (project.hasProperty(property.propertyName)) {
+        if (project.hasProperty(property.propertyName) && project[property.propertyName] != null) {
             System.out.print("[${project[property.propertyName]}] > ")
             System.out.flush()
         } else {
@@ -81,9 +81,7 @@ class PropertyCategory {
         if (newValue == null) {
             throw new GradleException("Entering data has been stopped at reading ${property.propertyName}")
         }
-        if (!newValue.isEmpty()) {
-            project[property.propertyName] = newValue
-        }
+        project[property.propertyName] = newValue
     }
 
     public static String readReleaseNotes(Project project) {

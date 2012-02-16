@@ -31,7 +31,7 @@ abstract class AbstractVerifySetupTask extends DefaultTask{
         def projectPropertiesFile = new File(project.rootDir,'gradle.properties')
         if (!projectPropertiesFile.exists()) {
             throw new GradleException("""The gradle.properties file does not exist.
-!!!!! Please run "gradle prepareSetup" to correct project's configuration !!!!!""")
+!!!!! Please run "gradle prepareSetup --quiet" to correct project's configuration !!!!!""")
         }
         projectProperties.load(projectPropertiesFile.newInputStream())
         return projectProperties
@@ -40,7 +40,7 @@ abstract class AbstractVerifySetupTask extends DefaultTask{
     protected static void checkProperty(Properties projectProperties, Enum property) {
         if (projectProperties.getProperty(property.propertyName) == null && property.defaultValue == null) {
             throw new GradleException("""Property ${property.propertyName} should be defined in gradle.properties.
-!!!!! Please run "gradle prepareSetup" to correct it """)
+!!!!! Please run "gradle prepareSetup --quiet" to correct it """)
         }
     }
 
