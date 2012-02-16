@@ -57,9 +57,11 @@ class PrepareIOSSetupTask extends AbstractPrepareSetupTask {
     }
 
     private List getPlistFiles() {
+        def BIN_PATH = new File(project.rootDir,'bin').getAbsolutePath()
+        def BUILD_PATH = new File(project.rootDir,'build').getAbsolutePath()
         def plistFiles = []
         new File('.').eachFileRecurse(FileType.FILES) {
-            if (it.name.endsWith(".plist")) {
+            if (it.name.endsWith(".plist") && ! (it.absolutePath.startsWith(BIN_PATH)) && !(it.absolutePath.startsWith(BUILD_PATH))) {
                 def path = it.path.startsWith("./") ? it.path.substring(2) : it.path
                 plistFiles << path
             }

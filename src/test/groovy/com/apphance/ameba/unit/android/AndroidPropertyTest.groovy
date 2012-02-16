@@ -44,7 +44,7 @@ android.minSdk.target=android-8
             assertEquals('''###########################################################
 # Android properties
 ###########################################################
-# Main variant used when releasing the aplication [optional] default<>
+# Main variant used when releasing the aplication [optional] default: <>
 android.mainVariant=mainVariant
 # Regular expressions separated with comas - if variant name matches any of these, it is excluded from configuration [optional] default: <>
 android.excluded.builds=.*

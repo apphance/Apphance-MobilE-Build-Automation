@@ -77,7 +77,7 @@ project.country=US
 ###########################################################
 # iOS properties
 ###########################################################
-ios.plist.file=bin/com/apphance/ameba/unit/ios/Test.plist
+ios.plist.file=
 ios.excluded.builds=
 ios.families=iPhone,iPad
 ios.distribution.resources.dir=

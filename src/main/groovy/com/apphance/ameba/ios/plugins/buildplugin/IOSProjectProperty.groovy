@@ -1,6 +1,6 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 public enum IOSProjectProperty {
-    PLIST_FILE('ios.plist.file', 'Path to plist file of the project'),
+    PLIST_FILE('ios.plist.file', 'Path to plist file of the project',''),
     EXCLUDED_BUILDS('ios.excluded.builds', 'List of excluded builds. These are coma-separated regular expressions (matched against target-configuration)',''),
     IOS_FAMILIES('ios.families', 'List of iOS families used (iPhone/iPad)', 'iPhone,iPad'),
     DISTRIBUTION_DIR('ios.distribution.resources.dir', 'Path to distribution resources directory. In this directory mobile provision file should be placed.'),
