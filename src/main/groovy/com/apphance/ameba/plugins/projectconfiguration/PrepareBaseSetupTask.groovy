@@ -1,7 +1,6 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
 
-import groovy.io.FileType
 
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -28,13 +27,7 @@ class PrepareBaseSetupTask extends AbstractPrepareSetupTask {
 # Or you can re-run the prepareSetup command
 # for guided re-configuration
 """
-        def files = []
-        new File('.').eachFileRecurse(FileType.FILES) {
-            if (it.name.toLowerCase().equals('icon.png')) {
-                def path = it.path.startsWith("./") ? it.path.substring(2) : it.path
-                files << path
-            }
-        }
+        def files = getFiles { it.name.toLowerCase().equals('icon.png') }
         BufferedReader br = getReader()
         use(PropertyCategory) {
             BaseProperty.each {

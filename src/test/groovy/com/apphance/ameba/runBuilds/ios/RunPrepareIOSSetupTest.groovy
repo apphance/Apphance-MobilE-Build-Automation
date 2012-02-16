@@ -1,4 +1,4 @@
-package com.apphance.ameba.runBuilds.android;
+package com.apphance.ameba.runBuilds.ios;
 
 import static org.junit.Assert.*;
 
@@ -9,10 +9,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-class RunPrepareSetupTest {
-    File testProject = new File("testProjects/android")
-    File gradleProperties = new File(testProject,"gradle.properties")
-    File gradlePropertiesOrig = new File(testProject,"gradle.properties.orig")
+class RunPrepareIOSSetupTest {
+    File testIosProject = new File("testProjects/ios/GradleXCode")
+    File gradleProperties = new File(testIosProject,"gradle.properties")
+    File gradlePropertiesOrig = new File(testIosProject,"gradle.properties.orig")
 
     @Before
     void before() {
@@ -28,7 +28,7 @@ class RunPrepareSetupTest {
     }
 
     String runTests(String input, String ... tasks) {
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
+        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testIosProject).connect();
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream()
             BuildLauncher bl = connection.newBuild().forTasks(tasks);
@@ -46,7 +46,7 @@ class RunPrepareSetupTest {
 
     @Test
     public void testGenerateNoChange() throws Exception {
-        String res = runTests('\n'*21 + 'y\n', 'prepareSetup')
+        String res = runTests('\n'*24 + 'y\n', 'prepareSetup')
         String text = gradleProperties.text
         String originalText = gradlePropertiesOrig.text
         assertEquals(originalText, text)
@@ -56,7 +56,7 @@ class RunPrepareSetupTest {
     @Test
     public void testGenerateDefaults() throws Exception {
         gradleProperties.delete()
-        String res = runTests('\n'*21 + 'y\n', 'prepareSetup')
+        String res = runTests('\n'*24 + 'y\n', 'prepareSetup')
         assertTrue(gradleProperties.exists())
         String text = gradleProperties.text
         String originalText = gradlePropertiesOrig.text
@@ -69,32 +69,38 @@ class RunPrepareSetupTest {
 ###########################################################
 # Base properties
 ###########################################################
-project.icon.file=testProjects/android/bin/res/drawable-hdpi/icon.png
+project.icon.file=icon.png
 project.url.base=
 project.directory.name=
 project.language=en
 project.country=US
 ###########################################################
-# Android properties
+# iOS properties
 ###########################################################
-android.mainVariant=
-android.excluded.builds=
-android.minSdk.target=
+ios.plist.file=GradleXCode/GradleXCode-Info.plist
+ios.excluded.builds=
+ios.families=iPhone,iPad
+ios.distribution.resources.dir=
+ios.mainTarget=GradleXCode
+ios.mainConfiguration=BasicConfiguration
+ios.sdk=iphoneos
+ios.simulator.sdk=iphonesimulator
 ###########################################################
-# Android jar library properties
+# iOS FoneMonkey properties
 ###########################################################
-android.jarLibrary.resPrefix=
+ios.fonemonkey.configuration=Debug
 ###########################################################
-# Android test properties
+# iOS Framework properties
 ###########################################################
-android.test.emulator.skin=WVGA800
-android.test.emulator.cardSize=200M
-android.test.emulator.snapshotEnabled=true
-android.test.emulator.noWindow=true
-android.test.emulator.target=
-android.test.directory=test/android
-android.test.perPackage=false
-android.useEmma=true
+ios.framework.target=GradleXCode
+ios.framework.configuration=Debug
+ios.framework.version=A
+ios.framework.headers=GradleXCode/gradleXCodeAppDelegate.h
+ios.framework.resources=icon.png
+###########################################################
+# iOS KIF properties
+###########################################################
+ios.kif.configuration=Debug
 ###########################################################
 # Mercurial properties
 ###########################################################

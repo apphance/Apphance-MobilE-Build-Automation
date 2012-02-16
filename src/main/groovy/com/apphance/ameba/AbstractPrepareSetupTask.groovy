@@ -1,5 +1,9 @@
 package com.apphance.ameba
 
+import groovy.io.FileType;
+
+import java.util.List;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging
@@ -42,5 +46,18 @@ class AbstractPrepareSetupTask extends DefaultTask {
             String newValue = oldValue + propertyString
             project[GENERATED_GRADLE_PROPERTIES] = newValue
         }
+    }
+
+    List getFiles(Closure filter) {
+        def BIN_PATH = new File(project.rootDir,'bin').path
+        def BUILD_PATH = new File(project.rootDir,'build').path
+        def plistFiles = []
+        project.rootDir.eachFileRecurse(FileType.FILES) {
+            def thePath = it.path
+            if (filter(it) && !thePath.startsWith(BIN_PATH) && !thePath.startsWith(BUILD_PATH)) {
+                plistFiles << thePath.substring(project.rootDir.path.length() + 1)
+            }
+        }
+        return plistFiles
     }
 }

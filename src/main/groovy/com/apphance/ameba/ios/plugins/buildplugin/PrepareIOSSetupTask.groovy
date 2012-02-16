@@ -1,9 +1,6 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
 
-
-import groovy.io.FileType;
-
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction;
@@ -25,7 +22,7 @@ class PrepareIOSSetupTask extends AbstractPrepareSetupTask {
     @TaskAction
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        def plistFiles = getPlistFiles()
+        def plistFiles = getFiles {it.name.endsWith(".plist")}
         use (PropertyCategory) {
             IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
             IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
@@ -56,18 +53,5 @@ class PrepareIOSSetupTask extends AbstractPrepareSetupTask {
             }
             appendProperties()
         }
-    }
-
-    private List getPlistFiles() {
-        def BIN_PATH = new File(project.rootDir,'bin').path
-        def BUILD_PATH = new File(project.rootDir,'build').path
-        def plistFiles = []
-        project.rootDir.eachFileRecurse(FileType.FILES) {
-            def thePath = it.path
-            if (it.name.endsWith(".plist") && !thePath.startsWith(BIN_PATH) && !thePath.startsWith(BUILD_PATH)) {
-                plistFiles << thePath
-            }
-        }
-        return plistFiles
     }
 }
