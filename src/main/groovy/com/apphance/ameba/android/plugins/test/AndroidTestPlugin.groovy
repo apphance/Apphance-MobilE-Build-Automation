@@ -18,6 +18,7 @@ import com.apphance.ameba.android.AndroidBuildXmlHelper
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**
@@ -63,6 +64,7 @@ class AndroidTestPlugin implements Plugin<Project>{
     Process logcatProcess
 
     public void apply(Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         this.projectHelper = new ProjectHelper()
         this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
         this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)

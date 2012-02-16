@@ -9,8 +9,10 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.ProjectHelper;
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin;
 
 class AndroidAnalysisPlugin implements Plugin<Project>{
 
@@ -19,6 +21,7 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
     AndroidProjectConfiguration androidConf
 
     public void apply(Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         def androidAnalysisConvention = new AndroidAnalysisConvention()
         project.extensions.androidAnalysis = androidAnalysisConvention
         this.androidConfRetriever = new AndroidProjectConfigurationRetriever()

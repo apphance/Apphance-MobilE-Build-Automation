@@ -12,6 +12,7 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidManifestHelper
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 
 class AndroidApphancePlugin implements Plugin<Project>{
 
@@ -23,6 +24,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     AndroidManifestHelper manifestHelper
 
     public void apply(Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()

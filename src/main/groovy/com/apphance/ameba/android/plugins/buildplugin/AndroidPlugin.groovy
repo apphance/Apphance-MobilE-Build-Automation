@@ -42,6 +42,7 @@ class AndroidPlugin implements Plugin<Project> {
     AndroidEnvironment androidEnvironment
 
     def void apply (Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, ProjectConfigurationPlugin.class)
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
@@ -133,7 +134,8 @@ class AndroidPlugin implements Plugin<Project> {
             logger.lifecycle("Running android update")
             runUpdateRecursively(project, project.rootDir, false, true)
             androidEnvironment = new AndroidEnvironment(project)
-            androidConf.sdkDirectory = new File(androidEnvironment.getAndroidProperty('sdk.dir'))
+            def sdkDir = androidEnvironment.getAndroidProperty('sdk.dir')
+            androidConf.sdkDirectory = sdkDir == null ? null : new File(sdkDir)
             if (androidConf.sdkDirectory == null) {
                 def androidHome = System.getenv("ANDROID_HOME")
                 if (androidHome != null) {
@@ -142,7 +144,7 @@ class AndroidPlugin implements Plugin<Project> {
             }
             if (androidConf.sdkDirectory == null) {
                 throw new GradleException('Unable to find location of Android SDK, either\
-     set it in local.properties or in ANDROID_HOME environment variable')
+ set it in local.properties or in ANDROID_HOME environment variable')
             }
             androidConf.excludedBuilds = project.readProperty(AndroidProjectProperty.EXCLUDED_BUILDS)*.trim()
             def target = androidEnvironment.getAndroidProperty('target')
@@ -241,11 +243,14 @@ class AndroidPlugin implements Plugin<Project> {
     private void runUpdateRecursively(Project project, File currentDir, boolean reRun, boolean silentLogging = false) {
         runUpdateProject(project, currentDir,reRun)
         Properties prop = new Properties()
-        prop.load (new FileInputStream(new File(currentDir,PROJECT_PROPERTIES_KEY)))
-        prop.each { key, value ->
-            if (key.startsWith('android.library.reference.')) {
-                File libraryProject = new File(currentDir, value)
-                runUpdateRecursively(project, libraryProject, reRun, silentLogging)
+        File propFile = new File(currentDir,PROJECT_PROPERTIES_KEY)
+        if (propFile.exists()) {
+            prop.load (new FileInputStream(propFile))
+            prop.each { key, value ->
+                if (key.startsWith('android.library.reference.')) {
+                    File libraryProject = new File(currentDir, value)
+                    runUpdateRecursively(project, libraryProject, reRun, silentLogging)
+                }
             }
         }
     }

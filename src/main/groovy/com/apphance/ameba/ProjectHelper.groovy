@@ -1,16 +1,19 @@
 package com.apphance.ameba
 
 
-import groovy.io.FileType;
+
+import groovy.io.FileType
 
 import java.io.File
 import java.io.IOException
 
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.api.GradleException
+import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logging;
-import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
+
 
 
 class FileSystemOutput implements Appendable{
@@ -320,6 +323,26 @@ class ProjectHelper {
                     it.delete()
                 }
             }
+        }
+    }
+
+    public static void checkAllPluginsAreLoaded(Project project, Class<Plugin<Project>> myPlugin, Class<Plugin<Project>> ... plugins) {
+        plugins.each {
+            if (!project.plugins.collect{it.class}.contains(it)) {
+                throw new GradleException("The plugin ${it} has not been loaded yet. Please make sure you put it before ${myPlugin}")
+            }
+        }
+    }
+
+    public static void checkAnyPluginIsLoaded(Project project, Class<Plugin<Project>> myPlugin, Class<Plugin<Project>> ... plugins) {
+        boolean anyPluginLoaded = false
+        plugins.each {
+            if (project.plugins.collect{it.class}.contains(it)) {
+                anyPluginLoaded = true
+            }
+        }
+        if (!anyPluginLoaded) {
+            throw new GradleException("None of the plugins ${plugins} has been loaded yet. Please make sure one of them is put before ${myPlugin}")
         }
     }
 }
