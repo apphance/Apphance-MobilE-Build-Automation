@@ -11,6 +11,7 @@ import org.junit.Before
 import org.junit.Test
 
 class RunVerifyErrorsSetupTest {
+    List BOOLEANS = ['true', 'false']
     File testProject = new File("testProjects/android")
     File gradleProperties = new File(testProject,"gradle.properties")
     File gradlePropertiesOrig = new File(testProject,"gradle.properties.orig")
@@ -59,11 +60,36 @@ class RunVerifyErrorsSetupTest {
 
     @Test
     void testMainVariantFile() {
-        runErrorScenario(/^(android\.mainVariant.*)=(.*)$/,'$1=/missingvariant', 'The main variant')
+        runErrorScenario(/^(android\.mainVariant.*)=(.*)$/,'$1=missingvariant', 'The main variant')
     }
 
     @Test
     void testMinSdkTargetFile() {
-        runErrorScenario(/^(android\.minSdk\.target.*)=(.*)$/,'$1=/missingtarget', 'The min sdk target')
+        runErrorScenario(/^(android\.minSdk\.target.*)=(.*)$/,'$1=missingtarget', 'The min sdk target')
+    }
+
+    @Test
+    void testEmulatorNoWindow() {
+        runErrorScenario(/^(android\.test\.emulator\.noWindow.*)=(.*)$/,'$1=nottruefalse', 'noWindow')
+    }
+
+    @Test
+    void testEmulatorSnapshot() {
+        runErrorScenario(/^(android\.test\.emulator\.snapshotEnabled.*)=(.*)$/,'$1=nottruefalse', 'snapshotEnabled')
+    }
+
+    @Test
+    void testEmulatorTestPerPackage() {
+        runErrorScenario(/^(android\.test\.perPackage.*)=(.*)$/,'$1=nottruefalse', 'perPackage')
+    }
+
+    @Test
+    void testEmulatorUseEmma() {
+        runErrorScenario(/^(android\.useEmma.*)=(.*)$/,'$1=nottruefalse', 'useEmma')
+    }
+
+    @Test
+    void testDirectory() {
+        runErrorScenario(/^(android\.test\.directory.*)=(.*)$/,'$1=missingdirectory', 'directory')
     }
 }

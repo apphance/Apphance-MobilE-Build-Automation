@@ -102,11 +102,11 @@ class RunVerifyErrorsSetupTest {
     }
     @Test
     void testTarget() {
-        runErrorScenario(/^(ios\.mainTarget.*)=(.*)$/,'$1=missingTarget', 'main target')
+        runErrorScenario(/^(ios\.mainTarget.*)=(.*)$/,'$1=missingTarget', 'target')
     }
     @Test
     void testConfiguration() {
-        runErrorScenario(/^(ios\.mainConfiguration.*)=(.*)$/,'$1=missingConfiguration', 'main configuration')
+        runErrorScenario(/^(ios\.mainConfiguration.*)=(.*)$/,'$1=missingConfiguration', 'configuration')
     }
     @Test
     void testIOSSdk() {
@@ -120,15 +120,15 @@ class RunVerifyErrorsSetupTest {
 
     @Test
     void testFoneMonkeyConfiguration() {
-        runErrorScenario(/^(ios\.fonemonkey\.configuration.*)=(.*)$/,'$1=missingconfiguration', 'fonemonkey configuration')
+        runErrorScenario(/^(ios\.fonemonkey\.configuration.*)=(.*)$/,'$1=missingconfiguration', 'configuration')
     }
     @Test
     void testFrameworkConfiguration() {
-        runErrorScenario(/^(ios\.framework\.configuration.*)=(.*)$/,'$1=missingconfiguration', 'framework configuration')
+        runErrorScenario(/^(ios\.framework\.configuration.*)=(.*)$/,'$1=missingconfiguration', 'configuration')
     }
     @Test
     void testFrameworkTarget() {
-        runErrorScenario(/^(ios\.framework\.target.*)=(.*)$/,'$1=missingtarget', 'framework target')
+        runErrorScenario(/^(ios\.framework\.target.*)=(.*)$/,'$1=missingtarget', 'target')
     }
 
     @Test
@@ -143,7 +143,7 @@ class RunVerifyErrorsSetupTest {
 
     @Test
     void testKIFConfiguration() {
-        runErrorScenario(/^(ios\.kif\.configuration.*)=(.*)$/,'$1=missingconfiguration', 'kif configuration')
+        runErrorScenario(/^(ios\.kif\.configuration.*)=(.*)$/,'$1=missingconfiguration', 'configuration')
     }
 
 

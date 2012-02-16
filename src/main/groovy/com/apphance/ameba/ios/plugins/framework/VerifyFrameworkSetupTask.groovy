@@ -4,13 +4,13 @@ package com.apphance.ameba.ios.plugins.framework
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
-import com.apphance.ameba.AbstractVerifySetupTask
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.ios.AbstractVerifyIOSSetupTask
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 
 
-class VerifyFrameworkSetupTask extends AbstractVerifySetupTask {
+class VerifyFrameworkSetupTask extends AbstractVerifyIOSSetupTask {
 
     IOSXCodeOutputParser iosXCodeOutputParser
     IOSProjectConfiguration iosConf
@@ -31,8 +31,8 @@ class VerifyFrameworkSetupTask extends AbstractVerifySetupTask {
                 checkProperty(projectProperties, it)
             }
         }
-        checkTarget()
-        checkConfiguration()
+        checkTarget(IOSFrameworkProperty.FRAMEWORK_TARGET)
+        checkConfiguration(IOSFrameworkProperty.FRAMEWORK_CONFIGURATION)
         checkFilesExist(IOSFrameworkProperty.FRAMEWORK_RESOURCES)
         checkFilesExist(IOSFrameworkProperty.FRAMEWORK_HEADERS)
         allPropertiesOK()
@@ -48,25 +48,6 @@ class VerifyFrameworkSetupTask extends AbstractVerifySetupTask {
                         throw new GradleException("The file is missing in ${property.propertyName}: ${it}")
                     }
                 }
-            }
-        }
-    }
-
-
-    void checkTarget() {
-        use (PropertyCategory) {
-            String target = project.readProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
-            if (!iosConf.alltargets.contains(target)) {
-                throw new GradleException("""The framework target in ${IOSFrameworkProperty.FRAMEWORK_TARGET.propertyName}: ${target} can only be one of ${iosConf.alltargets}""")
-            }
-        }
-    }
-
-    void checkConfiguration() {
-        use (PropertyCategory) {
-            String configuration = project.readProperty(IOSFrameworkProperty.FRAMEWORK_CONFIGURATION)
-            if (!iosConf.allconfigurations.contains(configuration)) {
-                throw new GradleException("""The framework configuration in ${IOSFrameworkProperty.FRAMEWORK_CONFIGURATION.propertyName}: ${configuration} can only be one of ${iosConf.allconfigurations}""")
             }
         }
     }
