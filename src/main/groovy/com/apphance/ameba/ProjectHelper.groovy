@@ -345,4 +345,18 @@ class ProjectHelper {
             throw new GradleException("None of the plugins ${plugins} has been loaded yet. Please make sure one of them is put before ${myPlugin}")
         }
     }
+
+    public static void checkExactlyOnePluginIsLoaded(Project project, Class<Plugin<Project>> myPlugin, Class<Plugin<Project>> ... plugins) {
+        int count = 0
+        plugins.each {
+            if (project.plugins.collect{plugin -> plugin.class}.contains(it)) {
+                anyPluginLoaded = true
+            }
+        }
+        if (project.plugins.collect{plugin -> plugin.class}.contains(myPlugin)) {
+        }
+        if (count != 1) {
+            throw new GradleException("There is more than one plugin loaded from the list: ${plugins}, but there should be only one. Please make sure one of them remains")
+        }
+    }
 }

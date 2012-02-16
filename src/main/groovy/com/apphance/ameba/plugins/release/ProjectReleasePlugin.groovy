@@ -20,6 +20,8 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
 import com.apphance.ameba.plugins.release.PrepareReleaseSetupTask;
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty;
 import com.apphance.ameba.plugins.release.VerifyReleaseSetupTask;
+import com.apphance.ameba.vcs.plugins.git.GitPlugin
+import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
 
 
 /**
@@ -35,6 +37,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
 
     void apply(Project project) {
         ProjectHelper.checkAnyPluginIsLoaded(project, this.class, AndroidPlugin.class, IOSPlugin.class)
+        ProjectHelper.checkAnyPluginIsLoaded(project, this.class, MercurialPlugin.class, GitPlugin.class)
         projectHelper = new ProjectHelper()
         use (PropertyCategory) {
             conf = project.getProjectConfiguration()

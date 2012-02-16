@@ -99,8 +99,20 @@ class CheckAndroidPluginDependenciesTest {
     }
 
     @Test
+    public void testCommonReleaseVcsPluginDependencies() throws Exception {
+        String res = runTests(new File(testProject, 'project-release-vcs.gradle'), 'None of the plugins')
+        println res
+    }
+
+    @Test
     public void testAndroidTestPluginDependencies() throws Exception {
         String res = runTests(new File(testProject, 'android-test.gradle'), 'AndroidPlugin has not been loaded yet')
+        println res
+    }
+
+    @Test
+    public void testMercurialGitDependencies() throws Exception {
+        String res = runTests(new File(testProject, 'project-mercurial-git.gradle'), 'There is more than one plugin loaded from the list')
         println res
     }
 }
