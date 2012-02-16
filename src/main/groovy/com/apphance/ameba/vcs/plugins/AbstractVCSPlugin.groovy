@@ -4,12 +4,16 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.vcs.plugins.git.GitPlugin
+import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
 
 abstract class AbstractVCSPlugin implements Plugin<Project> {
     ProjectConfiguration conf
 
     def void apply (Project project) {
+        ProjectHelper.checkExactlyOnePluginIsLoaded(project, this.class, MercurialPlugin.class, GitPlugin.class)
         use (PropertyCategory) {
             conf = project.getProjectConfiguration()
             cleanVCSTask(project)

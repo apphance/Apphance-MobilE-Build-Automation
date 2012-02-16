@@ -5,10 +5,8 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.vcs.plugins.AbstractVCSPlugin;
-import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
 
 
 /**
@@ -22,7 +20,6 @@ class GitPlugin extends AbstractVCSPlugin {
     @Override
     public void apply(Project project) {
         super.apply(project);
-        ProjectHelper.checkExactlyOnePluginIsLoaded(project, this.class, MercurialPlugin.class, GitPlugin.class)
         project.task('verifyGitSetup', type: VerifyGitSetupTask.class)
         project.task('prepareGitSetup', type: PrepareGitSetupTask.class)
         project.task('showGitSetup', type: ShowGitSetupTask.class)

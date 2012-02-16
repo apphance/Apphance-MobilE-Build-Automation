@@ -44,14 +44,17 @@ class TestReleaseIOSTasks extends AbstractBaseIOSTaskTest {
             'prepareBaseSetup',
             'prepareSetup',
             'prepareIOSSetup',
+            'prepareMercurialSetup',
             'prepareReleaseSetup',
             'verifyBaseSetup',
             'verifySetup',
             'verifyIOSSetup',
+            'verifyMercurialSetup',
             'verifyReleaseSetup',
             'showBaseSetup',
             'showSetup',
             'showIOSSetup',
+            'showMercurialSetup',
             'showReleaseSetup',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
     }

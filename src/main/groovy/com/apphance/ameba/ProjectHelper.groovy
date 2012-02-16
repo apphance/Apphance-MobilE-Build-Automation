@@ -349,8 +349,10 @@ class ProjectHelper {
     public static void checkExactlyOnePluginIsLoaded(Project project, Class<Plugin<Project>> myPlugin, Class<Plugin<Project>> ... plugins) {
         int count = 0
         plugins.each {
-            if (project.plugins.collect{plugin -> plugin.class}.contains(it)) {
+            println it
+            if (project.plugins.collect{plugin -> plugin.class}.contains(it) || it == myPlugin) {
                 count ++
+                println "up"
             }
         }
         if (count > 1) {

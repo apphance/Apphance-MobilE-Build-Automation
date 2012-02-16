@@ -5,10 +5,8 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.vcs.plugins.AbstractVCSPlugin;
-import com.apphance.ameba.vcs.plugins.git.GitPlugin
 
 /**
  * Plugin for Mercurial implementation of VCS system
@@ -21,7 +19,6 @@ class MercurialPlugin extends AbstractVCSPlugin {
     @Override
     public void apply(Project project) {
         super.apply(project)
-        ProjectHelper.checkExactlyOnePluginIsLoaded(project, this.class, MercurialPlugin.class, GitPlugin.class)
         project.task('verifyMercurialSetup', type: VerifyMercurialSetupTask.class)
         project.task('prepareMercurialSetup', type: PrepareMercurialSetupTask.class)
         project.task('showMercurialSetup', type: ShowMercurialSetupTask.class)
