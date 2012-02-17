@@ -35,7 +35,6 @@ import com.sun.org.apache.xpath.internal.XPathAPI
 class IOSReleasePlugin implements Plugin<Project> {
     static Logger logger = Logging.getLogger(IOSReleasePlugin.class)
 
-    String pListFileName
     ProjectHelper projectHelper
     ProjectConfiguration conf
     IOSXCodeOutputParser iosConfigurationAndTargetRetriever
@@ -214,9 +213,8 @@ class IOSReleasePlugin implements Plugin<Project> {
     }
 
     private org.w3c.dom.Element getParsedPlist(Project project) {
-        File pListFile = new File("${project.rootDir}/${pListFileName}")
-        logger.debug("Reading file " + pListFile)
-        return new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
+        logger.debug("Reading file " + iosConf.plistFile)
+        return new XMLBomAwareFileReader().readXMLFileIncludingBom(iosConf.plistFile)
     }
 
     def void prepareUpdateVersionTask(Project project) {
@@ -237,7 +235,7 @@ class IOSReleasePlugin implements Plugin<Project> {
                         '/plist/dict/key[text()="CFBundleVersion"]').each{
                             it.nextSibling.nextSibling.textContent = conf.versionCode
                         }
-                new File("${project.rootDir}/${pListFileName}").write(root as String)
+                iosConf.plistFile.write(root as String)
                 logger.lifecycle("New version code: ${conf.versionCode}")
                 logger.lifecycle("Updated version string to ${conf.versionString}")
             }
