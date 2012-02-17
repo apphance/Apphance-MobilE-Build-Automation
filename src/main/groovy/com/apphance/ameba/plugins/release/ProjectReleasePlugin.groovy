@@ -156,7 +156,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
             Collection<String>  command = new LinkedList<String>()
             command << "montage"
             ImageNameFilter imageFilter = new ImageNameFilter();
-            project.rootDir.eachFileRecurse { file ->
+            project.rootDir.traverse([type: FileType.FILES, maxDepth : 20]) { file ->
                 if (imageFilter.isValid(project.rootDir, file)) {
                     command << file
                 }

@@ -349,23 +349,23 @@ class IOSPlugin implements Plugin<Project> {
 
     Collection<File> findAllPlistFiles(Project project) {
         def result = []
-        project.rootDir.eachFileRecurse(FileType.FILES, {
+        project.rootDir.traverse([type: FileType.FILES, maxDepth : 20]) {
             if (it.name.endsWith("-Info.plist") && !it.path.contains("/External/") && !it.path.contains('/build/')) {
                 logger.lifecycle("Adding plist file ${it} to processing list")
                 result << it
             }
-        })
+        }
         return result
     }
 
     Collection<File> findAllSourceFiles(Project project) {
         def result = []
-        project.rootDir.eachFileRecurse(FileType.FILES, {
+        project.rootDir.traverse([type: FileType.FILES, maxDepth : 20]) {
             if ((it.name.endsWith(".m") || it.name.endsWith(".h")) && !it.path.contains("/External/")) {
                 logger.lifecycle("Adding source file ${it} to processing list")
                 result << it
             }
-        })
+        }
         return result
     }
 }
