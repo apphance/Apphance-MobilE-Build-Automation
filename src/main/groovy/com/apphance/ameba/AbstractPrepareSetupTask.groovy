@@ -56,7 +56,7 @@ class AbstractPrepareSetupTask extends DefaultTask {
             new File(project.rootDir,'tmp').absolutePath,
         ]
         def plistFiles = []
-        project.rootDir.traverse([type: FileType.FILES, maxDepth : 20]) {
+        project.rootDir.traverse([type: FileType.FILES, maxDepth : 7]) {
             def thePath = it.absolutePath
             if (filter(it)) {
                 if (!paths.any {path -> thePath.startsWith(path)}) {

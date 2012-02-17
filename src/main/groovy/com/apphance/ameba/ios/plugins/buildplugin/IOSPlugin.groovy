@@ -3,7 +3,6 @@ package com.apphance.ameba.ios.plugins.buildplugin;
 
 
 
-import groovy.io.FileType;
 
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -349,7 +348,7 @@ class IOSPlugin implements Plugin<Project> {
 
     Collection<File> findAllPlistFiles(Project project) {
         def result = []
-        project.rootDir.traverse([type: FileType.FILES, maxDepth : 20]) {
+        project.rootDir.traverse([type: FileType.FILES, maxDepth : 7]) {
             if (it.name.endsWith("-Info.plist") && !it.path.contains("/External/") && !it.path.contains('/build/')) {
                 logger.lifecycle("Adding plist file ${it} to processing list")
                 result << it
@@ -360,7 +359,7 @@ class IOSPlugin implements Plugin<Project> {
 
     Collection<File> findAllSourceFiles(Project project) {
         def result = []
-        project.rootDir.traverse([type: FileType.FILES, maxDepth : 20]) {
+        project.rootDir.traverse([type: FileType.FILES, maxDepth : 7]) {
             if ((it.name.endsWith(".m") || it.name.endsWith(".h")) && !it.path.contains("/External/")) {
                 logger.lifecycle("Adding source file ${it} to processing list")
                 result << it
