@@ -16,6 +16,8 @@ import com.apphance.ameba.vcs.plugins.AbstractVCSPlugin;
 class MercurialPlugin extends AbstractVCSPlugin {
     static Logger logger = Logging.getLogger(MercurialPlugin.class)
 
+    ProjectHelper projectHelper = new ProjectHelper()
+
 
     @Override
     public void apply(Project project) {
@@ -35,7 +37,6 @@ class MercurialPlugin extends AbstractVCSPlugin {
                 "-rf",
                 ".hgcheck",
             ]
-            def projectHelper = new ProjectHelper()
             projectHelper.executeCommand(project, commandHgCheck)
             String[] commandRevert = [
                 "hg",
