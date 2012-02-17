@@ -67,7 +67,9 @@ class PropertyCategory {
             project[property.propertyName] = property.defaultValue
         } else if (options != null) {
             // or pre-select first option if present
-            project[property.propertyName] = options[0]
+            if (options.size > 0 && options[0] != null) {
+                project[property.propertyName] = options[0]
+            }
         }
         System.out.println(s)
         if (project.hasProperty(property.propertyName) && project[property.propertyName] != null) {
@@ -81,7 +83,9 @@ class PropertyCategory {
         if (newValue == null) {
             throw new GradleException("Entering data has been stopped at reading ${property.propertyName}")
         }
-        project[property.propertyName] = newValue
+        if (!newValue.isEmpty()) {
+            project[property.propertyName] = newValue
+        }
     }
 
     public static String readReleaseNotes(Project project) {
