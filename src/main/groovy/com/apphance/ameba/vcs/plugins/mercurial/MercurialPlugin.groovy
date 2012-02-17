@@ -5,6 +5,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.ProjectHelper;
 import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.vcs.plugins.AbstractVCSPlugin;
 
@@ -34,6 +35,7 @@ class MercurialPlugin extends AbstractVCSPlugin {
                 "-rf",
                 ".hgcheck",
             ]
+            def projectHelper = new ProjectHelper()
             projectHelper.executeCommand(project, commandHgCheck)
             String[] commandRevert = [
                 "hg",
