@@ -15,6 +15,7 @@ import org.gradle.logging.StyledTextOutputFactory
 import org.gradle.logging.StyledTextOutput.Style
 
 import com.apphance.ameba.AbstractPrepareSetupTask
+import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
@@ -153,11 +154,27 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
     }
 
+    private prepareGalleryArtifacts() {
+        conf.galleryCss = new AmebaArtifact(
+                name : "CSS Gallery",
+                url : new URL(conf.versionedApplicationUrl, "_css/jquery.swipegallery.css"),
+                location : new File(conf.targetDirectory, "_css/jquery.swipegallery.css"))
+        conf.galleryJs = new AmebaArtifact(
+                name : "JS Gallery",
+                url : new URL(conf.versionedApplicationUrl, "_res/jquery.swipegallery.js"),
+                location : new File(conf.targetDirectory, "_res/jquery.swipegallery.js"))
+        conf.galleryTrans = new AmebaArtifact(
+                name : "JS Gallery",
+                url : new URL(conf.versionedApplicationUrl, "_res/trans.png"),
+                location : new File(conf.targetDirectory, "_res/trans.png"))
+    }
+
     def void prepareCopyGalleryFilesTask(Project project) {
         def task = project.task('copyGalleryFiles')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task.description = "Copy files required by swipe jquerymobile gallery"
         task << {
+            prepareGalleryArtifacts()
             conf.galleryCss.location.parentFile.mkdirs()
             conf.galleryJs.location.parentFile.mkdirs()
             conf.galleryCss.location.setText(this.class.getResourceAsStream("swipegallery/_css/jquery.swipegallery.css").text,"utf-8")

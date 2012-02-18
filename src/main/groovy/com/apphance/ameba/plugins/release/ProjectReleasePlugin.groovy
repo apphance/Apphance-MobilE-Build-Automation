@@ -97,21 +97,6 @@ class ProjectReleasePlugin implements Plugin<Project> {
         }
     }
 
-    private prepareGalleryArtifacts() {
-        conf.galleryCss = new AmebaArtifact(
-                name : "CSS Gallery",
-                url : new URL(conf.versionedApplicationUrl, "_css/jquery.swipegallery.css"),
-                location : new File(conf.targetDirectory, "_css/jquery.swipegallery.css"))
-        conf.galleryJs = new AmebaArtifact(
-                name : "JS Gallery",
-                url : new URL(conf.versionedApplicationUrl, "_res/jquery.swipegallery.js"),
-                location : new File(conf.targetDirectory, "_res/jquery.swipegallery.js"))
-        conf.galleryTrans = new AmebaArtifact(
-                name : "JS Gallery",
-                url : new URL(conf.versionedApplicationUrl, "_res/trans.png"),
-                location : new File(conf.targetDirectory, "_res/trans.png"))
-    }
-
     def void preparePrepareForReleaseTask(Project project) {
         def task = project.task('prepareForRelease')
         task.group= AmebaCommonBuildTaskGroups.AMEBA_RELEASE
@@ -119,7 +104,6 @@ class ProjectReleasePlugin implements Plugin<Project> {
         task << {
             prepareSourcesAndDocumentationArtifacts()
             prepareMailArtifacts(project)
-            prepareGalleryArtifacts()
         }
         task.dependsOn(project.readProjectConfiguration)
     }
