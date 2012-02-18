@@ -337,17 +337,21 @@ class AndroidPlugin implements Plugin<Project> {
         if (androidBuilder.hasVariants()) {
             loopAllVariants(project,{ directory->
                 prepareInstallTask(project, directory.name)
-            })
+            }, false)
         } else {
             prepareInstallTaskNoVariant(project, 'Debug')
             prepareInstallTaskNoVariant(project, 'Release')
         }
     }
 
-    private void loopAllVariants(Project project, Closure closure) {
+    private void loopAllVariants(Project project, Closure closure, boolean printToOutput) {
         androidBuilder.variantsDir.eachDir { directory ->
             if (!androidConf.isBuildExcluded(directory.name)) {
                 closure (directory)
+            } else {
+                if (printToOutput) {
+                    println "Excluding variant ${directory.name} : excluded by configuration ${androidConf.excludedBuilds}"
+                }
             }
         }
     }
@@ -403,7 +407,7 @@ class AndroidPlugin implements Plugin<Project> {
         if (androidBuilder.hasVariants()) {
             loopAllVariants (project,{ directory ->
                 prepareSingleVariant(project, directory.name, null)
-            })
+            }, true)
         } else {
             ['Debug', 'Release'].each {
                 prepareSingleVariant(project, null, it)
