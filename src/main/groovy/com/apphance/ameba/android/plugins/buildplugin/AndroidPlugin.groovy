@@ -146,7 +146,7 @@ class AndroidPlugin implements Plugin<Project> {
                 throw new GradleException('Unable to find location of Android SDK, either\
  set it in local.properties or in ANDROID_HOME environment variable')
             }
-            androidConf.excludedBuilds = project.readProperty(AndroidProjectProperty.EXCLUDED_BUILDS)*.trim()
+            androidConf.excludedBuilds = project.readProperty(AndroidProjectProperty.EXCLUDED_BUILDS).split (',')*.trim()
             def target = androidEnvironment.getAndroidProperty('target')
             if (target == null) {
                 throw new GradleException("target is not defined. Please run 'android update project' or 'android create project' as appropriate")
