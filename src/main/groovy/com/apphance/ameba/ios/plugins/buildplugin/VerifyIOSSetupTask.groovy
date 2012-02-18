@@ -30,8 +30,8 @@ class VerifyIOSSetupTask extends AbstractVerifyIOSSetupTask {
             checkDistributionDir()
             checkTargetsAndConfigurations()
             checkSDKs()
-            checkTarget(IOSProjectProperty.MAIN_TARGET)
-            checkConfiguration(IOSProjectProperty.MAIN_CONFIGURATION)
+            checkBuildableTarget(IOSProjectProperty.MAIN_TARGET)
+            checkBuildableConfiguration(IOSProjectProperty.MAIN_CONFIGURATION)
             allPropertiesOK()
         }
     }
