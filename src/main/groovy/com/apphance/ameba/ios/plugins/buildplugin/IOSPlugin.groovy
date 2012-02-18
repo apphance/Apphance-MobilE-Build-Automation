@@ -4,6 +4,8 @@ package com.apphance.ameba.ios.plugins.buildplugin;
 
 
 
+import groovy.io.FileType;
+
 import javax.xml.parsers.DocumentBuilderFactory
 
 import org.gradle.api.GradleException
