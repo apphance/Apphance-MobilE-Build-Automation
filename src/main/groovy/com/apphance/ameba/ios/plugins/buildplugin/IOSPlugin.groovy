@@ -178,13 +178,14 @@ class IOSPlugin implements Plugin<Project> {
         def task = project.task('buildAll')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task.description = 'Builds all target/configuration combinations and produces all artifacts (zip, ipa, messages, etc)'
+        iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
         def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
         def trimmed = lines*.trim()
         iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmed)
         iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmed)
         def targets = iosConf.targets
         def configurations = iosConf.configurations
-        logger.lifecycle("Building all builds")
+        println("Building all builds")
         targets.each { target ->
             configurations.each { configuration ->
                 def id = "${target}-${configuration}".toString()
@@ -200,7 +201,7 @@ class IOSPlugin implements Plugin<Project> {
                     task.dependsOn(singleTask)
                     singleTask.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.verifySetup)
                 } else {
-                    logger.lifecycle("Skipping build ${id} - it is excluded in configuration (${iosConf.excludedBuilds})")
+                    println ("Skipping build ${id} - it is excluded in configuration (${iosConf.excludedBuilds})")
                 }
             }
         }

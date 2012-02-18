@@ -32,6 +32,24 @@ abstract class AbstractVerifyIOSSetupTask extends AbstractVerifySetupTask {
         }
     }
 
+    void checkBuildableTarget(property) {
+        use (PropertyCategory) {
+            String target = project.readProperty(property)
+            if (!iosConf.targets.contains(target)) {
+                throw new GradleException("""The target in ${property.propertyName}: ${target} can only be one of ${iosConf.targets}""")
+            }
+        }
+    }
+
+    void checkBuildableConfiguration(property) {
+        use (PropertyCategory) {
+            String configuration = project.readProperty(property)
+            if (!iosConf.configurations.contains(configuration)) {
+                throw new GradleException("""The configuration in ${property.propertyName}: ${configuration} can only be one of ${iosConf.configurations}""")
+            }
+        }
+    }
+    
     void checkTarget(property) {
         use (PropertyCategory) {
             String target = project.readProperty(property)
