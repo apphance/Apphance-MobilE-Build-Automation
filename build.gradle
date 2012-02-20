@@ -136,4 +136,4 @@ task cleanTmp << {
 
 cleanTmp.description = 'Cleans tmp directory'
 clean.dependsOn(cleanTmp)
-createReleaseTag.dependsOn uploadArchives
+//createReleaseTag.dependsOn uploadArchives

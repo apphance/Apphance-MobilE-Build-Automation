@@ -71,14 +71,41 @@ class AndroidApphancePlugin implements Plugin<Project>{
         task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
         task << { restoreManifestBeforeApphanceRemoval(project) }
     }
+	
+	File getMainApplicationFile(Project project) {
+		String applicationName = manifestHelper.getApplicationName(project.rootDir)
+		applicationName = applicationName.replace('.', '/')
+		applicationName = applicationName + '.java'
+		applicationName = 'src/' + applicationName
+		File f
+		if (new File(applicationName).exists()) {
+			f = new File(applicationName)
+		} else {
+			String mainActivityName = manifestHelper.getMainActivityName(project.rootDir)
+			mainActivityName = mainActivityName.replace('.', '/')
+			mainActivityName = mainActivityName + '.java'
+			mainActivityName = 'src/' + mainActivityName
+			if (!(new File(mainActivityName)).exists()) {
+				f = null
+			} else {
+				f = new File(mainActivityName)
+			}
+		}
+		return f
+	}
 
     public void preprocessBuildsWithApphance(Project project) {
         project.tasks.each {  task ->
             if (task.name.startsWith('buildDebug')) {
                 task.doFirst { 
-					replaceLogsWithApphance(project) 
-					addApphanceInit(project)	
-					copyApphanceJar(project)
+					if (!checkIfApphancePresent(project)) {
+						File mainFile = getMainApplicationFile(project)
+						if (mainFile != null) {
+							replaceLogsWithApphance(project)
+							addApphanceInit(project, mainFile)
+							copyApphanceJar(project)
+						}
+					}
 				}
             }
             if (task.name.startsWith('buildRelease')) {
@@ -120,27 +147,9 @@ class AndroidApphancePlugin implements Plugin<Project>{
         apphanceRemovedManifest << new File(project.rootDir,"AndroidManifest.xml").text
     }
 	
-	private addApphanceInit(Project project) {
-		String applicationName = manifestHelper.getApplicationName(project.rootDir)
-		applicationName = applicationName.replace('.', '/')
-		applicationName = applicationName + '.java'
-		applicationName = 'src/' + applicationName
-		File f
-		if (new File(applicationName).exists()) {
-			f = new File(applicationName)
-		} else {
-			String mainActivityName = manifestHelper.getMainActivityName(project.rootDir)
-			mainActivityName = mainActivityName.replace('.', '/')
-			mainActivityName = mainActivityName + '.java'
-			mainActivityName = 'src/' + mainActivityName
-			if (!(new File(mainActivityName)).exists()) {
-				throw new GradleException("Application class and main activity not defined in Android manifest")
-			}
-			f = new File(mainActivityName)
-		}
-		
+	private def addApphanceInit(Project project, File mainFile) {
 		def lineToModification = []
-		f.eachLine { line, lineNumber ->
+		mainFile.eachLine { line, lineNumber ->
 			if (line.contains('super.onCreate')) {
 				lineToModification << lineNumber
 			}
@@ -148,15 +157,15 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		File newMainClass = new File("newMainClassFile.java")
 		def mode
 		if (project[ApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
-			mode = "Apphance.QA"
+			mode = "Apphance.Mode.QA"
 		} else {
-			mode = "Apphance.SILENT"
+			mode = "Apphance.Mode.SILENT"
 		}
 		String appKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
 		String startSession = "Apphance.startNewSession(this, \"${appKey}\", ${mode});"
 		String importApphance = 'import com.apphance.android.Apphance;'
 		newMainClass.withWriter { out ->
-			f.eachLine { line ->
+			mainFile.eachLine { line ->
 				if (line.contains('super.onCreate')) {
 					out.println(line << startSession)
 				} else if (line.contains('package')) {
@@ -166,11 +175,39 @@ class AndroidApphancePlugin implements Plugin<Project>{
 				}
 			}
 		}
+		mainFile.delete()
+		mainFile << newMainClass.getText()
+		newMainClass.delete()
 	}
 	
 	private copyApphanceJar(Project project) {
+		def libsDir = new File('libs')
+		libsDir.eachFileMatch(".*apphance.*\\.jar") {
+			logger.lifecycle("Removing old apphance jar: " + it.name)
+			it.delete()
+		}
 		File libsApphance = new File(project.rootDir, '/libs/apphance.jar')
 		URL apphanceUrl = this.class.getResource("apphance-android-library_1.4.2.1.jar")
 		libsApphance << apphanceUrl.getContent()
+	}
+	
+	private boolean checkIfApphancePresent(Project project) {
+		boolean found = false
+		File basedir = new File(project.rootDir, 'src')
+		basedir.eachFileRecurse { file ->
+			if (file.name.endsWith('.java')) {
+				file.eachLine {
+					if (it.contains("Apphance.startNewSession")) {
+						found = true
+					}
+				}
+			}
+		}
+		if (!found) {
+			project.rootDir.eachFileMatch(".*apphance.*\\.jar") {
+				found = true
+			}
+		}
+		return found
 	}
 }

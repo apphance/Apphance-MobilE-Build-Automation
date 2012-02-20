@@ -22,9 +22,9 @@ class AndroidJarLibraryTest extends BaseAndroidTaskTest {
     public void testTasksAvailable() {
         verifyTasksInGroup(getProject(),[
             'buildAll',
-            'buildDebug',
+            'buildAllDebug',
             'buildDebug-test',
-            'buildRelease',
+            'buildAllRelease',
             'buildRelease-market',
             'checkTests',
             'cleanAndroid',

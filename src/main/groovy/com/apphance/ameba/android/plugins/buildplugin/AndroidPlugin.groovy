@@ -21,7 +21,7 @@ import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.AndroidSingleVariantBuilder
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin;
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
 /**
  * Plugin for various Android related tasks.
@@ -372,9 +372,7 @@ class AndroidPlugin implements Plugin<Project> {
             }
         }
         task.dependsOn(project.readAndroidProjectConfiguration)
-        if (variant != null) {
-            project.tasks["build${debugRelease}"].dependsOn(task)
-        }
+        project.tasks["buildAll${debugRelease}"].dependsOn(task)
     }
 
 
