@@ -76,7 +76,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		String applicationName = manifestHelper.getApplicationName(project.rootDir)
 		applicationName = applicationName.replace('.', '/')
 		applicationName = applicationName + '.java'
-		applicationName = 'src/' + applicationName
+		applicationName = 'srcTmp/src/' + applicationName
 		File f
 		if (new File(applicationName).exists()) {
 			f = new File(applicationName)
@@ -84,7 +84,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
 			String mainActivityName = manifestHelper.getMainActivityName(project.rootDir)
 			mainActivityName = mainActivityName.replace('.', '/')
 			mainActivityName = mainActivityName + '.java'
-			mainActivityName = 'src/' + mainActivityName
+			mainActivityName = 'srcTmp/src/' + mainActivityName
 			if (!(new File(mainActivityName)).exists()) {
 				f = null
 			} else {
@@ -97,7 +97,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     public void preprocessBuildsWithApphance(Project project) {
         project.tasks.each {  task ->
             if (task.name.startsWith('buildDebug')) {
-                task.doFirst { 
+                task.doFirst {
 					if (!checkIfApphancePresent(project)) {
 						File mainFile = getMainApplicationFile(project)
 						if (mainFile != null) {
@@ -121,7 +121,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     private replaceLogsWithAndroid(Project project) {
         project.ant.replace(casesensitive: 'true', token : 'import com.apphance.android.Log;',
                 value: 'import android.util.Log;', summary: true) {
-                    fileset(dir: 'src') { include (name : '**/*.java') }
+                    fileset(dir: 'srcTmp/src') { include (name : '**/*.java') }
                 }
     }
 
@@ -129,22 +129,25 @@ class AndroidApphancePlugin implements Plugin<Project>{
         logger.lifecycle("Replacing android logs with apphance")
         project.ant.replace(casesensitive: 'true', token : 'import android.util.Log;',
                 value: 'import com.apphance.android.Log;', summary: true) {
-                    fileset(dir: 'src') { include (name : '**/*.java') }
+                    fileset(dir: 'srcTmp/src') { include (name : '**/*.java') }
                 }
     }
 
     private restoreManifestBeforeApphanceRemoval(Project project) {
         logger.lifecycle("Restoring before apphance was removed from manifest. ")
-        manifestHelper.restoreBeforeApphanceRemoval(project.rootDir)
+        manifestHelper.restoreBeforeApphanceRemoval(project.rootDir, "srcTmp")
     }
 
     private removeApphanceFromManifest(Project project) {
         logger.lifecycle("Remove apphance from manifest")
-        manifestHelper.removeApphance(project.rootDir)
-        File apphanceRemovedManifest = new File(conf.logDirectory,"AndroidManifest-with-apphance-removed.xml")
+        manifestHelper.removeApphance(new File(project.rootDir, "srcTmp"))
+        File apphanceRemovedManifest = new File(conf.logDirectory,"srcTmp/AndroidManifest-with-apphance-removed.xml")
         logger.lifecycle("Manifest used for this build is stored in ${apphanceRemovedManifest}")
-        apphanceRemovedManifest.delete()
-        apphanceRemovedManifest << new File(project.rootDir,"AndroidManifest.xml").text
+		if (apphanceRemovedManifest.exists()) {
+			logger.lifecycle('removed manifest exists')
+			apphanceRemovedManifest.delete()
+		}
+        apphanceRemovedManifest << new File(project.rootDir,"srcTmp/AndroidManifest.xml").text
     }
 	
 	private def addApphanceInit(Project project, File mainFile) {
@@ -181,19 +184,19 @@ class AndroidApphancePlugin implements Plugin<Project>{
 	}
 	
 	private copyApphanceJar(Project project) {
-		def libsDir = new File('libs')
+		def libsDir = new File('srcTmp/libs')
 		libsDir.eachFileMatch(".*apphance.*\\.jar") {
 			logger.lifecycle("Removing old apphance jar: " + it.name)
 			it.delete()
 		}
-		File libsApphance = new File(project.rootDir, '/libs/apphance.jar')
+		File libsApphance = new File(project.rootDir, 'srcTmp/libs/apphance.jar')
 		URL apphanceUrl = this.class.getResource("apphance-android-library_1.4.2.1.jar")
 		libsApphance << apphanceUrl.getContent()
 	}
 	
 	private boolean checkIfApphancePresent(Project project) {
 		boolean found = false
-		File basedir = new File(project.rootDir, 'src')
+		File basedir = new File(project.rootDir, 'srcTmp/src')
 		basedir.eachFileRecurse { file ->
 			if (file.name.endsWith('.java')) {
 				file.eachLine {
@@ -204,7 +207,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
 			}
 		}
 		if (!found) {
-			project.rootDir.eachFileMatch(".*apphance.*\\.jar") {
+			new File(project.rootDir, 'srcTmp').eachFileMatch(".*apphance.*\\.jar") {
 				found = true
 			}
 		}

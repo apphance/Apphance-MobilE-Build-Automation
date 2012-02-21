@@ -46,6 +46,7 @@ class AndroidPlugin implements Plugin<Project> {
             this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
             this.manifestHelper = new AndroidManifestHelper()
             this.androidBuilder = new AndroidSingleVariantBuilder(project, this.androidConf)
+			prepareCopySourcesTask(project)
             prepareAndroidEnvironment(project)
             prepareJavaEnvironment(project)
             prepareCompileAndroidTask(project)
@@ -82,10 +83,10 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = "Performs code generation/compile tasks for android (if needed)"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            File gen = new File(project.rootDir,'gen')
+            File gen = new File(project.rootDir,'srcTmp/gen')
             if (!gen.exists() || gen.list().length == 0) {
                 logger.lifecycle("Regenerating gen directory by running debug project")
-                projectHelper.executeCommand(project, [
+                projectHelper.executeCommand(project, new File(project.rootDir, "srcTmp"), [
                     'ant',
                     'debug'
                 ])
@@ -102,15 +103,15 @@ class AndroidPlugin implements Plugin<Project> {
         def javaConventions =  project.convention.plugins.java
         javaConventions.sourceSets {
             main {
-                output.classesDir = 'build/classes'
-                output.resourcesDir = 'build/resources'
-                java { srcDir 'src' }
-                java { srcDir 'gen' }
+                output.classesDir = 'srcTmp/build/classes'
+                output.resourcesDir = 'srcTmp/build/resources'
+                java { srcDir 'srcTmp/src' }
+                java { srcDir 'srcTmp/gen' }
             }
             test {
-                output.classesDir = 'build/test-classes'
-                output.resourcesDir = 'build/test-resources'
-                java { srcDir 'test-src' }
+                output.classesDir = 'srcTmp/build/test-classes'
+                output.resourcesDir = 'srcTmp/build/test-resources'
+                java { srcDir 'srcTmp/test-src' }
             }
         }
         project.compileJava.options.encoding = 'UTF-8'
@@ -372,8 +373,44 @@ class AndroidPlugin implements Plugin<Project> {
             }
         }
         task.dependsOn(project.readAndroidProjectConfiguration)
+		task.dependsOn(project.copySources)
         project.tasks["buildAll${debugRelease}"].dependsOn(task)
     }
+	
+	void prepareCopySourcesTask(Project project) {
+		def task = project.task('copySources')
+		task.description = "Copies all sources to tmp directory for build"
+		task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+		task << {
+			new AntBuilder().delete(dir: "srcTmp")
+			new AntBuilder().copy(toDir : "srcTmp", verbose:true) {
+				fileset(dir : "./") {
+					exclude(name: 'srcTmp')
+					conf.sourceExcludes.each {
+						if (!it.equals('**/local.properties')) {
+							exclude(name: it)
+						}
+					}
+				}
+			}
+			// edit ant.properties for proper signing keystore path
+			File antProperties = new File('srcTmp/ant.properties')
+			File newAntProperties = new File('srcTmp/ant.props')
+			newAntProperties.delete()
+			newAntProperties.withWriter { out ->
+				antProperties.eachLine {
+					if (it.contains("key.store=")) {
+						out.println(it.replaceFirst("key.store=", "key.store=../"))
+					} else {
+						out.println(it)
+					}
+				}
+			}
+			antProperties.delete()
+			antProperties << newAntProperties.text
+			newAntProperties.delete()
+		}
+	}
 
 
     void prepareBuildAllTask(Project project) {

@@ -31,6 +31,7 @@ class TestBasicAndroidTasks extends BaseAndroidTaskTest {
             'installRelease-market',
             'replacePackage',
             'updateProject',
+			'copySources'
         ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 

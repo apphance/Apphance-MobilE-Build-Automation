@@ -55,6 +55,7 @@ class AndroidManifestHelper {
         }
     }
     void updateVersion(File projectDirectory, ProjectConfiguration conf) {
+		println("${projectDirectory}")
         def file = new File("${projectDirectory}/AndroidManifest.xml")
         def originalFile = new File("${projectDirectory}/AndroidManifest.xml.beforeUpdate.orig")
         originalFile.delete()

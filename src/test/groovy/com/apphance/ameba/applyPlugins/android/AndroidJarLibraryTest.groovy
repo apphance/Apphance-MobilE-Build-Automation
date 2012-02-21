@@ -34,7 +34,8 @@ class AndroidJarLibraryTest extends BaseAndroidTaskTest {
             'installRelease-market',
             'jarLibrary',
             'replacePackage',
-            'updateProject'
+            'updateProject',
+			'copySources'
         ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 }

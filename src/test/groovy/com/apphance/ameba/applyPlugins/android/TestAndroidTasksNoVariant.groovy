@@ -30,7 +30,8 @@ class TestAndroidTasksNoVariant extends BaseAndroidTaskTest {
             'installDebug',
             'installRelease',
             'replacePackage',
-            'updateProject'
+            'updateProject',
+			'copySources'
         ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 }
