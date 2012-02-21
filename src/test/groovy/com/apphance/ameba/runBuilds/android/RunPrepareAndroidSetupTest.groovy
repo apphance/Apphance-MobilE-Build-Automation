@@ -75,15 +75,21 @@ project.directory.name=
 project.language=en
 project.country=US
 ###########################################################
+# Mercurial properties
+###########################################################
+hg.commit.user=
+###########################################################
 # Android properties
 ###########################################################
 android.mainVariant=
 android.excluded.builds=
 android.minSdk.target=
 ###########################################################
-# Android jar library properties
+# Release properties
 ###########################################################
-android.jarLibrary.resPrefix=
+release.mail.from=
+release.mail.to=
+release.mail.flags=qrCode,imageMontage
 ###########################################################
 # Android test properties
 ###########################################################
@@ -96,15 +102,9 @@ android.test.directory=test/android
 android.test.perPackage=false
 android.useEmma=true
 ###########################################################
-# Mercurial properties
+# Android jar library properties
 ###########################################################
-hg.commit.user=
-###########################################################
-# Release properties
-###########################################################
-release.mail.from=
-release.mail.to=
-release.mail.flags=qrCode,imageMontage
+android.jarLibrary.resPrefix=
 """, text)
         println text
     }

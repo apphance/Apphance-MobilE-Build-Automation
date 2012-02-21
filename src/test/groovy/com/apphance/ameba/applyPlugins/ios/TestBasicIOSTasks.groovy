@@ -52,15 +52,21 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
     @Test
     public void testSetupTasksAvailable() {
         verifyTasksInGroup(getProject(),[
-            'prepareBaseSetup',
             'prepareSetup',
-            'prepareIOSSetup',
-            'verifyBaseSetup',
             'verifySetup',
-            'verifyIOSSetup',
-            'showBaseSetup',
             'showSetup',
-            'showIOSSetup'
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
+        assertEquals([
+            'PrepareBaseSetupOperation',
+            'PrepareIOSSetupOperation'
+        ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName } )
+        assertEquals([
+            'VerifyBaseSetupOperation',
+            'VerifyIOSSetupOperation'
+        ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName } )
+        assertEquals([
+            'ShowBaseSetupOperation',
+            'ShowIOSSetupOperation'
+        ], project.showSetup.showSetupOperations.collect { it.class.simpleName } )
     }
 }

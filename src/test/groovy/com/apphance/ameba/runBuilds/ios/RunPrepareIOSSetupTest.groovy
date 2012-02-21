@@ -75,6 +75,10 @@ project.directory.name=
 project.language=en
 project.country=US
 ###########################################################
+# Mercurial properties
+###########################################################
+hg.commit.user=
+###########################################################
 # iOS properties
 ###########################################################
 ios.plist.file=GradleXCode/GradleXCode-Info.plist
@@ -85,6 +89,16 @@ ios.mainTarget=GradleXCode
 ios.mainConfiguration=BasicConfiguration
 ios.sdk=iphoneos
 ios.simulator.sdk=iphonesimulator
+###########################################################
+# Release properties
+###########################################################
+release.mail.from=
+release.mail.to=
+release.mail.flags=qrCode,imageMontage
+###########################################################
+# iOS KIF properties
+###########################################################
+ios.kif.configuration=Debug
 ###########################################################
 # iOS FoneMonkey properties
 ###########################################################
@@ -97,20 +111,6 @@ ios.framework.configuration=Debug
 ios.framework.version=A
 ios.framework.headers=GradleXCode/gradleXCodeAppDelegate.h
 ios.framework.resources=icon.png
-###########################################################
-# iOS KIF properties
-###########################################################
-ios.kif.configuration=Debug
-###########################################################
-# Mercurial properties
-###########################################################
-hg.commit.user=
-###########################################################
-# Release properties
-###########################################################
-release.mail.from=
-release.mail.to=
-release.mail.flags=qrCode,imageMontage
 """, text)
         println text
     }

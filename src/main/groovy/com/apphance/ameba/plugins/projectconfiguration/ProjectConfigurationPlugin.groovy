@@ -1,20 +1,11 @@
 package com.apphance.ameba.plugins.projectconfiguration;
 
 
-
-
-import java.io.BufferedReader
-
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.LogLevel
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutputFactory
-import org.gradle.logging.StyledTextOutput.Style
 
-import com.apphance.ameba.AbstractPrepareSetupTask
 import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
@@ -38,76 +29,23 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
     void apply(Project project) {
         projectHelper = new ProjectHelper()
         prepareRepositories(project)
-        prepareVerifySetupTask(project)
         readProjectConfigurationTask(project)
-        preparePrepareSetupTask(project)
+        project.task('prepareSetup', type: PrepareSetupTask.class)
+        project.task('verifySetup', type: VerifySetupTask.class)
+        project.task('showSetup', type: ShowSetupTask.class)
         project.task('checkTests', type: CheckTestsTask.class)
         showProjectConfigurationTask(project)
         prepareCleanConfigurationTask(project)
-        prepareShowPropertiesTask(project)
         prepareCopyGalleryFilesTask(project)
-        project.task('verifyBaseSetup', type: VerifyBaseSetupTask.class)
-        project.task('prepareBaseSetup', type: PrepareBaseSetupTask.class)
-        project.task('showBaseSetup', type: ShowBaseSetupTask.class)
+        project.prepareSetup.prepareSetupOperations << new PrepareBaseSetupOperation()
+        project.verifySetup.verifySetupOperations << new VerifyBaseSetupOperation()
+        project.showSetup.showSetupOperations << new ShowBaseSetupOperation()
     }
 
     void prepareRepositories(Project project) {
         project.repositories.mavenCentral()
     }
 
-    void prepareVerifySetupTask(Project project) {
-        def task = project.task('verifySetup')
-        task.description = "Verifies if the project can be build properly"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        task << {
-            // this task does nothing. It is there to serve as umbrella task for other setup tasks
-        }
-    }
-
-    def void preparePrepareSetupTask(Project project) {
-        def task = project.task('prepareSetup')
-        task.description = "Walk-through wizard for preparing project's configuration"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        project.logging.setLevel(LogLevel.QUIET)
-        task.logging.setLevel(LogLevel.QUIET)
-        task << {
-            use(PropertyCategory) {
-                String propertiesToWrite = project.readProperty(AbstractPrepareSetupTask.GENERATED_GRADLE_PROPERTIES,'')
-                StyledTextOutput o = task.services.get(StyledTextOutputFactory).create(task.class)
-                o.withStyle(Style.Normal).println("About to write new properties to gradle.properties:")
-                propertiesToWrite.split('\n').each {
-                    if (it.startsWith('#')) {
-                        o.withStyle(Style.Info).println(it)
-                    } else {
-                        o.withStyle(Style.Identifier).println(it)
-                    }
-                }
-                o.withStyle(Style.Normal).println("Are you sure y/n?")
-                BufferedReader br = AbstractPrepareSetupTask.getReader()
-                File f = new File(project.rootDir,'gradle.properties')
-                String answer = ''
-                while (!(answer in ['y', 'n'])) {
-                    answer = br.readLine()
-                }
-                if (answer == 'y') {
-                    f.delete()
-                    f << propertiesToWrite
-                    System.out.println("File written: ${f}")
-                } else {
-                    System.out.println("Skipped writing to file: ${f}")
-                }
-            }
-        }
-    }
-
-    void prepareShowPropertiesTask(Project project) {
-        def task = project.task('showSetup')
-        task.description = "Shows all available project properties"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
-        task << {
-            // this task does nothing. It is there to serve as umbrella task for other setup tasks
-        }
-    }
     def void readProjectConfigurationTask(Project project) {
         def task = project.task('readProjectConfiguration')
         task.description = "Reads project's configuration and sets it up in projectConfiguration property of project"

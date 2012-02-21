@@ -77,9 +77,9 @@ class AndroidTestPlugin implements Plugin<Project>{
         prepareCleanAvdTask(project)
         prepareStartEmulatorTask(project)
         prepareStopAllEmulatorsTask(project)
-        project.task('prepareAndroidTestSetup', type:PrepareAndroidTestSetupTask)
-        project.task('verifyAndroidTestSetup', type: VerifyAndroidTestSetupTask)
-        project.task('showAndroidTestSetup', type: ShowAndroidTestSetupTask)
+        project.prepareSetup.prepareSetupOperations << new PrepareAndroidTestSetupOperation()
+        project.verifySetup.verifySetupOperations << new VerifyAndroidTestSetupOperation()
+        project.showSetup.showSetupOperations << new ShowAndroidTestSetupOperation()
     }
 
     private void readConfiguration(Project project) {

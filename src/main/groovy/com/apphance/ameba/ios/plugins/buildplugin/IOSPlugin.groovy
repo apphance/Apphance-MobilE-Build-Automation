@@ -1,11 +1,6 @@
 package com.apphance.ameba.ios.plugins.buildplugin;
 
 
-
-
-
-import groovy.io.FileType;
-
 import javax.xml.parsers.DocumentBuilderFactory
 
 import org.gradle.api.GradleException
@@ -64,9 +59,9 @@ class IOSPlugin implements Plugin<Project> {
             prepareBuildAllTask(project)
             prepareReplaceBundleIdPrefixTask(project)
             addIosSourceExcludes()
-            project.task('prepareIOSSetup', type:PrepareIOSSetupTask)
-            project.task('verifyIOSSetup', type: VerifyIOSSetupTask)
-            project.task('showIOSSetup', type: ShowIOSSetupTask)
+            project.prepareSetup.prepareSetupOperations << new PrepareIOSSetupOperation()
+            project.verifySetup.verifySetupOperations << new  VerifyIOSSetupOperation()
+            project.showSetup.showSetupOperations << new ShowIOSSetupOperation()
         }
     }
 

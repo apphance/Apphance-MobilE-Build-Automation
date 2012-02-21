@@ -22,9 +22,9 @@ class MercurialPlugin extends AbstractVCSPlugin {
     @Override
     public void apply(Project project) {
         super.apply(project)
-        project.task('verifyMercurialSetup', type: VerifyMercurialSetupTask.class)
-        project.task('prepareMercurialSetup', type: PrepareMercurialSetupTask.class)
-        project.task('showMercurialSetup', type: ShowMercurialSetupTask.class)
+        project.prepareSetup.prepareSetupOperations << new PrepareMercurialSetupOperation()
+        project.verifySetup.verifySetupOperations << new  VerifyMercurialSetupOperation()
+        project.showSetup.showSetupOperations << new ShowMercurialSetupOperation()
     }
 
     def void cleanVCSTask(Project project) {

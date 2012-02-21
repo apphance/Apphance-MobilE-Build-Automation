@@ -28,15 +28,21 @@ class MercurialPluginTest extends BaseTaskTest {
     @Test
     public void testSetupTasksAvailable() {
         verifyTasksInGroup(getProject(),[
-            'prepareBaseSetup',
             'prepareSetup',
-            'prepareMercurialSetup',
-            'verifyBaseSetup',
             'verifySetup',
-            'verifyMercurialSetup',
-            'showBaseSetup',
             'showSetup',
-            'showMercurialSetup',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
+        assertEquals([
+            'PrepareBaseSetupOperation',
+            'PrepareMercurialSetupOperation',
+        ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName } )
+        assertEquals([
+            'VerifyBaseSetupOperation',
+            'VerifyMercurialSetupOperation',
+        ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName } )
+        assertEquals([
+            'ShowBaseSetupOperation',
+            'ShowMercurialSetupOperation',
+        ], project.showSetup.showSetupOperations.collect { it.class.simpleName } )
     }
 }

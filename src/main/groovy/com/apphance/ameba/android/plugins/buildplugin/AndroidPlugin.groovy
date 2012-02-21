@@ -66,9 +66,13 @@ class AndroidPlugin implements Plugin<Project> {
             prepareReplacePackageTask(project)
             addAndroidSourceExcludes()
             addAndroidVCSCommits()
-            project.task('prepareAndroidSetup', type:PrepareAndroidSetupTask)
-            project.task('verifyAndroidSetup', type: VerifyAndroidSetupTask)
-            project.task('showAndroidSetup', type: ShowAndroidSetupTask)
+            project.prepareSetup.prepareSetupOperations << new PrepareAndroidSetupOperation()
+            project.verifySetup.verifySetupOperations << new VerifyAndroidSetupOperation()
+            project.showSetup.showSetupOperations << new ShowAndroidSetupOperation()
+
+            project.prepareSetup.dependsOn(project.readAndroidProjectConfiguration)
+            project.verifySetup.dependsOn(project.readAndroidProjectConfiguration)
+            project.showSetup.dependsOn(project.readAndroidProjectConfiguration)
         }
     }
 

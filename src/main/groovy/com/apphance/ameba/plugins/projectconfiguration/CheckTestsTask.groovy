@@ -35,7 +35,6 @@ class CheckTestsTask extends DefaultTask{
         }
     }
 
-
     @TaskAction
     void checkTests(){
         List<String> failingTests = new ArrayList<String>();

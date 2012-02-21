@@ -23,9 +23,9 @@ class GitPlugin extends AbstractVCSPlugin {
     @Override
     public void apply(Project project) {
         super.apply(project);
-        project.task('verifyGitSetup', type: VerifyGitSetupTask.class)
-        project.task('prepareGitSetup', type: PrepareGitSetupTask.class)
-        project.task('showGitSetup', type: ShowGitSetupTask.class)
+        project.prepareSetup.prepareSetupOperations << new PrepareGitSetupOperation()
+        project.verifySetup.verifySetupOperations << new VerifyGitSetupOperation()
+        project.showSetup.showSetupOperations << new ShowGitSetupOperation()
     }
 
 

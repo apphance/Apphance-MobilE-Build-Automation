@@ -41,21 +41,27 @@ class TestReleaseIOSTasks extends AbstractBaseIOSTaskTest {
     @Test
     public void testSetupTasksAvailable() {
         verifyTasksInGroup(getProject(),[
-            'prepareBaseSetup',
             'prepareSetup',
-            'prepareIOSSetup',
-            'prepareMercurialSetup',
-            'prepareReleaseSetup',
-            'verifyBaseSetup',
             'verifySetup',
-            'verifyIOSSetup',
-            'verifyMercurialSetup',
-            'verifyReleaseSetup',
-            'showBaseSetup',
             'showSetup',
-            'showIOSSetup',
-            'showMercurialSetup',
-            'showReleaseSetup',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
+        assertEquals([
+            'PrepareBaseSetupOperation',
+            'PrepareMercurialSetupOperation',
+            'PrepareIOSSetupOperation',
+            'PrepareReleaseSetupOperation',
+        ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName } )
+        assertEquals([
+            'VerifyBaseSetupOperation',
+            'VerifyMercurialSetupOperation',
+            'VerifyIOSSetupOperation',
+            'VerifyReleaseSetupOperation',
+        ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName } )
+        assertEquals([
+            'ShowBaseSetupOperation',
+            'ShowMercurialSetupOperation',
+            'ShowIOSSetupOperation',
+            'ShowReleaseSetupOperation',
+        ], project.showSetup.showSetupOperations.collect { it.class.simpleName } )
     }
 }

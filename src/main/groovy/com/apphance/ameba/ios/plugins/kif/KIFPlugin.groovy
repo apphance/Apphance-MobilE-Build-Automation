@@ -44,9 +44,9 @@ class KIFPlugin implements Plugin<Project> {
             prepareBuildKIFReleaseTask()
             prepareRunKIFTestsTask()
             prepareRunSingleKIFTestTask()
-            project.task('verifyKIFSetup', type: VerifyIosKIFSetupTask.class)
-            project.task('prepareKIFSetup', type: PrepareIosKIFSetupTask.class)
-            project.task('showKIFSetup', type: ShowIosKIFSetupTask.class)
+            project.prepareSetup.prepareSetupOperations << new PrepareIosKIFSetupOperation()
+            project.verifySetup.verifySetupOperations << new VerifyIosKIFSetupOperation()
+            project.showSetup.showSetupOperations << new ShowIosKIFSetupOperation()
         }
     }
 

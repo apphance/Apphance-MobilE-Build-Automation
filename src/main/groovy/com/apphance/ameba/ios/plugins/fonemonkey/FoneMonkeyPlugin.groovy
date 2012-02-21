@@ -46,9 +46,9 @@ class FoneMonkeyPlugin implements Plugin<Project> {
             prepareRunMonkeyTestsTask()
             prepareRunSingleFoneMonkeyTestTask()
             prepareFoneMonkeyReportTask()
-            project.task('verifyFoneMonkeySetup', type: VerifyFoneMonkeySetupTask.class)
-            project.task('prepareFoneMonkeySetup', type: PrepareFoneMonkeySetupTask.class)
-            project.task('showFoneMonkeySetup', type: ShowFoneMonkeySetupTask.class)
+            project.prepareSetup.prepareSetupOperations << new PrepareFoneMonkeySetupOperation()
+            project.verifySetup.verifySetupOperations << new VerifyFoneMonkeySetupOperation()
+            project.showSetup.showSetupOperations << new ShowFoneMonkeySetupOperation()
         }
     }
 

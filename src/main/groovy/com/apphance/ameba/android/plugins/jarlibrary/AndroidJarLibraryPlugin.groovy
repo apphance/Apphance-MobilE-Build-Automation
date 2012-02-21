@@ -44,9 +44,9 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
                 jarLibraryPrefix = this.androidConf.mainProjectName
             }
             prepareJarLibraryTask(project)
-            project.task('prepareAndroidJarLibrarySetup', type:PrepareAndroidJarLibrarySetupTask)
-            project.task('verifyAndroidJarLibrarySetup', type: VerifyAndroidJarLibrarySetupTask)
-            project.task('showAndroidJarLibrarySetup', type: ShowAndroidJarLibrarySetupTask)
+            project.prepareSetup.prepareSetupOperations << new PrepareAndroidJarLibrarySetupOperation()
+            project.verifySetup.verifySetupOperations << new VerifyAndroidJarLibrarySetupOperation()
+            project.showSetup.showSetupOperations << new ShowAndroidJarLibrarySetupOperation()
         }
     }
 

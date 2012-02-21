@@ -38,12 +38,12 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
     @Test
     public void testSetupTasksAvailable() {
         verifyTasksInGroup(getProject(),[
-            'prepareBaseSetup',
             'prepareSetup',
-            'verifyBaseSetup',
             'verifySetup',
-            'showBaseSetup',
             'showSetup',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
+        assertEquals(['PrepareBaseSetupOperation'], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName } )
+        assertEquals(['VerifyBaseSetupOperation'], project.verifySetup.verifySetupOperations.collect { it.class.simpleName } )
+        assertEquals(['ShowBaseSetupOperation'], project.showSetup.showSetupOperations.collect { it.class.simpleName } )
     }
 }

@@ -22,8 +22,8 @@ class IOSFrameworkPlugin implements Plugin<Project> {
     def void apply (Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
         project.task('buildFramework', type: IOSBuildFrameworkTask)
-        project.task('verifyFrameworkSetup', type: VerifyFrameworkSetupTask.class)
-        project.task('prepareFrameworkSetup', type: PrepareFrameworkSetupTask.class)
-        project.task('showFrameworkSetup', type: ShowFrameworkSetupTask.class)
+        project.prepareSetup.prepareSetupOperations << new PrepareFrameworkSetupOperation()
+        project.verifySetup.verifySetupOperations << new VerifyFrameworkSetupOperation()
+        project.showSetup.showSetupOperations << new ShowFrameworkSetupOperation()
     }
 }
