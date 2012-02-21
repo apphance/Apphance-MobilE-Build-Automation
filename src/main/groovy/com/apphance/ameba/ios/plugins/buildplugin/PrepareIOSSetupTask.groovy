@@ -1,6 +1,5 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
-import groovy.io.FileType;
 
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -17,16 +16,17 @@ class PrepareIOSSetupTask extends AbstractPrepareSetupTask {
 
     PrepareIOSSetupTask() {
         super(IOSProjectProperty.class)
+        this.dependsOn(project.prepareBaseSetup)
     }
 
     @TaskAction
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        def plistFiles = getPlistFiles()
+        def plistFiles = getFiles {it.name.endsWith(".plist")}
         use (PropertyCategory) {
             IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
             IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+            BufferedReader br = getReader()
             IOSProjectProperty.each {
                 switch (it) {
                     case IOSProjectProperty.PLIST_FILE:
@@ -53,16 +53,5 @@ class PrepareIOSSetupTask extends AbstractPrepareSetupTask {
             }
             appendProperties()
         }
-    }
-
-    private List getPlistFiles() {
-        def plistFiles = []
-        new File('.').eachFileRecurse(FileType.FILES) {
-            if (it.name.endsWith(".plist")) {
-                def path = it.path.startsWith("./") ? it.path.substring(2) : it.path
-                plistFiles << path
-            }
-        }
-        return plistFiles
     }
 }

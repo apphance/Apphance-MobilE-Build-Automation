@@ -21,6 +21,8 @@ import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.AndroidSingleVariantBuilder
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import com.apphance.ameba.plugins.release.ProjectReleasePlugin;
 
 class AndroidReleasePlugin implements Plugin<Project>{
 
@@ -34,6 +36,7 @@ class AndroidReleasePlugin implements Plugin<Project>{
     AndroidManifestHelper manifestHelper
 
     public void apply(Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class, ProjectReleasePlugin.class)
         use (PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper();

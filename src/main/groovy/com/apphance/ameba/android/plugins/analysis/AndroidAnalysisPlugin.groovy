@@ -9,8 +9,10 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.ProjectHelper;
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin;
 
 class AndroidAnalysisPlugin implements Plugin<Project>{
 
@@ -19,6 +21,7 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
     AndroidProjectConfiguration androidConf
 
     public void apply(Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         def androidAnalysisConvention = new AndroidAnalysisConvention()
         project.extensions.androidAnalysis = androidAnalysisConvention
         this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
@@ -144,14 +147,12 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
         task << {
             URL checkstyleXml = this.class.getResource('checkstyle.xml')
             def analysisDir = new File(project.rootDir,project.androidAnalysis.buildAnalysisDirectory)
-            println(analysisDir.canonicalPath)
             def checkstyleFile = new File(analysisDir,"checkstyle.xml")
             checkstyleFile.parentFile.mkdirs()
             checkstyleFile.delete()
             checkstyleFile << replacePathsInCheckStyle(project, checkstyleXml.getContent())
             URL checkstyleSuppressionsXml = this.class.getResource('checkstyle-suppressions.xml')
             def checkstyleSuppressionsFile = new File(analysisDir,"checkstyle-suppressions.xml")
-            println(checkstyleSuppressionsFile.canonicalPath)
             checkstyleSuppressionsFile.delete()
             checkstyleSuppressionsFile << checkstyleSuppressionsXml.getContent()
             URL checkstyleLocalSuppressionsXml = this.class.getResource('checkstyle-local-suppressions.xml')

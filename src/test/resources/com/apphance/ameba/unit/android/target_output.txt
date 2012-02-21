@@ -1,0 +1,391 @@
+Available Android targets:
+----------
+id: 1 or "android-2"
+     Name: Android 1.1
+     Type: Platform
+     API level: 2
+     Revision: 1
+     Skins: HVGA (default), HVGA-L, HVGA-P, QVGA-L, QVGA-P
+     ABIs : armeabi
+----------
+id: 2 or "android-3"
+     Name: Android 1.5
+     Type: Platform
+     API level: 3
+     Revision: 4
+     Skins: HVGA (default), HVGA-L, HVGA-P, QVGA-L, QVGA-P
+     ABIs : armeabi
+----------
+id: 3 or "Google Inc.:Google APIs:3"
+     Name: Google APIs
+     Type: Add-On
+     Vendor: Google Inc.
+     Revision: 3
+     Description: Android + Google APIs
+     Based on Android 1.5 (API level 3)
+     Libraries:
+      * com.google.android.maps (maps.jar)
+          API for Google Maps
+     Skins: QVGA-P, HVGA-L, HVGA (default), QVGA-L, HVGA-P
+     ABIs : armeabi
+----------
+id: 4 or "android-4"
+     Name: Android 1.6
+     Type: Platform
+     API level: 4
+     Revision: 3
+     Skins: HVGA, QVGA, WVGA800 (default), WVGA854
+     ABIs : armeabi
+----------
+id: 5 or "Google Inc.:Google APIs:4"
+     Name: Google APIs
+     Type: Add-On
+     Vendor: Google Inc.
+     Revision: 2
+     Description: Android + Google APIs
+     Based on Android 1.6 (API level 4)
+     Libraries:
+      * com.google.android.maps (maps.jar)
+          API for Google Maps
+     Skins: WVGA854, HVGA, WVGA800 (default), QVGA
+     ABIs : armeabi
+----------
+id: 6 or "android-5"
+     Name: Android 2.0
+     Type: Platform
+     API level: 5
+     Revision: 1
+     Skins: HVGA, QVGA, WQVGA400, WQVGA432, WVGA800 (default), WVGA854
+     ABIs : armeabi
+----------
+id: 7 or "android-6"
+     Name: Android 2.0.1
+     Type: Platform
+     API level: 6
+     Revision: 1
+     Skins: HVGA, QVGA, WQVGA400, WQVGA432, WVGA800 (default), WVGA854
+     ABIs : armeabi
+----------
+id: 8 or "Google Inc.:Google APIs:6"
+     Name: Google APIs
+     Type: Add-On
+     Vendor: Google Inc.
+     Revision: 1
+     Description: Android + Google APIs
+     Based on Android 2.0.1 (API level 6)
+     Libraries:
+      * com.google.android.maps (maps.jar)
+          API for Google Maps
+     Skins: WVGA854, WQVGA400, HVGA, WQVGA432, WVGA800 (default), QVGA
+     ABIs : armeabi
+----------
+id: 9 or "android-7"
+     Name: Android 2.1
+     Type: Platform
+     API level: 7
+     Revision: 3
+     Skins: HVGA, QVGA, WQVGA400, WQVGA432, WVGA800 (default), WVGA854
+     ABIs : armeabi
+----------
+id: 10 or "Google Inc.:Google APIs:7"
+     Name: Google APIs
+     Type: Add-On
+     Vendor: Google Inc.
+     Revision: 1
+     Description: Android + Google APIs
+     Based on Android 2.1 (API level 7)
+     Libraries:
+      * com.google.android.maps (maps.jar)
+          API for Google Maps
+     Skins: WVGA854, WQVGA400, HVGA, WQVGA432, WVGA800 (default), QVGA
+     ABIs : armeabi
+----------
+id: 11 or "android-8"
+     Name: Android 2.2
+     Type: Platform
+     API level: 8
+     Revision: 3
+     Skins: HVGA, QVGA, WQVGA400, WQVGA432, WVGA800 (default), WVGA854
+     ABIs : armeabi
+----------
+id: 12 or "Google Inc.:Google APIs:8"
+     Name: Google APIs
+     Type: Add-On
+     Vendor: Google Inc.
+     Revision: 2
+     Description: Android + Google APIs
+     Based on Android 2.2 (API level 8)
+     Libraries:
+      * com.google.android.maps (maps.jar)
+          API for Google Maps
+     Skins: WVGA854, WQVGA400, HVGA, WQVGA432, WVGA800 (default), QVGA
+     ABIs : armeabi
+----------
+id: 13 or "KYOCERA Corporation:DTS Add-On:8"
+     Name: DTS Add-On
+     Type: Add-On
+     Vendor: KYOCERA Corporation
+     Revision: 1
+     Description: DTS Add-On
+     Based on Android 2.2 (API level 8)
+     Libraries:
+      * com.kyocera.dualscreen (dualscreen.jar)
+          Dual Screen optional platform library
+     Skins: DTS400 (default), WVGA854, WQVGA400, HVGA, DTS800, WQVGA432, WVGA800, QVGA
+     ABIs : armeabi
+----------
+id: 14 or "KYOCERA Corporation:DTS Add-On:8"
+     Name: DTS Add-On
+     Type: Add-On
+     Vendor: KYOCERA Corporation
+     Revision: 1
+     Description: DTS Add-On
+     Based on Android 2.2 (API level 8)
+     Libraries:
+      * com.kyocera.dualscreen (dualscreen.jar)
+          Dual Screen optional platform library
+     Skins: DTS400 (default), WVGA854, WQVGA400, HVGA, DTS800, WQVGA432, WVGA800, QVGA
+     ABIs : armeabi
+----------
+id: 15 or "LGE:Real3D Add-On:8"
+     Name: Real3D Add-On
+     Type: Add-On
+     Vendor: LGE
+     Revision: 1
+     Description: Real3D add-on
+     Based on Android 2.2 (API level 8)
+     Libraries:
+      * com.lge.real3d (real3d.jar)
+          Real3D library
+     Skins: WVGA854, WQVGA400, Optimus3D (default), HVGA, WQVGA432, WVGA800, QVGA
+     ABIs : armeabi
+----------
+id: 16 or "LGE:Real3D Add-On:8"
+     Name: Real3D Add-On
+     Type: Add-On
+     Vendor: LGE
+     Revision: 1
+     Description: Real3D add-on
+     Based on Android 2.2 (API level 8)
+     Libraries:
+      * com.lge.real3d (real3d.jar)
+          Real3D library
+     Skins: WVGA854, WQVGA400, Optimus3D (default), HVGA, WQVGA432, WVGA800, QVGA
+     ABIs : armeabi
+----------
+id: 17 or "Samsung Electronics Co., Ltd.:GALAXY Tab Addon:8"
+     Name: GALAXY Tab Addon
+     Type: Add-On
+     Vendor: Samsung Electronics Co., Ltd.
+     Revision: 1
+     Based on Android 2.2 (API level 8)
+     Skins: WVGA854, WQVGA400, GALAXY Tab (default), HVGA, WQVGA432, WVGA800, QVGA
+     ABIs : armeabi
+----------
+id: 18 or "Samsung Electronics Co., Ltd.:GALAXY Tab Addon:8"
+     Name: GALAXY Tab Addon
+     Type: Add-On
+     Vendor: Samsung Electronics Co., Ltd.
+     Revision: 1
+     Based on Android 2.2 (API level 8)
+     Skins: WVGA854, WQVGA400, GALAXY Tab (default), HVGA, WQVGA432, WVGA800, QVGA
+     ABIs : armeabi
+----------
+id: 19 or "Samsung Electronics Co., Ltd.:GALAXY Tab Addon:8"
+     Name: GALAXY Tab Addon
+     Type: Add-On
+     Vendor: Samsung Electronics Co., Ltd.
+     Revision: 1
+     Based on Android 2.2 (API level 8)
+     Skins: WVGA854, WQVGA400, GALAXY Tab (default), HVGA, WQVGA432, WVGA800, QVGA
+     ABIs : armeabi
+----------
+id: 20 or "android-9"
+     Name: Android 2.3.1
+     Type: Platform
+     API level: 9
+     Revision: 2
+     Skins: HVGA, QVGA, WQVGA400, WQVGA432, WVGA800 (default), WVGA854
+     ABIs : armeabi
+----------
+id: 21 or "Google Inc.:Google APIs:9"
+     Name: Google APIs
+     Type: Add-On
+     Vendor: Google Inc.
+     Revision: 2
+     Description: Android + Google APIs
+     Based on Android 2.3.1 (API level 9)
+     Libraries:
+      * com.google.android.maps (maps.jar)
+          API for Google Maps
+     Skins: WVGA854, WQVGA400, HVGA, WQVGA432, WVGA800 (default), QVGA
+     ABIs : armeabi
+----------
+id: 22 or "Sony Ericsson Mobile Communications AB:EDK:9"
+     Name: EDK
+     Type: Add-On
+     Vendor: Sony Ericsson Mobile Communications AB
+     Revision: 1
+     Description: XPERIA Device
+     Based on Android 2.3.1 (API level 9)
+     Libraries:
+      * com.sonyericsson.eventstream_1 (com.sonyericsson.eventstream_1.jar)
+          Library for Android Market filtering
+     Skins: WVGA854, WQVGA400, Xperia (default), HVGA, WQVGA432, WVGA800, QVGA
+     ABIs : armeabi
+----------
+id: 23 or "android-10"
+     Name: Android 2.3.3
+     Type: Platform
+     API level: 10
+     Revision: 2
+     Skins: HVGA, QVGA, WQVGA400, WQVGA432, WVGA800 (default), WVGA854
+     ABIs : armeabi
+----------
+id: 24 or "Google Inc.:Google APIs:10"
+     Name: Google APIs
+     Type: Add-On
+     Vendor: Google Inc.
+     Revision: 2
+     Description: Android + Google APIs
+     Based on Android 2.3.3 (API level 10)
+     Libraries:
+      * com.android.future.usb.accessory (usb.jar)
+          API for USB Accessories
+      * com.google.android.maps (maps.jar)
+          API for Google Maps
+     Skins: WVGA854, WQVGA400, HVGA, WQVGA432, WVGA800 (default), QVGA
+     ABIs : armeabi
+----------
+id: 25 or "KYOCERA Corporation:DTS Add-On:10"
+     Name: DTS Add-On
+     Type: Add-On
+     Vendor: KYOCERA Corporation
+     Revision: 1
+     Description: DTS Add-On
+     Based on Android 2.3.3 (API level 10)
+     Libraries:
+      * com.kyocera.dualscreen (dualscreen.jar)
+          Dual Screen optional platform library
+     Skins: DTS400 (default), WVGA854, WQVGA400, HVGA, DTS800, WQVGA432, WVGA800, QVGA
+     ABIs : armeabi
+----------
+id: 26 or "LGE:Real3D Add-On:10"
+     Name: Real3D Add-On
+     Type: Add-On
+     Vendor: LGE
+     Revision: 1
+     Description: Real3D add-on
+     Based on Android 2.3.3 (API level 10)
+     Libraries:
+      * com.lge.real3d (real3d.jar)
+          Real3D library
+     Skins: WVGA854, WQVGA400, Optimus3D (default), HVGA, WQVGA432, WVGA800, QVGA
+     ABIs : armeabi
+----------
+id: 27 or "Sony Ericsson Mobile Communications AB:EDK 1.2:10"
+     Name: EDK 1.2
+     Type: Add-On
+     Vendor: Sony Ericsson Mobile Communications AB
+     Revision: 1
+     Description: XPERIA Device
+     Based on Android 2.3.3 (API level 10)
+     Libraries:
+      * com.sonyericsson.media.infinite.extension_1 (com.sonyericsson.media.infinite.extension_1.jar)
+          Library for Android Market filtering
+      * com.sonyericsson.eventstream_1 (com.sonyericsson.eventstream.jar)
+          Library for Android Market filtering
+      * com.sonyericsson.eventstream_2 (com.sonyericsson.eventstream.jar)
+          Library for Android Market filtering
+     Skins: WVGA854, WQVGA400, HVGA, WQVGA432, WVGA800, QVGA, HVGA_XPERIA, WVGA_XPERIA (default)
+     ABIs : armeabi
+----------
+id: 28 or "android-11"
+     Name: Android 3.0
+     Type: Platform
+     API level: 11
+     Revision: 2
+     Skins: WXGA (default)
+     ABIs : armeabi
+----------
+id: 29 or "Google Inc.:Google APIs:11"
+     Name: Google APIs
+     Type: Add-On
+     Vendor: Google Inc.
+     Revision: 1
+     Description: Android + Google APIs
+     Based on Android 3.0 (API level 11)
+     Libraries:
+      * com.google.android.maps (maps.jar)
+          API for Google Maps
+     Skins: WXGA (default)
+     ABIs : armeabi
+----------
+id: 30 or "android-12"
+     Name: Android 3.1
+     Type: Platform
+     API level: 12
+     Revision: 3
+     Skins: WXGA (default)
+     ABIs : armeabi
+----------
+id: 31 or "Google Inc.:Google APIs:12"
+     Name: Google APIs
+     Type: Add-On
+     Vendor: Google Inc.
+     Revision: 1
+     Description: Android + Google APIs
+     Based on Android 3.1 (API level 12)
+     Libraries:
+      * com.android.future.usb.accessory (usb.jar)
+          API for USB Accessories
+      * com.google.android.maps (maps.jar)
+          API for Google Maps
+     Skins: WXGA (default)
+     ABIs : armeabi
+----------
+id: 32 or "android-13"
+     Name: Android 3.2
+     Type: Platform
+     API level: 13
+     Revision: 1
+     Skins: WXGA (default)
+     ABIs : armeabi
+----------
+id: 33 or "Google Inc.:Google APIs:13"
+     Name: Google APIs
+     Type: Add-On
+     Vendor: Google Inc.
+     Revision: 1
+     Description: Android + Google APIs
+     Based on Android 3.2 (API level 13)
+     Libraries:
+      * com.android.future.usb.accessory (usb.jar)
+          API for USB Accessories
+      * com.google.android.maps (maps.jar)
+          API for Google Maps
+     Skins: WXGA (default)
+     ABIs : armeabi
+----------
+id: 34 or "android-14"
+     Name: Android 4.0
+     Type: Platform
+     API level: 14
+     Revision: 3
+     Skins: HVGA, QVGA, WQVGA400, WQVGA432, WSVGA, WVGA800 (default), WVGA854, WXGA720, WXGA800
+     ABIs : armeabi-v7a
+----------
+id: 35 or "Google Inc.:Google APIs:14"
+     Name: Google APIs
+     Type: Add-On
+     Vendor: Google Inc.
+     Revision: 2
+     Description: Android + Google APIs
+     Based on Android 4.0 (API level 14)
+     Libraries:
+      * com.android.future.usb.accessory (usb.jar)
+          API for USB Accessories
+      * com.google.android.maps (maps.jar)
+          API for Google Maps
+     Skins: WVGA854, WQVGA400, WSVGA, WXGA720, HVGA, WQVGA432, WVGA800 (default), QVGA, WXGA800
+     ABIs : armeabi-v7a

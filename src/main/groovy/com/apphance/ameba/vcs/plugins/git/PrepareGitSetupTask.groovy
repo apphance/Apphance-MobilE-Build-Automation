@@ -14,12 +14,13 @@ class PrepareGitSetupTask extends AbstractPrepareSetupTask {
 
     PrepareGitSetupTask() {
         super(GitProperty.class)
+        this.dependsOn(project.prepareBaseSetup)
     }
 
     @TaskAction
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+        BufferedReader br = getReader()
         use(PropertyCategory) {
             GitProperty.each {
                 project.getProjectPropertyFromUser(it, null, br)

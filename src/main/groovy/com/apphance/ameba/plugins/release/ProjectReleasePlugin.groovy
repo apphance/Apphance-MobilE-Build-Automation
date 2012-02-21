@@ -1,6 +1,8 @@
 package com.apphance.ameba.plugins.release;
 
 
+import groovy.io.FileType;
+
 import java.util.LinkedList
 
 import org.gradle.api.GradleException
@@ -15,9 +17,13 @@ import com.apphance.ameba.ImageNameFilter
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory;
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
 import com.apphance.ameba.plugins.release.PrepareReleaseSetupTask;
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty;
 import com.apphance.ameba.plugins.release.VerifyReleaseSetupTask;
+import com.apphance.ameba.vcs.plugins.git.GitPlugin
+import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
 
 
 /**
@@ -32,6 +38,8 @@ class ProjectReleasePlugin implements Plugin<Project> {
     ProjectConfiguration conf
 
     void apply(Project project) {
+        ProjectHelper.checkAnyPluginIsLoaded(project, this.class, AndroidPlugin.class, IOSPlugin.class)
+        ProjectHelper.checkAnyPluginIsLoaded(project, this.class, MercurialPlugin.class, GitPlugin.class)
         projectHelper = new ProjectHelper()
         use (PropertyCategory) {
             conf = project.getProjectConfiguration()
@@ -89,21 +97,6 @@ class ProjectReleasePlugin implements Plugin<Project> {
         }
     }
 
-    private prepareGalleryArtifacts() {
-        conf.galleryCss = new AmebaArtifact(
-                name : "CSS Gallery",
-                url : new URL(conf.versionedApplicationUrl, "_css/jquery.swipegallery.css"),
-                location : new File(conf.targetDirectory, "_css/jquery.swipegallery.css"))
-        conf.galleryJs = new AmebaArtifact(
-                name : "JS Gallery",
-                url : new URL(conf.versionedApplicationUrl, "_res/jquery.swipegallery.js"),
-                location : new File(conf.targetDirectory, "_res/jquery.swipegallery.js"))
-        conf.galleryTrans = new AmebaArtifact(
-                name : "JS Gallery",
-                url : new URL(conf.versionedApplicationUrl, "_res/trans.png"),
-                location : new File(conf.targetDirectory, "_res/trans.png"))
-    }
-
     def void preparePrepareForReleaseTask(Project project) {
         def task = project.task('prepareForRelease')
         task.group= AmebaCommonBuildTaskGroups.AMEBA_RELEASE
@@ -111,7 +104,6 @@ class ProjectReleasePlugin implements Plugin<Project> {
         task << {
             prepareSourcesAndDocumentationArtifacts()
             prepareMailArtifacts(project)
-            prepareGalleryArtifacts()
         }
         task.dependsOn(project.readProjectConfiguration)
     }
@@ -150,7 +142,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
             Collection<String>  command = new LinkedList<String>()
             command << "montage"
             ImageNameFilter imageFilter = new ImageNameFilter();
-            project.rootDir.eachFileRecurse { file ->
+            project.rootDir.traverse([type: FileType.FILES, maxDepth : 7]) { file ->
                 if (imageFilter.isValid(project.rootDir, file)) {
                     command << file
                 }
@@ -172,12 +164,16 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
                 "gravity southwest fill black text 0,12 '${conf.projectName} Version: ${conf.fullVersionString} Generated: ${conf.buildDate}'",
                 imageMontageFile
             ]
-            projectHelper.executeCommand(project,convertCommand)
-            def imageMontageFileArtifact = new AmebaArtifact(
-                    name : "Image Montage",
-                    url : new URL(conf.versionedApplicationUrl, "${imageMontageFile.name}"),
-                    location : imageMontageFile)
-            conf.imageMontageFile = imageMontageFileArtifact
+            try {
+                projectHelper.executeCommand(project,convertCommand)
+                def imageMontageFileArtifact = new AmebaArtifact(
+                        name : "Image Montage",
+                        url : new URL(conf.versionedApplicationUrl, "${imageMontageFile.name}"),
+                        location : imageMontageFile)
+                conf.imageMontageFile = imageMontageFileArtifact
+            } catch (Exception e) {
+                logger.lifecycle("The convert binary execution failed: skipping image montage preparation. Add convert (ImageMagick) binary to the path to get image montage.")
+            }
         }
         task.dependsOn(project.readProjectConfiguration, project.prepareForRelease)
     }

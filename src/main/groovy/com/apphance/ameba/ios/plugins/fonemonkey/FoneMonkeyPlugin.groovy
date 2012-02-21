@@ -18,6 +18,7 @@ import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 
 class FoneMonkeyPlugin implements Plugin<Project> {
 
@@ -29,14 +30,17 @@ class FoneMonkeyPlugin implements Plugin<Project> {
     IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
+    String foneMonkeyConfiguration
 
     void apply(Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
         use (PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
             this.iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
             this.conf = project.getProjectConfiguration()
             this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            this.foneMonkeyConfiguration = project.readProperty(IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
             prepareFoneMonkeyTemplatesTask()
             prepareBuildFoneMonkeyReleaseTask()
             prepareRunMonkeyTestsTask()
@@ -165,7 +169,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
         baseScript += """
     echo Running test ${test} in directory ${cfFixedDirectory}
     export FM_RUN_SINGLE_TEST=${test}
-    iphonesim launch ${project.rootDir}/build/${iosConf.foneMonkeyConfiguration}-iphonesimulator/RunMonkeyTests.app ${simulatorSdk} ${family.toLowerCase()}  >${foneMonkeyOutput} 2>&1
+    iphonesim launch ${project.rootDir}/build/${foneMonkeyConfiguration}-iphonesimulator/RunMonkeyTests.app ${simulatorSdk} ${family.toLowerCase()}  >${foneMonkeyOutput} 2>&1
     cat ${foneMonkeyOutput}
     XMLS=`find ${cfFixedDirectory} -name 'FM_LOG*.xml' | wc -l | sed 's/^[ \\n\\t]*//g' | sed 's/[ \\n\\t]*\$//g'`
     echo Number of xmls: \$XMLS
@@ -187,7 +191,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
             "${runTestScript}"
         ])
 
-        File applicationAppFile = new File(project.rootDir, "build/${iosConf.foneMonkeyConfiguration}-iphonesimulator/RunMonkeyTests.app")
+        File applicationAppFile = new File(project.rootDir, "build/${foneMonkeyConfiguration}-iphonesimulator/RunMonkeyTests.app")
         projectHelper.executeCommand(project, [
             "/bin/bash",
             "${runTestScript}"

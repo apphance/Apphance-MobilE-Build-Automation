@@ -1,7 +1,8 @@
 package com.apphance.ameba
 
 
-import groovy.io.FileType;
+
+import groovy.io.FileType
 
 import java.io.File
 import java.io.IOException
@@ -9,8 +10,9 @@ import java.io.IOException
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.logging.Logging;
-import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
+
 
 
 class FileSystemOutput implements Appendable{
@@ -313,13 +315,45 @@ class ProjectHelper {
 
 
     public void removeMissingSymlinks(File baseDirectory) {
-        baseDirectory.traverse {
+        baseDirectory.traverse([type: FileType.FILES, maxDepth: 7]) {
             if (!it.isDirectory()) {
                 File canonicalFile = it.getCanonicalFile()
                 if (!canonicalFile.exists()) {
                     it.delete()
                 }
             }
+        }
+    }
+
+    public static void checkAllPluginsAreLoaded(Project project, def myPluginClass, def ... pluginClasses) {
+        pluginClasses.each {
+            if (!project.plugins.collect{it.class}.contains(it)) {
+                throw new GradleException("The plugin ${it} has not been loaded yet. Please make sure you put it before ${myPluginClass}")
+            }
+        }
+    }
+
+    public static void checkAnyPluginIsLoaded(Project project, def myPluginClass, def ... pluginClasses) {
+        boolean anyPluginLoaded = false
+        pluginClasses.each {
+            if (project.plugins.collect{it.class}.contains(it)) {
+                anyPluginLoaded = true
+            }
+        }
+        if (!anyPluginLoaded) {
+            throw new GradleException("None of the plugins ${pluginClasses} has been loaded yet. Please make sure one of them is put before ${myPluginClass}")
+        }
+    }
+
+    public static void checkExactlyOnePluginIsLoaded(Project project, def myPluginClass, def ... pluginClasses) {
+        int count = 0
+        pluginClasses.each {
+            if (project.plugins.collect{plugin -> plugin.class}.contains(it) || it == myPluginClass) {
+                count ++
+            }
+        }
+        if (count > 1) {
+            throw new GradleException("There is more than one plugin loaded from the list: ${pluginClasses}, but there should be only one. Please make sure one of them remains")
         }
     }
 }

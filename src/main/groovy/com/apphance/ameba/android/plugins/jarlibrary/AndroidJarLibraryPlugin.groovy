@@ -14,6 +14,7 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration;
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 
 /**
  * Helps building the library with resources embedded. It is useful in case we want to generate libraries like
@@ -31,18 +32,21 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
     String jarLibraryPrefix
 
     public void apply(Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
             this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
             manifestHelper = new AndroidManifestHelper()
-            if (project.hasProperty('android.jarLibrary.resPrefix')) {
-                jarLibraryPrefix = project['android.jarLibrary.resPrefix']
-            } else {
+            jarLibraryPrefix = project.readProperty(AndroidJarLibraryProperty.RES_PREFIX)
+            if (jarLibraryPrefix == null) {
                 jarLibraryPrefix = this.androidConf.mainProjectName
             }
             prepareJarLibraryTask(project)
+            project.task('prepareAndroidJarLibrarySetup', type:PrepareAndroidJarLibrarySetupTask)
+            project.task('verifyAndroidJarLibrarySetup', type: VerifyAndroidJarLibrarySetupTask)
+            project.task('showAndroidJarLibrarySetup', type: ShowAndroidJarLibrarySetupTask)
         }
     }
 

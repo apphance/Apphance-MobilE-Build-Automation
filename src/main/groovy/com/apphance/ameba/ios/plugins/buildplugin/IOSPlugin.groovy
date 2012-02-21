@@ -3,6 +3,9 @@ package com.apphance.ameba.ios.plugins.buildplugin;
 
 
 
+
+import groovy.io.FileType;
+
 import javax.xml.parsers.DocumentBuilderFactory
 
 import org.gradle.api.GradleException
@@ -28,6 +31,10 @@ import com.sun.org.apache.xpath.internal.XPathAPI
  *
  */
 class IOSPlugin implements Plugin<Project> {
+
+    static final String IOS_CONFIGURATION_LOCAL_PROPERTY = 'ios.configuration'
+    static final String IOS_TARGET_LOCAL_PROPERTY = 'ios.target'
+
     static Logger logger = Logging.getLogger(IOSPlugin.class)
 
     String pListFileName
@@ -40,6 +47,7 @@ class IOSPlugin implements Plugin<Project> {
     public static final List<String> FAMILIES = ['iPad', 'iPhone']
 
     def void apply (Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, ProjectConfigurationPlugin.class)
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
@@ -170,13 +178,14 @@ class IOSPlugin implements Plugin<Project> {
         def task = project.task('buildAll')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task.description = 'Builds all target/configuration combinations and produces all artifacts (zip, ipa, messages, etc)'
+        iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
         def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
         def trimmed = lines*.trim()
         iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmed)
         iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmed)
         def targets = iosConf.targets
         def configurations = iosConf.configurations
-        logger.lifecycle("Building all builds")
+        println("Building all builds")
         targets.each { target ->
             configurations.each { configuration ->
                 def id = "${target}-${configuration}".toString()
@@ -190,10 +199,9 @@ class IOSPlugin implements Plugin<Project> {
                         singleReleaseBuilder.buildRelease(project, target, configuration)
                     }
                     task.dependsOn(singleTask)
-                    singleTask.dependsOn(project.readProjectConfiguration)
-                    singleTask.dependsOn(project.copyMobileProvision)
+                    singleTask.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.verifySetup)
                 } else {
-                    logger.lifecycle("Skipping build ${id} - it is excluded in configuration (${iosConf.excludedBuilds})")
+                    println ("Skipping build ${id} - it is excluded in configuration (${iosConf.excludedBuilds})")
                 }
             }
         }
@@ -206,7 +214,7 @@ class IOSPlugin implements Plugin<Project> {
             return null
         }
         File pListFile = new File("${project.rootDir}/${pListFileName}")
-        if (!pListFile.exists()) {
+        if (!pListFile.exists() || !pListFile.isFile()) {
             return null
         }
         return new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
@@ -225,12 +233,12 @@ class IOSPlugin implements Plugin<Project> {
         task << {
             use (PropertyCategory) {
                 def singleReleaseBuilder = new IOSSingleReleaseBuilder(project, this.ant)
-                String target = project.readExpectedProperty("ios.target")
-                String configuration = project.readExpectedProperty("ios.configuration")
+                String target = project.readExpectedProperty(IOS_TARGET_LOCAL_PROPERTY)
+                String configuration = project.readExpectedProperty(IOS_CONFIGURATION_LOCAL_PROPERTY)
                 singleReleaseBuilder.buildRelease(project, target, configuration)
             }
         }
-        task.dependsOn(project.readProjectConfiguration)
+        task.dependsOn(project.readProjectConfiguration, project.verifySetup)
     }
 
 
@@ -343,23 +351,23 @@ class IOSPlugin implements Plugin<Project> {
 
     Collection<File> findAllPlistFiles(Project project) {
         def result = []
-        project.rootDir.eachFileRecurse(FileType.FILES, {
+        project.rootDir.traverse([type: FileType.FILES, maxDepth : 7]) {
             if (it.name.endsWith("-Info.plist") && !it.path.contains("/External/") && !it.path.contains('/build/')) {
                 logger.lifecycle("Adding plist file ${it} to processing list")
                 result << it
             }
-        })
+        }
         return result
     }
 
     Collection<File> findAllSourceFiles(Project project) {
         def result = []
-        project.rootDir.eachFileRecurse(FileType.FILES, {
+        project.rootDir.traverse([type: FileType.FILES, maxDepth : 7]) {
             if ((it.name.endsWith(".m") || it.name.endsWith(".h")) && !it.path.contains("/External/")) {
                 logger.lifecycle("Adding source file ${it} to processing list")
                 result << it
             }
-        })
+        }
         return result
     }
 }

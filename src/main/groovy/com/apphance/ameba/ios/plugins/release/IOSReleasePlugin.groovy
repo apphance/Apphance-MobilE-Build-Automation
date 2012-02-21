@@ -23,7 +23,9 @@ import com.apphance.ameba.android.AndroidEnvironment
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.MPParser
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleReleaseBuilder;
+import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**
@@ -33,13 +35,13 @@ import com.sun.org.apache.xpath.internal.XPathAPI
 class IOSReleasePlugin implements Plugin<Project> {
     static Logger logger = Logging.getLogger(IOSReleasePlugin.class)
 
-    String pListFileName
     ProjectHelper projectHelper
     ProjectConfiguration conf
     IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     IOSProjectConfiguration iosConf
 
     def void apply (Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class, ProjectReleasePlugin.class)
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
@@ -211,9 +213,8 @@ class IOSReleasePlugin implements Plugin<Project> {
     }
 
     private org.w3c.dom.Element getParsedPlist(Project project) {
-        File pListFile = new File("${project.rootDir}/${pListFileName}")
-        logger.debug("Reading file " + pListFile)
-        return new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
+        logger.debug("Reading file " + iosConf.plistFile)
+        return new XMLBomAwareFileReader().readXMLFileIncludingBom(iosConf.plistFile)
     }
 
     def void prepareUpdateVersionTask(Project project) {
@@ -234,7 +235,7 @@ class IOSReleasePlugin implements Plugin<Project> {
                         '/plist/dict/key[text()="CFBundleVersion"]').each{
                             it.nextSibling.nextSibling.textContent = conf.versionCode
                         }
-                new File("${project.rootDir}/${pListFileName}").write(root as String)
+                iosConf.plistFile.write(root as String)
                 logger.lifecycle("New version code: ${conf.versionCode}")
                 logger.lifecycle("Updated version string to ${conf.versionString}")
             }

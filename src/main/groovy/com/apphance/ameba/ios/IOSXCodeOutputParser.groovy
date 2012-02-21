@@ -14,11 +14,13 @@ import org.gradle.api.logging.Logging
 class IOSXCodeOutputParser {
     static Logger logger = Logging.getLogger(IOSXCodeOutputParser.class)
 
+    static public final String IOS_PROJECT_CONFIGURATION_KEY = 'ios.project.configuration'
+
     IOSProjectConfiguration getIosProjectConfiguration(Project project){
-        if (!project.hasProperty('ios.project.configuration')) {
-            project['ios.project.configuration'] = new IOSProjectConfiguration()
+        if (!project.hasProperty(IOS_PROJECT_CONFIGURATION_KEY)) {
+            project[IOS_PROJECT_CONFIGURATION_KEY] = new IOSProjectConfiguration()
         }
-        return project['ios.project.configuration']
+        return project[IOS_PROJECT_CONFIGURATION_KEY]
     }
 
     Collection readBuildableConfigurations(List trimmedOutput) {

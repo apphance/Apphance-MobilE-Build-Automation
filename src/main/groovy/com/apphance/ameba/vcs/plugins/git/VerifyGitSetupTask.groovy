@@ -11,6 +11,7 @@ class VerifyGitSetupTask extends  AbstractVerifySetupTask {
 
     VerifyGitSetupTask() {
         super(GitProperty.class)
+        this.dependsOn(project.verifyBaseSetup)
     }
 
     @TaskAction

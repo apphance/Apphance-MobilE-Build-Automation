@@ -1,8 +1,9 @@
 package com.apphance.ameba.android.plugins.buildplugin;
 
-import groovy.lang.Closure
+import groovy.util.FileNameFinder
 
-import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
 
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -30,6 +31,8 @@ import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugi
 class AndroidPlugin implements Plugin<Project> {
     static Logger logger = Logging.getLogger(AndroidPlugin.class)
 
+    static final String PROJECT_PROPERTIES_KEY = 'project.properties'
+
     ProjectHelper projectHelper
     ProjectConfiguration conf
     AndroidProjectConfigurationRetriever androidConfRetriever
@@ -39,6 +42,7 @@ class AndroidPlugin implements Plugin<Project> {
     AndroidEnvironment androidEnvironment
 
     def void apply (Project project) {
+        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, ProjectConfigurationPlugin.class)
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
@@ -63,6 +67,9 @@ class AndroidPlugin implements Plugin<Project> {
             prepareReplacePackageTask(project)
             addAndroidSourceExcludes()
             addAndroidVCSCommits()
+            project.task('prepareAndroidSetup', type:PrepareAndroidSetupTask)
+            project.task('verifyAndroidSetup', type: VerifyAndroidSetupTask)
+            project.task('showAndroidSetup', type: ShowAndroidSetupTask)
         }
     }
 
@@ -124,45 +131,42 @@ class AndroidPlugin implements Plugin<Project> {
     }
 
     private void prepareAndroidEnvironment(Project project) {
-        logger.lifecycle("Running android update")
-        runUpdateRecursively(project, project.rootDir, false, true)
-        androidEnvironment = new AndroidEnvironment(project)
-        androidConf.sdkDirectory = new File(androidEnvironment.getAndroidProperty('sdk.dir'))
-        if (androidConf.sdkDirectory == null) {
-            def androidHome = System.getenv("ANDROID_HOME")
-            if (androidHome != null) {
-                androidConf.sdkDirectory = new File(androidHome)
+        use (PropertyCategory) {
+            logger.lifecycle("Running android update")
+            runUpdateRecursively(project, project.rootDir, false, true)
+            androidEnvironment = new AndroidEnvironment(project)
+            def sdkDir = androidEnvironment.getAndroidProperty('sdk.dir')
+            androidConf.sdkDirectory = sdkDir == null ? null : new File(sdkDir)
+            if (androidConf.sdkDirectory == null) {
+                def androidHome = System.getenv("ANDROID_HOME")
+                if (androidHome != null) {
+                    androidConf.sdkDirectory = new File(androidHome)
+                }
             }
-        }
-        if (androidConf.sdkDirectory == null) {
-            throw new GradleException('Unable to find location of Android SDK, either\
+            if (androidConf.sdkDirectory == null) {
+                throw new GradleException('Unable to find location of Android SDK, either\
  set it in local.properties or in ANDROID_HOME environment variable')
-        }
-        androidConf.excludedBuilds = project.hasProperty('android.excluded.builds') ? project['android.excluded.builds'].split(",")*.trim() : []
-        def target = androidEnvironment.getAndroidProperty('target')
-        if (target == null) {
-            throw new GradleException("target is not defined. Please run 'android update project' or 'android create project' as appropriate")
-        }
-        androidConf.targetName = target
-        if (project.hasProperty('android.minSdk.target') && !project['android.minSdk.target'].empty) {
-            androidConf.minSdkTargetName = project['android.minSdk.target']
-        } else {
-            AndroidManifestHelper helper = new AndroidManifestHelper()
-            def targetVersion = helper.readMinSdkVersion(project.rootDir)
-            if (targetVersion != null) {
-                androidConf.minSdkTargetName = 'android-' + targetVersion
-            } else {
-                androidConf.minSdkTargetName = androidConf.targetName
             }
+            androidConf.excludedBuilds = project.readProperty(AndroidProjectProperty.EXCLUDED_BUILDS).split (',')*.trim()
+            def target = androidEnvironment.getAndroidProperty('target')
+            if (target == null) {
+                throw new GradleException("target is not defined. Please run 'android update project' or 'android create project' as appropriate")
+            }
+            androidConf.targetName = target
+            androidConf.minSdkTargetName = project.readProperty(AndroidProjectProperty.MIN_SDK_TARGET)
+            if (androidConf.minSdkTargetName.empty) {
+                AndroidManifestHelper helper = new AndroidManifestHelper()
+                def targetVersion = helper.readMinSdkVersion(project.rootDir)
+                if (targetVersion != null) {
+                    androidConf.minSdkTargetName = 'android-' + targetVersion
+                } else {
+                    androidConf.minSdkTargetName = androidConf.targetName
+                }
+            }
+            logger.lifecycle("Min SDK target name = " + androidConf.minSdkTargetName)
+            updateSdkJars()
+            updateLibraryProjects(project.rootDir)
         }
-        logger.lifecycle("Min SDK target name = " + androidConf.minSdkTargetName)
-        if (project.hasProperty('android.test.emulator.target') && !project['android.test.emulator.target'].empty) {
-            androidConf.emulatorTargetName = project['android.test.emulator.target']
-        } else {
-            androidConf.emulatorTargetName = androidConf.targetName
-        }
-        updateSdkJars()
-        updateLibraryProjects(project.rootDir)
     }
 
     private void updateSdkJars() {
@@ -171,27 +175,30 @@ class AndroidPlugin implements Plugin<Project> {
             String version= target.split("-")[1]
             androidConf.sdkJars << new File(androidConf.sdkDirectory,"platforms/android-" + version + "/android.jar")
         } else {
-            String version= target.split(':')[2]
-            Integer numVersion = version as Integer
-            androidConf.sdkJars << new File(androidConf.sdkDirectory,"platforms/android-" + version + "/android.jar")
-            if (target.startsWith('Google')) {
-                def mapJarFiles = new FileNameFinder().getFileNames(androidConf.sdkDirectory.path,
-                        "add-ons/addon*google*apis*google*inc*${version}/libs/maps.jar")
-                for (path in mapJarFiles) {
-                    androidConf.sdkJars << new File(path)
+            List splitTarget = target.split(':')
+            if (splitTarget.size() > 2) {
+                String version= splitTarget[2]
+                Integer numVersion = version as Integer
+                androidConf.sdkJars << new File(androidConf.sdkDirectory,"platforms/android-" + version + "/android.jar")
+                if (target.startsWith('Google')) {
+                    def mapJarFiles = new FileNameFinder().getFileNames(androidConf.sdkDirectory.path,
+                            "add-ons/addon*google*apis*google*inc*${version}/libs/maps.jar")
+                    for (path in mapJarFiles) {
+                        androidConf.sdkJars << new File(path)
+                    }
                 }
-            }
-            if (target.startsWith('KYOCERA Corporation:DTS')) {
-                androidConf.sdkJars << new File(androidConf.sdkDirectory,"add-ons/addon_dual_screen_apis_kyocera_corporation_" +
-                        version + "/libs/dualscreen.jar")
-            }
-            if (target.startsWith('LGE:Real3D')) {
-                androidConf.sdkJars << new File(androidConf.sdkDirectory,"add-ons/addon_real3d_lge_" +
-                        version + "/libs/real3d.jar")
-            }
-            if (target.startsWith('Sony Ericsson Mobile Communications AB:EDK')) {
-                androidConf.sdkJars << new File(androidConf.sdkDirectory,"add-ons/addon_edk_sony_ericsson_mobile_communications_ab_" +
-                        version + "/libs/com.sonyericsson.eventstream_1.jar")
+                if (target.startsWith('KYOCERA Corporation:DTS')) {
+                    androidConf.sdkJars << new File(androidConf.sdkDirectory,"add-ons/addon_dual_screen_apis_kyocera_corporation_" +
+                            version + "/libs/dualscreen.jar")
+                }
+                if (target.startsWith('LGE:Real3D')) {
+                    androidConf.sdkJars << new File(androidConf.sdkDirectory,"add-ons/addon_real3d_lge_" +
+                            version + "/libs/real3d.jar")
+                }
+                if (target.startsWith('Sony Ericsson Mobile Communications AB:EDK')) {
+                    androidConf.sdkJars << new File(androidConf.sdkDirectory,"add-ons/addon_edk_sony_ericsson_mobile_communications_ab_" +
+                            version + "/libs/com.sonyericsson.eventstream_1.jar")
+                }
             }
         }
         logger.lifecycle("Android SDK jars = " + androidConf.sdkJars)
@@ -207,7 +214,7 @@ class AndroidPlugin implements Plugin<Project> {
             }
         }
         Properties prop = new Properties()
-        prop.load (new FileInputStream(new File(projectDir,'project.properties')))
+        prop.load (new FileInputStream(new File(projectDir,PROJECT_PROPERTIES_KEY)))
         prop.each { key, value ->
             if (key.startsWith('android.library.reference.')) {
                 File libraryProject = new File(projectDir, value)
@@ -237,11 +244,14 @@ class AndroidPlugin implements Plugin<Project> {
     private void runUpdateRecursively(Project project, File currentDir, boolean reRun, boolean silentLogging = false) {
         runUpdateProject(project, currentDir,reRun)
         Properties prop = new Properties()
-        prop.load (new FileInputStream(new File(currentDir,'project.properties')))
-        prop.each { key, value ->
-            if (key.startsWith('android.library.reference.')) {
-                File libraryProject = new File(currentDir, value)
-                runUpdateRecursively(project, libraryProject, reRun, silentLogging)
+        File propFile = new File(currentDir,PROJECT_PROPERTIES_KEY)
+        if (propFile.exists()) {
+            prop.load (new FileInputStream(propFile))
+            prop.each { key, value ->
+                if (key.startsWith('android.library.reference.')) {
+                    File libraryProject = new File(currentDir, value)
+                    runUpdateRecursively(project, libraryProject, reRun, silentLogging)
+                }
             }
         }
     }
@@ -328,17 +338,21 @@ class AndroidPlugin implements Plugin<Project> {
         if (androidBuilder.hasVariants()) {
             loopAllVariants(project,{ directory->
                 prepareInstallTask(project, directory.name)
-            })
+            }, false)
         } else {
             prepareInstallTaskNoVariant(project, 'Debug')
             prepareInstallTaskNoVariant(project, 'Release')
         }
     }
 
-    private void loopAllVariants(Project project, Closure closure) {
+    private void loopAllVariants(Project project, Closure closure, boolean printToOutput) {
         androidBuilder.variantsDir.eachDir { directory ->
             if (!androidConf.isBuildExcluded(directory.name)) {
                 closure (directory)
+            } else {
+                if (printToOutput) {
+                    println "Excluding variant ${directory.name} : excluded by configuration ${androidConf.excludedBuilds}"
+                }
             }
         }
     }
@@ -372,8 +386,7 @@ class AndroidPlugin implements Plugin<Project> {
                 androidBuilder.buildSingleApk(bi)
             }
         }
-        task.dependsOn(project.readAndroidProjectConfiguration)
-		task.dependsOn(project.copySources)
+        task.dependsOn(project.readAndroidProjectConfiguration, project.verifySetup, project.copySources)
         project.tasks["buildAll${debugRelease}"].dependsOn(task)
     }
 	
@@ -424,7 +437,7 @@ class AndroidPlugin implements Plugin<Project> {
         if (androidBuilder.hasVariants()) {
             loopAllVariants (project,{ directory ->
                 prepareSingleVariant(project, directory.name, null)
-            })
+            }, true)
         } else {
             ['Debug', 'Release'].each {
                 prepareSingleVariant(project, null, it)

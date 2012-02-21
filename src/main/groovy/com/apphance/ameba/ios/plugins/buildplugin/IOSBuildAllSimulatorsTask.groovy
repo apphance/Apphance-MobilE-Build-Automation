@@ -42,7 +42,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
 
     @TaskAction
     void buildAllSimulators() {
-        iosConf = project['ios.project.configuration']
+        iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
         iosConf.targets.each { target ->
             buildDebugRelease(project, target)
         }

@@ -2,17 +2,24 @@ package com.apphance.ameba.plugins.projectconfiguration;
 
 
 
+
+import java.io.BufferedReader
+
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.LogLevel;
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.logging.StyledTextOutput
+import org.gradle.logging.StyledTextOutputFactory
+import org.gradle.logging.StyledTextOutput.Style
 
-import com.apphance.ameba.AbstractPrepareSetupTask;
+import com.apphance.ameba.AbstractPrepareSetupTask
+import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyCategory;
+import com.apphance.ameba.PropertyCategory
 
 
 /**
@@ -73,12 +80,22 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task << {
             use(PropertyCategory) {
                 String propertiesToWrite = project.readProperty(AbstractPrepareSetupTask.GENERATED_GRADLE_PROPERTIES,'')
-                System.out.println("About to write new properties to gradle.properties:")
-                System.out.println(propertiesToWrite)
-                System.out.println("Are you sure y/n?")
-                BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
-                String answer = br.readLine()
-                File f = new File('gradle.properties')
+                StyledTextOutput o = task.services.get(StyledTextOutputFactory).create(task.class)
+                o.withStyle(Style.Normal).println("About to write new properties to gradle.properties:")
+                propertiesToWrite.split('\n').each {
+                    if (it.startsWith('#')) {
+                        o.withStyle(Style.Info).println(it)
+                    } else {
+                        o.withStyle(Style.Identifier).println(it)
+                    }
+                }
+                o.withStyle(Style.Normal).println("Are you sure y/n?")
+                BufferedReader br = AbstractPrepareSetupTask.getReader()
+                File f = new File(project.rootDir,'gradle.properties')
+                String answer = ''
+                while (!(answer in ['y', 'n'])) {
+                    answer = br.readLine()
+                }
                 if (answer == 'y') {
                     f.delete()
                     f << propertiesToWrite
@@ -124,7 +141,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task.description = "Shows project's configuration"
         task << {
-            logger.lifecycle( "Configuration: " + project['project.configuration'])
+            logger.lifecycle( "Configuration: " + project[PropertyCategory.PROJECT_CONFIGURATION_KEY])
         }
         task.dependsOn(project.readProjectConfiguration)
     }
@@ -144,11 +161,27 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
     }
 
+    private prepareGalleryArtifacts() {
+        conf.galleryCss = new AmebaArtifact(
+                name : "CSS Gallery",
+                url : new URL(conf.versionedApplicationUrl, "_css/jquery.swipegallery.css"),
+                location : new File(conf.targetDirectory, "_css/jquery.swipegallery.css"))
+        conf.galleryJs = new AmebaArtifact(
+                name : "JS Gallery",
+                url : new URL(conf.versionedApplicationUrl, "_res/jquery.swipegallery.js"),
+                location : new File(conf.targetDirectory, "_res/jquery.swipegallery.js"))
+        conf.galleryTrans = new AmebaArtifact(
+                name : "JS Gallery",
+                url : new URL(conf.versionedApplicationUrl, "_res/trans.png"),
+                location : new File(conf.targetDirectory, "_res/trans.png"))
+    }
+
     def void prepareCopyGalleryFilesTask(Project project) {
         def task = project.task('copyGalleryFiles')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task.description = "Copy files required by swipe jquerymobile gallery"
         task << {
+            prepareGalleryArtifacts()
             conf.galleryCss.location.parentFile.mkdirs()
             conf.galleryJs.location.parentFile.mkdirs()
             conf.galleryCss.location.setText(this.class.getResourceAsStream("swipegallery/_css/jquery.swipegallery.css").text,"utf-8")

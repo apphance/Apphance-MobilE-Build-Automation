@@ -5,6 +5,7 @@ import com.apphance.ameba.AbstractShowSetupTask;
 class ShowMercurialSetupTask extends AbstractShowSetupTask {
     ShowMercurialSetupTask() {
         super(MercurialProperty.class)
+        this.dependsOn(project.showBaseSetup)
     }
 }
 

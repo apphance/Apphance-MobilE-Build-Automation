@@ -7,7 +7,7 @@ apply {
 }
 
 apply from:'file:emma.gradle'
-apply from: "http://launchpad.net/gradle-release/trunk/latest/+download/apply.groovy"
+apply from:'file:release.gradle'
 
 group = 'com.apphance.ameba'
 artifactId = 'Ameba'
@@ -136,4 +136,3 @@ task cleanTmp << {
 
 cleanTmp.description = 'Cleans tmp directory'
 clean.dependsOn(cleanTmp)
-//createReleaseTag.dependsOn uploadArchives

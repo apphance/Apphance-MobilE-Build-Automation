@@ -8,7 +8,7 @@ import com.apphance.ameba.ProjectHelper;
 
 class RemoveSymlinksTest {
     @Test
-    public void readXMLWithBom() throws Exception {
+    public void removeSymlinks() throws Exception {
         ProjectHelper ph = new ProjectHelper()
         File currentDir = new File("testProjects/android")
         [

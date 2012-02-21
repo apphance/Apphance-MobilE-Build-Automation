@@ -11,6 +11,8 @@ import com.apphance.ameba.plugins.projectconfiguration.BaseProperty;
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
 class PropertyCategory {
+
+    public static final String PROJECT_CONFIGURATION_KEY = 'project.configuration'
     public static List<String> listProperties(Project project, Class<Enum> properties, boolean useComments) {
         String description = properties.getField('DESCRIPTION').get(null)
         List<String> s = []
@@ -65,10 +67,12 @@ class PropertyCategory {
             project[property.propertyName] = property.defaultValue
         } else if (options != null) {
             // or pre-select first option if present
-            project[property.propertyName] = options[0]
+            if (options.size > 0 && options[0] != null) {
+                project[property.propertyName] = options[0]
+            }
         }
         System.out.println(s)
-        if (project.hasProperty(property.propertyName)) {
+        if (project.hasProperty(property.propertyName) && project[property.propertyName] != null) {
             System.out.print("[${project[property.propertyName]}] > ")
             System.out.flush()
         } else {
@@ -76,6 +80,9 @@ class PropertyCategory {
             System.out.flush()
         }
         String newValue = br.readLine()
+        if (newValue == null) {
+            throw new GradleException("Entering data has been stopped at reading ${property.propertyName}")
+        }
         if (!newValue.isEmpty()) {
             project[property.propertyName] = newValue
         }
@@ -140,10 +147,10 @@ class PropertyCategory {
     }
 
     public static ProjectConfiguration getProjectConfiguration(Project project){
-        if (!project.hasProperty('project.configuration')) {
-            project['project.configuration'] = new ProjectConfiguration()
+        if (!project.hasProperty(PROJECT_CONFIGURATION_KEY)) {
+            project[PROJECT_CONFIGURATION_KEY] = new ProjectConfiguration()
         }
-        return project['project.configuration']
+        return project[PROJECT_CONFIGURATION_KEY]
     }
 
     public static void retrieveBasicProjectData(Project project) {

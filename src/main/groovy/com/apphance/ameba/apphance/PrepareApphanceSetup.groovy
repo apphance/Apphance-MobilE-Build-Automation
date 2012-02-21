@@ -23,7 +23,7 @@ class PrepareApphanceSetup extends AbstractPrepareSetupTask {
 	@TaskAction
 	void prepareSetup() {
 		logger.lifecycle("Preparing ${propertyDescription}")
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+		BufferedReader br = getReader()
 		use (PropertyCategory) {
 			ApphanceProperty.each {
 				project.getProjectPropertyFromUser(it, null, br)

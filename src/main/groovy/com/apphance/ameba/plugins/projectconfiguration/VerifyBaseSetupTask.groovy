@@ -58,10 +58,13 @@ class VerifyBaseSetupTask extends  AbstractVerifySetupTask {
 
     void checkIconFile(Properties projectProperties) {
         use (PropertyCategory) {
-            File iconFile = new File(project.rootDir,project.readProperty(BaseProperty.PROJECT_ICON_FILE))
-            if (!iconFile.exists() || !iconFile.isFile()) {
-                throw new GradleException("""The icon file property ${BaseProperty.PROJECT_ICON_FILE.propertyName}: ${iconFile}) does not exist
-    or is not a file. Please run 'gradle prepareSetup' to correct it.""")
+            String iconPath = project.readProperty(BaseProperty.PROJECT_ICON_FILE)
+            if (iconPath != null && !iconPath.empty) {
+                File iconFile = new File(project.rootDir,iconPath)
+                if (!iconFile.exists() || !iconFile.isFile()) {
+                    throw new GradleException("""The icon file property ${BaseProperty.PROJECT_ICON_FILE.propertyName}: ${iconFile}) does not exist
+        or is not a file. Please run 'gradle prepareSetup' to correct it.""")
+                }
             }
         }
     }

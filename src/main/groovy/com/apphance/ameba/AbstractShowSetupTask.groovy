@@ -5,6 +5,9 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.logging.StyledTextOutput;
+import org.gradle.logging.StyledTextOutput.Style;
+import org.gradle.logging.StyledTextOutputFactory;
 
 abstract class AbstractShowSetupTask extends DefaultTask{
     Logger logger = Logging.getLogger(AbstractShowSetupTask.class)
@@ -24,7 +27,15 @@ abstract class AbstractShowSetupTask extends DefaultTask{
     @TaskAction
     public void showSetup() {
         use (PropertyCategory) {
-            System.out.print(project.listPropertiesAsString(clazz, true))
+            StyledTextOutput o = services.get(StyledTextOutputFactory).create(this.class)
+            List props = project.listProperties(clazz, true)
+            props.each {
+                if (it.startsWith('#')) {
+                    o.withStyle(Style.Info).println(it)
+                } else {
+                    o.withStyle(Style.Identifier).println(it)
+                }
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.ProjectHelper;
 import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.vcs.plugins.AbstractVCSPlugin;
 
@@ -14,6 +15,8 @@ import com.apphance.ameba.vcs.plugins.AbstractVCSPlugin;
  */
 class MercurialPlugin extends AbstractVCSPlugin {
     static Logger logger = Logging.getLogger(MercurialPlugin.class)
+
+    ProjectHelper projectHelper = new ProjectHelper()
 
 
     @Override

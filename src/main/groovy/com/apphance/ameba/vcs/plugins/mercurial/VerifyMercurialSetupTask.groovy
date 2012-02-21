@@ -11,6 +11,7 @@ class VerifyMercurialSetupTask extends  AbstractVerifySetupTask {
 
     VerifyMercurialSetupTask() {
         super(MercurialProperty.class)
+        this.dependsOn(project.verifyBaseSetup)
     }
 
     @TaskAction
