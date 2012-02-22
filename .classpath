@@ -15,15 +15,15 @@
 	<classpathentry kind="var" path="GRADLE_HOME/lib/commons-io-1.4.jar"/>
 	<classpathentry kind="var" path="GRADLE_HOME/lib/commons-lang-2.6.jar"/>
 	<classpathentry kind="var" path="GRADLE_HOME/lib/dom4j-1.6.1.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-base-services-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-cli-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-core-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-launcher-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-native-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-open-api-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-tooling-api-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-ui-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-wrapper-1.0-milestone-8.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-base-services-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-cli-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-core-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-launcher-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-native-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-open-api-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-tooling-api-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-ui-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/gradle-wrapper-1.0-milestone-8a.jar"/>
 	<classpathentry kind="var" path="GRADLE_HOME/lib/groovy-all-1.8.4.jar"/>
 	<classpathentry kind="var" path="GRADLE_HOME/lib/guava-11.0.1.jar"/>
 	<classpathentry kind="var" path="GRADLE_HOME/lib/ivy-2.2.0.jar"/>
@@ -48,20 +48,20 @@
 	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/commons-codec-1.4.jar"/>
 	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/core-3.1.1.jar"/>
 	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/geronimo-annotation_1.0_spec-1.0.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-announce-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-antlr-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-code-quality-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-core-impl-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-cpp-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-ear-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-ide-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-jetty-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-maven-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-osgi-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-plugins-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-scala-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-signing-1.0-milestone-8.jar"/>
-	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-sonar-1.0-milestone-8.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-announce-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-antlr-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-code-quality-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-core-impl-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-cpp-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-ear-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-ide-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-jetty-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-maven-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-osgi-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-plugins-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-scala-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-signing-1.0-milestone-8a.jar"/>
+	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/gradle-sonar-1.0-milestone-8a.jar"/>
 	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/hamcrest-core-1.1.jar"/>
 	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/httpclient-4.1.2.jar"/>
 	<classpathentry kind="var" path="GRADLE_HOME/lib/plugins/httpcore-4.1.2.jar"/>
