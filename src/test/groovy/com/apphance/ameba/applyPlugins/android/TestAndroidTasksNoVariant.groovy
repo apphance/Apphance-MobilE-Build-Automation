@@ -24,7 +24,6 @@ class TestAndroidTasksNoVariant extends BaseAndroidTaskTest {
             'buildAll',
             'buildDebug',
             'buildRelease',
-            'checkTests',
             'installDebug',
             'installRelease',
             'replacePackage',

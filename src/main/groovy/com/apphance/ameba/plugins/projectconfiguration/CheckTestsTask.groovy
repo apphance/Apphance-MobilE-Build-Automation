@@ -6,20 +6,14 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 import org.slf4j.Logger
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.AmebaCommonBuildTaskGroups;
+import com.apphance.ameba.ProjectConfiguration;
+import com.apphance.ameba.ProjectHelper;
+import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.ios.IOSProjectConfiguration
 
-/**
- * Created by IntelliJ IDEA.
- * User: viroos
- * Date: 9/29/11
- * Time: 11:35 AM
- * To change this template use File | Settings | File Templates.
- */
-class CheckTestsTask extends DefaultTask{
+
+class CheckTestsTask extends DefaultTask {
     Logger logger = Logging.getLogger(CheckTestsTask.class)
     ProjectHelper projectHelper
     ProjectConfiguration conf
@@ -27,7 +21,7 @@ class CheckTestsTask extends DefaultTask{
 
     CheckTestsTask() {
         use (PropertyCategory) {
-            this.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+            this.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
             this.description = 'Checks if there are any failed junit test results in the project and fails if therea are'
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()

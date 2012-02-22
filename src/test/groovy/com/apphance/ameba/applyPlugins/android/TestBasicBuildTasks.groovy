@@ -17,8 +17,8 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
     }
 
     @Test
-    public void testBuildTasksAvailable() {
-        verifyTasksInGroup(getProject(),['checkTests'],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
+    public void testTestTasksAvailable() {
+        verifyTasksInGroup(getProject(),['checkTests'],AmebaCommonBuildTaskGroups.AMEBA_TEST)
     }
 
     @Test

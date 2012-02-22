@@ -26,7 +26,6 @@ class TestFoneMonkeyTasks extends AbstractBaseIOSTaskTest {
             'buildAllSimulators',
             'build-GradleXCode-BasicConfiguration',
             'buildSingleRelease',
-            'checkTests',
             'copyMobileProvision',
             'replaceBundleIdPrefix',
             'unlockKeyChain'

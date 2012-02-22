@@ -26,7 +26,6 @@ class TestBasicAndroidTasks extends BaseAndroidTaskTest {
             'buildRelease',
             'buildDebug-test',
             'buildRelease-market',
-            'checkTests',
             'installDebug-test',
             'installRelease-market',
             'replacePackage',
