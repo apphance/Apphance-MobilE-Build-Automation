@@ -173,7 +173,7 @@ class AndroidManifestHelper {
 		originalFile.delete()
 		originalFile<< file.text
 		
-		XmlSlurper slurper = new XmlSlurper()
+		XmlSlurper slurper = new XmlSlurper(false, false)
 		GPathResult manifest = slurper.parse(file)
 		String androidName = "android:name"
 		String packageName = manifest.@package
@@ -241,7 +241,6 @@ class AndroidManifestHelper {
 		outputBuilder.encoding = 'UTF-8'
 		String result = outputBuilder.bind{
 			mkp.xmlDeclaration()
-			mkp.declareNamespace("":"")
 			mkp.yield manifest
 		}
 		file << result.replace(">", ">\n")
