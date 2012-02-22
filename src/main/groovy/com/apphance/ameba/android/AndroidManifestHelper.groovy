@@ -1,5 +1,7 @@
 package com.apphance.ameba.android
 
+import groovy.util.slurpersupport.GPathResult;
+
 import java.io.File
 
 import javax.xml.parsers.DocumentBuilderFactory
@@ -9,6 +11,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.apphance.ApphanceProperty;
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 class AndroidManifestHelper {
@@ -163,6 +166,86 @@ class AndroidManifestHelper {
         fileAgain.delete()
         fileAgain.write(root as String)
     }
+	
+	public void addApphanceToManifest(File projectDirectory) {
+		def file = new File("${projectDirectory}/AndroidManifest.xml")
+		def originalFile = new File("${projectDirectory}/AndroidManifest.xml.beforeApphance.orig")
+		originalFile.delete()
+		originalFile<< file.text
+		
+		XmlSlurper slurper = new XmlSlurper()
+		GPathResult manifest = slurper.parse(file)
+		String androidName = "android:name"
+		String packageName = manifest.@package
+		
+		// Add instrumentation
+		manifest.appendNode({instrumentation("${androidName}":"com.apphance.android.ApphanceInstrumentation",
+			'android:targetPackage':packageName)})
+		
+		// Add permissions
+		def permissions = manifest."uses-permission"
+		logger.lifecycle(permissions.text())
+		def apphancePermissions = ["android.permission.INTERNET", "android.permission.READ_PHONE_STATE", "android.permission.GET_TASKS"]
+		apphancePermissions.each { apphancePermission ->
+			logger.lifecycle("Finding permission " + apphancePermission)
+			def permission = permissions.find { it.@"${androidName}".text().equals(apphancePermission)}
+			if (permission == null || permission.isEmpty()) {
+				logger.lifecycle("Permission " + apphancePermission + " not found")
+				manifest.appendNode({'uses-permission'("${androidName}":apphancePermission)})
+			} else {
+				logger.lifecycle("Permission " + permission.@"${androidName}".text() + " aaa " + permission.text() + " found")
+			}
+		}
+		
+		// Add apphance activities
+		
+		def apphanceActivities = [{activity("${androidName}":"com.apphance.ui.LoginActivity")}, 
+			{activity("${androidName}":"com.apphance.android.ui.ProblemActivity", "android:configChanges":"orientation", "android:launchMode":"singleInstance")}, 
+			{activity("${androidName}":"com.apphance.android.LauncherActivity", "android:theme":"@android:style/Theme.Translucent.NoTitleBar")}]
+		apphanceActivities.each {
+			manifest.application.appendNode(it)
+		}
+		
+		// Add alias
+		String apphanceAliasString = '''<activity-alias android:name=\".ApphanceLauncherActivity\" android:targetActivity=\"com.apphance.android.LauncherActivity\">
+<intent-filter>
+<action android:name=\"android.intent.action.MAIN\" />
+<category android:name=\"android.intent.category.LAUNCHER\" />
+</intent-filter>
+</activity-alias>'''
+		def apphanceAlias = new XmlSlurper(false, false).parseText(apphanceAliasString)
+		manifest.application.appendNode(apphanceAlias)
+		
+		// Replace intent filter in main activity
+		String mainActivity = getMainActivityName(projectDirectory)
+		logger.lifecycle("Main activity " + mainActivity)
+		def packages = mainActivity.split('\\.')
+		logger.lifecycle("packages size " + packages.size() + " content " + packages)
+		mainActivity = packages.last()
+		manifest.application.activity.each {
+			if (it.@"${androidName}".text().contains(mainActivity)) {
+				it."intent-filter".each { filter ->
+					if (filter.action.size() > 0 && filter.action.@"${androidName}".text().equals('android.intent.action.MAIN')) {
+						filter.action.replaceNode({action("${androidName}":"com.apphance.android.LAUNCH")})
+					}
+					if (filter.category.size() > 0 && filter.category.@"${androidName}".text().equals('android.intent.category.LAUNCHER')) {
+						filter.category.replaceNode({category("${androidName}":"android.intent.category.DEFAULT")})
+					}
+				}
+			}
+		}
+		
+		
+		file.delete()
+		def outputBuilder = new groovy.xml.StreamingMarkupBuilder()
+		outputBuilder.encoding = 'UTF-8'
+		String result = outputBuilder.bind{
+			mkp.xmlDeclaration()
+			mkp.declareNamespace("":"")
+			mkp.yield manifest
+		}
+		file << result.replace(">", ">\n")
+	}
 	
 	public String getMainActivityName(File projectDirectory) {
 		def file = new File("${projectDirectory}/AndroidManifest.xml")

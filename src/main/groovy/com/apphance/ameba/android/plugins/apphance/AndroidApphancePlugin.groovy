@@ -106,6 +106,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
 							replaceLogsWithApphance(project)
 							addApphanceInit(project, mainFile)
 							copyApphanceJar(project)
+							addApphanceToManifest(project)
 						}
 					}
 				}
@@ -145,8 +146,6 @@ class AndroidApphancePlugin implements Plugin<Project>{
         manifestHelper.removeApphance(new File(project.rootDir, "srcTmp"))
         File apphanceRemovedManifest = new File(conf.logDirectory,"AndroidManifest-with-apphance-removed.xml")
         logger.lifecycle("Manifest used for this build is stored in ${apphanceRemovedManifest}")
-//		File f = new File(conf.logDirectory, "srcTmp").mkdir()
-//		logger.lifecycle('f')
 		if (apphanceRemovedManifest.exists()) {
 			logger.lifecycle('removed manifest exists')
 			apphanceRemovedManifest.delete()
@@ -154,7 +153,13 @@ class AndroidApphancePlugin implements Plugin<Project>{
         apphanceRemovedManifest << new File(project.rootDir,"srcTmp/AndroidManifest.xml").text
     }
 	
+	private addApphanceToManifest(Project project) {
+		logger.lifecycle("Adding apphance to manifest")
+		manifestHelper.addApphanceToManifest(new File(project.rootDir, "srcTmp"))
+	}
+	
 	private def addApphanceInit(Project project, File mainFile) {
+		logger.lifecycle("Adding apphance init to file " + mainFile)
 		def lineToModification = []
 		mainFile.eachLine { line, lineNumber ->
 			if (line.contains('super.onCreate')) {
