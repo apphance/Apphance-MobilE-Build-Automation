@@ -22,7 +22,6 @@ class ExecuteAndroidBuildsTest {
         ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
         try {
             def buildLauncher = connection.newBuild()
-            buildLauncher.getProperties().put(project.rootDir, connection)
             buildLauncher.forTasks(tasks).run();
         } finally {
             connection.close();
