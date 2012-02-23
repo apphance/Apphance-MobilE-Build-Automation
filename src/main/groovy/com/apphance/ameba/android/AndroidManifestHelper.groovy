@@ -173,7 +173,7 @@ class AndroidManifestHelper {
 		originalFile.delete()
 		originalFile<< file.text
 		
-		XmlSlurper slurper = new XmlSlurper(false, false)
+		XmlSlurper slurper = new XmlSlurper(false, true)
 		GPathResult manifest = slurper.parse(file)
 		String androidName = "android:name"
 		String packageName = manifest.@package
@@ -199,9 +199,9 @@ class AndroidManifestHelper {
 		
 		// Add apphance activities
 		
-		def apphanceActivities = [{activity("${androidName}":"com.apphance.ui.LoginActivity")}, 
-			{activity("${androidName}":"com.apphance.android.ui.ProblemActivity", "android:configChanges":"orientation", "android:launchMode":"singleInstance")}, 
-			{activity("${androidName}":"com.apphance.android.LauncherActivity", "android:theme":"@android:style/Theme.Translucent.NoTitleBar")}]
+		def apphanceActivities = [{activity("${androidName}":"com.apphance.ui.LoginActivity")},
+			{activity("${androidName}":"com.apphance.android.ui.ProblemActivity", "configChanges":"orientation", "launchMode":"singleInstance")},
+			{activity("${androidName}":"com.apphance.android.LauncherActivity", "theme":"@android:style/Theme.Translucent.NoTitleBar")}]
 		apphanceActivities.each {
 			manifest.application.appendNode(it)
 		}
@@ -218,10 +218,9 @@ class AndroidManifestHelper {
 		
 		// Replace intent filter in main activity
 		String mainActivity = getMainActivityName(projectDirectory)
-		logger.lifecycle("Main activity " + mainActivity)
 		def packages = mainActivity.split('\\.')
-		logger.lifecycle("packages size " + packages.size() + " content " + packages)
 		mainActivity = packages.last()
+		logger.lifecycle("Main activity name = " + mainActivity)
 		manifest.application.activity.each {
 			if (it.@"${androidName}".text().contains(mainActivity)) {
 				it."intent-filter".each { filter ->
@@ -233,23 +232,26 @@ class AndroidManifestHelper {
 					}
 				}
 			}
-		}
-		
+		}		
 		
 		file.delete()
 		def outputBuilder = new groovy.xml.StreamingMarkupBuilder()
 		outputBuilder.encoding = 'UTF-8'
+		outputBuilder.useDoubleQuotes = true
+
 		String result = outputBuilder.bind{
 			mkp.xmlDeclaration()
 			mkp.yield manifest
 		}
-		file << result.replace(">", ">\n")
+		file.withWriter { writer ->
+			writer << result.replace(">", ">\n").replace("xmlns:tag0=\"\"", "").replace("tag0:", "")
+		}
 	}
 	
 	public String getMainActivityName(File projectDirectory) {
 		def file = new File("${projectDirectory}/AndroidManifest.xml")
 		
-		def manifest = new XmlSlurper().parse(file)
+		def manifest = new XmlSlurper(false, true).parse(file)
 		
 		String className = manifest.@package
 		String intentFilter = "intent-filter"
