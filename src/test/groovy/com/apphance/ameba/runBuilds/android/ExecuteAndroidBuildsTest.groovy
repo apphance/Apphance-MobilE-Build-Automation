@@ -2,56 +2,51 @@ package com.apphance.ameba.runBuilds.android;
 
 import static org.junit.Assert.*
 
-import org.codehaus.groovy.runtime.ProcessGroovyMethods
-import org.gradle.tooling.GradleConnector;
+
+import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.Test
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.android.AndroidManifestHelper
 
+
+
 class ExecuteAndroidBuildsTest {
 
-    boolean USE_PROCESS_EXECUTION = true
     File testProject = new File("testProjects/android")
     File testNovariantsProject = new File("testProjects/android-novariants")
     File templateFile = new File("templates/android")
 
     protected void runGradle(String ... tasks) {
-        if (USE_PROCESS_EXECUTION) {
-            def cmd = ['gradle']
-            tasks.each { cmd << it }
-            ProcessBuilder processBuilder = new ProcessBuilder()
-            processBuilder.command(cmd).directory(testProject).redirectErrorStream(true)
-            Process process = processBuilder.start()
-            Thread outputThread = ProcessGroovyMethods.consumeProcessOutputStream(process, System.out)
-            process.waitFor()
-        } else {
-            ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
-            try {
-                connection.newBuild().forTasks(tasks).run();
-            } finally {
-                connection.close();
-            }
+        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
+        try {
+            def buildLauncher = connection.newBuild()
+            buildLauncher.getProperties().put(project.rootDir, connection)
+            buildLauncher.forTasks(tasks).run();
+        } finally {
+            connection.close();
+        }
+    }
+
+    protected void runGradleWithProperties(Properties p, String ... tasks) {
+        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
+        try {
+            def buildLauncher = connection.newBuild()
+            def args = p.collect { property , value -> "-D${property}=${value}"}
+            buildLauncher.setJvmArguments(args as String[])
+            buildLauncher.forTasks(tasks).run()
+        } finally {
+            connection.close();
         }
     }
 
     protected void runGradleNoVariants(String ... tasks) {
-        if (USE_PROCESS_EXECUTION) {
-            def cmd = ['gradle']
-            tasks.each { cmd << it }
-            ProcessBuilder processBuilder = new ProcessBuilder()
-            processBuilder.command(cmd).directory(testNovariantsProject).redirectErrorStream(true)
-            Process process = processBuilder.start()
-            Thread outputThread = ProcessGroovyMethods.consumeProcessOutputStream(process, System.out)
-            process.waitFor()
-        } else {
-            ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testNovariantsProject).connect();
-            try {
-                connection.newBuild().forTasks(tasks).run();
-            } finally {
-                connection.close();
-            }
+        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testNovariantsProject).connect();
+        try {
+            connection.newBuild().forTasks(tasks).run();
+        } finally {
+            connection.close();
         }
     }
 
@@ -146,7 +141,9 @@ class ExecuteAndroidBuildsTest {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
         try {
-            runGradle('updateProject', 'updateVersion', '-Pversion.string=TEST_UPDATE')
+            Properties p = new Properties()
+            p.put('version.string', 'TEST_UPDATE')
+            runGradleWithProperties(p, 'updateProject', 'updateVersion')
             manifestHelper.readVersion(new File("testProjects/android"), projectConf)
         } finally {
             manifestHelper.restoreOriginalManifest(new File("testProjects/android"))
@@ -234,6 +231,8 @@ class ExecuteAndroidBuildsTest {
         ]
         File avdsDirectory = new File('testProjects/android/avds')
         assertTrue(avdsDirectory.exists())
-        files.each { assertTrue(it, new File(avdsDirectory,it).exists()) }
+        files.each {
+            assertTrue(it, new File(avdsDirectory,it).exists())
+        }
     }
 }

@@ -282,7 +282,10 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = "cleans the application"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            projectHelper.executeCommand(project,['ant', 'clean'])
+            projectHelper.executeCommand(project,[
+                'ant',
+                'clean'
+            ])
             File tmpDir = new File(project.rootDir,"tmp")
             project.ant.delete(dir: tmpDir)
         }
