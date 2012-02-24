@@ -1,0 +1,53 @@
+Plugin reference for Ameba, version ${version}.&nbsp;
+<div><br>
+</div>
+<div>This document provides description of all plugins of Ameba, tasks that they provide, conventions that they are using. &nbsp;It also provides useful examples explaining what's happening when particular task is executed.</div>
+<div><br>
+</div>
+<div>
+<div><img src="https://www.google.com/chart?chc=sites&amp;cht=d&amp;chdp=sites&amp;chl=%5B%5BTable+of+contents'%3D20'f%5Cv'a%5C%3D0'10'%3D249'0'dim'%5Cbox1'b%5CF6F6F6'fC%5CF6F6F6'eC%5C0'sk'%5C%5B'%5D'a%5CV%5C%3D12'f%5C%5DV%5Cta%5C%3D10'%3D0'%3D250'%3D297'dim'%5C%3D10'%3D10'%3D250'%3D297'vdim'%5Cbox1'b%5Cva%5CF6F6F6'fC%5CC8C8C8'eC%5C'a%5C%5Do%5CLauto'f%5C&amp;sig=TzxATGSyGo59uvdEcnpk0pMmCmI" data-type="toc" data-props="align:left;maxDepth:2;width:400;" width="400" height="300" style="display:block;text-align:left;margin-right:auto;"></div></div>
+<% amebaDocumentation.groupNames.each { groupName -> %>
+    <% group = amebaDocumentation.groups[groupName] %>
+    <h2>${groupName}</h2>
+    <% group.pluginNames.each { pluginName -> %>
+        <% plugin = group.plugins[pluginName] %>
+        <h3>${pluginName}</h3>
+${plugin.description}
+            <h4>Tasks</h4>
+                <div>
+                    <ul>
+                        <% plugin.tasks.each { path, task -> %>
+                            <li>
+                                <span style="background-color:transparent"><b>${task.name}</b>&nbsp;:
+                                    ${task.description}
+                                </span>
+                            </li>
+                        <% } %>
+                    </ul>
+                </div>
+            <% if (!plugin.props.empty) { %>
+                <h4>Properties</h4>
+                   <div class="sites-codeblock sites-codesnippet-block">
+                      <div>
+                         <% plugin.props.each { line -> %>
+                            <% def comment = line.startsWith('#') %>
+                            <% if (comment) { %>
+                                <div style="font-family:courier new,monospace"><code><font color="#e69138">${line}</font></code></div>
+                            <% } else { %>
+                                <div style="font-family:courier new,monospace"><code><font color="#6aa84f">${line}</font></code></div>
+                            <% } %>
+                         <% } %>
+                      </div>
+                   </div>
+            <% } %>
+                <h4>Example build.gradle:</h4>
+                   <div class="sites-codeblock sites-codesnippet-block">
+                      <div>
+                         <% plugin.example.each { line -> %>
+                             <div style="font-family:courier new,monospace"><code><font color="#6aa84f">${line}</font></code></div>
+                         <% } %>
+                      </div>
+                   </div>
+                <hr>
+     <% } %>
+<% } %>
