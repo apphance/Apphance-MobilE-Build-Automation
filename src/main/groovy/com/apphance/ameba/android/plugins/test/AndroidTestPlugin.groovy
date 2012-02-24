@@ -27,6 +27,17 @@ import com.sun.org.apache.xpath.internal.XPathAPI
 class AndroidTestPlugin implements Plugin<Project>{
     static Logger logger = Logging.getLogger(AndroidTestPlugin.class)
 
+    static public final String DESCRIPTION ="""
+    <div>
+    <div>This plugin provides easy automated testing framework for Android applications</div>
+    <div><br></div>
+    <div>It has support for two level of tests: integration testing done usually with the
+help of roboguice and standard android emulator-based testing, unit testing done with
+help of robolectric.</div>
+    <div><br></div>
+    </div>
+    """
+
     private static final String TEST_RUNNER = "pl.polidea.instrumentation.PolideaInstrumentationTestRunner"
     private static final String AVD_PATH = 'avds'
     private static final int MAX_EMULATOR_STARTUP_TIME = 360 * 1000

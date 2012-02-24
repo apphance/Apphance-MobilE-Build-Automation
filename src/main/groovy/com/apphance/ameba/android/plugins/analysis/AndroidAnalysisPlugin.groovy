@@ -20,6 +20,16 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
     AndroidProjectConfigurationRetriever androidConfRetriever
     AndroidProjectConfiguration androidConf
 
+    static public final String DESCRIPTION ="""
+    <div>
+    <div>This plugin provides capabulity of running basic static code analysis on android.</div>
+    <div><br></div>
+    <div>It provides analysis task, that executes checkstyle, findbugs, pmd tasks (soon also lint).
+Not that the findbugs plugin requires findbugs to be installed. </div>
+    </div>
+    """
+
+
     public void apply(Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         def androidAnalysisConvention = new AndroidAnalysisConvention()

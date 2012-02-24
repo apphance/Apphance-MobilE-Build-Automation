@@ -22,6 +22,16 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 
 class FoneMonkeyPlugin implements Plugin<Project> {
 
+
+    static public final String DESCRIPTION ="""
+    <div>
+    <div>This plugins provides functionality of Fonemonkey integration testing for iOS.</div>
+    <div><br></div>
+    <div>More description is needed.</div>
+    <div><br></div>
+    </div>
+    """
+
     static final String IPHONESIMULATOR = 'iphonesimulator'
 
     Logger logger = Logging.getLogger(FoneMonkeyPlugin.class)

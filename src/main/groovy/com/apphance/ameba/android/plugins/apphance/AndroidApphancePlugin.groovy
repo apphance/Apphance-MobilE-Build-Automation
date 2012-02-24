@@ -18,6 +18,21 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     static Logger logger = Logging.getLogger(AndroidApphancePlugin.class)
 
+    static public final String DESCRIPTION ="""
+    <div>
+    <div>This is the plugin that links Ameba with Apphance service.</div>
+    <div><br></div>
+    <div>The plugin provides integration with Apphance service. It performs the
+following tasks: adding Apphance on-the-fly while building the application
+(for all Debug builds), removing Apphance on-the-fly while building the application
+(for all Release builds), submitting the application to apphance at release time.</div>
+    <div><br></div>
+    <div>Note that this plugin replaces entirely the android release plugin's release
+functionality.</div>
+    </div>
+    """
+
+
     ProjectHelper projectHelper
     ProjectConfiguration conf
     File findbugsHomeDir

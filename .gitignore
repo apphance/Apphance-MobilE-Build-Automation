@@ -12,3 +12,6 @@ emma
 /.gradle
 /build
 /tmp
+testProjects/documentation/*/build.xml
+testProjects/documentation/*/proguard.cfg
+testProjects/documentation/ameba-android-test/test/android/proguard.cfg

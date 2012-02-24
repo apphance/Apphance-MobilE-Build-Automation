@@ -31,6 +31,17 @@ import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugi
 class AndroidPlugin implements Plugin<Project> {
     static Logger logger = Logging.getLogger(AndroidPlugin.class)
 
+    static public final String DESCRIPTION ="""
+    <div>
+    <div>This is the main android build plugin.</div>
+    <div><br></div>
+    <div>The plugin provides all the task needed to build android application.
+Besides tasks explained below, the plugin prepares build-* and install-*
+tasks which are dynamically created based on variants available. In
+case the build has no variants, the only available builds are Debug and Release.
+In case of variants, there is one build and one task created for every variant.</div>
+    </div>
+    """
     static final String PROJECT_PROPERTIES_KEY = 'project.properties'
 
     ProjectHelper projectHelper
@@ -297,7 +308,7 @@ class AndroidPlugin implements Plugin<Project> {
 
     private void prepareCleanClassesTask(Project project) {
         def task = project.task('cleanClasses')
-        task.description = "Cleans only the compiled classes (removes instrumentation)"
+        task.description = "Cleans only the compiled classes"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
             project.ant.delete(dir: new File(project.rootDir,"build"))
