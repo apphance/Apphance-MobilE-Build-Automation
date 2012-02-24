@@ -130,6 +130,10 @@ dependencies {
    groovy localGroovy()
 }
 
+task buildAmebaDocumentation(type: com.apphance.ameba.build.BuildAmebaDocumentationTask) {
+
+}
+
 task cleanTmp << {
    project.ant.delete(dir: "tmp")
 }

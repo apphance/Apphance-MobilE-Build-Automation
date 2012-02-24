@@ -1,8 +1,8 @@
-package com.apphance.ameba.unit
+package com.apphance.ameba.documentation
 
 import org.gradle.tooling.model.Task;
 
-class Plugin {
+class PluginDocumentation {
     Class clazz
     String name
     String description
@@ -17,9 +17,9 @@ class Plugin {
     }
 }
 
-class PluginGroup {
+class PluginGroupDocumentation {
     String name
-    Map<String,Plugin> plugins = [:]
+    Map<String,PluginDocumentation> plugins = [:]
     List<String> pluginNames = []
 
     @Override
@@ -28,9 +28,9 @@ class PluginGroup {
     }
 }
 
-class DocumentationInfo {
+class AmebaDocumentation {
     Map<String,Task> tasks = [:]
-    Map<String, PluginGroup> groups = [:]
+    Map<String, PluginGroupDocumentation> groups = [:]
     List<String> groupNames = []
 
     @Override
