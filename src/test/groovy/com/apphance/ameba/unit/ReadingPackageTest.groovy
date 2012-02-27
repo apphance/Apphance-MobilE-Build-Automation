@@ -21,6 +21,7 @@ class ReadingPackageTest {
             'com.apphance.ameba.runBuilds.ios',
             'com.apphance.ameba.unit',
             'com.apphance.ameba.unit.android',
+			'com.apphance.ameba.unit.apphance.android',
             'com.apphance.ameba.unit.ios',
             'com.apphance.ameba.unit.vcs',
         ], (String[]) currentPackage)
