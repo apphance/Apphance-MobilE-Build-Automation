@@ -73,7 +73,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
         task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
         task << { restoreManifestBeforeApphanceRemoval(project) }
     }
-	
+
 	File getMainApplicationFile(Project project) {
 		String applicationName = manifestHelper.getApplicationName(new File(project.rootDir, "srcTmp"))
 		applicationName = applicationName.replace('.', '/')
@@ -124,7 +124,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     private replaceLogsWithAndroid(Project project) {
         project.ant.replace(casesensitive: 'true', token : 'import com.apphance.android.Log;',
                 value: 'import android.util.Log;', summary: true) {
-                    fileset(dir: 'srcTmp/src') { include (name : '**/*.java') }
+                    fileset(dir: 'srcTmp') { include (name : '**/*.java') }
                 }
     }
 
@@ -152,12 +152,12 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		}
         apphanceRemovedManifest << new File(project.rootDir,"srcTmp/AndroidManifest.xml").text
     }
-	
+
 	private addApphanceToManifest(Project project) {
 		logger.lifecycle("Adding apphance to manifest")
 		manifestHelper.addApphanceToManifest(new File(project.rootDir, "srcTmp"))
 	}
-	
+
 	private def addApphanceInit(Project project, File mainFile) {
 		logger.lifecycle("Adding apphance init to file " + mainFile)
 		def lineToModification = []
@@ -191,7 +191,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		mainFile << newMainClass.getText()
 		newMainClass.delete()
 	}
-	
+
 	private copyApphanceJar(Project project) {
 		def libsDir = new File('srcTmp/libs')
 		libsDir.eachFileMatch(".*apphance.*\\.jar") {
@@ -202,7 +202,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		URL apphanceUrl = this.class.getResource("apphance-android-library_1.4.2.1.jar")
 		libsApphance << apphanceUrl.getContent()
 	}
-	
+
 	private boolean checkIfApphancePresent(Project project) {
 		boolean found = false
 		File basedir = new File(project.rootDir, 'srcTmp/src')
