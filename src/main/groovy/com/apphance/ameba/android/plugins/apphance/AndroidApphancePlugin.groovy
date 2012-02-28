@@ -199,6 +199,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
 			it.delete()
 		}
 		File libsApphance = new File(project.rootDir, 'srcTmp/libs/apphance.jar')
+		new File(project.rootDir, 'srcTmp/libs').mkdirs()
 		URL apphanceUrl = this.class.getResource("apphance-android-library_1.4.2.1.jar")
 		libsApphance << apphanceUrl.getContent()
 	}
