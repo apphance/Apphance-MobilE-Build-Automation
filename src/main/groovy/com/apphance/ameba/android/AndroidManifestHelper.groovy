@@ -166,22 +166,22 @@ class AndroidManifestHelper {
         fileAgain.delete()
         fileAgain.write(root as String)
     }
-	
+
 	public void addApphanceToManifest(File projectDirectory) {
 		def file = new File("${projectDirectory}/AndroidManifest.xml")
 		def originalFile = new File("${projectDirectory}/AndroidManifest.xml.beforeApphance.orig")
 		originalFile.delete()
 		originalFile<< file.text
-		
+
 		XmlSlurper slurper = new XmlSlurper(false, true)
 		GPathResult manifest = slurper.parse(file)
 		String androidName = "android:name"
 		String packageName = manifest.@package
-		
+
 		// Add instrumentation
 		manifest.appendNode({instrumentation("${androidName}":"com.apphance.android.ApphanceInstrumentation",
 			'android:targetPackage':packageName)})
-		
+
 		// Add permissions
 		def permissions = manifest."uses-permission"
 		logger.lifecycle(permissions.text())
@@ -196,16 +196,16 @@ class AndroidManifestHelper {
 				logger.lifecycle("Permission " + permission.@"${androidName}".text() + " aaa " + permission.text() + " found")
 			}
 		}
-		
+
 		// Add apphance activities
-		
-		def apphanceActivities = [{activity("${androidName}":"com.apphance.ui.LoginActivity")},
+
+		def apphanceActivities = [{activity("${androidName}":"com.apphance.android.ui.LoginActivity")},
 			{activity("${androidName}":"com.apphance.android.ui.ProblemActivity", "configChanges":"orientation", "launchMode":"singleInstance")},
 			{activity("${androidName}":"com.apphance.android.LauncherActivity", "theme":"@android:style/Theme.Translucent.NoTitleBar")}]
 		apphanceActivities.each {
 			manifest.application.appendNode(it)
 		}
-		
+
 		// Add alias
 		String apphanceAliasString = '''<activity-alias android:name=\".ApphanceLauncherActivity\" android:targetActivity=\"com.apphance.android.LauncherActivity\">
 <intent-filter>
@@ -215,7 +215,7 @@ class AndroidManifestHelper {
 </activity-alias>'''
 		def apphanceAlias = new XmlSlurper(false, false).parseText(apphanceAliasString)
 		manifest.application.appendNode(apphanceAlias)
-		
+
 		// Replace intent filter in main activity
 		String mainActivity = getMainActivityName(projectDirectory)
 		def packages = mainActivity.split('\\.')
@@ -232,8 +232,8 @@ class AndroidManifestHelper {
 					}
 				}
 			}
-		}		
-		
+		}
+
 		file.delete()
 		def outputBuilder = new groovy.xml.StreamingMarkupBuilder()
 		outputBuilder.encoding = 'UTF-8'
@@ -247,16 +247,16 @@ class AndroidManifestHelper {
 			writer << result.replace(">", ">\n").replace("xmlns:tag0=\"\"", "").replace("tag0:", "")
 		}
 	}
-	
+
 	public String getMainActivityName(File projectDirectory) {
 		def file = new File("${projectDirectory}/AndroidManifest.xml")
-		
+
 		def manifest = new XmlSlurper(false, true).parse(file)
-		
+
 		String className = manifest.@package
 		String intentFilter = "intent-filter"
 		String androidName = "android:name"
-		
+
 		def mainActivity = manifest.application.activity.findAll {
 			if (it."${intentFilter}".size() > 0 && it."${intentFilter}".action.size() > 0 && it."${intentFilter}".category.size() > 0) {
 				it."${intentFilter}".action.@"${androidName}".text().equals('android.intent.action.MAIN')  &&
@@ -275,13 +275,13 @@ class AndroidManifestHelper {
 
 		return className
 	}
-	
+
 	public String getApplicationName(File projectDirectory) {
 		def file = new File("${projectDirectory}/AndroidManifest.xml")
-		
+
 		def manifest = new XmlSlurper().parse(file)
 		String className = manifest.@package
-		
+
 		String androidName = "android:name"
 		String applicationName = manifest.application.@"${androidName}".text()
 		if (!applicationName.startsWith(".")) {
