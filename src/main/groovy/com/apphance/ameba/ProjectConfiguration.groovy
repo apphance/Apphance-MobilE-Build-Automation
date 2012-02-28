@@ -13,10 +13,10 @@ class ProjectConfiguration  {
     String projectDirectoryName
     Collection<String> releaseNotes
     URL baseUrl = new URL("http://example.com")
-    File otaDirectory = new File('ota')
-    File tmpDirectory = new File('tmp')
-    File logDirectory = new File('log')
-    File buildDirectory = new File('build')
+    File otaDirectory
+    File tmpDirectory
+    File logDirectory
+    File buildDirectory
     String versionString = "NOVERSION"
     Integer versionCode = 0
 
