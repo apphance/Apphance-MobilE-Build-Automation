@@ -1,3 +1,7 @@
 coverage.ec
-doc
+/doc
 /userHome
+/tmp
+/gen
+/bin
+/.gradle
