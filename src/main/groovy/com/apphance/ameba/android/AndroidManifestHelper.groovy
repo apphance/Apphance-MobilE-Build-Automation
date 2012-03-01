@@ -193,7 +193,7 @@ class AndroidManifestHelper {
 				logger.lifecycle("Permission " + apphancePermission + " not found")
 				manifest.appendNode({'uses-permission'("${androidName}":apphancePermission)})
 			} else {
-				logger.lifecycle("Permission " + permission.@"${androidName}".text() + " aaa " + permission.text() + " found")
+				logger.lifecycle("Permission " + permission.@"${androidName}".text() + " found")
 			}
 		}
 

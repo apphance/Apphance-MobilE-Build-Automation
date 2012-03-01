@@ -16,10 +16,11 @@ class ApphanceOTFTest {
 
 	boolean USE_PROCESS_EXECUTION = true
 	File testNovariantsProject = new File("testProjects/android-novariants")
-	
+
 	protected void runGradleNoVariants(String ... tasks) {
 		if (USE_PROCESS_EXECUTION) {
 			def cmd = ['gradle']
+			cmd << '--stacktrace'
 			tasks.each { cmd << it }
 			ProcessBuilder processBuilder = new ProcessBuilder()
 			processBuilder.command(cmd).directory(testNovariantsProject).redirectErrorStream(true)
@@ -35,18 +36,18 @@ class ApphanceOTFTest {
 			}
 		}
 	}
-	
+
 	@Test
 	void testAddAmeba() {
 		File mainActivityFile = new File(testNovariantsProject, "src/com/apphance/amebaTest/android/TestActivity.java")
 		File tmpCopy = new File("tmpCopy")
 		tmpCopy.delete()
 		tmpCopy << mainActivityFile.getText()
-		
+
 		runGradleNoVariants('updateProject', 'cleanRelease', 'buildDebug')
 		assertTrue(new File(testNovariantsProject,
 				"ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-1.0.1-SNAPSHOT_42.apk").exists())
-		
+
 		mainActivityFile.delete()
 		mainActivityFile << tmpCopy.getText()
 	}

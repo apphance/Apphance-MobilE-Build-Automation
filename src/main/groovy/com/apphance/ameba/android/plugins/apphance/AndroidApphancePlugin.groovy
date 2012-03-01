@@ -193,7 +193,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
 	}
 
 	private copyApphanceJar(Project project) {
-		def libsDir = new File('srcTmp/libs').mkdirs()
+		def libsDir = new File('srcTmp/libs')
+		libsDir.mkdirs()
 		libsDir.eachFileMatch(".*apphance.*\\.jar") {
 			logger.lifecycle("Removing old apphance jar: " + it.name)
 			it.delete()
