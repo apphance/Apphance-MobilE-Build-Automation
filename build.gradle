@@ -1,9 +1,9 @@
 apply {
-	plugin 'java'
-	plugin 'groovy'
-	plugin 'maven'
-	plugin 'signing'
-	plugin 'eclipse'
+    plugin 'java'
+    plugin 'groovy'
+    plugin 'maven'
+    plugin 'signing'
+    plugin 'eclipse'
 }
 
 apply from:'file:emma.gradle'
@@ -13,93 +13,93 @@ group = 'com.apphance.ameba'
 artifactId = 'Ameba'
 
 task sourcesJar(type: Jar, dependsOn:classes) {
-	classifier = 'sources'
-	from sourceSets.main.allSource
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn:groovydoc) {
-	classifier = 'javadoc'
-	from javadoc.destinationDir
+    classifier = 'javadoc'
+    from javadoc.destinationDir
 }
 
 isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 artifacts {
-	if (isReleaseVersion) {
-		archives sourcesJar
-		archives javadocJar
-		archives jar
-	}
+    if (isReleaseVersion) {
+        archives sourcesJar
+        archives javadocJar
+        archives jar
+    }
 }
 
 signing {
-	if (isReleaseVersion) {
-		sign configurations.archives
-	}
+    if (isReleaseVersion) {
+        sign configurations.archives
+    }
 }
 
 def uploadUsername = ''
 def uploadPassword = ''
 if (project.hasProperty('sonatypeUsername')) {
-	uploadUsername = project['sonatypeUsername']
+    uploadUsername = project['sonatypeUsername']
 }
 if (project.hasProperty('sonatypePassword')) {
-	uploadPassword = project['sonatypePassword']
+    uploadPassword = project['sonatypePassword']
 }
 
 uploadArchives {
-	repositories {
-		mavenDeployer {
-			beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
 
-			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
-				authentication(userName: uploadUsername, password: uploadPassword)
-			}
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots") {
+                authentication(userName: uploadUsername, password: uploadPassword)
+            }
 
-			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-				authentication(userName: uploadUsername, password: uploadPassword)
-			}
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: uploadUsername, password: uploadPassword)
+            }
 
-			pom.artifactId = artifactId
+            pom.artifactId = artifactId
 
-			pom.project {
-				name 'ameba'
-				packaging 'jar'
-				description 'AMEBA stands for Apphance MobilE Build Automation - it is gradle plugin to automate builds for mobile applications'
-				url 'http://ameba.apphance.com/'
+            pom.project {
+                name 'ameba'
+                packaging 'jar'
+                description 'AMEBA stands for Apphance MobilE Build Automation - it is gradle plugin to automate builds for mobile applications'
+                url 'http://ameba.apphance.com/'
 
-				scm {
-					url 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
-					connection 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
-					developerConnection 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
-				}
+                scm {
+                    url 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
+                    connection 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
+                    developerConnection 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
+                }
 
-				licenses {
-					license {
-						name 'NewBSD Licence'
-						url 'http://www.opensource.org/licenses/bsd-license.php'
-						distribution 'repo'
-					}
-				}
+                licenses {
+                    license {
+                        name 'NewBSD Licence'
+                        url 'http://www.opensource.org/licenses/bsd-license.php'
+                        distribution 'repo'
+                    }
+                }
 
-				developers {
-					developer {
-						id 'jarek.potiuk.apphance'
-						name 'Jarek Potiuk'
-					}
-					developer {
-						id 'blazej.marcinkiewicz'
-						name 'Blazej Marcinkiewicz'
-					}
-				}
-			}
+                developers {
+                    developer {
+                        id 'jarek.potiuk.apphance'
+                        name 'Jarek Potiuk'
+                    }
+                    developer {
+                        id 'blazej.marcinkiewicz'
+                        name 'Blazej Marcinkiewicz'
+                    }
+                }
+            }
 
-		}
-	}
+        }
+    }
 }
 
 configure(install.repositories.mavenInstaller) {
-	pom.project { artifactId artifactId }
+    pom.project { artifactId artifactId }
 }
 
 //compileGroovy.options.optimize = false
@@ -111,29 +111,37 @@ repositories { mavenCentral() }
 configurations { mail }
 
 emma{
-	reportPath = "emma"
-	verbosityLevel =  "verbose"
+    reportPath = "emma"
+    verbosityLevel =  "verbose"
 }
 
 dependencies {
-	emma 'emma:emma:2.1.5320', 'emma:emma_ant:2.1.5320'
-	testCompile 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
-	testRuntime 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
-	mail 'org.apache.ant:ant-javamail:1.8.2',  'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1'
-	compile 'javax.mail:mail:1.4', gradleApi()
-	groovy localGroovy()
+    emma 'emma:emma:2.1.5320', 'emma:emma_ant:2.1.5320'
+    testCompile 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
+    testRuntime 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
+    mail 'org.apache.ant:ant-javamail:1.8.2',  'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1'
+    compile 'javax.mail:mail:1.4', gradleApi(), fileTree(dir: 'libs', include: '*.jar')
+        runtime 'org.apache.ant:ant-javamail:1.8.2',  'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1', fileTree(dir: 'libs', include: '*.jar')
+    groovy localGroovy()
 }
 
-task (buildDocumentation, dependsOn: ['testClasses','processTestResources'], type: JavaExec) {
-	main = 'com.apphance.ameba.documentation.AmebaDocumentationBuilder'
-	classpath = sourceSets.test.runtimeClasspath
-	file('tmp').mkdirs()
-	standardOutput = file('tmp/buildDocumentation.out').newOutputStream()
-}
+file('tmp').mkdirs()
 
+generatedFile = file('tmp/plugins_reference.html')
+
+task (buildPluginReference, dependsOn: ['testClasses','processTestResources'], type: JavaExec) {
+    outputFile = file('tmp/buildDocumentation.out')
+    main = 'com.apphance.ameba.documentation.AmebaPluginReferenceBuilder'
+    classpath = sourceSets.test.runtimeClasspath
+    standardOutput = outputFile.newOutputStream()
+    jvmArgs "-XX:MaxPermSize=512m"
+    inputs.files(sourceSets.main.allSource, sourceSets.test.allSource)
+    outputs.upToDateSpec = new org.gradle.api.specs.AndSpec()
+    outputs.file generatedFile
+}
 
 task cleanTmp << {
-	project.ant.delete(dir: "tmp")
+    project.ant.delete(dir: "tmp")
 }
 
 cleanTmp.description = 'Cleans tmp directory'

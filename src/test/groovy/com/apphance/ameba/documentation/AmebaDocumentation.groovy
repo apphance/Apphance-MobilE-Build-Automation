@@ -11,6 +11,16 @@ class PluginDocumentation {
     List<String> conventions = []
     List<String> example = []
 
+    String getNiceName() {
+        def words = name.split('-')
+        if (words[1] == 'ios') {
+            words[1] = 'iOS'
+        } else {
+            words[1] = words[1].charAt(0).toUpperCase().toString() + words[1].substring(1)
+        }
+        return words[1..-1].join(' ')
+    }
+
     @Override
     public String toString() {
         return this.getProperties()
