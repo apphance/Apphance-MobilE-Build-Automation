@@ -41,7 +41,9 @@ signing {
 test {
 	def os = System.getProperty("os.name").toLowerCase()
 	if (os.contains("windows")) {
-		exclude "**/ios/**/*"
+		exclude "**/ios/**/*",
+				"**/ExecuteAndroidBuildsTest.class", // analysis tasks
+				"**/RemoveSymlinksTest.class" // uses ln command
 	}
 	else if (os.contains("os x")) {
 		exclude "**/wp7/**/*"
