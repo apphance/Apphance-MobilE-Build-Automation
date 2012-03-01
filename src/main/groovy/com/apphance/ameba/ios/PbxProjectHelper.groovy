@@ -28,13 +28,16 @@ class PbxProjectHelper {
 		return slurper.parseText(outBuff.toString())
 	}
 
+	int nextHash() {
+		return hash++
+	}
+
 	void addApphanceToFramework(Object rootObject, Object frameworks) {
 		boolean foundApphance = false
 		frameworks.files.each { file ->
 			// find file reference in objects
 			def fileRef = rootObject.objects."${file}".fileRef
-			logger.lifecycle("File ref " + rootObject.objects."${fileRef}".name)
-			if (rootObject.objects."${fileRef}".name.contains("apphance")) {
+			if (rootObject.objects."${fileRef}".name.toLowerCase().contains("apphance")) {
 				logger.lifecycle("Apphance already added")
 				// apphance already added
 				foundApphance = true
@@ -45,9 +48,11 @@ class PbxProjectHelper {
 			return
 		}
 		logger.lifecycle("Apphance not found")
-		rootObject.objects.put("000000000000000000000000", [isa : "PBXBuildFile", fileRef : "000000000000000000000001"])
-		frameworks.files.add("000000000000000000000000")
-		rootObject.objects.put("000000000000000000000001", [name : "apphance"])
+		int apphanceFrameworkHash = nextHash()
+		int apphanceFileFrameworkHash = nextHash()
+		rootObject.objects.put(apphanceFrameworkHash.toString(), [isa : "PBXBuildFile", fileRef : apphanceFileFrameworkHash])
+		frameworks.files.add(apphanceFrameworkHash.toString())
+		rootObject.objects.put(apphanceFileFrameworkHash.toString(), [name : "Apphance-iOS.framework"])
 	}
 
 	void addApphanceToProject(File projectRootDirectory, String targetName) {
@@ -59,7 +64,6 @@ class PbxProjectHelper {
 				rootObject.objects."${target}".buildPhases.each { phase ->
 					// find frameworks in build phases
 					if (rootObject.objects."${phase}".isa.equals("PBXFrameworksBuildPhase")) {
-						addApphanceToFramework(rootObject, rootObject.objects."${phase}")
 						addApphanceToFramework(rootObject, rootObject.objects."${phase}")
 					}
 				}
