@@ -38,6 +38,16 @@ signing {
     }
 }
 
+test {
+	def os = System.getProperty("os.name").toLowerCase()
+	if (os.contains("windows")) {
+		exclude "**/ios/**/*"
+	}
+	else if (os.contains("os x")) {
+		exclude "**/wp7/**/*"
+	}
+}
+
 def uploadUsername = ''
 def uploadPassword = ''
 if (project.hasProperty('sonatypeUsername')) {
