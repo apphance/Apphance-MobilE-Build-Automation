@@ -46,7 +46,7 @@ class VerifyAndroidSetupTask extends AbstractVerifySetupTask {
     void checkMinSdkTarget(Properties properties) {
         use (PropertyCategory) {
             String target = project.readProperty(AndroidProjectProperty.MIN_SDK_TARGET)
-            List targets = AndroidCommandParser.getTargets()
+            List targets = AndroidCommandParser.getTargets(project)
             if (target != null && !target.empty && !targets.contains(target)) {
                 throw new GradleException("""The min sdk target ${AndroidProjectProperty.MIN_SDK_TARGET.propertyName}: ${target} can only be one of ${targets}""")
             }
