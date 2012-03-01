@@ -1,0 +1,18 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath files("../../../build/classes/main", "../../../build/resources/main", "../../../bin")
+    }
+}
+
+apply plugin: 'ameba-project-configuration'
+apply plugin: 'ameba-git'
+apply plugin: 'ameba-android-build'
+apply plugin: 'ameba-android-analysis'
+
+androidAnalysis {
+    buildAnalysisDirectory = 'build/analysis'
+    configAnalysisDirectory = 'config/analysis'
+}
