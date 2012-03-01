@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio 10.0\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
+<FxCopReport Version="10.0">
+ <Targets>
+  <Target Name="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\bin\Microsoft.Silverlight.Testing.dll">
+   <Modules>
+    <Module Name="microsoft.silverlight.testing.dll">
+     <Namespaces>
+      <Namespace Name="Microsoft.Silverlight.Testing.Controls">
+       <Types>
+        <Type Name="GridSplitterAutomationPeer" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#System.Windows.Automation.Provider.ITransformProvider.CanMove" Kind="Property" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Accessors>
+            <Accessor Name="#System.Windows.Automation.Provider.ITransformProvider.get_CanMove()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+             <Messages>
+              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+               <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\GridSplitter" File="GridSplitterAutomationPeer.cs" Line="93">Make 'GridSplitterAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ITransformProvider.CanMove.get()' and is visible to derived classes.</Issue>
+              </Message>
+             </Messages>
+            </Accessor>
+           </Accessors>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.ITransformProvider.CanResize" Kind="Property" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Accessors>
+            <Accessor Name="#System.Windows.Automation.Provider.ITransformProvider.get_CanResize()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+             <Messages>
+              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+               <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\GridSplitter" File="GridSplitterAutomationPeer.cs" Line="102">Make 'GridSplitterAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ITransformProvider.CanResize.get()' and is visible to derived classes.</Issue>
+              </Message>
+             </Messages>
+            </Accessor>
+           </Accessors>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.ITransformProvider.CanRotate" Kind="Property" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Accessors>
+            <Accessor Name="#System.Windows.Automation.Provider.ITransformProvider.get_CanRotate()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+             <Messages>
+              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+               <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\GridSplitter" File="GridSplitterAutomationPeer.cs" Line="110">Make 'GridSplitterAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ITransformProvider.CanRotate.get()' and is visible to derived classes.</Issue>
+              </Message>
+             </Messages>
+            </Accessor>
+           </Accessors>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.ITransformProvider.Move(System.Double,System.Double)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\GridSplitter" File="GridSplitterAutomationPeer.cs" Line="123">Make 'GridSplitterAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ITransformProvider.Move(double, double)' and is visible to derived classes.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.ITransformProvider.Resize(System.Double,System.Double)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\GridSplitter" File="GridSplitterAutomationPeer.cs" Line="157">Make 'GridSplitterAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ITransformProvider.Resize(double, double)' and is visible to derived classes.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.ITransformProvider.Rotate(System.Double)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\GridSplitter" File="GridSplitterAutomationPeer.cs" Line="170">Make 'GridSplitterAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ITransformProvider.Rotate(double)' and is visible to derived classes.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="TreeViewAutomationPeer" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#System.Windows.Automation.Provider.ISelectionProvider.CanSelectMultiple" Kind="Property" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Accessors>
+            <Accessor Name="#System.Windows.Automation.Provider.ISelectionProvider.get_CanSelectMultiple()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+             <Messages>
+              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+               <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\TreeView" File="TreeViewAutomationPeer.cs" Line="48">Make 'TreeViewAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ISelectionProvider.CanSelectMultiple.get()' and is visible to derived classes.</Issue>
+              </Message>
+             </Messages>
+            </Accessor>
+           </Accessors>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.ISelectionProvider.GetSelection()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\TreeView" File="TreeViewAutomationPeer.cs" Line="195">Make 'TreeViewAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ISelectionProvider.GetSelection()' and is visible to derived classes.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.ISelectionProvider.IsSelectionRequired" Kind="Property" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Accessors>
+            <Accessor Name="#System.Windows.Automation.Provider.ISelectionProvider.get_IsSelectionRequired()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+             <Messages>
+              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+               <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\TreeView" File="TreeViewAutomationPeer.cs" Line="64">Make 'TreeViewAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ISelectionProvider.IsSelectionRequired.get()' and is visible to derived classes.</Issue>
+              </Message>
+             </Messages>
+            </Accessor>
+           </Accessors>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="TreeViewItemAutomationPeer" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#System.Windows.Automation.Provider.IExpandCollapseProvider.Collapse()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\TreeView" File="TreeViewItemAutomationPeer.cs" Line="246">Make 'TreeViewItemAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'IExpandCollapseProvider.Collapse()' and is visible to derived classes.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.IExpandCollapseProvider.Expand()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\TreeView" File="TreeViewItemAutomationPeer.cs" Line="222">Make 'TreeViewItemAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'IExpandCollapseProvider.Expand()' and is visible to derived classes.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.IExpandCollapseProvider.ExpandCollapseState" Kind="Property" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Accessors>
+            <Accessor Name="#System.Windows.Automation.Provider.IExpandCollapseProvider.get_ExpandCollapseState()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+             <Messages>
+              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+               <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\TreeView" File="TreeViewItemAutomationPeer.cs" Line="56">Make 'TreeViewItemAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'IExpandCollapseProvider.ExpandCollapseState.get()' and is visible to derived classes.</Issue>
+              </Message>
+             </Messages>
+            </Accessor>
+           </Accessors>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.IScrollItemProvider.ScrollIntoView()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\TreeView" File="TreeViewItemAutomationPeer.cs" Line="319">Make 'TreeViewItemAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'IScrollItemProvider.ScrollIntoView()' and is visible to derived classes.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.ISelectionItemProvider.AddToSelection()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\TreeView" File="TreeViewItemAutomationPeer.cs" Line="269">Make 'TreeViewItemAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ISelectionItemProvider.AddToSelection()' and is visible to derived classes.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.ISelectionItemProvider.IsSelected" Kind="Property" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Accessors>
+            <Accessor Name="#System.Windows.Automation.Provider.ISelectionItemProvider.get_IsSelected()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+             <Messages>
+              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+               <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\TreeView" File="TreeViewItemAutomationPeer.cs" Line="82">Make 'TreeViewItemAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ISelectionItemProvider.IsSelected.get()' and is visible to derived classes.</Issue>
+              </Message>
+             </Messages>
+            </Accessor>
+           </Accessors>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.ISelectionItemProvider.RemoveFromSelection()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\TreeView" File="TreeViewItemAutomationPeer.cs" Line="299">Make 'TreeViewItemAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ISelectionItemProvider.RemoveFromSelection()' and is visible to derived classes.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.ISelectionItemProvider.Select()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+             <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\TreeView" File="TreeViewItemAutomationPeer.cs" Line="287">Make 'TreeViewItemAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ISelectionItemProvider.Select()' and is visible to derived classes.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#System.Windows.Automation.Provider.ISelectionItemProvider.SelectionContainer" Kind="Property" Static="False" Accessibility="Private" ExternallyVisible="True">
+           <Accessors>
+            <Accessor Name="#System.Windows.Automation.Provider.ISelectionItemProvider.get_SelectionContainer()" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="True">
+             <Messages>
+              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="NonBreaking">
+               <Issue Certainty="95" Level="Error" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Client\Controls\TreeView" File="TreeViewItemAutomationPeer.cs" Line="99">Make 'TreeViewItemAutomationPeer' sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of 'ISelectionItemProvider.SelectionContainer.get()' and is visible to derived classes.</Issue>
+              </Message>
+             </Messages>
+            </Accessor>
+           </Accessors>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+      <Namespace Name="Microsoft.Silverlight.Testing.Harness">
+       <Types>
+        <Type Name="ResourceUtility" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#GetAllText(System.Object,System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="DependsOnFix">
+             <Issue Certainty="75" Level="Warning" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\UnitTesting" File="ResourceUtility.cs" Line="45">Object 'stream' can be disposed more than once in method 'ResourceUtility.GetAllText(object, string)'. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 45</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+      <Namespace Name="Microsoft.Silverlight.Testing.Service">
+       <Types>
+        <Type Name="SimpleXElement" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#Parse(System.String)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="Dispose objects before losing scope" Category="Microsoft.Reliability" CheckId="CA2000" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="DependsOnFix">
+             <Issue Name="ExceptionEdge" Certainty="75" Level="Warning" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Service" File="SimpleXElement.cs" Line="190">In method 'SimpleXElement.Parse(string)', object 'new StringReader(xml)' is not disposed along all exception paths. Call System.IDisposable.Dispose on object 'new StringReader(xml)' before all references to it are out of scope.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="WebServiceResult" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#ReadHttpWebResponse()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202" Status="Active" Created="2011-08-21 18:39:39Z" FixCategory="DependsOnFix">
+             <Issue Certainty="75" Level="Warning" Path="C:\Users\Richard\SVN\WP7-CI\trunk\Release\WindowsPhone7\Infrastructure\TestFramework\Service" File="WebServiceResult.cs" Line="80">Object 'stream' can be disposed more than once in method 'WebServiceResult.ReadHttpWebResponse()'. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 80</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+ </Targets>
+ <Rules>
+  <Rule TypeName="Dispose objects before losing scope" Category="Microsoft.Reliability" CheckId="CA2000">
+   <Name>Dispose objects before losing scope</Name>
+   <Description>If a disposable object is not explicitly disposed before all references to it are out of scope, the object will be disposed at some indeterminate time when the garbage collector runs the finalizer of the object. Because an exceptional event might occur that will prevent the finalizer of the object from running, the object should be explicitly disposed instead.</Description>
+   <Resolution Name="ExceptionEdge">In method {0}, object {1} is not disposed along all exception paths. Call System.IDisposable.Dispose on object {1} before all references to it are out of scope.</Resolution>
+   <Owner>RuleOwner</Owner>
+   <Url>http://msdn.microsoft.com/library/ms182289(VS.100).aspx</Url>
+   <Email />
+   <MessageLevel Certainty="75">Warning</MessageLevel>
+   <File Name="dataflowrules.dll" Version="10.0.0.0" />
+  </Rule>
+  <Rule TypeName="Do not dispose objects multiple times" Category="Microsoft.Usage" CheckId="CA2202">
+   <Name>Do not dispose objects multiple times</Name>
+   <Description>A correctly implemented Dispose method can be called multiple times without throwing an exception. However, this is not guaranteed and to avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.</Description>
+   <Resolution Name="Default">Object {0} can be disposed more than once in method {1}. To avoid generating a System.ObjectDisposedException you should not call Dispose more than one time on an object.: Lines: 80</Resolution>
+   <Owner>RuleOwner</Owner>
+   <Url>http://msdn.microsoft.com/library/ms182334(VS.100).aspx</Url>
+   <Email />
+   <MessageLevel Certainty="75">Warning</MessageLevel>
+   <File Name="dataflowrules.dll" Version="10.0.0.0" />
+  </Rule>
+  <Rule TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033">
+   <Name>Interface methods should be callable by child types</Name>
+   <Description>Explicit method implementations are defined with private accessibility. Classes that derive from classes with explicit method implementations and choose to re-declare them on the class will not be able to call into the base class implementation unless the base class has provided an alternate method with appropriate accessibility. When overriding a base class method that has been hidden by explicit interface implementation, in order to call into the base class implementation, a derived class must cast the base pointer to the relevant interface. When calling through this reference, however, the derived class implementation will actually be invoked, resulting in recursion and an eventual stack overflow.</Description>
+   <Resolution Name="Default">Make {0} sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of {1} and is visible to derived classes.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182153(VS.100).aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="95">Error</MessageLevel>
+   <File Name="designrules.dll" Version="10.0.0.0" />
+  </Rule>
+ </Rules>
+ <Localized>
+  <String Key="Category">Category</String>
+  <String Key="Certainty">Certainty</String>
+  <String Key="CollapseAll">Collapse All</String>
+  <String Key="CheckId">Check Id</String>
+  <String Key="Error">Error</String>
+  <String Key="Errors">error(s)</String>
+  <String Key="ExpandAll">Expand All</String>
+  <String Key="Help">Help</String>
+  <String Key="Line">Line</String>
+  <String Key="Messages">message(s)</String>
+  <String Key="LocationNotStoredInPdb">[Location not stored in Pdb]</String>
+  <String Key="Project">Project</String>
+  <String Key="Resolution">Resolution</String>
+  <String Key="Rule">Rule</String>
+  <String Key="RuleFile">Rule File</String>
+  <String Key="RuleDescription">Rule Description</String>
+  <String Key="Source">Source</String>
+  <String Key="Status">Status</String>
+  <String Key="Target">Target</String>
+  <String Key="Warning">Warning</String>
+  <String Key="Warnings">warning(s)</String>
+  <String Key="ReportTitle">Code Analysis Report</String>
+ </Localized>
+</FxCopReport>

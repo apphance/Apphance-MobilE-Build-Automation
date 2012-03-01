@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmebaTest", "AmebaTest\AmebaTest.csproj", "{0B727C05-D02D-4286-B92C-00770EF21B3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmebaTest.Tests", "AmebaTest\test\AmebaTest.Tests\AmebaTest.Tests.csproj", "{FC3171FD-587E-419A-AECE-53CC36B4933E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B727C05-D02D-4286-B92C-00770EF21B3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B727C05-D02D-4286-B92C-00770EF21B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B727C05-D02D-4286-B92C-00770EF21B3B}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{0B727C05-D02D-4286-B92C-00770EF21B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B727C05-D02D-4286-B92C-00770EF21B3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B727C05-D02D-4286-B92C-00770EF21B3B}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{FC3171FD-587E-419A-AECE-53CC36B4933E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC3171FD-587E-419A-AECE-53CC36B4933E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC3171FD-587E-419A-AECE-53CC36B4933E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{FC3171FD-587E-419A-AECE-53CC36B4933E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC3171FD-587E-419A-AECE-53CC36B4933E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC3171FD-587E-419A-AECE-53CC36B4933E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
