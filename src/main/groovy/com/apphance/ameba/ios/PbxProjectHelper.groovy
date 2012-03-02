@@ -10,7 +10,12 @@ class PbxProjectHelper {
 
 	static Logger logger = Logging.getLogger(PbxProjectHelper.class)
 
+	Object rootObject
 	private int hash = 0
+
+	Object getObject(String objectName) {
+		return rootObject.objects."${objectName}"
+	}
 
 	def getParsedProject(File projectRootDirectory, String targetName) {
 		File projectFile = new File(projectRootDirectory, "${targetName}.xcodeproj/project.pbxproj")
@@ -32,12 +37,12 @@ class PbxProjectHelper {
 		return hash++
 	}
 
-	void addApphanceToFramework(Object rootObject, Object frameworks) {
+	void addApphanceToFramework(Object frameworks) {
 		boolean foundApphance = false
 		frameworks.files.each { file ->
 			// find file reference in objects
-			def fileRef = rootObject.objects."${file}".fileRef
-			if (rootObject.objects."${fileRef}".name.toLowerCase().contains("apphance")) {
+			def fileRef = getObject("${file}").fileRef
+			if (getObject("${fileRef}").name.toLowerCase().contains("apphance")) {
 				logger.lifecycle("Apphance already added")
 				// apphance already added
 				foundApphance = true
@@ -52,22 +57,77 @@ class PbxProjectHelper {
 		int apphanceFileFrameworkHash = nextHash()
 		rootObject.objects.put(apphanceFrameworkHash.toString(), [isa : "PBXBuildFile", fileRef : apphanceFileFrameworkHash])
 		frameworks.files.add(apphanceFrameworkHash.toString())
-		rootObject.objects.put(apphanceFileFrameworkHash.toString(), [name : "Apphance-iOS.framework"])
+		rootObject.objects.put(apphanceFileFrameworkHash.toString(), [isa : PBXFileReference, lastKnownFileType : wrapper.framework, name : "Apphance-iOS.framework", path : "Apphance-iOS.framework", sourceTree : "<group>" ])
+		def mainGroup = getObject(project.mainGroup)
+		mainGroup.children.add(apphanceFileFrameworkHash.toString())
 	}
 
-	void addApphanceToProject(File projectRootDirectory, String targetName) {
-		def rootObject = getParsedProject(projectRootDirectory, targetName)
-		def project = rootObject.objects."${rootObject.rootObject}"
+	String printElementToString(Object node, int level) {
+		StringBuilder builder = new StringBuilder()
+		if (node instanceof Map) {
+			builder << "{\n"
+			builder << "\t"*level
+			node.each { key, value ->
+				builder << "\"${key}\" = "
+				builder << printElementToString(node[key], level + 1)
+				builder << ";\n"
+				builder << "\t"*level
+			}
+			builder << "}"
+		} else if (node instanceof Collection){
+			// its list or array
+			builder << "(\n"
+			builder << "\t"*level
+			node.each {
+				builder << printElementToString(it, level + 1)
+				builder << ",\n"
+				builder << "\t"*level
+			}
+			builder << ")"
+//		} else if (node instanceof String) {
+//			builder << "\"${node}\""
+		} else {
+			String nodeString = node.toString()
+			if (nodeString.contains('$(SRCROOT)/GradleXCode')) {
+				int a = 0;
+			}
+			def lines = nodeString.split("\\r?\\n")
+			if (lines.size() > 1) {
+				builder << "\""
+				lines.each {
+					builder << "${it}\\n"
+				}
+				builder << "\""
+			} else {
+				builder << "\"${node}\""
+			}
+
+		}
+		return builder.toString()
+	}
+
+	String writePlistToString() {
+		StringBuilder builder = new StringBuilder()
+		builder << printElementToString(rootObject, 1)
+		return builder.toString()
+	}
+
+	String addApphanceToProject(File projectRootDirectory, String targetName) {
+		rootObject = getParsedProject(projectRootDirectory, targetName)
+		def project = getObject("${rootObject.rootObject}")
 		project.targets.each { target ->
-			if (rootObject.objects."${target}".name.equals(targetName)) {
+			if (getObject("${target}").name.equals(targetName)) {
 				// find build phases in target
-				rootObject.objects."${target}".buildPhases.each { phase ->
+				getObject("${target}").buildPhases.each { phase ->
 					// find frameworks in build phases
-					if (rootObject.objects."${phase}".isa.equals("PBXFrameworksBuildPhase")) {
-						addApphanceToFramework(rootObject, rootObject.objects."${phase}")
+					if (getObject("${phase}").isa.equals("PBXFrameworksBuildPhase")) {
+						addApphanceToFramework(getObject("${phase}"))
 					}
 				}
 			}
 		}
+		logger.lifecycle(rootObject.toString())
+		logger.lifecycle(writePlistToString())
+		return writePlistToString()
 	}
 }
