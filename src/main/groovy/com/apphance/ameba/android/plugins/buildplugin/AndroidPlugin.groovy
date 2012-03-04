@@ -262,7 +262,7 @@ class AndroidPlugin implements Plugin<Project> {
     private runUpdateProject(Project project, File directory, boolean reRun, boolean silentLogging = false) {
         if (!new File(directory,'local.properties').exists() || reRun) {
             if (!directory.exists()) {
-                throw new GradleException('The directory ${directory} to execute the command, does not exist! Your configuration is wrong.')
+                throw new GradleException("The directory ${directory} to execute the command, does not exist! Your configuration is wrong.")
             }
             try {
                 projectHelper.executeCommand(project, directory, [

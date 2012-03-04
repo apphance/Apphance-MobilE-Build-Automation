@@ -82,7 +82,7 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
         AndroidAnalysisConvention convention = project.convention.plugins.androidAnalysis
         URL baseUrl = project.file('config/analysis').toURI().toURL()
         if (convention.baseAnalysisConfigUrl != null) {
-            baseUrl = convention.baseAnalysisConfigUrl
+            baseUrl = new URL(convention.baseAnalysisConfigUrl)
         }
         URL targetURL = new URL(baseUrl, resourceName)
         if (targetURL.getProtocol() == 'file') {

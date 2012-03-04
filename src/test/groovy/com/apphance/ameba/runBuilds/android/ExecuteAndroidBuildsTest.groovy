@@ -16,6 +16,7 @@ class ExecuteAndroidBuildsTest {
 
     File testProject = new File("testProjects/android")
     File testNovariantsProject = new File("testProjects/android-novariants")
+    File testAndroidAnalysisProject = new File("testProjects/android-remote-convention")
     File templateFile = new File("templates/android")
 
     protected void runGradle(String ... tasks) {
@@ -48,6 +49,16 @@ class ExecuteAndroidBuildsTest {
             connection.close();
         }
     }
+
+    protected void runGradleAndroidAnalysis(String ... tasks) {
+        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testAndroidAnalysisProject).connect();
+        try {
+            connection.newBuild().forTasks(tasks).run();
+        } finally {
+            connection.close();
+        }
+    }
+
 
     @Test
     void testCleanCheckTests() {
@@ -185,6 +196,23 @@ class ExecuteAndroidBuildsTest {
         assertConfigSameAsBuild("findbugs-exclude.xml")
         assertConfigSameAsBuild("pmd-rules.xml")
     }
+
+        @Test
+    void testAnalysisFromRemote() {
+        File baseDir = new File("testProjects/android-novariants/build/analysis/")
+        File configBaseDir = new File("testProjects/android-novariants/config/analysis/")
+        runGradleAndroidAnalysis('updateProject' ,'analysis')
+        assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
+        assertTrue(new File(baseDir, "cpd-result.xml").exists())
+        assertTrue(new File(baseDir, "findbugs-result.xml").exists())
+        assertConfigSameAsBuild("checkstyle-local-suppressions.xml")
+        assertConfigSameAsBuild("checkstyle-suppressions.xml")
+        assertConfigSameAsBuild("checkstyle-local-suppressions.xml")
+        assertConfigSameAsBuild("checkstyle.xml")
+        assertConfigSameAsBuild("findbugs-exclude.xml")
+        assertConfigSameAsBuild("pmd-rules.xml")
+    }
+
 
     @Test
     void testAnalysisAfterClean() {
