@@ -1,5 +1,6 @@
 package com.apphance.ameba.documentation.sites
 
+import com.google.gdata.data.sites.ContentEntry;
 import com.google.gdata.data.sites.FileCabinetPageEntry;
 import com.google.gdata.data.sites.PageEntry
 
@@ -22,8 +23,8 @@ class AmebaFileUploader {
         sitesCommunicator.readUserPassword(args)
         sitesCommunicator.createService()
         sitesCommunicator.loggingIn()
-        FileCabinetPageEntry page = sitesCommunicator.retrieveDownloadPage()
-        //sitesCommunicator.uploadAttachment(zipFile, page, "Documentation", "Documentation: ${zipFile}")
+        ContentEntry page = sitesCommunicator.retrieveDownloadPage()
+        sitesCommunicator.uploadAttachment(zipFile, page, "Documentation", "Documentation: ${zipFile}")
     }
 
 

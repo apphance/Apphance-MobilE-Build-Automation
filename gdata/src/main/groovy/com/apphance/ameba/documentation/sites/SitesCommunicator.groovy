@@ -49,22 +49,22 @@ class SitesCommunicator {
         query.setPath('/introduction/plugin-reference/')
         ContentFeed contentFeed = service.getFeed(query, ContentFeed.class)
         def entries  = contentFeed.getEntries()
-        entries.each {
-            println it.title.text
-        }
         ContentEntry page = entries.get(0)
         return page
     }
 
-    public FileCabinetPageEntry retrieveDownloadPage() {
+    public ContentEntry retrieveDownloadPage() {
         println "Retrieving download page"
-
-        ContentFeed contentFeed = service.getFeed(new URL(CONTENT_URL + '?kind=filecabinet'),
-             ContentFeed.class);
-        FileCabinetPageEntry page = contentFeed.getEntries().get(0);
+        ContentQuery query = new ContentQuery(new URL(CONTENT_URL));
+        query.setKind('filecabinet')
+        ContentFeed contentFeed = service.getFeed(query,ContentFeed.class);
+        def entries  = contentFeed.getEntries()
+        entries.each {
+            println it.title.text
+        }
+        ContentEntry page = entries.get(0);
         return page
     }
-
 
     public List<ContentEntry> retrieveAllPagesIndex() {
         println "Retrieving all pages index"
@@ -76,8 +76,9 @@ class SitesCommunicator {
         return entries
     }
 
-    public AttachmentEntry uploadAttachment(File file, BasePageEntry<?> parentPage,
+    public AttachmentEntry uploadAttachment(File file, ContentEntry parentPage,
         String title, String description) throws IOException, ServiceException {
+        println "Uploading attachment"
         MimetypesFileTypeMap mediaTypes = new MimetypesFileTypeMap();
         mediaTypes.addMimeTypes("application/zip zip");
         AttachmentEntry newAttachment = new AttachmentEntry();
@@ -87,6 +88,5 @@ class SitesCommunicator {
         newAttachment.addLink(SitesLink.Rel.PARENT, Type.ATOM, parentPage.getSelfLink().getHref());
         return service.insert(new URL(CONTENT_URL), newAttachment);
     }
-
 
 }
