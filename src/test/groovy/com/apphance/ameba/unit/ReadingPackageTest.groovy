@@ -16,6 +16,8 @@ class ReadingPackageTest {
             'com.apphance.ameba.applyPlugins.android',
             'com.apphance.ameba.applyPlugins.ios',
             'com.apphance.ameba.applyPlugins.vcs',
+            'com.apphance.ameba.conventions',
+            'com.apphance.ameba.documentation',
             'com.apphance.ameba.runBuilds.android',
             'com.apphance.ameba.runBuilds.ios',
             'com.apphance.ameba.unit',
