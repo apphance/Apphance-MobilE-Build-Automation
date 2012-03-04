@@ -32,7 +32,6 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
             'cleanConfiguration',
             'copyGalleryFiles',
             'readProjectConfiguration',
-            'showProjectConfiguration',
         ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
     }
     @Test

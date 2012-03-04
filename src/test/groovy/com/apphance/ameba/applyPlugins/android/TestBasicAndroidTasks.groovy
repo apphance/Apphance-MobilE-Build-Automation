@@ -41,7 +41,6 @@ class TestBasicAndroidTasks extends BaseAndroidTaskTest {
             'readAndroidProjectConfiguration',
             'readAndroidVersionAndProjectName',
             'readProjectConfiguration',
-            'showProjectConfiguration',
         ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
     }
 

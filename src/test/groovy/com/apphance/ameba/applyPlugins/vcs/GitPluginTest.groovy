@@ -31,6 +31,7 @@ class GitPluginTest extends BaseTaskTest {
             'prepareSetup',
             'verifySetup',
             'showSetup',
+            'showConventions',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
         assertEquals([
             'PrepareBaseSetupOperation',

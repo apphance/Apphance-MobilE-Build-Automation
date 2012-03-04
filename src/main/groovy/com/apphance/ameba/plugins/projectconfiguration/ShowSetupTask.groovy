@@ -16,7 +16,7 @@ class ShowSetupTask extends DefaultTask {
     List<AbstractShowSetupOperation> showSetupOperations = []
 
     @TaskAction
-    void verifySetup() {
+    void showSetup() {
         showSetupOperations.each { it.project = project }
         showSetupOperations.each { it.showSetup() }
     }

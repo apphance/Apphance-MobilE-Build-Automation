@@ -33,7 +33,7 @@ Not that the findbugs plugin requires findbugs to be installed. </div>
     public void apply(Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         def androidAnalysisConvention = new AndroidAnalysisConvention()
-        project.extensions.androidAnalysis = androidAnalysisConvention
+        project.convention.plugins.put('androidAnalysis', androidAnalysisConvention)
         this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
         this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
         preparePmdTask(project)
@@ -135,9 +135,11 @@ Not that the findbugs plugin requires findbugs to be installed. </div>
         def modules = xmlSlurper.parseText(strFileContents)
         def suppressionFilters = modules.module.findAll {it.@name.text().contains("SuppressionFilter")}
         def configFilter = suppressionFilters.findAll{it.property.@value.text().contains('config/analysis')}
-        configFilter.each {it -> it.property.@value = it.property.@value.text().replaceFirst('config/analysis', project.androidAnalysis.configAnalysisDirectory)}
+        configFilter.each {it -> it.property.@value = it.property.@value.text().replaceFirst('config/analysis',
+            project.androidAnalysis.configAnalysisDirectory)}
         def buildFilter = suppressionFilters.findAll{it.property.@value.text().contains('build/analysis')}
-        buildFilter.each {it -> it.property.@value = it.property.@value.text().replaceFirst('build/analysis', project.androidAnalysis.buildAnalysisDirectory)}
+        buildFilter.each {it -> it.property.@value = it.property.@value.text().replaceFirst('build/analysis',
+            project.androidAnalysis.buildAnalysisDirectory)}
         def outputBuilder = new groovy.xml.StreamingMarkupBuilder()
         outputBuilder.encoding = 'UTF-8'
         String result = outputBuilder.bind{
@@ -202,6 +204,7 @@ Not that the findbugs plugin requires findbugs to be installed. </div>
     }
 
     static class AndroidAnalysisConvention {
+        static public final String DESCRIPTION ="The conventions provide places where analysis configuration files are placed."
         def String buildAnalysisDirectory = 'build/analysis'
         def String configAnalysisDirectory = 'config/analysis'
 

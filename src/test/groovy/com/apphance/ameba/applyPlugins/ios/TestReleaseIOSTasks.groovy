@@ -44,6 +44,7 @@ class TestReleaseIOSTasks extends AbstractBaseIOSTaskTest {
             'prepareSetup',
             'verifySetup',
             'showSetup',
+            'showConventions',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
         assertEquals([
             'PrepareBaseSetupOperation',

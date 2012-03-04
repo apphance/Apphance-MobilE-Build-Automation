@@ -1,6 +1,7 @@
 package com.apphance.ameba.plugins.projectconfiguration;
 
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -46,12 +47,30 @@ It also adds several utility tasks that can be used across all types of projects
         project.task('verifySetup', type: VerifySetupTask.class)
         project.task('showSetup', type: ShowSetupTask.class)
         project.task('checkTests', type: CheckTestsTask.class)
-        showProjectConfigurationTask(project)
+        project.task('showConventions', type: ShowConventionsTask.class)
+        prepareShowConventionRule(project)
         prepareCleanConfigurationTask(project)
         prepareCopyGalleryFilesTask(project)
         project.prepareSetup.prepareSetupOperations << new PrepareBaseSetupOperation()
         project.verifySetup.verifySetupOperations << new VerifyBaseSetupOperation()
         project.showSetup.showSetupOperations << new ShowBaseSetupOperation()
+    }
+
+    private void prepareShowConventionRule(Project project) {
+        project.tasks.addRule("Pattern: showConvention<ConventionName>: Shows current convention values for convention specified by name") { String taskName ->
+            if (taskName.startsWith("showConvention")) {
+                project.task(taskName) << {
+                    String pluginName = taskName.substring('showConvention'.length()).replaceAll('^.') { it.toLowerCase() }
+                    pluginConventionObject = project.convention.plugins[pluginName]
+                    if (pluginConventionObject == null) {
+                        throw new GradleException("There is no convention with ${pluginName} name")
+                    }
+                    StringBuilder sb = new StringBuilder()
+                    new ShowConventionHelper().getConventionObject(sb, pluginName, pluginConventionObject)
+                    println sb
+                }
+            }
+        }
     }
 
     void prepareRepositories(Project project) {
@@ -77,16 +96,6 @@ It also adds several utility tasks that can be used across all types of projects
     private prepareGeneratedDirectories(Project project) {
         conf.otaDirectory = new File(project.rootDir,"ota/")
         conf.tmpDirectory = new File(project.rootDir,"tmp/")
-    }
-
-    def void showProjectConfigurationTask(Project project) {
-        def task = project.task('showProjectConfiguration')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
-        task.description = "Shows project's configuration"
-        task << {
-            logger.lifecycle( "Configuration: " + project[PropertyCategory.PROJECT_CONFIGURATION_KEY])
-        }
-        task.dependsOn(project.readProjectConfiguration)
     }
 
     def void prepareCleanConfigurationTask(Project project) {

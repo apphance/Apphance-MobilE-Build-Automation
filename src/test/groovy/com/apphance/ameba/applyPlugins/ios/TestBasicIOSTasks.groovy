@@ -39,7 +39,6 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
             'readIOSProjectConfiguration',
             'readIOSParametersFromXcode',
             'readIOSProjectVersions',
-            'showProjectConfiguration'
         ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
     }
 
@@ -54,6 +53,7 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
             'prepareSetup',
             'verifySetup',
             'showSetup',
+            'showConventions'
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
         assertEquals([
             'PrepareBaseSetupOperation',

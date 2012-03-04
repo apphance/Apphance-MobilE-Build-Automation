@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath files("../../../build/classes/main", "../../../build/resources/main", "../../../bin")
+        classpath files("../../../bin/", "../../../build/classes/main", "../../../build/resources/main", "../../../bin")
     }
 }
 
