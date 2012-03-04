@@ -255,9 +255,9 @@ combination is excluded by appropriate property.</div>
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
             projectHelper.executeCommand(project, ["dot_clean", "./"]as String [])
-            ant.delete(dir: project.file("build"), verbose: true)
-            ant.delete(dir: project.file("bin"), verbose: true)
-            ant.delete(dir: project.file("documentation"), verbose: true)
+            ant.delete(dir: new File(project.rootDir,"build"), verbose: true)
+            ant.delete(dir: new File(project.rootDir,"bin"), verbose: true)
+            ant.delete(dir: new File(project.rootDir,"documentation"), verbose: true)
         }
         task.dependsOn(project.cleanConfiguration)
     }
