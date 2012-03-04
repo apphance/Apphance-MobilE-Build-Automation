@@ -12,12 +12,12 @@ apply from:'file:emma.gradle'
 group = 'com.apphance.ameba'
 artifactId = 'Ameba'
 
-task sourcesJar(type: Jar, dependsOn:classes) {
+task sourcesJar(type: Jar, dependsOn:classes, description: 'Prepares .jar file containing the source code of ameba') {
     classifier = 'sources'
     from sourceSets.main.allSource
 }
 
-task javadocJar(type: Jar, dependsOn:groovydoc) {
+task javadocJar(type: Jar, dependsOn:groovydoc, description: 'Prepares .jar file with documentation generated out of the code') {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
@@ -129,7 +129,7 @@ file('tmp').mkdirs()
 
 generatedFile = file('tmp/plugins_reference.html')
 
-task (buildPluginReference, dependsOn: ['testClasses','processTestResources'], type: JavaExec) {
+task (buildPluginReference, group: 'Ameba\'s documentation', dependsOn: ['testClasses','processTestResources'], type: JavaExec, description: 'Builds plugin description HTML file') {
     outputFile = file('tmp/buildDocumentation.out')
     main = 'com.apphance.ameba.documentation.AmebaPluginReferenceBuilder'
     classpath = sourceSets.test.runtimeClasspath

@@ -14,7 +14,7 @@ dependencies {
     groovy localGroovy()
 }
 
-task ask << {
+task ask (group: 'Ameba\'s documentation', description: 'Asks for user/password in case not specified as username/password properties') << {
     def console = System.console()
     if (console) {
         if (!project.hasProperty('username')) {
@@ -32,7 +32,7 @@ Properties props = new Properties()
 props.load(file('../gradle.properties').newInputStream())
 def version = properties.get('version')
 
-task sendPluginReference << {
+task sendPluginReference(group: 'Ameba\'s documentation', description: 'Send plugin reference to Ameba\'s sites') << {
     javaexec {
         workingDir = getRootDir()
         main = 'com.apphance.ameba.documentation.sites.AmebaPluginReferenceSender'
@@ -42,7 +42,7 @@ task sendPluginReference << {
 }
 project.sendPluginReference.dependsOn(project.classes, project.ask)
 
-task downloadPages << {
+task downloadPages(group: 'Ameba\'s documentation', description: 'Downloads all pages from Ameba\'s sites and prepares .zip file with the documentation') << {
     javaexec {
         workingDir = getRootDir()
         main = 'com.apphance.ameba.documentation.sites.AmebaSiteRetrieval'
@@ -55,7 +55,7 @@ task downloadPages << {
 }
 project.downloadPages.dependsOn(project.classes, project.ask)
 
-task sendZipDocumentation << {
+task sendZipDocumentation (group: 'Ameba\'s documentation', description: 'Sends .prepared zip file to Ameba\'s sites') << {
     javaexec {
         workingDir = getRootDir()
         main = 'com.apphance.ameba.documentation.sites.AmebaFileUploader'
