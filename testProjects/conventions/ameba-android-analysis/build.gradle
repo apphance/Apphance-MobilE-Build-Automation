@@ -13,6 +13,5 @@ apply plugin: 'ameba-android-build'
 apply plugin: 'ameba-android-analysis'
 
 androidAnalysis {
-    buildAnalysisDirectory = 'build/analysis2'
-    configAnalysisDirectory = 'config/analysis2'
+    baseAnalysisConfigUrl = 'https://github.com/apphance/Apphance-MobilE-Build-Automation/tree/master/src/main/resources/com/apphance/ameba/android/plugins/analysis'
 }

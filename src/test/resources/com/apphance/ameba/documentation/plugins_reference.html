@@ -11,7 +11,7 @@ Plugin reference for Ameba, version ${version}.
 <% separator = "" %>
 <% amebaDocumentation.groupNames.each { groupName -> %>
     <% group = amebaDocumentation.groups[groupName] %>
-    ${separator}<a href="#${groupName}">${groupName}</a><br>
+    ${separator}<a href="#${groupName}">${groupName}</a><br><br>
     <% group.pluginNames.each { pluginName -> %>
         <% plugin = group.plugins[pluginName] %>
         &nbsp; &nbsp; &nbsp;<a href="#${plugin.name}">${plugin.niceName}</a><br>
@@ -23,13 +23,13 @@ Plugin reference for Ameba, version ${version}.
 <% amebaDocumentation.groupNames.each { groupName -> %>
     <% group = amebaDocumentation.groups[groupName] %>
     <div><hr></div>
-    <div><a name="${groupName}"></a><h2 style="text-align: center;">${groupName}</h2><div>
+    <div><a name="${groupName}"></a><h2 style="color:#973800;border-bottom:solid 1px #aaa"><font size="5">${groupName}</font></h2><div>
     <% group.pluginNames.each { pluginName -> %>
         <% plugin = group.plugins[pluginName] %>
         <div><hr></div>
-        <a name="${plugin.name}"></a><h3><font size="5">${plugin.niceName}</font></h3>
+        <a name="${plugin.name}"></a><h3 style="border-bottom:dotted 1px #aaa"><font size="4">${plugin.niceName}</font></h3>
             <div><br></div>
-            <div>Name: <b>${plugin.name}</b><br></div>
+            <div>Name: <span style="color:#bd4401;font-weight:bold">${plugin.name}</span></div>
             <div><br></div>
             ${plugin.description}
             <h4>Tasks</h4>
