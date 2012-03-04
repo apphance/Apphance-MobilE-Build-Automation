@@ -154,11 +154,36 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testAnalysis() {
+        File baseDir = new File("testProjects/android/build/analysis/")
         runGradle('updateProject' ,'analysis')
-        assertTrue(new File("testProjects/android/build/analysis/checkstyle-report.xml").exists())
-        assertTrue(new File("testProjects/android/build/analysis/cpd-result.xml").exists())
-        assertTrue(new File("testProjects/android/build/analysis/findbugs-result.xml").exists())
-        assertTrue(new File("testProjects/android/build/analysis/pmd-result.xml").exists())
+        assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
+        assertTrue(new File(baseDir, "cpd-result.xml").exists())
+        assertTrue(new File(baseDir, "findbugs-result.xml").exists())
+        assertTrue(new File(baseDir, "pmd-result.xml").exists())
+    }
+
+    private assertConfigSameAsBuild(String fileName) {
+        File baseDir = new File("testProjects/android-novariants/build/analysis/")
+        File resourceDir = new File("src/main/resources/com/apphance/ameba/android/plugins/analysis/")
+        File configBaseDir = new File("testProjects/android-novariants/config/analysis/")
+        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
+        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
+    }
+
+    @Test
+    void testAnalysisFromConfig() {
+        File baseDir = new File("testProjects/android-novariants/build/analysis/")
+        File configBaseDir = new File("testProjects/android-novariants/config/analysis/")
+        runGradleNoVariants('updateProject' ,'analysis')
+        assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
+        assertTrue(new File(baseDir, "cpd-result.xml").exists())
+        assertTrue(new File(baseDir, "findbugs-result.xml").exists())
+        assertConfigSameAsBuild("checkstyle-local-suppressions.xml")
+        assertConfigSameAsBuild("checkstyle-suppressions.xml")
+        assertConfigSameAsBuild("checkstyle-local-suppressions.xml")
+        assertConfigSameAsBuild("checkstyle.xml")
+        assertConfigSameAsBuild("findbugs-exclude.xml")
+        assertConfigSameAsBuild("pmd-rules.xml")
     }
 
     @Test
