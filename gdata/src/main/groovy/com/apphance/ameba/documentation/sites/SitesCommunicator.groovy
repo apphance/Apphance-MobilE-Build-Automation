@@ -16,6 +16,7 @@ import com.google.gdata.data.sites.ContentEntry
 import com.google.gdata.data.sites.ContentFeed
 import com.google.gdata.data.sites.FileCabinetPageEntry
 import com.google.gdata.data.sites.SitesLink
+import com.google.gdata.data.sites.WebPageEntry;
 import com.google.gdata.util.ServiceException
 
 class SitesCommunicator {
@@ -45,9 +46,13 @@ class SitesCommunicator {
     public ContentEntry retrievePluginReferencePage() {
         println "Retrieving plugin reference page"
         ContentQuery query = new ContentQuery(new URL(CONTENT_URL));
-        query.setPath('/introduction/plugin-reference')
+        query.setPath('/introduction/plugin-reference/')
         ContentFeed contentFeed = service.getFeed(query, ContentFeed.class)
-        ContentEntry page = contentFeed.getEntries(ContentEntry.class).get(0)
+        def entries  = contentFeed.getEntries()
+        entries.each {
+            println it.title.text
+        }
+        ContentEntry page = entries.get(0)
         return page
     }
 
@@ -56,8 +61,7 @@ class SitesCommunicator {
 
         ContentFeed contentFeed = service.getFeed(new URL(CONTENT_URL + '?kind=filecabinet'),
              ContentFeed.class);
-        FileCabinetPageEntry page = contentFeed.getEntries(FileCabinetPageEntry.class).get(0);
-
+        FileCabinetPageEntry page = contentFeed.getEntries().get(0);
         return page
     }
 

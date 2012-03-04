@@ -24,21 +24,6 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
 
     static Logger logger = Logging.getLogger(AndroidJarLibraryPlugin.class)
 
-    static public final String DESCRIPTION ="""
-    <div>
-    <div>This is the plugin that makes up Android's inability to prepare standalone .jar libraries.</div>
-    <div><br></div>
-    <div>Currently (android sdk v16 as of this writing) android has no features yet to provide
-libraries as standalone .jar files. The feature is being worked on, but temporarily
-the jarlibrary plugin provides capability of building such jar library. It embeds
-resources of Android project (from res directory) to standard java/jar resource - with specified prefix.
-This is not a perfect solution (for example you cannot process layouts this way - only the
-images) but it will do for a moment. This is how Apphance service library is prepared.</div>
-    <div><br></div>
-    </div>
-    """
-
-
     ProjectHelper projectHelper
     ProjectConfiguration conf
     AndroidManifestHelper manifestHelper
@@ -110,4 +95,16 @@ images) but it will do for a moment. This is how Apphance service library is pre
         }
         task.dependsOn(project.readAndroidProjectConfiguration)
     }
+
+    static public final String DESCRIPTION =
+"""This is the plugin that makes up Android's inability to prepare standalone .jar libraries.
+
+Currently (android sdk v16 as of this writing) android has no features yet to provide
+libraries as standalone .jar files. The feature is being worked on, but temporarily
+the jarlibrary plugin provides capability of building such jar library. It embeds
+resources of Android project (from res directory) to standard java/jar resource - with specified prefix.
+This is not a perfect solution (for example you cannot process layouts this way - only the
+images) but it will do for a moment. This is how Apphance service library is prepared.
+"""
+
 }

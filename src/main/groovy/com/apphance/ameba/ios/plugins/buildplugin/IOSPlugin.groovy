@@ -30,18 +30,6 @@ class IOSPlugin implements Plugin<Project> {
     static final String IOS_CONFIGURATION_LOCAL_PROPERTY = 'ios.configuration'
     static final String IOS_TARGET_LOCAL_PROPERTY = 'ios.target'
 
-    static public final String DESCRIPTION ="""
-    <div>
-    <div>This is the main iOS build plugin.</div>
-    <div><br></div>
-    <div>The plugin provides all the task needed to build iOS application.
-Besides tasks explained below, the plugin prepares build-*
-tasks which are dynamically created based on targets and configurations available.
-There is one task available per each Target-Configuration combination - unless particular
-combination is excluded by appropriate property.</div>
-    </div>
-    """
-
     static Logger logger = Logging.getLogger(IOSPlugin.class)
 
     String pListFileName
@@ -377,4 +365,14 @@ combination is excluded by appropriate property.</div>
         }
         return result
     }
+
+static public final String DESCRIPTION =
+"""This is the main iOS build plugin.
+
+The plugin provides all the task needed to build iOS application.
+Besides tasks explained below, the plugin prepares build-*
+tasks which are dynamically created, based on targets and configurations available.
+There is one task available per each Target-Configuration combination - unless particular
+combination is excluded by the exclude property."""
+
 }

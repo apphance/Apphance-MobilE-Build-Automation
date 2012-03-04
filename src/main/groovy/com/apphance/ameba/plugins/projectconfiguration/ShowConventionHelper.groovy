@@ -54,8 +54,10 @@ class ShowConventionHelper {
         def clazz = pluginConventionObject.class
         sb << "// Conventions for ${pluginName} plugin" << '\n'
         try {
-            def conventionDescription =  clazz.getField('DESCRIPTION').get(null)
-            sb << "// ${conventionDescription}" << '\n'
+            def conventionDescription =  clazz.getField('DESCRIPTION').get(null).split('\n')
+            conventionDescription.each {
+                sb << "// ${it}" << '\n'
+            }
         } catch (NoSuchFieldException e) {
             // skip description ....
         }

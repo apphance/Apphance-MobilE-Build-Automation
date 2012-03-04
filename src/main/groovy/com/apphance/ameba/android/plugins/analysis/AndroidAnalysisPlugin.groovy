@@ -16,7 +16,7 @@ import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin;
 
 class AndroidAnalysisPlugin implements Plugin<Project>{
 
-            static final String FINDBUGS_HOME_DIR_PROPERTY = 'findbugs.home.dir'
+    static final String FINDBUGS_HOME_DIR_PROPERTY = 'findbugs.home.dir'
 
     static final String FINDBUGS_DEFAULT_HOME = '/var/lib/analysis/findbugs'
 
@@ -52,12 +52,12 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
             pmdFile << pmdXml.getContent()
             project.ant {
                 taskdef(name:'pmd', classname:'net.sourceforge.pmd.ant.PMDTask',
-                        classpath: project.configurations.pmdConf.asPath)
+                                classpath: project.configurations.pmdConf.asPath)
                 pmd(shortFilenames:'false', failonruleviolation:'false',
-                        rulesetfiles:"build/analysis/pmd-rules.xml") {
-                            formatter(type:'xml', toFile:"build/analysis/pmd-result.xml")
-                            fileset(dir: 'src') { include(name: '**/*.java') }
-                        }
+                                rulesetfiles:"build/analysis/pmd-rules.xml") {
+                                    formatter(type:'xml', toFile:"build/analysis/pmd-result.xml")
+                                    fileset(dir: 'src') { include(name: '**/*.java') }
+                                }
             }
         }
     }
@@ -69,11 +69,11 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
         task << {
             project.ant {
                 taskdef(name:'cpd', classname:'net.sourceforge.pmd.cpd.CPDTask',
-                        classpath: project.configurations.pmdConf.asPath)
+                                classpath: project.configurations.pmdConf.asPath)
                 cpd(minimumTokenCount:'100', format: 'xml', encoding: 'UTF-8',
-                        outputFile:"build/analysis/cpd-result.xml") {
-                            fileset(dir: 'src', includes: '**/*.java')
-                        }
+                                outputFile:"build/analysis/cpd-result.xml") {
+                                    fileset(dir: 'src', includes: '**/*.java')
+                                }
             }
         }
     }
@@ -123,14 +123,14 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
             }
             project.ant {
                 taskdef(name:'findbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask',
-                        classpath: project.configurations.findbugsConf.asPath)
+                                classpath: project.configurations.findbugsConf.asPath)
                 findbugs(home: findbugsHomeDir.absolutePath,
-                        output:'xml', outputFile:"build/analysis/findbugs-result.xml",
-                        excludefilter:"build/analysis/findbugs-exclude.xml") {
-                            sourcePath(path: 'src')
-                            "class"(location:'bin/classes')
-                            auxclassPath(path: androidConf.allJarsAsPath)
-                        }
+                                output:'xml', outputFile:"build/analysis/findbugs-result.xml",
+                                excludefilter:"build/analysis/findbugs-exclude.xml") {
+                                    sourcePath(path: 'src')
+                                    "class"(location:'bin/classes')
+                                    auxclassPath(path: androidConf.allJarsAsPath)
+                                }
             }
         }
         task.dependsOn(project.classes)
@@ -162,15 +162,15 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
             }
             project.ant {
                 taskdef(resource:'checkstyletask.properties',
-                        classpath: project.configurations.checkstyleConf.asPath)
+                                classpath: project.configurations.checkstyleConf.asPath)
                 checkstyle(config: "build/analysis/checkstyle.xml",
-                        failOnViolation: false) {
-                            formatter(type: 'xml', tofile:"build/analysis/checkstyle-report.xml")
-                            classpath(path: 'bin/classes')
-                            classpath(path: project.configurations.checkstyleConf.asPath)
-                            classpath(path: androidConf.allJarsAsPath)
-                            fileset(dir: 'src', includes: '**/*.java')
-                        }
+                                failOnViolation: false) {
+                                    formatter(type: 'xml', tofile:"build/analysis/checkstyle-report.xml")
+                                    classpath(path: 'bin/classes')
+                                    classpath(path: project.configurations.checkstyleConf.asPath)
+                                    classpath(path: androidConf.allJarsAsPath)
+                                    fileset(dir: 'src', includes: '**/*.java')
+                                }
             }
         }
         task.dependsOn(project.classes)
@@ -190,9 +190,11 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
     }
 
     static class AndroidAnalysisConvention {
-        static public final String DESCRIPTION ="""The convention provide base URL where analysis configuration files are placed.
-The configuration files can be either internal (no configuration needed) or taken from local configuration directory (config/analysis)
-or retrieved using base URL specified"""
+        static public final String DESCRIPTION =
+"""The convention provide base URL where analysis configuration files are placed.
+The configuration files can be either internal (no configuration needed)
+or taken from local configuration directory (config/analysis)
+or retrieved using base URL specified."""
         def String baseAnalysisConfigUrl = null
 
         def androidAnalysis(Closure close) {
@@ -201,37 +203,37 @@ or retrieved using base URL specified"""
         }
     }
 
-    static public final String DESCRIPTION ="""
-        <div>
-        <div>This plugin provides capability of running basic static code analysis on android.</div>
-        <div><br></div>
-        <div>It provides analysis task, that executes checkstyle, findbugs, pmd tasks (soon also lint).
-    Note that the findbugs plugin requires findbugs to be installed and it's home has to be configured.
-    By default the home of findbugs is in '${FINDBUGS_DEFAULT_HOME}' but it can be configured by specifying gradle's property: ${FINDBUGS_HOME_DIR_PROPERTY}.
-    The Easiest way it is to add it in gradle.properties or specified in organisation-specific conventions:
-    <code>
-    this['${FINDBUGS_HOME_DIR_PROPERTY}'] = 'SPECIFY HOME DIRECTORY'
-    </code>
-    </div>
-        <div>Configuration files for all analysis taks are retrieved from internal configuration.
-    The configuration files can elso be present in local config directory in the project (for project-specific configuration)
-    They can also be downloaded remotely using http if specified in convention - this is for organisation-wide setup for many projects.
-    The convention or local config files (if present) take precedence over the internal configuration, however if specific
-    configuration file  cannot be founde
-    The structure of the directory/URL is as follows:
-    <code>
-    [config/analysis] directory or base URL
-    |
-    +---+- checkstyle.xml                      : main checkstule configuration
-        +- checkstyle-suppressions.xml         : suppressions from checkstyle can be specified in this file
-        +- checkstyle-local-suppressions.xml   : additional local suppressions can be specified in this file
-        +- findbugs-exclude.xml                : findbugs exclude configuration is specified here
-        +- pmd-rules.xml                       : pmd rules are specified here
-    </code>
+    static public final String DESCRIPTION =
+"""This plugin provides capability of running basic static code analysis on android.
 
-    Example of configuration files that can be used as starting point for your local/project configuration
-    can be found <a href="https://github.com/apphance/Apphance-MobilE-Build-Automation/tree/master/src/main/resources/com/apphance/ameba/android/plugins/analysis">here</a>
-        </div>
-        """
+It provides analysis task, that executes checkstyle, findbugs, pmd tasks (soon also lint).
 
+Note that the findbugs plugin requires findbugs to be installed and it's home has to be configured.
+By default the home of findbugs is in '${FINDBUGS_DEFAULT_HOME}' but it can be configured
+by specifying gradle's property: ${FINDBUGS_HOME_DIR_PROPERTY}.
+
+The Easiest way it is to add it in gradle.properties or specified in organisation-specific conventions:
+<code>
+this['${FINDBUGS_HOME_DIR_PROPERTY}'] = 'SPECIFY HOME DIRECTORY'
+</code>
+
+Configuration files for all analysis taks are retrieved from internal configuration.
+The configuration files can also be present in local config directory in the project (for project-specific configuration)
+They can also be downloaded remotely using http if specified in convention - this is for organisation-wide setup for many projects.
+The convention or local config files (if present) take precedence over the internal configuration, however if specific
+configuration file cannot be found, the internal version is used.
+
+The structure of the directory/URL is as follows:
+<code>
+[config/analysis] directory or base URL
++---+- checkstyle.xml : main checkstyle configuration
+    +- checkstyle-suppressions.xml : suppressions from checkstyle
+    +- checkstyle-local-suppressions.xml : additional local suppressions
+    +- findbugs-exclude.xml : findbugs excludes configuration
+    +- pmd-rules.xml : pmd rules
+</code>
+Example of configuration files that can be used as starting point for your local/project configuration
+can be found
+<a href="https://github.com/apphance/Apphance-MobilE-Build-Automation/tree/master/src/main/resources/com/apphance/ameba/android/plugins/analysis">here</a>
+"""
 }

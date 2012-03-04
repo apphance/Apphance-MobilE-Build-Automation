@@ -17,13 +17,6 @@ class MercurialPlugin extends AbstractVCSPlugin {
     static Logger logger = Logging.getLogger(MercurialPlugin.class)
 
     ProjectHelper projectHelper = new ProjectHelper()
-    static public final String DESCRIPTION ="""
-    <div>
-    <div>This is the VCS (version control system) plugin which supports mercurial VCS.</div>
-    <div><br></div>
-    <div>The plugin should be applied before the main build plugin.</div>
-    </div>
-    """
 
     @Override
     public void apply(Project project) {
@@ -96,4 +89,11 @@ class MercurialPlugin extends AbstractVCSPlugin {
     def String [] getVCSExcludes(Project project) {
         return ["**/.hg/**", "**/.hg*/**"]as String[]
     }
+
+    static public final String DESCRIPTION =
+"""This is the VCS (version control system) plugin which supports mercurial VCS.
+
+The plugin should be applied before the main build plugin.
+"""
+
 }

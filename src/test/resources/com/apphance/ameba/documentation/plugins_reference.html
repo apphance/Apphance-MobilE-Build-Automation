@@ -22,11 +22,9 @@ Plugin reference for Ameba, version ${version}.
 <br>
 <% amebaDocumentation.groupNames.each { groupName -> %>
     <% group = amebaDocumentation.groups[groupName] %>
-    <div><hr></div>
     <div><a name="${groupName}"></a><h2 style="color:#973800;border-bottom:solid 1px #aaa"><font size="5">${groupName}</font></h2><div>
     <% group.pluginNames.each { pluginName -> %>
         <% plugin = group.plugins[pluginName] %>
-        <div><hr></div>
         <a name="${plugin.name}"></a><h3 style="border-bottom:dotted 1px #aaa"><font size="4">${plugin.niceName}</font></h3>
             <div><br></div>
             <div>Name: <span style="color:#bd4401;font-weight:bold">${plugin.name}</span></div>
@@ -44,29 +42,16 @@ Plugin reference for Ameba, version ${version}.
                     <% } %>
                 </ul>
             </div>
-            <% if (!plugin.props.empty) { %>
+            <% if (plugin.props != null) { %>
                 <h4>Properties</h4>
-                   <div class="sites-codeblock sites-codesnippet-block">
-                      <div>
-                         <% plugin.props.each { line -> %>
-                            <% def comment = line.startsWith('#') %>
-                            <% if (comment) { %>
-                                <div style="font-family:courier new,monospace"><code><font color="#e69138">${line}</font></code></div>
-                            <% } else { %>
-                                <div style="font-family:courier new,monospace"><code><font color="#6aa84f">${line}</font></code></div>
-                            <% } %>
-                         <% } %>
-                      </div>
-                   </div>
+                ${plugin.props}
             <% } %>
-            <h4>Example</h4>
-            <div class="sites-codeblock sites-codesnippet-block">
-               <div>
-                  <% plugin.example.each { line -> %>
-                      <div style="font-family:courier new,monospace"><code><font color="#6aa84f">${line}</font></code></div>
-                  <% } %>
-               </div>
-            </div>
+            <h4>Example build.gradle</h4>
+            ${plugin.example}
+            <% if (plugin.conventions != null)  { %>
+                <h4>Conventions</h4>
+                ${plugin.conventions}
+            <% } %>
             <div><br></div>
      <% } %>
 <% } %>

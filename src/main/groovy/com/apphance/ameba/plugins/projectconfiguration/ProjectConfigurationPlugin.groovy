@@ -22,18 +22,6 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
 
     static Logger logger = Logging.getLogger(ProjectConfigurationPlugin.class)
 
-    static public final String DESCRIPTION ="""
-<div>
-<div>This is the base plugin which should be applied by any project.</div>
-<div><br></div>
-<div>The plugin should be applied before any other plugin. It reads basic project configuration and loads shared
-configuration for all other plugins. Other plugins use this plugin's generated task.</div>
-<div>This plugin provides also setup-related tasks. The tasks allow to generate new configuration,
-verify existing configurationa and show the configuration to the user.
-It also adds several utility tasks that can be used across all types of projects.&nbsp;</div>
-</div>
-"""
-
     static final String PROJECT_NAME_PROPERTY = 'project.name'
 
     ProjectHelper projectHelper
@@ -142,4 +130,16 @@ It also adds several utility tasks that can be used across all types of projects
         }
         task.dependsOn(project.readProjectConfiguration)
     }
+
+    static public final String DESCRIPTION =
+"""This is the base plugin which should be applied by any project.
+
+The plugin should be applied before any other plugin. It reads basic project configuration and loads shared
+configuration for all other plugins. Other plugins use this plugin's generated task.
+
+This plugin provides also setup-related tasks. The tasks allow to generate new configuration,
+verify existing configurationa and show the configuration to the user.
+It also adds several utility tasks that can be used across all types of projects.
+"""
+
 }

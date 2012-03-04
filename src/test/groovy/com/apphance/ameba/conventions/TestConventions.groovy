@@ -12,28 +12,17 @@ import org.gradle.tooling.model.GradleProject;
 import org.junit.Test;
 
 class TestConventions {
-
-    private static File documentationBase = new File("testProjects/documentation")
     private static File conventionsBase = new File("testProjects/conventions")
-    private getProjectConnectionAndModel(File baseFolder, String dirName) {
-        def projectDir = new File(baseFolder, "${dirName}")
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(projectDir).connect()
-        return [connection, connection.getModel(GradleProject.class)]
-    }
 
-    private getAllProjectsAndModels(String dirName) {
-        def documentationConnection, documentationProject, conventionsConnection, conventionsProject
-        (documentationConnection, documentationProject) = getProjectConnectionAndModel(documentationBase, dirName)
-        (conventionsConnection, conventionsProject) = getProjectConnectionAndModel(conventionsBase, dirName)
-        return [documentationConnection, documentationProject, conventionsConnection, conventionsProject]
+    private ProjectConnection getProjectConnection(File baseFolder, String dirName) {
+        def projectDir = new File(baseFolder, dirName)
+        return  GradleConnector.newConnector().forProjectDirectory(projectDir).connect()
     }
 
     @Test
     public void testAndroidAnalysisConvention() throws Exception {
-        def documentationConnection, documentationProject, conventionsConnection, conventionsProject
-        (documentationConnection, documentationProject, conventionsConnection, conventionsProject) =
-            getAllProjectsAndModels("ameba-android-analysis")
-         BuildLauncher bl = documentationConnection.newBuild().forTasks('showConventionAndroidAnalysis');
+         ProjectConnection connection = getProjectConnection("ameba-android-analysis")
+         BuildLauncher bl = connection.newBuild().forTasks('showConventionAndroidAnalysis');
          ByteArrayOutputStream baos = new ByteArrayOutputStream()
          bl.setStandardOutput(baos)
          bl.run()

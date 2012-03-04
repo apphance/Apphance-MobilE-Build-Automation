@@ -18,15 +18,6 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 
 class KIFPlugin implements Plugin<Project> {
 
-    static public final String DESCRIPTION ="""
-    <div>
-    <div>This plugins provides functionality of KIF integration testing for iOS.</div>
-    <div><br></div>
-    <div>More description is needed.</div>
-    <div><br></div>
-    </div>
-    """
-
     static final String AMEBA_IOS_KIF = 'Ameba iOS KIF'
 
     static final String IPHONESIMULATOR = 'iphonesimulator'
@@ -211,4 +202,15 @@ class KIFPlugin implements Plugin<Project> {
         }
         task.dependsOn(project.buildKIFRelease)
     }
+
+    static public final String DESCRIPTION =
+"""This plugins provides functionality of KIF integration testing for iOS.
+
+It executes all tests which are build using KIF test framework.
+
+More description needed ....
+
+"""
+
+
 }

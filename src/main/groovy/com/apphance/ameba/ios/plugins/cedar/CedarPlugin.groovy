@@ -16,16 +16,6 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 
 class CedarPlugin implements Plugin<Project> {
 
-    static public final String DESCRIPTION ="""
-    <div>
-    <div>This plugins provides functionality of Cedar integration testing for iOS.</div>
-    <div><br></div>
-    <div>More description is needed.</div>
-    <div><br></div>
-    </div>
-    """
-
-
     static final String AMEBA_IOS_CEDAR = 'Ameba iOS Cedar'
 
     String IPHONE_SIMULATOR_SDK = "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/"
@@ -141,4 +131,16 @@ return RESULT
     File getCedarTemplate(String family) {
         return new File(conf.tmpDirectory, "cedar/${family}/${family}_template.zip")
     }
+
+    static public final String DESCRIPTION =
+"""This plugins provides functionality of Cedar integration testing for iOS.
+
+It executes all tests which are build using Cedar test framework.
+
+More description needed ....
+
+"""
+
+
+
 }

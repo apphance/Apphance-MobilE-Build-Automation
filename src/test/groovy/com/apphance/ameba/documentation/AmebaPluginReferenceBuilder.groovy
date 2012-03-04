@@ -4,17 +4,15 @@ package com.apphance.ameba.documentation
 import groovy.text.SimpleTemplateEngine
 import groovy.xml.MarkupBuilder
 
-import java.io.File;
-import java.util.List;
+import java.io.File
+import java.util.List
 
-import org.gradle.api.DefaultTask
-import org.gradle.api.Plugin
-import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
-import org.gradle.tooling.model.GradleProject;
+import org.gradle.tooling.model.GradleProject
 
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.buildplugin.AndroidProjectProperty
@@ -86,38 +84,73 @@ class AmebaPluginReferenceBuilder {
         return projectBuilder.build()
     }
 
-    private List<String> getExample(File templateDir, File projectDir) {
-        def list = []
+    private addHeaderFromTemplate(File templateDir, list) {
         boolean enabled = true
         new File(templateDir,'build.gradle').text.split ('\n').each {
             if (it.trim().startsWith('apply')) {
                 enabled = false
             }
-            if (enabled && ! it.trim().empty) {
-                if (it.empty) {
-                    list << '<br>'
-                } else {
-                    list << it.replaceAll(' ', '&nbsp;')
-                }
+            if (enabled) {
+                list << it
             }
         }
+    }
+
+    private List addAppliesFromProjectDir(File projectDir, List list) {
+        boolean enabled = false
         new File(projectDir,'build.gradle').text.split ('\n').each {
             if (it.trim().startsWith('apply')) {
                 enabled = true
             }
-            if (enabled && ! it.trim().empty) {
-                if (it.empty) {
-                    list << '<br>'
-                } else {
-                    list << it.replaceAll(' ', '&nbsp;')
-                }
+            if (enabled) {
+                list << it
             }
         }
+    }
+
+    private List<String> getExample(File templateDir, File projectDir) {
+        def list = []
+        addHeaderFromTemplate(templateDir, list)
+        addAppliesFromProjectDir(projectDir, list)
         return list
     }
 
-    private void addAmebaDocumentation(String groupName, String pluginName, property = null) {
+    private List addAppliesFromOutput(String output, List list) {
+        boolean enabled = false
+        output.split ('\n').each {
+            if (it.trim().startsWith('//')) {
+                enabled = true
+            }
+            if (it.trim().empty) {
+                enabled = false
+            }
+            if (enabled) {
+                list << it
+            }
+        }
+    }
+
+    private List<String> getConventions(File templateDir, String output) {
+        def list = []
+        addHeaderFromTemplate(templateDir, list)
+        addAppliesFromOutput(output, list)
+        return list
+    }
+
+    private String runShowConvention(File conventionsDir, String conventionName) {
+        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(conventionsDir).connect()
+        String upperCaseStartingConventionName = conventionName.replaceAll('^.') { it.toUpperCase() }
+        BuildLauncher bl = connection.newBuild().forTasks("showConvention${upperCaseStartingConventionName}");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream()
+        bl.setStandardOutput(baos)
+        bl.run()
+        String output = baos.toString('utf-8')
+        return output
+     }
+
+    private void addAmebaDocumentation(String groupName, String pluginName, property = null, String conventionName = null) {
         def projectDir = new File("testProjects/documentation/${pluginName}")
+        def conventionsDir = new File("testProjects/conventions/${pluginName}")
         def templateDir = new File("templates/android")
         Project project = getProject(projectDir)
         ProjectConnection connection
@@ -128,8 +161,13 @@ class AmebaPluginReferenceBuilder {
             PluginDocumentation plugin = new PluginDocumentation()
             plugin.clazz = getPluginClass(pluginName)
             plugin.name = pluginName
-            plugin.description = plugin.clazz.getField('DESCRIPTION').get(null)
-            plugin.example = getExample(templateDir, projectDir)
+            String description = plugin.clazz.getField('DESCRIPTION').get(null)
+            plugin.description = AmebaDocumentationHelper.getHtmlTextFromDescription(description)
+            plugin.example = AmebaDocumentationHelper.getBlockTextWithComments(getExample(templateDir, projectDir))
+            if (conventionName != null) {
+                String output = runShowConvention(conventionsDir, conventionName)
+                plugin.conventions = AmebaDocumentationHelper.getBlockTextWithComments(getConventions(templateDir, output))
+            }
             group.plugins.put(pluginName, plugin)
             group.pluginNames << pluginName
             gradleProject.tasks.each { task ->
@@ -139,8 +177,7 @@ class AmebaPluginReferenceBuilder {
                 }
             }
             if (property != null) {
-                MarkupBuilder mb = new MarkupBuilder()
-                plugin.props = PropertyCategory.listProperties(project, property, true).collect {mb.escapeXmlValue(it, false)}
+                plugin.props = AmebaDocumentationHelper.getBlockTextWithComments(PropertyCategory.listProperties(project, property, true))
             }
         } finally {
             connection.close()
@@ -181,7 +218,7 @@ class AmebaPluginReferenceBuilder {
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-build', AndroidProjectProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-build', IOSProjectProperty.class)
         addAmebaDocumentation(COMMON_TASKS, 'ameba-project-release', ProjectReleaseProperty.class)
-        addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-analysis')
+        addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-analysis', null, 'androidAnalysis')
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-apphance')
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-jarlibrary', AndroidJarLibraryProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-release')
@@ -193,7 +230,6 @@ class AmebaPluginReferenceBuilder {
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-ocunit')
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-release')
         generateDocumentation()
-        println amebaDocumentation
     }
 
 

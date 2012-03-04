@@ -23,7 +23,7 @@ class AmebaFileUploader {
         sitesCommunicator.createService()
         sitesCommunicator.loggingIn()
         FileCabinetPageEntry page = sitesCommunicator.retrieveDownloadPage()
-        sitesCommunicator.uploadAttachment(zipFile, page, "Documentation", "Documentation: ${zipFile}")
+        //sitesCommunicator.uploadAttachment(zipFile, page, "Documentation", "Documentation: ${zipFile}")
     }
 
 

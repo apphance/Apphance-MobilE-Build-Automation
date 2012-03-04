@@ -27,17 +27,6 @@ import com.sun.org.apache.xpath.internal.XPathAPI
 class AndroidTestPlugin implements Plugin<Project>{
     static Logger logger = Logging.getLogger(AndroidTestPlugin.class)
 
-    static public final String DESCRIPTION ="""
-    <div>
-    <div>This plugin provides easy automated testing framework for Android applications</div>
-    <div><br></div>
-    <div>It has support for two level of tests: integration testing done usually with the
-help of roboguice and standard android emulator-based testing, unit testing done with
-help of robolectric.</div>
-    <div><br></div>
-    </div>
-    """
-
     private static final String TEST_RUNNER = "pl.polidea.instrumentation.PolideaInstrumentationTestRunner"
     private static final String AVD_PATH = 'avds'
     private static final int MAX_EMULATOR_STARTUP_TIME = 360 * 1000
@@ -185,13 +174,13 @@ help of robolectric.</div>
         task << {
             use (PropertyCategory) {
                 boolean emulatorExists = projectHelper.executeCommand(
-                        project,
-                        project.rootDir,[
-                            'android',
-                            'list',
-                            'avd',
-                            '-c'
-                        ]).any { it == emulatorName }
+                                project,
+                                project.rootDir,[
+                                    'android',
+                                    'list',
+                                    'avd',
+                                    '-c'
+                                ]).any { it == emulatorName }
                 if (!avdDir.exists() || !emulatorExists) {
                     avdDir.mkdirs()
                     logger.lifecycle("Creating emulator avd: ${emulatorName}")
@@ -451,7 +440,7 @@ help of robolectric.</div>
 
     void prepareCoverageReport(Project project) {
         project.ant.taskdef( resource:"emma_ant.properties",
-                classpath: project.configurations.emma.asPath)
+                        classpath: project.configurations.emma.asPath)
         project.ant.emma {
             report(sourcepath : "${project.rootDir}/src") {
                 fileset(dir : coverageDir) {
@@ -502,4 +491,11 @@ help of robolectric.</div>
         task << { startEmulator(project, true, false) }
         task.dependsOn(project.readAndroidProjectConfiguration)
     }
+
+    static public final String DESCRIPTION =
+    """This plugin provides easy automated testing framework for Android applications
+
+It has support for two level of tests: integration testing done usually with the
+help of robolectric."""
+
 }

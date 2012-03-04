@@ -21,7 +21,7 @@ task ask (group: 'Ameba\'s documentation', description: 'Asks for user/password 
             project['username'] = console.readLine('> Please enter your username: ')
         }
         if (!project.hasProperty('password')) {
-            project['password'] = console.readLine('> Please enter your password: ')
+            project['password'] = new String(console.readPassword('> Please enter your password: '))
         }
     } else {
         logger.error "Cannot get console."
@@ -37,7 +37,7 @@ task sendPluginReference(group: 'Ameba\'s documentation', description: 'Send plu
         workingDir = getRootDir()
         main = 'com.apphance.ameba.documentation.sites.AmebaPluginReferenceSender'
         classpath = sourceSets.main.runtimeClasspath
-        args project['username'], project['password'], file('../tmp/plugin_reference.html')
+        args project['username'], project['password'], file('../tmp/plugins_reference.html')
     }
 }
 project.sendPluginReference.dependsOn(project.classes, project.ask)

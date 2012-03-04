@@ -34,15 +34,6 @@ class ProjectReleasePlugin implements Plugin<Project> {
 
     static Logger logger = Logging.getLogger(ProjectReleasePlugin.class)
 
-    static public final String DESCRIPTION ="""
-    <div>
-    <div>This is Ameba release plugin.</div>
-    <div><br></div>
-    <div>The plugin provides all the basic tasks required to prepare OTA release of
-an application. It should be added after build plugin is added.</div>
-    </div>
-    """
-
     ProjectHelper projectHelper
     ProjectConfiguration conf
 
@@ -255,4 +246,12 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
         }
         task.dependsOn(project.readProjectConfiguration, project.prepareForRelease)
     }
+
+    static public final String DESCRIPTION =
+"""This is Ameba release plugin.
+
+The plugin provides all the basic tasks required to prepare OTA release of
+an application. It should be added after build plugin is added.
+"""
+
 }

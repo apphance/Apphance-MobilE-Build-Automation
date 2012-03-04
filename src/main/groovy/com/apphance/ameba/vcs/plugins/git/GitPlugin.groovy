@@ -17,13 +17,6 @@ import com.apphance.ameba.vcs.plugins.AbstractVCSPlugin;
 class GitPlugin extends AbstractVCSPlugin {
 
     static Logger logger = Logging.getLogger(GitPlugin.class)
-    static public final String DESCRIPTION ="""
-    <div>
-    <div>This is the VCS (version control system) plugin which supports git VCS.</div>
-    <div><br></div>
-    <div>The plugin should be applied before the main build plugin.</div>
-    </div>
-    """
 
     ProjectHelper projectHelper = new ProjectHelper()
 
@@ -129,4 +122,11 @@ class GitPlugin extends AbstractVCSPlugin {
     void prepareShowPropertiesTask(Project arg0) {
         // no properties to show
     }
+
+    static public final String DESCRIPTION =
+"""This is the VCS (version control system) plugin which supports git VCS.
+
+The plugin should be applied before the main build plugin.
+"""
+
 }

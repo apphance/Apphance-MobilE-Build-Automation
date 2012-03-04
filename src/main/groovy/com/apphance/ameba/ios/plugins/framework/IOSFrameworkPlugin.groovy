@@ -19,17 +19,6 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
 class IOSFrameworkPlugin implements Plugin<Project> {
     static Logger logger = Logging.getLogger(IOSFrameworkPlugin.class)
 
-    static public final String DESCRIPTION ="""
-    <div>
-    <div>This plugins provides functionality of building shared framework for IOS projects.</div>
-    <div><br></div>
-    <div>While iOS itself provides a number of frameworks (shared libraries) that
-can be used in various projects. It is undocumented feature of iOS that one can create own
-framework. This plugin closes the gap.</div>
-    <div><br></div>
-    </div>
-    """
-
     def void apply (Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
         project.task('buildFramework', type: IOSBuildFrameworkTask)
@@ -37,4 +26,14 @@ framework. This plugin closes the gap.</div>
         project.verifySetup.verifySetupOperations << new VerifyFrameworkSetupOperation()
         project.showSetup.showSetupOperations << new ShowFrameworkSetupOperation()
     }
+
+    static public final String DESCRIPTION =
+"""This plugins provides functionality of building shared framework for IOS projects.
+
+While iOS itself provides a number of frameworks (shared libraries) that
+can be used in various projects. It is undocumented feature of iOS that one can create own
+framework. This plugin closes the gap.
+"""
+
+
 }

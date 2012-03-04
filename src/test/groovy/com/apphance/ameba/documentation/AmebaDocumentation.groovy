@@ -7,9 +7,9 @@ class PluginDocumentation {
     String name
     String description
     Map<String,Task> tasks = [:]
-    List<String> props = []
-    List<String> conventions = []
-    List<String> example = []
+    String props = null
+    String example = null
+    String conventions  = null
 
     String getNiceName() {
         def words = name.split('-')

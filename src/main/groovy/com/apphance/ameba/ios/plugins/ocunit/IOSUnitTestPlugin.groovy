@@ -16,16 +16,6 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 
 class IOSUnitTestPlugin implements Plugin<Project> {
 
-    static public final String DESCRIPTION ="""
-    <div>
-    <div>This plugins provides functionality of built-in unit testing for iOS.</div>
-    <div><br></div>
-    <div>More description is needed.</div>
-    <div><br></div>
-    </div>
-    """
-
-
     static final String AMEBA_IOS_UNIT = 'Ameba iOS OCUnit tests'
 
     Logger logger = Logging.getLogger(IOSUnitTestPlugin.class)
@@ -83,4 +73,14 @@ class IOSUnitTestPlugin implements Plugin<Project> {
             close.run()
         }
     }
+
+    static public final String DESCRIPTION =
+"""This plugins provides functionality of standard ocunit testing for iOS.
+
+It executes all tests which are build using ocunit test framework.
+
+More description needed ....
+
+"""
+
 }
