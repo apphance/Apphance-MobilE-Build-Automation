@@ -18,9 +18,11 @@ class IOSPBXProjectHelperTest {
 	@Test
 	void addApphanceToProject() {
 		PbxProjectHelper helper = new PbxProjectHelper()
-		String s = helper.addApphanceToProject(new File("testProjects/ios/GradleXCode/"), "GradleXCode")
+		String s = helper.addApphanceToProject(new File("testProjects/ios/GradleXCode/"), "GradleXCode", "Debug")
 		File f = new File("newProject.pbxproj")
 		f.delete()
-		f << s
+		f.withWriter { writer ->
+			writer << s
+		}
 	}
 }

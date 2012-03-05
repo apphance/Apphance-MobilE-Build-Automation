@@ -24,11 +24,8 @@ class PbxProjectHelper {
 		}
 		def command = ["plutil", "-convert", "json", "-o", "-", "${projectFile}"]
 		Process proc = Runtime.getRuntime().exec((String[]) command.toArray())
-		proc.waitFor()
-		// get output
 		StringBuffer outBuff = new StringBuffer()
-		Thread t = proc.consumeProcessOutputStream(outBuff)
-		t.join()
+		proc.waitForProcessOutput(outBuff, null)
 		JsonSlurper slurper = new JsonSlurper()
 		return slurper.parseText(outBuff.toString())
 	}
@@ -37,29 +34,49 @@ class PbxProjectHelper {
 		return hash++
 	}
 
-	void addApphanceToFramework(Object frameworks) {
-		boolean foundApphance = false
+	void addFramework(Object frameworks, String name, String path, String group, String strongWeak) {
+		int apphanceFrameworkHash = nextHash()
+		int apphanceFileFrameworkHash = nextHash()
+		rootObject.objects.put(apphanceFrameworkHash.toString(), [isa : "PBXBuildFile", fileRef : apphanceFileFrameworkHash, settings : [ATTRIBUTES:[strongWeak,]]])
+		frameworks.files.add(apphanceFrameworkHash.toString())
+		rootObject.objects.put(apphanceFileFrameworkHash.toString(), [isa : "PBXFileReference", lastKnownFileType : "wrapper.framework", name : name, path : path, sourceTree : group ])
+
+		def mainGroup = getObject(getObject(rootObject.rootObject).mainGroup)
+		mainGroup.children.add(apphanceFileFrameworkHash.toString())
+	}
+
+	boolean findFramework(Object frameworks, String name) {
+		boolean foundFramework = false
 		frameworks.files.each { file ->
 			// find file reference in objects
 			def fileRef = getObject("${file}").fileRef
-			if (getObject("${fileRef}").name.toLowerCase().contains("apphance")) {
+			if (getObject("${fileRef}").name.toLowerCase().contains(name)) {
 				logger.lifecycle("Apphance already added")
 				// apphance already added
-				foundApphance = true
+				foundFramework = true
 				return
 			}
 		}
-		if (foundApphance) {
-			return
+		return foundFramework
+	}
+
+	void addApphanceToFramework(Object frameworks) {
+		def frameworksToAdd = [ ["name":"Apphance-iOS.framework", "path":"Apphance-iOS.framework", "group":"<group>", "searchName":"apphance", "strong":"Required"],
+								["name":"CoreLocation.framework", "path":"System/Library/Frameworks/CoreLocation.framework", "group":"SDKROOT", "searchName":"CoreLocation.framework", "strong":"Required"],
+								["name":"QuartzCore.framework", "path":"System/Library/Frameworks/QuartzCore.framework", "group":"SDKROOT", "searchName":"QuartzCore.framework", "strong":"Required"],
+								["name":"SystemConfiguration.framework", "path":"System/Library/Frameworks/SystemConfiguration.framework", "group":"SDKROOT", "searchName":"SystemConfiguration.framework", "strong":"Weak"],
+								["name":"CoreTelephony.framework", "path":"System/Library/Frameworks/CoreTelephony.framework", "group":"SDKROOT", "searchName":"CoreTelephony.framework", "strong":"Weak"],
+								["name":"AudioToolbox.framework", "path":"System/Library/Frameworks/AudioToolbox.framework", "group":"SDKROOT", "searchName":"AudioToolbox.framework", "strong":"Required"]]
+
+		frameworksToAdd.each { framework ->
+			if (findFramework(frameworks, framework["searchName"])) {
+				logger.lifecycle("Framework " + framework["searchName"] + " already in project")
+				return
+			}
+			logger.lifecycle("Framework " + framework["searchName"] + " not found in project")
+			addFramework(frameworks, framework["name"], framework["path"], framework["group"], framework["strong"])
 		}
-		logger.lifecycle("Apphance not found")
-		int apphanceFrameworkHash = nextHash()
-		int apphanceFileFrameworkHash = nextHash()
-		rootObject.objects.put(apphanceFrameworkHash.toString(), [isa : "PBXBuildFile", fileRef : apphanceFileFrameworkHash])
-		frameworks.files.add(apphanceFrameworkHash.toString())
-		rootObject.objects.put(apphanceFileFrameworkHash.toString(), [isa : PBXFileReference, lastKnownFileType : wrapper.framework, name : "Apphance-iOS.framework", path : "Apphance-iOS.framework", sourceTree : "<group>" ])
-		def mainGroup = getObject(project.mainGroup)
-		mainGroup.children.add(apphanceFileFrameworkHash.toString())
+
 	}
 
 	String printElementToString(Object node, int level) {
@@ -87,9 +104,6 @@ class PbxProjectHelper {
 		} else {
 			String nodeString = node.toString()
 			nodeString = nodeString.replace("\"", "\\\"")
-			if (nodeString.contains('$(SRCROOT)/GradleXCode')) {
-				int a = 0;
-			}
 			def lines = nodeString.split("\\r?\\n")
 			if (lines.size() > 1) {
 				builder << "\""
@@ -107,17 +121,43 @@ class PbxProjectHelper {
 
 		}
 		String s = builder.toString()
-		logger.lifecycle(s)
 		return s
 	}
 
 	String writePlistToString() {
 		StringBuilder builder = new StringBuilder()
 		builder << printElementToString(rootObject, 1)
-		return builder.toString()
+		return builder.toString() + "\n"
 	}
 
-	String addApphanceToProject(File projectRootDirectory, String targetName) {
+	void addFlagsAndPathsToProject(Object project) {
+		def configurationList = getObject(project.buildConfigurationList)
+		configurationList.buildConfigurations.each { configuration ->
+			if (getObject(configuration).name.equals(configurationName)) {
+				if (getObject(configuration).OTHER_LDFLAGS == null) {
+					getObject(configuration).put("OTHER_LDFLAGS", [])
+				}
+				getObject(configuration).OTHER_LDFLAGS.add("-ObjC")
+				getObject(configuration).OTHER_LDFLAGS.add("-all_load")
+				if (getObject(configuration).buildSettings.FRAMEWORK_SEARCH_PATHS == null) {
+					getObject(configuration).buildSettings.put("FRAMEWORK_SEARCH_PATHS", ["\$(inherited)"])
+				}
+				getObject(configuration).buildSettings.FRAMEWORK_SEARCH_PATHS.add("\$(SRCROOT)/")
+				if (getObject(configuration).buildSettings.LIBRARY_SEARCH_PATHS == null) {
+					getObject(configuration).buildSettings.put("LIBRARY_SEARCH_PATHS", ["\$(inherited)"])
+				}
+				getObject(configuration).buildSettings.LIBRARY_SEARCH_PATHS.add("\$(SRCROOT)/Apphance-iOS.framework")
+
+			}
+		}
+	}
+
+	void addApphanceInit(File projectRootDirectory) {
+		def launchingPattern = /application.*didFinishLaunchingWithOptions[^\(\r\n]*\s+\{)/
+		
+	}
+
+	String addApphanceToProject(File projectRootDirectory, String targetName, String configurationName) {
 		rootObject = getParsedProject(projectRootDirectory, targetName)
 		def project = getObject("${rootObject.rootObject}")
 		project.targets.each { target ->
@@ -131,8 +171,10 @@ class PbxProjectHelper {
 				}
 			}
 		}
-		logger.lifecycle(rootObject.toString())
-//		logger.lifecycle(writePlistToString())
+		addFlagsAndPathsToProject(project)
+		addApphanceInit(projectRootDirectory)
+
+		logger.lifecycle(writePlistToString())
 		return writePlistToString()
 	}
 }
