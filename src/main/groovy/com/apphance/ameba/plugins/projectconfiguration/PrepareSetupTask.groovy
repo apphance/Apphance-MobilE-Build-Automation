@@ -1,11 +1,12 @@
-
 package com.apphance.ameba.plugins.projectconfiguration
 
-import org.gradle.api.DefaultTask;
-import org.gradle.api.tasks.TaskAction;
+import java.util.List
+
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.StyledTextOutput
-import org.gradle.logging.StyledTextOutput.Style;
 import org.gradle.logging.StyledTextOutputFactory
+import org.gradle.logging.StyledTextOutput.Style
 
 import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
