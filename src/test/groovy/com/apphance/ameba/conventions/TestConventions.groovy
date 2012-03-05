@@ -21,7 +21,7 @@ class TestConventions {
 
     @Test
     public void testAndroidAnalysisConvention() throws Exception {
-         ProjectConnection connection = getProjectConnection("ameba-android-analysis")
+         ProjectConnection connection = getProjectConnection(conventionsBase,"ameba-android-analysis")
          BuildLauncher bl = connection.newBuild().forTasks('showConventionAndroidAnalysis');
          ByteArrayOutputStream baos = new ByteArrayOutputStream()
          bl.setStandardOutput(baos)
