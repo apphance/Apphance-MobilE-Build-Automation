@@ -43,7 +43,7 @@ class Wp7TestPlugin implements Plugin<Project> {
 			}
 
 			prepareWp7TestTask(project)
-			prepareTransformTrxToXmlTask(project)
+			prepareTrx2XmlTask(project)
 		}
 	}
 
@@ -62,8 +62,8 @@ class Wp7TestPlugin implements Plugin<Project> {
 		}
 	}
 
-	private void prepareTransformTrxToXmlTask(Project project) {
-		def task = project.task('transformTrxToXml')
+	private void prepareTrx2XmlTask(Project project) {
+		def task = project.task('trx2xml')
 		task.description = "Transforms mstest *.trx output files to junit/nuint xml"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
 		task << {

@@ -78,7 +78,7 @@ class ApphanceSourceCodeHelper {
 	}
 
 	public String convertApphanceLogsToSystemDebug(String file) {
-		return file.replaceAll(/(System\.Console\.WriteLine\()/, /(ApphanceLibrary\.Apphance\.Log\("",)/)
+		return file.replaceAll(/(ApphanceLibrary\.Apphance\.Log\("",)/, /(System\.Console\.WriteLine\()/)
 	}
 
 
