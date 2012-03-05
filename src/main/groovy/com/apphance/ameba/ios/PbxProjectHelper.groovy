@@ -84,10 +84,9 @@ class PbxProjectHelper {
 				builder << "\t"*level
 			}
 			builder << ")"
-//		} else if (node instanceof String) {
-//			builder << "\"${node}\""
 		} else {
 			String nodeString = node.toString()
+			nodeString = nodeString.replace("\"", "\\\"")
 			if (nodeString.contains('$(SRCROOT)/GradleXCode')) {
 				int a = 0;
 			}
@@ -99,11 +98,17 @@ class PbxProjectHelper {
 				}
 				builder << "\""
 			} else {
-				builder << "\"${node}\""
+				if (!nodeString.startsWith("\"")) {
+					builder << "\"${node}\""
+				} else {
+					builder << "${node}"
+				}
 			}
 
 		}
-		return builder.toString()
+		String s = builder.toString()
+		logger.lifecycle(s)
+		return s
 	}
 
 	String writePlistToString() {
@@ -127,7 +132,7 @@ class PbxProjectHelper {
 			}
 		}
 		logger.lifecycle(rootObject.toString())
-		logger.lifecycle(writePlistToString())
+//		logger.lifecycle(writePlistToString())
 		return writePlistToString()
 	}
 }
