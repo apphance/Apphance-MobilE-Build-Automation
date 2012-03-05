@@ -128,7 +128,7 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
                                 output:'xml', outputFile:"build/analysis/findbugs-result.xml",
                                 excludefilter:"build/analysis/findbugs-exclude.xml") {
                                     sourcePath(path: 'src')
-                                    "class"(location:'bin/classes')
+                                    "class"(location:'srcTmp/bin/classes')
                                     auxclassPath(path: androidConf.allJarsAsPath)
                                 }
             }

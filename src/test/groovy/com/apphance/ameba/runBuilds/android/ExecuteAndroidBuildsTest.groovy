@@ -81,7 +81,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildDebug() {
-        runGradle('updateProject', 'cleanRelease', 'buildDebug')
+        runGradle('updateProject', 'cleanRelease', 'buildAllDebug')
         assertTrue(new File(testProject,
                 "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testProject,
@@ -93,7 +93,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildRelease() {
-        runGradle('updateProject', 'cleanRelease', 'buildRelease')
+        runGradle('updateProject', 'cleanRelease', 'buildAllRelease')
         assertTrue(new File(testProject,
                 "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testProject,
@@ -104,7 +104,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildDebugNoVariant() {
-        runGradleNoVariants('updateProject', 'cleanRelease', 'buildDebug')
+        runGradleNoVariants('updateProject', 'cleanRelease', 'buildAllDebug')
         assertTrue(new File(testNovariantsProject,
                 "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
@@ -114,7 +114,7 @@ class ExecuteAndroidBuildsTest {
     }
     @Test
     void testBuildReleaseNoVariant() {
-        runGradleNoVariants('updateProject', 'cleanRelease', 'buildRelease')
+        runGradleNoVariants('updateProject', 'cleanRelease', 'buildAllRelease')
         assertTrue(new File(testNovariantsProject,
                 "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,

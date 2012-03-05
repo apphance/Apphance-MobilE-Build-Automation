@@ -22,7 +22,7 @@ import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.AndroidSingleVariantBuilder
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin;
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
 /**
  * Plugin for various Android related tasks.
@@ -50,6 +50,7 @@ class AndroidPlugin implements Plugin<Project> {
             this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
             this.manifestHelper = new AndroidManifestHelper()
             this.androidBuilder = new AndroidSingleVariantBuilder(project, this.androidConf)
+			prepareCopySourcesTask(project)
             prepareAndroidEnvironment(project)
             prepareJavaEnvironment(project)
             prepareCompileAndroidTask(project)
@@ -93,10 +94,10 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = "Performs code generation/compile tasks for android (if needed)"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            File gen = new File(project.rootDir,'gen')
+            File gen = new File(project.rootDir,'srcTmp/gen')
             if (!gen.exists() || gen.list().length == 0) {
                 logger.lifecycle("Regenerating gen directory by running debug project")
-                projectHelper.executeCommand(project, [
+                projectHelper.executeCommand(project, new File(project.rootDir, "srcTmp"), [
                     'ant',
                     'debug'
                 ])
@@ -113,14 +114,15 @@ class AndroidPlugin implements Plugin<Project> {
         def javaConventions =  project.convention.plugins.java
         javaConventions.sourceSets {
             main {
-                output.classesDir = 'build/classes'
-                output.resourcesDir = 'build/resources'
-                java { srcDir 'src' }
-                java { srcDir 'gen' }
+                output.classesDir = 'srcTmp/build/classes'
+                output.resourcesDir = 'srcTmp/build/resources'
+                java { srcDir 'srcTmp/src' }
+                java { srcDir 'srcTmp/gen' }
             }
             test {
-                output.classesDir = 'build/test-classes'
-                output.resourcesDir = 'build/test-resources'
+                output.classesDir = 'srcTmp/build/test-classes'
+                output.resourcesDir = 'srcTmp/build/test-resources'
+                java { srcDir 'srcTmp/test-src' }
             }
         }
         project.compileJava.options.encoding = 'UTF-8'
@@ -363,19 +365,15 @@ class AndroidPlugin implements Plugin<Project> {
     }
 
     void prepareBuildDebugOnlyTask(Project project) {
-        if (androidBuilder.hasVariants()) {
-            def task = project.task('buildDebug')
-            task.description = "Builds only debug variants"
-            task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        }
+        def task = project.task('buildAllDebug')
+        task.description = "Builds only debug variants"
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
     }
 
     void prepareBuildReleaseOnlyTask(Project project) {
-        if (androidBuilder.hasVariants()) {
-            def task = project.task('buildRelease')
-            task.description = "Builds only release variants"
-            task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        }
+        def task = project.task('buildAllRelease')
+        task.description = "Builds only release variants"
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
     }
 
     void prepareSingleVariant(Project project, String variant, String debugRelease) {
@@ -395,18 +393,53 @@ class AndroidPlugin implements Plugin<Project> {
                 androidBuilder.buildSingleApk(bi)
             }
         }
-        task.dependsOn(project.readAndroidProjectConfiguration, project.verifySetup)
-        if (variant != null) {
-            project.tasks["build${debugRelease}"].dependsOn(task)
-        }
+        task.dependsOn(project.readAndroidProjectConfiguration, project.verifySetup, project.copySources)
+        project.tasks["buildAll${debugRelease}"].dependsOn(task)
     }
+
+	void prepareCopySourcesTask(Project project) {
+		def task = project.task('copySources')
+		task.description = "Copies all sources to tmp directory for build"
+		task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+		task << {
+			new AntBuilder().delete(dir: "${project.rootDir}/srcTmp")
+			new AntBuilder().copy(toDir : "${project.rootDir}/srcTmp", verbose:true) {
+				fileset(dir : "${project.rootDir}/") {
+					exclude(name: "${project.rootDir}/srcTmp/**/*")
+					conf.sourceExcludes.each {
+						if (!it.equals('**/local.properties')) {
+							exclude(name: it)
+						}
+					}
+				}
+			}
+			// edit ant.properties for proper signing keystore path
+			File antProperties = new File("${project.rootDir}/srcTmp/ant.properties")
+			File newAntProperties = new File("${project.rootDir}/srcTmp/ant.props")
+			if (newAntProperties.exists()) {
+				newAntProperties.delete()
+			}
+			newAntProperties.withWriter { out ->
+				antProperties.eachLine {
+					if (it.contains("key.store=")) {
+						out.println(it.replaceFirst("key.store=", "key.store=../"))
+					} else {
+						out.println(it)
+					}
+				}
+			}
+			antProperties.delete()
+			antProperties << newAntProperties.text
+			newAntProperties.delete()
+		}
+	}
 
 
     void prepareBuildAllTask(Project project) {
         def task = project.task('buildAll')
         task.description = "Builds all variants"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        task.dependsOn(project.tasks['buildDebug'],project.tasks['buildRelease'])
+        task.dependsOn(project.tasks['buildAllDebug'],project.tasks['buildAllRelease'])
     }
 
     void prepareAllVariants(Project project) {

@@ -22,12 +22,16 @@ class TestAndroidTasksNoVariant extends BaseAndroidTaskTest {
             'cleanClasses',
             'compileAndroid',
             'buildAll',
-            'buildDebug',
-            'buildRelease',
+            'buildAllDebug',
+            'buildAllRelease',
+			'buildDebug',
+			'buildRelease',
+            'checkTests',
             'installDebug',
             'installRelease',
             'replacePackage',
-            'updateProject'
+            'updateProject',
+			'copySources'
         ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 }

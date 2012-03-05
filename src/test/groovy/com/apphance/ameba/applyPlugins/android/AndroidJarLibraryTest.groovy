@@ -22,9 +22,9 @@ class AndroidJarLibraryTest extends BaseAndroidTaskTest {
     public void testTasksAvailable() {
         verifyTasksInGroup(getProject(),[
             'buildAll',
-            'buildDebug',
+            'buildAllDebug',
             'buildDebug-test',
-            'buildRelease',
+            'buildAllRelease',
             'buildRelease-market',
             'cleanAndroid',
             'cleanClasses',
@@ -33,7 +33,8 @@ class AndroidJarLibraryTest extends BaseAndroidTaskTest {
             'installRelease-market',
             'jarLibrary',
             'replacePackage',
-            'updateProject'
+            'updateProject',
+			'copySources'
         ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 }

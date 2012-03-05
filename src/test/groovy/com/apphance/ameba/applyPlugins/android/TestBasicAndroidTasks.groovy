@@ -22,14 +22,15 @@ class TestBasicAndroidTasks extends BaseAndroidTaskTest {
             'cleanClasses',
             'compileAndroid',
             'buildAll',
-            'buildDebug',
-            'buildRelease',
+            'buildAllDebug',
+            'buildAllRelease',
             'buildDebug-test',
             'buildRelease-market',
             'installDebug-test',
             'installRelease-market',
             'replacePackage',
             'updateProject',
+			'copySources'
         ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 

@@ -46,7 +46,7 @@ class RunPrepareAndroidSetupTest {
 
     @Test
     public void testGenerateNoChange() throws Exception {
-        String res = runTests('\n'*50 + 'y\n', 'prepareSetup')
+        String res = runTests('\n'*252 + 'y\n', 'prepareSetup')
         String text = gradleProperties.text
         String originalText = gradlePropertiesOrig.text
         assertEquals(originalText, text)
@@ -56,7 +56,7 @@ class RunPrepareAndroidSetupTest {
     @Test
     public void testGenerateDefaults() throws Exception {
         gradleProperties.delete()
-        String res = runTests('\n'*50 + 'y\n', 'prepareSetup')
+        String res = runTests('\n'*252 + 'y\n', 'prepareSetup')
         assertTrue(gradleProperties.exists())
         String text = gradleProperties.text
         String originalText = gradlePropertiesOrig.text
@@ -102,6 +102,12 @@ android.test.directory=test/android
 android.test.perPackage=false
 android.useEmma=true
 ###########################################################
+# Apphance properties
+###########################################################
+apphance.appkey=
+apphance.mode=QA
+###########################################################
+# Mercurial properties
 # Android jar library properties
 ###########################################################
 android.jarLibrary.resPrefix=
