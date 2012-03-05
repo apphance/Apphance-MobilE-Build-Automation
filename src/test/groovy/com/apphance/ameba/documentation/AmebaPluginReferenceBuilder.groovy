@@ -208,6 +208,7 @@ class AmebaPluginReferenceBuilder {
                             date: new Date().format('yyyy-MM-dd HH-mm zzz'),
                         ]
         def result = engine.createTemplate(pluginsReferenceTemplate).make(binding)
+        new File('tmp').mkdirs()
         new File("tmp/plugins_reference.html").write(result.toString(), "utf-8")
     }
 

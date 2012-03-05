@@ -22,3 +22,4 @@ emma
 /*.hprof
 /.settings
 /tmpCopy
+/coverage.ec
