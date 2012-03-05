@@ -191,7 +191,7 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
 
     static class AndroidAnalysisConvention {
         static public final String DESCRIPTION =
-"""The convention provide base URL where analysis configuration files are placed.
+"""The convention provides base URL where analysis configuration files are placed.
 The configuration files can be either internal (no configuration needed)
 or taken from local configuration directory (config/analysis)
 or retrieved using base URL specified."""

@@ -1,6 +1,8 @@
 package com.apphance.ameba.android.plugins.test
 
 
+import groovy.lang.Closure;
+
 import java.io.IOException
 import java.net.Inet4Address
 import java.net.ServerSocket
@@ -29,7 +31,6 @@ class AndroidTestPlugin implements Plugin<Project>{
 
     private static final String TEST_RUNNER = "pl.polidea.instrumentation.PolideaInstrumentationTestRunner"
     private static final String AVD_PATH = 'avds'
-    private static final int MAX_EMULATOR_STARTUP_TIME = 360 * 1000
 
     ProjectHelper projectHelper
     AndroidProjectConfigurationRetriever androidConfRetriever
@@ -70,6 +71,8 @@ class AndroidTestPlugin implements Plugin<Project>{
         this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
         this.androidManifestHelper = new AndroidManifestHelper()
         this.buildXmlHelper = new AndroidBuildXmlHelper()
+        def androidTestConvention = new AndroidTestConvention()
+        project.convention.plugins.put('androidTest', androidTestConvention)
         readConfiguration(project)
         prepareEmmaConfiguration(project)
         prepareCreateAvdTask(project)
@@ -103,10 +106,11 @@ class AndroidTestPlugin implements Plugin<Project>{
         }
     }
 
-    static int findFreeEmulatorPort() {
-        int START_PORT = 5554
-        int END_PORT = 5584
-        for (int port = START_PORT; port<= END_PORT; port+=2) {
+    int findFreeEmulatorPort() {
+        AndroidTestConvention convention = project.convention.plugins.androidTest
+        int startPort = convention.startPort
+        int endPort = convention.endPort
+        for (int port = startPort; port<= endPort; port+=2) {
             logger.lifecycle("Android emulator probing. trying ports: ${port} ${port+1}")
             try {
                 ServerSocket ss1 = new ServerSocket(port, 0, Inet4Address.getByAddress([127, 0, 0, 1]as byte[]))
@@ -165,7 +169,6 @@ class AndroidTestPlugin implements Plugin<Project>{
             projectHelper.executeCommand(project,project.rootDir, ['killall', 'adb'], false)
         }
     }
-
 
     void prepareCreateAvdTask(Project project) {
         def task = project.task('createAVD')
@@ -334,6 +337,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 
     void waitUntilEmulatorReady(Project project) {
         logger.lifecycle("Waiting until emulator is ready ${emulatorName}")
+        AndroidTestConvention convention = project.convention.plugins.androidTest
         String [] commandRunShell =[
             adbBinary,
             '-s',
@@ -349,11 +353,11 @@ class AndroidTestPlugin implements Plugin<Project>{
                 logger.lifecycle("Emulator is ready ${emulatorName}!")
                 break
             }
-            if (System.currentTimeMillis() - startTime > MAX_EMULATOR_STARTUP_TIME) {
+            if (System.currentTimeMillis() - startTime > convention.maxEmulatorStartupTime) {
                 emulatorProcess?.destroy()
-                throw new GradleException("Could not start emulator in  ${MAX_EMULATOR_STARTUP_TIME/1000} s. Giving up.")
+                throw new GradleException("Could not start emulator in  ${convention.maxEmulatorStartupTime/1000.0} s. Giving up.")
             }
-            Thread.sleep(4000) // wait 4 seconds between retries
+            Thread.sleep(convention.retryTime) // wait 4 seconds between retries
         }
     }
 
@@ -457,6 +461,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 
     void startEmulator(Project project, boolean noWindow) {
         logger.lifecycle("Starting emulator ${emulatorName}")
+        AndroidTestConvention convention = project.convention.plugins.androidTest
         emulatorPort = findFreeEmulatorPort()
         def emulatorCommand = [
             'emulator',
@@ -471,7 +476,7 @@ class AndroidTestPlugin implements Plugin<Project>{
         }
         def outFile = new File(project.rootDir,"tmp/emulator.txt")
         emulatorProcess = projectHelper.executeCommandInBackground(project.rootDir, outFile, emulatorCommand)
-        Thread.sleep(4000) // sleep for 4 secs.
+        Thread.sleep(convention.retryTime) // sleep for some time.
         runLogCat(project)
         waitUntilEmulatorReady(project)
         logger.lifecycle("Started emulator ${emulatorName}")
@@ -491,6 +496,24 @@ class AndroidTestPlugin implements Plugin<Project>{
         task << { startEmulator(project, true, false) }
         task.dependsOn(project.readAndroidProjectConfiguration)
     }
+
+    static class AndroidTestConvention {
+        static public final String DESCRIPTION =
+"""The convention provides port address range which is used by android emulator.
+It also defines maximum time (in ms) to start android emulator and retry time (in ms.) between trying to
+reconnect to the emulator.
+"""
+        def int startPort = 5554
+        def int endPort = 5584
+        def int maxEmulatorStartupTime = 360 * 1000
+        def int retryTime = 4 * 1000
+
+        def androidTest(Closure close) {
+            close.delegate = this
+            close.run()
+        }
+    }
+
 
     static public final String DESCRIPTION =
     """This plugin provides easy automated testing framework for Android applications

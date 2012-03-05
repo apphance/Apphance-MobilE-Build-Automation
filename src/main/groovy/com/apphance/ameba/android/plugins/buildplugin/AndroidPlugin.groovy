@@ -121,7 +121,6 @@ class AndroidPlugin implements Plugin<Project> {
             test {
                 output.classesDir = 'build/test-classes'
                 output.resourcesDir = 'build/test-resources'
-                java { srcDir 'test-src' }
             }
         }
         project.compileJava.options.encoding = 'UTF-8'
