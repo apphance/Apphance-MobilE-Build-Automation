@@ -79,6 +79,11 @@ project.country=US
 ###########################################################
 hg.commit.user=
 ###########################################################
+# Apphance properties
+###########################################################
+apphance.appkey=
+apphance.mode=QA
+###########################################################
 # Android properties
 ###########################################################
 android.mainVariant=
@@ -102,12 +107,6 @@ android.test.directory=test/android
 android.test.perPackage=false
 android.useEmma=true
 ###########################################################
-# Apphance properties
-###########################################################
-apphance.appkey=
-apphance.mode=QA
-###########################################################
-# Mercurial properties
 # Android jar library properties
 ###########################################################
 android.jarLibrary.resPrefix=

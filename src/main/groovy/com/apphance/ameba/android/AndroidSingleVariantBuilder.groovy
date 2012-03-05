@@ -143,7 +143,7 @@ class AndroidSingleVariantBuilder {
         projectHelper.executeCommand(project, new File (project.rootDir, "srcTmp"), ['ant', 'clean'])
         if (bi.variant != null) {
             project.ant {
-                copy(todir : 'srcTmp/res/raw', overwrite:'true', verbose:'true') {
+                copy(todir : project.file('srcTmp/res/raw'), overwrite:'true', verbose:'true') {
                     fileset(dir: new File(variantsDir, bi.variant),
                             includes:'*', excludes:'market_variant.txt')
                 }

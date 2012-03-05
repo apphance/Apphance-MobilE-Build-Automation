@@ -114,15 +114,15 @@ class AndroidPlugin implements Plugin<Project> {
         def javaConventions =  project.convention.plugins.java
         javaConventions.sourceSets {
             main {
-                output.classesDir = 'srcTmp/build/classes'
-                output.resourcesDir = 'srcTmp/build/resources'
-                java { srcDir 'srcTmp/src' }
-                java { srcDir 'srcTmp/gen' }
+                output.classesDir = project.file('srcTmp/build/classes')
+                output.resourcesDir = project.file('srcTmp/build/resources')
+                java { srcDir project.file('srcTmp/src') }
+                java { srcDir project.file('srcTmp/gen') }
             }
             test {
-                output.classesDir = 'srcTmp/build/test-classes'
-                output.resourcesDir = 'srcTmp/build/test-resources'
-                java { srcDir 'srcTmp/test-src' }
+                output.classesDir = project.file('srcTmp/build/test-classes')
+                output.resourcesDir = project.file('srcTmp/build/test-resources')
+                java { srcDir project.file('srcTmp/test-src') }
             }
         }
         project.compileJava.options.encoding = 'UTF-8'
@@ -243,6 +243,7 @@ class AndroidPlugin implements Plugin<Project> {
             runUpdateRecursively(project, project.rootDir, true)
             logger.lifecycle("Performed android update")
         }
+        task.dependsOn(project.copySources)
     }
 
     private void runUpdateRecursively(Project project, File currentDir, boolean reRun, boolean silentLogging = false) {
