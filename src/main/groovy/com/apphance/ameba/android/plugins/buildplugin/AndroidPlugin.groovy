@@ -50,7 +50,7 @@ class AndroidPlugin implements Plugin<Project> {
             this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
             this.manifestHelper = new AndroidManifestHelper()
             this.androidBuilder = new AndroidSingleVariantBuilder(project, this.androidConf)
-			prepareCopySourcesTask(project)
+            prepareCopySourcesTask(project)
             prepareAndroidEnvironment(project)
             prepareJavaEnvironment(project)
             prepareCompileAndroidTask(project)
@@ -397,42 +397,42 @@ class AndroidPlugin implements Plugin<Project> {
         project.tasks["buildAll${debugRelease}"].dependsOn(task)
     }
 
-	void prepareCopySourcesTask(Project project) {
-		def task = project.task('copySources')
-		task.description = "Copies all sources to tmp directory for build"
-		task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-		task << {
-			new AntBuilder().delete(dir: "${project.rootDir}/srcTmp")
-			new AntBuilder().copy(toDir : "${project.rootDir}/srcTmp", verbose:true) {
-				fileset(dir : "${project.rootDir}/") {
-					exclude(name: "${project.rootDir}/srcTmp/**/*")
-					conf.sourceExcludes.each {
-						if (!it.equals('**/local.properties')) {
-							exclude(name: it)
-						}
-					}
-				}
-			}
-			// edit ant.properties for proper signing keystore path
-			File antProperties = new File("${project.rootDir}/srcTmp/ant.properties")
-			File newAntProperties = new File("${project.rootDir}/srcTmp/ant.props")
-			if (newAntProperties.exists()) {
-				newAntProperties.delete()
-			}
-			newAntProperties.withWriter { out ->
-				antProperties.eachLine {
-					if (it.contains("key.store=")) {
-						out.println(it.replaceFirst("key.store=", "key.store=../"))
-					} else {
-						out.println(it)
-					}
-				}
-			}
-			antProperties.delete()
-			antProperties << newAntProperties.text
-			newAntProperties.delete()
-		}
-	}
+    void prepareCopySourcesTask(Project project) {
+        def task = project.task('copySources')
+        task.description = "Copies all sources to tmp directory for build"
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        task << {
+            new AntBuilder().delete(dir: "${project.rootDir}/srcTmp")
+            new AntBuilder().copy(toDir : "${project.rootDir}/srcTmp", verbose:true) {
+                fileset(dir : "${project.rootDir}/") {
+                    exclude(name: "${project.rootDir}/srcTmp/**/*")
+                    conf.sourceExcludes.each {
+                        if (!it.equals('**/local.properties')) {
+                            exclude(name: it)
+                        }
+                    }
+                }
+            }
+            // edit ant.properties for proper signing keystore path
+            File antProperties = new File("${project.rootDir}/srcTmp/ant.properties")
+            File newAntProperties = new File("${project.rootDir}/srcTmp/ant.props")
+            if (newAntProperties.exists()) {
+                newAntProperties.delete()
+            }
+            newAntProperties.withWriter { out ->
+                antProperties.eachLine {
+                    if (it.contains("key.store=")) {
+                        out.println(it.replaceFirst("key.store=", "key.store=../"))
+                    } else {
+                        out.println(it)
+                    }
+                }
+            }
+            antProperties.delete()
+            antProperties << newAntProperties.text
+            newAntProperties.delete()
+        }
+    }
 
 
     void prepareBuildAllTask(Project project) {

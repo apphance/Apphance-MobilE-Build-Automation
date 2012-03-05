@@ -1,4 +1,4 @@
-package com.apphance.ameba.apphance
+package com.apphance.ameba.android.plugins.apphance
 
 enum ApphanceProperty {
 	
