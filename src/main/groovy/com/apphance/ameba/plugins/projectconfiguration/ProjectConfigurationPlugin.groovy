@@ -82,8 +82,8 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
     }
 
     private prepareGeneratedDirectories(Project project) {
-        conf.otaDirectory = new File(project.rootDir,"ota/")
-        conf.tmpDirectory = new File(project.rootDir,"tmp/")
+        conf.otaDirectory = project.file("ota/")
+        conf.tmpDirectory = project.file("tmp/")
     }
 
     def void prepareCleanConfigurationTask(Project project) {

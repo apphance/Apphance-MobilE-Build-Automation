@@ -59,7 +59,7 @@ class AndroidReleasePlugin implements Plugin<Project>{
             File destZip = conf.documentationZip.location
             destZip.mkdirs()
             destZip.delete()
-            File javadocDir = new File(project.rootDir,"build/docs/javadoc")
+            File javadocDir = project.file("build/docs/javadoc")
             project.ant.zip(destfile: destZip, basedir : javadocDir)
             logger.lifecycle("Zipped documentation to ${destZip}")
         }

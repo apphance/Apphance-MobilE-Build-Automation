@@ -46,10 +46,10 @@ abstract class AbstractPrepareSetupOperation {
 
     List getFiles(Closure filter) {
         List paths = [
-            new File(project.rootDir,'bin').absolutePath,
-            new File(project.rootDir,'build').absolutePath,
-            new File(project.rootDir,'ota').absolutePath,
-            new File(project.rootDir,'tmp').absolutePath,
+            project.file('bin').absolutePath,
+            project.file('build').absolutePath,
+            project.file('ota').absolutePath,
+            project.file('tmp').absolutePath,
         ]
         def plistFiles = []
         project.rootDir.traverse([type: FileType.FILES, maxDepth : 7]) {

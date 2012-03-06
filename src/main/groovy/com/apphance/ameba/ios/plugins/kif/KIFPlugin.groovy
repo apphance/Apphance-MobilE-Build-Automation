@@ -111,7 +111,7 @@ class KIFPlugin implements Plugin<Project> {
             "${runTestScript}"
         ])
 
-        File applicationAppFile = new File(project.rootDir, "build/${KIFConfiguration}-iphonesimulator/KIFTests.app")
+        File applicationAppFile = project.file( "build/${KIFConfiguration}-iphonesimulator/KIFTests.app")
         projectHelper.executeCommand(project, [
             "/bin/bash",
             "${runTestScript}"

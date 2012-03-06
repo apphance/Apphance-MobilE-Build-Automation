@@ -26,7 +26,7 @@ abstract class AbstractVerifySetupOperation {
 
     protected Properties readProperties() {
         def projectProperties = new Properties()
-        def projectPropertiesFile = new File(project.rootDir,'gradle.properties')
+        def projectPropertiesFile = project.file('gradle.properties')
         if (!projectPropertiesFile.exists()) {
             throw new GradleException("""The gradle.properties file does not exist.
 !!!!! Please run "gradle prepareSetup --quiet" to correct project's configuration !!!!!""")

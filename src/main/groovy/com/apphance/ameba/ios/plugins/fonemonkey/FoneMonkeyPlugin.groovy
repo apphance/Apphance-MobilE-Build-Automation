@@ -191,7 +191,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
             "${runTestScript}"
         ])
 
-        File applicationAppFile = new File(project.rootDir, "build/${foneMonkeyConfiguration}-iphonesimulator/RunMonkeyTests.app")
+        File applicationAppFile = project.file( "build/${foneMonkeyConfiguration}-iphonesimulator/RunMonkeyTests.app")
         projectHelper.executeCommand(project, [
             "/bin/bash",
             "${runTestScript}"

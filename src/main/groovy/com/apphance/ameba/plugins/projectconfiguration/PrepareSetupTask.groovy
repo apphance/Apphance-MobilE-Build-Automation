@@ -46,7 +46,7 @@ class PrepareSetupTask extends DefaultTask {
             }
             o.withStyle(Style.Normal).println("Are you sure y/n?")
             BufferedReader br = AbstractPrepareSetupOperation.getReader()
-            File f = new File(project.rootDir,'gradle.properties')
+            File f = project.file('gradle.properties')
             String answer = ''
             while (!(answer in ['y', 'n'])) {
                 answer = br.readLine()

@@ -70,7 +70,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     }
 
     File getMainApplicationFile(Project project) {
-        String applicationName = manifestHelper.getApplicationName(new File(project.rootDir, "srcTmp"))
+        String applicationName = manifestHelper.getApplicationName(project.file( "srcTmp"))
         applicationName = applicationName.replace('.', '/')
         applicationName = applicationName + '.java'
         applicationName = 'srcTmp/src/' + applicationName
@@ -78,7 +78,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
         if (new File(applicationName).exists()) {
             f = new File(applicationName)
         } else {
-            String mainActivityName = manifestHelper.getMainActivityName(new File(project.rootDir, "srcTmp"))
+            String mainActivityName = manifestHelper.getMainActivityName(project.file( "srcTmp"))
             mainActivityName = mainActivityName.replace('.', '/')
             mainActivityName = mainActivityName + '.java'
             mainActivityName = 'srcTmp/src/' + mainActivityName
@@ -133,24 +133,24 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     private restoreManifestBeforeApphanceRemoval(Project project) {
         logger.lifecycle("Restoring before apphance was removed from manifest. ")
-        manifestHelper.restoreBeforeApphanceRemoval(new File(project.rootDir, "srcTmp"))
+        manifestHelper.restoreBeforeApphanceRemoval(project.file( "srcTmp"))
     }
 
     private removeApphanceFromManifest(Project project) {
         logger.lifecycle("Remove apphance from manifest")
-        manifestHelper.removeApphance(new File(project.rootDir, "srcTmp"))
+        manifestHelper.removeApphance(project.file( "srcTmp"))
         File apphanceRemovedManifest = new File(conf.logDirectory,"AndroidManifest-with-apphance-removed.xml")
         logger.lifecycle("Manifest used for this build is stored in ${apphanceRemovedManifest}")
         if (apphanceRemovedManifest.exists()) {
             logger.lifecycle('removed manifest exists')
             apphanceRemovedManifest.delete()
         }
-        apphanceRemovedManifest << new File(project.rootDir,"srcTmp/AndroidManifest.xml").text
+        apphanceRemovedManifest << project.file("srcTmp/AndroidManifest.xml").text
     }
 
     private addApphanceToManifest(Project project) {
         logger.lifecycle("Adding apphance to manifest")
-        manifestHelper.addApphanceToManifest(new File(project.rootDir, "srcTmp"))
+        manifestHelper.addApphanceToManifest(project.file( "srcTmp"))
     }
 
     private def addApphanceInit(Project project, File mainFile) {
@@ -194,14 +194,14 @@ class AndroidApphancePlugin implements Plugin<Project>{
             logger.lifecycle("Removing old apphance jar: " + it.name)
             it.delete()
         }
-        File libsApphance = new File(project.rootDir, 'srcTmp/libs/apphance.jar')
+        File libsApphance = project.file( 'srcTmp/libs/apphance.jar')
         URL apphanceUrl = this.class.getResource("apphance-android-library_1.4.2.1.jar")
         libsApphance << apphanceUrl.getContent()
     }
 
     private boolean checkIfApphancePresent(Project project) {
         boolean found = false
-        File basedir = new File(project.rootDir, 'srcTmp/src')
+        File basedir = project.file( 'srcTmp/src')
         basedir.eachFileRecurse { file ->
             if (file.name.endsWith('.java')) {
                 file.eachLine {
@@ -212,7 +212,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
             }
         }
         if (!found) {
-            new File(project.rootDir, 'srcTmp').eachFileMatch(".*apphance.*\\.jar") {
+            project.file( 'srcTmp').eachFileMatch(".*apphance.*\\.jar") {
                 found = true
             }
         }

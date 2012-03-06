@@ -74,10 +74,10 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
             project.ant.delete(dir : resDir)
             resDir.mkdirs()
             project.ant.copy(todir: resDir) {
-                fileset(dir: new File(project.rootDir, 'res'))
+                fileset(dir: project.file( 'res'))
             }
-            File destFile = new File(project.rootDir,"bin/${androidConf.mainProjectName}_${conf.versionString}.jar")
-            File classesDir = new File(project.rootDir, "bin/classes")
+            File destFile = project.file("bin/${androidConf.mainProjectName}_${conf.versionString}.jar")
+            File classesDir = project.file( "bin/classes")
             destFile.delete()
             project.ant.jar(destfile: destFile, manifest: manifestFile, manifestencoding: 'utf-8') {
                 fileset(dir: classesDir) {

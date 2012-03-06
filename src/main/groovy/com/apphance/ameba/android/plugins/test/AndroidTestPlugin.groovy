@@ -87,8 +87,8 @@ class AndroidTestPlugin implements Plugin<Project>{
 
     private void readConfiguration(Project project) {
         use(PropertyCategory) {
-            androidTestDirectory = new File(project.rootDir,project.readProperty(AndroidTestProperty.TEST_DIRECTORY))
-            rawDir = new File(project.rootDir, 'res/raw')
+            androidTestDirectory = project.file(project.readProperty(AndroidTestProperty.TEST_DIRECTORY))
+            rawDir = project.file( 'res/raw')
             testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
             testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
             testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
@@ -144,11 +144,11 @@ class AndroidTestPlugin implements Plugin<Project>{
         ]))
         emmaDumpFile = "/data/data/${androidConf.mainProjectPackage}/coverage.ec"
         xmlJUnitDir = "/data/data/${androidConf.mainProjectPackage}/files/"
-        coverageDir = new File(project.rootDir,'tmp/coverage')
+        coverageDir = project.file('tmp/coverage')
         coverageEmFile = new File(coverageDir,'coverage.em')
         coverageEcFile = new File(coverageDir,'coverage.ec')
         adbBinary = new File(androidConf.sdkDirectory,'platform-tools/adb')
-        avdDir = new File(project.rootDir,AVD_PATH)
+        avdDir = project.file(AVD_PATH)
     }
 
     private void prepareCleanAvdTask(Project project) {
@@ -331,7 +331,7 @@ class AndroidTestPlugin implements Plugin<Project>{
             '-v',
             'time'
         ]
-        def outFile = new File(project.rootDir,"tmp/logcat.txt")
+        def outFile = project.file("tmp/logcat.txt")
         logcatProcess = projectHelper.executeCommandInBackground(project.rootDir, outFile, commandRunLogcat)
     }
 
@@ -474,7 +474,7 @@ class AndroidTestPlugin implements Plugin<Project>{
         if (noWindow) {
             emulatorCommand << '-no-window'
         }
-        def outFile = new File(project.rootDir,"tmp/emulator.txt")
+        def outFile = project.file("tmp/emulator.txt")
         emulatorProcess = projectHelper.executeCommandInBackground(project.rootDir, outFile, emulatorCommand)
         Thread.sleep(convention.retryTime) // sleep for some time.
         runLogCat(project)

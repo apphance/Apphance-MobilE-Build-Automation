@@ -45,7 +45,7 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
         project.dependencies.add('pmdConf', 'pmd:pmd:4.2.6' )
         task << {
             URL pmdXml = getResourceUrl(project, 'pmd-rules.xml')
-            def analysisDir = new File(project.rootDir,'build/analysis')
+            def analysisDir = project.file('build/analysis')
             def pmdFile = new File(analysisDir,"pmd-rules.xml")
             pmdFile.parentFile.mkdirs()
             pmdFile.delete()
@@ -108,7 +108,7 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
         project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs-ant:1.3.9' )
         task << {
             URL findbugsXml = getResourceUrl(project, 'findbugs-exclude.xml')
-            def analysisDir = new File(project.rootDir,'build/analysis')
+            def analysisDir = project.file('build/analysis')
             def findbugsFile = new File(analysisDir,"findbugs-exclude.xml")
             findbugsFile.parentFile.mkdirs()
             findbugsFile.delete()
@@ -144,7 +144,7 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
         project.dependencies.add('checkstyleConf','checkstyle:checkstyle:5.0')
         task << {
             URL checkstyleXml = getResourceUrl(project, 'checkstyle.xml')
-            def analysisDir = new File(project.rootDir,'build/analysis')
+            def analysisDir = project.file('build/analysis')
             def checkstyleFile = new File(analysisDir,"checkstyle.xml")
             checkstyleFile.parentFile.mkdirs()
             checkstyleFile.delete()
@@ -154,7 +154,7 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
             checkstyleSuppressionsFile.delete()
             checkstyleSuppressionsFile << checkstyleSuppressionsXml.getContent()
             URL checkstyleLocalSuppressionsXml = getResourceUrl(project,'checkstyle-local-suppressions.xml')
-            def configAnalysisDir = new File(project.rootDir, 'build/analysis')
+            def configAnalysisDir = project.file( 'build/analysis')
             def checkstyleLocalSuppressionsFile = new File(configAnalysisDir,"checkstyle-local-suppressions.xml")
             checkstyleLocalSuppressionsFile.parentFile.mkdirs()
             if (!checkstyleLocalSuppressionsFile.exists()) {

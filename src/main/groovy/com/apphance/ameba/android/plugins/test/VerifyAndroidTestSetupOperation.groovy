@@ -32,7 +32,7 @@ class VerifyAndroidTestSetupOperation extends AbstractVerifySetupOperation {
     void checkDirectory(property) {
         use (PropertyCategory) {
             def dirName = project.readProperty(property)
-            File dir = new File(project.rootDir,dirName)
+            File dir = project.file(dirName)
             if (!dir.exists()) {
                 throw new GradleException("""The directory does not exist ${property.propertyName}: ${dir}""")
             }

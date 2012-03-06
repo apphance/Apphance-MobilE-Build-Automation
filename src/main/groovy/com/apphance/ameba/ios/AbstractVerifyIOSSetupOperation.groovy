@@ -27,7 +27,7 @@ abstract class AbstractVerifyIOSSetupOperation extends AbstractVerifySetupOperat
 
     void checkPlistFile(property) {
         use (PropertyCategory) {
-            File plistFile = new File(project.rootDir,project.readExpectedProperty(property))
+            File plistFile = project.file(project.readExpectedProperty(property))
             if (!plistFile.exists() || !plistFile.isFile()) {
                 throw new GradleException("""The plist file ${property.propertyName}:${plistFile}) does not exist or is not a file. Please run 'gradle prepareSetup' to correct it.""")
             }

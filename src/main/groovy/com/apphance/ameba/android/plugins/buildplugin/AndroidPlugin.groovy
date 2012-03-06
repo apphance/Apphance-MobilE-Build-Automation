@@ -94,10 +94,10 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = "Performs code generation/compile tasks for android (if needed)"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            File gen = new File(project.rootDir,'srcTmp/gen')
+            File gen = project.file('srcTmp/gen')
             if (!gen.exists() || gen.list().length == 0) {
                 logger.lifecycle("Regenerating gen directory by running debug project")
-                projectHelper.executeCommand(project, new File(project.rootDir, "srcTmp"), [
+                projectHelper.executeCommand(project, project.file( "srcTmp"), [
                     'ant',
                     'debug'
                 ])
@@ -292,7 +292,7 @@ class AndroidPlugin implements Plugin<Project> {
                 'ant',
                 'clean'
             ])
-            File tmpDir = new File(project.rootDir,"tmp")
+            File tmpDir = project.file("tmp")
             project.ant.delete(dir: tmpDir)
         }
         project.clean.dependsOn(task)
@@ -305,7 +305,7 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = "Cleans only the compiled classes"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            project.ant.delete(dir: new File(project.rootDir,"build"))
+            project.ant.delete(dir: project.file("build"))
         }
     }
 

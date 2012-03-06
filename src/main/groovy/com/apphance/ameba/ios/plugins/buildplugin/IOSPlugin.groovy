@@ -82,7 +82,7 @@ class IOSPlugin implements Plugin<Project> {
                 iosConf.simulatorsdk = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK)
                 iosConf.plistFile = pListFileName == null ? null : new File(this.pListFileName)
                 String distDirName = project.readProperty(IOSProjectProperty.DISTRIBUTION_DIR)
-                iosConf.distributionDirectory = distDirName == null ? null : new File(project.rootDir, distDirName)
+                iosConf.distributionDirectory = distDirName == null ? null : project.file( distDirName)
                 iosConf.families = project.readProperty(IOSProjectProperty.IOS_FAMILIES).split(",")*.trim()
                 iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
                 if (iosConf.plistFile != null) {
@@ -243,9 +243,9 @@ class IOSPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
             projectHelper.executeCommand(project, ["dot_clean", "./"]as String [])
-            ant.delete(dir: new File(project.rootDir,"build"), verbose: true)
-            ant.delete(dir: new File(project.rootDir,"bin"), verbose: true)
-            ant.delete(dir: new File(project.rootDir,"documentation"), verbose: true)
+            ant.delete(dir: project.file("build"), verbose: true)
+            ant.delete(dir: project.file("bin"), verbose: true)
+            ant.delete(dir: project.file("documentation"), verbose: true)
         }
         task.dependsOn(project.cleanConfiguration)
     }
