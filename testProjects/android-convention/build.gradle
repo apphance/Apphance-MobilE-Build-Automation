@@ -22,5 +22,5 @@ apply plugin: 'ameba-android-test'
 apply plugin: 'ameba-android-jarlibrary'
 
 androidAnalysis {
-    baseAnalysisConfigUrl = 'https://raw.github.com/apphance/Apphance-MobilE-Build-Automation/better_documentation/testProjects/android-novariants/config/analysis'
+    baseAnalysisConfigUrl = 'https://raw.github.com/apphance/Apphance-MobilE-Build-Automation/better_documentation/testProjects/android-novariants/config/analysis/'
 }

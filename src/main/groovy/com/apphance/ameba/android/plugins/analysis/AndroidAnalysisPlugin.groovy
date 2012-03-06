@@ -1,20 +1,21 @@
 package com.apphance.ameba.android.plugins.analysis
 
-import groovy.util.XmlSlurper
-
 import java.io.File
 
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ProjectHelper;
+import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin;
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 
 class AndroidAnalysisPlugin implements Plugin<Project>{
+    static Logger logger = Logging.getLogger(AndroidAnalysisPlugin.class)
 
     static final String FINDBUGS_HOME_DIR_PROPERTY = 'findbugs.home.dir'
 
@@ -79,20 +80,27 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
     }
 
     private URL getResourceUrl(Project project, String resourceName) {
+        logger.info("Reading resource ${resourceName}")
         AndroidAnalysisConvention convention = project.convention.plugins.androidAnalysis
         URL baseUrl = project.file('config/analysis').toURI().toURL()
         if (convention.baseAnalysisConfigUrl != null) {
             baseUrl = new URL(convention.baseAnalysisConfigUrl)
+            logger.info("Base config url  ${baseUrl}")
         }
         URL targetURL = new URL(baseUrl, resourceName)
         if (targetURL.getProtocol() == 'file') {
+            println "Reading resource from tile ${targetURL}"
             if (!(new File(targetURL.toURI()).exists())) {
-                return this.class.getResource(resourceName)
+                def url =  this.class.getResource(resourceName)
+                println "Reading resource from internal ${url}"
+                return url
             }
         } else {
+            println "Downloading file from ${targetURL}"
             try {
                 targetURL.getContent()
             } catch (IOException e){
+                println "Exception ${e}"
                 return this.class.getResource(resourceName)
             }
         }
@@ -154,12 +162,9 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
             checkstyleSuppressionsFile.delete()
             checkstyleSuppressionsFile << checkstyleSuppressionsXml.getContent()
             URL checkstyleLocalSuppressionsXml = getResourceUrl(project,'checkstyle-local-suppressions.xml')
-            def configAnalysisDir = project.file('build/analysis')
-            def checkstyleLocalSuppressionsFile = new File(configAnalysisDir,"checkstyle-local-suppressions.xml")
+            def checkstyleLocalSuppressionsFile = new File(analysisDir,"checkstyle-local-suppressions.xml")
             checkstyleLocalSuppressionsFile.parentFile.mkdirs()
-            if (!checkstyleLocalSuppressionsFile.exists()) {
-                checkstyleLocalSuppressionsFile << checkstyleLocalSuppressionsXml.getContent()
-            }
+            checkstyleLocalSuppressionsFile << checkstyleLocalSuppressionsXml.getContent()
             project.ant {
                 taskdef(resource:'checkstyletask.properties',
                                 classpath: project.configurations.checkstyleConf.asPath)
