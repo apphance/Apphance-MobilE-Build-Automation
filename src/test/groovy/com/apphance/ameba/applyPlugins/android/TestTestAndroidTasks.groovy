@@ -20,6 +20,7 @@ class TestTestAndroidTasks extends BaseAndroidTaskTest {
     @Test
     public void testBuildTasksAvailable() {
         verifyTasksInGroup(getProject(),[
+            'checkTests',
             'testAndroid',
             'cleanAVD',
             'createAVD',

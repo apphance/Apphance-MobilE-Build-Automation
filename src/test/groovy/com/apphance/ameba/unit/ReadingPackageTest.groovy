@@ -13,13 +13,17 @@ class ReadingPackageTest {
         def currentPackage = []
         ph.findAllPackages("", f, currentPackage)
         assertArrayEquals(currentPackage.toString(), (String [])[
+			'com.apphance.ameba.apphance.android',
             'com.apphance.ameba.applyPlugins.android',
             'com.apphance.ameba.applyPlugins.ios',
             'com.apphance.ameba.applyPlugins.vcs',
+            'com.apphance.ameba.conventions',
+            'com.apphance.ameba.documentation',
             'com.apphance.ameba.runBuilds.android',
             'com.apphance.ameba.runBuilds.ios',
             'com.apphance.ameba.unit',
             'com.apphance.ameba.unit.android',
+			'com.apphance.ameba.unit.apphance.android',
             'com.apphance.ameba.unit.ios',
             'com.apphance.ameba.unit.vcs',
         ], (String[]) currentPackage)

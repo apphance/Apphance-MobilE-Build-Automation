@@ -44,9 +44,9 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
                 jarLibraryPrefix = this.androidConf.mainProjectName
             }
             prepareJarLibraryTask(project)
-            project.task('prepareAndroidJarLibrarySetup', type:PrepareAndroidJarLibrarySetupTask)
-            project.task('verifyAndroidJarLibrarySetup', type: VerifyAndroidJarLibrarySetupTask)
-            project.task('showAndroidJarLibrarySetup', type: ShowAndroidJarLibrarySetupTask)
+            project.prepareSetup.prepareSetupOperations << new PrepareAndroidJarLibrarySetupOperation()
+            project.verifySetup.verifySetupOperations << new VerifyAndroidJarLibrarySetupOperation()
+            project.showSetup.showSetupOperations << new ShowAndroidJarLibrarySetupOperation()
         }
     }
 
@@ -74,10 +74,10 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
             project.ant.delete(dir : resDir)
             resDir.mkdirs()
             project.ant.copy(todir: resDir) {
-                fileset(dir: new File(project.rootDir, 'res'))
+                fileset(dir: project.file( 'res'))
             }
-            File destFile = new File(project.rootDir,"bin/${androidConf.mainProjectName}_${conf.versionString}.jar")
-            File classesDir = new File(project.rootDir, "bin/classes")
+            File destFile = project.file("bin/${androidConf.mainProjectName}_${conf.versionString}.jar")
+            File classesDir = project.file( "bin/classes")
             destFile.delete()
             project.ant.jar(destfile: destFile, manifest: manifestFile, manifestencoding: 'utf-8') {
                 fileset(dir: classesDir) {
@@ -95,4 +95,16 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
         }
         task.dependsOn(project.readAndroidProjectConfiguration)
     }
+
+    static public final String DESCRIPTION =
+"""This is the plugin that makes up Android's inability to prepare standalone .jar libraries.
+
+Currently (android sdk v16 as of this writing) android has no features yet to provide
+libraries as standalone .jar files. The feature is being worked on, but temporarily
+the jarlibrary plugin provides capability of building such jar library. It embeds
+resources of Android project (from res directory) to standard java/jar resource - with specified prefix.
+This is not a perfect solution (for example you cannot process layouts this way - only the
+images) but it will do for a moment. This is how Apphance service library is prepared.
+"""
+
 }

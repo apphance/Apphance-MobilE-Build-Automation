@@ -32,9 +32,11 @@ class Wp7Plugin implements Plugin<Project> {
 			prepareBuildAllTask(project)
 			prepareCleanTask(project)
 			prepareCopyProject(project)
-			project.task('prepareWp7Setup', type:PrepareWp7SetupTask)
-			project.task('verifyWp7Setup', type: VerifyWp7SetupTask)
-			project.task('showWp7Setup', type: ShowWp7SetupTask)
+
+			project.prepareSetup.prepareSetupOperations << new PrepareWp7SetupOperation()
+			project.verifySetup.verifySetupOperations << new VerifyWp7SetupOperation()
+			project.showSetup.showSetupOperations << new ShowWp7PropertiesOperation()
+
 		}
 	}
 

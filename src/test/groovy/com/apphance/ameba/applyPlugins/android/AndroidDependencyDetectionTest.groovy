@@ -33,7 +33,7 @@ class AndroidDependencyDetectionTest extends BaseAndroidTaskTest {
         assertNotNull(androidConf.sdkDirectory )
         assertEquals([
             'FlurryAgent.jar',
-            'development-apphance.jar'
+            'development-apphance.jar',
         ], androidConf.libraryJars.collect { it.name} )
         assertEquals([
             'subproject',

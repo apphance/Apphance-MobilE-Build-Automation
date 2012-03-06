@@ -46,7 +46,7 @@ class RunPrepareAndroidSetupTest {
 
     @Test
     public void testGenerateNoChange() throws Exception {
-        String res = runTests('\n'*50 + 'y\n', 'prepareSetup')
+        String res = runTests('\n'*252 + 'y\n', 'prepareSetup')
         String text = gradleProperties.text
         String originalText = gradlePropertiesOrig.text
         assertEquals(originalText, text)
@@ -56,7 +56,7 @@ class RunPrepareAndroidSetupTest {
     @Test
     public void testGenerateDefaults() throws Exception {
         gradleProperties.delete()
-        String res = runTests('\n'*50 + 'y\n', 'prepareSetup')
+        String res = runTests('\n'*252 + 'y\n', 'prepareSetup')
         assertTrue(gradleProperties.exists())
         String text = gradleProperties.text
         String originalText = gradlePropertiesOrig.text
@@ -75,15 +75,26 @@ project.directory.name=
 project.language=en
 project.country=US
 ###########################################################
+# Mercurial properties
+###########################################################
+hg.commit.user=
+###########################################################
 # Android properties
 ###########################################################
 android.mainVariant=
 android.excluded.builds=
 android.minSdk.target=
 ###########################################################
-# Android jar library properties
+# Release properties
 ###########################################################
-android.jarLibrary.resPrefix=
+release.mail.from=
+release.mail.to=
+release.mail.flags=qrCode,imageMontage
+###########################################################
+# Apphance properties
+###########################################################
+apphance.appkey=
+apphance.mode=QA
 ###########################################################
 # Android test properties
 ###########################################################
@@ -96,15 +107,9 @@ android.test.directory=test/android
 android.test.perPackage=false
 android.useEmma=true
 ###########################################################
-# Mercurial properties
+# Android jar library properties
 ###########################################################
-hg.commit.user=
-###########################################################
-# Release properties
-###########################################################
-release.mail.from=
-release.mail.to=
-release.mail.flags=qrCode,imageMontage
+android.jarLibrary.resPrefix=
 """, text)
         println text
     }

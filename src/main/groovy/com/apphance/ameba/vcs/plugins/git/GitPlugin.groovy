@@ -23,9 +23,9 @@ class GitPlugin extends AbstractVCSPlugin {
     @Override
     public void apply(Project project) {
         super.apply(project);
-        project.task('verifyGitSetup', type: VerifyGitSetupTask.class)
-        project.task('prepareGitSetup', type: PrepareGitSetupTask.class)
-        project.task('showGitSetup', type: ShowGitSetupTask.class)
+        project.prepareSetup.prepareSetupOperations << new PrepareGitSetupOperation()
+        project.verifySetup.verifySetupOperations << new VerifyGitSetupOperation()
+        project.showSetup.showSetupOperations << new ShowGitSetupOperation()
     }
 
 
@@ -122,4 +122,11 @@ class GitPlugin extends AbstractVCSPlugin {
     void prepareShowPropertiesTask(Project arg0) {
         // no properties to show
     }
+
+    static public final String DESCRIPTION =
+"""This is the VCS (version control system) plugin which supports git VCS.
+
+The plugin should be applied before the main build plugin.
+"""
+
 }

@@ -19,9 +19,9 @@ import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
-import com.apphance.ameba.plugins.release.PrepareReleaseSetupTask;
+import com.apphance.ameba.plugins.release.PrepareReleaseSetupOperation;
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty;
-import com.apphance.ameba.plugins.release.VerifyReleaseSetupTask;
+import com.apphance.ameba.plugins.release.VerifyReleaseSetupOperation;
 import com.apphance.ameba.vcs.plugins.git.GitPlugin
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
 
@@ -51,9 +51,9 @@ class ProjectReleasePlugin implements Plugin<Project> {
         prepareSendMailMessageTask(project)
         prepareCleanReleaseTask(project)
         prepareSourcesZipTask(project)
-        project.task('verifyReleaseSetup', type: VerifyReleaseSetupTask.class)
-        project.task('prepareReleaseSetup', type: PrepareReleaseSetupTask.class)
-        project.task('showReleaseSetup', type: ShowReleaseSetupTask.class)
+        project.prepareSetup.prepareSetupOperations << new PrepareReleaseSetupOperation()
+        project.verifySetup.verifySetupOperations << new VerifyReleaseSetupOperation()
+        project.showSetup.showSetupOperations << new ShowReleaseSetupOperation()
     }
 
     void prepareMailConfiguration(Project project) {
@@ -246,4 +246,12 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
         }
         task.dependsOn(project.readProjectConfiguration, project.prepareForRelease)
     }
+
+    static public final String DESCRIPTION =
+"""This is Ameba release plugin.
+
+The plugin provides all the basic tasks required to prepare OTA release of
+an application. It should be added after build plugin is added.
+"""
+
 }

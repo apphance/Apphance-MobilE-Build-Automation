@@ -17,8 +17,8 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
     }
 
     @Test
-    public void testBuildTasksAvailable() {
-        verifyTasksInGroup(getProject(),['checkTests'],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
+    public void testTestTasksAvailable() {
+        verifyTasksInGroup(getProject(),['checkTests'],AmebaCommonBuildTaskGroups.AMEBA_TEST)
     }
 
     @Test
@@ -32,18 +32,18 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
             'cleanConfiguration',
             'copyGalleryFiles',
             'readProjectConfiguration',
-            'showProjectConfiguration',
         ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
     }
     @Test
     public void testSetupTasksAvailable() {
         verifyTasksInGroup(getProject(),[
-            'prepareBaseSetup',
             'prepareSetup',
-            'verifyBaseSetup',
             'verifySetup',
-            'showBaseSetup',
+            'showConventions',
             'showSetup',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
+        assertEquals(['PrepareBaseSetupOperation'], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName } )
+        assertEquals(['VerifyBaseSetupOperation'], project.verifySetup.verifySetupOperations.collect { it.class.simpleName } )
+        assertEquals(['ShowBaseSetupOperation'], project.showSetup.showSetupOperations.collect { it.class.simpleName } )
     }
 }

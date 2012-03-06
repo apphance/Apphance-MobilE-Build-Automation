@@ -73,4 +73,14 @@ class IOSUnitTestPlugin implements Plugin<Project> {
             close.run()
         }
     }
+
+    static public final String DESCRIPTION =
+"""This plugins provides functionality of standard ocunit testing for iOS.
+
+It executes all tests which are build using ocunit test framework.
+
+More description needed ....
+
+"""
+
 }

@@ -59,7 +59,7 @@ class AndroidReleasePlugin implements Plugin<Project>{
             File destZip = conf.documentationZip.location
             destZip.mkdirs()
             destZip.delete()
-            File javadocDir = new File(project.rootDir,"build/docs/javadoc")
+            File javadocDir = project.file("build/docs/javadoc")
             project.ant.zip(destfile: destZip, basedir : javadocDir)
             logger.lifecycle("Zipped documentation to ${destZip}")
         }
@@ -262,4 +262,17 @@ class AndroidReleasePlugin implements Plugin<Project>{
         out << url.openStream()
         out.close()
     }
+
+    static public final String DESCRIPTION =
+"""This is the plugin that provides simple release functionality.
+
+It provides basic release tasks, so that you can upgrade version of the application
+while preparing the release and it provides post-release tasks that commit it into the repository.
+Most importantly however, it produces ready-to-use OTA (Over-The-Air) package (in ota directory)
+that you can copy to appropriate directory on your web server and have ready-to-use,
+easily installable OTA version of your application.
+
+Note that you need to load generic 'ameba-project-release' plugin before this plugin is loaded.
+"""
+
 }

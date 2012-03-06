@@ -131,4 +131,16 @@ return RESULT
     File getCedarTemplate(String family) {
         return new File(conf.tmpDirectory, "cedar/${family}/${family}_template.zip")
     }
+
+    static public final String DESCRIPTION =
+"""This plugins provides functionality of Cedar integration testing for iOS.
+
+It executes all tests which are build using Cedar test framework.
+
+More description needed ....
+
+"""
+
+
+
 }

@@ -46,9 +46,9 @@ class FoneMonkeyPlugin implements Plugin<Project> {
             prepareRunMonkeyTestsTask()
             prepareRunSingleFoneMonkeyTestTask()
             prepareFoneMonkeyReportTask()
-            project.task('verifyFoneMonkeySetup', type: VerifyFoneMonkeySetupTask.class)
-            project.task('prepareFoneMonkeySetup', type: PrepareFoneMonkeySetupTask.class)
-            project.task('showFoneMonkeySetup', type: ShowFoneMonkeySetupTask.class)
+            project.prepareSetup.prepareSetupOperations << new PrepareFoneMonkeySetupOperation()
+            project.verifySetup.verifySetupOperations << new VerifyFoneMonkeySetupOperation()
+            project.showSetup.showSetupOperations << new ShowFoneMonkeySetupOperation()
         }
     }
 
@@ -191,7 +191,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
             "${runTestScript}"
         ])
 
-        File applicationAppFile = new File(project.rootDir, "build/${foneMonkeyConfiguration}-iphonesimulator/RunMonkeyTests.app")
+        File applicationAppFile = project.file( "build/${foneMonkeyConfiguration}-iphonesimulator/RunMonkeyTests.app")
         projectHelper.executeCommand(project, [
             "/bin/bash",
             "${runTestScript}"
@@ -288,4 +288,14 @@ class FoneMonkeyPlugin implements Plugin<Project> {
         }
         task.dependsOn(project.buildFoneMonkeyRelease)
     }
+
+    static public final String DESCRIPTION =
+"""This plugins provides functionality of Fonemonkey integration testing for iOS.
+
+It executes all tests which are build using Fonemonkey test framework.
+
+More description needed ....
+
+"""
+
 }
