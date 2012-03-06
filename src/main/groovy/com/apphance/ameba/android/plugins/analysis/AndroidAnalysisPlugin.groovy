@@ -82,27 +82,28 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
     private URL getResourceUrl(Project project, String resourceName) {
         logger.info("Reading resource ${resourceName}")
         AndroidAnalysisConvention convention = project.convention.plugins.androidAnalysis
-        URL baseUrl = project.file('config/analysis').toURI().toURL()
+        URL configUrl = project.file('config/analysis').toURI().toURL()
+        URL baseUrl = configUrl
         if (convention.baseAnalysisConfigUrl != null) {
             baseUrl = new URL(convention.baseAnalysisConfigUrl)
             logger.info("Base config url  ${baseUrl}")
         }
         URL targetURL = new URL(baseUrl, resourceName)
-        if (targetURL.getProtocol() == 'file') {
-            println "Reading resource from tile ${targetURL}"
-            if (!(new File(targetURL.toURI()).exists())) {
-                def url =  this.class.getResource(resourceName)
-                println "Reading resource from internal ${url}"
-                return url
-            }
-        } else {
-            println "Downloading file from ${targetURL}"
+            if (targetURL.getProtocol() != 'file') {
+            logger.info("Downloading file from ${targetURL}")
             try {
-                targetURL.getContent()
+                targetURL.getContent() // just checking if we can read it
+                return targetURL
             } catch (IOException e){
-                println "Exception ${e}"
-                return this.class.getResource(resourceName)
+                logger.warn("Exception ${e} while reading from ${targetURL}. Falling back")
+                targetURL = new URL(configUrl, resourceName)
             }
+        }
+        logger.info("Reading resource from file ${targetURL}")
+        if (!(new File(targetURL.toURI()).exists())) {
+            def url =  this.class.getResource(resourceName)
+            logger.info("Reading resource from internal ${url} as file ${targetURL} not found")
+            return url
         }
         return targetURL
     }
@@ -159,11 +160,13 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
             checkstyleFile << checkstyleXml.getContent()
             URL checkstyleSuppressionsXml = getResourceUrl(project,'checkstyle-suppressions.xml')
             def checkstyleSuppressionsFile = new File(analysisDir,"checkstyle-suppressions.xml")
+            checkstyleSuppressionsFile.parentFile.mkdirs()
             checkstyleSuppressionsFile.delete()
             checkstyleSuppressionsFile << checkstyleSuppressionsXml.getContent()
             URL checkstyleLocalSuppressionsXml = getResourceUrl(project,'checkstyle-local-suppressions.xml')
             def checkstyleLocalSuppressionsFile = new File(analysisDir,"checkstyle-local-suppressions.xml")
             checkstyleLocalSuppressionsFile.parentFile.mkdirs()
+            checkstyleLocalSuppressionsFile.delete()
             checkstyleLocalSuppressionsFile << checkstyleLocalSuppressionsXml.getContent()
             project.ant {
                 taskdef(resource:'checkstyletask.properties',

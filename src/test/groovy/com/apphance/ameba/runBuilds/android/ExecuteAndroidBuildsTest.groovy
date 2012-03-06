@@ -17,6 +17,7 @@ class ExecuteAndroidBuildsTest {
     File testProject = new File("testProjects/android")
     File testNovariantsProject = new File("testProjects/android-novariants")
     File testAndroidConventionProject = new File("testProjects/android-convention")
+    File testAndroidWrongConventionProject = new File("testProjects/android-convention-wrong-specs")
     File templateFile = new File("templates/android")
 
     protected void runGradle(String ... tasks) {
@@ -59,6 +60,14 @@ class ExecuteAndroidBuildsTest {
         }
     }
 
+    protected void runGradleAndroidAnalysisWrongConvention(String ... tasks) {
+        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testAndroidWrongConventionProject).connect();
+        try {
+            connection.newBuild().forTasks(tasks).run();
+        } finally {
+            connection.close();
+        }
+    }
 
     @Test
     void testCleanCheckTests() {
@@ -191,7 +200,6 @@ class ExecuteAndroidBuildsTest {
         assertTrue(new File(baseDir, "findbugs-result.xml").exists())
         assertConfigSameAsBuild(testNovariantsProject, "checkstyle-local-suppressions.xml")
         assertConfigSameAsBuild(testNovariantsProject, "checkstyle-suppressions.xml")
-        assertConfigSameAsBuild(testNovariantsProject, "checkstyle-local-suppressions.xml")
         assertConfigSameAsBuild(testNovariantsProject, "checkstyle.xml")
         assertConfigSameAsBuild(testNovariantsProject, "findbugs-exclude.xml")
         assertConfigSameAsBuild(testNovariantsProject, "pmd-rules.xml")
@@ -214,10 +222,21 @@ class ExecuteAndroidBuildsTest {
         assertTrue(new File(baseDir, "findbugs-result.xml").exists())
         assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "checkstyle-local-suppressions.xml")
         assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "checkstyle-suppressions.xml")
-        assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "checkstyle-local-suppressions.xml")
         assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "checkstyle.xml")
         assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "findbugs-exclude.xml")
         assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "pmd-rules.xml")
+    }
+
+    @Test
+    void testAnalysisFromRemoteWrongConvention() {
+        File baseDir = new File(testAndroidWrongConventionProject, "build/analysis/")
+        runGradleAndroidAnalysisWrongConvention('updateProject' ,'analysis')
+        assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
+        assertTrue(new File(baseDir, "cpd-result.xml").exists())
+        assertTrue(new File(baseDir, "findbugs-result.xml").exists())
+        assertConfigSameAsBuild(testAndroidWrongConventionProject, "checkstyle.xml")
+        assertConfigSameAsBuild(testAndroidWrongConventionProject, "findbugs-exclude.xml")
+        assertConfigSameAsBuild(testAndroidWrongConventionProject, "pmd-rules.xml")
     }
 
 
@@ -226,7 +245,7 @@ class ExecuteAndroidBuildsTest {
         runGradle('clean', 'updateProject' ,'analysis')
         assertTrue(new File("testProjects/android/build/analysis/checkstyle-report.xml").exists())
         assertTrue(new File("testProjects/android/build/analysis/cpd-result.xml").exists())
-        // don't now why but it does not work from within assertTrue(new File("testProjects/android/build/analysis/findbugs-result.xml").exists())
+        assertTrue(new File("testProjects/android/build/analysis/findbugs-result.xml").exists())
         assertTrue(new File("testProjects/android/build/analysis/pmd-result.xml").exists())
     }
 
