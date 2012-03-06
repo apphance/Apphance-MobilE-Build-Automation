@@ -19,6 +19,6 @@ emma
 /tmp
 /.classpath
 /*.hprof
-/.settings
+/.settings*
 /tmpCopy
 /coverage.ec
