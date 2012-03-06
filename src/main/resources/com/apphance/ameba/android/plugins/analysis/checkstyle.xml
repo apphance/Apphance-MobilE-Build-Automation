@@ -91,7 +91,7 @@
     <property name="file" value="${basedir}/build/analysis/checkstyle-suppressions.xml"/>
   </module>
   <module name="SuppressionFilter">
-    <property name="file" value="${basedir}/config/analysis/checkstyle-local-suppressions.xml"/>
+    <property name="file" value="${basedir}/build/analysis/checkstyle-local-suppressions.xml"/>
   </module>
   <module name="JavadocPackage"/>
   <module name="NewlineAtEndOfFile">

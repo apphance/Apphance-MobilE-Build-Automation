@@ -44,9 +44,9 @@ class KIFPlugin implements Plugin<Project> {
             prepareBuildKIFReleaseTask()
             prepareRunKIFTestsTask()
             prepareRunSingleKIFTestTask()
-            project.task('verifyKIFSetup', type: VerifyIosKIFSetupTask.class)
-            project.task('prepareKIFSetup', type: PrepareIosKIFSetupTask.class)
-            project.task('showKIFSetup', type: ShowIosKIFSetupTask.class)
+            project.prepareSetup.prepareSetupOperations << new PrepareIosKIFSetupOperation()
+            project.verifySetup.verifySetupOperations << new VerifyIosKIFSetupOperation()
+            project.showSetup.showSetupOperations << new ShowIosKIFSetupOperation()
         }
     }
 
@@ -111,7 +111,7 @@ class KIFPlugin implements Plugin<Project> {
             "${runTestScript}"
         ])
 
-        File applicationAppFile = new File(project.rootDir, "build/${KIFConfiguration}-iphonesimulator/KIFTests.app")
+        File applicationAppFile = project.file( "build/${KIFConfiguration}-iphonesimulator/KIFTests.app")
         projectHelper.executeCommand(project, [
             "/bin/bash",
             "${runTestScript}"
@@ -202,4 +202,15 @@ class KIFPlugin implements Plugin<Project> {
         }
         task.dependsOn(project.buildKIFRelease)
     }
+
+    static public final String DESCRIPTION =
+"""This plugins provides functionality of KIF integration testing for iOS.
+
+It executes all tests which are build using KIF test framework.
+
+More description needed ....
+
+"""
+
+
 }

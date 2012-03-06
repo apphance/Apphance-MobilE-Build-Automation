@@ -71,7 +71,7 @@ class IOSSingleReleaseBuilder {
                 id : "${target}-${configuration}",
                 target : target,
                 configuration : configuration,
-                buildDirectory : new File(new File(project.rootDir, "srcTmp/build"),"${configuration}-iphoneos"),
+                buildDirectory : new File(project.file( "build"),"${configuration}-iphoneos"),
                 fullReleaseName : "${target}-${configuration}-${conf.fullVersionString}",
                 folderPrefix : "${conf.projectDirectoryName}/${conf.fullVersionString}/${target}/${configuration}",
                 filePrefix : "${target}-${configuration}-${conf.fullVersionString}",

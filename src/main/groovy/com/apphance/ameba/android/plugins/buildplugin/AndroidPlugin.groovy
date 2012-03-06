@@ -50,7 +50,7 @@ class AndroidPlugin implements Plugin<Project> {
             this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
             this.manifestHelper = new AndroidManifestHelper()
             this.androidBuilder = new AndroidSingleVariantBuilder(project, this.androidConf)
-			prepareCopySourcesTask(project)
+            prepareCopySourcesTask(project)
             prepareAndroidEnvironment(project)
             prepareJavaEnvironment(project)
             prepareCompileAndroidTask(project)
@@ -67,9 +67,13 @@ class AndroidPlugin implements Plugin<Project> {
             prepareReplacePackageTask(project)
             addAndroidSourceExcludes()
             addAndroidVCSCommits()
-            project.task('prepareAndroidSetup', type:PrepareAndroidSetupTask)
-            project.task('verifyAndroidSetup', type: VerifyAndroidSetupTask)
-            project.task('showAndroidSetup', type: ShowAndroidSetupTask)
+            project.prepareSetup.prepareSetupOperations << new PrepareAndroidSetupOperation()
+            project.verifySetup.verifySetupOperations << new VerifyAndroidSetupOperation()
+            project.showSetup.showSetupOperations << new ShowAndroidSetupOperation()
+
+            project.prepareSetup.dependsOn(project.readAndroidProjectConfiguration)
+            project.verifySetup.dependsOn(project.readAndroidProjectConfiguration)
+            project.showSetup.dependsOn(project.readAndroidProjectConfiguration)
         }
     }
 
@@ -90,10 +94,10 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = "Performs code generation/compile tasks for android (if needed)"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            File gen = new File(project.rootDir,'srcTmp/gen')
+            File gen = project.file('srcTmp/gen')
             if (!gen.exists() || gen.list().length == 0) {
                 logger.lifecycle("Regenerating gen directory by running debug project")
-                projectHelper.executeCommand(project, new File(project.rootDir, "srcTmp"), [
+                projectHelper.executeCommand(project, project.file( "srcTmp"), [
                     'ant',
                     'debug'
                 ])
@@ -110,15 +114,15 @@ class AndroidPlugin implements Plugin<Project> {
         def javaConventions =  project.convention.plugins.java
         javaConventions.sourceSets {
             main {
-                output.classesDir = 'srcTmp/build/classes'
-                output.resourcesDir = 'srcTmp/build/resources'
-                java { srcDir 'srcTmp/src' }
-                java { srcDir 'srcTmp/gen' }
+                output.classesDir = project.file('srcTmp/build/classes')
+                output.resourcesDir = project.file('srcTmp/build/resources')
+                java { srcDir project.file('srcTmp/src') }
+                java { srcDir project.file('srcTmp/gen') }
             }
             test {
-                output.classesDir = 'srcTmp/build/test-classes'
-                output.resourcesDir = 'srcTmp/build/test-resources'
-                java { srcDir 'srcTmp/test-src' }
+                output.classesDir = project.file('srcTmp/build/test-classes')
+                output.resourcesDir = project.file('srcTmp/build/test-resources')
+                java { srcDir project.file('srcTmp/test-src') }
             }
         }
         project.compileJava.options.encoding = 'UTF-8'
@@ -239,6 +243,7 @@ class AndroidPlugin implements Plugin<Project> {
             runUpdateRecursively(project, project.rootDir, true)
             logger.lifecycle("Performed android update")
         }
+        task.dependsOn(project.copySources)
     }
 
     private void runUpdateRecursively(Project project, File currentDir, boolean reRun, boolean silentLogging = false) {
@@ -259,7 +264,7 @@ class AndroidPlugin implements Plugin<Project> {
     private runUpdateProject(Project project, File directory, boolean reRun, boolean silentLogging = false) {
         if (!new File(directory,'local.properties').exists() || reRun) {
             if (!directory.exists()) {
-                throw new GradleException('The directory ${directory} to execute the command, does not exist! Your configuration is wrong.')
+                throw new GradleException("The directory ${directory} to execute the command, does not exist! Your configuration is wrong.")
             }
             try {
                 projectHelper.executeCommand(project, directory, [
@@ -287,7 +292,7 @@ class AndroidPlugin implements Plugin<Project> {
                 'ant',
                 'clean'
             ])
-            File tmpDir = new File(project.rootDir,"tmp")
+            File tmpDir = project.file("tmp")
             project.ant.delete(dir: tmpDir)
         }
         project.clean.dependsOn(task)
@@ -297,10 +302,10 @@ class AndroidPlugin implements Plugin<Project> {
 
     private void prepareCleanClassesTask(Project project) {
         def task = project.task('cleanClasses')
-        task.description = "Cleans only the compiled classes (removes instrumentation)"
+        task.description = "Cleans only the compiled classes"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            project.ant.delete(dir: new File(project.rootDir,"build"))
+            project.ant.delete(dir: project.file("build"))
         }
     }
 
@@ -393,42 +398,42 @@ class AndroidPlugin implements Plugin<Project> {
         project.tasks["buildAll${debugRelease}"].dependsOn(task)
     }
 
-	void prepareCopySourcesTask(Project project) {
-		def task = project.task('copySources')
-		task.description = "Copies all sources to tmp directory for build"
-		task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-		task << {
-			new AntBuilder().delete(dir: "${project.rootDir}/srcTmp")
-			new AntBuilder().copy(toDir : "${project.rootDir}/srcTmp", verbose:true) {
-				fileset(dir : "${project.rootDir}/") {
-					exclude(name: "${project.rootDir}/srcTmp/**/*")
-					conf.sourceExcludes.each {
-						if (!it.equals('**/local.properties')) {
-							exclude(name: it)
-						}
-					}
-				}
-			}
-			// edit ant.properties for proper signing keystore path
-			File antProperties = new File("${project.rootDir}/srcTmp/ant.properties")
-			File newAntProperties = new File("${project.rootDir}/srcTmp/ant.props")
-			if (newAntProperties.exists()) {
-				newAntProperties.delete()
-			}
-			newAntProperties.withWriter { out ->
-				antProperties.eachLine {
-					if (it.contains("key.store=")) {
-						out.println(it.replaceFirst("key.store=", "key.store=../"))
-					} else {
-						out.println(it)
-					}
-				}
-			}
-			antProperties.delete()
-			antProperties << newAntProperties.text
-			newAntProperties.delete()
-		}
-	}
+    void prepareCopySourcesTask(Project project) {
+        def task = project.task('copySources')
+        task.description = "Copies all sources to tmp directory for build"
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        task << {
+            new AntBuilder().delete(dir: "${project.rootDir}/srcTmp")
+            new AntBuilder().copy(toDir : "${project.rootDir}/srcTmp", verbose:true) {
+                fileset(dir : "${project.rootDir}/") {
+                    exclude(name: "${project.rootDir}/srcTmp/**/*")
+                    conf.sourceExcludes.each {
+                        if (!it.equals('**/local.properties')) {
+                            exclude(name: it)
+                        }
+                    }
+                }
+            }
+            // edit ant.properties for proper signing keystore path
+            File antProperties = new File("${project.rootDir}/srcTmp/ant.properties")
+            File newAntProperties = new File("${project.rootDir}/srcTmp/ant.props")
+            if (newAntProperties.exists()) {
+                newAntProperties.delete()
+            }
+            newAntProperties.withWriter { out ->
+                antProperties.eachLine {
+                    if (it.contains("key.store=")) {
+                        out.println(it.replaceFirst("key.store=", "key.store=../"))
+                    } else {
+                        out.println(it)
+                    }
+                }
+            }
+            antProperties.delete()
+            antProperties << newAntProperties.text
+            newAntProperties.delete()
+        }
+    }
 
 
     void prepareBuildAllTask(Project project) {
@@ -507,8 +512,8 @@ class AndroidPlugin implements Plugin<Project> {
                     AndroidBuildXmlHelper buildXMLHelper = new AndroidBuildXmlHelper()
                     buildXMLHelper.replaceProjectName(project.rootDir, newName)
                 }
-                File sourceFolder = new File("src/" + oldPackage.replaceAll('\\.', '/'))
-                File targetFolder = new File("src/" + newPackage.replaceAll('\\.', '/'))
+                File sourceFolder = project.file("src/" + oldPackage.replaceAll('\\.', '/'))
+                File targetFolder = project.file("src/" + newPackage.replaceAll('\\.', '/'))
                 logger.lifecycle("Moving ${sourceFolder} to ${targetFolder}")
                 project.ant.move(file: sourceFolder, tofile : targetFolder, failonerror : false)
                 logger.lifecycle("Replacing remaining references in AndroidManifest ")
@@ -521,4 +526,15 @@ class AndroidPlugin implements Plugin<Project> {
             }
         }
     }
+
+    static public final String DESCRIPTION =
+"""This is the main android build plugin.
+
+The plugin provides all the tasks needed to build android application.
+Besides tasks explained below, the plugin prepares build-* and install-*
+tasks which are dynamically created, based on variants available. In
+case the build has no variants, the only available builds are Debug and Release.
+In case of variants, there is one build and one task created for every variant.
+"""
+
 }

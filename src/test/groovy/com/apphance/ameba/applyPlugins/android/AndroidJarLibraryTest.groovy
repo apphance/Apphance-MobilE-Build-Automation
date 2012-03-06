@@ -26,7 +26,6 @@ class AndroidJarLibraryTest extends BaseAndroidTaskTest {
             'buildDebug-test',
             'buildAllRelease',
             'buildRelease-market',
-            'checkTests',
             'cleanAndroid',
             'cleanClasses',
             'compileAndroid',

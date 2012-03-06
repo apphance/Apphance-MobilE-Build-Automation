@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.text.SimpleDateFormat
 import java.util.ArrayList;
+import java.util.List;
 
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -162,11 +163,11 @@ class PropertyCategory {
             def url = project.readProperty(BaseProperty.PROJECT_URL)
             conf.baseUrl = url == null ? null : new URL(url)
             def iconFile = project.readProperty(BaseProperty.PROJECT_ICON_FILE)
-            conf.iconFile = iconFile == null ? null : new File(project.rootDir,iconFile)
-            conf.otaDirectory = new File(project.rootDir,'ota')
-            conf.tmpDirectory = new File(project.rootDir, 'tmp')
-            conf.logDirectory = new File(project.rootDir, 'log')
-            conf.buildDirectory = new File(project.rootDir, 'build')
+            conf.iconFile = iconFile == null ? null : project.file(iconFile)
+            conf.otaDirectory = project.file('ota')
+            conf.tmpDirectory = project.file( 'tmp')
+            conf.logDirectory = project.file( 'log')
+            conf.buildDirectory = project.file( 'build')
             project.retrieveLocale()
             conf.releaseNotes = project.readReleaseNotes()?.tokenize(",")
         }

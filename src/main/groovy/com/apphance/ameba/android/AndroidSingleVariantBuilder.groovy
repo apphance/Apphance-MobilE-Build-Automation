@@ -29,7 +29,7 @@ class AndroidSingleVariantBuilder {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.androidConf = androidProjectConfiguration
-            this.variantsDir = new File(project.rootDir, "variants")
+            this.variantsDir = project.file( "variants")
         }
     }
 
@@ -51,7 +51,7 @@ class AndroidSingleVariantBuilder {
         }
         String debugReleaseLowercase = debugRelease?.toLowerCase()
         String variablePart = debugReleaseLowercase + (variant == null ? "" : "-${variant}")
-        File binDir = new File(project.rootDir, "srcTmp/bin")
+        File binDir = project.file( "srcTmp/bin")
         AndroidArtifactBuilderInfo bi = new AndroidArtifactBuilderInfo(
                 variant: variant,
                 debugRelease: debugRelease,
@@ -69,7 +69,7 @@ class AndroidSingleVariantBuilder {
         }
         String debugReleaseLowercase = debugRelease?.toLowerCase()
         String variablePart = debugReleaseLowercase + (variant == null ? "" : "-${variant}")
-        File binDir = new File(project.rootDir, "srcTmp/bin")
+        File binDir = project.file( "srcTmp/bin")
         AndroidArtifactBuilderInfo bi = new AndroidArtifactBuilderInfo(
                 variant: variant,
                 debugRelease: debugRelease,
@@ -143,7 +143,7 @@ class AndroidSingleVariantBuilder {
         projectHelper.executeCommand(project, new File (project.rootDir, "srcTmp"), ['ant', 'clean'])
         if (bi.variant != null) {
             project.ant {
-                copy(todir : 'srcTmp/res/raw', overwrite:'true', verbose:'true') {
+                copy(todir : project.file('srcTmp/res/raw'), overwrite:'true', verbose:'true') {
                     fileset(dir: new File(variantsDir, bi.variant),
                             includes:'*', excludes:'market_variant.txt')
                 }

@@ -157,7 +157,7 @@ class ProjectHelper {
 
     Collection<String> executeCommand(Project project, File runDirectory, command, boolean failOnError = true, String [] envp = null,
     input = null, int retryTimes = 1, boolean silentLogging = false) {
-        File logDir = new File(project.rootDir, "log")
+        File logDir = project.file( "log")
         if (!logDir.exists()) {
             logDir.mkdirs()
         }

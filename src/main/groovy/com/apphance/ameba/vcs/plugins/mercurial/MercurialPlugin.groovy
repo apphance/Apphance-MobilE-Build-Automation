@@ -18,13 +18,12 @@ class MercurialPlugin extends AbstractVCSPlugin {
 
     ProjectHelper projectHelper = new ProjectHelper()
 
-
     @Override
     public void apply(Project project) {
         super.apply(project)
-        project.task('verifyMercurialSetup', type: VerifyMercurialSetupTask.class)
-        project.task('prepareMercurialSetup', type: PrepareMercurialSetupTask.class)
-        project.task('showMercurialSetup', type: ShowMercurialSetupTask.class)
+        project.prepareSetup.prepareSetupOperations << new PrepareMercurialSetupOperation()
+        project.verifySetup.verifySetupOperations << new  VerifyMercurialSetupOperation()
+        project.showSetup.showSetupOperations << new ShowMercurialSetupOperation()
     }
 
     def void cleanVCSTask(Project project) {
@@ -90,4 +89,11 @@ class MercurialPlugin extends AbstractVCSPlugin {
     def String [] getVCSExcludes(Project project) {
         return ["**/.hg/**", "**/.hg*/**"]as String[]
     }
+
+    static public final String DESCRIPTION =
+"""This is the VCS (version control system) plugin which supports mercurial VCS.
+
+The plugin should be applied before the main build plugin.
+"""
+
 }

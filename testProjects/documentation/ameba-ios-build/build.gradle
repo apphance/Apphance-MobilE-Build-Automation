@@ -1,0 +1,12 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath files("../../../bin/", "../../../build/classes/main", "../../../build/resources/main", "../../../bin")
+    }
+}
+
+apply plugin: 'ameba-project-configuration'
+apply plugin: 'ameba-git'
+apply plugin: 'ameba-ios-build'

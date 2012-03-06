@@ -26,7 +26,6 @@ class TestFoneMonkeyTasks extends AbstractBaseIOSTaskTest {
             'buildAllSimulators',
             'build-GradleXCode-BasicConfiguration',
             'buildSingleRelease',
-            'checkTests',
             'copyMobileProvision',
             'replaceBundleIdPrefix',
             'unlockKeyChain'
@@ -35,19 +34,26 @@ class TestFoneMonkeyTasks extends AbstractBaseIOSTaskTest {
 
     public void testSetupTasksAvailable() {
         verifyTasksInGroup(getProject(),[
-            'prepareBaseSetup',
             'prepareSetup',
-            'prepareIOSSetup',
-            'prepareFoneMonkeySetup',
-            'verifyBaseSetup',
             'verifySetup',
-            'verifyIOSSetup',
-            'verifyFoneMonkeySetup',
-            'showBaseSetup',
             'showSetup',
-            'showIOSSetup',
-            'showFoneMonkeySetup'
+            'showConventions',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
+        assertEquals([
+            'PrepareBaseSetupOperation',
+            'PrepareIOSSetupOperation',
+            'PrepareFoneMonkeySetupOperation',
+        ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName } )
+        assertEquals([
+            'VerifyBaseSetupOperation',
+            'VerifyIOSSetupOperation',
+            'VerifyFoneMonkeySetupOperation',
+        ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName } )
+        assertEquals([
+            'ShowBaseSetupOperation',
+            'ShowIOSSetupOperation',
+            'ShowFoneMonkeySetupOperation',
+        ], project.showSetup.showSetupOperations.collect { it.class.simpleName } )
     }
 
     @Test

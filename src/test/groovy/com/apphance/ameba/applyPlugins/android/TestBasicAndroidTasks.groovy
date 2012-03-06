@@ -26,7 +26,6 @@ class TestBasicAndroidTasks extends BaseAndroidTaskTest {
             'buildAllRelease',
             'buildDebug-test',
             'buildRelease-market',
-            'checkTests',
             'installDebug-test',
             'installRelease-market',
             'replacePackage',
@@ -43,7 +42,6 @@ class TestBasicAndroidTasks extends BaseAndroidTaskTest {
             'readAndroidProjectConfiguration',
             'readAndroidVersionAndProjectName',
             'readProjectConfiguration',
-            'showProjectConfiguration',
         ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
     }
 

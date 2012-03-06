@@ -24,7 +24,6 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
             'buildAllSimulators',
             'build-GradleXCode-BasicConfiguration',
             'buildSingleRelease',
-            'checkTests',
             'copyMobileProvision',
             'replaceBundleIdPrefix',
             'unlockKeyChain'
@@ -40,7 +39,6 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
             'readIOSProjectConfiguration',
             'readIOSParametersFromXcode',
             'readIOSProjectVersions',
-            'showProjectConfiguration'
         ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
     }
 
@@ -52,15 +50,22 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
     @Test
     public void testSetupTasksAvailable() {
         verifyTasksInGroup(getProject(),[
-            'prepareBaseSetup',
             'prepareSetup',
-            'prepareIOSSetup',
-            'verifyBaseSetup',
             'verifySetup',
-            'verifyIOSSetup',
-            'showBaseSetup',
             'showSetup',
-            'showIOSSetup'
+            'showConventions'
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
+        assertEquals([
+            'PrepareBaseSetupOperation',
+            'PrepareIOSSetupOperation'
+        ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName } )
+        assertEquals([
+            'VerifyBaseSetupOperation',
+            'VerifyIOSSetupOperation'
+        ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName } )
+        assertEquals([
+            'ShowBaseSetupOperation',
+            'ShowIOSSetupOperation'
+        ], project.showSetup.showSetupOperations.collect { it.class.simpleName } )
     }
 }

@@ -16,6 +16,8 @@ class ExecuteAndroidBuildsTest {
 
     File testProject = new File("testProjects/android")
     File testNovariantsProject = new File("testProjects/android-novariants")
+    File testAndroidConventionProject = new File("testProjects/android-convention")
+    File testAndroidWrongConventionProject = new File("testProjects/android-convention-wrong-specs")
     File templateFile = new File("templates/android")
 
     protected void runGradle(String ... tasks) {
@@ -42,6 +44,24 @@ class ExecuteAndroidBuildsTest {
 
     protected void runGradleNoVariants(String ... tasks) {
         ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testNovariantsProject).connect();
+        try {
+            connection.newBuild().forTasks(tasks).run();
+        } finally {
+            connection.close();
+        }
+    }
+
+    protected void runGradleAndroidAnalysis(String ... tasks) {
+        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testAndroidConventionProject).connect();
+        try {
+            connection.newBuild().forTasks(tasks).run();
+        } finally {
+            connection.close();
+        }
+    }
+
+    protected void runGradleAndroidAnalysisWrongConvention(String ... tasks) {
+        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testAndroidWrongConventionProject).connect();
         try {
             connection.newBuild().forTasks(tasks).run();
         } finally {
@@ -154,19 +174,78 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testAnalysis() {
+        File baseDir = new File("testProjects/android/build/analysis/")
         runGradle('updateProject' ,'analysis')
-        assertTrue(new File("testProjects/android/build/analysis/checkstyle-report.xml").exists())
-        assertTrue(new File("testProjects/android/build/analysis/cpd-result.xml").exists())
-        assertTrue(new File("testProjects/android/build/analysis/findbugs-result.xml").exists())
-        assertTrue(new File("testProjects/android/build/analysis/pmd-result.xml").exists())
+        assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
+        assertTrue(new File(baseDir, "cpd-result.xml").exists())
+        assertTrue(new File(baseDir, "findbugs-result.xml").exists())
+        assertTrue(new File(baseDir, "pmd-result.xml").exists())
     }
+
+    private assertConfigSameAsBuild(File projectDirectory, String fileName) {
+        File baseDir = new File(projectDirectory, "build/analysis/")
+        File resourceDir = new File("src/main/resources/com/apphance/ameba/android/plugins/analysis/")
+        File configBaseDir = new File(projectDirectory, "config/analysis/")
+        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
+        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
+    }
+
+    @Test
+    void testAnalysisFromConfig() {
+        File baseDir = new File(testNovariantsProject, "build/analysis/")
+        File configBaseDir = new File(testNovariantsProject, "config/analysis/")
+        runGradleNoVariants('updateProject' ,'analysis')
+        assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
+        assertTrue(new File(baseDir, "cpd-result.xml").exists())
+        assertTrue(new File(baseDir, "findbugs-result.xml").exists())
+        assertConfigSameAsBuild(testNovariantsProject, "checkstyle-local-suppressions.xml")
+        assertConfigSameAsBuild(testNovariantsProject, "checkstyle-suppressions.xml")
+        assertConfigSameAsBuild(testNovariantsProject, "checkstyle.xml")
+        assertConfigSameAsBuild(testNovariantsProject, "findbugs-exclude.xml")
+        assertConfigSameAsBuild(testNovariantsProject, "pmd-rules.xml")
+    }
+
+    private assertRemoteSameAsBuild(File projectDirectory, File configDirectory, String fileName) {
+        File baseDir = new File(projectDirectory, "build/analysis/")
+        File resourceDir = new File("src/main/resources/com/apphance/ameba/android/plugins/analysis/")
+        File configBaseDir = new File(configDirectory, "config/analysis/")
+        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
+        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
+    }
+
+    @Test
+    void testAnalysisFromRemote() {
+        File baseDir = new File(testAndroidConventionProject, "build/analysis/")
+        runGradleAndroidAnalysis('updateProject' ,'analysis')
+        assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
+        assertTrue(new File(baseDir, "cpd-result.xml").exists())
+        assertTrue(new File(baseDir, "findbugs-result.xml").exists())
+        assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "checkstyle-local-suppressions.xml")
+        assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "checkstyle-suppressions.xml")
+        assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "checkstyle.xml")
+        assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "findbugs-exclude.xml")
+        assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "pmd-rules.xml")
+    }
+
+    @Test
+    void testAnalysisFromRemoteWrongConvention() {
+        File baseDir = new File(testAndroidWrongConventionProject, "build/analysis/")
+        runGradleAndroidAnalysisWrongConvention('updateProject' ,'analysis')
+        assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
+        assertTrue(new File(baseDir, "cpd-result.xml").exists())
+        assertTrue(new File(baseDir, "findbugs-result.xml").exists())
+        assertConfigSameAsBuild(testAndroidWrongConventionProject, "checkstyle.xml")
+        assertConfigSameAsBuild(testAndroidWrongConventionProject, "findbugs-exclude.xml")
+        assertConfigSameAsBuild(testAndroidWrongConventionProject, "pmd-rules.xml")
+    }
+
 
     @Test
     void testAnalysisAfterClean() {
         runGradle('clean', 'updateProject' ,'analysis')
         assertTrue(new File("testProjects/android/build/analysis/checkstyle-report.xml").exists())
         assertTrue(new File("testProjects/android/build/analysis/cpd-result.xml").exists())
-        // don't now why but it does not work from within assertTrue(new File("testProjects/android/build/analysis/findbugs-result.xml").exists())
+        assertTrue(new File("testProjects/android/build/analysis/findbugs-result.xml").exists())
         assertTrue(new File("testProjects/android/build/analysis/pmd-result.xml").exists())
     }
 

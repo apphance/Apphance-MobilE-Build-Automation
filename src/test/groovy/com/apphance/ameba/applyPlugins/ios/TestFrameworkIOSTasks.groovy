@@ -27,7 +27,6 @@ class TestFrameworkIOSTasks extends AbstractBaseIOSTaskTest {
             'build-GradleXCode-BasicConfiguration',
             'buildSingleRelease',
             'buildFramework',
-            'checkTests',
             'copyMobileProvision',
             'replaceBundleIdPrefix',
             'unlockKeyChain'

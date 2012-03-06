@@ -1,0 +1,59 @@
+Plugin reference for Ameba, version ${version}.
+<div><br></div>
+<div>
+  This reference provides description of all plugins of Ameba, and tasks that they provide.
+  It also provides description of all properties that can be used in the plugin's configuration.
+  Last but not least, it provides examples showing how particular plugin should be used -
+  including conventions they can be used with particular plugins.
+</div>
+<div><br></div>
+<div class="sites-codeblock sites-codesnippet-block" style="width:300px;">
+<% separator = "" %>
+<% amebaDocumentation.groupNames.each { groupName -> %>
+    <% group = amebaDocumentation.groups[groupName] %>
+    ${separator}<a href="#${groupName}">${groupName}</a><br><br>
+    <% group.pluginNames.each { pluginName -> %>
+        <% plugin = group.plugins[pluginName] %>
+        &nbsp; &nbsp; &nbsp;<a href="#${plugin.name}">${plugin.niceName}</a><br>
+    <%     separator = "<br>" %>
+    <% } %>
+<% } %>
+</div>
+<br>
+<% amebaDocumentation.groupNames.each { groupName -> %>
+    <% group = amebaDocumentation.groups[groupName] %>
+    <div><a name="${groupName}"></a><h2 style="color:#973800;border-bottom:solid 1px #aaa"><font size="5">${groupName}</font></h2><div>
+    <% group.pluginNames.each { pluginName -> %>
+        <% plugin = group.plugins[pluginName] %>
+        <a name="${plugin.name}"></a><h3 style="border-bottom:dotted 1px #aaa"><font size="4">${plugin.niceName}</font></h3>
+            <div><br></div>
+            <div>Name: <span style="color:#bd4401;font-weight:bold">${plugin.name}</span></div>
+            <div><br></div>
+            ${plugin.description}
+            <h4>Tasks</h4>
+            <div>
+                <ul>
+                    <% plugin.tasks.each { path, task -> %>
+                        <li>
+                            <span style="background-color:transparent"><b>${task.name}</b>&nbsp;:
+                                ${task.description}
+                            </span>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+            <% if (plugin.props != null) { %>
+                <h4>Properties</h4>
+                ${plugin.props}
+            <% } %>
+            <h4>Example build.gradle</h4>
+            ${plugin.example}
+            <% if (plugin.conventions != null)  { %>
+                <h4>Conventions</h4>
+                ${plugin.conventions}
+            <% } %>
+            <div><br></div>
+     <% } %>
+<% } %>
+<div><br></div>
+<font size="1">This document was generated at ${date}</font>

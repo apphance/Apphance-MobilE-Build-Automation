@@ -1,20 +1,25 @@
 package com.apphance.ameba.android.plugins.analysis
 
-import groovy.util.XmlSlurper
-
 import java.io.File
 
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ProjectHelper;
+import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin;
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 
 class AndroidAnalysisPlugin implements Plugin<Project>{
+    static Logger logger = Logging.getLogger(AndroidAnalysisPlugin.class)
+
+    static final String FINDBUGS_HOME_DIR_PROPERTY = 'findbugs.home.dir'
+
+    static final String FINDBUGS_DEFAULT_HOME = '/var/lib/analysis/findbugs'
 
     File findbugsHomeDir
     AndroidProjectConfigurationRetriever androidConfRetriever
@@ -23,7 +28,7 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
     public void apply(Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         def androidAnalysisConvention = new AndroidAnalysisConvention()
-        project.extensions.androidAnalysis = androidAnalysisConvention
+        project.convention.plugins.put('androidAnalysis', androidAnalysisConvention)
         this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
         this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
         preparePmdTask(project)
@@ -40,20 +45,20 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
         project.configurations.add('pmdConf')
         project.dependencies.add('pmdConf', 'pmd:pmd:4.2.6' )
         task << {
-            URL pmdXml = this.class.getResource('pmd-rules.xml')
-            def analysisDir = new File(project.rootDir,project.androidAnalysis.buildAnalysisDirectory)
+            URL pmdXml = getResourceUrl(project, 'pmd-rules.xml')
+            def analysisDir = project.file('build/analysis')
             def pmdFile = new File(analysisDir,"pmd-rules.xml")
             pmdFile.parentFile.mkdirs()
             pmdFile.delete()
             pmdFile << pmdXml.getContent()
             project.ant {
                 taskdef(name:'pmd', classname:'net.sourceforge.pmd.ant.PMDTask',
-                        classpath: project.configurations.pmdConf.asPath)
+                                classpath: project.configurations.pmdConf.asPath)
                 pmd(shortFilenames:'false', failonruleviolation:'false',
-                        rulesetfiles:"${project.androidAnalysis.buildAnalysisDirectory}/pmd-rules.xml") {
-                            formatter(type:'xml', toFile:"${project.androidAnalysis.buildAnalysisDirectory}/pmd-result.xml")
-                            fileset(dir: 'src') { include(name: '**/*.java') }
-                        }
+                                rulesetfiles:"build/analysis/pmd-rules.xml") {
+                                    formatter(type:'xml', toFile:"build/analysis/pmd-result.xml")
+                                    fileset(dir: 'src') { include(name: '**/*.java') }
+                                }
             }
         }
     }
@@ -65,13 +70,42 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
         task << {
             project.ant {
                 taskdef(name:'cpd', classname:'net.sourceforge.pmd.cpd.CPDTask',
-                        classpath: project.configurations.pmdConf.asPath)
+                                classpath: project.configurations.pmdConf.asPath)
                 cpd(minimumTokenCount:'100', format: 'xml', encoding: 'UTF-8',
-                        outputFile:"${project.androidAnalysis.buildAnalysisDirectory}/cpd-result.xml") {
-                            fileset(dir: 'src', includes: '**/*.java')
-                        }
+                                outputFile:"build/analysis/cpd-result.xml") {
+                                    fileset(dir: 'src', includes: '**/*.java')
+                                }
             }
         }
+    }
+
+    private URL getResourceUrl(Project project, String resourceName) {
+        logger.info("Reading resource ${resourceName}")
+        AndroidAnalysisConvention convention = project.convention.plugins.androidAnalysis
+        URL configUrl = project.file('config/analysis').toURI().toURL()
+        URL baseUrl = configUrl
+        if (convention.baseAnalysisConfigUrl != null) {
+            baseUrl = new URL(convention.baseAnalysisConfigUrl)
+            logger.info("Base config url  ${baseUrl}")
+        }
+        URL targetURL = new URL(baseUrl, resourceName)
+            if (targetURL.getProtocol() != 'file') {
+            logger.info("Downloading file from ${targetURL}")
+            try {
+                targetURL.getContent() // just checking if we can read it
+                return targetURL
+            } catch (IOException e){
+                logger.warn("Exception ${e} while reading from ${targetURL}. Falling back")
+                targetURL = new URL(configUrl, resourceName)
+            }
+        }
+        logger.info("Reading resource from file ${targetURL}")
+        if (!(new File(targetURL.toURI()).exists())) {
+            def url =  this.class.getResource(resourceName)
+            logger.info("Reading resource from internal ${url} as file ${targetURL} not found")
+            return url
+        }
+        return targetURL
     }
 
     private void prepareFindbugsTask(Project project) {
@@ -82,60 +116,33 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
         project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs:1.3.9' )
         project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs-ant:1.3.9' )
         task << {
-            URL findbugsXml = this.class.getResource('findbugs-exclude.xml')
-            def analysisDir = new File(project.rootDir,project.androidAnalysis.buildAnalysisDirectory)
+            URL findbugsXml = getResourceUrl(project, 'findbugs-exclude.xml')
+            def analysisDir = project.file('build/analysis')
             def findbugsFile = new File(analysisDir,"findbugs-exclude.xml")
             findbugsFile.parentFile.mkdirs()
             findbugsFile.delete()
             findbugsFile << findbugsXml.getContent()
-            if (project.hasProperty('findbugs.home.dir')) {
-                findbugsHomeDir = new File(project['findbugs.home.dir'])
+            if (project.hasProperty(FINDBUGS_HOME_DIR_PROPERTY)) {
+                findbugsHomeDir = new File(project[FINDBUGS_HOME_DIR_PROPERTY])
             } else {
-                findbugsHomeDir = new File('/var/lib/analysis/findbugs')
+                findbugsHomeDir = new File(FINDBUGS_DEFAULT_HOME)
             }
             if (!findbugsHomeDir.exists()  && !findbugsHomeDir.isDirectory()) {
                 throw new GradleException("The file ${findbugsHomeDir} should point to findbugs home directory. You can change it by specifying -Pfindbugs.home.dir=<DIR>")
             }
             project.ant {
                 taskdef(name:'findbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask',
-                        classpath: project.configurations.findbugsConf.asPath)
+                                classpath: project.configurations.findbugsConf.asPath)
                 findbugs(home: findbugsHomeDir.absolutePath,
-                        output:'xml', outputFile:"${project.androidAnalysis.buildAnalysisDirectory}/findbugs-result.xml",
-                        excludefilter:"${project.androidAnalysis.buildAnalysisDirectory}/findbugs-exclude.xml") {
-                            sourcePath(path: 'src')
-                            "class"(location:'srcTmp/bin/classes')
-                            auxclassPath(path: androidConf.allJarsAsPath)
-                        }
+                                output:'xml', outputFile:"build/analysis/findbugs-result.xml",
+                                excludefilter:"build/analysis/findbugs-exclude.xml") {
+                                    sourcePath(path: 'src')
+                                    "class"(location:'srcTmp/bin/classes')
+                                    auxclassPath(path: androidConf.allJarsAsPath)
+                                }
             }
         }
         task.dependsOn(project.classes)
-    }
-
-    private String replacePathsInCheckStyle(Project project, Object content) {
-        byte[] contents = new byte[5 * 1024];
-
-        int bytesRead=0;
-        String strFileContents;
-
-        while( (bytesRead = content.read(contents)) != -1){
-            strFileContents = new String(contents, 0, bytesRead);
-        }
-        def xmlSlurper = new XmlSlurper()
-        xmlSlurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-        def modules = xmlSlurper.parseText(strFileContents)
-        def suppressionFilters = modules.module.findAll {it.@name.text().contains("SuppressionFilter")}
-        def configFilter = suppressionFilters.findAll{it.property.@value.text().contains('config/analysis')}
-        configFilter.each {it -> it.property.@value = it.property.@value.text().replaceFirst('config/analysis', project.androidAnalysis.configAnalysisDirectory)}
-        def buildFilter = suppressionFilters.findAll{it.property.@value.text().contains('build/analysis')}
-        buildFilter.each {it -> it.property.@value = it.property.@value.text().replaceFirst('build/analysis', project.androidAnalysis.buildAnalysisDirectory)}
-        def outputBuilder = new groovy.xml.StreamingMarkupBuilder()
-        outputBuilder.encoding = 'UTF-8'
-        String result = outputBuilder.bind{
-            mkp.xmlDeclaration()
-            mkp.yieldUnescaped '<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">'
-            mkp.yield modules
-        }
-        return result
     }
 
     private void prepareCheckstyleTask(Project project) {
@@ -145,34 +152,33 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
         project.configurations.add('checkstyleConf')
         project.dependencies.add('checkstyleConf','checkstyle:checkstyle:5.0')
         task << {
-            URL checkstyleXml = this.class.getResource('checkstyle.xml')
-            def analysisDir = new File(project.rootDir,project.androidAnalysis.buildAnalysisDirectory)
+            URL checkstyleXml = getResourceUrl(project, 'checkstyle.xml')
+            def analysisDir = project.file('build/analysis')
             def checkstyleFile = new File(analysisDir,"checkstyle.xml")
             checkstyleFile.parentFile.mkdirs()
             checkstyleFile.delete()
-            checkstyleFile << replacePathsInCheckStyle(project, checkstyleXml.getContent())
-            URL checkstyleSuppressionsXml = this.class.getResource('checkstyle-suppressions.xml')
+            checkstyleFile << checkstyleXml.getContent()
+            URL checkstyleSuppressionsXml = getResourceUrl(project,'checkstyle-suppressions.xml')
             def checkstyleSuppressionsFile = new File(analysisDir,"checkstyle-suppressions.xml")
+            checkstyleSuppressionsFile.parentFile.mkdirs()
             checkstyleSuppressionsFile.delete()
             checkstyleSuppressionsFile << checkstyleSuppressionsXml.getContent()
-            URL checkstyleLocalSuppressionsXml = this.class.getResource('checkstyle-local-suppressions.xml')
-            def configAnalysisDir = new File(project.rootDir, project.androidAnalysis.configAnalysisDirectory)
-            def checkstyleLocalSuppressionsFile = new File(configAnalysisDir,"checkstyle-local-suppressions.xml")
+            URL checkstyleLocalSuppressionsXml = getResourceUrl(project,'checkstyle-local-suppressions.xml')
+            def checkstyleLocalSuppressionsFile = new File(analysisDir,"checkstyle-local-suppressions.xml")
             checkstyleLocalSuppressionsFile.parentFile.mkdirs()
-            if (!checkstyleLocalSuppressionsFile.exists()) {
-                checkstyleLocalSuppressionsFile << checkstyleLocalSuppressionsXml.getContent()
-            }
+            checkstyleLocalSuppressionsFile.delete()
+            checkstyleLocalSuppressionsFile << checkstyleLocalSuppressionsXml.getContent()
             project.ant {
                 taskdef(resource:'checkstyletask.properties',
-                        classpath: project.configurations.checkstyleConf.asPath)
-                checkstyle(config: "${project.androidAnalysis.buildAnalysisDirectory}/checkstyle.xml",
-                        failOnViolation: false) {
-                            formatter(type: 'xml', tofile:"${project.androidAnalysis.buildAnalysisDirectory}/checkstyle-report.xml")
-                            classpath(path: 'bin/classes')
-                            classpath(path: project.configurations.checkstyleConf.asPath)
-                            classpath(path: androidConf.allJarsAsPath)
-                            fileset(dir: 'src', includes: '**/*.java')
-                        }
+                                classpath: project.configurations.checkstyleConf.asPath)
+                checkstyle(config: "build/analysis/checkstyle.xml",
+                                failOnViolation: false) {
+                                    formatter(type: 'xml', tofile:"build/analysis/checkstyle-report.xml")
+                                    classpath(path: 'bin/classes')
+                                    classpath(path: project.configurations.checkstyleConf.asPath)
+                                    classpath(path: androidConf.allJarsAsPath)
+                                    fileset(dir: 'src', includes: '**/*.java')
+                                }
             }
         }
         task.dependsOn(project.classes)
@@ -192,12 +198,50 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
     }
 
     static class AndroidAnalysisConvention {
-        def String buildAnalysisDirectory = 'build/analysis'
-        def String configAnalysisDirectory = 'config/analysis'
+        static public final String DESCRIPTION =
+"""The convention provides base URL where analysis configuration files are placed.
+The configuration files can be either internal (no configuration needed)
+or taken from local configuration directory (config/analysis)
+or retrieved using base URL specified."""
+        def String baseAnalysisConfigUrl = null
 
         def androidAnalysis(Closure close) {
             close.delegate = this
             close.run()
         }
     }
+
+    static public final String DESCRIPTION =
+"""This plugin provides capability of running basic static code analysis on android.
+
+It provides analysis task, that executes checkstyle, findbugs, pmd tasks (soon also lint).
+
+Note that the findbugs plugin requires findbugs to be installed and it's home has to be configured.
+By default the home of findbugs is in '${FINDBUGS_DEFAULT_HOME}' but it can be configured
+by specifying gradle's property: ${FINDBUGS_HOME_DIR_PROPERTY}.
+
+The Easiest way it is to add it in gradle.properties or specified in organisation-specific conventions:
+<code>
+this['${FINDBUGS_HOME_DIR_PROPERTY}'] = 'SPECIFY HOME DIRECTORY'
+</code>
+
+Configuration files for all analysis taks are retrieved from internal configuration.
+The configuration files can also be present in local config directory in the project (for project-specific configuration)
+They can also be downloaded remotely using http if specified in convention - this is for organisation-wide setup for many projects.
+The convention or local config files (if present) take precedence over the internal configuration, however if specific
+configuration file cannot be found, the internal version is used.
+
+The structure of the directory/URL is as follows:
+<code>
+[config/analysis] directory or base URL
++---+- checkstyle.xml : main checkstyle configuration
+    +- checkstyle-suppressions.xml : suppressions from checkstyle
+    +- checkstyle-local-suppressions.xml : additional local suppressions
+    +- findbugs-exclude.xml : findbugs excludes configuration
+    +- pmd-rules.xml : pmd rules
+</code>
+Example of configuration files that can be used as starting point for your local/project configuration
+can be found
+<a href="https://github.com/apphance/Apphance-MobilE-Build-Automation/tree/master/src/main/resources/com/apphance/ameba/android/plugins/analysis">here</a>
+"""
 }

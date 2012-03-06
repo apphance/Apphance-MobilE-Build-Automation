@@ -11,7 +11,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.apphance.ApphanceProperty;
+import com.apphance.ameba.android.plugins.apphance.ApphanceProperty;
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 class AndroidManifestHelper {

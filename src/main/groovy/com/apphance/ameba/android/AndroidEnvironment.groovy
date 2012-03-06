@@ -20,7 +20,7 @@ class AndroidEnvironment {
     AndroidEnvironment(Project project) {
         def aP = new Properties()
         PROPERTIES_FILES.each {
-            File propFile = new File(project.rootDir, "${it}.properties")
+            File propFile = project.file( "${it}.properties")
             if (propFile.exists()) {
                 aP.load(new FileInputStream(propFile))
             }
