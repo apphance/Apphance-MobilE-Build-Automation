@@ -154,7 +154,7 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
             checkstyleSuppressionsFile.delete()
             checkstyleSuppressionsFile << checkstyleSuppressionsXml.getContent()
             URL checkstyleLocalSuppressionsXml = getResourceUrl(project,'checkstyle-local-suppressions.xml')
-            def configAnalysisDir = project.file( 'build/analysis')
+            def configAnalysisDir = project.file('build/analysis')
             def checkstyleLocalSuppressionsFile = new File(configAnalysisDir,"checkstyle-local-suppressions.xml")
             checkstyleLocalSuppressionsFile.parentFile.mkdirs()
             if (!checkstyleLocalSuppressionsFile.exists()) {

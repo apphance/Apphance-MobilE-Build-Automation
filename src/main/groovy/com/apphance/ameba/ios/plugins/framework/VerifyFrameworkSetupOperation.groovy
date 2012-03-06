@@ -41,7 +41,7 @@ class VerifyFrameworkSetupOperation extends AbstractVerifyIOSSetupOperation {
             String files = project.readProperty(property)
             if (files != '') {
                 files.split(',').each {
-                    File file = new File(it)
+                    File file = project.file(it)
                     if (!file.exists()) {
                         throw new GradleException("The file is missing in ${property.propertyName}: ${it}")
                     }

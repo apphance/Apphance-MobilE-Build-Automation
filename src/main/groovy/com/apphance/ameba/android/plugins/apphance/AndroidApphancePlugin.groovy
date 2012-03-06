@@ -70,15 +70,15 @@ class AndroidApphancePlugin implements Plugin<Project>{
     }
 
     File getMainApplicationFile(Project project) {
-        String applicationName = manifestHelper.getApplicationName(project.file( "srcTmp"))
-        applicationName = applicationName.replace('.', '/')
-        applicationName = applicationName + '.java'
-        applicationName = 'srcTmp/src/' + applicationName
+        String mainApplicationFileName = manifestHelper.getApplicationName(project.file("srcTmp"))
+        mainApplicationFileName = mainApplicationFileName.replace('.', '/')
+        mainApplicationFileName = mainApplicationFileName + '.java'
+        mainApplicationFileName = 'srcTmp/src/' + mainApplicationFileName
         File f
-        if (new File(applicationName).exists()) {
-            f = new File(applicationName)
+        if (new File(mainApplicationFileName).exists()) {
+            f = new File(mainApplicationFileName)
         } else {
-            String mainActivityName = manifestHelper.getMainActivityName(project.file( "srcTmp"))
+            String mainActivityName = manifestHelper.getMainActivityName(project.file("srcTmp"))
             mainActivityName = mainActivityName.replace('.', '/')
             mainActivityName = mainActivityName + '.java'
             mainActivityName = 'srcTmp/src/' + mainActivityName

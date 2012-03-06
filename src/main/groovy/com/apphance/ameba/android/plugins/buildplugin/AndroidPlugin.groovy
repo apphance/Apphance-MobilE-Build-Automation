@@ -512,8 +512,8 @@ class AndroidPlugin implements Plugin<Project> {
                     AndroidBuildXmlHelper buildXMLHelper = new AndroidBuildXmlHelper()
                     buildXMLHelper.replaceProjectName(project.rootDir, newName)
                 }
-                File sourceFolder = new File("src/" + oldPackage.replaceAll('\\.', '/'))
-                File targetFolder = new File("src/" + newPackage.replaceAll('\\.', '/'))
+                File sourceFolder = project.file("src/" + oldPackage.replaceAll('\\.', '/'))
+                File targetFolder = project.file("src/" + newPackage.replaceAll('\\.', '/'))
                 logger.lifecycle("Moving ${sourceFolder} to ${targetFolder}")
                 project.ant.move(file: sourceFolder, tofile : targetFolder, failonerror : false)
                 logger.lifecycle("Replacing remaining references in AndroidManifest ")

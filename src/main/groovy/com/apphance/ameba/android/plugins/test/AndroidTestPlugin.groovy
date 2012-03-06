@@ -92,7 +92,7 @@ class AndroidTestPlugin implements Plugin<Project>{
             testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
             testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
             testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
-            emulatorName = new File('.').getAbsolutePath().replaceAll('[\\\\ /]','_')
+            emulatorName = project.rootDir.getAbsolutePath().replaceAll('[\\\\ /]','_')
             emulatorTargetName = project.readProperty(AndroidTestProperty.EMULATOR_TARGET)
             if (emulatorTargetName == null || emulatorTargetName.empty) {
                 emulatorTargetName = androidConf.targetName

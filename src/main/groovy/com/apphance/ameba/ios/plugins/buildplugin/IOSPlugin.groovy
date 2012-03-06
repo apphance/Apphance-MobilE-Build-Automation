@@ -80,7 +80,7 @@ class IOSPlugin implements Plugin<Project> {
                 iosConf.mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
                 iosConf.sdk = project.readProperty(IOSProjectProperty.IOS_SDK)
                 iosConf.simulatorsdk = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK)
-                iosConf.plistFile = pListFileName == null ? null : new File(this.pListFileName)
+                iosConf.plistFile = pListFileName == null ? null : project.file(pListFileName)
                 String distDirName = project.readProperty(IOSProjectProperty.DISTRIBUTION_DIR)
                 iosConf.distributionDirectory = distDirName == null ? null : project.file( distDirName)
                 iosConf.families = project.readProperty(IOSProjectProperty.IOS_FAMILIES).split(",")*.trim()
