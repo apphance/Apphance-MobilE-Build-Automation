@@ -13,6 +13,7 @@ class PbxProjectHelper {
 
 	Object rootObject
 	private int hash = 0
+	boolean hasApphance = false
 
 	Object getObject(String objectName) {
 		return rootObject.objects."${objectName}"
@@ -52,9 +53,12 @@ class PbxProjectHelper {
 			// find file reference in objects
 			def fileRef = getObject("${file}").fileRef
 			if (getObject("${fileRef}").name.toLowerCase().contains(name)) {
-				logger.lifecycle("Apphance already added")
+				logger.lifecycle("Framework already added")
 				// apphance already added
 				foundFramework = true
+				if (name.equals("apphance")) {
+					hasApphance = true
+				}
 				return
 			}
 		}
@@ -212,16 +216,20 @@ class PbxProjectHelper {
 						addApphanceToFramework(getObject("${phase}"))
 					}
 				}
-				// Find pch file with proper configuration
-				getObject(getObject("${target}").buildConfigurationList).buildConfigurations.each { configuration ->
-					if (getObject(configuration).name.equals(configurationName)) {
-						addApphanceToPch(new File(projectRootDirectory, getObject(configuration).buildSettings.GCC_PREFIX_HEADER))
+				if (!hasApphance) {
+					// Find pch file with proper configuration
+					getObject(getObject("${target}").buildConfigurationList).buildConfigurations.each { configuration ->
+						if (getObject(configuration).name.equals(configurationName)) {
+							addApphanceToPch(new File(projectRootDirectory, getObject(configuration).buildSettings.GCC_PREFIX_HEADER))
+						}
 					}
 				}
 			}
 		}
-		addFlagsAndPathsToProject(project, configurationName)
-		addApphanceInit(projectRootDirectory, appKey)
+		if (!hasApphance) {
+			addFlagsAndPathsToProject(project, configurationName)
+			addApphanceInit(projectRootDirectory, appKey)
+		}
 
 		return writePlistToString()
 	}
