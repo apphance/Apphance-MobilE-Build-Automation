@@ -5,6 +5,7 @@ import groovy.json.JsonSlurper;
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.GradleException
+import groovy.io.FileType
 
 class PbxProjectHelper {
 
@@ -62,11 +63,11 @@ class PbxProjectHelper {
 
 	void addApphanceToFramework(Object frameworks) {
 		def frameworksToAdd = [ ["name":"Apphance-iOS.framework", "path":"Apphance-iOS.framework", "group":"<group>", "searchName":"apphance", "strong":"Required"],
-								["name":"CoreLocation.framework", "path":"System/Library/Frameworks/CoreLocation.framework", "group":"SDKROOT", "searchName":"CoreLocation.framework", "strong":"Required"],
-								["name":"QuartzCore.framework", "path":"System/Library/Frameworks/QuartzCore.framework", "group":"SDKROOT", "searchName":"QuartzCore.framework", "strong":"Required"],
-								["name":"SystemConfiguration.framework", "path":"System/Library/Frameworks/SystemConfiguration.framework", "group":"SDKROOT", "searchName":"SystemConfiguration.framework", "strong":"Weak"],
-								["name":"CoreTelephony.framework", "path":"System/Library/Frameworks/CoreTelephony.framework", "group":"SDKROOT", "searchName":"CoreTelephony.framework", "strong":"Weak"],
-								["name":"AudioToolbox.framework", "path":"System/Library/Frameworks/AudioToolbox.framework", "group":"SDKROOT", "searchName":"AudioToolbox.framework", "strong":"Required"]]
+								["name":"CoreLocation.framework", "path":"System/Library/Frameworks/CoreLocation.framework", "group":"SDKROOT", "searchName":"corelocation.framework", "strong":"Required"],
+								["name":"QuartzCore.framework", "path":"System/Library/Frameworks/QuartzCore.framework", "group":"SDKROOT", "searchName":"quartzcore.framework", "strong":"Required"],
+								["name":"SystemConfiguration.framework", "path":"System/Library/Frameworks/SystemConfiguration.framework", "group":"SDKROOT", "searchName":"systemconfiguration.framework", "strong":"Weak"],
+								["name":"CoreTelephony.framework", "path":"System/Library/Frameworks/CoreTelephony.framework", "group":"SDKROOT", "searchName":"coretelephony.framework", "strong":"Weak"],
+								["name":"AudioToolbox.framework", "path":"System/Library/Frameworks/AudioToolbox.framework", "group":"SDKROOT", "searchName":"audiotoolbox.framework", "strong":"Required"]]
 
 		frameworksToAdd.each { framework ->
 			if (findFramework(frameworks, framework["searchName"])) {
@@ -130,15 +131,15 @@ class PbxProjectHelper {
 		return builder.toString() + "\n"
 	}
 
-	void addFlagsAndPathsToProject(Object project) {
+	void addFlagsAndPathsToProject(Object project, String configurationName) {
 		def configurationList = getObject(project.buildConfigurationList)
 		configurationList.buildConfigurations.each { configuration ->
 			if (getObject(configuration).name.equals(configurationName)) {
-				if (getObject(configuration).OTHER_LDFLAGS == null) {
-					getObject(configuration).put("OTHER_LDFLAGS", [])
+				if (getObject(configuration).buildSettings.OTHER_LDFLAGS == null) {
+					getObject(configuration).buildSettings.put("OTHER_LDFLAGS", [])
 				}
-				getObject(configuration).OTHER_LDFLAGS.add("-ObjC")
-				getObject(configuration).OTHER_LDFLAGS.add("-all_load")
+				getObject(configuration).buildSettings.OTHER_LDFLAGS.add("-ObjC")
+				getObject(configuration).buildSettings.OTHER_LDFLAGS.add("-all_load")
 				if (getObject(configuration).buildSettings.FRAMEWORK_SEARCH_PATHS == null) {
 					getObject(configuration).buildSettings.put("FRAMEWORK_SEARCH_PATHS", ["\$(inherited)"])
 				}
@@ -152,12 +153,54 @@ class PbxProjectHelper {
 		}
 	}
 
-	void addApphanceInit(File projectRootDirectory) {
-		def launchingPattern = /application.*didFinishLaunchingWithOptions[^\(\r\n]*\s+\{)/
-		
+	String findAppDelegateFile(File projectRootDirectory) {
+		String appFilename = ""
+		projectRootDirectory.eachFileRecurse(FileType.FILES) {
+			if (it.name.endsWith(".h") && it.text.contains("UIApplicationDelegate")) {
+				appFilename = it.canonicalPath
+				logger.lifecycle("Application delegate found in file " + it)
+				return
+			}
+		}
+		return appFilename
 	}
 
-	String addApphanceToProject(File projectRootDirectory, String targetName, String configurationName) {
+	void addApphanceInit(File projectRootDirectory, String appKey) {
+		def launchingPattern = /(application.*didFinishLaunchingWithOptions[^\n]*\s+\{)/
+		def initApphance = "[APHLogger startNewSessionWithApplicationKey:@\"" + "${appKey}" + "\" apphanceMode:kAPHApphanceModeQA];"
+		def setExceptionHandler = "NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);"
+		String appFilename = findAppDelegateFile(projectRootDirectory)
+		if (appFilename.equals("")) {
+			throw new GradleException("Cannot find file with UIApplicationDelegate")
+		}
+		appFilename = appFilename.replace(".h", ".m")
+		File appDelegateFile = new File(appFilename)
+
+		File newAppDelegate = new File("newAppDelegate.m")
+		newAppDelegate.delete()
+		newAppDelegate.withWriter { out ->
+			 out << appDelegateFile.text.replaceAll(launchingPattern, "\$1"+initApphance+setExceptionHandler)
+		}
+		appDelegateFile.delete()
+		appDelegateFile.withWriter { out ->
+			out << newAppDelegate.text
+		}
+	}
+
+	void addApphanceToPch(File pchFile) {
+		logger.lifecycle("Adding apphance header to file " + pchFile)
+		File newPch = new File("newPch.pch")
+		newPch.delete()
+		newPch.withWriter { out ->
+			out << pchFile.text.replace("#ifdef __OBJC__", "#ifdef __OBJC__\n#import <Apphance-iOS/APHLogger.h>")
+		}
+		pchFile.delete()
+		pchFile.withWriter { out ->
+			out << newPch.text
+		}
+	}
+
+	String addApphanceToProject(File projectRootDirectory, String targetName, String configurationName, String appKey) {
 		rootObject = getParsedProject(projectRootDirectory, targetName)
 		def project = getObject("${rootObject.rootObject}")
 		project.targets.each { target ->
@@ -169,12 +212,17 @@ class PbxProjectHelper {
 						addApphanceToFramework(getObject("${phase}"))
 					}
 				}
+				// Find pch file with proper configuration
+				getObject(getObject("${target}").buildConfigurationList).buildConfigurations.each { configuration ->
+					if (getObject(configuration).name.equals(configurationName)) {
+						addApphanceToPch(new File(projectRootDirectory, getObject(configuration).buildSettings.GCC_PREFIX_HEADER))
+					}
+				}
 			}
 		}
-		addFlagsAndPathsToProject(project)
-		addApphanceInit(projectRootDirectory)
+		addFlagsAndPathsToProject(project, configurationName)
+		addApphanceInit(projectRootDirectory, appKey)
 
-		logger.lifecycle(writePlistToString())
 		return writePlistToString()
 	}
 }
