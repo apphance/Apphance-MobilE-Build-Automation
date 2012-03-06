@@ -5,7 +5,6 @@ log
 testProjects/android*/gen
 testProjects/android*/avds
 testProjects/android*/libs
-testProjects/android*/res
 testProjects/android*/srcTmp
 testProjects/android*/subproject/gen
 testProjects/android*/subproject/subsubproject/gen
