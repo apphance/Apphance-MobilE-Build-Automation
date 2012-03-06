@@ -53,6 +53,7 @@ class IOSPlugin implements Plugin<Project> {
             this.conf = project.getProjectConfiguration()
             this.iosXcodeOutputParser = new IOSXCodeOutputParser()
             this.iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
+			prepareCopySourcesTask(project)
             prepareReadIosProjectConfigurationTask(project)
             prepareReadIosTargetsAndConfigurationsTask(project)
             prepareReadIosProjectVersionsTask(project)
@@ -199,7 +200,7 @@ class IOSPlugin implements Plugin<Project> {
                         singleReleaseBuilder.buildRelease(project, target, configuration)
                     }
                     task.dependsOn(singleTask)
-                    singleTask.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.verifySetup)
+                    singleTask.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.verifySetup, project.copySources)
                 } else {
                     println ("Skipping build ${id} - it is excluded in configuration (${iosConf.excludedBuilds})")
                 }
@@ -238,7 +239,7 @@ class IOSPlugin implements Plugin<Project> {
                 singleReleaseBuilder.buildRelease(project, target, configuration)
             }
         }
-        task.dependsOn(project.readProjectConfiguration, project.verifySetup)
+        task.dependsOn(project.readProjectConfiguration, project.verifySetup, project.copySources)
     }
 
 
@@ -370,4 +371,21 @@ class IOSPlugin implements Plugin<Project> {
         }
         return result
     }
+
+	void prepareCopySourcesTask(Project project) {
+		def task = project.task('copySources')
+		task.description = "Copies all sources to tmp directory for build"
+		task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+		task << {
+			new AntBuilder().delete(dir: "${project.rootDir}/srcTmp")
+			new AntBuilder().copy(toDir : "${project.rootDir}/srcTmp", verbose:true) {
+				fileset(dir : "${project.rootDir}/") {
+					exclude(name: "${project.rootDir}/srcTmp/**/*")
+					conf.sourceExcludes.each {
+						exclude(name: it)
+					}
+				}
+			}
+		}
+	}
 }

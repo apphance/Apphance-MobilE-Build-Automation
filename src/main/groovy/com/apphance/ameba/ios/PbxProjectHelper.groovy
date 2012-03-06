@@ -189,6 +189,7 @@ class PbxProjectHelper {
 		appDelegateFile.withWriter { out ->
 			out << newAppDelegate.text
 		}
+		newAppDelegate.delete()
 	}
 
 	void addApphanceToPch(File pchFile) {
@@ -202,6 +203,7 @@ class PbxProjectHelper {
 		pchFile.withWriter { out ->
 			out << newPch.text
 		}
+		newPch.delete()
 	}
 
 	String addApphanceToProject(File projectRootDirectory, String targetName, String configurationName, String appKey) {
@@ -231,6 +233,16 @@ class PbxProjectHelper {
 			addApphanceInit(projectRootDirectory, appKey)
 		}
 
-		return writePlistToString()
+		File f = new File(projectRootDirectory, "newProject.pbxproj")
+		f.delete()
+		f.withWriter { writer ->
+			writer << writePlistToString()
+		}
+		File projectFile = new File(projectRootDirectory, "${targetName}.xcodeproj/project.pbxproj")
+		projectFile.withWriter { out ->
+			out << f.text
+		}
+		f.delete()
+		return projectFile.text
 	}
 }
