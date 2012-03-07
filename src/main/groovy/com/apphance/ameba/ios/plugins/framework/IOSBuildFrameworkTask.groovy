@@ -13,6 +13,7 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
+import com.apphance.ameba.ios.IOSXCodeOutputParser;
 
 
 /**
@@ -26,6 +27,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
     ProjectHelper projectHelper
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
+    IOSXCodeOutputParser iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
 
     String frameworkTarget
     String frameworkConfiguration
@@ -57,7 +59,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
     @TaskAction
     void buildIOSFramework() {
         use (PropertyCategory) {
-            iosConf = project.getProjectConfiguration()
+            iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
             frameworkTarget = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
             frameworkConfiguration = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
             frameworkVersion = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_VERSION)
