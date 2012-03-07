@@ -58,7 +58,7 @@ class AndroidManifestHelper {
         }
     }
     void updateVersion(File projectDirectory, ProjectConfiguration conf) {
-		println("${projectDirectory}")
+        println("${projectDirectory}")
         def file = new File("${projectDirectory}/AndroidManifest.xml")
         def originalFile = new File("${projectDirectory}/AndroidManifest.xml.beforeUpdate.orig")
         originalFile.delete()
@@ -167,132 +167,132 @@ class AndroidManifestHelper {
         fileAgain.write(root as String)
     }
 
-	public void addApphanceToManifest(File projectDirectory) {
-		def file = new File("${projectDirectory}/AndroidManifest.xml")
-		def originalFile = new File("${projectDirectory}/AndroidManifest.xml.beforeApphance.orig")
-		originalFile.delete()
-		originalFile<< file.text
+    public void addApphanceToManifest(File projectDirectory) {
+        def file = new File("${projectDirectory}/AndroidManifest.xml")
+        def originalFile = new File("${projectDirectory}/AndroidManifest.xml.beforeApphance.orig")
+        originalFile.delete()
+        originalFile<< file.text
 
-		XmlSlurper slurper = new XmlSlurper(false, true)
-		GPathResult manifest = slurper.parse(file)
-		String androidName = "android:name"
-		String packageName = manifest.@package
+        XmlSlurper slurper = new XmlSlurper(false, true)
+        GPathResult manifest = slurper.parse(file)
+        String androidName = "android:name"
+        String packageName = manifest.@package
 
-		// Add instrumentation
-		manifest.appendNode({instrumentation("${androidName}":"com.apphance.android.ApphanceInstrumentation",
-			'android:targetPackage':packageName)})
+        // Add instrumentation
+        manifest.appendNode({instrumentation("${androidName}":"com.apphance.android.ApphanceInstrumentation",
+            'android:targetPackage':packageName)})
 
-		// Add permissions
-		def permissions = manifest."uses-permission"
-		logger.lifecycle(permissions.text())
-		def apphancePermissions = ["android.permission.INTERNET", "android.permission.READ_PHONE_STATE", "android.permission.GET_TASKS"]
-		apphancePermissions.each { apphancePermission ->
-			logger.lifecycle("Finding permission " + apphancePermission)
-			def permission = permissions.find { it.@"${androidName}".text().equals(apphancePermission)}
-			if (permission == null || permission.isEmpty()) {
-				logger.lifecycle("Permission " + apphancePermission + " not found")
-				manifest.appendNode({'uses-permission'("${androidName}":apphancePermission)})
-			} else {
-				logger.lifecycle("Permission " + permission.@"${androidName}".text() + " found")
-			}
-		}
+        // Add permissions
+        def permissions = manifest."uses-permission"
+        logger.lifecycle(permissions.text())
+        def apphancePermissions = ["android.permission.INTERNET", "android.permission.READ_PHONE_STATE", "android.permission.GET_TASKS"]
+        apphancePermissions.each { apphancePermission ->
+            logger.lifecycle("Finding permission " + apphancePermission)
+            def permission = permissions.find { it.@"${androidName}".text().equals(apphancePermission)}
+            if (permission == null || permission.isEmpty()) {
+                logger.lifecycle("Permission " + apphancePermission + " not found")
+                manifest.appendNode({'uses-permission'("${androidName}":apphancePermission)})
+            } else {
+                logger.lifecycle("Permission " + permission.@"${androidName}".text() + " found")
+            }
+        }
 
-		// Add apphance activities
+        // Add apphance activities
 
-		def apphanceActivities = [{activity("${androidName}":"com.apphance.android.ui.LoginActivity")},
-			{activity("${androidName}":"com.apphance.android.ui.ProblemActivity", "configChanges":"orientation", "launchMode":"singleInstance")},
-			{activity("${androidName}":"com.apphance.android.LauncherActivity", "theme":"@android:style/Theme.Translucent.NoTitleBar")}]
-		apphanceActivities.each {
-			manifest.application.appendNode(it)
-		}
+        def apphanceActivities = [{activity("${androidName}":"com.apphance.android.ui.LoginActivity")},
+            {activity("${androidName}":"com.apphance.android.ui.ProblemActivity", "configChanges":"orientation", "launchMode":"singleInstance")},
+            {activity("${androidName}":"com.apphance.android.LauncherActivity", "theme":"@android:style/Theme.Translucent.NoTitleBar")}]
+        apphanceActivities.each {
+            manifest.application.appendNode(it)
+        }
 
-		// Add alias
-		String apphanceAliasString = '''<activity-alias android:name=\".ApphanceLauncherActivity\" android:targetActivity=\"com.apphance.android.LauncherActivity\">
+        // Add alias
+        String apphanceAliasString = '''<activity-alias android:name=\".ApphanceLauncherActivity\" android:targetActivity=\"com.apphance.android.LauncherActivity\">
 <intent-filter>
 <action android:name=\"android.intent.action.MAIN\" />
 <category android:name=\"android.intent.category.LAUNCHER\" />
 </intent-filter>
 </activity-alias>'''
-		def apphanceAlias = new XmlSlurper(false, false).parseText(apphanceAliasString)
-		manifest.application.appendNode(apphanceAlias)
+        def apphanceAlias = new XmlSlurper(false, false).parseText(apphanceAliasString)
+        manifest.application.appendNode(apphanceAlias)
 
-		// Replace intent filter in main activity
-		String mainActivity = getMainActivityName(projectDirectory)
-		def packages = mainActivity.split('\\.')
-		mainActivity = packages.last()
-		logger.lifecycle("Main activity name = " + mainActivity)
-		manifest.application.activity.each {
-			if (it.@"${androidName}".text().contains(mainActivity)) {
-				it."intent-filter".each { filter ->
-					if (filter.action.size() > 0 && filter.action.@"${androidName}".text().equals('android.intent.action.MAIN')) {
-						filter.action.replaceNode({action("${androidName}":"com.apphance.android.LAUNCH")})
-					}
-					if (filter.category.size() > 0 && filter.category.@"${androidName}".text().equals('android.intent.category.LAUNCHER')) {
-						filter.category.replaceNode({category("${androidName}":"android.intent.category.DEFAULT")})
-					}
-				}
-			}
-		}
+        // Replace intent filter in main activity
+        String mainActivity = getMainActivityName(projectDirectory)
+        def packages = mainActivity.split('\\.')
+        mainActivity = packages.last()
+        logger.lifecycle("Main activity name = " + mainActivity)
+        manifest.application.activity.each {
+            if (it.@"${androidName}".text().contains(mainActivity)) {
+                it."intent-filter".each { filter ->
+                    if (filter.action.size() > 0 && filter.action.@"${androidName}".text().equals('android.intent.action.MAIN')) {
+                        filter.action.replaceNode({action("${androidName}":"com.apphance.android.LAUNCH")})
+                    }
+                    if (filter.category.size() > 0 && filter.category.@"${androidName}".text().equals('android.intent.category.LAUNCHER')) {
+                        filter.category.replaceNode({category("${androidName}":"android.intent.category.DEFAULT")})
+                    }
+                }
+            }
+        }
 
-		file.delete()
-		def outputBuilder = new groovy.xml.StreamingMarkupBuilder()
-		outputBuilder.encoding = 'UTF-8'
-		outputBuilder.useDoubleQuotes = true
+        file.delete()
+        def outputBuilder = new groovy.xml.StreamingMarkupBuilder()
+        outputBuilder.encoding = 'UTF-8'
+        outputBuilder.useDoubleQuotes = true
 
-		String result = outputBuilder.bind{
-			mkp.xmlDeclaration()
-			mkp.yield manifest
-		}
-		file.withWriter { writer ->
-			writer << result.replace(">", ">\n").replace("xmlns:tag0=\"\"", "").replace("tag0:", "")
-		}
-	}
+        String result = outputBuilder.bind{
+            mkp.xmlDeclaration()
+            mkp.yield manifest
+        }
+        file.withWriter { writer ->
+            writer << result.replace(">", ">\n").replace("xmlns:tag0=\"\"", "").replace("tag0:", "")
+        }
+    }
 
-	public String getMainActivityName(File projectDirectory) {
-		def file = new File("${projectDirectory}/AndroidManifest.xml")
+    public String getMainActivityName(File projectDirectory) {
+        def file = new File("${projectDirectory}/AndroidManifest.xml")
 
-		def manifest = new XmlSlurper(false, true).parse(file)
+        def manifest = new XmlSlurper(false, true).parse(file)
 
-		String className = manifest.@package
-		String intentFilter = "intent-filter"
-		String androidName = "android:name"
+        String className = manifest.@package
+        String intentFilter = "intent-filter"
+        String androidName = "android:name"
 
-		def mainActivity = manifest.application.activity.findAll {
-			if (it."${intentFilter}".size() > 0 && it."${intentFilter}".action.size() > 0 && it."${intentFilter}".category.size() > 0) {
-				it."${intentFilter}".action.@"${androidName}".text().equals('android.intent.action.MAIN')  &&
-				it."${intentFilter}".category.@"${androidName}".text().equals('android.intent.category.LAUNCHER')
-			}
-		}
-		if (mainActivity.size() > 0) {
-			if (!mainActivity[0].@"${androidName}".text().startsWith(".")) {
-				className = className + "."
-			}
-			if (mainActivity[0].@"${androidName}".text().startsWith(manifest.@package.text())) {
-				className = ""
-			}
-			className = className + mainActivity[0].@"${androidName}".text()
-		}
+        def mainActivity = manifest.application.activity.findAll {
+            if (it."${intentFilter}".size() > 0 && it."${intentFilter}".action.size() > 0 && it."${intentFilter}".category.size() > 0) {
+                it."${intentFilter}".action.@"${androidName}".text().equals('android.intent.action.MAIN')  &&
+                it."${intentFilter}".category.@"${androidName}".text().equals('android.intent.category.LAUNCHER')
+            }
+        }
+        if (mainActivity.size() > 0) {
+            if (!mainActivity[0].@"${androidName}".text().startsWith(".")) {
+                className = className + "."
+            }
+            if (mainActivity[0].@"${androidName}".text().startsWith(manifest.@package.text())) {
+                className = ""
+            }
+            className = className + mainActivity[0].@"${androidName}".text()
+        }
 
-		return className
-	}
+        return className
+    }
 
-	public String getApplicationName(File projectDirectory) {
-		def file = new File("${projectDirectory}/AndroidManifest.xml")
+    public String getApplicationName(File projectDirectory) {
+        def file = new File("${projectDirectory}/AndroidManifest.xml")
 
-		def manifest = new XmlSlurper().parse(file)
-		String className = manifest.@package
+        def manifest = new XmlSlurper().parse(file)
+        String className = manifest.@package
 
-		String androidName = "android:name"
-		String applicationName = manifest.application.@"${androidName}".text()
-		if (!applicationName.startsWith(".")) {
-			className = className + "."
-		}
-		if (applicationName.contains(manifest.@package.text())) {
-			className = ""
-		}
-		className = className + applicationName
-		return className
-	}
+        String androidName = "android:name"
+        String applicationName = manifest.application.@"${androidName}".text()
+        if (!applicationName.startsWith(".")) {
+            className = className + "."
+        }
+        if (applicationName.contains(manifest.@package.text())) {
+            className = ""
+        }
+        className = className + applicationName
+        return className
+    }
 
     void restoreOriginalManifest(File projectDirectory) {
         def file = new File("${projectDirectory}/AndroidManifest.xml")

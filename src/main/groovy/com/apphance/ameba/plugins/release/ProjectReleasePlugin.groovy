@@ -17,6 +17,8 @@ import com.apphance.ameba.ImageNameFilter
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory;
+import com.apphance.ameba.android.AndroidProjectConfiguration;
+import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
 import com.apphance.ameba.plugins.release.PrepareReleaseSetupOperation;
@@ -36,6 +38,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
 
     ProjectHelper projectHelper
     ProjectConfiguration conf
+    AndroidProjectConfiguration androidConf
 
     void apply(Project project) {
         ProjectHelper.checkAnyPluginIsLoaded(project, this.class, AndroidPlugin.class, IOSPlugin.class)
@@ -44,6 +47,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
         use (PropertyCategory) {
             conf = project.getProjectConfiguration()
         }
+        androidConf = new AndroidProjectConfigurationRetriever().getAndroidProjectConfiguration(project)
         prepareMailConfiguration(project)
         preparePrepareForReleaseTask(project)
         prepareVerifyReleaseNotesTask(project)
@@ -129,7 +133,12 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
             conf.otaDirectory.deleteDir()
             conf.tmpDirectory.deleteDir()
             conf.otaDirectory.mkdirs()
-            conf.tmpDirectory.mkdirs()
+            conf.tmpDirectory.mkdirs(
+                )
+            androidConf.tmpDirs.values().each {
+                project.ant.delete(dir: it)
+            }
+
         }
         task.dependsOn(project.readProjectConfiguration, project.clean)
     }
