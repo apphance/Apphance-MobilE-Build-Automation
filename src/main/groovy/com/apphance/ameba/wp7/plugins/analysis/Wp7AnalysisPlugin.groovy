@@ -1,4 +1,4 @@
-package com.apphance.ameba.wp7.plugin.analysis
+package com.apphance.ameba.wp7.plugins.analysis
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
