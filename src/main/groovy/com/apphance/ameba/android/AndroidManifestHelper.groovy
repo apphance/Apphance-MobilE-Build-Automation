@@ -45,7 +45,7 @@ class AndroidManifestHelper {
                 if (attribute.name == 'android:versionCode') {
                     def versionCodeString = attribute.value
                     try {
-                        conf.versionCode = versionCodeString.toInteger()
+                        conf.versionCode = versionCodeString.toLong()
                     } catch (NumberFormatException e) {
                         logger.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
                         conf.versionCode = 0

@@ -18,7 +18,7 @@ class ProjectConfiguration  {
     File logDirectory
     File buildDirectory
     String versionString = "NOVERSION"
-    Integer versionCode = 0
+    Long versionCode = 0
 
     String bundleId
     String buildDate
