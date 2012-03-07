@@ -14,6 +14,12 @@ import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugi
 
 class PropertyCategory {
 
+
+    private static Map<String, String> getDefaultConventionValues(Project project) {
+        def defaultConventionValues = Eval.me(project.convention.plugins.amebaPropertyDefaults.defaults)
+        return defaultConventionValues
+    }
+
     public static final String PROJECT_CONFIGURATION_KEY = 'project.configuration'
     public static List<String> listProperties(Project project, Class<Enum> properties, boolean useComments) {
         String description = properties.getField('DESCRIPTION').get(null)
@@ -22,10 +28,11 @@ class PropertyCategory {
         s << "# ${description}"
         s << "###########################################################"
         properties.each {
+            def defaultValue = getDefaultForProperty(it, project)
             String comment = '# ' + it.description
             String propString = it.propertyName + '='
-            if (it.defaultValue != null) {
-                comment = comment + " [optional] default: <${it.defaultValue}>"
+            if (defaultValue != null) {
+                comment = comment + " [optional] default: <${defaultValue}>"
             }
             if (project.hasProperty(it.propertyName)) {
                 propString = propString + project[it.propertyName]
@@ -37,6 +44,16 @@ class PropertyCategory {
         }
         return s
     }
+
+    private static String getDefaultForProperty(Project project, property) {
+        def defaultMap = getDefaultConventionValues(project)
+        def defaultValue = property.defaultValue
+        if (defaultMap[property.propertyName] != null) {
+            defaultValue = defaultMap[property.propertyName]
+        }
+        return defaultValue
+    }
+
 
     public static String listPropertiesAsString(Project project, Class<Enum> properties, boolean useComments) {
         StringBuffer sb = new StringBuffer()
@@ -53,20 +70,21 @@ class PropertyCategory {
     }
 
     public static Object readProperty(Project project, Enum property) {
-        return readProperty(project, property.propertyName, property.defaultValue)
+        return readProperty(project, property.propertyName, getDefaultForProperty(project, property))
     }
 
     public static String getProjectPropertyFromUser(Project project, Enum property,
     ArrayList options, BufferedReader br) {
+        def defaultValue = getDefaultForProperty(project, property)
         String s = "Enter ${property.propertyName}\n${property.description}"
         if (options != null) {
             s = s + '\nProposed values: ' + options
         }
         if (project.hasProperty(property.propertyName)) {
             // skip setting = we already have some value
-        } else if (property.defaultValue != null) {
+        } else if (defaultValue != null) {
             // or choose default if exists
-            project[property.propertyName] = property.defaultValue
+            project[property.propertyName] = defaultValue
         } else if (options != null) {
             // or pre-select first option if present
             if (options.size > 0 && options[0] != null) {

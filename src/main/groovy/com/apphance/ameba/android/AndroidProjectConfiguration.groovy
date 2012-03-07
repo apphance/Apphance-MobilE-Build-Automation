@@ -1,5 +1,7 @@
 package com.apphance.ameba.android
 
+import groovy.lang.Closure;
+
 import java.io.File
 import java.util.Collection
 import java.util.List
