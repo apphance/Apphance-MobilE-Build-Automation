@@ -16,8 +16,12 @@ class PropertyCategory {
 
 
     private static Map<String, String> getDefaultConventionValues(Project project) {
-        def defaultConventionValues = Eval.me(project.convention.plugins.amebaPropertyDefaults.defaults)
-        return defaultConventionValues
+        if (project.convention.plugins.amebaPropertyDefaults != null) {
+            def defaultConventionValues = Eval.me(project.convention.plugins.amebaPropertyDefaults.defaults)
+            return defaultConventionValues
+        } else {
+            return [:]
+        }
     }
 
     public static final String PROJECT_CONFIGURATION_KEY = 'project.configuration'
