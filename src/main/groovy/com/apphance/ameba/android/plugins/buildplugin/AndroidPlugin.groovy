@@ -94,10 +94,10 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = "Performs code generation/compile tasks for android (if needed)"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            File gen = project.file('srcTmp/gen')
+            File gen = project.file('gen')
             if (!gen.exists() || gen.list().length == 0) {
                 logger.lifecycle("Regenerating gen directory by running debug project")
-                projectHelper.executeCommand(project, project.file( "srcTmp"), [
+                projectHelper.executeCommand(project, project.rootDir, [
                     'ant',
                     'debug'
                 ])
@@ -114,15 +114,10 @@ class AndroidPlugin implements Plugin<Project> {
         def javaConventions =  project.convention.plugins.java
         javaConventions.sourceSets {
             main {
-                output.classesDir = project.file('srcTmp/build/classes')
-                output.resourcesDir = project.file('srcTmp/build/resources')
-                java { srcDir project.file('srcTmp/src') }
-                java { srcDir project.file('srcTmp/gen') }
-            }
-            test {
-                output.classesDir = project.file('srcTmp/build/test-classes')
-                output.resourcesDir = project.file('srcTmp/build/test-resources')
-                java { srcDir project.file('srcTmp/test-src') }
+                output.classesDir = project.file('bin')
+                output.resourcesDir = project.file('bin')
+                java { srcDir project.file('src') }
+                java { srcDir project.file('gen') }
             }
         }
         project.compileJava.options.encoding = 'UTF-8'
@@ -243,7 +238,6 @@ class AndroidPlugin implements Plugin<Project> {
             runUpdateRecursively(project, project.rootDir, true)
             logger.lifecycle("Performed android update")
         }
-        task.dependsOn(project.copySources)
     }
 
     private void runUpdateRecursively(Project project, File currentDir, boolean reRun, boolean silentLogging = false) {
@@ -310,12 +304,12 @@ class AndroidPlugin implements Plugin<Project> {
     }
 
     private prepareInstallTask(Project project, String variant) {
-        String debugRelease  = androidBuilder.getDebugRelease(project, variant)
+        String debugRelease  = androidConf.debugRelease[variant]
         def testTask = project.task("install${debugRelease}-${variant}")
         testTask.description = "Installs " + variant
         testTask.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        def firstLetterLowerCase = debugRelease[0].toLowerCase()
         testTask << {
+            def firstLetterLowerCase = debugRelease[0].toLowerCase()
             File apkFile = new File(conf.targetDirectory,"${conf.projectName}-${debugRelease}-${variant}-${conf.fullVersionString}.apk")
             projectHelper.executeCommand(project,[
                 'ant',
@@ -379,9 +373,9 @@ class AndroidPlugin implements Plugin<Project> {
 
     void prepareSingleVariant(Project project, String variant, String debugRelease) {
         if (variant != null && debugRelease == null) {
-            debugRelease = androidBuilder.getDebugRelease(project, variant)
+            debugRelease = androidConf.debugRelease[variant]
         }
-        def noSpaceVariantName = variant == null? "" : '-' + variant.replaceAll(' ','_')
+        def noSpaceVariantName = '-' + variant.replaceAll(' ','_')
         def task = project.task("build${debugRelease}${noSpaceVariantName}")
         task.description = "Builds ${debugRelease}${noSpaceVariantName}"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
@@ -403,35 +397,18 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = "Copies all sources to tmp directory for build"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            new AntBuilder().delete(dir: "${project.rootDir}/srcTmp")
-            new AntBuilder().copy(toDir : "${project.rootDir}/srcTmp", verbose:true) {
-                fileset(dir : "${project.rootDir}/") {
-                    exclude(name: "${project.rootDir}/srcTmp/**/*")
-                    conf.sourceExcludes.each {
-                        if (!it.equals('**/local.properties')) {
-                            exclude(name: it)
+            androidConf.variants.each { variant ->
+                new AntBuilder().sync(toDir : androidConf.tmpDirs[variant], overwrite:true, verbose:true) {
+                    fileset(dir : "${project.rootDir}/") {
+                        exclude(name: androidConf.tmpDirs[variant].absolutePath + '/**/*')
+                        conf.sourceExcludes.each {
+                            if (!it.equals('**/local.properties')) {
+                                exclude(name: it)
+                            }
                         }
                     }
                 }
             }
-            // edit ant.properties for proper signing keystore path
-            File antProperties = new File("${project.rootDir}/srcTmp/ant.properties")
-            File newAntProperties = new File("${project.rootDir}/srcTmp/ant.props")
-            if (newAntProperties.exists()) {
-                newAntProperties.delete()
-            }
-            newAntProperties.withWriter { out ->
-                antProperties.eachLine {
-                    if (it.contains("key.store=")) {
-                        out.println(it.replaceFirst("key.store=", "key.store=../"))
-                    } else {
-                        out.println(it)
-                    }
-                }
-            }
-            antProperties.delete()
-            antProperties << newAntProperties.text
-            newAntProperties.delete()
         }
     }
 
@@ -450,7 +427,7 @@ class AndroidPlugin implements Plugin<Project> {
             }, true)
         } else {
             ['Debug', 'Release'].each {
-                prepareSingleVariant(project, null, it)
+                prepareSingleVariant(project, it, it)
             }
         }
     }
@@ -480,9 +457,9 @@ class AndroidPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task.description = 'Reads Android project configuration from properties'
         task << {
-            androidBuilder.updateAndroidConfigurationWithVariants()
             androidConfRetriever.readAndroidProjectConfiguration(project)
         }
+        androidBuilder.updateAndroidConfigurationWithVariants()
         task.dependsOn(project.readProjectConfiguration)
     }
 

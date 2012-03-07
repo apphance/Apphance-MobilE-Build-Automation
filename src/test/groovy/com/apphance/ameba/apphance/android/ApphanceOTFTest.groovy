@@ -46,7 +46,7 @@ class ApphanceOTFTest {
 
 		runGradleNoVariants('updateProject', 'cleanRelease', 'buildDebug')
 		assertTrue(new File(testNovariantsProject,
-				"ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-1.0.1-SNAPSHOT_42.apk").exists())
+				"ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
 
 		mainActivityFile.delete()
 		mainActivityFile << tmpCopy.getText()

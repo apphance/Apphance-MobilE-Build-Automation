@@ -90,7 +90,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildDebug() {
-        runGradle('updateProject', 'cleanRelease', 'buildAllDebug')
+        runGradle('buildAllDebug')
         assertTrue(new File(testProject,
                 "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testProject,
@@ -102,7 +102,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildRelease() {
-        runGradle('updateProject', 'cleanRelease', 'buildAllRelease')
+        runGradle('buildAllRelease')
         assertTrue(new File(testProject,
                 "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testProject,
@@ -113,23 +113,23 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildDebugNoVariant() {
-        runGradleNoVariants('updateProject', 'cleanRelease', 'buildAllDebug')
+        runGradleNoVariants('buildAllDebug')
         assertTrue(new File(testNovariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
     }
     @Test
     void testBuildReleaseNoVariant() {
-        runGradleNoVariants('updateProject', 'cleanRelease', 'buildAllRelease')
+        runGradleNoVariants('buildAllRelease')
         assertTrue(new File(testNovariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
 
@@ -271,8 +271,8 @@ class ExecuteAndroidBuildsTest {
         assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/index.html").exists())
         assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/plain_file_index.html").exists())
         assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/qrcode-TestAndroidProject-1.0.1-SNAPSHOT_42.png").exists())
-        assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-1.0.1-SNAPSHOT_42.apk").exists())
-        assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-1.0.1-SNAPSHOT_42.apk").exists())
+        assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
+        assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
     @Test

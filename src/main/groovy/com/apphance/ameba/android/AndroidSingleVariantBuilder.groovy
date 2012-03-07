@@ -29,9 +29,23 @@ class AndroidSingleVariantBuilder {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.androidConf = androidProjectConfiguration
-            this.variantsDir = project.file( "variants")
+            this.variantsDir = project.file("variants")
         }
     }
+
+    File getTmpDirectory(Project project, String variant) {
+        return new File(project.rootDir.parent,("tmp-${project.rootDir.name}-" + variant).replaceAll('[\\\\ /]','_'))
+    }
+
+    String getDebugRelease(Project project, String variant) {
+        File dir = project.file("variants/${variant}")
+        if (!dir.exists()) {
+            return variant //Debug/Release
+        }
+        boolean marketVariant = dir.list().any { it == 'market_variant.txt' }
+        return marketVariant ? 'Release' : 'Debug'
+    }
+
 
     void updateAndroidConfigurationWithVariants() {
         androidConf.variants = []
@@ -43,41 +57,45 @@ class AndroidSingleVariantBuilder {
         if (androidConf.variants.empty) {
             throw new GradleException("variants directory should contain at least one variant!")
         }
+        androidConf.variants.each { variant ->
+            androidConf.tmpDirs[variant] = getTmpDirectory(project,variant)
+            androidConf.debugRelease[variant] = getDebugRelease(project, variant)
+        }
     }
 
     AndroidArtifactBuilderInfo buildApkArtifactBuilderInfo(Project project, String variant, String debugRelease) {
         if (variant != null && debugRelease == null) {
-            debugRelease = getDebugRelease(project, variant)
+            debugRelease = androidConf.debugRelease[variant]
         }
         String debugReleaseLowercase = debugRelease?.toLowerCase()
-        String variablePart = debugReleaseLowercase + (variant == null ? "" : "-${variant}")
-        File binDir = project.file( "srcTmp/bin")
+        String variablePart = debugReleaseLowercase + "-${variant}"
+        File binDir = new File(androidConf.tmpDirs[variant],'bin')
         AndroidArtifactBuilderInfo bi = new AndroidArtifactBuilderInfo(
-                variant: variant,
-                debugRelease: debugRelease,
-                buildDirectory : binDir,
-                originalFile : new File(binDir, "${conf.projectName}-${debugReleaseLowercase}.apk"),
-                fullReleaseName : "${conf.projectName}-${variablePart}-${conf.fullVersionString}",
-                folderPrefix : "${conf.projectDirectoryName}/${conf.fullVersionString}",
-                filePrefix : "${conf.projectName}-${variablePart}-${conf.fullVersionString}")
+                        variant: variant,
+                        debugRelease: debugRelease,
+                        buildDirectory : binDir,
+                        originalFile : new File(binDir, "${conf.projectName}-${debugReleaseLowercase}.apk"),
+                        fullReleaseName : "${conf.projectName}-${variablePart}-${conf.fullVersionString}",
+                        folderPrefix : "${conf.projectDirectoryName}/${conf.fullVersionString}",
+                        filePrefix : "${conf.projectName}-${variablePart}-${conf.fullVersionString}")
         return bi
     }
 
     AndroidArtifactBuilderInfo buildJarArtifactBuilderInfo(Project project, String variant, String debugRelease) {
         if (variant != null && debugRelease == null) {
-            debugRelease = getDebugRelease(project, variant)
+            debugRelease = androidConf.debugRelease[variant]
         }
         String debugReleaseLowercase = debugRelease?.toLowerCase()
-        String variablePart = debugReleaseLowercase + (variant == null ? "" : "-${variant}")
-        File binDir = project.file( "srcTmp/bin")
+        String variablePart = debugReleaseLowercase + "-${variant}"
+        File binDir = new File(androidConf.tmpDirs[variant],"bin")
         AndroidArtifactBuilderInfo bi = new AndroidArtifactBuilderInfo(
-                variant: variant,
-                debugRelease: debugRelease,
-                buildDirectory : binDir,
-                originalFile : new File(binDir, "classes.jar"),
-                fullReleaseName : "${conf.projectName}-${variablePart}-${conf.fullVersionString}",
-                folderPrefix : "${conf.projectDirectoryName}/${conf.fullVersionString}",
-                filePrefix : "${conf.projectName}-${variablePart}-${conf.fullVersionString}")
+                        variant: variant,
+                        debugRelease: debugRelease,
+                        buildDirectory : binDir,
+                        originalFile : new File(binDir, "classes.jar"),
+                        fullReleaseName : "${conf.projectName}-${variablePart}-${conf.fullVersionString}",
+                        folderPrefix : "${conf.projectDirectoryName}/${conf.fullVersionString}",
+                        filePrefix : "${conf.projectName}-${variablePart}-${conf.fullVersionString}")
         return bi
     }
 
@@ -94,12 +112,6 @@ class AndroidSingleVariantBuilder {
             }
         }
         return variants
-    }
-
-    String getDebugRelease(Project project, String variant) {
-        File dir = new File(variantsDir,"${variant}")
-        boolean marketVariant = dir.list().any { it == 'market_variant.txt' }
-        return marketVariant ? 'Release' : 'Debug'
     }
 
     private AmebaArtifact prepareApkArtifact(AndroidArtifactBuilderInfo bi) {
@@ -120,16 +132,17 @@ class AndroidSingleVariantBuilder {
 
     void buildSingleApk(AndroidArtifactBuilderInfo bi) {
         AmebaArtifact apkArtifact = prepareApkArtifact(bi)
-        projectHelper.executeCommand(project, new File (project.rootDir, "srcTmp"), ['ant', 'clean'])
-        if (bi.variant != null) {
+        projectHelper.executeCommand(project, androidConf.tmpDirs[bi.variant], ['ant', 'clean'])
+        def variantPropertiesDir = new File(variantsDir, bi.variant)
+        if (bi.variant != null && variantPropertiesDir.exists()) {
             project.ant {
-                copy(todir : 'srcTmp/res/raw', overwrite:'true', verbose:'true') {
-                    fileset(dir: new File(variantsDir, bi.variant),
-                            includes:'*', excludes:'market_variant.txt')
+                copy(todir : new File(androidConf.tmpDirs[bi.variant],'res/raw'), overwrite:'true', verbose:'true') {
+                    fileset(dir: variantPropertiesDir,
+                                    includes:'*', excludes:'market_variant.txt')
                 }
             }
         }
-        projectHelper.executeCommand(project, new File (project.rootDir, "srcTmp"), [
+        projectHelper.executeCommand(project, , androidConf.tmpDirs[bi.variant], [
             'ant',
             bi.debugRelease.toLowerCase()
         ])
@@ -140,16 +153,16 @@ class AndroidSingleVariantBuilder {
 
     void buildSingleJar(AndroidArtifactBuilderInfo bi) {
         AmebaArtifact apkArtifact = prepareJarArtifact(bi)
-        projectHelper.executeCommand(project, new File (project.rootDir, "srcTmp"), ['ant', 'clean'])
+        projectHelper.executeCommand(project, , androidConf.tmpDirs[bi.variant], ['ant', 'clean'])
         if (bi.variant != null) {
             project.ant {
-                copy(todir : project.file('srcTmp/res/raw'), overwrite:'true', verbose:'true') {
+                copy(todir : new File(androidConf.tmpDirs[bi.variant], 'res/raw'), overwrite:'true', verbose:'true') {
                     fileset(dir: new File(variantsDir, bi.variant),
-                            includes:'*', excludes:'market_variant.txt')
+                                    includes:'*', excludes:'market_variant.txt')
                 }
             }
         }
-        projectHelper.executeCommand(project, new File (project.rootDir, "srcTmp"), [
+        projectHelper.executeCommand(project, androidConf.tmpDirs[bi.variant], [
             'ant',
             bi.debugRelease.toLowerCase()
         ])
@@ -160,7 +173,7 @@ class AndroidSingleVariantBuilder {
 
     void buildArtifactsOnly(Project project, String variant, boolean isLibrary, String debugRelease = null) {
         if (variant != null && debugRelease == null) {
-            debugRelease = getDebugRelease(project, variant)
+            debugRelease = androidConf.debugRelease[variant]
         }
         if (conf.versionString != null) {
             if (isLibrary) {

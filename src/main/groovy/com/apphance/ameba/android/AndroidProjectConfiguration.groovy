@@ -20,6 +20,8 @@ class AndroidProjectConfiguration {
     String targetName
     String minSdkTargetName
     String mainVariant
+    Map<String,File> tmpDirs = [:]
+    Map<String,String> debugRelease = [:]
     Collection<String> variants
     Collection<File> sdkJars = []
     Collection<File> libraryJars = []
