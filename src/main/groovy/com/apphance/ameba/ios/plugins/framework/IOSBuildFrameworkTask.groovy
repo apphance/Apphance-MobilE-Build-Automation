@@ -61,7 +61,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
         use (PropertyCategory) {
             iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
             frameworkTarget = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
-            frameworkConfiguration = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
+            frameworkConfiguration = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_CONFIGURATION)
             frameworkVersion = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_VERSION)
             frameworkHeaders = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_HEADERS).split(',')
             frameworkResources = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_RESOURCES).split(',')
