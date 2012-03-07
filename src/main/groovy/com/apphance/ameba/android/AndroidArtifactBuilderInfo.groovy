@@ -17,7 +17,7 @@ class AndroidArtifactBuilderInfo  {
     String filePrefix
 
     String getId() {
-        return variant == null ? debugRelease : variant
+        return variant
     }
 
     @Override

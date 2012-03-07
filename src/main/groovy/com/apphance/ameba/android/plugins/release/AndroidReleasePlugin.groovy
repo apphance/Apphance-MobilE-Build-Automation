@@ -78,8 +78,8 @@ class AndroidReleasePlugin implements Plugin<Project>{
                     builder.buildArtifactsOnly(project, variant, androidEnvironment.isLibrary())
                 }
             } else {
-                builder.buildArtifactsOnly(project, null, androidEnvironment.isLibrary(), 'Debug')
-                builder.buildArtifactsOnly(project, null, androidEnvironment.isLibrary(), 'Release')
+                builder.buildArtifactsOnly(project, 'Debug', androidEnvironment.isLibrary(), 'Debug')
+                builder.buildArtifactsOnly(project, 'Release', androidEnvironment.isLibrary(), 'Release')
             }
             if (conf.versionString != null) {
                 String otaFolderPrefix = "${conf.projectDirectoryName}/${conf.fullVersionString}"

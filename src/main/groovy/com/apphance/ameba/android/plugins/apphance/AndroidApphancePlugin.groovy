@@ -13,12 +13,12 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidManifestHelper
-import com.apphance.ameba.apphance.ApphanceProperty;
-import com.apphance.ameba.apphance.PrepareApphanceSetup;
-import com.apphance.ameba.apphance.ShowApphancePropertiesTask;
-import com.apphance.ameba.apphance.VerifyApphanceSetupTask;
-import com.apphance.ameba.apphance.ApphanceProperty;
+import com.apphance.ameba.android.AndroidProjectConfiguration;
+import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import com.apphance.ameba.apphance.PrepareApphanceSetupOperation;
+import com.apphance.ameba.apphance.ShowApphancePropertiesOperation;
+import com.apphance.ameba.apphance.VerifyApphanceSetupOperation;
 
 class AndroidApphancePlugin implements Plugin<Project>{
 
@@ -28,6 +28,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     ProjectConfiguration conf
     File findbugsHomeDir
     AndroidManifestHelper manifestHelper
+    AndroidProjectConfiguration androidConf
 
     public void apply(Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
@@ -35,6 +36,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             manifestHelper = new AndroidManifestHelper()
+            this.androidConf = new AndroidProjectConfigurationRetriever().getAndroidProjectConfiguration(project)
             preprocessBuildsWithApphance(project)
             prepareConvertLogsToApphance(project)
             prepareConvertLogsToAndroid(project)
@@ -49,49 +51,74 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     void prepareConvertLogsToApphance(project) {
         def task = project.task('convertLogsToApphance')
-        task.description = "Converts all logs to apphance from android logs"
+        task.description = "Converts all logs to apphance from android logs for Debug builds"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-        task << { replaceLogsWithApphance(project) }
+        task << {
+            androidConf.variants.each { variant ->
+                if (androidConf.debugRelease[variant] == 'Debug') {
+                    replaceLogsWithApphance(project, variant)
+                }
+            }
+        }
     }
 
     void prepareConvertLogsToAndroid(project) {
         def task = project.task('convertLogsToAndroid')
-        task.description = "Converts all logs to android from apphance logs"
+        task.description = "Converts all logs to android from apphance logs for Release builds"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-        task << { replaceLogsWithAndroid(project) }
+        task << {
+            androidConf.variants.each { variant ->
+                if (androidConf.debugRelease[variant] == 'Release') {
+                    replaceLogsWithAndroid(project, variant)
+                }
+            }
+        }
     }
 
     void prepareRemoveApphaceFromManifest(project) {
         def task = project.task('removeApphanceFromManifest')
         task.description = "Remove apphance-only entries from manifest"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-        task << { removeApphanceFromManifest(project) }
+        task << {
+            androidConf.variants.each { variant ->
+                if (androidConf.debugRelease[variant] == 'Release') {
+                    removeApphanceFromManifest(project, variant)
+                }
+            }
+        }
     }
 
     void prepareRestoreManifestBeforeApphance(project) {
         def task = project.task('restoreManifestBeforeApphance')
         task.description = "Restore manifest to before apphance replacement"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-        task << { restoreManifestBeforeApphanceRemoval(project) }
+        task << {
+            androidConf.variants.each { variant ->
+                if (androidConf.debugRelease[variant] == 'Release') {
+                    restoreManifestBeforeApphanceRemoval(project, variant)
+                }
+            }
+        }
     }
 
-    File getMainApplicationFile(Project project) {
-        String mainApplicationFileName = manifestHelper.getApplicationName(project.file("srcTmp"))
+    File getMainApplicationFile(Project project, String variant) {
+        File tmpDir = androidConf.tmpDirs[variant]
+        String mainApplicationFileName = manifestHelper.getApplicationName(project.rootDir)
         mainApplicationFileName = mainApplicationFileName.replace('.', '/')
         mainApplicationFileName = mainApplicationFileName + '.java'
-        mainApplicationFileName = 'srcTmp/src/' + mainApplicationFileName
+        mainApplicationFileName = 'src/' + mainApplicationFileName
         File f
-        if (new File(mainApplicationFileName).exists()) {
-            f = new File(mainApplicationFileName)
+        if (new File(tmpDir,mainApplicationFileName).exists()) {
+            f = new File(tmpDir, mainApplicationFileName)
         } else {
-            String mainActivityName = manifestHelper.getMainActivityName(project.file("srcTmp"))
+            String mainActivityName = manifestHelper.getMainActivityName(project.rootDir)
             mainActivityName = mainActivityName.replace('.', '/')
             mainActivityName = mainActivityName + '.java'
-            mainActivityName = 'srcTmp/src/' + mainActivityName
-            if (!(new File(mainActivityName)).exists()) {
+            mainActivityName = 'src/' + mainActivityName
+            if (!(new File(tmpDir, mainActivityName)).exists()) {
                 f = null
             } else {
-                f = new File(mainActivityName)
+                f = new File(tmpDir, mainActivityName)
             }
         }
         return f
@@ -100,66 +127,69 @@ class AndroidApphancePlugin implements Plugin<Project>{
     public void preprocessBuildsWithApphance(Project project) {
         project.tasks.each {  task ->
             if (task.name.startsWith('buildDebug')) {
+                def variant = task.name == 'buildDebug' ? 'Debug' : task.name.substring('buildDebug-'.length())
                 task.doFirst {
                     if (!checkIfApphancePresent(project)) {
-                        File mainFile = getMainApplicationFile(project)
+                        File mainFile = getMainApplicationFile(project, variant)
                         if (mainFile != null) {
-                            replaceLogsWithApphance(project)
-                            addApphanceInit(project, mainFile)
-                            copyApphanceJar(project)
-                            addApphanceToManifest(project)
+                            replaceLogsWithApphance(project, variant)
+                            addApphanceInit(project, variant, mainFile)
+                            copyApphanceJar(project, variant)
+                            addApphanceToManifest(project, variant)
                         }
                     }
                 }
             }
             if (task.name.startsWith('buildRelease')) {
+                def variant = task.name == 'buildRelease' ? 'Release' : task.name.substring('buildRelease-'.length())
                 task.doFirst {
-                    removeApphanceFromManifest(project)
-                    replaceLogsWithAndroid(project)
+                    removeApphanceFromManifest(project, variant)
+                    replaceLogsWithAndroid(project, variant)
                 }
-                task.doLast { restoreManifestBeforeApphanceRemoval(project) }
+                task.doLast { restoreManifestBeforeApphanceRemoval(project, variant) }
             }
         }
     }
 
-    private replaceLogsWithAndroid(Project project) {
+    private replaceLogsWithAndroid(Project project, String variant) {
+        logger.lifecycle("Replacing apphance logs with android for ${variant}")
         project.ant.replace(casesensitive: 'true', token : 'import com.apphance.android.Log;',
-                value: 'import android.util.Log;', summary: true) {
-                    fileset(dir: 'srcTmp') { include (name : '**/*.java') }
-                }
+                        value: 'import android.util.Log;', summary: true) {
+                            fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
+                        }
     }
 
-    private replaceLogsWithApphance(Project project) {
-        logger.lifecycle("Replacing android logs with apphance")
+    private replaceLogsWithApphance(Project project, String variant) {
+        logger.lifecycle("Replacing android logs with apphance for ${variant}")
         project.ant.replace(casesensitive: 'true', token : 'import android.util.Log;',
-                value: 'import com.apphance.android.Log;', summary: true) {
-                    fileset(dir: 'srcTmp/src') { include (name : '**/*.java') }
-                }
+                        value: 'import com.apphance.android.Log;', summary: true) {
+                            fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
+                        }
     }
 
-    private restoreManifestBeforeApphanceRemoval(Project project) {
+    private restoreManifestBeforeApphanceRemoval(Project project, variant) {
         logger.lifecycle("Restoring before apphance was removed from manifest. ")
-        manifestHelper.restoreBeforeApphanceRemoval(project.file( "srcTmp"))
+        manifestHelper.restoreBeforeApphanceRemoval(new File(androidConf.tmpDirs[variant], 'src'))
     }
 
-    private removeApphanceFromManifest(Project project) {
+    private removeApphanceFromManifest(Project project, variant) {
         logger.lifecycle("Remove apphance from manifest")
-        manifestHelper.removeApphance(project.file( "srcTmp"))
+        manifestHelper.removeApphance(androidConf.tmpDirs[variant])
         File apphanceRemovedManifest = new File(conf.logDirectory,"AndroidManifest-with-apphance-removed.xml")
         logger.lifecycle("Manifest used for this build is stored in ${apphanceRemovedManifest}")
         if (apphanceRemovedManifest.exists()) {
             logger.lifecycle('removed manifest exists')
             apphanceRemovedManifest.delete()
         }
-        apphanceRemovedManifest << project.file("srcTmp/AndroidManifest.xml").text
+        apphanceRemovedManifest << new File(androidConf.tmpDirs[variant], "AndroidManifest.xml").text
     }
 
-    private addApphanceToManifest(Project project) {
+    private addApphanceToManifest(Project project, String variant) {
         logger.lifecycle("Adding apphance to manifest")
-        manifestHelper.addApphanceToManifest(project.file( "srcTmp"))
+        manifestHelper.addApphanceToManifest(androidConf.tmpDirs[variant])
     }
 
-    private def addApphanceInit(Project project, File mainFile) {
+    private def addApphanceInit(Project project, variant, File mainFile) {
         logger.lifecycle("Adding apphance init to file " + mainFile)
         def lineToModification = []
         mainFile.eachLine { line, lineNumber ->
@@ -193,21 +223,21 @@ class AndroidApphancePlugin implements Plugin<Project>{
         newMainClass.delete()
     }
 
-    private copyApphanceJar(Project project) {
-        def libsDir = new File('srcTmp/libs')
+    private copyApphanceJar(Project project, variant) {
+        def libsDir = new File(androidConf.tmpDirs[variant], 'libs')
         libsDir.mkdirs()
         libsDir.eachFileMatch(".*apphance.*\\.jar") {
             logger.lifecycle("Removing old apphance jar: " + it.name)
             it.delete()
         }
-        File libsApphance = project.file( 'srcTmp/libs/apphance.jar')
-        URL apphanceUrl = this.class.getResource("apphance-android-library_1.4.2.1.jar")
+        File libsApphance = new File(androidConf.tmpDirs[variant], 'libs/apphance.jar')
+        URL apphanceUrl = this.class.getResource("apphance-android-library_1.5.jar")
         libsApphance << apphanceUrl.getContent()
     }
 
     private boolean checkIfApphancePresent(Project project) {
         boolean found = false
-        File basedir = project.file( 'srcTmp/src')
+        File basedir = project.file('src')
         basedir.eachFileRecurse { file ->
             if (file.name.endsWith('.java')) {
                 file.eachLine {
@@ -218,20 +248,17 @@ class AndroidApphancePlugin implements Plugin<Project>{
             }
         }
         if (!found) {
-            project.file( 'srcTmp').eachFileMatch(".*apphance.*\\.jar") {
-                found = true
-            }
+            project.file('.').eachFileMatch(".*apphance.*\\.jar") { found = true }
         }
         return found
     }
 
     static public final String DESCRIPTION =
-"""This is the plugin that links Ameba with Apphance service.
+    """This is the plugin that links Ameba with Apphance service.
 
 The plugin provides integration with Apphance service. It performs the
 following tasks: adding Apphance on-the-fly while building the application
 (for all Debug builds), removing Apphance on-the-fly while building the application
 (for all Release builds), submitting the application to apphance at release time.
 """
-
 }

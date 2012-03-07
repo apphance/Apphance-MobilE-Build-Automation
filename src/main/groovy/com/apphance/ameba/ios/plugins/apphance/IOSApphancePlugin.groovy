@@ -9,9 +9,9 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.ProjectConfiguration;
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.apphance.PrepareApphanceSetup;
-import com.apphance.ameba.apphance.ShowApphancePropertiesTask;
-import com.apphance.ameba.apphance.VerifyApphanceSetupTask;
+import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
+import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
+import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
 import com.apphance.ameba.apphance.ApphanceProperty;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.IOSXCodeOutputParser;
@@ -42,9 +42,9 @@ class IOSApphancePlugin implements Plugin<Project> {
 			iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmedListOutput)
 			preprocessBuildsWithApphance(project)
 
-			project.task('showApphanceProperties', type:ShowApphancePropertiesTask)
-			project.task('verifyApphanceSetup', type:VerifyApphanceSetupTask)
-			project.task('prepareApphanceSetup', type:PrepareApphanceSetup)
+            project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
+            project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
+            project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
 		}
 	}
 
