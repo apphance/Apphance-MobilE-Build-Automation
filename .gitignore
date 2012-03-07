@@ -1,6 +1,4 @@
 testProjects/android/test/Robotium/gen
-Colleagues/test/roboelectric/emma
-MalyszRacing.xcodeproj/xcuserdata
 log
 testProjects/android*/gen
 testProjects/android*/avds
@@ -13,7 +11,6 @@ testProjects/documentation/*/proguard.cfg
 testProjects/documentation/ameba-android-test/test/android/proguard.cfg
 local.properties
 emma
-/.gradle
 /build/
 /tmp
 /.classpath
@@ -22,3 +19,7 @@ emma
 /tmpCopy
 /coverage.ec
 /.groovy
+/bin/
+*.user
+*.suo
+*\.gradle

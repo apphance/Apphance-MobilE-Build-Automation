@@ -224,6 +224,7 @@ class AmebaPluginReferenceBuilder {
         addAmebaDocumentation(VCS_TASKS, 'ameba-mercurial', MercurialProperty.class)
 
 		// Android
+
 		addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-build', AndroidProjectProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-analysis', null, 'androidAnalysis')
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-apphance')
@@ -243,10 +244,12 @@ class AmebaPluginReferenceBuilder {
 		*/
 
 		// Windows Phone
+
 		addAmebaDocumentation(WP7_TASKS, 'ameba-wp7-analysis')
 		addAmebaDocumentation(WP7_TASKS, 'ameba-wp7-apphance')
 		addAmebaDocumentation(WP7_TASKS, 'ameba-wp7-build')
 		addAmebaDocumentation(WP7_TASKS, 'ameba-wp7-test')
+
 		generateDocumentation()
     }
 
