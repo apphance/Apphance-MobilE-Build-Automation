@@ -1,5 +1,7 @@
 package com.apphance.ameba.ios.plugins.apphance
 
+import java.util.zip.ZipFile;
+
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -51,25 +53,27 @@ class IOSApphancePlugin implements Plugin<Project> {
 	void preprocessBuildsWithApphance(Project project) {
 		iosConf.configurations.each { configuration ->
 			iosConf.targets.each { target ->
-				project."build-${target}-${configuration}".doFirst {
-					replaceLogsWithApphance(project)
-					pbxProjectHelper.addApphanceToProject(new File(project.rootDir, "srcTmp"), target, configuration, project[ApphanceProperty.APPLICATION_KEY.propertyName])
-					copyApphanceFramework(project)
+				if (!iosConf.isBuildExcluded(target + "-" + configuration)) {
+					project."build-${target}-${configuration}".doFirst {
+						replaceLogsWithApphance(project, iosConf.tmpDirName(target, configuration))
+						pbxProjectHelper.addApphanceToProject(new File(project.rootDir, iosConf.tmpDirName(target, configuration)), target, configuration, project[ApphanceProperty.APPLICATION_KEY.propertyName])
+						copyApphanceFramework(project, iosConf.tmpDirName(target, configuration))
+					}
 				}
 			}
 		}
 	}
 
-	void replaceLogsWithApphance(Project project) {
+	void replaceLogsWithApphance(Project project, String tmpDir) {
 		logger.lifecycle("Replacing android logs with apphance")
 		project.ant.replace(casesensitive: 'true', token : 'NSLog',
 				value: 'APHLog', summary: true) {
-					fileset(dir: "${project.rootDir}/srcTmp/") { include (name : '**/*.m') }
+					fileset(dir: "${project.rootDir}/" + tmpDir) { include (name : '**/*.m') }
 				}
 	}
 
-	private copyApphanceFramework(Project project) {
-		def libsDir = new File(project.rootDir, 'srcTmp/')
+	private copyApphanceFramework(Project project, String tmpDir) {
+		def libsDir = new File(project.rootDir, tmpDir)
 		logger.lifecycle("Copying apphance into directory " + libsDir)
 		libsDir.mkdirs()
 		libsDir.eachFileMatch(".*[aA]pphance.*\\.framework") { framework ->
@@ -84,10 +88,11 @@ class IOSApphancePlugin implements Plugin<Project> {
 			// Apply closure
 			delClos( new File(framework.canonicalPath) )
 		}
+
 		URL apphanceUrl = this.class.getResource("Apphance-iOS.framework.zip")
-		copy {
-			from zipFile(apphanceUrl)
-			into "${project.rootDir}"
-		}
+
+		def command = ["unzip", "${apphanceUrl.path}", "-d", "${libsDir}"]
+		Process proc = Runtime.getRuntime().exec((String[]) command.toArray())
+		proc.waitFor()
 	}
 }

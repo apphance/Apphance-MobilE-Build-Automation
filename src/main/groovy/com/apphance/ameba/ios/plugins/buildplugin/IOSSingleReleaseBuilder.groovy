@@ -44,7 +44,7 @@ class IOSSingleReleaseBuilder {
             logger.lifecycle ("* If it does make sure that SKIP_IOS_BUILDS variable is unset    *")
             logger.lifecycle ("********************************************************************")
         } else {
-            projectHelper.executeCommand(project, new File(project.rootDir, "srcTmp"), [
+            projectHelper.executeCommand(project, new File(project.rootDir, iosConf.tmpDirName(target, configuration)), [
                 "xcodebuild" ,
                 "-target",
                 target,
@@ -71,7 +71,7 @@ class IOSSingleReleaseBuilder {
                 id : "${target}-${configuration}",
                 target : target,
                 configuration : configuration,
-                buildDirectory : new File(project.file( "build"),"${configuration}-iphoneos"),
+                buildDirectory : new File(project.file(iosConf.tmpDirName(target, configuration) + "/build"),"${configuration}-iphoneos"),
                 fullReleaseName : "${target}-${configuration}-${conf.fullVersionString}",
                 folderPrefix : "${conf.projectDirectoryName}/${conf.fullVersionString}/${target}/${configuration}",
                 filePrefix : "${target}-${configuration}-${conf.fullVersionString}",

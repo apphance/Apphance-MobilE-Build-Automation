@@ -72,7 +72,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
             IOSArtifactBuilderInfo bi= new IOSArtifactBuilderInfo()
             bi.target = target
             bi.configuration = configuration
-            bi.buildDirectory = new File(project.file( "build"),"${configuration}-iphonesimulator")
+            bi.buildDirectory = new File(project.file( iosConf.tmpDirName(target, configuration) + "/build"),"${configuration}-iphonesimulator")
             bi.fullReleaseName  = "${target}-${configuration}-${conf.fullVersionString}"
             bi.folderPrefix = "${conf.projectDirectoryName}/${conf.fullVersionString}/${target}/${configuration}"
             bi.filePrefix = "${target}-${configuration}-${conf.fullVersionString}"

@@ -57,4 +57,8 @@ class IOSProjectConfiguration {
         }
         return excluded
     }
+
+	String tmpDirName(String target, String configuration) {
+		return "../tmp-${target}-${configuration}"
+	}
 }

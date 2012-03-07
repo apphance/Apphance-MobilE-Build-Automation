@@ -372,12 +372,17 @@ class IOSPlugin implements Plugin<Project> {
 		task.description = "Copies all sources to tmp directory for build"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
 		task << {
-			new AntBuilder().delete(dir: "${project.rootDir}/srcTmp")
-			new AntBuilder().copy(toDir : "${project.rootDir}/srcTmp", verbose:true) {
-				fileset(dir : "${project.rootDir}/") {
-					exclude(name: "${project.rootDir}/srcTmp/**/*")
-					conf.sourceExcludes.each {
-						exclude(name: it)
+			iosConf.alltargets.each { target ->
+				iosConf.allconfigurations.each { configuration ->
+					if (!iosConf.isBuildExcluded(target + "-" + configuration)) {
+						new AntBuilder().sync(toDir : iosConf.tmpDirName(target, configuration), overwrite:true, verbose:true) {
+							fileset(dir : "${project.rootDir}/") {
+								exclude(name: new File(project.rootDir, iosConf.tmpDirName(target, configuration)).absolutePath + '/**/*')
+								conf.sourceExcludes.each {
+									exclude(name: it)
+								}
+							}
+						}
 					}
 				}
 			}
