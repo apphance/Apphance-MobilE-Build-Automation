@@ -90,6 +90,8 @@ class IOSBuildFrameworkTask extends DefaultTask {
 
     private createLibrary() {
         logger.lifecycle("Create library")
+        def outputFile = new File(this.frameworkVersionsVersionDir, conf.projectName)
+        outputFile.parentFile.mkdirs()
         projectHelper.executeCommand(project,
                 [
                     "lipo",
@@ -97,7 +99,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
                     this.iphoneosLibrary,
                     this.iphonesimulatorLibrary,
                     "-output",
-                    new File(this.frameworkVersionsVersionDir, conf.projectName)]
+                    outputFile]
                 )
     }
 
