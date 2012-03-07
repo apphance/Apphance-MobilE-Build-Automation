@@ -20,8 +20,14 @@ class PbxProjectHelper {
 	}
 
 	def getParsedProject(File projectRootDirectory, String targetName) {
-		File projectFile = new File(projectRootDirectory, "${targetName}.xcodeproj/project.pbxproj")
-		if (!projectFile.exists()) {
+		def projectFile = null
+		projectRootDirectory.eachFileRecurse {
+			if (it.name.equals("project.pbxproj")) {
+				projectFile = it
+				return
+			}
+		}
+		if (projectFile == null) {
 			throw new GradleException("There is no project file in directory " + projectRootDirectory.canonicalPath + " with name " + targetName)
 		}
 		def command = ["plutil", "-convert", "json", "-o", "-", "${projectFile}"]
