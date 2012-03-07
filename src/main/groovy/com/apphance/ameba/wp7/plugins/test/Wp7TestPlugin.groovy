@@ -77,4 +77,8 @@ class Wp7TestPlugin implements Plugin<Project> {
 			transformer.transform(trxInput, xmlOutput)
 		}
 	}
+
+	static public final String DESCRIPTION =
+	"""This plugin provides easy automated testing framework for Windows Phone applications
+	"""
 }

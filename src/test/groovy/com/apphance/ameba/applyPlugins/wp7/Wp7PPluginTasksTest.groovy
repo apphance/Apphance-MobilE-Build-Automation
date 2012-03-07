@@ -19,9 +19,8 @@ class Wp7PPluginTasksTest extends AbstractBaseWp7TasksTest {
 	@Test
 	public void testBuildTasksAvailable() {
 		verifyTasksInGroup(getProject(),[
-			'clean',
 			'buildAll',
-			'checkTests',
+			'clean',
 		],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
 	}
 
@@ -31,7 +30,6 @@ class Wp7PPluginTasksTest extends AbstractBaseWp7TasksTest {
 			'cleanConfiguration',
 			'copyGalleryFiles',
 			'readProjectConfiguration',
-			'showProjectConfiguration'
 		],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
 	}
 
@@ -43,15 +41,11 @@ class Wp7PPluginTasksTest extends AbstractBaseWp7TasksTest {
 	@Test
 	public void testSetupTasksAvailable() {
 		verifyTasksInGroup(getProject(),[
-			'prepareBaseSetup',
 			'prepareSetup',
-			'prepareWp7Setup',
-			'showBaseSetup',
+			'showConventions',
 			'showSetup',
-			'showWp7Setup',
-			'verifyBaseSetup',
 			'verifySetup',
-			'verifyWp7Setup',
+
 		],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
 	}
 }

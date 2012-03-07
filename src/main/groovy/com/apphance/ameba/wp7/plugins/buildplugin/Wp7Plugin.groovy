@@ -96,4 +96,14 @@ class Wp7Plugin implements Plugin<Project> {
 
 		}
 	}
+
+	static public final String DESCRIPTION =
+	"""This is the main windows phone build plugin.
+
+	The plugin provides all the tasks needed to build windows phone application.
+	Besides tasks explained below, the plugin prepares build-* and install-*
+	tasks which are dynamically created, based on variants available. In
+	case the build has no variants, the only available builds are Debug and Release.
+	In case of variants, there is one build and one task created for every variant.
+	"""
 }

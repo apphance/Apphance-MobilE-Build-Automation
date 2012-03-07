@@ -168,4 +168,13 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 	File getProjectDir(Project project) {
 		return project.rootDir
 	}
+
+	static public final String DESCRIPTION =
+	"""This is the plugin that links Ameba with Apphance service.
+
+The plugin provides integration with Apphance service. It performs the
+following tasks: adding Apphance on-the-fly while building the application
+(for all Debug builds), removing Apphance on-the-fly while building the application
+(for all Release builds), submitting the application to apphance at release time.
+"""
 }
