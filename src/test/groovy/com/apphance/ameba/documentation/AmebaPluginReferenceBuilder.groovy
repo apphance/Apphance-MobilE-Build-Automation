@@ -153,6 +153,7 @@ class AmebaPluginReferenceBuilder {
         def conventionsDir = new File("testProjects/conventions/${pluginName}")
         def templateDir = new File("templates/android")
         Project project = getProject(projectDir)
+        project.apply plugin:'ameba-project-configuration'
         ProjectConnection connection
         GradleProject gradleProject
         (connection, gradleProject) = getProjectConnectionAndModel(projectDir)

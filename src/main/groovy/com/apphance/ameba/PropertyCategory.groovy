@@ -28,7 +28,7 @@ class PropertyCategory {
         s << "# ${description}"
         s << "###########################################################"
         properties.each {
-            def defaultValue = getDefaultForProperty(it, project)
+            def defaultValue = getDefaultForProperty(project, it)
             String comment = '# ' + it.description
             String propString = it.propertyName + '='
             if (defaultValue != null) {
