@@ -1,22 +1,78 @@
 package com.apphance.ameba.ios
 
 import groovy.json.JsonSlurper;
+import groovy.xml.XmlUtil;
 
+import javax.xml.parsers.DocumentBuilderFactory
+
+import org.apache.tools.ant.filters.StringInputStream;
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.GradleException
 import groovy.io.FileType
+import com.sun.org.apache.xpath.internal.XPathAPI;
 
 class PbxProjectHelper {
 
 	static Logger logger = Logging.getLogger(PbxProjectHelper.class)
 
 	Object rootObject
+	Object objects
 	private int hash = 0
 	boolean hasApphance = false
 
+	Object getProperty(Object object, String propertyName) {
+		def returnObject = null
+		def property = object.key.each {
+			if (it.text().equals(propertyName)) {
+				returnObject = it
+			}
+		}
+		if (returnObject != null) {
+			returnObject = getNextNode(returnObject)
+		}
+		return returnObject
+	}
+
+	void setRootObject(Object rootObject) {
+		this.rootObject = rootObject
+	}
+
+	Object getObjectsList() {
+		def objects = null
+		rootObject.dict.key.each {
+			if (it.text().equals("objects")) {
+				objects = it
+				return
+			}
+		}
+		objects = getNextNode(objects)
+		return objects
+	}
+
 	Object getObject(String objectName) {
-		return rootObject.objects."${objectName}"
+		def returnObject = null
+
+		def objects = getObjectsList()
+		objects.key.each {
+			if (it.text().equals(objectName)) {
+				returnObject = it
+				return
+			}
+		}
+		returnObject = getNextNode(returnObject)
+		return returnObject
+	}
+
+	def getNextNode(Object object) {
+		Iterator iter = object.parent().breadthFirst()
+		while (iter.hasNext()) {
+			def obj = iter.next()
+			if (object == obj) {
+				return iter.next()
+			}
+		}
+		return null
 	}
 
 	def getParsedProject(File projectRootDirectory, String targetName) {
@@ -30,12 +86,13 @@ class PbxProjectHelper {
 		if (projectFile == null) {
 			throw new GradleException("There is no project file in directory " + projectRootDirectory.canonicalPath + " with name " + targetName)
 		}
-		def command = ["plutil", "-convert", "json", "-o", "-", "${projectFile}"]
+		def command = ["plutil", "-convert", "xml1", "-o", "-", "${projectFile}"]
 		Process proc = Runtime.getRuntime().exec((String[]) command.toArray())
 		StringBuffer outBuff = new StringBuffer()
 		proc.waitForProcessOutput(outBuff, null)
-		JsonSlurper slurper = new JsonSlurper()
-		return slurper.parseText(outBuff.toString())
+		XmlSlurper slurper = new XmlSlurper(false, false)
+		def root = slurper.parseText(outBuff.toString())
+		return root
 	}
 
 	int nextHash() {
@@ -45,20 +102,61 @@ class PbxProjectHelper {
 	void addFramework(Object frameworks, String name, String path, String group, String strongWeak) {
 		int apphanceFrameworkHash = nextHash()
 		int apphanceFileFrameworkHash = nextHash()
-		rootObject.objects.put(apphanceFrameworkHash.toString(), [isa : "PBXBuildFile", fileRef : apphanceFileFrameworkHash, settings : [ATTRIBUTES:[strongWeak,]]])
-		frameworks.files.add(apphanceFrameworkHash.toString())
-		rootObject.objects.put(apphanceFileFrameworkHash.toString(), [isa : "PBXFileReference", lastKnownFileType : "wrapper.framework", name : name, path : path, sourceTree : group ])
+		def objectsList = getObjectsList()
+		objectsList.appendNode {
+			key(apphanceFrameworkHash.toString())
+		}
+		objectsList.appendNode {
+			dict {
+				key("isa")
+				string("PBXBuildFile")
+				key("fileRef")
+				string(apphanceFileFrameworkHash)
+				key("settings")
+				dict {
+					key("ATTRIBUTES")
+					array {
+						string(strongWeak)
+					}
+				}
+			}
+		}
+		getProperty(frameworks, "files").appendNode {
+			string(apphanceFrameworkHash.toString())
+		}
+		objectsList.appendNode {
+			key(apphanceFileFrameworkHash.toString())
+			dict {
+				key("isa")
+				string("PBXFileReference")
+				key("lastKnownFileType")
+				string("wrapper.framework")
+				key("name")
+				string(name)
+				key("path")
+				string(path)
+				key("sourceTree")
+				string(group)
+			}
+		}
+//		rootObject.objects.put(apphanceFrameworkHash.toString(), [isa : "PBXBuildFile", fileRef : apphanceFileFrameworkHash, settings : [ATTRIBUTES:[strongWeak,]]])
+//		frameworks.files.add(apphanceFrameworkHash.toString())
+//		rootObject.objects.put(apphanceFileFrameworkHash.toString(), [isa : "PBXFileReference", lastKnownFileType : "wrapper.framework", name : name, path : path, sourceTree : group ])
 
-		def mainGroup = getObject(getObject(rootObject.rootObject).mainGroup)
-		mainGroup.children.add(apphanceFileFrameworkHash.toString())
+		def project = getObject(getProperty(rootObject.dict, "rootObject").text())
+		def mainGroupProp = getProperty(project, "mainGroup")
+		def mainGroup = getObject(mainGroupProp.text())
+		getProperty(mainGroup, "children").appendNode {
+			string(apphanceFileFrameworkHash.toString())
+		}
 	}
 
 	boolean findFramework(Object frameworks, String name) {
 		boolean foundFramework = false
-		frameworks.files.each { file ->
+		getProperty(frameworks, "files").'*'.each { file ->
 			// find file reference in objects
-			def fileRef = getObject("${file}").fileRef
-			if (getObject("${fileRef}").name.toLowerCase().contains(name)) {
+			def fileRef = getProperty(getObject("${file}"), "fileRef")
+			if (getProperty(getObject("${fileRef}"), "name").text().toLowerCase().contains(name)) {
 				logger.lifecycle("Framework already added")
 				// apphance already added
 				foundFramework = true
@@ -92,21 +190,21 @@ class PbxProjectHelper {
 
 	String printElementToString(Object node, int level) {
 		StringBuilder builder = new StringBuilder()
-		if (node instanceof Map) {
+		if (node.name().equals("dict")) {
 			builder << "{\n"
 			builder << "\t"*level
-			node.each { key, value ->
-				builder << "\"${key}\" = "
-				builder << printElementToString(node[key], level + 1)
-				builder << ";\n"
-				builder << "\t"*level
+			node.key.each {
+					builder << "\"${it.text()}\" = "
+					builder << printElementToString(getNextNode(it), level + 1)
+					builder << ";\n"
+					builder << "\t"*level
 			}
 			builder << "}"
-		} else if (node instanceof Collection){
+		} else if (node.name().equals("array")){
 			// its list or array
 			builder << "(\n"
 			builder << "\t"*level
-			node.each {
+			node.string.each {
 				builder << printElementToString(it, level + 1)
 				builder << ",\n"
 				builder << "\t"*level
@@ -137,28 +235,74 @@ class PbxProjectHelper {
 
 	String writePlistToString() {
 		StringBuilder builder = new StringBuilder()
-		builder << printElementToString(rootObject, 1)
+		builder << printElementToString(rootObject.dict, 1)
 		return builder.toString() + "\n"
 	}
 
 	void addFlagsAndPathsToProject(Object project, String configurationName) {
-		def configurationList = getObject(project.buildConfigurationList)
-		configurationList.buildConfigurations.each { configuration ->
-			if (getObject(configuration).name.equals(configurationName)) {
-				if (getObject(configuration).buildSettings.OTHER_LDFLAGS == null) {
-					getObject(configuration).buildSettings.put("OTHER_LDFLAGS", [])
+		def configurationList = getObject(getProperty(project, "buildConfigurationList").text())
+		getProperty(configurationList, "buildConfigurations").'*'.each {
+			def configuration = getObject(it.text())
+			if (getProperty(configuration, "name").text().equals(configurationName)) {
+				def buildSettings = getProperty(configuration, "buildSettings")
+				def ldflags = getProperty(buildSettings, "OTHER_LDFLAGS")
+				if (ldflags == null) {
+					buildSettings.appendNode {
+						key("OTHER_LDFLAGS")
+					}
+					buildSettings.appendNode {
+						array {
+						}
+					}
+					XmlSlurper slurper = new XmlSlurper()
+					rootObject = slurper.parseText(XmlUtil.serialize(rootObject))
+					buildSettings = getProperty(getObject(it.text()), "buildSettings")
+					ldflags = getProperty(buildSettings, "OTHER_LDFLAGS")
 				}
-				getObject(configuration).buildSettings.OTHER_LDFLAGS.add("-ObjC")
-				getObject(configuration).buildSettings.OTHER_LDFLAGS.add("-all_load")
-				if (getObject(configuration).buildSettings.FRAMEWORK_SEARCH_PATHS == null) {
-					getObject(configuration).buildSettings.put("FRAMEWORK_SEARCH_PATHS", ["\$(inherited)"])
+				ldflags.appendNode {
+					string("-ObjC")
 				}
-				getObject(configuration).buildSettings.FRAMEWORK_SEARCH_PATHS.add("\$(SRCROOT)/")
-				if (getObject(configuration).buildSettings.LIBRARY_SEARCH_PATHS == null) {
-					getObject(configuration).buildSettings.put("LIBRARY_SEARCH_PATHS", ["\$(inherited)"])
+				ldflags.appendNode {
+					string("-all_load")
 				}
-				getObject(configuration).buildSettings.LIBRARY_SEARCH_PATHS.add("\$(SRCROOT)/Apphance-iOS.framework")
-
+				def frameworkSearchPaths = getProperty(buildSettings, "FRAMEWORK_SEARCH_PATHS")
+				if (frameworkSearchPaths == null) {
+					buildSettings.appendNode {
+						key("FRAMEWORK_SEARCH_PATHS")
+					}
+					buildSettings.appendNode {
+						array {
+							string("\$(inherited)")
+						}
+					}
+					XmlSlurper slurper = new XmlSlurper()
+					rootObject = slurper.parseText(XmlUtil.serialize(rootObject))
+					buildSettings = getProperty(getObject(it.text()), "buildSettings")
+					frameworkSearchPaths = getProperty(buildSettings, "FRAMEWORK_SEARCH_PATHS")
+				}
+				frameworkSearchPaths.appendNode {
+					string("\$(SRCROOT)/")
+				}
+				def librarySearchPaths = getProperty(buildSettings, "LIBRARY_SEARCH_PATHS")
+				if (librarySearchPaths == null) {
+					buildSettings.appendNode {
+						key("LIBRARY_SEARCH_PATHS")
+					}
+					buildSettings.appendNode {
+						array {
+							string("\$(inherited)")
+						}
+					}
+					XmlSlurper slurper = new XmlSlurper()
+					rootObject = slurper.parseText(XmlUtil.serialize(rootObject))
+					buildSettings = getProperty(getObject(it.text()), "buildSettings")
+					librarySearchPaths = getProperty(buildSettings, "LIBRARY_SEARCH_PATHS")
+				}
+				librarySearchPaths.appendNode {
+					string("\$(SRCROOT)/Apphance-iOS.framework")
+				}
+				XmlSlurper slurper = new XmlSlurper()
+				rootObject = slurper.parseText(XmlUtil.serialize(rootObject))
 			}
 		}
 	}
@@ -214,21 +358,23 @@ class PbxProjectHelper {
 
 	String addApphanceToProject(File projectRootDirectory, String targetName, String configurationName, String appKey) {
 		rootObject = getParsedProject(projectRootDirectory, targetName)
-		def project = getObject("${rootObject.rootObject}")
-		project.targets.each { target ->
-			if (getObject("${target}").name.equals(targetName)) {
+		def project = getObject(getProperty(rootObject.dict, "rootObject").text())
+		getProperty(project, "targets").'*'.each { target ->
+			if (getProperty(getObject("${target.text()}"), "name").text().equals(targetName)) {
 				// find build phases in target
-				getObject("${target}").buildPhases.each { phase ->
+				getProperty(getObject("${target.text()}"), "buildPhases").'*'.each { phase ->
 					// find frameworks in build phases
-					if (getObject("${phase}").isa.equals("PBXFrameworksBuildPhase")) {
-						addApphanceToFramework(getObject("${phase}"))
+					if (getProperty(getObject("${phase.text()}"), "isa").text().equals("PBXFrameworksBuildPhase")) {
+						addApphanceToFramework(getObject("${phase.text()}"))
 					}
 				}
 				if (!hasApphance) {
 					// Find pch file with proper configuration
-					getObject(getObject("${target}").buildConfigurationList).buildConfigurations.each { configuration ->
-						if (getObject(configuration).name.equals(configurationName)) {
-							addApphanceToPch(new File(projectRootDirectory, getObject(configuration).buildSettings.GCC_PREFIX_HEADER))
+					def buildConfigurationList = getProperty(getObject("${target.text()}"), "buildConfigurationList")
+					getProperty(getObject(buildConfigurationList.text()), "buildConfigurations").'*'.each { configuration ->
+						if (getProperty(getObject(configuration.text()), "name").text().equals(configurationName)) {
+							addApphanceToPch(new File(projectRootDirectory, getProperty(getProperty(getObject(configuration.text()), "buildSettings"),
+								"GCC_PREFIX_HEADER").text()))
 						}
 					}
 				}
