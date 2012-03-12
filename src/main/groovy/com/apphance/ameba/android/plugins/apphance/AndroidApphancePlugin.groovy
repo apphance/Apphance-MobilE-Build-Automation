@@ -49,7 +49,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		task.description = "Converts all logs to apphance from android logs for Debug builds"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 		task << {
-			androidConf.variants.each { variant ->
+			androidConf.variants.each {
+				variant ->
 				if (androidConf.debugRelease[variant] == 'Debug') {
 					replaceLogsWithApphance(project, variant)
 				}
@@ -62,7 +63,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		task.description = "Converts all logs to android from apphance logs for Release builds"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 		task << {
-			androidConf.variants.each { variant ->
+			androidConf.variants.each {
+				variant ->
 				if (androidConf.debugRelease[variant] == 'Release') {
 					replaceLogsWithAndroid(project, variant)
 				}
@@ -75,7 +77,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		task.description = "Remove apphance-only entries from manifest"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 		task << {
-			androidConf.variants.each { variant ->
+			androidConf.variants.each {
+				variant ->
 				if (androidConf.debugRelease[variant] == 'Release') {
 					removeApphanceFromManifest(project, variant)
 				}
@@ -88,7 +91,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		task.description = "Restore manifest to before apphance replacement"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 		task << {
-			androidConf.variants.each { variant ->
+			androidConf.variants.each {
+				variant ->
 				if (androidConf.debugRelease[variant] == 'Release') {
 					restoreManifestBeforeApphanceRemoval(project, variant)
 				}
@@ -96,61 +100,119 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		}
 	}
 
+	private static String EVENT_LOG_PACKAGE = "com.apphance.android.eventlog.widget"
+
 	private void replaceViewsWithApphance(Project project, String variant) {
 
 		if (project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
-				logger.lifecycle("Replacing android logs with apphance for ${variant}")
-				replaceViewWithApphance(project, variant, "Button")
-				replaceViewWithApphance(project, variant, "EditText")
-				replaceViewWithApphance(project, variant, "SeekBar")
-				replaceViewWithApphance(project, variant, "RadioGroup")
+			logger.lifecycle("Replacing android views with apphance loggable versions for ${variant}")
+			replaceViewWithApphance(project, variant, "Button")
+			replaceViewWithApphance(project, variant, "CheckBox")
+			replaceViewWithApphance(project, variant, "EditText")
+			replaceViewWithApphance(project, variant, "ImageButton")
+			replaceViewWithApphance(project, variant, "ListView")
+			replaceViewWithApphance(project, variant, "RadioGroup")
+			replaceViewWithApphance(project, variant, "SeekBar")
+			replaceViewWithApphance(project, variant, "Spinner")
+			replaceViewWithApphance(project, variant, "TextView")
 		}
 	}
 
-
-
 	private void replaceViewWithApphance(Project project, String variant, String viewName) {
-		String logPackage = "com.apphance.android.eventlog.widget."
+		//invertRFile(project, variant, EVENT_LOG_PACKAGE);
 		replaceViewExtendsWithApphance(project, variant, viewName);
-		replaceTagResourcesOpeningTag(project, variant, viewName, logPackage+viewName);
-		replaceTagResourcesClosingTag(project, variant, viewName, logPackage+viewName);
+		replaceTagResourcesOpeningTag(project, variant, viewName, EVENT_LOG_PACKAGE+"."+viewName);
+		replaceTagResourcesClosingTag(project, variant, viewName, EVENT_LOG_PACKAGE+"."+viewName);
+
 	}
 
 	private void replaceViewExtendsWithApphance(Project project, String variant, String viewName) {
-		String logPackage = "com.apphance.android.eventlog.widget."
 		project.ant.replace(casesensitive: 'true', token : 'extends '+viewName,
-				value: 'extends '+logPackage+viewName, summary: true) {
-					fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
-				}
+		value: 'extends '+EVENT_LOG_PACKAGE+"."+viewName, summary: true) {
+			fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) {
+				include (name : '**/*.java')
+			}
+		}
 	}
-
 
 	private void replaceTagResourcesOpeningTag(Project project, String variant, String tagName, String replacement) {
 		project.ant.replace(casesensitive: 'true', token : '<'+tagName+" ",
-				value: '<'+replacement+" ", summary: true) {
-					fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
-				}
+		value: '<'+replacement+" ", summary: true) {
+			fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) {
+				include (name : '**/*.xml')
+			}
+		}
 	}
 
 	private void replaceTagResourcesClosingTag(Project project, String variant, String tagName, String replacement) {
 		project.ant.replace(casesensitive: 'true', token : '</'+tagName+" ",
-				value: '</'+replacement+" ", summary: true) {
-					fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
-				}
+		value: '</'+replacement+" ", summary: true) {
+			fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) {
+				include (name : '**/*.xml')
+			}
+		}
 	}
 
-	private void invertRFile(Project project, String variant) {
-		logger.lifecycle("invertRFile")
-		String rfile = ""
-		HashMap<Integer, String> ids = new HashMap<Integer, String>();
-		BufferedReader reader = new BufferedReader(new StringReader(rfile));
+	public void invertRFile(Project project, String variant, String invertedRFilePackage) {
+		logger.lifecycle("invertRFile ${invertedRFilePackage}")
+		File gen = new File(androidConf.tmpDirs[variant], 'gen')
+
+		if (!gen.exists() || gen.list().length == 0) {
+			projectHelper.executeCommand(project, androidConf.tmpDirs[variant], [
+				'ant',
+				'debug'
+			])
+		}
+		else {
+			logger.lifecycle("gen already exists")
+		}
+
+		String appPackage = manifestHelper.readPackage(androidConf.tmpDirs[variant])
+		appPackage = appPackage.replace(".", File.separator)
+		File rFileDir = new File(androidConf.tmpDirs[variant], "gen"+File.separator+appPackage)
+		File rFile = new File(rFileDir, "R.java");
+
+		String invertedFileRelativePath = "src"+File.separator+invertedRFilePackage.replace(".", File.separator)
+		File  invertedFile = new File(new File(androidConf.tmpDirs[variant], invertedFileRelativePath), "R.java");
+		invertedFile.mkdirs();
+		invertedFile.delete();
+		invertedFile.createNewFile();
+		invertRFile(rFileDir, invertedFile, invertedRFilePackage);
+	}
+
+
+
+	public static void invertRFile(File rFile, File invertedFile, String invertedRFilePackage) {
+		BufferedReader reader = new BufferedReader(new FileReader(rFile));
 		String line;
+		String currentGroup;
 		while((line = reader.readLine()) != null) {
-			if(line.contains("public static final int")) {
-				def pattern = /public static final int ([^\r\n]*)=0x([^\r\n]*);/
-				line.find(pattern) { match, name, id ->
-					ids.put(Integer.parseInt(id,16), name);
+
+			if(line.contains("package ")) {
+				invertedFile << invertedRFilePackage << "\n";
+			} else if(line.contains("public static final class")) {
+
+				def pattern = /public static final class ([^\r\n]*) /
+				line.find(pattern) {
+					match, groupName ->
+					if(currentGroup != null) {
+						// close previous 'static' section
+						invertedFile << "\t\t}\n"
+					}
+					currentGroup = groupName;
+					invertedFile << "\t\tpublic static HashMap<String, String> " + groupName + " = new HashMap<String, String>();\n";
+					invertedFile << "\t\tstatic {\n"
 				}
+			} else if(line.contains("public static final int")) {
+				def pattern = /public static final int ([^\r\n]*)=0x([^\r\n]*);/
+				line.find(pattern) {
+					match, name, id ->
+					int intId = Integer.parseInt(id,16);
+					invertedFile << "\t\t" + currentGroup + ".put(\"" + intId + "\",\"" +name+"\");\n";
+				}
+			}
+			else {
+				invertedFile << line << "\n";
 			}
 		}
 	}
@@ -179,7 +241,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
 	}
 
 	public void preprocessBuildsWithApphance(Project project) {
-		project.tasks.each {  task ->
+		project.tasks.each {
+			task ->
 			if (task.name.startsWith('buildDebug')) {
 				def variant = task.name == 'buildDebug' ? 'Debug' : task.name.substring('buildDebug-'.length())
 				task.doFirst {
@@ -201,7 +264,9 @@ class AndroidApphancePlugin implements Plugin<Project>{
 					removeApphanceFromManifest(project, variant)
 					replaceLogsWithAndroid(project, variant)
 				}
-				task.doLast { restoreManifestBeforeApphanceRemoval(project, variant) }
+				task.doLast {
+					restoreManifestBeforeApphanceRemoval(project, variant)
+				}
 			}
 		}
 	}
@@ -209,17 +274,21 @@ class AndroidApphancePlugin implements Plugin<Project>{
 	private replaceLogsWithAndroid(Project project, String variant) {
 		logger.lifecycle("Replacing apphance logs with android for ${variant}")
 		project.ant.replace(casesensitive: 'true', token : 'import com.apphance.android.Log;',
-				value: 'import android.util.Log;', summary: true) {
-					fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
-				}
+		value: 'import android.util.Log;', summary: true) {
+			fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) {
+				include (name : '**/*.java')
+			}
+		}
 	}
 
 	private replaceLogsWithApphance(Project project, String variant) {
 		logger.lifecycle("Replacing android logs with apphance for ${variant}")
 		project.ant.replace(casesensitive: 'true', token : 'import android.util.Log;',
-				value: 'import com.apphance.android.Log;', summary: true) {
-					fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
-				}
+		value: 'import com.apphance.android.Log;', summary: true) {
+			fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) {
+				include (name : '**/*.java')
+			}
+		}
 	}
 
 	private restoreManifestBeforeApphanceRemoval(Project project, variant) {
@@ -247,7 +316,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
 	private def addApphanceInit(Project project, variant, File mainFile) {
 		logger.lifecycle("Adding apphance init to file " + mainFile)
 		def lineToModification = []
-		mainFile.eachLine { line, lineNumber ->
+		mainFile.eachLine {
+			line, lineNumber ->
 			if (line.contains('super.onCreate')) {
 				lineToModification << lineNumber
 			}
@@ -261,10 +331,18 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		}
 		String appKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
 		String startSession = "Apphance.startNewSession(this, \"${appKey}\", ${mode});"
+
+		/*
+		if (project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
+			startSession = startSession + "com.apphance.android.eventlog.EventLog.setInvertedIdMap("+EVENT_LOG_PACKAGE+".R.id)";
+		}*/
+
 		String importApphance = 'import com.apphance.android.Apphance;'
 		boolean onCreateAdded = false
-		newMainClass.withWriter { out ->
-			mainFile.eachLine { line ->
+		newMainClass.withWriter {
+			out ->
+			mainFile.eachLine {
+				line ->
 				if (line.contains('super.onCreate') && !onCreateAdded) {
 					out.println(line << startSession)
 					onCreateAdded = true
@@ -295,7 +373,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
 	private boolean checkIfApphancePresent(Project project) {
 		boolean found = false
 		File basedir = project.file('src')
-		basedir.eachFileRecurse { file ->
+		basedir.eachFileRecurse {
+			file ->
 			if (file.name.endsWith('.java')) {
 				file.eachLine {
 					if (it.contains("Apphance.startNewSession")) {
@@ -305,7 +384,9 @@ class AndroidApphancePlugin implements Plugin<Project>{
 			}
 		}
 		if (!found) {
-			project.file('.').eachFileMatch(".*apphance.*\\.jar") { found = true }
+			project.file('.').eachFileMatch(".*apphance.*\\.jar") {
+				found = true
+			}
 		}
 		return found
 	}
