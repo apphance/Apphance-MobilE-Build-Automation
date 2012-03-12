@@ -155,7 +155,7 @@ class PbxProjectHelper {
 		boolean foundFramework = false
 		getProperty(frameworks, "files").'*'.each { file ->
 			// find file reference in objects
-			def fileRef = getProperty(getObject("${file}"), "fileRef")
+			def fileRef = getProperty(getObject("${file}"), "fileRef").text()
 			if (getProperty(getObject("${fileRef}"), "name").text().toLowerCase().contains(name)) {
 				logger.lifecycle("Framework already added")
 				// apphance already added
