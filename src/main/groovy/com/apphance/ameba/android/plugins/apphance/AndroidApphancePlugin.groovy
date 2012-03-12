@@ -227,8 +227,10 @@ class AndroidApphancePlugin implements Plugin<Project>{
             it.delete()
         }
         File libsApphance = new File(androidConf.tmpDirs[variant], 'libs/apphance.jar')
-        URL apphanceUrl = this.class.getResource("apphance-android-library_1.5.jar")
-        libsApphance << apphanceUrl.getContent()
+        URL apphanceUrl = this.class.getResource("apphance-android-library_1.4.2.1.jar")
+        libsApphance.withWriter{ out ->
+			out << apphanceUrl.getContent()
+        }
     }
 
     private boolean checkIfApphancePresent(Project project) {

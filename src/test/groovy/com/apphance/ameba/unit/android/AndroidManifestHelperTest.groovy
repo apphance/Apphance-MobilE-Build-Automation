@@ -180,7 +180,7 @@ class AndroidManifestHelperTest {
         ProjectConfiguration projectConfiguration = new ProjectConfiguration()
         def file = new File("testProjects/apphance-updates/")
         String mainActivity = manifestHelper.getMainActivityName(file)
-        assertEquals('', mainActivity)
+        assertTrue(mainActivity.contains('HomeActivity'))
     }
 
 }

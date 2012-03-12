@@ -258,10 +258,30 @@ class AndroidManifestHelper {
         String androidName = "android:name"
 
         def mainActivity = manifest.application.activity.findAll {
-            if (it."${intentFilter}".size() > 0 && it."${intentFilter}".action.size() > 0 && it."${intentFilter}".category.size() > 0) {
-                it."${intentFilter}".action.@"${androidName}".text().equals('android.intent.action.MAIN')  &&
-                it."${intentFilter}".category.@"${androidName}".text().equals('android.intent.category.LAUNCHER')
-            }
+			def intentFilters = []
+			def mainIntentFound = false
+			def launcherIntentFound = false
+			// collect all filter nodes
+			it."${intentFilter}".each {
+				intentFilters << it
+			}
+			// iterate through each intent filter node and find proper action and category
+			intentFilters.each { intentFilterNode ->
+				intentFilterNode.action.each {
+					if (it.@"${androidName}".text().equals('android.intent.action.MAIN')) {
+						mainIntentFound = true
+						return
+					}
+				}
+				intentFilterNode.category.each {
+					if (it.@"${androidName}".text().equals('android.intent.category.LAUNCHER')) {
+						launcherIntentFound = true
+						return
+					}
+				}
+			}
+			// return value
+			mainIntentFound && launcherIntentFound
         }
         if (mainActivity.size() > 0) {
             if (!mainActivity[0].@"${androidName}".text().startsWith(".")) {
@@ -271,6 +291,8 @@ class AndroidManifestHelper {
                 className = ""
             }
             className = className + mainActivity[0].@"${androidName}".text()
+        } else {
+			throw new GradleException("Main activity file could not be found")
         }
 
         return className
