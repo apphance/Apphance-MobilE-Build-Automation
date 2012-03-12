@@ -313,6 +313,7 @@ class AndroidManifestHelper {
             className = ""
         }
         className = className + applicationName
+		logger.lifecycle("Searching for application class file " + className)
         return className
     }
 
