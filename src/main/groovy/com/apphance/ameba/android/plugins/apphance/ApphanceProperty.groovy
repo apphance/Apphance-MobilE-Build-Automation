@@ -4,6 +4,7 @@ enum ApphanceProperty {
 
     APPLICATION_KEY("apphance.appkey", "Application key in Apphance"),
     APPHANCE_MODE("apphance.mode", "Apphance mode (one of [QA,SILENT]", "QA"),
+	APPHANCE_LOG_EVENTS("apphance.log.events", "Apphance mode (one of [true,false]", "false"),
 
     public static final DESCRIPTION = 'Apphance properties'
     final String propertyName
