@@ -24,6 +24,21 @@ class AndroidManifestHelper {
         return builder.parse(inputStream).documentElement
     }
 
+
+	String readPackage(File projectDirectory) {
+		def root = getParsedManifest(projectDirectory)
+		def appPackage = null
+		XPathAPI.selectNodeList(root,'/manifest').each{ apppackage ->
+			apppackage.attributes.nodes.each { attribute ->
+				if (attribute.name == 'package') {
+					appPackage = attribute.value
+				}
+			}
+		}
+		return appPackage
+	}
+
+
     String readMinSdkVersion(File projectDirectory) {
         def root = getParsedManifest(projectDirectory)
         def minSdkVersion = null

@@ -38,7 +38,6 @@ class AndroidApphancePlugin implements Plugin<Project>{
             prepareConvertLogsToAndroid(project)
             prepareRemoveApphaceFromManifest(project)
             prepareRestoreManifestBeforeApphance(project)
-
             project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
             project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
             project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
@@ -97,6 +96,112 @@ class AndroidApphancePlugin implements Plugin<Project>{
         }
     }
 
+    private static String EVENT_LOG_PACKAGE = "com.apphance.android.eventlog.widget"
+
+    private void replaceViewsWithApphance(Project project, String variant) {
+
+        if (project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
+            logger.lifecycle("Replacing android views with apphance loggable versions for ${variant}")
+            replaceViewWithApphance(project, variant, "Button")
+            replaceViewWithApphance(project, variant, "CheckBox")
+            replaceViewWithApphance(project, variant, "EditText")
+            replaceViewWithApphance(project, variant, "ImageButton")
+            replaceViewWithApphance(project, variant, "ListView")
+            replaceViewWithApphance(project, variant, "RadioGroup")
+            replaceViewWithApphance(project, variant, "SeekBar")
+            replaceViewWithApphance(project, variant, "Spinner")
+            replaceViewWithApphance(project, variant, "TextView")
+        }
+    }
+
+    private void replaceViewWithApphance(Project project, String variant, String viewName) {
+        //invertRFile(project, variant, EVENT_LOG_PACKAGE);
+        replaceViewExtendsWithApphance(project, variant, viewName);
+        replaceTagResourcesOpeningTag(project, variant, viewName, EVENT_LOG_PACKAGE+"."+viewName);
+        replaceTagResourcesClosingTag(project, variant, viewName, EVENT_LOG_PACKAGE+"."+viewName);
+
+    }
+
+    private void replaceViewExtendsWithApphance(Project project, String variant, String viewName) {
+        project.ant.replace(casesensitive: 'true', token : 'extends '+viewName,
+                        value: 'extends '+EVENT_LOG_PACKAGE+"."+viewName, summary: true) {
+                            fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
+                        }
+    }
+
+    private void replaceTagResourcesOpeningTag(Project project, String variant, String tagName, String replacement) {
+        project.ant.replace(casesensitive: 'true', token : '<'+tagName+" ",
+                        value: '<'+replacement+" ", summary: true) {
+                            fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
+                        }
+    }
+
+    private void replaceTagResourcesClosingTag(Project project, String variant, String tagName, String replacement) {
+        project.ant.replace(casesensitive: 'true', token : '</'+tagName+" ",
+                        value: '</'+replacement+" ", summary: true) {
+                            fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
+                        }
+    }
+
+    public void invertRFile(Project project, String variant, String invertedRFilePackage) {
+        logger.lifecycle("invertRFile ${invertedRFilePackage}")
+        File gen = new File(androidConf.tmpDirs[variant], 'gen')
+
+        if (!gen.exists() || gen.list().length == 0) {
+            projectHelper.executeCommand(project, androidConf.tmpDirs[variant], ['ant', 'debug'])
+        }
+        else {
+            logger.lifecycle("gen already exists")
+        }
+
+        String appPackage = manifestHelper.readPackage(androidConf.tmpDirs[variant])
+        appPackage = appPackage.replace(".", File.separator)
+        File rFileDir = new File(androidConf.tmpDirs[variant], "gen"+File.separator+appPackage)
+        File rFile = new File(rFileDir, "R.java");
+
+        String invertedFileRelativePath = "src"+File.separator+invertedRFilePackage.replace(".", File.separator)
+        File  invertedFile = new File(new File(androidConf.tmpDirs[variant], invertedFileRelativePath), "R.java");
+        invertedFile.mkdirs();
+        invertedFile.delete();
+        invertedFile.createNewFile();
+        invertRFile(rFileDir, invertedFile, invertedRFilePackage);
+    }
+
+
+
+    public static void invertRFile(File rFile, File invertedFile, String invertedRFilePackage) {
+        BufferedReader reader = new BufferedReader(new FileReader(rFile));
+        String line;
+        String currentGroup;
+        while((line = reader.readLine()) != null) {
+
+            if(line.contains("package ")) {
+                invertedFile << invertedRFilePackage << "\n";
+            } else if(line.contains("public static final class")) {
+
+                def pattern = /public static final class ([^\r\n]*) /
+                line.find(pattern) { match, groupName ->
+                    if(currentGroup != null) {
+                        // close previous 'static' section
+                        invertedFile << "\t\t}\n"
+                    }
+                    currentGroup = groupName;
+                    invertedFile << "\t\tpublic static HashMap<String, String> " + groupName + " = new HashMap<String, String>();\n";
+                    invertedFile << "\t\tstatic {\n"
+                }
+            } else if(line.contains("public static final int")) {
+                def pattern = /public static final int ([^\r\n]*)=0x([^\r\n]*);/
+                line.find(pattern) { match, name, id ->
+                    int intId = Integer.parseInt(id,16);
+                    invertedFile << "\t\t" + currentGroup + ".put(\"" + intId + "\",\"" +name+"\");\n";
+                }
+            }
+            else {
+                invertedFile << line << "\n";
+            }
+        }
+    }
+
     File getMainApplicationFile(Project project, String variant) {
         File tmpDir = androidConf.tmpDirs[variant]
         String mainApplicationFileName = manifestHelper.getApplicationName(project.rootDir)
@@ -121,7 +226,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     }
 
     public void preprocessBuildsWithApphance(Project project) {
-        project.tasks.each {  task ->
+        project.tasks.each { task ->
             if (task.name.startsWith('buildDebug')) {
                 def variant = task.name == 'buildDebug' ? 'Debug' : task.name.substring('buildDebug-'.length())
                 task.doFirst {
@@ -130,6 +235,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
                         File mainFile = getMainApplicationFile(project, variant)
                         if (mainFile != null) {
                             replaceLogsWithApphance(project, variant)
+                            replaceViewsWithApphance(project, variant)
                             addApphanceInit(project, variant, mainFile)
                             copyApphanceJar(project, variant)
                             addApphanceToManifest(project, variant)
@@ -137,6 +243,9 @@ class AndroidApphancePlugin implements Plugin<Project>{
                     } else {
                         logger.lifecycle("Apphance found in project")
                     }
+                }
+                if (project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
+                    task.dependsOn(project.compileAndroid)
                 }
             }
             if (task.name.startsWith('buildRelease')) {
@@ -196,7 +305,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
                 lineToModify << lineNumber
             }
         }
-        boolean addOnCreate  = lineToModify.empty
+        boolean addOnCreateInApplication  = lineToModify.empty
         File newMainClass = new File("newMainClassFile.java")
         def mode
         if (project[ApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
@@ -207,13 +316,22 @@ class AndroidApphancePlugin implements Plugin<Project>{
         String appKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
         String startSession = "Apphance.startNewSession(this, \"${appKey}\", ${mode});"
         String onCreate = " public void onCreate() { super.onCreate(); Apphance.startNewSession(this, \"${appKey}\", ${mode}); } "
+
+
+        if (project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
+            startSession = startSession + "com.apphance.android.eventlog.EventLog.setInvertedIdMap("+EVENT_LOG_PACKAGE+".R.id)";
+        }
+
         String importApphance = 'import com.apphance.android.Apphance;'
+        boolean onCreateAdded = false
         newMainClass.withWriter { out ->
             mainFile.eachLine { line ->
-                if (line.contains('super.onCreate')) {
+                if (line.contains('super.onCreate') && !onCreateAdded) {
                     out.println(line << startSession)
-                } else if (addOnCreate && line.contains('extends Application {')) {
+                    onCreateAdded = true
+                } else if (addOnCreateInApplication && line.contains('extends Application {') && !onCreateAdded) {
                     out.println(line << onCreate)
+                    onCreateAdded = true
                 } else if (line.contains('package')) {
                     out.println(line << importApphance)
                 } else {
@@ -234,10 +352,9 @@ class AndroidApphancePlugin implements Plugin<Project>{
             it.delete()
         }
         File libsApphance = new File(androidConf.tmpDirs[variant], 'libs/apphance.jar')
-        URL apphanceUrl = this.class.getResource("apphance-android-library_1.5.jar")
-        libsApphance.withWriter{ out ->
-            out << apphanceUrl.getContent()
-        }
+        libsApphance.delete()
+        URL apphanceUrl = this.class.getResource("apphance-android-library_1.5-event-log.jar")
+        libsApphance << apphanceUrl.getContent()
     }
 
     private boolean checkIfApphancePresent(Project project) {
