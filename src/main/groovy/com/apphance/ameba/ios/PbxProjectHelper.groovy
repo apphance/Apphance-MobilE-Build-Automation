@@ -159,7 +159,9 @@ class PbxProjectHelper {
 			logger.lifecycle("File " + fileString)
 			def fileRef = getProperty(getObject("${fileString}"), "fileRef").text()
 			logger.lifecycle("Framework fileref " + fileRef)
-			if (getProperty(getObject("${fileRef}"), "name").text().toLowerCase().contains(name)) {
+			def frameworkName = getProperty(getObject("${fileRef}"), "name")
+			def frameworkPath = getProperty(getObject("${fileRef}"), "path")
+			if ((frameworkName != null && frameworkName.text().toLowerCase().contains(name)) || (frameworkPath != null && frameworkPath.text().toLowerCase().endsWith(name))) {
 				logger.lifecycle("Framework already added")
 				// apphance already added
 				foundFramework = true
