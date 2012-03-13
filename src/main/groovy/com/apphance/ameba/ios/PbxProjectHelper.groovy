@@ -213,7 +213,7 @@ class PbxProjectHelper {
 			}
 			builder << ")"
 		} else {
-			String nodeString = node.toString()
+			String nodeString = node.text()
 			nodeString = nodeString.replace("\"", "\\\"")
 			def lines = nodeString.split("\\r?\\n")
 			if (lines.size() > 1) {
