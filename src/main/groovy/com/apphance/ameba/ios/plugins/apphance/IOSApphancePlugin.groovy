@@ -90,7 +90,7 @@ class IOSApphancePlugin implements Plugin<Project> {
 		}
 
 		URL apphanceUrl = this.class.getResource("Apphance-iOS.framework.zip")
-
+		logger.lifecycle("Unpacking file " + apphanceUrl.path)
 		def command = ["unzip", "${apphanceUrl.path}", "-d", "${libsDir}"]
 		Process proc = Runtime.getRuntime().exec((String[]) command.toArray())
 		proc.waitFor()
