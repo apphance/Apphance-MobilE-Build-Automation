@@ -156,6 +156,7 @@ class PbxProjectHelper {
 		getProperty(frameworks, "files").'*'.each { file ->
 			// find file reference in objects
 			def fileString = file.text()
+			logger.lifecycle("File " + fileString)
 			def fileRef = getProperty(getObject("${fileString}"), "fileRef").text()
 			logger.lifecycle("Framework fileref " + fileRef)
 			if (getProperty(getObject("${fileRef}"), "name").text().toLowerCase().contains(name)) {
