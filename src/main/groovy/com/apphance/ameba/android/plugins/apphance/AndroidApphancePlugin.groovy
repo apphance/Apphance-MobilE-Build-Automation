@@ -126,7 +126,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
                 def variant = task.name == 'buildDebug' ? 'Debug' : task.name.substring('buildDebug-'.length())
                 task.doFirst {
                     if (!checkIfApphancePresent(project)) {
-						logger.lifecycle("Apphance not found in project")
+                        logger.lifecycle("Apphance not found in project")
                         File mainFile = getMainApplicationFile(project, variant)
                         if (mainFile != null) {
                             replaceLogsWithApphance(project, variant)
@@ -135,7 +135,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
                             addApphanceToManifest(project, variant)
                         }
                     } else {
-						logger.lifecycle("Apphance found in project")
+                        logger.lifecycle("Apphance found in project")
                     }
                 }
             }
@@ -190,12 +190,13 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     private def addApphanceInit(Project project, variant, File mainFile) {
         logger.lifecycle("Adding apphance init to file " + mainFile)
-        def lineToModification = []
+        def lineToModify = []
         mainFile.eachLine { line, lineNumber ->
             if (line.contains('super.onCreate')) {
-                lineToModification << lineNumber
+                lineToModify << lineNumber
             }
         }
+        boolean addOnCreate  = lineToModify.empty
         File newMainClass = new File("newMainClassFile.java")
         def mode
         if (project[ApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
@@ -205,11 +206,14 @@ class AndroidApphancePlugin implements Plugin<Project>{
         }
         String appKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
         String startSession = "Apphance.startNewSession(this, \"${appKey}\", ${mode});"
+        String onCreate = " public void onCreate() { super.onCreate(); Apphance.startNewSession(this, \"${appKey}\", ${mode}); } "
         String importApphance = 'import com.apphance.android.Apphance;'
         newMainClass.withWriter { out ->
             mainFile.eachLine { line ->
                 if (line.contains('super.onCreate')) {
                     out.println(line << startSession)
+                } else if (addOnCreate && line.contains('extends Application {')) {
+                    out.println(line << onCreate)
                 } else if (line.contains('package')) {
                     out.println(line << importApphance)
                 } else {
@@ -232,7 +236,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
         File libsApphance = new File(androidConf.tmpDirs[variant], 'libs/apphance.jar')
         URL apphanceUrl = this.class.getResource("apphance-android-library_1.5.jar")
         libsApphance.withWriter{ out ->
-			out << apphanceUrl.getContent()
+            out << apphanceUrl.getContent()
         }
     }
 
