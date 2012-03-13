@@ -362,17 +362,19 @@ class PbxProjectHelper {
 		rootObject = getParsedProject(projectRootDirectory, targetName)
 		def project = getObject(getProperty(rootObject.dict, "rootObject").text())
 		getProperty(project, "targets").'*'.each { target ->
-			if (getProperty(getObject("${target.text()}"), "name").text().equals(targetName)) {
+			def targetText = target.text()
+			if (getProperty(getObject("${targetText}"), "name").text().equals(targetName)) {
 				// find build phases in target
-				getProperty(getObject("${target.text()}"), "buildPhases").'*'.each { phase ->
+				getProperty(getObject("${targetText}"), "buildPhases").'*'.each { phase ->
 					// find frameworks in build phases
-					if (getProperty(getObject("${phase.text()}"), "isa").text().equals("PBXFrameworksBuildPhase")) {
-						addApphanceToFramework(getObject("${phase.text()}"))
+					def phaseText = phase.text()
+					if (getProperty(getObject("${phaseText}"), "isa").text().equals("PBXFrameworksBuildPhase")) {
+						addApphanceToFramework(getObject("${phaseText}"))
 					}
 				}
 				if (!hasApphance) {
 					// Find pch file with proper configuration
-					def buildConfigurationList = getProperty(getObject("${target.text()}"), "buildConfigurationList")
+					def buildConfigurationList = getProperty(getObject("${targetText}"), "buildConfigurationList")
 					getProperty(getObject(buildConfigurationList.text()), "buildConfigurations").'*'.each { configuration ->
 						if (getProperty(getObject(configuration.text()), "name").text().equals(configurationName)) {
 							addApphanceToPch(new File(projectRootDirectory, getProperty(getProperty(getObject(configuration.text()), "buildSettings"),
