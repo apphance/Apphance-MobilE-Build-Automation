@@ -223,11 +223,7 @@ class PbxProjectHelper {
 				}
 				builder << "\""
 			} else {
-				if (!nodeString.startsWith("\"")) {
-					builder << "\"${node}\""
-				} else {
-					builder << "${node}"
-				}
+				builder << "\"${nodeString}\""
 			}
 
 		}
