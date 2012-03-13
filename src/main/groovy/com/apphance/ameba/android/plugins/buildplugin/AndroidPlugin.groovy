@@ -402,7 +402,7 @@ class AndroidPlugin implements Plugin<Project> {
                     fileset(dir : "${project.rootDir}/") {
                         exclude(name: androidConf.tmpDirs[variant].absolutePath + '/**/*')
                         conf.sourceExcludes.each {
-                            if (!it.equals('**/local.properties')) {
+                            if (!it.equals('**/local.properties') && !it.equals('**/gen/**')) {
                                 exclude(name: it)
                             }
                         }

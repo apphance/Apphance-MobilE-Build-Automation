@@ -115,7 +115,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     }
 
     private void replaceViewWithApphance(Project project, String variant, String viewName) {
-        //invertRFile(project, variant, EVENT_LOG_PACKAGE);
+        invertRFile(project, variant, EVENT_LOG_PACKAGE);
         replaceViewExtendsWithApphance(project, variant, viewName);
         replaceTagResourcesOpeningTag(project, variant, viewName, EVENT_LOG_PACKAGE+"."+viewName);
         replaceTagResourcesClosingTag(project, variant, viewName, EVENT_LOG_PACKAGE+"."+viewName);
@@ -123,13 +123,16 @@ class AndroidApphancePlugin implements Plugin<Project>{
     }
 
     private void replaceViewExtendsWithApphance(Project project, String variant, String viewName) {
+        String newClassName = EVENT_LOG_PACKAGE+"." + viewName
+        logger.info("Replacing extends with Apphance for ${viewName} to ${newClassName}")
         project.ant.replace(casesensitive: 'true', token : 'extends '+viewName,
-                        value: 'extends '+EVENT_LOG_PACKAGE+"."+viewName, summary: true) {
+                        value: 'extends '+newClassName, summary: true) {
                             fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
                         }
     }
 
     private void replaceTagResourcesOpeningTag(Project project, String variant, String tagName, String replacement) {
+        logger.info("Replacing tag resources with Apphance for ${tagName} to ${replacement}")
         project.ant.replace(casesensitive: 'true', token : '<'+tagName+" ",
                         value: '<'+replacement+" ", summary: true) {
                             fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
@@ -137,6 +140,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     }
 
     private void replaceTagResourcesClosingTag(Project project, String variant, String tagName, String replacement) {
+        logger.info("Replacing tag resources with Apphance for ${tagName} to ${replacement}")
         project.ant.replace(casesensitive: 'true', token : '</'+tagName+" ",
                         value: '</'+replacement+" ", summary: true) {
                             fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
@@ -146,14 +150,6 @@ class AndroidApphancePlugin implements Plugin<Project>{
     public void invertRFile(Project project, String variant, String invertedRFilePackage) {
         logger.lifecycle("invertRFile ${invertedRFilePackage}")
         File gen = new File(androidConf.tmpDirs[variant], 'gen')
-
-        if (!gen.exists() || gen.list().length == 0) {
-            projectHelper.executeCommand(project, androidConf.tmpDirs[variant], ['ant', 'debug'])
-        }
-        else {
-            logger.lifecycle("gen already exists")
-        }
-
         String appPackage = manifestHelper.readPackage(androidConf.tmpDirs[variant])
         appPackage = appPackage.replace(".", File.separator)
         File rFileDir = new File(androidConf.tmpDirs[variant], "gen"+File.separator+appPackage)
@@ -164,10 +160,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
         invertedFile.mkdirs();
         invertedFile.delete();
         invertedFile.createNewFile();
-        invertRFile(rFileDir, invertedFile, invertedRFilePackage);
+        invertRFile(rFile, invertedFile, invertedRFilePackage);
     }
-
-
 
     public static void invertRFile(File rFile, File invertedFile, String invertedRFilePackage) {
         BufferedReader reader = new BufferedReader(new FileReader(rFile));
@@ -176,14 +170,15 @@ class AndroidApphancePlugin implements Plugin<Project>{
         while((line = reader.readLine()) != null) {
 
             if(line.contains("package ")) {
-                invertedFile << invertedRFilePackage << "\n";
+                invertedFile << "package " + invertedRFilePackage << ";\n";
+                invertedFile << "import java.util.HashMap;\n"
             } else if(line.contains("public static final class")) {
 
                 def pattern = /public static final class ([^\r\n]*) /
                 line.find(pattern) { match, groupName ->
                     if(currentGroup != null) {
                         // close previous 'static' section
-                        invertedFile << "\t\t}\n"
+ //                       invertedFile << "\t\t}\n"
                     }
                     currentGroup = groupName;
                     invertedFile << "\t\tpublic static HashMap<String, String> " + groupName + " = new HashMap<String, String>();\n";
@@ -353,6 +348,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
         }
         File libsApphance = new File(androidConf.tmpDirs[variant], 'libs/apphance.jar')
         libsApphance.delete()
+        logger.lifecycle("Copying apphance jar: to ${libsApphance}")
         URL apphanceUrl = this.class.getResource("apphance-android-library_1.5-event-log.jar")
         libsApphance << apphanceUrl.getContent()
     }
