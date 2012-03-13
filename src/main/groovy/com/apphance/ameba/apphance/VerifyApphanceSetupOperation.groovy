@@ -18,6 +18,7 @@ class VerifyApphanceSetupOperation extends AbstractVerifySetupOperation {
             ApphanceProperty.each {
                 checkProperty(projectProperties, it)
             }
+            checkIsOnList(ApphanceProperty.APPHANCE_MODE, ['QA', 'SILENT'])
             allPropertiesOK()
         }
     }

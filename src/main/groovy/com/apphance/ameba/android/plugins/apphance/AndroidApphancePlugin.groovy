@@ -130,6 +130,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
                 def variant = task.name == 'buildDebug' ? 'Debug' : task.name.substring('buildDebug-'.length())
                 task.doFirst {
                     if (!checkIfApphancePresent(project)) {
+						logger.lifecycle("Apphance not found in project")
                         File mainFile = getMainApplicationFile(project, variant)
                         if (mainFile != null) {
                             replaceLogsWithApphance(project, variant)
@@ -137,6 +138,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
                             copyApphanceJar(project, variant)
                             addApphanceToManifest(project, variant)
                         }
+                    } else {
+						logger.lifecycle("Apphance found in project")
                     }
                 }
             }
@@ -232,7 +235,9 @@ class AndroidApphancePlugin implements Plugin<Project>{
         }
         File libsApphance = new File(androidConf.tmpDirs[variant], 'libs/apphance.jar')
         URL apphanceUrl = this.class.getResource("apphance-android-library_1.5.jar")
-        libsApphance << apphanceUrl.getContent()
+        libsApphance.withWriter{ out ->
+			out << apphanceUrl.getContent()
+        }
     }
 
     private boolean checkIfApphancePresent(Project project) {

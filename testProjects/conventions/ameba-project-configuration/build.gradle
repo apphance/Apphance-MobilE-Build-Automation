@@ -8,3 +8,7 @@ buildscript {
 }
 
 apply plugin: 'ameba-project-configuration'
+
+amebaPropertyDefaults {
+    defaults = "['project.url.base' = 'http://mycompany.com']"
+}

@@ -153,6 +153,7 @@ class AmebaPluginReferenceBuilder {
         def conventionsDir = new File("testProjects/conventions/${pluginName}")
         def templateDir = new File("templates/android")
         Project project = getProject(projectDir)
+        project.apply plugin:'ameba-project-configuration'
         ProjectConnection connection
         GradleProject gradleProject
         (connection, gradleProject) = getProjectConnectionAndModel(projectDir)
@@ -213,7 +214,7 @@ class AmebaPluginReferenceBuilder {
     }
 
     public void buildDocumentation() throws Exception {
-        addAmebaDocumentation(COMMON_TASKS,'ameba-project-configuration', BaseProperty.class)
+        addAmebaDocumentation(COMMON_TASKS,'ameba-project-configuration', BaseProperty.class, 'amebaPropertyDefaults')
         addAmebaDocumentation(VCS_TASKS, 'ameba-git', GitProperty.class)
         addAmebaDocumentation(VCS_TASKS, 'ameba-mercurial', MercurialProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-build', AndroidProjectProperty.class)
