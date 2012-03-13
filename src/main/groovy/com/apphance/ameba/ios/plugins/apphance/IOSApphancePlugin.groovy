@@ -89,11 +89,16 @@ class IOSApphancePlugin implements Plugin<Project> {
 			delClos( new File(framework.canonicalPath) )
 		}
 
-		URL apphanceUrl = this.class.getResource("Apphance-iOS.framework.zip")
-		def apphanceZip = new File(apphanceUrl.path)
-		logger.lifecycle("Unpacking file " + apphanceUrl.path)
-		logger.lifecycle("Exists " + apphanceZip.exists())
-		def command = ["unzip", "${apphanceUrl.path}", "-d", "${libsDir}"]
+		InputStream apphanceZip = this.class.getResourceAsStream("Apphance-iOS.framework.zip")
+		def projectApphanceZip = new File(libsDir, "apphance.zip")
+		projectApphanceZip.delete()
+		projectApphanceZip.withWriter{ out ->
+			out << apphanceZip.getText()
+		}
+
+		logger.lifecycle("Unpacking file " + projectApphanceZip)
+		logger.lifecycle("Exists " + projectApphanceZip.exists())
+		def command = ["unzip", "${projectApphanceZip}", "-d", "${libsDir}"]
 		Process proc = Runtime.getRuntime().exec((String[]) command.toArray())
 		proc.waitFor()
 	}
