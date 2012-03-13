@@ -363,11 +363,13 @@ class PbxProjectHelper {
 		def project = getObject(getProperty(rootObject.dict, "rootObject").text())
 		getProperty(project, "targets").'*'.each { target ->
 			def targetText = target.text()
+			logger.lifecycle("Target " + targetText)
 			if (getProperty(getObject("${targetText}"), "name").text().equals(targetName)) {
 				// find build phases in target
 				getProperty(getObject("${targetText}"), "buildPhases").'*'.each { phase ->
 					// find frameworks in build phases
 					def phaseText = phase.text()
+					logger.lifecycle("Phase " + phaseText)
 					if (getProperty(getObject("${phaseText}"), "isa").text().equals("PBXFrameworksBuildPhase")) {
 						addApphanceToFramework(getObject("${phaseText}"))
 					}
