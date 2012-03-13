@@ -157,6 +157,7 @@ class PbxProjectHelper {
 			// find file reference in objects
 			def fileString = file.text()
 			def fileRef = getProperty(getObject("${fileString}"), "fileRef").text()
+			logger.lifecycle("Framework fileref " + fileRef)
 			if (getProperty(getObject("${fileRef}"), "name").text().toLowerCase().contains(name)) {
 				logger.lifecycle("Framework already added")
 				// apphance already added
