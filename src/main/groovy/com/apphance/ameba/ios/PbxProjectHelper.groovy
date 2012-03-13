@@ -20,6 +20,7 @@ class PbxProjectHelper {
 	Object objects
 	private int hash = 0
 	boolean hasApphance = false
+	def projectFile = null
 
 	Object getProperty(Object object, String propertyName) {
 		def returnObject = null
@@ -76,7 +77,6 @@ class PbxProjectHelper {
 	}
 
 	def getParsedProject(File projectRootDirectory, String targetName) {
-		def projectFile = null
 		projectRootDirectory.eachFileRecurse {
 			if (it.name.equals("project.pbxproj")) {
 				projectFile = it
@@ -156,9 +156,7 @@ class PbxProjectHelper {
 		getProperty(frameworks, "files").'*'.each { file ->
 			// find file reference in objects
 			def fileString = file.text()
-			logger.lifecycle("File " + fileString)
 			def fileRef = getProperty(getObject("${fileString}"), "fileRef").text()
-			logger.lifecycle("Framework fileref " + fileRef)
 			def frameworkName = getProperty(getObject("${fileRef}"), "name")
 			def frameworkPath = getProperty(getObject("${fileRef}"), "path")
 			if ((frameworkName != null && frameworkName.text().toLowerCase().contains(name)) || (frameworkPath != null && frameworkPath.text().toLowerCase().endsWith(name))) {
@@ -366,13 +364,11 @@ class PbxProjectHelper {
 		def project = getObject(getProperty(rootObject.dict, "rootObject").text())
 		getProperty(project, "targets").'*'.each { target ->
 			def targetText = target.text()
-			logger.lifecycle("Target " + targetText)
 			if (getProperty(getObject("${targetText}"), "name").text().equals(targetName)) {
 				// find build phases in target
 				getProperty(getObject("${targetText}"), "buildPhases").'*'.each { phase ->
 					// find frameworks in build phases
 					def phaseText = phase.text()
-					logger.lifecycle("Phase " + phaseText)
 					if (getProperty(getObject("${phaseText}"), "isa").text().equals("PBXFrameworksBuildPhase")) {
 						addApphanceToFramework(getObject("${phaseText}"))
 					}
@@ -399,7 +395,7 @@ class PbxProjectHelper {
 		f.withWriter { writer ->
 			writer << writePlistToString()
 		}
-		File projectFile = new File(projectRootDirectory, "${targetName}.xcodeproj/project.pbxproj")
+		File projectFile = new File(projectRootDirectory, "${projectFile}")
 		projectFile.withWriter { out ->
 			out << f.text
 		}
