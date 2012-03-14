@@ -31,7 +31,7 @@ class PrepareAndroidTestSetupOperation extends AbstractPrepareSetupOperation {
                         project.getProjectPropertyFromUser(it, BOOLEANS, br)
                         break;
                     case AndroidTestProperty.EMULATOR_TARGET:
-                        List targets = AndroidCommandParser.getTargets()
+                        List targets = AndroidCommandParser.getTargets(project)
                         project.getProjectPropertyFromUser(it, targets, br)
                         break;
                     default:

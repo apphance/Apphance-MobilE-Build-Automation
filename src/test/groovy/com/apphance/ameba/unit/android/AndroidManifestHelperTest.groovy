@@ -173,4 +173,14 @@ class AndroidManifestHelperTest {
         def fileAgain = new File(tmpDir,"AndroidManifest.xml")
         assertEquals(originalText, fileAgain.text)
     }
+
+
+    @Test
+    void testReadMainActivityFromManifest() {
+        ProjectConfiguration projectConfiguration = new ProjectConfiguration()
+        def file = new File("testProjects/apphance-updates/")
+        String mainActivity = manifestHelper.getMainActivityName(file)
+        assertTrue(mainActivity.contains('HomeActivity'))
+    }
+
 }

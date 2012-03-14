@@ -1,6 +1,10 @@
 package com.apphance.ameba.plugins.projectconfiguration;
 
 
+import groovy.lang.Closure;
+
+import java.util.Map;
+
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -29,6 +33,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         projectHelper = new ProjectHelper()
+        project.convention.plugins.put('amebaPropertyDefaults', new ProjectConfigurationConvention())
         prepareRepositories(project)
         readProjectConfigurationTask(project)
         project.task('prepareSetup', type: PrepareSetupTask.class)
@@ -141,5 +146,20 @@ This plugin provides also setup-related tasks. The tasks allow to generate new c
 verify existing configurationa and show the configuration to the user.
 It also adds several utility tasks that can be used across all types of projects.
 """
+
+    static class ProjectConfigurationConvention {
+        static public final String DESCRIPTION =
+"""Using this convention object you can specify different defaults
+for properties (for all properties from all plugins). It's enough to
+specify the default as map of values stored in map form     "['property.name' : 'value' ]".
+"""
+        def String defaults = '[:]'
+
+        def amebaPropertyDefaults(Closure close) {
+            close.delegate = this
+            close.run()
+        }
+    }
+
 
 }

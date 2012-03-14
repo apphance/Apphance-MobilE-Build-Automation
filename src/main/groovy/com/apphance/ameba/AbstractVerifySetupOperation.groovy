@@ -54,4 +54,14 @@ abstract class AbstractVerifySetupOperation {
             }
         }
     }
+
+    protected void checkIsOnList(property, list) {
+        use (PropertyCategory) {
+            String value = project.readProperty(property.propertyName)
+            if (!list.any { it == value}) {
+                throw new GradleException("""The value in ${property.propertyName}: ${value} can only be one of ${list}""")
+            }
+        }
+    }
+
 }

@@ -38,7 +38,6 @@ class AndroidApphancePlugin implements Plugin<Project>{
             prepareConvertLogsToAndroid(project)
             prepareRemoveApphaceFromManifest(project)
             prepareRestoreManifestBeforeApphance(project)
-
             project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
             project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
             project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
@@ -97,6 +96,91 @@ class AndroidApphancePlugin implements Plugin<Project>{
         }
     }
 
+    private static String EVENT_LOG_WIDGET_PACKAGE = "com.apphance.android.eventlog.widget"
+    private static String EVENT_LOG_ACTIVITY_PACKAGE = "com.apphance.android.eventlog.activity"
+
+    private void replaceViewsWithApphance(Project project, String variant) {
+
+        if (project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
+            logger.lifecycle("Replacing android views with apphance loggable versions for ${variant}")
+            replaceViewWithApphance(project, variant, "Button")
+            replaceViewWithApphance(project, variant, "CheckBox")
+            replaceViewWithApphance(project, variant, "EditText")
+            replaceViewWithApphance(project, variant, "ImageButton")
+            replaceViewWithApphance(project, variant, "ListView")
+            replaceViewWithApphance(project, variant, "RadioGroup")
+            replaceViewWithApphance(project, variant, "SeekBar")
+            replaceViewWithApphance(project, variant, "Spinner")
+            replaceViewWithApphance(project, variant, "TextView")
+
+            replaceActivityWithApphance(project, variant, "Activity")
+            replaceActivityWithApphance(project, variant, "ActivityGroup")
+        }
+    }
+    private void replaceActivityWithApphance(Project project, String variant, String activityName) {
+        replaceActivityExtendsWithApphance(project, variant, activityName)
+    }
+
+    private void replaceViewWithApphance(Project project, String variant, String viewName) {
+        replaceViewExtendsWithApphance(project, variant, viewName);
+        replaceTagResourcesOpeningTag(project, variant, viewName, EVENT_LOG_WIDGET_PACKAGE+"."+viewName);
+        replaceTagResourcesClosingTag(project, variant, viewName, EVENT_LOG_WIDGET_PACKAGE+"."+viewName);
+    }
+
+    private void replaceActivityExtendsWithApphance(Project project, String variant, String activityName) {
+        String newClassName = EVENT_LOG_ACTIVITY_PACKAGE+"." + activityName
+        logger.info("Replacing extends with Apphance for ${activityName} to ${newClassName}")
+        project.ant.replace(casesensitive: 'true', token : "extends ${activityName} ",
+                        value: "extends ${newClassName} ", summary: true) {
+                            fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
+                        }
+    }
+
+
+    private void replaceViewExtendsWithApphance(Project project, String variant, String viewName) {
+        String newClassName = EVENT_LOG_WIDGET_PACKAGE+"." + viewName
+        logger.info("Replacing extends with Apphance for ${viewName} to ${newClassName}")
+        project.ant.replace(casesensitive: 'true', token : "extends ${viewName} ",
+                        value: "extends ${newClassName} ", summary: true) {
+                            fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
+                        }
+    }
+
+    private void replaceTagResourcesOpeningTag(Project project, String variant, String tagName, String replacement) {
+        logger.info("Replacing tag resources with Apphance for ${tagName} to ${replacement}")
+        project.ant.replace(casesensitive: 'true', token : "<${tagName} ",
+                        value: "<${replacement} ", summary: true) {
+                            fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
+                        }
+        project.ant.replaceregexp(flags : 'gm') {
+            regexp (pattern:"<${tagName}(\\s*)")
+            substitution (expression:"<${replacement}\\1")
+            fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
+        }
+        project.ant.replace(casesensitive: 'true', token : "<${tagName}>",
+                        value: "<${replacement}>", summary: true) {
+                            fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
+                        }
+    }
+
+    private void replaceTagResourcesClosingTag(Project project, String variant, String tagName, String replacement) {
+        logger.info("Replacing tag resources with Apphance for ${tagName} to ${replacement}")
+        project.ant.replace(casesensitive: 'true', token : "</${tagName} ",
+                        value: "</${replacement} ", summary: true) {
+                            fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
+                        }
+        project.ant.replaceregexp(flags : 'gm') {
+            regexp (pattern: "</${tagName}(\\s*)")
+            substitution (expression:"</${replacement}\\1")
+            fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
+        }
+        project.ant.replace(casesensitive: 'true', token : "</${tagName}>",
+                        value: "</${replacement}>", summary: true) {
+                            fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
+                        }
+    }
+
+
     File getMainApplicationFile(Project project, String variant) {
         File tmpDir = androidConf.tmpDirs[variant]
         String mainApplicationFileName = manifestHelper.getApplicationName(project.rootDir)
@@ -121,28 +205,34 @@ class AndroidApphancePlugin implements Plugin<Project>{
     }
 
     public void preprocessBuildsWithApphance(Project project) {
-        project.tasks.each {  task ->
-            if (task.name.startsWith('buildDebug')) {
-                def variant = task.name == 'buildDebug' ? 'Debug' : task.name.substring('buildDebug-'.length())
-                task.doFirst {
-                    if (!checkIfApphancePresent(project)) {
-                        File mainFile = getMainApplicationFile(project, variant)
-                        if (mainFile != null) {
-                            replaceLogsWithApphance(project, variant)
-                            addApphanceInit(project, variant, mainFile)
-                            copyApphanceJar(project, variant)
-                            addApphanceToManifest(project, variant)
+        use (PropertyCategory) {
+            project.tasks.each { task ->
+                if (task.name.startsWith('buildDebug')) {
+                    def variant = task.name == 'buildDebug' ? 'Debug' : task.name.substring('buildDebug-'.length())
+                    task.doFirst {
+                        if (!checkIfApphancePresent(project)) {
+                            logger.lifecycle("Apphance not found in project")
+                            File mainFile = getMainApplicationFile(project, variant)
+                            if (mainFile != null) {
+                                replaceLogsWithApphance(project, variant)
+                                replaceViewsWithApphance(project, variant)
+                                addApphanceInit(project, variant, mainFile)
+                                copyApphanceJar(project, variant)
+                                addApphanceToManifest(project, variant)
+                            }
+                        } else {
+                            logger.lifecycle("Apphance found in project")
                         }
                     }
                 }
-            }
-            if (task.name.startsWith('buildRelease')) {
-                def variant = task.name == 'buildRelease' ? 'Release' : task.name.substring('buildRelease-'.length())
-                task.doFirst {
-                    removeApphanceFromManifest(project, variant)
-                    replaceLogsWithAndroid(project, variant)
+                if (task.name.startsWith('buildRelease')) {
+                    def variant = task.name == 'buildRelease' ? 'Release' : task.name.substring('buildRelease-'.length())
+                    task.doFirst {
+                        removeApphanceFromManifest(project, variant)
+                        replaceLogsWithAndroid(project, variant)
+                    }
+                    task.doLast { restoreManifestBeforeApphanceRemoval(project, variant) }
                 }
-                task.doLast { restoreManifestBeforeApphanceRemoval(project, variant) }
             }
         }
     }
@@ -187,12 +277,13 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     private def addApphanceInit(Project project, variant, File mainFile) {
         logger.lifecycle("Adding apphance init to file " + mainFile)
-        def lineToModification = []
+        def lineToModify = []
         mainFile.eachLine { line, lineNumber ->
             if (line.contains('super.onCreate')) {
-                lineToModification << lineNumber
+                lineToModify << lineNumber
             }
         }
+        boolean addOnCreateInApplication  = lineToModify.empty
         File newMainClass = new File("newMainClassFile.java")
         def mode
         if (project[ApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
@@ -202,11 +293,23 @@ class AndroidApphancePlugin implements Plugin<Project>{
         }
         String appKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
         String startSession = "Apphance.startNewSession(this, \"${appKey}\", ${mode});"
+        String onCreate = " public void onCreate() { super.onCreate(); Apphance.startNewSession(this, \"${appKey}\", ${mode}); } "
+
+
+        if (project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
+            startSession = startSession + "com.apphance.android.eventlog.EventLog.setInvertedIdMap(this);";
+        }
+
         String importApphance = 'import com.apphance.android.Apphance;'
+        boolean onCreateAdded = false
         newMainClass.withWriter { out ->
             mainFile.eachLine { line ->
-                if (line.contains('super.onCreate')) {
+                if (line.contains('super.onCreate') && !onCreateAdded) {
                     out.println(line << startSession)
+                    onCreateAdded = true
+                } else if (addOnCreateInApplication && line.contains('extends Application {') && !onCreateAdded) {
+                    out.println(line << onCreate)
+                    onCreateAdded = true
                 } else if (line.contains('package')) {
                     out.println(line << importApphance)
                 } else {
@@ -227,7 +330,9 @@ class AndroidApphancePlugin implements Plugin<Project>{
             it.delete()
         }
         File libsApphance = new File(androidConf.tmpDirs[variant], 'libs/apphance.jar')
-        URL apphanceUrl = this.class.getResource("apphance-android-library_1.5.jar")
+        libsApphance.delete()
+        logger.lifecycle("Copying apphance jar: to ${libsApphance}")
+        URL apphanceUrl = this.class.getResource("apphance-android-library_1.5-event-log.jar")
         libsApphance << apphanceUrl.getContent()
     }
 

@@ -33,7 +33,6 @@ class AmebaPluginReferenceBuilder {
     String VCS_TASKS = "VCS tasks"
     String IOS_TASKS = "iOS tasks"
     String ANDROID_TASKS = "Android tasks"
-	String WP7_TASKS = "WP7 tasks"
 
     AmebaDocumentation amebaDocumentation = new AmebaDocumentation()
     def excludedPath = [
@@ -154,6 +153,7 @@ class AmebaPluginReferenceBuilder {
         def conventionsDir = new File("testProjects/conventions/${pluginName}")
         def templateDir = new File("templates/android")
         Project project = getProject(projectDir)
+        project.apply plugin:'ameba-project-configuration'
         ProjectConnection connection
         GradleProject gradleProject
         (connection, gradleProject) = getProjectConnectionAndModel(projectDir)
@@ -214,43 +214,24 @@ class AmebaPluginReferenceBuilder {
     }
 
     public void buildDocumentation() throws Exception {
-
-		// Common
-		addAmebaDocumentation(COMMON_TASKS,'ameba-project-configuration', BaseProperty.class)
-		addAmebaDocumentation(COMMON_TASKS, 'ameba-project-release', ProjectReleaseProperty.class)
-
-		// VCS
+        addAmebaDocumentation(COMMON_TASKS,'ameba-project-configuration', BaseProperty.class, 'amebaPropertyDefaults')
         addAmebaDocumentation(VCS_TASKS, 'ameba-git', GitProperty.class)
         addAmebaDocumentation(VCS_TASKS, 'ameba-mercurial', MercurialProperty.class)
-
-		// Android
-
-		addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-build', AndroidProjectProperty.class)
+        addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-build', AndroidProjectProperty.class)
+        addAmebaDocumentation(IOS_TASKS, 'ameba-ios-build', IOSProjectProperty.class)
+        addAmebaDocumentation(COMMON_TASKS, 'ameba-project-release', ProjectReleaseProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-analysis', null, 'androidAnalysis')
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-apphance')
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-jarlibrary', AndroidJarLibraryProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-release')
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-test', AndroidTestProperty.class)
-
-		// iOS
-		/*
-		addAmebaDocumentation(IOS_TASKS, 'ameba-ios-build', IOSProjectProperty.class)
-		addAmebaDocumentation(IOS_TASKS, 'ameba-ios-cedar')
+        addAmebaDocumentation(IOS_TASKS, 'ameba-ios-cedar')
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-fonemonkey',IOSFoneMonkeyProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-framework', IOSFrameworkProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-kif', IOSKifProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-ocunit')
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-release')
-		*/
-
-		// Windows Phone
-
-		addAmebaDocumentation(WP7_TASKS, 'ameba-wp7-analysis')
-		addAmebaDocumentation(WP7_TASKS, 'ameba-wp7-apphance')
-		addAmebaDocumentation(WP7_TASKS, 'ameba-wp7-build')
-		addAmebaDocumentation(WP7_TASKS, 'ameba-wp7-test')
-
-		generateDocumentation()
+        generateDocumentation()
     }
 
 

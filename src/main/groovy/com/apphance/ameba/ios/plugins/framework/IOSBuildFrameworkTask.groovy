@@ -13,6 +13,7 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
+import com.apphance.ameba.ios.IOSXCodeOutputParser;
 
 
 /**
@@ -26,6 +27,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
     ProjectHelper projectHelper
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
+    IOSXCodeOutputParser iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
 
     String frameworkTarget
     String frameworkConfiguration
@@ -57,9 +59,9 @@ class IOSBuildFrameworkTask extends DefaultTask {
     @TaskAction
     void buildIOSFramework() {
         use (PropertyCategory) {
-            iosConf = project.getProjectConfiguration()
+            iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
             frameworkTarget = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
-            frameworkConfiguration = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
+            frameworkConfiguration = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_CONFIGURATION)
             frameworkVersion = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_VERSION)
             frameworkHeaders = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_HEADERS).split(',')
             frameworkResources = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_RESOURCES).split(',')
@@ -88,6 +90,8 @@ class IOSBuildFrameworkTask extends DefaultTask {
 
     private createLibrary() {
         logger.lifecycle("Create library")
+        def outputFile = new File(this.frameworkVersionsVersionDir, conf.projectName)
+        outputFile.parentFile.mkdirs()
         projectHelper.executeCommand(project,
                 [
                     "lipo",
@@ -95,7 +99,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
                     this.iphoneosLibrary,
                     this.iphonesimulatorLibrary,
                     "-output",
-                    new File(this.frameworkVersionsVersionDir, conf.projectName)]
+                    outputFile]
                 )
     }
 
