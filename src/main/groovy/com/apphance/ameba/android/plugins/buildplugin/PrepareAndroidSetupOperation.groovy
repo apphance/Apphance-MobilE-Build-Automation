@@ -33,7 +33,7 @@ class PrepareAndroidSetupOperation extends AbstractPrepareSetupOperation {
                         project.getProjectPropertyFromUser(it, androidConf.variants, br)
                         break;
                     case AndroidProjectProperty.MIN_SDK_TARGET:
-                        List targets = AndroidCommandParser.getTargets()
+                        List targets = AndroidCommandParser.getTargets(project)
                         project.getProjectPropertyFromUser(it, targets, br)
                         break;
                     default:
