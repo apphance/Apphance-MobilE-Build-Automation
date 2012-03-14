@@ -44,9 +44,9 @@ class IOSApphancePlugin implements Plugin<Project> {
 			iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmedListOutput)
 			preprocessBuildsWithApphance(project)
 
-            project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
-            project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
-            project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
+			project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
+			project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
+			project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
 		}
 	}
 
@@ -55,9 +55,11 @@ class IOSApphancePlugin implements Plugin<Project> {
 			iosConf.targets.each { target ->
 				if (!iosConf.isBuildExcluded(target + "-" + configuration)) {
 					project."build-${target}-${configuration}".doFirst {
-						replaceLogsWithApphance(project, iosConf.tmpDirName(target, configuration))
-						pbxProjectHelper.addApphanceToProject(new File(project.rootDir, iosConf.tmpDirName(target, configuration)), target, configuration, project[ApphanceProperty.APPLICATION_KEY.propertyName])
-						copyApphanceFramework(project, iosConf.tmpDirName(target, configuration))
+						if (!isApphancePresent(new File(project.rootDir, iosConf.tmpDirName(target, configuration)))) {
+							replaceLogsWithApphance(project, iosConf.tmpDirName(target, configuration))
+							pbxProjectHelper.addApphanceToProject(new File(project.rootDir, iosConf.tmpDirName(target, configuration)), target, configuration, project[ApphanceProperty.APPLICATION_KEY.propertyName])
+							copyApphanceFramework(project, iosConf.tmpDirName(target, configuration))
+						}
 					}
 				}
 			}
@@ -76,17 +78,19 @@ class IOSApphancePlugin implements Plugin<Project> {
 		def libsDir = new File(project.rootDir, tmpDir)
 		logger.lifecycle("Copying apphance into directory " + libsDir)
 		libsDir.mkdirs()
-		libsDir.eachFileMatch(".*[aA]pphance.*\\.framework") { framework ->
-			logger.lifecycle("Removing old apphance framework: " + framework.name)
-			def delClos = {
-				it.eachDir( delClos );
-				it.eachFile {
-					it.delete()
+		libsDir.eachFileRecurse { framework ->
+			if (framework == ".*[aA]pphance.*\\.framework") {
+				logger.lifecycle("Removing old apphance framework: " + framework.name)
+				def delClos = {
+					it.eachDir( delClos );
+					it.eachFile {
+						it.delete()
+					}
 				}
-			}
 
-			// Apply closure
-			delClos( new File(framework.canonicalPath) )
+				// Apply closure
+				delClos( new File(framework.canonicalPath) )
+			}
 		}
 
 		InputStream apphanceZip = this.class.getResourceAsStream("Apphance-iOS.framework.zip")
@@ -101,5 +105,22 @@ class IOSApphancePlugin implements Plugin<Project> {
 		def command = ["unzip", "${projectApphanceZip}", "-d", "${libsDir}"]
 		Process proc = Runtime.getRuntime().exec((String[]) command.toArray())
 		proc.waitFor()
+	}
+
+	boolean isApphancePresent(File projectDir) {
+		def apphancePresent = false
+
+		projectDir.eachFileRecurse { framework ->
+			if (framework =~ ".*[aA]pphance.*\\.framework") {
+				apphancePresent = true
+			}
+		}
+
+		if (apphancePresent) {
+			logger.lifecycle("Apphance already in project")
+		} else {
+			logger.lifecycle("Apphance not in project")
+		}
+		return apphancePresent
 	}
 }

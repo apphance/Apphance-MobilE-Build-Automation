@@ -8,7 +8,7 @@ import com.apphance.ameba.ProjectHelper;
 
 class IOSApphancePluginTest {
 
-	File projectDir = new File('testProjects/ios/GradleXCode')
+	File projectDir
 
 	protected void runGradle(String ... tasks) {
 		def cmd = ['gradle']
@@ -23,7 +23,15 @@ class IOSApphancePluginTest {
 
 	@Test
 	void addApphanceTest() {
+		projectDir = new File('testProjects/ios/GradleXCode')
 		runGradle('clean', 'build-GradleXCode-BasicConfiguration')
+		assertTrue(new File(projectDir, "ota/ssasdadasdasd/1-SNAPSHOT_1/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1-SNAPSHOT_1.ipa").exists())
 	}
 
+	@Test
+	void addApphanceTestWithApphanceAlreadyInProject() {
+		projectDir = new File('testProjects/ios/GradleXCodeWithApphance')
+		runGradle('clean', 'build-GradleXCodeWithApphance-BasicConfiguration')
+		assertTrue(new File(projectDir, "ota/ssasdadasdasd/1-SNAPSHOT_1/GradleXCodeWithApphance/BasicConfiguration/GradleXCodeWithApphance-BasicConfiguration-1-SNAPSHOT_1.ipa").exists())
+	}
 }

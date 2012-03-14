@@ -4,7 +4,7 @@ import org.gradle.api.tasks.TaskAction
 
 import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.plugins.apphance.ApphanceProperty;
+import com.apphance.ameba.apphance.ApphanceProperty;
 
 class VerifyApphanceSetupOperation extends AbstractVerifySetupOperation {
 
