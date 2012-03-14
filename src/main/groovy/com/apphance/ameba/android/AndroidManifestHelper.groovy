@@ -24,6 +24,21 @@ class AndroidManifestHelper {
         return builder.parse(inputStream).documentElement
     }
 
+
+	String readPackage(File projectDirectory) {
+		def root = getParsedManifest(projectDirectory)
+		def appPackage = null
+		XPathAPI.selectNodeList(root,'/manifest').each{ apppackage ->
+			apppackage.attributes.nodes.each { attribute ->
+				if (attribute.name == 'package') {
+					appPackage = attribute.value
+				}
+			}
+		}
+		return appPackage
+	}
+
+
     String readMinSdkVersion(File projectDirectory) {
         def root = getParsedManifest(projectDirectory)
         def minSdkVersion = null
@@ -316,6 +331,37 @@ class AndroidManifestHelper {
 		logger.lifecycle("Searching for application class file " + className)
         return className
     }
+
+	public boolean isApphanceActivityPresent(File projectDirectory) {
+		def activityFound = false
+
+		def file = new File("${projectDirectory}/AndroidManifest.xml")
+		def manifest = new XmlSlurper().parse(file)
+
+		manifest.activity.each {
+			def activityName = it.@"android:name".text().toLowerCase()
+			if (activityName.equals("com.apphance.android.ui.loginactivity") || activityName.equals("com.apphance.android.ui.ProblemActivity")) {
+				activityFound = true
+			}
+		}
+
+		return activityFound
+	}
+
+	public boolean isApphanceInstrumentationPresent(File projectDirectory) {
+		def instrumentationFound = false
+
+		def file = new File("${projectDirectory}/AndroidManifest.xml")
+		def manifest = new XmlSlurper().parse(file)
+
+		manifest.instrumentation.each {
+			if (it.@"android:name".text().toLowerCase().equals("com.apphance.android.apphanceinstrumentation")) {
+				instrumentationFound = true
+			}
+		}
+
+		return instrumentationFound
+	}
 
     void restoreOriginalManifest(File projectDirectory) {
         def file = new File("${projectDirectory}/AndroidManifest.xml")

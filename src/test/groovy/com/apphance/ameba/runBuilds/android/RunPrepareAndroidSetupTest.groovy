@@ -95,6 +95,7 @@ release.mail.flags=qrCode,imageMontage
 ###########################################################
 apphance.appkey=
 apphance.mode=QA
+apphance.log.events=false
 ###########################################################
 # Android test properties
 ###########################################################
