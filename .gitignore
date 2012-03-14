@@ -18,8 +18,9 @@ emma
 /.settings*
 /tmpCopy
 /coverage.ec
-/.groovy
 /bin/
 *.user
 *.suo
 *\.gradle
+*\.groovy
+*\ota
