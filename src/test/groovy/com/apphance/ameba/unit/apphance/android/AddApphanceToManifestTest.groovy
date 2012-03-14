@@ -37,4 +37,10 @@ class AddApphanceToManifestTest {
 		}
 	}
 
+	@Test
+	void checkApphanceInstrumentation() {
+		AndroidManifestHelper helper = new AndroidManifestHelper()
+		assertTrue(helper.isApphanceInstrumentationPresent(new File('testProjects/android/')))
+	}
+
 }
