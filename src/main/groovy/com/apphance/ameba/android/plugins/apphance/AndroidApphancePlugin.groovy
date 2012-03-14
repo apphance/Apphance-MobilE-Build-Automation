@@ -96,7 +96,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
         }
     }
 
-    private static String EVENT_LOG_PACKAGE = "com.apphance.android.eventlog.widget"
+    private static String EVENT_LOG_WIDGET_PACKAGE = "com.apphance.android.eventlog.widget"
+    private static String EVENT_LOG_ACTIVITY_PACKAGE = "com.apphance.android.eventlog.activity"
 
     private void replaceViewsWithApphance(Project project, String variant) {
 
@@ -111,21 +112,35 @@ class AndroidApphancePlugin implements Plugin<Project>{
             replaceViewWithApphance(project, variant, "SeekBar")
             replaceViewWithApphance(project, variant, "Spinner")
             replaceViewWithApphance(project, variant, "TextView")
+
+            replaceActivityWithApphance(project, variant, "Activity")
         }
+    }
+    private void replaceActivityWithApphance(Project project, String variant, String activityName) {
+        replaceActivityExtendsWithApphance(project, variant, activityName)
     }
 
     private void replaceViewWithApphance(Project project, String variant, String viewName) {
         replaceViewExtendsWithApphance(project, variant, viewName);
-        replaceTagResourcesOpeningTag(project, variant, viewName, EVENT_LOG_PACKAGE+"."+viewName);
-        replaceTagResourcesClosingTag(project, variant, viewName, EVENT_LOG_PACKAGE+"."+viewName);
-
+        replaceTagResourcesOpeningTag(project, variant, viewName, EVENT_LOG_WIDGET_PACKAGE+"."+viewName);
+        replaceTagResourcesClosingTag(project, variant, viewName, EVENT_LOG_WIDGET_PACKAGE+"."+viewName);
     }
 
+    private void replaceActivityExtendsWithApphance(Project project, String variant, String activityName) {
+        String newClassName = EVENT_LOG_ACTIVITY_PACKAGE+"." + activityName
+        logger.info("Replacing extends with Apphance for ${activityName} to ${newClassName}")
+        project.ant.replace(casesensitive: 'true', token : "extends ${activityName} ",
+                        value: "extends ${newClassName} ", summary: true) {
+                            fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
+                        }
+    }
+
+
     private void replaceViewExtendsWithApphance(Project project, String variant, String viewName) {
-        String newClassName = EVENT_LOG_PACKAGE+"." + viewName
+        String newClassName = EVENT_LOG_WIDGET_PACKAGE+"." + viewName
         logger.info("Replacing extends with Apphance for ${viewName} to ${newClassName}")
-        project.ant.replace(casesensitive: 'true', token : 'extends '+viewName,
-                        value: 'extends '+newClassName, summary: true) {
+        project.ant.replace(casesensitive: 'true', token : "extends ${viewName} ",
+                        value: "extends ${newClassName} ", summary: true) {
                             fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
                         }
     }
@@ -137,10 +152,10 @@ class AndroidApphancePlugin implements Plugin<Project>{
                             fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
                         }
         project.ant.replaceregexp(flags : 'gm') {
-                            regexp (pattern:"<${tagName}(\\s*)")
-                            substitution (expression:"<${replacement}\\1")
-                            fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
-                        }
+            regexp (pattern:"<${tagName}(\\s*)")
+            substitution (expression:"<${replacement}\\1")
+            fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
+        }
         project.ant.replace(casesensitive: 'true', token : "<${tagName}>",
                         value: "<${replacement}>", summary: true) {
                             fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
@@ -154,10 +169,10 @@ class AndroidApphancePlugin implements Plugin<Project>{
                             fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
                         }
         project.ant.replaceregexp(flags : 'gm') {
-                            regexp (pattern: "</${tagName}(\\s*)")
-                            substitution (expression:"</${replacement}\\1")
-                            fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
-                        }
+            regexp (pattern: "</${tagName}(\\s*)")
+            substitution (expression:"</${replacement}\\1")
+            fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
+        }
         project.ant.replace(casesensitive: 'true', token : "</${tagName}>",
                         value: "</${replacement}>", summary: true) {
                             fileset(dir: new File(androidConf.tmpDirs[variant], 'res/layout')) { include (name : '**/*.xml') }
