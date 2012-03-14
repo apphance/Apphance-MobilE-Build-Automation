@@ -114,6 +114,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
             replaceViewWithApphance(project, variant, "TextView")
 
             replaceActivityWithApphance(project, variant, "Activity")
+            replaceActivityWithApphance(project, variant, "ActivityGroup")
         }
     }
     private void replaceActivityWithApphance(Project project, String variant, String activityName) {
