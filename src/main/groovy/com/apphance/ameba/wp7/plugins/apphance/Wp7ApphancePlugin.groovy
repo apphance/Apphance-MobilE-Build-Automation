@@ -9,7 +9,10 @@ import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.wp7.CsprojHelper
+import com.apphance.ameba.android.plugins.apphance.PrepareApphanceSetupOperation
+import com.apphance.ameba.android.plugins.apphance.ShowApphancePropertiesOperation
+import com.apphance.ameba.android.plugins.apphance.VerifyApphanceSetupOperation
+import com.apphance.ameba.wp7.Wp7ProjectHelper
 import com.apphance.ameba.wp7.plugins.buildplugin.Wp7ProjectProperty
 
 class Wp7ApphancePlugin implements Plugin<Project> {
@@ -20,14 +23,14 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 
 	ProjectConfiguration conf
 	ProjectHelper projectHelper
-	CsprojHelper csprojHelper
+	Wp7ProjectHelper csprojHelper
 	ApphanceSourceCodeHelper sourceHelper;
 
 	public void apply(Project project) {
 		use (PropertyCategory) {
 			this.projectHelper = new ProjectHelper()
 			this.conf = project.getProjectConfiguration()
-			this.csprojHelper = new CsprojHelper()
+			this.csprojHelper = new Wp7ProjectHelper()
 			this.sourceHelper = new ApphanceSourceCodeHelper()
 
 			prepareExtractApphanceDll(project)
@@ -41,6 +44,10 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 
 			prepareConvertsSystemDebugToApphanceLogs(project)
 			prepareConvertsApphanceLogsToSystemDebug(project)
+
+			project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
+			project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
+			project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
 		}
 	}
 

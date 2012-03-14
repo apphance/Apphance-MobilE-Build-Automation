@@ -33,6 +33,7 @@ class AmebaPluginReferenceBuilder {
     String VCS_TASKS = "VCS tasks"
     String IOS_TASKS = "iOS tasks"
     String ANDROID_TASKS = "Android tasks"
+	String WP7_TASKS = "WP7 tasks"
 
     AmebaDocumentation amebaDocumentation = new AmebaDocumentation()
     def excludedPath = [
@@ -231,6 +232,13 @@ class AmebaPluginReferenceBuilder {
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-kif', IOSKifProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-ocunit')
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-release')
+
+		// Windows Phone
+		addAmebaDocumentation(WP7_TASKS, 'ameba-wp7-analysis')
+		addAmebaDocumentation(WP7_TASKS, 'ameba-wp7-apphance')
+		addAmebaDocumentation(WP7_TASKS, 'ameba-wp7-build')
+		addAmebaDocumentation(WP7_TASKS, 'ameba-wp7-test')
+
         generateDocumentation()
     }
 

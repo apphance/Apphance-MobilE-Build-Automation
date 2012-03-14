@@ -10,6 +10,8 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.wp7.Wp7ProjectConfiguration
+import com.apphance.ameba.wp7.Wp7ProjectHelper
+import com.apphance.ameba.wp7.Wp7SingleVariantBuilder
 
 
 /**
@@ -21,6 +23,7 @@ class Wp7Plugin implements Plugin<Project> {
 	static Logger logger = Logging.getLogger(Wp7Plugin.class)
 
 	ProjectHelper projectHelper
+	Wp7ProjectHelper wp7ProjectHelper
 	ProjectConfiguration conf
 	Wp7ProjectConfiguration wp7Conf;
 
@@ -28,15 +31,17 @@ class Wp7Plugin implements Plugin<Project> {
 
 		use (PropertyCategory) {
 			this.projectHelper = new ProjectHelper()
+			wp7ProjectHelper = new Wp7ProjectHelper()
 			this.conf = project.getProjectConfiguration()
+			wp7Conf = new Wp7ProjectConfiguration()
+
+			prepareCopySourcesTask(project)
 			prepareBuildAllTask(project)
 			prepareCleanTask(project)
-			prepareCopyProject(project)
 
 			project.prepareSetup.prepareSetupOperations << new PrepareWp7SetupOperation()
 			project.verifySetup.verifySetupOperations << new VerifyWp7SetupOperation()
 			project.showSetup.showSetupOperations << new ShowWp7PropertiesOperation()
-
 		}
 	}
 
@@ -45,9 +50,10 @@ class Wp7Plugin implements Plugin<Project> {
 		def task = project.task('readWp7ProjectConfiguration')
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
 		task.description = 'Reads Wp7 project configuration'
-
 		task << {
 			use (PropertyCategory) {
+				File slnFile = wp7ProjectHelper.getSolutionFile(project.rootDir)
+				wp7ProjectHelper.readConfigurationsFromSln(slnFile, wp7Conf)
 			}
 		}
 
@@ -58,12 +64,32 @@ class Wp7Plugin implements Plugin<Project> {
 		def task = project.task('buildAll')
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
 		task.description = 'Builds all target/configuration combinations and produces all artifacts'
+		println("Building all builds")
 
-		logger.lifecycle("Building all builds")
+		File slnFile = wp7ProjectHelper.getSolutionFile(project.rootDir)
+		wp7ProjectHelper.readConfigurationsFromSln(slnFile, wp7Conf)
 
-		task << {
-			projectHelper.executeCommand(project, ['MSBuild'])
+		def targets = wp7Conf.targets
+		def configurations = wp7Conf.configurations
+
+		targets.each { target ->
+			configurations.each { configuration ->
+				def id = "${target}${configuration}".toString()
+
+				def noSpaceId = id.replaceAll(' ','_')
+				def singleTask = project.task("build${noSpaceId}")
+				singleTask.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+				singleTask.description = "Builds target:${target} configuration:${configuration}"
+				singleTask << {
+					def singleReleaseBuilder = new Wp7SingleVariantBuilder(wp7Conf)
+					singleReleaseBuilder.buildRelease(project, target, configuration)
+				}
+				task.dependsOn(singleTask)
+				singleTask.dependsOn(project.readProjectConfiguration, project.verifySetup, project.copySources)
+			}
 		}
+
+		task.dependsOn(project.readProjectConfiguration)
 	}
 
 	private void prepareCleanTask(Project project) {
@@ -77,28 +103,35 @@ class Wp7Plugin implements Plugin<Project> {
 	}
 
 
-	void prepareCopyProject(Project project) {
+	void prepareCopySourcesTask(Project project) {
 		def task = project.task('copySources')
-		task.description = "Copies all sources to selected directory"
-		task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+		task.description = "Copies all sources to tmp directory for build"
+		task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
 		task << {
 
-			File srcDir = getProjectDir(project)
-			File destDir = new File(getProjectDir(project), "tmpApphance/")
-			destDir.deleteDir()
+			def targets = wp7Conf.targets
+			def configurations = wp7Conf.configurations
 
-			new AntBuilder().delete(dir: destDir)
-			new AntBuilder().copy(toDir : destDir, verbose:true) {
-				fileset(dir : srcDir) {
-					exclude(name: "${destDir.absolutePath}/**/*")
+			targets.each { target ->
+				configurations.each { configuration ->
+
+					File projectDir = project.rootDir
+					File variantDir = wp7Conf.getVariantDirectory(project, target, configuration)
+
+					new AntBuilder().sync(toDir : variantDir, overwrite:true, verbose:true) {
+						fileset(dir : projectDir) {
+//							exclude(name: new File(project.rootDir, iosConf.tmpDirName(target, configuration)).absolutePath + '/**/*')
+//							conf.sourceExcludes.each { exclude(name: it) }
+						}
+					}
 				}
 			}
-
 		}
 	}
 
+
 	static public final String DESCRIPTION =
-	"""This is the main windows phone build plugin.
+	"""This is the main Windows Phone build plugin.
 
 	The plugin provides all the tasks needed to build windows phone application.
 	Besides tasks explained below, the plugin prepares build-* and install-*

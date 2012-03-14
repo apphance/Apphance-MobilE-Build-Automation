@@ -11,9 +11,9 @@ import com.apphance.ameba.ProjectConfiguration
 /**
  * @author Gocal
  */
-class CsprojHelper {
+class Wp7ProjectHelper {
 
-	static Logger logger = Logging.getLogger(CsprojHelper.class)
+	static Logger logger = Logging.getLogger(Wp7ProjectHelper.class)
 
 	String getCsprojName(File projectDir) {
 
@@ -33,6 +33,33 @@ class CsprojHelper {
 		}
 
 		return files[0];
+	}
+
+	File getSolutionFile(File projectDir) {
+
+		FilenameFilter slnFilter = new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".sln");
+			}
+		};
+
+		String[] projectFiles = projectDir.list(slnFilter);
+		if(projectFiles != null && projectFiles.length > 0) {
+			return new File(projectDir, projectFiles[0]);
+		}
+
+		File parentDir = projectDir.getParentFile();
+		String[] parentFiles = parentDir.list(slnFilter);
+		if(parentFiles != null && parentFiles.length > 0) {
+			return new File(projectDir, parentFiles[0]);
+		}
+
+		return null;
+	}
+
+	void readConfigurationsFromSln(File slnFile, Wp7ProjectConfiguration wp7conf) {
+		wp7conf.targets = ['Phone', 'Emulator']
+		wp7conf.configurations = ['Debug', 'Release']
 	}
 
 	void readVersionFromWMAppManifest(String WMAppManifestPath, ProjectConfiguration conf) {

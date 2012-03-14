@@ -7,20 +7,20 @@ import java.io.File
 import org.junit.Before
 import org.junit.Test
 
-import com.apphance.ameba.wp7.CsprojHelper
+import com.apphance.ameba.wp7.Wp7ProjectHelper
 
 // Add verification similar AndroidManifestHelperTest
 class CsprojHelperTest {
 
 
 	String projectDir = "testProjects/wp7/AmebaTest/"
-	CsprojHelper csprojHelper
+	Wp7ProjectHelper csprojHelper
 	File tmpDir
 
 
 	@Before
 	void setUp() {
-		this.csprojHelper = new CsprojHelper()
+		this.csprojHelper = new Wp7ProjectHelper()
 		this.tmpDir = new File("tmp")
 		tmpDir.mkdir()
 		def androidManifest = new File(tmpDir,"AmebaTest.csproj")
