@@ -7,14 +7,14 @@
       <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.css" />
       <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
       <script type="text/javascript" src="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.js"></script>
-      <script type="text/javascript" src="${conf.galleryJs.getRelativeUrl(baseUrl)}"></script>
+      <script type="text/javascript" src="${releaseConf.galleryJs.getRelativeUrl(baseUrl)}"></script>
       <script type="text/javascript" language="Javascript">
      \$(window).load(function() {
         \$('#swipegallery').swipeGallery({autoheight: true});
         //{width: ${family == 'iPad' ? 192 : 160}, height: ${family == 'iPhone' ? 256 : 240} }
      });
     </script>
-    <link rel="stylesheet" type="text/css" href="${conf.galleryCss.getRelativeUrl(baseUrl)}">
+    <link rel="stylesheet" type="text/css" href="${releaseConf.galleryCss.getRelativeUrl(baseUrl)}">
   </head>
   <body>
     <div data-role="page" id="home" data-add-back-btn="true">
@@ -52,7 +52,7 @@
     <% iosConf.monkeyTests[family].each { test -> %>
     <div data-role="page" id="${test}">
       <ul id="swipegallery">
-         <% iosConf.monkeyTestImages[family][test].each { image -> %>
+         <% iosReleaseConf.monkeyTestImages[family][test].each { image -> %>
                <li><img src="${image.getRelativeUrl(baseUrl)}"/></li>
          <% } %>
       </ul>

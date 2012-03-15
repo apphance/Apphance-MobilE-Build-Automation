@@ -37,8 +37,6 @@ class IOSPlugin implements Plugin<Project> {
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
 
-    IOSXCodeOutputParser iosXcodeOutputParser
-
     public static final List<String> FAMILIES = ['iPad', 'iPhone']
 
     def void apply (Project project) {
@@ -46,8 +44,7 @@ class IOSPlugin implements Plugin<Project> {
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
-            this.iosXcodeOutputParser = new IOSXCodeOutputParser()
-            this.iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
+            this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
             prepareReadIosProjectConfigurationTask(project)
             prepareReadIosTargetsAndConfigurationsTask(project)
             prepareReadIosProjectVersionsTask(project)
@@ -100,15 +97,15 @@ class IOSPlugin implements Plugin<Project> {
         task << {
             project.file("bin").mkdirs()
             def trimmedListOutput = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)*.trim()
-            IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
-            project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  iosXcodeOutputParser.readProjectName(trimmedListOutput)
-            iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmedListOutput)
-            iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmedListOutput)
-            iosConf.alltargets = iosXcodeOutputParser.readBaseTargets(trimmedListOutput, { true })
-            iosConf.allconfigurations = iosXcodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
+            IOSProjectConfiguration iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+            project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  IOSXCodeOutputParser.readProjectName(trimmedListOutput)
+            iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmedListOutput)
+            iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedListOutput)
+            iosConf.alltargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })
+            iosConf.allconfigurations = IOSXCodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
             def trimmedSdkOutput = projectHelper.executeCommand(project, ["xcodebuild", "-showsdks"]as String[],false, null, null, 1, true)*.trim()
-            iosConf.allIphoneSDKs = iosXcodeOutputParser.readIphoneSdks(trimmedSdkOutput)
-            iosConf.allIphoneSimulatorSDKs = iosXcodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
+            iosConf.allIphoneSDKs = IOSXCodeOutputParser.readIphoneSdks(trimmedSdkOutput)
+            iosConf.allIphoneSimulatorSDKs = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
             if (iosConf.targets == ['']) {
                 logger.lifecycle("Please specify at least one target")
                 iosConf.targets = []
@@ -176,8 +173,8 @@ class IOSPlugin implements Plugin<Project> {
         iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
         def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
         def trimmed = lines*.trim()
-        iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmed)
-        iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmed)
+        iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmed)
+        iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmed)
         def targets = iosConf.targets
         def configurations = iosConf.configurations
         println("Building all builds")
@@ -190,7 +187,7 @@ class IOSPlugin implements Plugin<Project> {
                     singleTask.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
                     singleTask.description = "Builds target:${target} configuration:${configuration}"
                     singleTask << {
-                        def singleReleaseBuilder = new IOSSingleReleaseBuilder(project, project.ant)
+                        def singleReleaseBuilder = new IOSSingleVariantBuilder(project, project.ant)
                         singleReleaseBuilder.buildRelease(project, target, configuration)
                     }
                     task.dependsOn(singleTask)
@@ -227,7 +224,7 @@ class IOSPlugin implements Plugin<Project> {
         task.description = "Builds single release for iOS. Requires ios.target and ios.configuration properties"
         task << {
             use (PropertyCategory) {
-                def singleReleaseBuilder = new IOSSingleReleaseBuilder(project, this.ant)
+                def singleReleaseBuilder = new IOSSingleVariantBuilder(project, this.ant)
                 String target = project.readExpectedProperty(IOS_TARGET_LOCAL_PROPERTY)
                 String configuration = project.readExpectedProperty(IOS_CONFIGURATION_LOCAL_PROPERTY)
                 singleReleaseBuilder.buildRelease(project, target, configuration)

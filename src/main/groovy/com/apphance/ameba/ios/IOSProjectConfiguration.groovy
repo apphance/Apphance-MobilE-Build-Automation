@@ -7,11 +7,10 @@ import java.util.List
 import java.util.Map
 import java.util.regex.Pattern
 
-import com.apphance.ameba.AmebaArtifact
+import com.apphance.ameba.plugins.release.AmebaArtifact;
 
 /**
- * TODO This class should be split into independent pieces.
- * This is the "god" class of IOS.
+ * Keeps IOS-specific configuration for the project.
  */
 class IOSProjectConfiguration {
     String sdk
@@ -25,21 +24,10 @@ class IOSProjectConfiguration {
     List<String> allconfigurations = []
     List<String> allIphoneSDKs = []
     List<String> allIphoneSimulatorSDKs = []
-    Map<String,AmebaArtifact> distributionZipFiles = [:]
-    Map<String,AmebaArtifact> dSYMZipFiles = [:]
-    Map<String,AmebaArtifact> ipaFiles = [:]
-    Map<String,AmebaArtifact> manifestFiles = [:]
-    Map<String,AmebaArtifact> mobileProvisionFiles = [:]
-    AmebaArtifact otaIndexFile
-    AmebaArtifact fileIndexFile
-    AmebaArtifact plainFileIndexFile
-    Map<String, AmebaArtifact> foneMonkeyTestResultFiles = [:]
-    Map<String,AmebaArtifact> dmgImageFiles = [:]
     List<String> families = []
     File plistFile
     def monkeyTests = [:]
     def monkeyTestResults = [:]
-    Map<String, HashMap<String, Collection<AmebaArtifact>>> monkeyTestImages = [:]
     List<String> excludedBuilds = []
 
     @Override

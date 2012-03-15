@@ -15,16 +15,13 @@ import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
 class PrepareAndroidSetupOperation extends AbstractPrepareSetupOperation {
     Logger logger = Logging.getLogger(PrepareAndroidSetupOperation.class)
 
-    AndroidProjectConfigurationRetriever retriever = new AndroidProjectConfigurationRetriever()
-    AndroidProjectConfiguration androidConf
-
     PrepareAndroidSetupOperation() {
         super(AndroidProjectProperty.class)
     }
 
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        androidConf = retriever.getAndroidProjectConfiguration(project)
+        def androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         use (PropertyCategory) {
             BufferedReader br = getReader()
             AndroidProjectProperty.each {

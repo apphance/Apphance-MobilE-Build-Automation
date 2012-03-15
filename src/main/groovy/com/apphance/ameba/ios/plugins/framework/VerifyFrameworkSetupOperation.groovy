@@ -11,7 +11,6 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser
 
 class VerifyFrameworkSetupOperation extends AbstractVerifyIOSSetupOperation {
 
-    IOSXCodeOutputParser iosXCodeOutputParser
     IOSProjectConfiguration iosConf
 
     VerifyFrameworkSetupOperation() {
@@ -21,8 +20,7 @@ class VerifyFrameworkSetupOperation extends AbstractVerifyIOSSetupOperation {
     void verifySetup() {
         super.verifySetup()
         def projectProperties = readProperties()
-        iosXCodeOutputParser = new IOSXCodeOutputParser()
-        iosConf = iosXCodeOutputParser.getIosProjectConfiguration(project)
+        iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
 
         IOSFrameworkProperty.each {
             if (!it.defaultValue != null) {

@@ -17,18 +17,16 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
         'qrCode',
         'imageMontage'
     ]
-    IOSXCodeOutputParser iosXCodeOutputParser
     IOSProjectConfiguration iosConf
 
     VerifyReleaseSetupOperation() {
         super(ProjectReleaseProperty.class)
     }
 
-    
+
     void verifySetup() {
         def projectProperties = readProperties()
-        iosXCodeOutputParser = new IOSXCodeOutputParser()
-        iosConf = iosXCodeOutputParser.getIosProjectConfiguration(project)
+        iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
 
         ProjectReleaseProperty.each {
             if (!it.defaultValue != null) {

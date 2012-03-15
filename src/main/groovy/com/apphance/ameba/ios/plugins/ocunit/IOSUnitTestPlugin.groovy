@@ -22,7 +22,6 @@ class IOSUnitTestPlugin implements Plugin<Project> {
     Project project
     ProjectConfiguration conf
     ProjectHelper projectHelper
-    IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     IOSProjectConfiguration iosConf
 
     void apply(Project project) {
@@ -30,9 +29,8 @@ class IOSUnitTestPlugin implements Plugin<Project> {
         use (PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
-            this.iosConfigurationAndTargetRetriever  = new IOSXCodeOutputParser()
             this.conf = project.getProjectConfiguration()
-            this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
             project.extensions.iosUnitTests = new IOSUnitTestConvention()
             prepareRunUnitTestsTask()
         }

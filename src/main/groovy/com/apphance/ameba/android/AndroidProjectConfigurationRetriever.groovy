@@ -13,16 +13,17 @@ import com.sun.org.apache.xpath.internal.XPathAPI
 public class AndroidProjectConfigurationRetriever {
     static Logger logger = Logging.getLogger(AndroidProjectConfigurationRetriever.class)
     public static final String ANDROID_PROJECT_CONFIGURATION_KEY = 'android.project.configuration'
-    AndroidManifestHelper androidManifestHelper = new AndroidManifestHelper()
-    AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
-    AndroidProjectConfiguration getAndroidProjectConfiguration(final Project project){
+    static AndroidManifestHelper androidManifestHelper = new AndroidManifestHelper()
+    static AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
+
+    static AndroidProjectConfiguration getAndroidProjectConfiguration(final Project project){
         if (!project.hasProperty(ANDROID_PROJECT_CONFIGURATION_KEY)) {
             project[ANDROID_PROJECT_CONFIGURATION_KEY] = new AndroidProjectConfiguration()
         }
         return project[ANDROID_PROJECT_CONFIGURATION_KEY]
     }
 
-    void readAndroidProjectConfiguration(Project project) {
+    static void readAndroidProjectConfiguration(Project project) {
         use (PropertyCategory) {
             AndroidProjectConfiguration androidConf = getAndroidProjectConfiguration(project)
             androidConf.mainVariant = project.readProperty(AndroidProjectProperty.MAIN_VARIANT)

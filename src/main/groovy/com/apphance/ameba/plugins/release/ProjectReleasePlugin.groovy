@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.release;
 
 
-import groovy.io.FileType;
+import groovy.io.FileType
 
 import java.util.LinkedList
 
@@ -11,19 +11,15 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ImageNameFilter
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyCategory;
-import com.apphance.ameba.android.AndroidProjectConfiguration;
-import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
+import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.android.AndroidProjectConfiguration
+import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
-import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
-import com.apphance.ameba.plugins.release.PrepareReleaseSetupOperation;
-import com.apphance.ameba.plugins.release.ProjectReleaseProperty;
-import com.apphance.ameba.plugins.release.VerifyReleaseSetupOperation;
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.vcs.plugins.git.GitPlugin
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
 
@@ -38,17 +34,18 @@ class ProjectReleasePlugin implements Plugin<Project> {
 
     ProjectHelper projectHelper
     ProjectConfiguration conf
+    ProjectReleaseConfiguration releaseConf
     AndroidProjectConfiguration androidConf
 
     void apply(Project project) {
         ProjectHelper.checkAnyPluginIsLoaded(project, this.class, AndroidPlugin.class, IOSPlugin.class)
         ProjectHelper.checkAnyPluginIsLoaded(project, this.class, MercurialPlugin.class, GitPlugin.class)
         projectHelper = new ProjectHelper()
-        use (PropertyCategory) {
-            conf = project.getProjectConfiguration()
-        }
-        androidConf = new AndroidProjectConfigurationRetriever().getAndroidProjectConfiguration(project)
+        conf = PropertyCategory.getProjectConfiguration(project)
+        releaseConf = ProjectReleaseCategory.retrieveProjectReleaseData(project)
+        androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         prepareMailConfiguration(project)
+        prepareCopyGalleryFilesTask(project)
         preparePrepareForReleaseTask(project)
         prepareVerifyReleaseNotesTask(project)
         prepareImageMontageTask(project)
@@ -73,30 +70,30 @@ class ProjectReleasePlugin implements Plugin<Project> {
 
     private prepareSourcesAndDocumentationArtifacts() {
         def sourceZipName = conf.projectVersionedName + "-src.zip"
-        conf.sourcesZip = new AmebaArtifact(
+        releaseConf.sourcesZip = new AmebaArtifact(
                 name : conf.projectName + "-src",
                 url : null, // we do not publish
                 location : new File(conf.tmpDirectory,sourceZipName))
         def documentationZipName = conf.projectVersionedName + "-doc.zip"
-        conf.documentationZip = new AmebaArtifact(
+        releaseConf.documentationZip = new AmebaArtifact(
                 name : conf.projectName + "-doc",
                 url : null,
                 location : new File(conf.tmpDirectory,documentationZipName))
-        conf.targetDirectory.mkdirs()
+        releaseConf.targetDirectory.mkdirs()
     }
 
     private prepareMailArtifacts(Project project) {
-        conf.mailMessageFile = new AmebaArtifact(
+        releaseConf.mailMessageFile = new AmebaArtifact(
                 name : "Mail message file",
-                url : new URL(conf.versionedApplicationUrl, "message_file.html"),
-                location : new File(conf.targetDirectory,"message_file.html"))
+                url : new URL(releaseConf.versionedApplicationUrl, "message_file.html"),
+                location : new File(releaseConf.targetDirectory,"message_file.html"))
         use (PropertyCategory) {
-            conf.releaseMailFrom = project.readExpectedProperty(ProjectReleaseProperty.RELEASE_MAIL_FROM)
-            conf.releaseMailTo = project.readExpectedProperty(ProjectReleaseProperty.RELEASE_MAIL_TO)
-            conf.releaseMailFlags = []
+            releaseConf.releaseMailFrom = project.readExpectedProperty(ProjectReleaseProperty.RELEASE_MAIL_FROM)
+            releaseConf.releaseMailTo = project.readExpectedProperty(ProjectReleaseProperty.RELEASE_MAIL_TO)
+            releaseConf.releaseMailFlags = []
             String flags = project.readProperty(ProjectReleaseProperty.RELEASE_MAIL_FLAGS)
             if (flags != null){
-                conf.releaseMailFlags = flags.tokenize(",").collect { it.trim() }
+                releaseConf.releaseMailFlags = flags.tokenize(",").collect { it.trim() }
             }
         }
     }
@@ -109,7 +106,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
             prepareSourcesAndDocumentationArtifacts()
             prepareMailArtifacts(project)
         }
-        task.dependsOn(project.readProjectConfiguration)
+        task.dependsOn(project.readProjectConfiguration, project.copyGalleryFiles)
     }
 
     def void prepareVerifyReleaseNotesTask(Project project) {
@@ -117,7 +114,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
         task.group= AmebaCommonBuildTaskGroups.AMEBA_RELEASE
         task.description = "Verifies that release notes are set for the build"
         task << {
-            if (conf.releaseNotes == null) {
+            if (releaseConf.releaseNotes == null) {
                 throw new GradleException("""Release notes of the project have not been set.... Please enter non-empty notes!\n
 Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES environment variable""")
             }
@@ -130,9 +127,9 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
         task.description = "Cleans release related directrories"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
         task << {
-            conf.otaDirectory.deleteDir()
+            releaseConf.otaDirectory.deleteDir()
             conf.tmpDirectory.deleteDir()
-            conf.otaDirectory.mkdirs()
+            releaseConf.otaDirectory.mkdirs()
             conf.tmpDirectory.mkdirs(
                 )
             androidConf.tmpDirs.values().each {
@@ -159,7 +156,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
             def  tempFile = File.createTempFile("image_montage_${conf.projectName}",".png")
             command << tempFile.toString()
             projectHelper.executeCommand(project, command as String [])
-            def  imageMontageFile = new File(conf.targetDirectory, "${conf.projectName}-${conf.fullVersionString}-image-montage.png")
+            def  imageMontageFile = new File(releaseConf.targetDirectory, "${conf.projectName}-${conf.fullVersionString}-image-montage.png")
             imageMontageFile.parentFile.mkdirs()
             imageMontageFile.delete()
             String[] convertCommand = [
@@ -170,16 +167,16 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
                 "-pointsize",
                 "36",
                 "-draw",
-                "gravity southwest fill black text 0,12 '${conf.projectName} Version: ${conf.fullVersionString} Generated: ${conf.buildDate}'",
+                "gravity southwest fill black text 0,12 '${conf.projectName} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}'",
                 imageMontageFile
             ]
             try {
                 projectHelper.executeCommand(project,convertCommand)
                 def imageMontageFileArtifact = new AmebaArtifact(
                         name : "Image Montage",
-                        url : new URL(conf.versionedApplicationUrl, "${imageMontageFile.name}"),
+                        url : new URL(releaseConf.versionedApplicationUrl, "${imageMontageFile.name}"),
                         location : imageMontageFile)
-                conf.imageMontageFile = imageMontageFileArtifact
+                releaseConf.imageMontageFile = imageMontageFileArtifact
             } catch (Exception e) {
                 logger.lifecycle("The convert binary execution failed: skipping image montage preparation. Add convert (ImageMagick) binary to the path to get image montage.")
             }
@@ -210,16 +207,16 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
                 ant.mail(
                         mailhost: mailServer,
                         mailport: mailPort,
-                        subject: conf.releaseMailSubject,
+                        subject: releaseConf.releaseMailSubject,
                         charset: "UTF-8",
-                        tolist : conf.releaseMailTo){
-                            from(address: conf.releaseMailFrom)
-                            message(mimetype:"text/html", conf.mailMessageFile.location.text)
-                            if (conf.releaseMailFlags.contains("qrCode")) {
-                                fileset(file: conf.qrCodeFile.location)
+                        tolist : releaseConf.releaseMailTo){
+                            from(address: releaseConf.releaseMailFrom)
+                            message(mimetype:"text/html", releaseConf.mailMessageFile.location.text)
+                            if (releaseConf.releaseMailFlags.contains("qrCode")) {
+                                fileset(file: releaseConf.qrCodeFile.location)
                             }
-                            if (conf.releaseMailFlags.contains("imageMontage") && conf.imageMontageFile != null) {
-                                fileset(file: conf.imageMontageFile.location)
+                            if (releaseConf.releaseMailFlags.contains("imageMontage") && releaseConf.imageMontageFile != null) {
+                                fileset(file: releaseConf.imageMontageFile.location)
                             }
                         }
             }
@@ -232,7 +229,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
         task.description = "Builds sources .zip file."
         task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
         task << {
-            File destZip = conf.sourcesZip.location
+            File destZip = releaseConf.sourcesZip.location
             logger.lifecycle("Removing empty symlinks")
             projectHelper.removeMissingSymlinks(project.rootDir)
             destZip.parentFile.mkdirs()
@@ -255,6 +252,37 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
         }
         task.dependsOn(project.readProjectConfiguration, project.prepareForRelease)
     }
+
+    private prepareGalleryArtifacts() {
+        releaseConf.galleryCss = new AmebaArtifact(
+                        name : "CSS Gallery",
+                        url : new URL(releaseConf.versionedApplicationUrl, "_css/jquery.swipegallery.css"),
+                        location : new File(releaseConf.targetDirectory, "_css/jquery.swipegallery.css"))
+        releaseConf.galleryJs = new AmebaArtifact(
+                        name : "JS Gallery",
+                        url : new URL(releaseConf.versionedApplicationUrl, "_res/jquery.swipegallery.js"),
+                        location : new File(releaseConf.targetDirectory, "_res/jquery.swipegallery.js"))
+        releaseConf.galleryTrans = new AmebaArtifact(
+                        name : "JS Gallery",
+                        url : new URL(releaseConf.versionedApplicationUrl, "_res/trans.png"),
+                        location : new File(releaseConf.targetDirectory, "_res/trans.png"))
+    }
+
+    def void prepareCopyGalleryFilesTask(Project project) {
+        def task = project.task('copyGalleryFiles')
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+        task.description = "Copy files required by swipe jquerymobile gallery"
+        task << {
+            prepareGalleryArtifacts()
+            releaseConf.galleryCss.location.parentFile.mkdirs()
+            releaseConf.galleryJs.location.parentFile.mkdirs()
+            releaseConf.galleryCss.location.setText(this.class.getResourceAsStream("swipegallery/_css/jquery.swipegallery.css").text,"utf-8")
+            releaseConf.galleryJs.location.setText(this.class.getResourceAsStream("swipegallery/_res/jquery.swipegallery.js").text,"utf-8")
+            releaseConf.galleryTrans.location.setText(this.class.getResourceAsStream("swipegallery/_res/trans.png").text,"utf-8")
+        }
+        task.dependsOn(project.readProjectConfiguration)
+    }
+
 
     static public final String DESCRIPTION =
 """This is Ameba release plugin.

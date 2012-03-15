@@ -30,7 +30,6 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
     public void testConfigurationTasksAvailable() {
         verifyTasksInGroup(getProject(),[
             'cleanConfiguration',
-            'copyGalleryFiles',
             'readProjectConfiguration',
         ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
     }

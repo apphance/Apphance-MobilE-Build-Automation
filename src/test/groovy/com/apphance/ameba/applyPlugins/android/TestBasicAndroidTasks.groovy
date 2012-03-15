@@ -30,7 +30,7 @@ class TestBasicAndroidTasks extends BaseAndroidTaskTest {
             'installRelease-market',
             'replacePackage',
             'updateProject',
-			'copySources'
+            'copySources'
         ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 
@@ -38,7 +38,6 @@ class TestBasicAndroidTasks extends BaseAndroidTaskTest {
     public void testConfigurationTasksAvailable() {
         verifyTasksInGroup(getProject(),[
             'cleanConfiguration',
-            'copyGalleryFiles',
             'readAndroidProjectConfiguration',
             'readAndroidVersionAndProjectName',
             'readProjectConfiguration',

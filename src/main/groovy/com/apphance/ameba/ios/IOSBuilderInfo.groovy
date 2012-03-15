@@ -6,13 +6,12 @@ import java.io.File
  * Information for single artict being built. Useful information grouped together needed
  * by various artifacts generated along the way.
  */
-class IOSArtifactBuilderInfo {
+class IOSBuilderInfo {
     String id
     String target
     String configuration
     File buildDirectory
     String fullReleaseName
-    String folderPrefix
     String filePrefix
     File mobileprovisionFile
     File plistFile

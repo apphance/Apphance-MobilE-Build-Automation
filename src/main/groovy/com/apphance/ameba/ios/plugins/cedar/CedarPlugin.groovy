@@ -22,7 +22,6 @@ class CedarPlugin implements Plugin<Project> {
     Logger logger = Logging.getLogger(CedarPlugin.class)
     Project project
     ProjectHelper projectHelper
-    IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
 
@@ -31,9 +30,8 @@ class CedarPlugin implements Plugin<Project> {
         use (PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
-            this.iosConfigurationAndTargetRetriever  = new IOSXCodeOutputParser()
             this.conf = project.getProjectConfiguration()
-            this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
             prepareCedarTemplatesTask()
             prepareBuildCedarReleasesTask()
             prepareRunCedarTasks()

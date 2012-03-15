@@ -32,7 +32,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             manifestHelper = new AndroidManifestHelper()
-            this.androidConf = new AndroidProjectConfigurationRetriever().getAndroidProjectConfiguration(project)
+            this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
             preprocessBuildsWithApphance(project)
             prepareConvertLogsToApphance(project)
             prepareConvertLogsToAndroid(project)

@@ -1,4 +1,4 @@
-package com.apphance.ameba
+package com.apphance.ameba.plugins.release
 
 import java.io.File
 import java.net.URL

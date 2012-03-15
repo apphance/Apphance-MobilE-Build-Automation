@@ -27,7 +27,6 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
     ProjectHelper projectHelper
     ProjectConfiguration conf
     AndroidManifestHelper manifestHelper
-    AndroidProjectConfigurationRetriever androidConfRetriever
     AndroidProjectConfiguration androidConf
     String jarLibraryPrefix
 
@@ -36,8 +35,7 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
-            this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
-            this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
+            this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
             manifestHelper = new AndroidManifestHelper()
             jarLibraryPrefix = project.readProperty(AndroidJarLibraryProperty.RES_PREFIX)
             if (jarLibraryPrefix == null) {

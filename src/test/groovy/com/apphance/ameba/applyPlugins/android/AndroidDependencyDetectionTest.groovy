@@ -21,9 +21,8 @@ class AndroidDependencyDetectionTest extends BaseAndroidTaskTest {
 
     @Test
     public void testProjectConfiguration() {
-        Project project = getProject();
-        AndroidProjectConfigurationRetriever confRetriever = new AndroidProjectConfigurationRetriever()
-        AndroidProjectConfiguration androidConf = confRetriever.getAndroidProjectConfiguration(project)
+        Project project = getProject()
+        AndroidProjectConfiguration androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         if (androidConf.linkedLibraryJars.empty) {
             ProjectHelper projectHelper = new ProjectHelper()
             projectHelper.executeCommand(project, new File("testProjects/android"), ['ant', 'debug'])

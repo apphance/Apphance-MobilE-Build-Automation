@@ -5,18 +5,17 @@ import static org.junit.Assert.*
 import org.gradle.api.Project
 
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidArtifactBuilderInfo
+import com.apphance.ameba.android.AndroidBuilderInfo
 import com.apphance.ameba.android.AndroidBuildXmlHelper
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.android.AndroidSingleVariantBuilder
+import com.apphance.ameba.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
 class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
 
-    private AndroidSingleVariantBuilder prepareEnvironment(Project project) {
+    private AndroidSingleVariantApkBuilder prepareEnvironment(Project project) {
         use (PropertyCategory) {
-            AndroidProjectConfigurationRetriever confRetriever = new AndroidProjectConfigurationRetriever()
             AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
             manifestHelper.readVersion(project.rootDir, project.getProjectConfiguration())
             AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
@@ -27,62 +26,59 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
             }
             project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.readProjectName(project.rootDir)
             project.retrieveBasicProjectData()
-            AndroidSingleVariantBuilder builder = new AndroidSingleVariantBuilder(project,confRetriever.getAndroidProjectConfiguration(project))
+            AndroidSingleVariantApkBuilder builder = new AndroidSingleVariantApkBuilder(project,
+                    AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project))
             builder.updateAndroidConfigurationWithVariants()
-            confRetriever.readAndroidProjectConfiguration(project)
+            AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration(project)
             return builder
         }
     }
 
     public void testArtifactBuilderInfoVariantedDebug() throws Exception {
         Project project = getProject()
-        AndroidSingleVariantBuilder builder = prepareEnvironment(project)
-        AndroidArtifactBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "test", null)
+        AndroidSingleVariantApkBuilder builder = prepareEnvironment(project)
+        AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "test", null)
         assertEquals('test', ai.variant)
         assertEquals('Debug', ai.debugRelease)
         assertEquals(new File("testProjects/tmp-android-test/bin").absolutePath, ai.buildDirectory.absolutePath)
         assertEquals(new File("testProjects/tmp-android-test/bin/TestAndroidProject-debug.apk").absolutePath, ai.originalFile.absolutePath)
         assertEquals('TestAndroidProject-debug-test-1.0.1_42', ai.fullReleaseName)
-        assertEquals('AdadalkjsaTest/1.0.1_42', ai.folderPrefix)
         assertEquals('TestAndroidProject-debug-test-1.0.1_42', ai.filePrefix)
     }
 
     public void testArtifactBuilderInfoVariantedRelease() throws Exception {
         Project project = getProject()
-        AndroidSingleVariantBuilder builder = prepareEnvironment(project)
-        AndroidArtifactBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "market", null)
+        AndroidSingleVariantApkBuilder builder = prepareEnvironment(project)
+        AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "market", null)
         assertEquals('market', ai.variant)
         assertEquals('Release', ai.debugRelease)
         assertEquals(new File("testProjects/tmp-android-market/bin").absolutePath, ai.buildDirectory.absolutePath)
         assertEquals(new File("testProjects/tmp-android-market/bin/TestAndroidProject-release.apk").absolutePath, ai.originalFile.absolutePath)
         assertEquals('TestAndroidProject-release-market-1.0.1_42', ai.fullReleaseName)
-        assertEquals('AdadalkjsaTest/1.0.1_42', ai.folderPrefix)
         assertEquals('TestAndroidProject-release-market-1.0.1_42', ai.filePrefix)
     }
 
     public void testArtifactBuilderInfoNotVariantedDebug() throws Exception {
         Project project = getProject(false)
-        AndroidSingleVariantBuilder builder = prepareEnvironment(project)
-        AndroidArtifactBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "Debug", "Debug")
+        AndroidSingleVariantApkBuilder builder = prepareEnvironment(project)
+        AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "Debug", "Debug")
         assertEquals('Debug', ai.variant)
         assertEquals('Debug', ai.debugRelease)
         assertEquals(new File("testProjects/tmp-android-novariants-Debug/bin").absolutePath, ai.buildDirectory.absolutePath)
         assertEquals(new File("testProjects/tmp-android-novariants-Debug/bin/TestAndroidProject-debug.apk").absolutePath, ai.originalFile.absolutePath)
         assertEquals('TestAndroidProject-debug-Debug-1.0.1_42', ai.fullReleaseName)
-        assertEquals('asdlakjljsdTest/1.0.1_42', ai.folderPrefix)
         assertEquals('TestAndroidProject-debug-Debug-1.0.1_42', ai.filePrefix)
     }
 
     public void testArtifactBuilderInfoNotVariantedRelease() throws Exception {
         Project project = getProject(false)
-        AndroidSingleVariantBuilder builder = prepareEnvironment(project)
-        AndroidArtifactBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "Release", "Release")
+        AndroidSingleVariantApkBuilder builder = prepareEnvironment(project)
+        AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "Release", "Release")
         assertEquals('Release', ai.variant)
         assertEquals('Release', ai.debugRelease)
         assertEquals(new File("testProjects/tmp-android-novariants-Release/bin").absolutePath, ai.buildDirectory.absolutePath)
         assertEquals(new File("testProjects/tmp-android-novariants-Release/bin/TestAndroidProject-release.apk").absolutePath, ai.originalFile.absolutePath)
         assertEquals('TestAndroidProject-release-Release-1.0.1_42', ai.fullReleaseName)
-        assertEquals('asdlakjljsdTest/1.0.1_42', ai.folderPrefix)
         assertEquals('TestAndroidProject-release-Release-1.0.1_42', ai.filePrefix)
     }
 }

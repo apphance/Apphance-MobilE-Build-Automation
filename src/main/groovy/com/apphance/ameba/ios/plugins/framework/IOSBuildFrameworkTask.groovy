@@ -27,7 +27,6 @@ class IOSBuildFrameworkTask extends DefaultTask {
     ProjectHelper projectHelper
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
-    IOSXCodeOutputParser iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
 
     String frameworkTarget
     String frameworkConfiguration
@@ -59,7 +58,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
     @TaskAction
     void buildIOSFramework() {
         use (PropertyCategory) {
-            iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
             frameworkTarget = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
             frameworkConfiguration = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_CONFIGURATION)
             frameworkVersion = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_VERSION)

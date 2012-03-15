@@ -7,13 +7,12 @@ import java.io.File
  * by various artifacts generated along the way.
  */
 
-class AndroidArtifactBuilderInfo  {
+class AndroidBuilderInfo  {
     String variant
     String debugRelease
     File buildDirectory
     File originalFile
     String fullReleaseName
-    String folderPrefix
     String filePrefix
 
     String getId() {

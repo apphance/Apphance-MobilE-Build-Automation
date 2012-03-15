@@ -25,7 +25,6 @@ class KIFPlugin implements Plugin<Project> {
     Logger logger = Logging.getLogger(KIFPlugin.class)
     Project project
     ProjectHelper projectHelper
-    IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
     String KIFConfiguration
@@ -36,9 +35,8 @@ class KIFPlugin implements Plugin<Project> {
         use (PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
-            this.iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
             this.conf = project.getProjectConfiguration()
-            this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
             this.KIFConfiguration = project.readProperty(IOSKifProperty.KIF_CONFIGURATION)
             prepareKIFTemplatesTask()
             prepareBuildKIFReleaseTask()

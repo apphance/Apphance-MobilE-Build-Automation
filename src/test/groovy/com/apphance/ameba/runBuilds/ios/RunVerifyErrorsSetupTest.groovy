@@ -64,7 +64,7 @@ class RunVerifyErrorsSetupTest {
 
     @Test
     void testUrl() {
-        runErrorScenario(/^(project\.url\.base.*)=(.*)$/,'$1=notaurl', 'java.net.MalformedURLException')
+        runErrorScenario(/^(project\.url\.base.*)=(.*)$/,'$1=notaurl', 'protocol')
     }
 
     @Test
