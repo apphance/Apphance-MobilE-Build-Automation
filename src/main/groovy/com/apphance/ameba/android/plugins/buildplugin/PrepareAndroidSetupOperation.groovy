@@ -27,9 +27,15 @@ class PrepareAndroidSetupOperation extends AbstractPrepareSetupOperation {
             AndroidProjectProperty.each {
                 switch (it) {
                     case AndroidProjectProperty.MAIN_VARIANT:
+                        if (!project.hasProperty(it.propertyName) && !androidConf.variants.empty) {
+                            project[it.propertyName] = androidConf.variants[0]
+                        }
                         project.getProjectPropertyFromUser(it, androidConf.variants, br)
                         break;
                     case AndroidProjectProperty.MIN_SDK_TARGET:
+                        if (!project.hasProperty(it.propertyName)) {
+                            project[it.propertyName] = androidConf.minSdkTargetName
+                        }
                         List targets = AndroidCommandParser.getTargets(project)
                         project.getProjectPropertyFromUser(it, targets, br)
                         break;

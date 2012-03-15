@@ -54,6 +54,7 @@ class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder
             'ant',
             bi.debugRelease.toLowerCase()
         ])
+        logger.lifecycle("Jar file created: ${bi.originalFile}")
         buildListeners.each {
             it.buildDone(project, bi)
         }

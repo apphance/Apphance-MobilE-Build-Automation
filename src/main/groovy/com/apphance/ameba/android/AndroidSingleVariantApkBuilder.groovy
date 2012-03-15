@@ -54,6 +54,7 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
             'ant',
             bi.debugRelease.toLowerCase()
         ])
+        logger.lifecycle("Apk file created: ${bi.originalFile}")
         buildListeners.each {
             it.buildDone(project, bi)
         }
