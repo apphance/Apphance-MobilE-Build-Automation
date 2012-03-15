@@ -2,20 +2,30 @@ package com.apphance.ameba.android.plugins.apphance
 
 import java.io.File
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import com.apphance.ameba.AmebaArtifact;
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.android.AndroidArtifactBuilderInfo
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration;
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
+import com.apphance.ameba.android.AndroidSingleVariantBuilder;
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import groovy.json.JsonBuilder
 
+import groovyx.net.http.*
+
+// Uncomment this annotation for eclipse building, leave commented for gradle build
+// Caused by: http://issues.gradle.org/browse/GRADLE-1162
+//@Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.5.2')
 class AndroidApphancePlugin implements Plugin<Project>{
 
     static Logger logger = Logging.getLogger(AndroidApphancePlugin.class)
@@ -206,6 +216,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     public void preprocessBuildsWithApphance(Project project) {
         use (PropertyCategory) {
+			def tasksToAdd = [:]
             project.tasks.each { task ->
                 if (task.name.startsWith('buildDebug')) {
                     def variant = task.name == 'buildDebug' ? 'Debug' : task.name.substring('buildDebug-'.length())
@@ -224,6 +235,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
                             logger.lifecycle("Apphance found in project")
                         }
                     }
+					tasksToAdd.put(task.name, variant)
+					logger.lifecycle("Adding upload task for variant " + variant)
                 }
                 if (task.name.startsWith('buildRelease')) {
                     def variant = task.name == 'buildRelease' ? 'Release' : task.name.substring('buildRelease-'.length())
@@ -234,6 +247,9 @@ class AndroidApphancePlugin implements Plugin<Project>{
                     task.doLast { restoreManifestBeforeApphanceRemoval(project, variant) }
                 }
             }
+			tasksToAdd.each { key, value ->
+				prepareSingleBuildUpload(project, value, project."${key}")
+			}
         }
     }
 
@@ -359,6 +375,71 @@ class AndroidApphancePlugin implements Plugin<Project>{
 		}
         return found
     }
+
+	void prepareSingleBuildUpload(Project project, String variantName, def buildTask) {
+
+			def uploadTask = project.task("upload${variantName}")
+			uploadTask.description = "Uploads .apk to Apphance server"
+			uploadTask.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+
+			uploadTask << {
+				AndroidSingleVariantBuilder androidBuilder = new AndroidSingleVariantBuilder(project, androidConf)
+				AndroidArtifactBuilderInfo bi = androidBuilder.buildApkArtifactBuilderInfo(project, variantName, "Debug")
+				AmebaArtifact apkArtifact = androidBuilder.prepareApkArtifact(bi)
+				HTTPBuilder builder = new HTTPBuilder('https://apphance-app.appspot.com/api/application.update_version')
+				String username = project["apphanceUserName"]
+				String pass = project["apphancePassword"]
+				String hashPass = "${username}" + "${pass}"
+				hashPass = hashPass.bytes.encodeBase64()
+				builder.auth.basic username, pass
+				def jsonbuilder = new JsonBuilder()
+				def root = jsonbuilder.applications {
+						[
+							{
+							name: "TestApp"
+							api_key: "${apphanceKey}"
+							version: {
+								name: "1"
+								number: 1
+							}
+							current:false
+							update_resources: ["apk"]
+							}
+						]
+				}
+				String apphanceKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
+					builder.request(Method.POST, ContentType.JSON) { req ->
+						headers = ["Http-Authorization" : "basic " + hashPass]
+						body = [
+							api_key: apphanceKey,
+							version: [
+								name: "1",
+								number: 1
+							],
+							current:false,
+							update_resources: ["apk"]
+							]
+
+//						body = root
+						logger.lifecycle("Rquest body " + req.getEntity().getContent().getText())
+						response.success = { resp, json ->
+							logger.lifecycle("Response for uploading .apk finished with status" + resp.status)
+							logger.lifecycle(json)
+						}
+						response.failure = { resp ->
+							logger.lifecycle("Request for uploading failed " + resp.getStatusLine())
+							throw new GradleException("Request for uploading failed " + resp.getStatusLine())
+						}
+					}
+			}
+
+			uploadTask.dependsOn(buildTask)
+
+	}
+
+	void uploadApk(Project project, String variant) {
+
+	}
 
     static public final String DESCRIPTION =
     """This is the plugin that links Ameba with Apphance service.
