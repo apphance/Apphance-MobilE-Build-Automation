@@ -1,15 +1,12 @@
 package com.apphance.ameba
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.text.SimpleDateFormat
-import java.util.ArrayList;
-import java.util.List;
+import java.io.BufferedReader
+import java.util.ArrayList
+import java.util.List
 
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
-import com.apphance.ameba.plugins.projectconfiguration.BaseProperty;
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
 class PropertyCategory {
@@ -168,7 +165,6 @@ class PropertyCategory {
         use (PropertyCategory) {
             ProjectConfiguration conf = getProjectConfiguration(project)
             conf.projectName = project.readProperty(ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY)
-            def url = project.readProperty(BaseProperty.PROJECT_URL)
             conf.tmpDirectory = project.file('tmp')
             conf.logDirectory = project.file('log')
             conf.buildDirectory = project.file('build')

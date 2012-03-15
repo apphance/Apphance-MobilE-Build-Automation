@@ -32,7 +32,6 @@ class RunShowVerifySetupTest {
     @Test
     public void testShowSetup() {
         String res = runTests('showSetup')
-        assertTrue(res.contains('# Base properties'))
         assertTrue(res.contains('# iOS properties'))
         assertTrue(res.contains('# iOS FoneMonkey properties'))
         assertTrue(res.contains('# iOS Framework properties'))
@@ -43,7 +42,6 @@ class RunShowVerifySetupTest {
     @Test
     public void testVerifySetup() {
         String res = runTests('verifySetup')
-        assertTrue(res.contains('GOOD!!! Base properties'))
         assertTrue(res.contains('GOOD!!! iOS properties'))
         assertTrue(res.contains('GOOD!!! iOS FoneMonkey properties'))
         assertTrue(res.contains('GOOD!!! iOS Framework properties'))

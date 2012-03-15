@@ -42,9 +42,6 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         project.task('showConventions', type: ShowConventionsTask.class)
         prepareShowConventionRule(project)
         prepareCleanConfigurationTask(project)
-        project.prepareSetup.prepareSetupOperations << new PrepareBaseSetupOperation()
-        project.verifySetup.verifySetupOperations << new VerifyBaseSetupOperation()
-        project.showSetup.showSetupOperations << new ShowBaseSetupOperation()
     }
 
     private void prepareShowConventionRule(Project project) {
@@ -103,7 +100,7 @@ The plugin should be applied before any other plugin. It reads basic project con
 configuration for all other plugins. Other plugins use this plugin's generated task.
 
 This plugin provides also setup-related tasks. The tasks allow to generate new configuration,
-verify existing configurationa and show the configuration to the user.
+verify existing configuration and show the configuration to the user.
 It also adds several utility tasks that can be used across all types of projects.
 """
 

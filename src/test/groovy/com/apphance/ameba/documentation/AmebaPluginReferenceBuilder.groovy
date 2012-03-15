@@ -2,7 +2,6 @@
 package com.apphance.ameba.documentation
 
 import groovy.text.SimpleTemplateEngine
-import groovy.xml.MarkupBuilder
 
 import java.io.File
 import java.util.List
@@ -22,7 +21,6 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
 import com.apphance.ameba.ios.plugins.fonemonkey.IOSFoneMonkeyProperty
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
 import com.apphance.ameba.ios.plugins.kif.IOSKifProperty
-import com.apphance.ameba.plugins.projectconfiguration.BaseProperty
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty
 import com.apphance.ameba.vcs.plugins.git.GitProperty
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialProperty
@@ -214,7 +212,7 @@ class AmebaPluginReferenceBuilder {
     }
 
     public void buildDocumentation() throws Exception {
-        addAmebaDocumentation(COMMON_TASKS,'ameba-project-configuration', BaseProperty.class, 'amebaPropertyDefaults')
+        addAmebaDocumentation(COMMON_TASKS,'ameba-project-configuration', null, 'amebaPropertyDefaults')
         addAmebaDocumentation(VCS_TASKS, 'ameba-git', GitProperty.class)
         addAmebaDocumentation(VCS_TASKS, 'ameba-mercurial', MercurialProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-build', AndroidProjectProperty.class)

@@ -1,13 +1,12 @@
 package com.apphance.ameba.plugins.release
 
 import java.text.SimpleDateFormat
-import java.util.ResourceBundle;
+import java.util.ResourceBundle
 
 import org.gradle.api.Project
 
-import com.apphance.ameba.ProjectConfiguration;
+import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.plugins.projectconfiguration.BaseProperty
 
 class ProjectReleaseCategory {
 
@@ -23,8 +22,8 @@ class ProjectReleaseCategory {
     public static void retrieveLocale(Project project) {
         use(PropertyCategory) {
             ProjectReleaseConfiguration releaseConf = getProjectReleaseConfiguration(project)
-            String language = project.readProperty(BaseProperty.PROJECT_LANGUAGE)
-            String country = project.readProperty(BaseProperty.PROJECT_COUNTRY)
+            String language = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_LANGUAGE)
+            String country = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_COUNTRY)
             if (language == null) {
                 releaseConf.locale = Locale.getDefault()
             } else {
@@ -42,11 +41,10 @@ class ProjectReleaseCategory {
         use (PropertyCategory) {
             ProjectReleaseConfiguration releaseConf = getProjectReleaseConfiguration(project)
             releaseConf.projectConfiguration = project.getProjectConfiguration()
-            releaseConf.projectDirectoryName = project.readProperty(BaseProperty.PROJECT_DIRECTORY)
-            def url = project.readProperty(BaseProperty.PROJECT_URL)
-            println url
+            releaseConf.projectDirectoryName = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_DIRECTORY)
+            def url = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_URL)
             releaseConf.baseUrl = url == null ? null : new URL(url)
-            def iconFile = project.readProperty(BaseProperty.PROJECT_ICON_FILE)
+            def iconFile = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE)
             releaseConf.iconFile = iconFile == null ? null : project.file(iconFile)
             releaseConf.otaDirectory = project.file('ota')
             retrieveLocale(project)

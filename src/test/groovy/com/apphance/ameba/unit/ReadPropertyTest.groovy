@@ -1,13 +1,13 @@
 package com.apphance.ameba.unit;
 
-import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
 
-import org.junit.Test;
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Test
 
-import com.apphance.ameba.PropertyCategory;
-import com.apphance.ameba.plugins.projectconfiguration.BaseProperty
+import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.plugins.release.ProjectReleaseProperty
 
 public class ReadPropertyTest {
 
@@ -44,8 +44,8 @@ public class ReadPropertyTest {
         use(PropertyCategory) {
             final ProjectBuilder builder = ProjectBuilder.builder()
             final Project project = builder.build()
-            project[BaseProperty.PROJECT_COUNTRY.propertyName] = 'aaaa'
-            assertEquals('aaaa',project.readProperty(BaseProperty.PROJECT_COUNTRY))
+            project[ProjectReleaseProperty.RELEASE_PROJECT_COUNTRY.propertyName] = 'aaaa'
+            assertEquals('aaaa',project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_COUNTRY))
         }
     }
 }

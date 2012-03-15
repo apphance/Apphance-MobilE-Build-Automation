@@ -67,14 +67,6 @@ class RunPrepareIOSSetupTest {
 # Or you can re-run the prepareSetup command
 # for guided re-configuration
 ###########################################################
-# Base properties
-###########################################################
-project.icon.file=icon.png
-project.url.base=
-project.directory.name=
-project.language=en
-project.country=US
-###########################################################
 # Mercurial properties
 ###########################################################
 hg.commit.user=
@@ -92,6 +84,11 @@ ios.simulator.sdk=iphonesimulator
 ###########################################################
 # Release properties
 ###########################################################
+release.project.icon.file=icon.png
+release.project.url.base=
+release.project.directory.name=
+release.project.language=en
+release.project.country=US
 release.mail.from=
 release.mail.to=
 release.mail.flags=qrCode,imageMontage
