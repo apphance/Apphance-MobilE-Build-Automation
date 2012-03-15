@@ -5,7 +5,6 @@ import static org.junit.Assert.*
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
-
 import com.apphance.ameba.android.AndroidCommandParser
 
 class AndroidVerifyTest {

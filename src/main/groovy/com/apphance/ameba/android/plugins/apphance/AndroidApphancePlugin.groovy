@@ -210,7 +210,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
                 if (task.name.startsWith('buildDebug')) {
                     def variant = task.name == 'buildDebug' ? 'Debug' : task.name.substring('buildDebug-'.length())
                     task.doFirst {
-                        if (!checkIfApphancePresent(project)) {
+                        if (!checkIfApphancePresent(project, variant)) {
                             logger.lifecycle("Apphance not found in project")
                             File mainFile = getMainApplicationFile(project, variant)
                             if (mainFile != null) {
@@ -336,9 +336,9 @@ class AndroidApphancePlugin implements Plugin<Project>{
         libsApphance << apphanceUrl.getContent()
     }
 
-    private boolean checkIfApphancePresent(Project project) {
+    public boolean checkIfApphancePresent(Project project, String variant) {
         boolean found = false
-        File basedir = project.file('src')
+        File basedir = androidConf.tmpDirs[variant]
         basedir.eachFileRecurse { file ->
             if (file.name.endsWith('.java')) {
                 file.eachLine {
@@ -349,8 +349,14 @@ class AndroidApphancePlugin implements Plugin<Project>{
             }
         }
         if (!found) {
-            project.file('.').eachFileMatch(".*apphance.*\\.jar") { found = true }
+            new File(basedir, './libs/').eachFileMatch(".*apphance.*\\.jar") { found = true }
         }
+		if (!found) {
+			found = manifestHelper.isApphanceActivityPresent(basedir)
+		}
+		if (!found) {
+			found = manifestHelper.isApphanceInstrumentationPresent(basedir)
+		}
         return found
     }
 

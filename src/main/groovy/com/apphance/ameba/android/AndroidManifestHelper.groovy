@@ -332,6 +332,37 @@ class AndroidManifestHelper {
         return className
     }
 
+	public boolean isApphanceActivityPresent(File projectDirectory) {
+		def activityFound = false
+
+		def file = new File("${projectDirectory}/AndroidManifest.xml")
+		def manifest = new XmlSlurper().parse(file)
+
+		manifest.activity.each {
+			def activityName = it.@"android:name".text().toLowerCase()
+			if (activityName.equals("com.apphance.android.ui.loginactivity") || activityName.equals("com.apphance.android.ui.ProblemActivity")) {
+				activityFound = true
+			}
+		}
+
+		return activityFound
+	}
+
+	public boolean isApphanceInstrumentationPresent(File projectDirectory) {
+		def instrumentationFound = false
+
+		def file = new File("${projectDirectory}/AndroidManifest.xml")
+		def manifest = new XmlSlurper().parse(file)
+
+		manifest.instrumentation.each {
+			if (it.@"android:name".text().toLowerCase().equals("com.apphance.android.apphanceinstrumentation")) {
+				instrumentationFound = true
+			}
+		}
+
+		return instrumentationFound
+	}
+
     void restoreOriginalManifest(File projectDirectory) {
         def file = new File("${projectDirectory}/AndroidManifest.xml")
         def originalBeforeApphance = new File("${projectDirectory}/AndroidManifest.xml.beforeApphance.orig")
