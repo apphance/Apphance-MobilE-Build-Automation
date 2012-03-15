@@ -42,8 +42,8 @@
                     <li><a href="${releaseConf.qrCodeFile.getRelativeUrl(baseUrl)}" rel="external">
                     <h3>${rb.getString('QR_Code')}</h3></a></li>
                  <% } %>
-                 <% if (androidConf.plainFileIndexFile != null) { %>
-                 <li><a href="${androidConf.plainFileIndexFile.getRelativeUrl(baseUrl)}" rel="external">
+                 <% if (androidReleaseConf.plainFileIndexFile != null) { %>
+                 <li><a href="${androidReleaseConf.plainFileIndexFile.getRelativeUrl(baseUrl)}" rel="external">
                  <h3>${rb.getString('Plain_file_index')}</h3></a></li>
                  <% } %>
               </ul>

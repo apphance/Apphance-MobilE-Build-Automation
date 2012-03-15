@@ -160,7 +160,7 @@ class AndroidReleasePlugin implements Plugin<Project>{
                         location : new File(releaseConf.otaDirectory,"${otaFolderPrefix}/file_index.html"))
         fileIndexFile.location.parentFile.mkdirs()
         fileIndexFile.location.delete()
-        androidConf.fileIndexFile = fileIndexFile
+        androidReleaseConf.fileIndexFile = fileIndexFile
     }
 
     private preparePlainFileIndexArtifact(String otaFolderPrefix) {
