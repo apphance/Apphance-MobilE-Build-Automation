@@ -31,10 +31,10 @@ class Wp7ProjectHelperTest {
 	@Test
 	void testGetCsprojName() {
 
-		def androidManifest = new File(tmpDir,"AmebaTest.csproj")
-		def originalAndroidManifest = new File(projectDir,"AmebaTest.csproj")
-		androidManifest.delete()
-		androidManifest << originalAndroidManifest.text
+		def csproj = new File(tmpDir,"AmebaTest.csproj")
+		def originaCsproj = new File(projectDir,"AmebaTest.csproj")
+		csproj.delete()
+		csproj << originaCsproj.text
 
 		def csFileName = wp7ProjectHelper.getCsprojName(tmpDir);
 		assertNotNull(csFileName);

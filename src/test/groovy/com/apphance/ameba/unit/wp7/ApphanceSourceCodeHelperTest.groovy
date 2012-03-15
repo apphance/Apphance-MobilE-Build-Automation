@@ -17,7 +17,7 @@ class ApphanceSourceCodeHelperTest {
 	String projectDir
 	ApphanceSourceCodeHelper apphanceHelper
 	File tmpDir
-	
+
 
 	@Before
 	void setUp() {
@@ -28,7 +28,7 @@ class ApphanceSourceCodeHelperTest {
 		tmpDir.delete()
 		ProjectBuilder projectBuilder = ProjectBuilder.builder()
 		Project project = projectBuilder.build()
-	
+
 	}
 
 	@After
@@ -42,7 +42,7 @@ class ApphanceSourceCodeHelperTest {
 		assertTrue(apphanceDll.exists())
 	}
 
-	
+
 	@Test
 	void addApphanceToAppCsTest() {
 		def appId = "1"
@@ -56,33 +56,34 @@ class ApphanceSourceCodeHelperTest {
 		String result = apphanceHelper.removeApphanceFromAppCs(appCsWithApphance)
 		assertEquals(result, appCsWithoutApphance)
 	}
-	
-	/*
+
+
 	@Test
 	void addApphanceToCsProjTest() {
+
 		String result = apphanceHelper.addApphanceToCsProj(csProjWithoutApphance, "Apphance.WindowsPhone.dll")
-		
-		def xmlSlurper = new XmlSlurper()
+
+		def xmlSlurper = new XmlSlurper(false, false)
 		def xml = xmlSlurper.parseText(result)
-		
+
 		boolean hasApphanceWindowsPhone = false
-		
+
 		xml.Project.ItemGroup[0].each { attribute ->
             if (attribute.name == 'Reference') {
                 // <Reference Include="Apphance.WindowsPhone" HintPath="Apphance.WindowsPhone.dll"/>
             }
 		}
-		assertTrue(hasApphanceWindowsPhone)	
+		assertTrue(hasApphanceWindowsPhone)
 	}
-	*/
-	
+
+
 	/*
 	@Test
 	void removeApphanceFromCsProjTest() {
 		String result = apphanceHelper.removeApphanceFromCsProj(csProjWithApphance, "Apphance.WindowsPhone.dll")
 	}
 	*/
- 
+
 
 	@Test
 	public void convertApphanceLogsToSystemDebugTest() {
@@ -102,7 +103,7 @@ class ApphanceSourceCodeHelperTest {
     {
         public App()
         {
-            // Global handler for uncaught exceptions. 
+            // Global handler for uncaught exceptions.
             UnhandledException += Application_UnhandledException;UnhandledException += ApphanceLibrary.Apphance.UnhandledExceptionHandler;
             }
 
@@ -117,13 +118,13 @@ class ApphanceSourceCodeHelperTest {
         }
     }
 	'''
-	
+
 	def appCsWithoutApphance='''
     public partial class App : Application
     {
         public App()
         {
-            // Global handler for uncaught exceptions. 
+            // Global handler for uncaught exceptions.
             UnhandledException += Application_UnhandledException;
             }
 
@@ -138,9 +139,9 @@ class ApphanceSourceCodeHelperTest {
         }
     }
 	'''
-	
+
 	def csProjWithApphance='''
-<Project>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Interop" />
@@ -153,9 +154,9 @@ class ApphanceSourceCodeHelperTest {
   </ItemGroup>
 </Project>
 	'''
-	
+
 	def csProjWithoutApphance='''
-<Project>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Interop" />
@@ -167,9 +168,9 @@ class ApphanceSourceCodeHelperTest {
   </ItemGroup>
 </Project>
 	'''
-	
-	
-	
+
+
+
 	def sourceCodeWithApphance='''
 namespace AmebaTest.Model
 {
@@ -182,7 +183,7 @@ namespace AmebaTest.Model
     }
 }
 '''
-		
+
 	def sourceCodeWithoutApphance='''
 namespace AmebaTest.Model
 {
@@ -195,6 +196,6 @@ namespace AmebaTest.Model
     }
 }
 '''
-		
+
 
 }

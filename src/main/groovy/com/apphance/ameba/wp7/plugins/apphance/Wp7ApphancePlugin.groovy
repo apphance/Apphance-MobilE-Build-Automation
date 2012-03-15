@@ -89,25 +89,25 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 
 
 	void addApphaceToCsProj(File projectDir) {
-		logger.lifecycle("addApphaceToCsProj")
-		def csProj = new File(wp7ProjectHelper.getCsprojName(projectDir))
+		logger.lifecycle("addApphaceToCsProj ${projectDir}")
+		def csProj = new File(projectDir, wp7ProjectHelper.getCsprojName(projectDir))
 		String csProjContent = csProj.text
 		csProj.delete()
 		csProj << sourceHelper.addApphanceToCsProj(csProjContent, APPHANCE_DLL_NAME)
 	}
 
 	void removeApphaceFromCsProject(File projectDir) {
-		logger.lifecycle("removeApphaceFromCsProject")
-		def csProj = new File(wp7ProjectHelper.getCsprojName(projectDir))
+		logger.lifecycle("removeApphaceFromCsProject ${projectDir}")
+		def csProj = new File(projectDir, wp7ProjectHelper.getCsprojName(projectDir))
 		String csProjContent = csProj.text
 		csProj.delete()
 		csProj << sourceHelper.removeApphanceFromCsProj(csProjContent, APPHANCE_DLL_NAME)
 	}
 
 	void addApphanceToAppCs(File projectDir, String appId) {
-		logger.lifecycle("addApphanceToAppCs")
+		logger.lifecycle("addApphanceToAppCs ${projectDir}")
 		use (PropertyCategory) {
-			wp7ProjectHelper.readVersionFromWMAppManifest("Properties/WMAppManifest.xml", conf)
+			wp7ProjectHelper.readVersionFromWMAppManifest(new File(projectDir, "Properties/WMAppManifest.xml"), conf)
 			String version = conf.versionString
 			def appCs = new File(projectDir, "App.xaml.cs")
 			String appCsContent = appCs.text
@@ -118,29 +118,29 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 
 
 	void removeApphanceFromAppCs(File projectDir) {
-		logger.lifecycle("removeApphanceFromAppCs")
+		logger.lifecycle("removeApphanceFromAppCs ${projectDir}")
 		projectDir.eachFileMatch(~/.*cs/) { sourceFile ->
 			String sourceFileContent = sourceFile.text
 			sourceFile.delete()
-			sourceFileContent << sourceHelper.removeApphanceFromAppCs(projectDir)
+			sourceFile << sourceHelper.removeApphanceFromAppCs(sourceFileContent)
 		}
 	}
 
 	void convertsSystemDebugToApphanceLogs(File projectDir) {
-		logger.lifecycle("convertsSystemDebugToApphanceLogs")
+		logger.lifecycle("convertsSystemDebugToApphanceLogs ${projectDir}")
 		projectDir.eachFileMatch(~/.*cs/) { sourceFile ->
 			String sourceFileContent = sourceFile.text
 			sourceFile.delete()
-			sourceFileContent << sourceHelper.convertSystemDebugToApphanceLogs(projectDir)
+			sourceFile << sourceHelper.convertSystemDebugToApphanceLogs(sourceFileContent)
 		}
 	}
 
 	void convertsApphanceLogsToSystemDebug(File projectDir) {
-		logger.lifecycle("convertsApphanceLogsToSystemDebug")
+		logger.lifecycle("convertsApphanceLogsToSystemDebug ${projectDir}")
 		projectDir.eachFileMatch(~/.*cs/) { sourceFile ->
 			String sourceFileContent = sourceFile.text
 			sourceFile.delete()
-			sourceFileContent << sourceHelper.convertApphanceLogsToSystemDebug(projectDir)
+			sourceFile << sourceHelper.convertApphanceLogsToSystemDebug(sourceFileContent)
 		}
 	}
 

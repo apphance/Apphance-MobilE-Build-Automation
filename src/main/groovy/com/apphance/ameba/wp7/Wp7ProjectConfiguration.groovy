@@ -11,7 +11,7 @@ class Wp7ProjectConfiguration {
 	List<String> configurations = []
 
 	public File getVariantDirectory(Project project, String target, String configuration) {
-		return new File(project.rootDir.parent, project.name+"-"+target+"-"+configuration)
+		return new File(project.rootDir.parent, project.name+target+configuration)
 	}
 
 	@Override

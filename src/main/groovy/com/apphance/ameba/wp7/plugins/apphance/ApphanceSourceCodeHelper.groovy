@@ -30,7 +30,7 @@ class ApphanceSourceCodeHelper {
 	public String addApphanceToAppCs(String appCsContent, String appId, String version) {
 
 		def apphanceExceptionLine = "UnhandledException += ApphanceLibrary.Apphance.UnhandledExceptionHandler;";
-		def apphanceInitLine = "ApphanceLibrary.Apphance.InitSession("+appId+", \""+version+"\", 1, ApphanceLibrary.Apphance.Mode.QA_MODE);";
+		def apphanceInitLine = "ApphanceLibrary.Apphance.InitSession(\""+appId+"\", \""+version+"\", 1, ApphanceLibrary.Apphance.Mode.QA_MODE);";
 
 
 		def exceptionPattern = /(UnhandledException\s\+\=\s+Application_UnhandledException;)/
@@ -53,20 +53,28 @@ class ApphanceSourceCodeHelper {
 
 	public String addApphanceToCsProj(String csProjContent, String apphanceDllPath) {
 
-		def xmlSlurper = new XmlSlurper()
-		def xml = xmlSlurper.parseText(csProjContent)
-		xml.Project.ItemGroup[0].appendNode {
+		def xmlSlurper = new XmlSlurper(false, false)
+		def Project = xmlSlurper.parseText(csProjContent)
+		Project.ItemGroup[0].appendNode {
 			Reference(Include : "Apphance.WindowsPhone") { HintPath(apphanceDllPath) }
 		}
 
-		def outputBuilder = new StreamingMarkupBuilder()
-		String result = outputBuilder.bind{ mkp.yield xml }
+
+		def outputBuilder = new groovy.xml.StreamingMarkupBuilder()
+		outputBuilder.encoding = 'UTF-8'
+		outputBuilder.useDoubleQuotes = true
+
+		String result = outputBuilder.bind{
+			mkp.xmlDeclaration()
+			mkp.yield Project
+		}
+
 		return result
 	}
 
 	public String removeApphanceFromCsProj(String csProjPath, String apphanceDllPath) {
 
-		def xmlSlurper = new XmlSlurper()
+		def xmlSlurper = new XmlSlurper(false, false)
 		def xml = xmlSlurper.parseText(csProj)
 
 

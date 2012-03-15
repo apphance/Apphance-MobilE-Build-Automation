@@ -65,7 +65,6 @@ class Wp7ProjectHelper {
 	void readVersionFromWMAppManifest(File WMAppManifest, ProjectConfiguration conf) {
 		def xmlSlurper = new XmlSlurper()
 		def Deployment = xmlSlurper.parse(WMAppManifest)
-
 		conf.versionString = Deployment.App[0].@Version.text()
 	}
 }
