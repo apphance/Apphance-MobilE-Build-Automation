@@ -62,11 +62,10 @@ class Wp7ProjectHelper {
 		wp7conf.configurations = ['Debug', 'Release']
 	}
 
-	void readVersionFromWMAppManifest(String WMAppManifestPath, ProjectConfiguration conf) {
-		def WMAppManifest = new File("${WMAppManifestPath}")
-
+	void readVersionFromWMAppManifest(File WMAppManifest, ProjectConfiguration conf) {
 		def xmlSlurper = new XmlSlurper()
-		def xml = xmlSlurper.parse(WMAppManifest)
-		conf.versionString = xml.WMAppManifest.App("Version")
+		def Deployment = xmlSlurper.parse(WMAppManifest)
+
+		conf.versionString = Deployment.App[0].@Version.text()
 	}
 }

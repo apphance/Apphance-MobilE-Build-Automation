@@ -5,13 +5,14 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.android.plugins.apphance.ApphanceProperty
 import com.apphance.ameba.android.plugins.apphance.PrepareApphanceSetupOperation
 import com.apphance.ameba.android.plugins.apphance.ShowApphancePropertiesOperation
 import com.apphance.ameba.android.plugins.apphance.VerifyApphanceSetupOperation
+import com.apphance.ameba.wp7.Wp7ProjectConfiguration
 import com.apphance.ameba.wp7.Wp7ProjectHelper
 import com.apphance.ameba.wp7.plugins.buildplugin.Wp7ProjectProperty
 
@@ -22,28 +23,20 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 	static Logger logger = Logging.getLogger(Wp7ApphancePlugin.class)
 
 	ProjectConfiguration conf
+	Wp7ProjectConfiguration wp7Conf;
 	ProjectHelper projectHelper
-	Wp7ProjectHelper csprojHelper
+	Wp7ProjectHelper wp7ProjectHelper;
 	ApphanceSourceCodeHelper sourceHelper;
 
 	public void apply(Project project) {
 		use (PropertyCategory) {
 			this.projectHelper = new ProjectHelper()
 			this.conf = project.getProjectConfiguration()
-			this.csprojHelper = new Wp7ProjectHelper()
+			this.wp7Conf = new Wp7ProjectConfiguration()
+			this.wp7ProjectHelper = new Wp7ProjectHelper()
 			this.sourceHelper = new ApphanceSourceCodeHelper()
 
-			prepareExtractApphanceDll(project)
-			prepareRemoveApphanceDll(project)
-
-			prepareAddApphaceToCsProj(project)
-			prepareRemoveApphaceFromCsProject(project)
-
-			prepareAddApphanceToAppCs(project)
-			prepareRemoveApphanceFromAppCs(project)
-
-			prepareConvertsSystemDebugToApphanceLogs(project)
-			prepareConvertsApphanceLogsToSystemDebug(project)
+			preprocessBuildsWithApphance(project)
 
 			project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
 			project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
@@ -51,129 +44,104 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 		}
 	}
 
-	void prepareExtractApphanceDll(Project project) {
-		def task = project.task('extractApphanceDll')
-		task.description = "Extract 'Apphance.WindowsPhone.dll' to project's directory"
-		task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-		task << {
-			File projectDir = getProjectDir(project)
-			sourceHelper.extractApphanceDll(projectDir, APPHANCE_DLL_NAME)
-		}
-	}
 
-	void  prepareRemoveApphanceDll(Project project) {
-		def task = project.task('removeApphanceDll')
-		task.description = "Remove 'Apphance.WindowsPhone.dll' from project's directory"
-		task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-		task << {
-			File projectDir = getProjectDir(project)
-			File apphanceDll = new File(projectDir, APPHANCE_DLL_NAME)
-			apphanceDll.delete()
-		}
-	}
+	void preprocessBuildsWithApphance(Project project) {
+
+		File slnFile = wp7ProjectHelper.getSolutionFile(project.rootDir)
+		wp7ProjectHelper.readConfigurationsFromSln(slnFile, wp7Conf)
 
 
-	void prepareAddApphaceToCsProj(Project project) {
-		def task = project.task('addApphanceToCsProj')
-		task.description = "Add Apphance entries to *.csproj file"
-		task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-		task << {
+		wp7Conf.configurations.each { configuration ->
+			wp7Conf.targets.each { target ->
 
-			File projectDir = getProjectDir(project)
-			def csProj = new File(csprojHelper.getCsprojName(projectDir))
-			String csProjContent = csProj.text
-			csProj.delete()
-			csProj << sourceHelper.addApphanceToCsProj(csProjContent, APPHANCE_DLL_NAME)
-		}
-	}
+				project."build${target}${configuration}".doFirst {
+					//if ("Debug".equals(configuration))
+					//{
+					use (PropertyCategory) {
 
-	void prepareRemoveApphaceFromCsProject(Project project) {
-		def task = project.task('removeApphanceFromCsProj')
-		task.description = "Remove Apphance entries from *.csproj file"
-		task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-		task << {
+						File variantDir = wp7Conf.getVariantDirectory(project, target, configuration)
 
-			File projectDir = getProjectDir(project)
-			def csProj = new File(csprojHelper.getCsprojName(projectDir))
-			String csProjContent = csProj.text
-			csProj.delete()
-			csProj << sourceHelper.removeApphanceFromCsProj(csProjContent, APPHANCE_DLL_NAME)
-		}
-	}
+						String appId = project.readProperty(Wp7ProjectProperty.APPHANCE_APPLICATION_KEY)
+						extractApphanceDll(variantDir)
+						addApphaceToCsProj(variantDir)
+						String appKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
+						addApphanceToAppCs(variantDir, appKey)
+						convertsSystemDebugToApphanceLogs(variantDir)
+					//}
 
-	void prepareAddApphanceToAppCs(Project project) {
-		use (PropertyCategory) {
-
-			def task = project.task('addApphanceToAppCs')
-			task.description = "Add Apphance entries to App.xaml.cs"
-			task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-			task << {
-				String appId = project.readProperty(Wp7ProjectProperty.APPHANCE_APPLICATION_KEY)
-				csprojHelper.readVersionFromWMAppManifest("Properties/WMAppManifest.xml", conf)
-				String version = conf.versionString
-
-				File projectDir = getProjectDir(project)
-				def appCs = new File(projectDir, "App.xaml.cs")
-				String appCsContent = appCs.text
-				appCs.delete()
-				appCs << sourceHelper.addApphanceToAppCs(appCsContent, appId, version)
-			}
-		}
-	}
-
-
-	void prepareRemoveApphanceFromAppCs(Project project) {
-		use (PropertyCategory) {
-			def task = project.task('removeApphanceFromAppCs')
-			task.description = "Remove Apphance entries from App.xaml.cs"
-			task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-			task << {
-
-				File projectDir = getProjectDir(project)
-
-				projectDir.eachFileMatch(~/.*cs/) { sourceFile ->
-					String sourceFileContent = sourceFile.text
-					sourceFile.delete()
-					sourceFileContent << sourceHelper.removeApphanceFromAppCs(projectDir)
+					//replaceLogsWithApphance(project, iosConf.tmpDirName(target, configuration))
+					//pbxProjectHelper.addApphanceToProject(new File(project.rootDir, iosConf.tmpDirName(target, configuration)), target, configuration, project[ApphanceProperty.APPLICATION_KEY.propertyName])
+					//copyApphanceFramework(project, iosConf.tmpDirName(target, configuration))
+					}
 				}
 			}
 		}
 	}
 
-	void prepareConvertsSystemDebugToApphanceLogs(Project project) {
-		def task = project.task('convertLogsToApphance')
-		task.description = "Converts all system.debug logs to Apphance logs"
-		task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-		task << {
-			File projectDir = getProjectDir(project)
-
-			projectDir.eachFileMatch(~/.*cs/) { sourceFile ->
-				String sourceFileContent = sourceFile.text
-				sourceFile.delete()
-				sourceFileContent << sourceHelper.convertSystemDebugToApphanceLogs(projectDir)
-			}
-		}
+	void extractApphanceDll(File projectDir) {
+		sourceHelper.extractApphanceDll(projectDir, APPHANCE_DLL_NAME)
 	}
 
-	void prepareConvertsApphanceLogsToSystemDebug(Project project) {
-		def task = project.task('convertLogsToSystemDebug')
-		task.description = "Converts all Apphance logs to system.debug logs"
-		task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-		task << {
-			File projectDir = getProjectDir(project)
-
-			projectDir.eachFileMatch(~/.*cs/) { sourceFile ->
-				String sourceFileContent = sourceFile.text
-				sourceFile.delete()
-				sourceFileContent << sourceHelper.convertApphanceLogsToSystemDebug(projectDir)
-			}
-		}
+	void  removeApphanceDll(File projectDir) {
+		File apphanceDll = new File(projectDir, APPHANCE_DLL_NAME)
+		apphanceDll.delete()
 	}
 
 
+	void addApphaceToCsProj(File projectDir) {
+		logger.lifecycle("addApphaceToCsProj")
+		def csProj = new File(wp7ProjectHelper.getCsprojName(projectDir))
+		String csProjContent = csProj.text
+		csProj.delete()
+		csProj << sourceHelper.addApphanceToCsProj(csProjContent, APPHANCE_DLL_NAME)
+	}
 
-	File getProjectDir(Project project) {
-		return project.rootDir
+	void removeApphaceFromCsProject(File projectDir) {
+		logger.lifecycle("removeApphaceFromCsProject")
+		def csProj = new File(wp7ProjectHelper.getCsprojName(projectDir))
+		String csProjContent = csProj.text
+		csProj.delete()
+		csProj << sourceHelper.removeApphanceFromCsProj(csProjContent, APPHANCE_DLL_NAME)
+	}
+
+	void addApphanceToAppCs(File projectDir, String appId) {
+		logger.lifecycle("addApphanceToAppCs")
+		use (PropertyCategory) {
+			wp7ProjectHelper.readVersionFromWMAppManifest("Properties/WMAppManifest.xml", conf)
+			String version = conf.versionString
+			def appCs = new File(projectDir, "App.xaml.cs")
+			String appCsContent = appCs.text
+			appCs.delete()
+			appCs << sourceHelper.addApphanceToAppCs(appCsContent, appId, version)
+		}
+	}
+
+
+	void removeApphanceFromAppCs(File projectDir) {
+		logger.lifecycle("removeApphanceFromAppCs")
+		projectDir.eachFileMatch(~/.*cs/) { sourceFile ->
+			String sourceFileContent = sourceFile.text
+			sourceFile.delete()
+			sourceFileContent << sourceHelper.removeApphanceFromAppCs(projectDir)
+		}
+	}
+
+	void convertsSystemDebugToApphanceLogs(File projectDir) {
+		logger.lifecycle("convertsSystemDebugToApphanceLogs")
+		projectDir.eachFileMatch(~/.*cs/) { sourceFile ->
+			String sourceFileContent = sourceFile.text
+			sourceFile.delete()
+			sourceFileContent << sourceHelper.convertSystemDebugToApphanceLogs(projectDir)
+		}
+	}
+
+	void convertsApphanceLogsToSystemDebug(File projectDir) {
+		logger.lifecycle("convertsApphanceLogsToSystemDebug")
+		projectDir.eachFileMatch(~/.*cs/) { sourceFile ->
+			String sourceFileContent = sourceFile.text
+			sourceFile.delete()
+			sourceFileContent << sourceHelper.convertApphanceLogsToSystemDebug(projectDir)
+		}
 	}
 
 	static public final String DESCRIPTION =

@@ -75,7 +75,6 @@ class Wp7Plugin implements Plugin<Project> {
 		targets.each { target ->
 			configurations.each { configuration ->
 				def id = "${target}${configuration}".toString()
-
 				def noSpaceId = id.replaceAll(' ','_')
 				def singleTask = project.task("build${noSpaceId}")
 				singleTask.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
