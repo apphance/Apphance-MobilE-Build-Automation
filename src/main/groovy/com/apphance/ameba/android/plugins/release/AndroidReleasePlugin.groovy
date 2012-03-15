@@ -70,7 +70,7 @@ class AndroidReleasePlugin implements Plugin<Project>{
         task.description = "Builds documentation .zip file."
         task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
         task << {
-            File destZip = conf.documentationZip.location
+            File destZip = releaseConf.documentationZip.location
             destZip.mkdirs()
             destZip.delete()
             File javadocDir = project.file("build/docs/javadoc")
@@ -194,7 +194,7 @@ class AndroidReleasePlugin implements Plugin<Project>{
                         ]
         def result = engine.createTemplate(fileIndexTemplate).make(binding)
         androidReleaseConf.fileIndexFile.location.write(result.toString(), "utf-8")
-        logger.lifecycle("File index created: ${androidConf.fileIndexFile}")
+        logger.lifecycle("File index created: ${androidReleaseConf.fileIndexFile}")
     }
 
     private void preparePlainFileIndexFile(Project project, Collection<String> variants) {
