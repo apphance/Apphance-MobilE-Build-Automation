@@ -59,6 +59,8 @@ class Wp7TestPlugin implements Plugin<Project> {
 				"/target:test",
 				"/p:TestResultsFile=\""+project.name+".trx\""
 			])
+
+			trx2xml(project)
 		}
 	}
 
@@ -67,15 +69,20 @@ class Wp7TestPlugin implements Plugin<Project> {
 		task.description = "Transforms mstest *.trx output files to junit/nuint xml"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
 		task << {
-
-			// TODO out
-			String outputPath = "Bin/Debug/";
-
-			File trxInput = new File(projectTestDirectory, outputPath+project.name+".trx")
-			File xmlOutput  = new File(projectTestDirectory,outputPath+project.name+".xml")
-			TrxToXmlTransformer transformer = new TrxToXmlTransformer()
-			transformer.transform(trxInput, xmlOutput)
+			trx2xml(project)
 		}
+	}
+
+	private void trx2xml(Project project) {
+		logger.lifecycle("convert trx2xml")
+
+		// TODO out
+		String outputPath = "Bin/Debug/";
+
+		File trxInput = new File(projectTestDirectory, outputPath+project.name+".trx")
+		File xmlOutput  = new File(projectTestDirectory,outputPath+project.name+".xml")
+		TrxToXmlTransformer transformer = new TrxToXmlTransformer()
+		transformer.transform(trxInput, xmlOutput)
 	}
 
 	static public final String DESCRIPTION =

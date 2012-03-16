@@ -3,17 +3,19 @@ package com.apphance.ameba.wp7.plugins.test
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.stream.StreamSource
+import org.gradle.api.logging.Logging
+import org.gradle.api.logging.Logger
 
 /**
  *	Transforms mstest *.trx output files to junit/nuint xml
  */
 class TrxToXmlTransformer {
 
-	private File xslt
+	static Logger logger = Logging.getLogger(TrxToXmlTransformer.class)
+
+	//private File xslt
 
 	public TrxToXmlTransformer() {
-		URL pmdXml = Wp7TestPlugin.class.classLoader.getResource('com/apphance/ameba/wp7/unit/MSBuild-to-NUnit.xslt');
-		xslt = new File(pmdXml.file);
 	}
 
 	public void transform(Reader input, Writer output) {
@@ -31,6 +33,7 @@ class TrxToXmlTransformer {
 	}
 
 	void transformInternal(StreamSource streamSource, StreamResult streamResult) {
+		InputStream xslt = Wp7TestPlugin.class.classLoader.getResourceAsStream('com/apphance/ameba/wp7/unit/MSBuild-to-NUnit.xslt')
 		def factory = TransformerFactory.newInstance()
 		def transformer = factory.newTransformer(new StreamSource(xslt))
 		transformer.transform(streamSource, streamResult)
