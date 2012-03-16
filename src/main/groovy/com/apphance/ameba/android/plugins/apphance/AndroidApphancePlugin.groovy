@@ -20,12 +20,31 @@ import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
 import com.apphance.ameba.android.AndroidSingleVariantBuilder;
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper;
 
-import groovyx.net.http.*
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache
+import org.apache.http.client.RedirectStrategy;
+import org.apache.http.client.ResponseHandler
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.auth.BasicScheme
+import org.apache.http.impl.client.BasicAuthCache
+import org.apache.http.impl.client.BasicResponseHandler
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultRedirectStrategy
+import org.apache.http.protocol.BasicHttpContext
+import org.apache.http.util.EntityUtils;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.entity.StringEntity
 
 // Uncomment this annotation for eclipse building, leave commented for gradle build
 // Caused by: http://issues.gradle.org/browse/GRADLE-1162
-//@Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.5.2')
+//@Grab(group='org.apache.httpcomponents', module='httpclient', version='4.1.3')
 class AndroidApphancePlugin implements Plugin<Project>{
 
     static Logger logger = Logging.getLogger(AndroidApphancePlugin.class)
@@ -386,31 +405,30 @@ class AndroidApphancePlugin implements Plugin<Project>{
 				AndroidSingleVariantBuilder androidBuilder = new AndroidSingleVariantBuilder(project, androidConf)
 				AndroidArtifactBuilderInfo bi = androidBuilder.buildApkArtifactBuilderInfo(project, variantName, "Debug")
 				AmebaArtifact apkArtifact = androidBuilder.prepareApkArtifact(bi)
-				HTTPBuilder builder = new HTTPBuilder('https://apphance-app.appspot.com/api/application.update_version')
-				String username = project["apphanceUserName"]
-				String pass = project["apphancePassword"]
-				String hashPass = "${username}" + "${pass}"
-				hashPass = hashPass.bytes.encodeBase64()
-				builder.auth.basic username, pass
-				def jsonbuilder = new JsonBuilder()
-				def root = jsonbuilder.applications {
+
+				def host = "apphance-app.appspot.com"
+				HttpHost targetHost = new HttpHost(host, 443, "https");
+				DefaultHttpClient httpclient = new DefaultHttpClient()
+				try {
+					String username = project["apphanceUserName"]
+					String pass = project["apphancePassword"]
+					httpclient.getCredentialsProvider().setCredentials(
+						new AuthScope(targetHost.getHostName(), targetHost.getPort()),
+						new UsernamePasswordCredentials("${username}", "${pass}"))
+					// Create AuthCache instance
+					AuthCache authCache = new BasicAuthCache();
+					// Generate BASIC scheme object and add it to the local
+					// auth cache
+					BasicScheme basicAuth = new BasicScheme();
+					authCache.put(targetHost, basicAuth);
+
+					// Add AuthCache to the execution context
+					BasicHttpContext localcontext = new BasicHttpContext();
+					localcontext.setAttribute(ClientContext.AUTH_CACHE, authCache);
+					HttpPost post = new HttpPost('/api/application.update_version')
+					String apphanceKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
+					def jsonBuilder = new JsonBuilder(
 						[
-							{
-							name: "TestApp"
-							api_key: "${apphanceKey}"
-							version: {
-								name: "1"
-								number: 1
-							}
-							current:false
-							update_resources: ["apk"]
-							}
-						]
-				}
-				String apphanceKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
-					builder.request(Method.POST, ContentType.JSON) { req ->
-						headers = ["Http-Authorization" : "basic " + hashPass]
-						body = [
 							api_key: apphanceKey,
 							version: [
 								name: "1",
@@ -418,19 +436,29 @@ class AndroidApphancePlugin implements Plugin<Project>{
 							],
 							current:false,
 							update_resources: ["apk"]
-							]
-
-//						body = root
-						logger.lifecycle("Rquest body " + req.getEntity().getContent().getText())
-						response.success = { resp, json ->
-							logger.lifecycle("Response for uploading .apk finished with status" + resp.status)
-							logger.lifecycle(json)
-						}
-						response.failure = { resp ->
-							logger.lifecycle("Request for uploading failed " + resp.getStatusLine())
-							throw new GradleException("Request for uploading failed " + resp.getStatusLine())
-						}
+						]
+					)
+					logger.lifecycle("Sending request " + jsonBuilder.toString())
+					StringEntity se = new StringEntity(jsonBuilder.toString());
+					post.setEntity(se);
+					post.setHeader("Accept", "application/json");
+					post.setHeader("Content-type", "application/json");
+					HttpResponse response = httpclient.execute(targetHost, post, localcontext)
+					logger.lifecycle("Response status " + response.getStatusLine())
+					if (response.getEntity() != null) {
+						JsonSlurper slurper = new JsonSlurper()
+						def resp = slurper.parseText(response.getEntity().getContent().getText())
+						logger.lifecycle("Response " + resp)
+					} else {
+						logger.lifecycle("Query failed")
 					}
+
+				} finally {
+					// When HttpClient instance is no longer needed,
+					// shut down the connection manager to ensure
+					// immediate deallocation of all system resources
+					httpclient.getConnectionManager().shutdown();
+				}
 			}
 
 			uploadTask.dependsOn(buildTask)
