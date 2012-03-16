@@ -44,7 +44,7 @@ abstract class AbstractPrepareSetupOperation {
         }
     }
 
-    List getFiles(Closure filter) {
+    List getFilesOrDirectories(FileType type, Closure filter) {
         List paths = [
             project.file('bin').absolutePath,
             project.file('build').absolutePath,
@@ -52,7 +52,7 @@ abstract class AbstractPrepareSetupOperation {
             project.file('tmp').absolutePath,
         ]
         def plistFiles = []
-        project.rootDir.traverse([type: FileType.FILES, maxDepth : 7]) {
+        project.rootDir.traverse([type: type, maxDepth : 7]) {
             def thePath = it.absolutePath
             if (filter(it)) {
                 if (!paths.any {path -> thePath.startsWith(path)}) {
@@ -61,5 +61,13 @@ abstract class AbstractPrepareSetupOperation {
             }
         }
         return plistFiles
+    }
+
+    List getFiles(Closure filter) {
+        return getFilesOrDirectories(FileType.FILES, filter)
+    }
+
+    List getDirectories(Closure filter) {
+        return getFilesOrDirectories(FileType.DIRECTORIES, filter)
     }
 }

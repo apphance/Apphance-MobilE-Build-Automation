@@ -18,7 +18,10 @@ class MPParser {
 
     static String readBundleIdFromProvisionFile(URL mobileprovisionUrl) {
         String xml = extractXML(mobileprovisionUrl)
-        def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        def builderFactory = DocumentBuilderFactory.newInstance()
+        builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        builderFactory.setFeature("http://xml.org/sax/features/validation", false)
+        def builder     = builderFactory.newDocumentBuilder()
         InputStream is = new ByteArrayInputStream(xml.getBytes("UTF-8"))
         def root        = builder.parse(is).documentElement
         String bundleId;
@@ -43,7 +46,10 @@ class MPParser {
 
     static Collection<String> readUdids(URL mobileprovisionUrl) {
         String xml = extractXML(mobileprovisionUrl)
-        def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        def builderFactory = DocumentBuilderFactory.newInstance()
+        builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        builderFactory.setFeature("http://xml.org/sax/features/validation", false)
+        def builder     = builderFactory.newDocumentBuilder()
         InputStream is = new ByteArrayInputStream(xml.getBytes("UTF-8"))
         def root        = builder.parse(is).documentElement
         def provisionedDevicesList = new LinkedList<String> ()

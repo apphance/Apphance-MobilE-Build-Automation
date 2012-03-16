@@ -24,7 +24,10 @@ class MPParserTest {
     @Test
     public void testXMLExtraction() throws Exception {
         String xml = MPParser.extractXML(provisioningFile)
-        def root  = new DOMBuilder(DocumentBuilderFactory.newInstance().newDocumentBuilder()).parseText(xml)
+        def builderFactory = DocumentBuilderFactory.newInstance()
+        builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        builderFactory.setFeature("http://xml.org/sax/features/validation", false)
+        def root  = new DOMBuilder(builderFactory.newDocumentBuilder()).parseText(xml)
         assertNotNull(root)
     }
 

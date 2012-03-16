@@ -9,7 +9,10 @@ import com.sun.org.apache.xpath.internal.XPathAPI
 
 class AndroidBuildXmlHelper {
     org.w3c.dom.Element getParsedBuildXml(File projectDirectory) {
-        def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        def builderFactory = DocumentBuilderFactory.newInstance()
+        builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        builderFactory.setFeature("http://xml.org/sax/features/validation", false)
+        def builder     = builderFactory.newDocumentBuilder()
         def inputStream = new FileInputStream("${projectDirectory}/build.xml")
         return builder.parse(inputStream).documentElement
     }

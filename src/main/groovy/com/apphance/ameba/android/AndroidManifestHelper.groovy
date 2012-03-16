@@ -19,24 +19,27 @@ class AndroidManifestHelper {
     static Logger logger = Logging.getLogger(AndroidManifestHelper.class)
 
     org.w3c.dom.Element getParsedManifest(File projectDirectory) {
-        def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        def builderFactory = DocumentBuilderFactory.newInstance()
+        builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        builderFactory.setFeature("http://xml.org/sax/features/validation", false)
+        def builder = builderFactory.newDocumentBuilder()
         def inputStream = new FileInputStream("${projectDirectory}/AndroidManifest.xml")
         return builder.parse(inputStream).documentElement
     }
 
 
-	String readPackage(File projectDirectory) {
-		def root = getParsedManifest(projectDirectory)
-		def appPackage = null
-		XPathAPI.selectNodeList(root,'/manifest').each{ apppackage ->
-			apppackage.attributes.nodes.each { attribute ->
-				if (attribute.name == 'package') {
-					appPackage = attribute.value
-				}
-			}
-		}
-		return appPackage
-	}
+    String readPackage(File projectDirectory) {
+        def root = getParsedManifest(projectDirectory)
+        def appPackage = null
+        XPathAPI.selectNodeList(root,'/manifest').each{ apppackage ->
+            apppackage.attributes.nodes.each { attribute ->
+                if (attribute.name == 'package') {
+                    appPackage = attribute.value
+                }
+            }
+        }
+        return appPackage
+    }
 
 
     String readMinSdkVersion(File projectDirectory) {
@@ -273,30 +276,30 @@ class AndroidManifestHelper {
         String androidName = "android:name"
 
         def mainActivity = manifest.application.activity.findAll {
-			def intentFilters = []
-			def mainIntentFound = false
-			def launcherIntentFound = false
-			// collect all filter nodes
-			it."${intentFilter}".each {
-				intentFilters << it
-			}
-			// iterate through each intent filter node and find proper action and category
-			intentFilters.each { intentFilterNode ->
-				intentFilterNode.action.each {
-					if (it.@"${androidName}".text().equals('android.intent.action.MAIN')) {
-						mainIntentFound = true
-						return
-					}
-				}
-				intentFilterNode.category.each {
-					if (it.@"${androidName}".text().equals('android.intent.category.LAUNCHER')) {
-						launcherIntentFound = true
-						return
-					}
-				}
-			}
-			// return value
-			mainIntentFound && launcherIntentFound
+            def intentFilters = []
+            def mainIntentFound = false
+            def launcherIntentFound = false
+            // collect all filter nodes
+            it."${intentFilter}".each {
+                intentFilters << it
+            }
+            // iterate through each intent filter node and find proper action and category
+            intentFilters.each { intentFilterNode ->
+                intentFilterNode.action.each {
+                    if (it.@"${androidName}".text().equals('android.intent.action.MAIN')) {
+                        mainIntentFound = true
+                        return
+                    }
+                }
+                intentFilterNode.category.each {
+                    if (it.@"${androidName}".text().equals('android.intent.category.LAUNCHER')) {
+                        launcherIntentFound = true
+                        return
+                    }
+                }
+            }
+            // return value
+            mainIntentFound && launcherIntentFound
         }
         if (mainActivity.size() > 0) {
             if (!mainActivity[0].@"${androidName}".text().startsWith(".")) {
@@ -307,7 +310,7 @@ class AndroidManifestHelper {
             }
             className = className + mainActivity[0].@"${androidName}".text()
         } else {
-			throw new GradleException("Main activity file could not be found")
+            throw new GradleException("Main activity file could not be found")
         }
 
         return className
@@ -328,40 +331,40 @@ class AndroidManifestHelper {
             className = ""
         }
         className = className + applicationName
-		logger.lifecycle("Searching for application class file " + className)
+        logger.lifecycle("Searching for application class file " + className)
         return className
     }
 
-	public boolean isApphanceActivityPresent(File projectDirectory) {
-		def activityFound = false
+    public boolean isApphanceActivityPresent(File projectDirectory) {
+        def activityFound = false
 
-		def file = new File("${projectDirectory}/AndroidManifest.xml")
-		def manifest = new XmlSlurper().parse(file)
+        def file = new File("${projectDirectory}/AndroidManifest.xml")
+        def manifest = new XmlSlurper().parse(file)
 
-		manifest.activity.each {
-			def activityName = it.@"android:name".text().toLowerCase()
-			if (activityName.equals("com.apphance.android.ui.loginactivity") || activityName.equals("com.apphance.android.ui.ProblemActivity")) {
-				activityFound = true
-			}
-		}
+        manifest.activity.each {
+            def activityName = it.@"android:name".text().toLowerCase()
+            if (activityName.equals("com.apphance.android.ui.loginactivity") || activityName.equals("com.apphance.android.ui.ProblemActivity")) {
+                activityFound = true
+            }
+        }
 
-		return activityFound
-	}
+        return activityFound
+    }
 
-	public boolean isApphanceInstrumentationPresent(File projectDirectory) {
-		def instrumentationFound = false
+    public boolean isApphanceInstrumentationPresent(File projectDirectory) {
+        def instrumentationFound = false
 
-		def file = new File("${projectDirectory}/AndroidManifest.xml")
-		def manifest = new XmlSlurper().parse(file)
+        def file = new File("${projectDirectory}/AndroidManifest.xml")
+        def manifest = new XmlSlurper().parse(file)
 
-		manifest.instrumentation.each {
-			if (it.@"android:name".text().toLowerCase().equals("com.apphance.android.apphanceinstrumentation")) {
-				instrumentationFound = true
-			}
-		}
+        manifest.instrumentation.each {
+            if (it.@"android:name".text().toLowerCase().equals("com.apphance.android.apphanceinstrumentation")) {
+                instrumentationFound = true
+            }
+        }
 
-		return instrumentationFound
-	}
+        return instrumentationFound
+    }
 
     void restoreOriginalManifest(File projectDirectory) {
         def file = new File("${projectDirectory}/AndroidManifest.xml")

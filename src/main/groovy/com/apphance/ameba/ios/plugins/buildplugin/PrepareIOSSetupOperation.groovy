@@ -20,6 +20,10 @@ class PrepareIOSSetupOperation extends AbstractPrepareSetupOperation {
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
         def plistFiles = getFiles {it.name.endsWith(".plist")}
+        def xCodeProjFiles = getDirectories {it.name.endsWith(".xcodeproj")}
+        if (!xCodeProjFiles.empty && ! project.hasProperty(IOSProjectProperty.PROJECT_DIRECTORY.propertyName)) {
+            project[IOSProjectProperty.PROJECT_DIRECTORY.propertyName]  = xCodeProjFiles[0]
+        }
         use (PropertyCategory) {
             IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
             IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
@@ -28,6 +32,9 @@ class PrepareIOSSetupOperation extends AbstractPrepareSetupOperation {
                 switch (it) {
                     case IOSProjectProperty.PLIST_FILE:
                         project.getProjectPropertyFromUser(it, plistFiles, br)
+                        break
+                    case IOSProjectProperty.PROJECT_DIRECTORY:
+                        project.getProjectPropertyFromUser(it, xCodeProjFiles, br)
                         break
                     case IOSProjectProperty.IOS_FAMILIES:
                         project.getProjectPropertyFromUser(it, IOSPlugin.FAMILIES, br)

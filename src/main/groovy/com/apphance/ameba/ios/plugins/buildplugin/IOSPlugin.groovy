@@ -214,7 +214,10 @@ class IOSPlugin implements Plugin<Project> {
 
 
     private org.w3c.dom.Element getParsedPlist(File file) {
-        def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        def builderFactory = DocumentBuilderFactory.newInstance()
+        builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        builderFactory.setFeature("http://xml.org/sax/features/validation", false)
+        def builder = builderFactory.newDocumentBuilder()
         return new XMLBomAwareFileReader().readXMLFileIncludingBom(file)
     }
 
