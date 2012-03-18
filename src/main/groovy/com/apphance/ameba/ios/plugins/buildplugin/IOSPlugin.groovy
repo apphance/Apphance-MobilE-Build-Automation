@@ -73,6 +73,9 @@ class IOSPlugin implements Plugin<Project> {
         task << {
             use (PropertyCategory) {
                 this.pListFileName = project.readProperty(IOSProjectProperty.PLIST_FILE)
+                if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
+                    iosConf.xCodeProjectDirectory  = new File(project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
+                }
                 iosConf.mainTarget = project.readProperty(IOSProjectProperty.MAIN_TARGET)
                 iosConf.mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
                 iosConf.sdk = project.readProperty(IOSProjectProperty.IOS_SDK)
@@ -96,14 +99,16 @@ class IOSPlugin implements Plugin<Project> {
         task.description = 'Reads iOS xCode project parameters'
         task << {
             project.file("bin").mkdirs()
-            def trimmedListOutput = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)*.trim()
+            def trimmedListOutput = projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
+                "-list",
+            ]as String[],false, null, null, 1, true)*.trim()
             IOSProjectConfiguration iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
             project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  IOSXCodeOutputParser.readProjectName(trimmedListOutput)
             iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmedListOutput)
             iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedListOutput)
             iosConf.alltargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })
             iosConf.allconfigurations = IOSXCodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
-            def trimmedSdkOutput = projectHelper.executeCommand(project, ["xcodebuild", "-showsdks"]as String[],false, null, null, 1, true)*.trim()
+            def trimmedSdkOutput = projectHelper.executeCommand(project, (iosConf.getXCodeBuildExecutionPath() + ["-showsdks"]) as String[],false, null, null, 1, true)*.trim()
             iosConf.allIphoneSDKs = IOSXCodeOutputParser.readIphoneSdks(trimmedSdkOutput)
             iosConf.allIphoneSimulatorSDKs = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
             if (iosConf.targets == ['']) {
@@ -141,19 +146,19 @@ class IOSPlugin implements Plugin<Project> {
                 def root = getParsedPlist(project)
                 if (root != null) {
                     XPathAPI.selectNodeList(root,
-                            '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
-                                conf.versionString =  it.nextSibling.nextSibling.textContent
-                            }
+                                    '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
+                                        conf.versionString =  it.nextSibling.nextSibling.textContent
+                                    }
                     XPathAPI.selectNodeList(root,
-                            '/plist/dict/key[text()="CFBundleVersion"]').each{
-                                def versionCodeString = it.nextSibling.nextSibling.textContent
-                                try {
-                                    conf.versionCode = versionCodeString.toLong()
-                                } catch (NumberFormatException e) {
-                                    logger.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
-                                    conf.versionCode = 0
-                                }
-                            }
+                                    '/plist/dict/key[text()="CFBundleVersion"]').each{
+                                        def versionCodeString = it.nextSibling.nextSibling.textContent
+                                        try {
+                                            conf.versionCode = versionCodeString.toLong()
+                                        } catch (NumberFormatException e) {
+                                            logger.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
+                                            conf.versionCode = 0
+                                        }
+                                    }
                     if (!project.isPropertyOrEnvironmentVariableDefined('version.string')) {
                         logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
                         conf.versionString = conf.versionString + "-SNAPSHOT"
@@ -170,8 +175,8 @@ class IOSPlugin implements Plugin<Project> {
         def task = project.task('buildAll')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task.description = 'Builds all target/configuration combinations and produces all artifacts (zip, ipa, messages, etc)'
-        iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
-        def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
+        iosConf.excludedBuilds = PropertyCategory.readProperty(project,IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
+        def lines = projectHelper.executeCommand(project, (iosConf.getXCodeBuildExecutionPath() + ["-list"]) as String[],false, null, null, 1, true)
         def trimmed = lines*.trim()
         iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmed)
         iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmed)
@@ -366,13 +371,12 @@ class IOSPlugin implements Plugin<Project> {
         return result
     }
 
-static public final String DESCRIPTION =
-"""This is the main iOS build plugin.
+    static public final String DESCRIPTION =
+    """This is the main iOS build plugin.
 
 The plugin provides all the task needed to build iOS application.
 Besides tasks explained below, the plugin prepares build-*
 tasks which are dynamically created, based on targets and configurations available.
 There is one task available per each Target-Configuration combination - unless particular
 combination is excluded by the exclude property."""
-
 }

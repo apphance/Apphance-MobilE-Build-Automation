@@ -40,17 +40,14 @@ class TestFoneMonkeyTasks extends AbstractBaseIOSTaskTest {
             'showConventions',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
         assertEquals([
-            'PrepareBaseSetupOperation',
             'PrepareIOSSetupOperation',
             'PrepareFoneMonkeySetupOperation',
         ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName } )
         assertEquals([
-            'VerifyBaseSetupOperation',
             'VerifyIOSSetupOperation',
             'VerifyFoneMonkeySetupOperation',
         ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName } )
         assertEquals([
-            'ShowBaseSetupOperation',
             'ShowIOSSetupOperation',
             'ShowFoneMonkeySetupOperation',
         ], project.showSetup.showSetupOperations.collect { it.class.simpleName } )

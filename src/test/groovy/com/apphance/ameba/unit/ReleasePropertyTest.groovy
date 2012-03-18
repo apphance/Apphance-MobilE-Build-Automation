@@ -17,8 +17,7 @@ class ReleasePropertyTest {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE.propertyName] = "Icon.png"
-            project[ProjectReleaseProperty.RELEASE_PROJECT_URL.propertyName] = "http://example.com"
-            project[ProjectReleaseProperty.RELEASE_PROJECT_DIRECTORY.propertyName] = "subproject"
+            project[ProjectReleaseProperty.RELEASE_PROJECT_URL.propertyName] = "http://example.com/subproject"
             project[ProjectReleaseProperty.RELEASE_PROJECT_LANGUAGE.propertyName] = "pl"
             project[ProjectReleaseProperty.RELEASE_PROJECT_COUNTRY.propertyName] = "PL"
             project[ProjectReleaseProperty.RELEASE_MAIL_FROM.propertyName] = "test@apphance.com"
@@ -29,8 +28,7 @@ class ReleasePropertyTest {
 # Release properties
 ###########################################################
 release.project.icon.file=Icon.png
-release.project.url.base=http://example.com
-release.project.directory.name=subproject
+release.project.url=http://example.com/subproject
 release.project.language=pl
 release.project.country=PL
 release.mail.from=test@apphance.com
@@ -46,8 +44,7 @@ release.mail.flags=qrCode,imageMontage
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE.propertyName] = "Icon.png"
-            project[ProjectReleaseProperty.RELEASE_PROJECT_URL.propertyName] = "http://example.com"
-            project[ProjectReleaseProperty.RELEASE_PROJECT_DIRECTORY.propertyName] = "subproject"
+            project[ProjectReleaseProperty.RELEASE_PROJECT_URL.propertyName] = "http://example.com/subproject"
             project[ProjectReleaseProperty.RELEASE_PROJECT_LANGUAGE.propertyName] = "pl"
             project[ProjectReleaseProperty.RELEASE_PROJECT_COUNTRY.propertyName] = "PL"
             project[ProjectReleaseProperty.RELEASE_MAIL_FROM.propertyName] = "test@apphance.com"
@@ -59,10 +56,8 @@ release.mail.flags=qrCode,imageMontage
 ###########################################################
 # Path to project's icon file
 release.project.icon.file=Icon.png
-# Base project URL where the artifacts will be available when released (for example http://example.com/)
-release.project.url.base=http://example.com
-# Name of subdirectory (at base url) where the artifacts will be placed (for example "testproject" leads to http://example.com/testproject)
-release.project.directory.name=subproject
+# Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as subdirectory of ota dir when artifacts are created locally.
+release.project.url=http://example.com/subproject
 # Language of the project [optional] default: <en>
 release.project.language=pl
 # Project country [optional] default: <US>

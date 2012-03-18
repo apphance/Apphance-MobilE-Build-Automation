@@ -4,6 +4,6 @@ import com.apphance.ameba.AbstractShowSetupOperation
 
 class ShowApphancePropertiesOperation extends AbstractShowSetupOperation {
     public ShowApphancePropertiesOperation() {
-        super(ApphanceProperty.class)
+        super(AndroidApphanceProperty.class)
     }
 }

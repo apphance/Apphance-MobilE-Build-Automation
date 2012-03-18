@@ -52,6 +52,7 @@ ios.simulator.sdk=iphonesimulator
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
+            project[IOSProjectProperty.PROJECT_DIRECTORY.propertyName] = "Project.xcodeproj"
             project[IOSProjectProperty.PLIST_FILE.propertyName] = "test"
             project[IOSProjectProperty.EXCLUDED_BUILDS.propertyName] = ".*"
             project[IOSProjectProperty.IOS_FAMILIES.propertyName] = "iPhone,iPad"

@@ -34,15 +34,12 @@ class GitPluginTest extends BaseTaskTest {
             'showConventions',
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
         assertEquals([
-            'PrepareBaseSetupOperation',
             'PrepareGitSetupOperation',
         ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName } )
         assertEquals([
-            'VerifyBaseSetupOperation',
             'VerifyGitSetupOperation',
         ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName } )
         assertEquals([
-            'ShowBaseSetupOperation',
             'ShowGitSetupOperation',
         ], project.showSetup.showSetupOperations.collect { it.class.simpleName } )
     }

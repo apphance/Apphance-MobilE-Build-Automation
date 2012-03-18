@@ -59,31 +59,31 @@ class RunVerifyErrorsSetupTest {
 
     @Test
     void testProjectIconFile() {
-        runErrorScenario(/^(project\.icon\.file.*)=(.*)$/,'$1=/notexistingfile.txt', 'The icon file')
+        runErrorScenario(/^(release\.project\.icon\.file.*)=(.*)$/,'$1=/notexistingfile.txt', 'The icon file')
     }
 
     @Test
     void testUrl() {
-        runErrorScenario(/^(project\.url\.base.*)=(.*)$/,'$1=notaurl', 'protocol')
+        runErrorScenario(/^(release\.project\.url.*)=(.*)$/,'$1=notaurl', 'protocol')
     }
 
     @Test
     void testLongLanguage() {
-        runErrorScenario(/^(project\.language.*)=(.*)$/,'$1=longlanguage', 'language')
+        runErrorScenario(/^(release\.project\.language.*)=(.*)$/,'$1=longlanguage', 'language')
     }
     @Test
     void testNotLowercaseLanguage() {
-        runErrorScenario(/^(project\.language.*)=(.*)$/,'$1=La', 'language')
+        runErrorScenario(/^(release\.project\.language.*)=(.*)$/,'$1=La', 'language')
     }
 
     @Test
     void testNoUppercaseCountry() {
-        runErrorScenario(/^(project\.country.*)=(.*)$/,'$1=No', 'country')
+        runErrorScenario(/^(release\.project\.country.*)=(.*)$/,'$1=No', 'country')
     }
 
     @Test
     void testLongCountry() {
-        runErrorScenario(/^(project\.country.*)=(.*)$/,'$1=longcountry', 'country')
+        runErrorScenario(/^(release\.project\.country.*)=(.*)$/,'$1=longcountry', 'country')
     }
 
     @Test

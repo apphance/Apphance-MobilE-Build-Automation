@@ -8,16 +8,16 @@ import com.apphance.ameba.PropertyCategory
 class VerifyApphanceSetupOperation extends AbstractVerifySetupOperation {
 
     VerifyApphanceSetupOperation() {
-        super(ApphanceProperty.class)
+        super(AndroidApphanceProperty.class)
     }
 
     void verifySetup() {
         use (PropertyCategory) {
             def projectProperties = readProperties()
-            ApphanceProperty.each {
+            AndroidApphanceProperty.each {
                 checkProperty(projectProperties, it)
             }
-            checkIsOnList(ApphanceProperty.APPHANCE_MODE, ['QA', 'SILENT'])
+            checkIsOnList(AndroidApphanceProperty.APPHANCE_MODE, ['QA', 'Silent'])
             allPropertiesOK()
         }
     }

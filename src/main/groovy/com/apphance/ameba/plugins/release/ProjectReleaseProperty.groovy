@@ -3,8 +3,7 @@ package com.apphance.ameba.plugins.release
 
 enum ProjectReleaseProperty {
     RELEASE_PROJECT_ICON_FILE('release.project.icon.file', 'Path to project\'s icon file'),
-    RELEASE_PROJECT_URL('release.project.url.base', 'Base project URL where the artifacts will be available when released (for example http://example.com/)'),
-    RELEASE_PROJECT_DIRECTORY('release.project.directory.name', 'Name of subdirectory (at base url) where the artifacts will be placed (for example "testproject" leads to http://example.com/testproject)'),
+    RELEASE_PROJECT_URL('release.project.url', 'Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as subdirectory of ota dir when artifacts are created locally.'),
     RELEASE_PROJECT_LANGUAGE('release.project.language', 'Language of the project','en'),
     RELEASE_PROJECT_COUNTRY('release.project.country', 'Project country','US'),
     RELEASE_MAIL_FROM('release.mail.from', 'Sender email address'),

@@ -12,8 +12,8 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidManifestHelper
-import com.apphance.ameba.android.AndroidProjectConfiguration;
-import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
+import com.apphance.ameba.android.AndroidProjectConfiguration
+import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 
 class AndroidApphancePlugin implements Plugin<Project>{
@@ -101,7 +101,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     private void replaceViewsWithApphance(Project project, String variant) {
 
-        if (project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
+        if (project[AndroidApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
             logger.lifecycle("Replacing android views with apphance loggable versions for ${variant}")
             replaceViewWithApphance(project, variant, "Button")
             replaceViewWithApphance(project, variant, "CheckBox")
@@ -286,17 +286,17 @@ class AndroidApphancePlugin implements Plugin<Project>{
         boolean addOnCreateInApplication  = lineToModify.empty
         File newMainClass = new File("newMainClassFile.java")
         def mode
-        if (project[ApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
+        if (project[AndroidApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
             mode = "Apphance.Mode.QA"
         } else {
-            mode = "Apphance.Mode.SILENT"
+            mode = "Apphance.Mode.Silent"
         }
-        String appKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
+        String appKey = project[AndroidApphanceProperty.APPLICATION_KEY.propertyName]
         String startSession = "Apphance.startNewSession(this, \"${appKey}\", ${mode});"
         String onCreate = " public void onCreate() { super.onCreate(); Apphance.startNewSession(this, \"${appKey}\", ${mode}); } "
 
 
-        if (project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
+        if (project[AndroidApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
             startSession = startSession + "com.apphance.android.eventlog.EventLog.setInvertedIdMap(this);";
         }
 
@@ -351,12 +351,12 @@ class AndroidApphancePlugin implements Plugin<Project>{
         if (!found) {
             new File(basedir, './libs/').eachFileMatch(".*apphance.*\\.jar") { found = true }
         }
-		if (!found) {
-			found = manifestHelper.isApphanceActivityPresent(basedir)
-		}
-		if (!found) {
-			found = manifestHelper.isApphanceInstrumentationPresent(basedir)
-		}
+        if (!found) {
+            found = manifestHelper.isApphanceActivityPresent(basedir)
+        }
+        if (!found) {
+            found = manifestHelper.isApphanceInstrumentationPresent(basedir)
+        }
         return found
     }
 

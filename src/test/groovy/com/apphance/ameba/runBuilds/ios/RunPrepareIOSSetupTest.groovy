@@ -73,6 +73,7 @@ hg.commit.user=
 ###########################################################
 # iOS properties
 ###########################################################
+ios.project.directory=GradleXCode.xcodeproj
 ios.plist.file=GradleXCode/GradleXCode-Info.plist
 ios.excluded.builds=
 ios.families=iPhone,iPad
@@ -85,8 +86,7 @@ ios.simulator.sdk=iphonesimulator
 # Release properties
 ###########################################################
 release.project.icon.file=icon.png
-release.project.url.base=
-release.project.directory.name=
+release.project.url=
 release.project.language=en
 release.project.country=US
 release.mail.from=

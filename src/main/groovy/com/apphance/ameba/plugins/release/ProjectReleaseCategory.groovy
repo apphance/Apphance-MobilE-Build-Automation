@@ -41,9 +41,13 @@ class ProjectReleaseCategory {
         use (PropertyCategory) {
             ProjectReleaseConfiguration releaseConf = getProjectReleaseConfiguration(project)
             releaseConf.projectConfiguration = project.getProjectConfiguration()
-            releaseConf.projectDirectoryName = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_DIRECTORY)
-            def url = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_URL)
-            releaseConf.baseUrl = url == null ? null : new URL(url)
+            String urlString = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_URL)
+            if (urlString != null) {
+                def baseUrl, directory
+                (baseUrl, directory) = splitUrl(urlString)
+                releaseConf.baseUrl = baseUrl
+                releaseConf.projectDirectoryName = directory
+            }
             def iconFile = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE)
             releaseConf.iconFile = iconFile == null ? null : project.file(iconFile)
             releaseConf.otaDirectory = project.file('ota')
@@ -71,5 +75,14 @@ class ProjectReleaseCategory {
         ProjectReleaseConfiguration releaseConf = getProjectReleaseConfiguration(project)
         String subject = resourceBundle.getString('Subject')
         releaseConf.releaseMailSubject = Eval.me("conf",conf,/"$subject"/)
+    }
+
+    public static splitUrl(String urlString) {
+        def url = new URL(urlString)
+        def path = url.path
+        def splitPath = path.split('/')
+        def lastElement = splitPath[-1]
+        def baseUrl = new URL(url.protocol,url.host, url.port,(splitPath[0 .. -2]).join('/'))
+        return [baseUrl, lastElement]
     }
 }

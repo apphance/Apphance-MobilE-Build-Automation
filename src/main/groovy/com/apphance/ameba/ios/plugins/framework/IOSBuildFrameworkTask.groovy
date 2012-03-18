@@ -92,14 +92,14 @@ class IOSBuildFrameworkTask extends DefaultTask {
         def outputFile = new File(this.frameworkVersionsVersionDir, conf.projectName)
         outputFile.parentFile.mkdirs()
         projectHelper.executeCommand(project,
-                [
-                    "lipo",
-                    "-create",
-                    this.iphoneosLibrary,
-                    this.iphonesimulatorLibrary,
-                    "-output",
-                    outputFile]
-                )
+                        [
+                            "lipo",
+                            "-create",
+                            this.iphoneosLibrary,
+                            this.iphonesimulatorLibrary,
+                            "-output",
+                            outputFile]
+                        )
     }
 
     private copyingResources() {
@@ -123,9 +123,9 @@ class IOSBuildFrameworkTask extends DefaultTask {
     private setLinkLibraries() {
         logger.lifecycle("Set link libraries")
         this.iphoneosLibrary = new File(project.buildDir, frameworkConfiguration + '-' +
-                'iphoneos/lib' +  conf.projectName + '.a')
+                        'iphoneos/lib' +  conf.projectName + '.a')
         this.iphonesimulatorLibrary = new File(project.buildDir, frameworkConfiguration + '-' +
-                'iphonesimulator/lib' +  conf.projectName + '.a')
+                        'iphonesimulator/lib' +  conf.projectName + '.a')
     }
 
     private createSymlinks() {
@@ -179,8 +179,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
     }
 
     private xcodeBuilds() {
-        projectHelper.executeCommand(project, [
-            "xcodebuild" ,
+        projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
             "-target",
             frameworkTarget,
             "-configuration",
@@ -192,8 +191,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
             "clean",
             "build"
         ])
-        projectHelper.executeCommand(project, [
-            "xcodebuild" ,
+        projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
             "-target",
             frameworkTarget,
             "-configuration",

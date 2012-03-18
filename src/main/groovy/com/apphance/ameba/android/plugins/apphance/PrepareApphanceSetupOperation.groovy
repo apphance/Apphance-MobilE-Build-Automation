@@ -13,14 +13,14 @@ class PrepareApphanceSetupOperation extends AbstractPrepareSetupOperation {
     ProjectConfiguration conf
 
     PrepareApphanceSetupOperation() {
-        super(ApphanceProperty.class)
+        super(AndroidApphanceProperty.class)
     }
 
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
         BufferedReader br = getReader()
         use (PropertyCategory) {
-            ApphanceProperty.each {
+            AndroidApphanceProperty.each {
                 project.getProjectPropertyFromUser(it, null, br)
             }
             appendProperties()

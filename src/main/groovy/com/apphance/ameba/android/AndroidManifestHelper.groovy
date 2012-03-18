@@ -1,6 +1,6 @@
 package com.apphance.ameba.android
 
-import groovy.util.slurpersupport.GPathResult;
+import groovy.util.slurpersupport.GPathResult
 
 import java.io.File
 
@@ -11,7 +11,6 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.android.plugins.apphance.ApphanceProperty;
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 class AndroidManifestHelper {

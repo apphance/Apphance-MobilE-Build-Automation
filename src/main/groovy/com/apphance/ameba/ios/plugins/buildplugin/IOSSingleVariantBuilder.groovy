@@ -39,8 +39,7 @@ class IOSSingleVariantBuilder {
             logger.lifecycle ("* If it does make sure that SKIP_IOS_BUILDS variable is unset    *")
             logger.lifecycle ("********************************************************************")
         } else {
-            projectHelper.executeCommand(project, [
-                "xcodebuild" ,
+            projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
                 "-target",
                 target,
                 "-configuration",
@@ -57,14 +56,14 @@ class IOSSingleVariantBuilder {
 
     IOSBuilderInfo buidSingleBuilderInfo(String target, String configuration, Project project) {
         IOSBuilderInfo bi= new IOSBuilderInfo(
-                id : "${target}-${configuration}",
-                target : target,
-                configuration : configuration,
-                buildDirectory : new File(project.file( "build"),"${configuration}-iphoneos"),
-                fullReleaseName : "${target}-${configuration}-${conf.fullVersionString}",
-                filePrefix : "${target}-${configuration}-${conf.fullVersionString}",
-                mobileprovisionFile : IOSXCodeOutputParser.findMobileProvisionFile(project, target, configuration),
-                plistFile : iosConf.plistFile)
+                        id : "${target}-${configuration}",
+                        target : target,
+                        configuration : configuration,
+                        buildDirectory : new File(project.file( "build"),"${configuration}-iphoneos"),
+                        fullReleaseName : "${target}-${configuration}-${conf.fullVersionString}",
+                        filePrefix : "${target}-${configuration}-${conf.fullVersionString}",
+                        mobileprovisionFile : IOSXCodeOutputParser.findMobileProvisionFile(project, target, configuration),
+                        plistFile : iosConf.plistFile)
         return bi
     }
 }

@@ -149,8 +149,7 @@ class KIFPlugin implements Plugin<Project> {
             def configuration = "${KIFConfiguration}"
             def target = "KIFTests"
             logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
-            projectHelper.executeCommand(project, [
-                "xcodebuild" ,
+            projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
                 "-target",
                 target,
                 "-configuration",
@@ -202,13 +201,11 @@ class KIFPlugin implements Plugin<Project> {
     }
 
     static public final String DESCRIPTION =
-"""This plugins provides functionality of KIF integration testing for iOS.
+    """This plugins provides functionality of KIF integration testing for iOS.
 
 It executes all tests which are build using KIF test framework.
 
 More description needed ....
 
 """
-
-
 }

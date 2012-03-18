@@ -69,8 +69,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
                 logger.lifecycle ("* If it does make sure that SKIP_IOS_BUILDS variable is unset    *")
                 logger.lifecycle ("********************************************************************")
             } else {
-                projectHelper.executeCommand(project, [
-                    "xcodebuild" ,
+                projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
                     "-target",
                     target,
                     "-configuration",

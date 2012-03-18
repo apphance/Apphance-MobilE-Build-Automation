@@ -18,6 +18,7 @@ class IOSProjectConfiguration {
     String mainTarget
     String mainConfiguration
     File distributionDirectory
+    File xCodeProjectDirectory
     List<String> targets = []
     List<String> configurations = []
     List<String> alltargets = []
@@ -44,5 +45,13 @@ class IOSProjectConfiguration {
             }
         }
         return excluded
+    }
+
+    def getXCodeBuildExecutionPath() {
+        if (xCodeProjectDirectory == null || xCodeProjectDirectory == '') {
+            return ['xcodebuild']
+        } else {
+            return ['xcodebuild' , '-project', xCodeProjectDirectory]
+        }
     }
 }

@@ -73,15 +73,14 @@ hg.commit.user=
 ###########################################################
 # Android properties
 ###########################################################
-android.mainVariant=
+android.mainVariant=market
 android.excluded.builds=
-android.minSdk.target=
+android.minSdk.target=android-7
 ###########################################################
 # Release properties
 ###########################################################
 release.project.icon.file=res/drawable-hdpi/icon.png
-release.project.url.base=
-release.project.directory.name=
+release.project.url=
 release.project.language=en
 release.project.country=US
 release.mail.from=
