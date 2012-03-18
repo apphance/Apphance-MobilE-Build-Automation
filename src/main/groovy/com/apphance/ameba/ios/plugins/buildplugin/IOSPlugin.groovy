@@ -71,26 +71,36 @@ class IOSPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task.description = 'Reads iOS project configuration'
         task << {
-            use (PropertyCategory) {
-                this.pListFileName = project.readProperty(IOSProjectProperty.PLIST_FILE)
-                if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
-                    iosConf.xCodeProjectDirectory  = new File(project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
-                }
-                iosConf.mainTarget = project.readProperty(IOSProjectProperty.MAIN_TARGET)
-                iosConf.mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
-                iosConf.sdk = project.readProperty(IOSProjectProperty.IOS_SDK)
-                iosConf.simulatorsdk = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK)
-                iosConf.plistFile = pListFileName == null ? null : project.file(pListFileName)
-                String distDirName = project.readProperty(IOSProjectProperty.DISTRIBUTION_DIR)
-                iosConf.distributionDirectory = distDirName == null ? null : project.file( distDirName)
-                iosConf.families = project.readProperty(IOSProjectProperty.IOS_FAMILIES).split(",")*.trim()
-                iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
-                if (iosConf.plistFile != null) {
-                    conf.commitFilesOnVCS << iosConf.plistFile.absolutePath
-                }
-            }
+            readIosProjectConfiguration(project)
         }
         project.readProjectConfiguration.dependsOn(task)
+    }
+
+    private readIosProjectConfiguration(Project project) {
+        use (PropertyCategory) {
+            readBasicIosProjectProperties(project)
+            iosConf.sdk = project.readProperty(IOSProjectProperty.IOS_SDK)
+            iosConf.simulatorsdk = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK)
+            iosConf.plistFile = pListFileName == null ? null : project.file(pListFileName)
+            String distDirName = project.readProperty(IOSProjectProperty.DISTRIBUTION_DIR)
+            iosConf.distributionDirectory = distDirName == null ? null : project.file( distDirName)
+            iosConf.families = project.readProperty(IOSProjectProperty.IOS_FAMILIES).split(",")*.trim()
+            if (iosConf.plistFile != null) {
+                conf.commitFilesOnVCS << iosConf.plistFile.absolutePath
+            }
+        }
+    }
+
+    private readBasicIosProjectProperties(Project project) {
+        use (PropertyCategory) {
+            this.pListFileName = project.readProperty(IOSProjectProperty.PLIST_FILE)
+            if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
+                iosConf.xCodeProjectDirectory  = new File(project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
+            }
+            iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
+            iosConf.mainTarget = project.readProperty(IOSProjectProperty.MAIN_TARGET)
+            iosConf.mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
+        }
     }
 
     def void prepareReadIosTargetsAndConfigurationsTask(Project project) {
@@ -99,18 +109,6 @@ class IOSPlugin implements Plugin<Project> {
         task.description = 'Reads iOS xCode project parameters'
         task << {
             project.file("bin").mkdirs()
-            def trimmedListOutput = projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
-                "-list",
-            ]as String[],false, null, null, 1, true)*.trim()
-            IOSProjectConfiguration iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
-            project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  IOSXCodeOutputParser.readProjectName(trimmedListOutput)
-            iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmedListOutput)
-            iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedListOutput)
-            iosConf.alltargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })
-            iosConf.allconfigurations = IOSXCodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
-            def trimmedSdkOutput = projectHelper.executeCommand(project, (iosConf.getXCodeBuildExecutionPath() + ["-showsdks"]) as String[],false, null, null, 1, true)*.trim()
-            iosConf.allIphoneSDKs = IOSXCodeOutputParser.readIphoneSdks(trimmedSdkOutput)
-            iosConf.allIphoneSimulatorSDKs = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
             if (iosConf.targets == ['']) {
                 logger.lifecycle("Please specify at least one target")
                 iosConf.targets = []
@@ -133,6 +131,26 @@ class IOSPlugin implements Plugin<Project> {
             logger.lifecycle("All configurations : " + iosConf.allconfigurations)
         }
         project.readProjectConfiguration.dependsOn(task)
+    }
+
+    private readProjectConfigurationFromXCode(Project project) {
+        use (PropertyCategory) {
+            if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
+                iosConf.xCodeProjectDirectory  = new File(project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
+            }
+        }
+        def trimmedListOutput = projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
+            "-list",
+        ]as String[],false, null, null, 1, true)*.trim()
+        IOSProjectConfiguration iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+        project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  IOSXCodeOutputParser.readProjectName(trimmedListOutput)
+        iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmedListOutput)
+        iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedListOutput)
+        iosConf.alltargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })
+        iosConf.allconfigurations = IOSXCodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
+        def trimmedSdkOutput = projectHelper.executeCommand(project, (iosConf.getXCodeBuildExecutionPath() + ["-showsdks"]) as String[],false, null, null, 1, true)*.trim()
+        iosConf.allIphoneSDKs = IOSXCodeOutputParser.readIphoneSdks(trimmedSdkOutput)
+        iosConf.allIphoneSimulatorSDKs = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
     }
 
 
@@ -175,11 +193,8 @@ class IOSPlugin implements Plugin<Project> {
         def task = project.task('buildAll')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task.description = 'Builds all target/configuration combinations and produces all artifacts (zip, ipa, messages, etc)'
-        iosConf.excludedBuilds = PropertyCategory.readProperty(project,IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
-        def lines = projectHelper.executeCommand(project, (iosConf.getXCodeBuildExecutionPath() + ["-list"]) as String[],false, null, null, 1, true)
-        def trimmed = lines*.trim()
-        iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmed)
-        iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmed)
+        readProjectConfigurationFromXCode(project)
+        readBasicIosProjectProperties(project)
         def targets = iosConf.targets
         def configurations = iosConf.configurations
         println("Building all builds")
