@@ -35,7 +35,6 @@ class ProjectReleasePlugin implements Plugin<Project> {
     ProjectHelper projectHelper
     ProjectConfiguration conf
     ProjectReleaseConfiguration releaseConf
-    AndroidProjectConfiguration androidConf
 
     void apply(Project project) {
         ProjectHelper.checkAnyPluginIsLoaded(project, this.class, AndroidPlugin.class, IOSPlugin.class)
@@ -43,7 +42,6 @@ class ProjectReleasePlugin implements Plugin<Project> {
         projectHelper = new ProjectHelper()
         conf = PropertyCategory.getProjectConfiguration(project)
         releaseConf = ProjectReleaseCategory.retrieveProjectReleaseData(project)
-        androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         prepareMailConfiguration(project)
         prepareCopyGalleryFilesTask(project)
         preparePrepareForReleaseTask(project)
@@ -130,12 +128,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
             releaseConf.otaDirectory.deleteDir()
             conf.tmpDirectory.deleteDir()
             releaseConf.otaDirectory.mkdirs()
-            conf.tmpDirectory.mkdirs(
-                )
-            androidConf.tmpDirs.values().each {
-                project.ant.delete(dir: it)
-            }
-
+            conf.tmpDirectory.mkdirs()
         }
         task.dependsOn(project.readProjectConfiguration, project.clean)
     }

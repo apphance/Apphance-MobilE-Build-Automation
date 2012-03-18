@@ -43,6 +43,7 @@ class IOSReleasePlugin implements Plugin<Project> {
     ProjectReleaseConfiguration releaseConf
     IOSProjectConfiguration iosConf
     IOSReleaseConfiguration iosReleaseConf
+    IOSPlistProcessor iosPlistProcessor = new IOSPlistProcessor()
 
     def void apply (Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class, ProjectReleasePlugin.class)
@@ -71,6 +72,19 @@ class IOSReleasePlugin implements Plugin<Project> {
             // ant.zip(destfile: destZip ) { fileset(dir: documentationDir) }
         }
     }
+
+    def void prepareCleanIosReleaseTask(Project project) {
+        def task = project.task('cleanIosRelease')
+        task.description = "Cleans release related directories for iOS"
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+        task << {
+//            iosConf.tmpDirs.values().each {
+//                project.ant.delete(dir: it)
+//            }
+        }
+        project.cleanRelease.dependsOn(task)
+    }
+
 
     private void prepareAvailableArtifactsInfoTask(Project project) {
         def task = project.task('prepareAvailableArtifactsInfo')
@@ -217,11 +231,6 @@ class IOSReleasePlugin implements Plugin<Project> {
         logger.lifecycle("File index created: ${iosReleaseConf.fileIndexFile}")
     }
 
-    private org.w3c.dom.Element getParsedPlist(Project project) {
-        logger.debug("Reading file " + iosConf.plistFile)
-        return new XMLBomAwareFileReader().readXMLFileIncludingBom(iosConf.plistFile)
-    }
-
     def void prepareUpdateVersionTask(Project project) {
         def task = project.task('updateVersion')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
@@ -230,25 +239,13 @@ class IOSReleasePlugin implements Plugin<Project> {
         task << {
             use (PropertyCategory) {
                 conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
-                def root = getParsedPlist(project)
-                XPathAPI.selectNodeList(root,
-                                '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
-                                    it.nextSibling.nextSibling.textContent = conf.versionString
-                                }
-                conf.versionCode += 1
-                XPathAPI.selectNodeList(root,
-                                '/plist/dict/key[text()="CFBundleVersion"]').each{
-                                    it.nextSibling.nextSibling.textContent = conf.versionCode
-                                }
-                iosConf.plistFile.write(root as String)
+                iosPlistProcessor.incrementPlistVersion(project)
                 logger.lifecycle("New version code: ${conf.versionCode}")
                 logger.lifecycle("Updated version string to ${conf.versionString}")
             }
         }
         task.dependsOn(project.readProjectConfiguration)
     }
-
-
 
     private void preparePlainFileIndexFile(Project project,
     Collection<String> targets, Collection<String> configurations) {

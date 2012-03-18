@@ -268,7 +268,7 @@ class IOSPlugin implements Plugin<Project> {
             projectHelper.executeCommand(project, ["dot_clean", "./"]as String [])
             ant.delete(dir: project.file("build"), verbose: true)
             ant.delete(dir: project.file("bin"), verbose: true)
-            ant.delete(dir: project.file("documentation"), verbose: true)
+            ant.delete(dir: project.file("tmp"), verbose: true)
         }
         task.dependsOn(project.cleanConfiguration)
     }
