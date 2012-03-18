@@ -197,7 +197,7 @@ class IOSPlugin implements Plugin<Project> {
         readBasicIosProjectProperties(project)
         def targets = iosConf.targets
         def configurations = iosConf.configurations
-        println("Building all builds")
+        println("Preparing all build tasks")
         targets.each { target ->
             configurations.each { configuration ->
                 def id = "${target}-${configuration}".toString()

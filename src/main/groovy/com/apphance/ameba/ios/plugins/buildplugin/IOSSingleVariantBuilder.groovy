@@ -20,6 +20,7 @@ class IOSSingleVariantBuilder {
     static Collection<IOSBuildListener> buildListeners = []
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
+    AntBuilder ant
 
     IOSSingleVariantBuilder(Project project, AntBuilder ant) {
         use (PropertyCategory) {
