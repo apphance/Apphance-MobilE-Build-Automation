@@ -139,18 +139,21 @@ class IOSPlugin implements Plugin<Project> {
                 iosConf.xCodeProjectDirectory  = new File(project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
             }
         }
-        def trimmedListOutput = projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
-            "-list",
-        ]as String[],false, null, null, 1, true)*.trim()
-        IOSProjectConfiguration iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
-        project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  IOSXCodeOutputParser.readProjectName(trimmedListOutput)
-        iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmedListOutput)
-        iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedListOutput)
-        iosConf.alltargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })
-        iosConf.allconfigurations = IOSXCodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
-        def trimmedSdkOutput = projectHelper.executeCommand(project, (iosConf.getXCodeBuildExecutionPath() + ["-showsdks"]) as String[],false, null, null, 1, true)*.trim()
-        iosConf.allIphoneSDKs = IOSXCodeOutputParser.readIphoneSdks(trimmedSdkOutput)
-        iosConf.allIphoneSimulatorSDKs = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
+        def cmd = (iosConf.getXCodeBuildExecutionPath() + [ "-list" ]) as String []
+        def trimmedListOutput = projectHelper.executeCommand(project, cmd, false, null, null, 1, false)*.trim()
+        if (trimmedListOutput.empty || trimmedListOutput[0] == '') {
+            throw new GradleException("Error while running ${cmd}:")
+        } else {
+            IOSProjectConfiguration iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+            project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  IOSXCodeOutputParser.readProjectName(trimmedListOutput)
+            iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmedListOutput)
+            iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedListOutput)
+            iosConf.alltargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })
+            iosConf.allconfigurations = IOSXCodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
+            def trimmedSdkOutput = projectHelper.executeCommand(project, (iosConf.getXCodeBuildExecutionPath() + ["-showsdks"]) as String[],false, null, null, 1, true)*.trim()
+            iosConf.allIphoneSDKs = IOSXCodeOutputParser.readIphoneSdks(trimmedSdkOutput)
+            iosConf.allIphoneSimulatorSDKs = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
+        }
     }
 
 
