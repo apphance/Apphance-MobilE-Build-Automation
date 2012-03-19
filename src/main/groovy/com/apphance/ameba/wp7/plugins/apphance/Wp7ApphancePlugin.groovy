@@ -50,7 +50,6 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 		File slnFile = wp7ProjectHelper.getSolutionFile(project.rootDir)
 		wp7ProjectHelper.readConfigurationsFromSln(slnFile, wp7Conf)
 
-
 		wp7Conf.configurations.each { configuration ->
 			wp7Conf.targets.each { target ->
 
@@ -58,9 +57,7 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 					//if ("Debug".equals(configuration))
 					//{
 					use (PropertyCategory) {
-
 						File variantDir = wp7Conf.getVariantDirectory(project, target, configuration)
-
 						String appId = project.readProperty(Wp7ProjectProperty.APPHANCE_APPLICATION_KEY)
 						extractApphanceDll(variantDir)
 						addApphaceToCsProj(variantDir)
@@ -68,10 +65,6 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 						addApphanceToAppCs(variantDir, appKey)
 						convertsSystemDebugToApphanceLogs(variantDir)
 					//}
-
-					//replaceLogsWithApphance(project, iosConf.tmpDirName(target, configuration))
-					//pbxProjectHelper.addApphanceToProject(new File(project.rootDir, iosConf.tmpDirName(target, configuration)), target, configuration, project[ApphanceProperty.APPLICATION_KEY.propertyName])
-					//copyApphanceFramework(project, iosConf.tmpDirName(target, configuration))
 					}
 				}
 			}
@@ -79,33 +72,20 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 	}
 
 	void extractApphanceDll(File projectDir) {
+		logger.lifecycle("extracting Apphance dll")
 		sourceHelper.extractApphanceDll(projectDir, APPHANCE_DLL_NAME)
 	}
 
-	void  removeApphanceDll(File projectDir) {
-		File apphanceDll = new File(projectDir, APPHANCE_DLL_NAME)
-		apphanceDll.delete()
-	}
-
-
 	void addApphaceToCsProj(File projectDir) {
-		logger.lifecycle("addApphaceToCsProj ${projectDir}")
 		def csProj = new File(projectDir, wp7ProjectHelper.getCsprojName(projectDir))
+		logger.lifecycle("adding Apphance to ${csProj}")
 		String csProjContent = csProj.text
 		csProj.delete()
 		csProj << sourceHelper.addApphanceToCsProj(csProjContent, APPHANCE_DLL_NAME)
 	}
 
-	void removeApphaceFromCsProject(File projectDir) {
-		logger.lifecycle("removeApphaceFromCsProject ${projectDir}")
-		def csProj = new File(projectDir, wp7ProjectHelper.getCsprojName(projectDir))
-		String csProjContent = csProj.text
-		csProj.delete()
-		csProj << sourceHelper.removeApphanceFromCsProj(csProjContent, APPHANCE_DLL_NAME)
-	}
-
 	void addApphanceToAppCs(File projectDir, String appId) {
-		logger.lifecycle("addApphanceToAppCs ${projectDir}")
+		logger.lifecycle("adding Apphance to App.xaml.cs")
 		use (PropertyCategory) {
 			wp7ProjectHelper.readVersionFromWMAppManifest(new File(projectDir, "Properties/WMAppManifest.xml"), conf)
 			String version = conf.versionString
@@ -117,17 +97,8 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 	}
 
 
-	void removeApphanceFromAppCs(File projectDir) {
-		logger.lifecycle("removeApphanceFromAppCs ${projectDir}")
-		projectDir.eachFileMatch(~/.*cs/) { sourceFile ->
-			String sourceFileContent = sourceFile.text
-			sourceFile.delete()
-			sourceFile << sourceHelper.removeApphanceFromAppCs(sourceFileContent)
-		}
-	}
-
 	void convertsSystemDebugToApphanceLogs(File projectDir) {
-		logger.lifecycle("convertsSystemDebugToApphanceLogs ${projectDir}")
+		logger.lifecycle("converting system debug to Apphance logs ${projectDir}")
 		projectDir.eachFileMatch(~/.*cs/) { sourceFile ->
 			String sourceFileContent = sourceFile.text
 			sourceFile.delete()
@@ -135,14 +106,6 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 		}
 	}
 
-	void convertsApphanceLogsToSystemDebug(File projectDir) {
-		logger.lifecycle("convertsApphanceLogsToSystemDebug ${projectDir}")
-		projectDir.eachFileMatch(~/.*cs/) { sourceFile ->
-			String sourceFileContent = sourceFile.text
-			sourceFile.delete()
-			sourceFile << sourceHelper.convertApphanceLogsToSystemDebug(sourceFileContent)
-		}
-	}
 
 	static public final String DESCRIPTION =
 	"""This is the plugin that links Ameba with Apphance service.

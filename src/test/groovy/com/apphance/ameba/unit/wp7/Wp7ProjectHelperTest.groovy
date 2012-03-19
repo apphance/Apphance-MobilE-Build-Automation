@@ -8,6 +8,7 @@ import org.junit.Before
 import org.junit.Test
 
 import com.apphance.ameba.ProjectConfiguration;
+import com.apphance.ameba.wp7.Wp7ProjectConfiguration;
 import com.apphance.ameba.wp7.Wp7ProjectHelper
 
 // Add verification similar AndroidManifestHelperTest
@@ -43,16 +44,22 @@ class Wp7ProjectHelperTest {
 
 	@Test
 	void testReadVersionFromWMAppManifest() {
-
 		def WMAppManifest = new File(tmpDir,"WMAppManifest.xml")
 		def originalWMAppManifest = new File(projectDir,"Properties/WMAppManifest.xml")
 		WMAppManifest.delete()
 		WMAppManifest << originalWMAppManifest.text
-
 		def csFileName = wp7ProjectHelper.readVersionFromWMAppManifest(WMAppManifest, conf)
 		assertNotNull(conf.versionString)
 	}
 
+	@Test
+	void testReadConfigurationsFromSln() {
+		File slnFile = wp7ProjectHelper.getSolutionFile(new File(projectDir));
+		Wp7ProjectConfiguration wp7conf = new Wp7ProjectConfiguration();
+		wp7ProjectHelper.readConfigurationsFromSln(slnFile, wp7conf)
+		assertNotNull(wp7conf.targets)
+		assertNotNull(wp7conf.configurations)
+	}
 
 
 }

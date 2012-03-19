@@ -72,13 +72,6 @@ class ApphanceSourceCodeHelper {
 		return result
 	}
 
-	public String removeApphanceFromCsProj(String csProjPath, String apphanceDllPath) {
-
-		def xmlSlurper = new XmlSlurper(false, false)
-		def xml = xmlSlurper.parseText(csProj)
-
-
-	}
 
 
 	public String convertSystemDebugToApphanceLogs(String file) {
