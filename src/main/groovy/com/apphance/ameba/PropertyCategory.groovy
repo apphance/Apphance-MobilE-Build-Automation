@@ -155,7 +155,7 @@ class PropertyCategory {
     }
 
     public static ProjectConfiguration getProjectConfiguration(Project project){
-        if (!project.hasProperty(PROJECT_CONFIGURATION_KEY)) {
+        if (!project.ext.has(PROJECT_CONFIGURATION_KEY)) {
             project.ext[PROJECT_CONFIGURATION_KEY] = new ProjectConfiguration()
         }
         return project.ext[PROJECT_CONFIGURATION_KEY]

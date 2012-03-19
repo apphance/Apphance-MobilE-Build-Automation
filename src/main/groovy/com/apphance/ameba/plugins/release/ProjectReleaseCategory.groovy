@@ -65,7 +65,7 @@ class ProjectReleaseCategory {
             if (notes == null || notes == "") {
                 return null
             }
-            project['release.notes'] = notes
+            project.ext['release.notes'] = notes
             return notes
         }
     }
