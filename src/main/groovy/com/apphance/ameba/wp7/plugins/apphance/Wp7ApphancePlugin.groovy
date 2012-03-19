@@ -54,17 +54,16 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 			wp7Conf.targets.each { target ->
 
 				project."build${target}${configuration}".doFirst {
-					//if ("Debug".equals(configuration))
-					//{
-					use (PropertyCategory) {
-						File variantDir = wp7Conf.getVariantDirectory(project, target, configuration)
-						String appId = project.readProperty(Wp7ProjectProperty.APPHANCE_APPLICATION_KEY)
-						extractApphanceDll(variantDir)
-						addApphaceToCsProj(variantDir)
-						String appKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
-						addApphanceToAppCs(variantDir, appKey)
-						convertsSystemDebugToApphanceLogs(variantDir)
-					//}
+					if (configuration.toLowerCase().contains("apphance")) {
+						use (PropertyCategory) {
+							File variantDir = wp7Conf.getVariantDirectory(project, target, configuration)
+							String appId = project.readProperty(Wp7ProjectProperty.APPHANCE_APPLICATION_KEY)
+							extractApphanceDll(variantDir)
+							addApphaceToCsProj(variantDir)
+							String appKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
+							addApphanceToAppCs(variantDir, appKey)
+							convertsSystemDebugToApphanceLogs(variantDir)
+						}
 					}
 				}
 			}
