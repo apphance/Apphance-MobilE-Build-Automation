@@ -122,4 +122,9 @@ class IOSApphancePlugin implements Plugin<Project> {
         }
         return apphancePresent
     }
+
+        static public final String DESCRIPTION =
+"""This plugins provides automated adding of Apphance libraries to the project.
+"""
+
 }
