@@ -19,8 +19,6 @@ class TrxToXmlTransformerTest {
 	@Test
 	public void testTransform() throws Exception {
 
-
-
 		Reader reader = new StringReader(input2)
 		Writer writer = new StringWriter()
 

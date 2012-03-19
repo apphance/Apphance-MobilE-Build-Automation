@@ -39,13 +39,5 @@ class TrxToXmlTransformer {
 		transformer.transform(streamSource, streamResult)
 	}
 
-	/*
-	 private void transformInternal(String input, StreamResult streamResult) {
-	 def factory = TransformerFactory.newInstance()
-	 StringWriter writer = new StringWriter()
-	 def transformer = factory.newTransformer(new StreamSource(new StringReader(xslt)))
-	 transformer.transform(new StreamSource(new StringReader(input)), streamResult)
-	 }
-	 */
 }
 
