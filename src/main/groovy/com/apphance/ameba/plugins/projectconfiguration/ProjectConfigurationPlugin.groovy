@@ -73,7 +73,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
             // NOTE! conf.versionString and conf.versionCode need to
             // be read before project configuration task -> task reading the version
             // should be injected here
-            conf = PropertyCategory.retrieveBasicProjectData(project)
+            this.conf = PropertyCategory.retrieveBasicProjectData(project)
         }
     }
 
