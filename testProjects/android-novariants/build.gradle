@@ -6,6 +6,8 @@ buildscript {
         classpath files("../../build/tmp/emma/instr/","../../build/tmp/emma/instr/main/",
              '../../bin', "../../build/classes/main", "../../build/resources/main")
         classpath 'emma:emma:2.0.5312'
+        classpath 'org.apache.httpcomponents:httpclient:4.1.3'
+        classpath 'org.apache.httpcomponents:httpmime:4.1.3'
     }
 }
 

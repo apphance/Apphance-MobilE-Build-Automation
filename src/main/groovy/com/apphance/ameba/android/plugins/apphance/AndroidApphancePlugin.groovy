@@ -41,10 +41,13 @@ import org.apache.http.protocol.BasicHttpContext
 import org.apache.http.util.EntityUtils;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.entity.StringEntity
+import org.apache.http.entity.mime.*
+import org.apache.http.entity.mime.content.*
+import java.nio.charset.Charset
 
 // Uncomment this annotation for eclipse building, leave commented for gradle build
 // Caused by: http://issues.gradle.org/browse/GRADLE-1162
-//@Grab(group='org.apache.httpcomponents', module='httpclient', version='4.1.3')
+//@Grab(group='org.apache.httpcomponents', module='httpmime', version='4.1.3')
 class AndroidApphancePlugin implements Plugin<Project>{
 
     static Logger logger = Logging.getLogger(AndroidApphancePlugin.class)
@@ -443,12 +446,34 @@ class AndroidApphancePlugin implements Plugin<Project>{
 					post.setEntity(se);
 					post.setHeader("Accept", "application/json");
 					post.setHeader("Content-type", "application/json");
+					post.setHeader("Connection", "close")
+					post.setHeader("Host", host)
 					HttpResponse response = httpclient.execute(targetHost, post, localcontext)
 					logger.lifecycle("Response status " + response.getStatusLine())
 					if (response.getEntity() != null) {
 						JsonSlurper slurper = new JsonSlurper()
 						def resp = slurper.parseText(response.getEntity().getContent().getText())
 						logger.lifecycle("Response " + resp)
+//						MultipartPostMethod method = new MultipartPostMethod( resp.update_urls.apk );
+//						HttpMultipart part = new HttpMultipart("aaa", "aaa")
+						def boundary = "----------------------------90505c6cdd54"
+						MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.STRICT, boundary, Charset.forName("UTF-8"));
+						reqEntity.addPart(new FormBodyPart("apk", new FileBody(apkArtifact.location, "application/octet-stream")))
+						HttpPost uploadReq = new HttpPost(resp.update_urls.apk.replace("https://apphance-app.appspot.com", ""))
+						uploadReq.setHeader("Content-type", "multipart/form-data; boundary=" + boundary)
+						uploadReq.setHeader("Accept", "*/*")
+						uploadReq.setHeader("Connection", "close")
+						uploadReq.setHeader("Host", host)
+//						uploadReq.setHeader("Expect", "100-continue")
+						uploadReq.setEntity(reqEntity)
+//						logger.lifecycle("Request entity " + reqEntity.getContent().getText())
+						reqEntity.writeTo(System.err)
+						DefaultHttpClient uploadClient = new DefaultHttpClient()
+//						uploadClient.getCredentialsProvider().setCredentials(
+//							new AuthScope(targetHost.getHostName(), targetHost.getPort()),
+//							new UsernamePasswordCredentials("${username}", "${pass}"))
+						HttpResponse uploadResponse = uploadClient.execute(targetHost, uploadReq)
+						logger.lifecycle("Upload response " + EntityUtils.toString(uploadResponse.getEntity()))
 					} else {
 						logger.lifecycle("Query failed")
 					}

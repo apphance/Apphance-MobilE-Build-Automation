@@ -127,6 +127,8 @@ dependencies {
     groovy localGroovy()
     compile 'org.apache.httpcomponents:httpclient:4.1.3'
     runtime 'org.apache.httpcomponents:httpclient:4.1.3'
+    compile 'org.apache.httpcomponents:httpmime:4.1.3'
+    runtime 'org.apache.httpcomponents:httpmime:4.1.3'
 }
 
 file('tmp').mkdirs()
