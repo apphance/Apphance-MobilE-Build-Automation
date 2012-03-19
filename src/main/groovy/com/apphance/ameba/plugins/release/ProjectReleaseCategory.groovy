@@ -13,10 +13,10 @@ class ProjectReleaseCategory {
     public static final String PROJECT_RELEASE_CONFIGURATION_KEY = 'project.release.configuration'
 
     public static ProjectReleaseConfiguration getProjectReleaseConfiguration(Project project){
-        if (!project.hasProperty(PROJECT_RELEASE_CONFIGURATION_KEY)) {
-            project.ext[PROJECT_RELEASE_CONFIGURATION_KEY] = new ProjectReleaseConfiguration()
+        if (!project.ext.has(PROJECT_RELEASE_CONFIGURATION_KEY)) {
+            project.ext.set(PROJECT_RELEASE_CONFIGURATION_KEY,new ProjectReleaseConfiguration())
         }
-        return project.ext[PROJECT_RELEASE_CONFIGURATION_KEY]
+        return project.ext.get(PROJECT_RELEASE_CONFIGURATION_KEY)
     }
 
     public static void retrieveLocale(Project project) {

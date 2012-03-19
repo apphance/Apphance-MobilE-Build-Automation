@@ -17,10 +17,10 @@ public class AndroidProjectConfigurationRetriever {
     static AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
 
     static AndroidProjectConfiguration getAndroidProjectConfiguration(final Project project){
-        if (!project.hasProperty(ANDROID_PROJECT_CONFIGURATION_KEY)) {
-            project.ext[ANDROID_PROJECT_CONFIGURATION_KEY] = new AndroidProjectConfiguration()
+        if (!project.ext.has(ANDROID_PROJECT_CONFIGURATION_KEY)) {
+            project.ext.set(ANDROID_PROJECT_CONFIGURATION_KEY,new AndroidProjectConfiguration())
         }
-        return project.ext[ANDROID_PROJECT_CONFIGURATION_KEY]
+        return project.ext.get(ANDROID_PROJECT_CONFIGURATION_KEY)
     }
 
     static void readAndroidProjectConfiguration(Project project) {
