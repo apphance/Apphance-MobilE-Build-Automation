@@ -2,6 +2,7 @@ package com.apphance.ameba.android.plugins.apphance
 
 import java.io.File
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -15,6 +16,9 @@ import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import com.apphance.ameba.apphance.PrepareApphanceSetupOperation;
+import com.apphance.ameba.apphance.ShowApphancePropertiesOperation;
+import com.apphance.ameba.apphance.VerifyApphanceSetupOperation;
 
 class AndroidApphancePlugin implements Plugin<Project>{
 
@@ -246,7 +250,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     }
 
     private replaceLogsWithApphance(Project project, String variant) {
-        logger.lifecycle("Replacing android logs with apphance for ${variant}")
+        logger.lifecycle("Replacing Android logs with Apphance for ${variant}")
         project.ant.replace(casesensitive: 'true', token : 'import android.util.Log;',
                         value: 'import com.apphance.android.Log;', summary: true) {
                             fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }

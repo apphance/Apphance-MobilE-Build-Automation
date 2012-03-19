@@ -17,6 +17,7 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.buildplugin.AndroidProjectProperty
 import com.apphance.ameba.android.plugins.jarlibrary.AndroidJarLibraryProperty
 import com.apphance.ameba.android.plugins.test.AndroidTestProperty
+import com.apphance.ameba.apphance.ApphanceProperty;
 import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
 import com.apphance.ameba.ios.plugins.fonemonkey.IOSFoneMonkeyProperty
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
@@ -219,10 +220,11 @@ class AmebaPluginReferenceBuilder {
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-build', IOSProjectProperty.class)
         addAmebaDocumentation(COMMON_TASKS, 'ameba-project-release', ProjectReleaseProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-analysis', null, 'androidAnalysis')
-        addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-apphance')
+        addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-apphance', ApphanceProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-jarlibrary', AndroidJarLibraryProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-release')
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-test', AndroidTestProperty.class)
+        addAmebaDocumentation(IOS_TASKS, 'ameba-ios-apphance', ApphanceProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-cedar')
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-fonemonkey',IOSFoneMonkeyProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-framework', IOSFrameworkProperty.class)

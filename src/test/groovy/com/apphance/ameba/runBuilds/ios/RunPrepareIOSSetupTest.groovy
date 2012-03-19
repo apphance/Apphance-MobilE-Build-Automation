@@ -108,6 +108,12 @@ ios.framework.configuration=Debug
 ios.framework.version=A
 ios.framework.headers=GradleXCode/gradleXCodeAppDelegate.h
 ios.framework.resources=icon.png
+###########################################################
+# Apphance properties
+###########################################################
+apphance.appkey=
+apphance.mode=QA
+apphance.log.events=false
 """, text)
         println text
     }

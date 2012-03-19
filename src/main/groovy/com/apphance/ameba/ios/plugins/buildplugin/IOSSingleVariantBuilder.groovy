@@ -1,5 +1,7 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
+import java.io.File;
+
 import groovy.util.AntBuilder
 
 import org.gradle.api.Project
@@ -21,9 +23,11 @@ class IOSSingleVariantBuilder {
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
     AntBuilder ant
+    Project project
 
     IOSSingleVariantBuilder(Project project, AntBuilder ant) {
         use (PropertyCategory) {
+            this.project = project
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
@@ -37,10 +41,10 @@ class IOSSingleVariantBuilder {
             logger.lifecycle ("********************* CAUTION !!!! *********************************")
             logger.lifecycle ("* Skipping iOS builds because SKIP_IOS_BUILDS variable is set  *")
             logger.lifecycle ("* This should never happen on actual jenkins build                 *")
-            logger.lifecycle ("* If it does make sure that SKIP_IOS_BUILDS variable is unset    *")
+            logger.lifecycle ("* If it does: make sure that SKIP_IOS_BUILDS variable is unset    *")
             logger.lifecycle ("********************************************************************")
         } else {
-            projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
+            projectHelper.executeCommand(project,tmpDir(target,configuration), iosConf.getXCodeBuildExecutionPath() + [
                 "-target",
                 target,
                 "-configuration",
@@ -60,11 +64,16 @@ class IOSSingleVariantBuilder {
                         id : "${target}-${configuration}",
                         target : target,
                         configuration : configuration,
-                        buildDirectory : new File(project.file( "build"),"${configuration}-iphoneos"),
+                        buildDirectory : new File(tmpDir(target, configuration),"/build/${configuration}-iphoneos"),
                         fullReleaseName : "${target}-${configuration}-${conf.fullVersionString}",
                         filePrefix : "${target}-${configuration}-${conf.fullVersionString}",
                         mobileprovisionFile : IOSXCodeOutputParser.findMobileProvisionFile(project, target, configuration),
                         plistFile : iosConf.plistFile)
         return bi
     }
+
+    public File tmpDir(String target, String configuration) {
+        return project.file("../tmp-${target}-${configuration}")
+    }
+
 }

@@ -28,7 +28,8 @@ class TestFoneMonkeyTasks extends AbstractBaseIOSTaskTest {
             'buildSingleRelease',
             'copyMobileProvision',
             'replaceBundleIdPrefix',
-            'unlockKeyChain'
+            'unlockKeyChain',
+			'copySources'
         ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 

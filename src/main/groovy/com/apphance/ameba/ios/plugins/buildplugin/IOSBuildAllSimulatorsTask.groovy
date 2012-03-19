@@ -33,6 +33,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
     IOSProjectConfiguration iosConf
     ProjectReleaseConfiguration releaseConf
     IOSReleaseConfiguration iosReleaseConf
+    IOSSingleVariantBuilder iosSingleVariantBuilder
 
     IOSBuildAllSimulatorsTask() {
         this.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
@@ -40,6 +41,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
         this.projectHelper = new ProjectHelper();
         this.conf = PropertyCategory.getProjectConfiguration(project)
         this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
+        this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, project.ant)
         this.dependsOn(project.readProjectConfiguration)
         this.dependsOn(project.copyMobileProvision)
     }
@@ -81,7 +83,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
             IOSBuilderInfo bi= new IOSBuilderInfo()
             bi.target = target
             bi.configuration = configuration
-            bi.buildDirectory = new File(project.file( "build"),"${configuration}-iphonesimulator")
+            bi.buildDirectory = new File(project.file(iosSingleVariantBuilder.tmpDir(target, configuration) + "/build"),"${configuration}-iphonesimulator")
             bi.fullReleaseName  = "${target}-${configuration}-${conf.fullVersionString}"
             bi.filePrefix = "${target}-${configuration}-${conf.fullVersionString}"
             bi.mobileprovisionFile = IOSXCodeOutputParser.findMobileProvisionFile(project, bi.target, bi.configuration)

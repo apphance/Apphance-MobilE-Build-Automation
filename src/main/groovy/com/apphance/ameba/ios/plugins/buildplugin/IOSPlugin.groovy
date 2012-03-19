@@ -36,6 +36,7 @@ class IOSPlugin implements Plugin<Project> {
     ProjectHelper projectHelper
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
+    IOSSingleVariantBuilder iosSingleVariantBuilder
 
     public static final List<String> FAMILIES = ['iPad', 'iPhone']
 
@@ -45,6 +46,8 @@ class IOSPlugin implements Plugin<Project> {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
             this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+            this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, project.ant)
+            prepareCopySourcesTask(project)
             prepareReadIosProjectConfigurationTask(project)
             prepareReadIosTargetsAndConfigurationsTask(project)
             prepareReadIosProjectVersionsTask(project)
@@ -214,7 +217,7 @@ class IOSPlugin implements Plugin<Project> {
                         singleReleaseBuilder.buildRelease(project, target, configuration)
                     }
                     task.dependsOn(singleTask)
-                    singleTask.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.verifySetup)
+                    singleTask.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.verifySetup, project.copySources)
                 } else {
                     println ("Skipping build ${id} - it is excluded in configuration (${iosConf.excludedBuilds})")
                 }
@@ -256,7 +259,7 @@ class IOSPlugin implements Plugin<Project> {
                 singleReleaseBuilder.buildRelease(project, target, configuration)
             }
         }
-        task.dependsOn(project.readProjectConfiguration, project.verifySetup)
+        task.dependsOn(project.readProjectConfiguration, project.verifySetup, project.copySources)
     }
 
 
@@ -389,8 +392,30 @@ class IOSPlugin implements Plugin<Project> {
         return result
     }
 
-    static public final String DESCRIPTION =
-    """This is the main iOS build plugin.
+    void prepareCopySourcesTask(Project project) {
+        def task = project.task('copySources')
+        task.description = "Copies all sources to tmp directory for build"
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        task << {
+            iosConf.alltargets.each { target ->
+                iosConf.allconfigurations.each { configuration ->
+                    if (!iosConf.isBuildExcluded(target + "-" + configuration)) {
+                        new AntBuilder().sync(toDir : iosSingleVariantBuilder.tmpDir(target, configuration), overwrite:true, verbose:true) {
+                            fileset(dir : "${project.rootDir}/") {
+                                exclude(name: iosSingleVariantBuilder.tmpDir(target, configuration).absolutePath + '/**/*')
+                                conf.sourceExcludes.each {
+                                    exclude(name: it)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+static public final String DESCRIPTION =
+"""This is the main iOS build plugin.
 
 The plugin provides all the task needed to build iOS application.
 Besides tasks explained below, the plugin prepares build-*
