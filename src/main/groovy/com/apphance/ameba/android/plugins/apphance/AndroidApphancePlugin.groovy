@@ -2,7 +2,6 @@ package com.apphance.ameba.android.plugins.apphance
 
 import java.io.File
 
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -16,9 +15,10 @@ import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
-import com.apphance.ameba.apphance.PrepareApphanceSetupOperation;
-import com.apphance.ameba.apphance.ShowApphancePropertiesOperation;
-import com.apphance.ameba.apphance.VerifyApphanceSetupOperation;
+import com.apphance.ameba.apphance.ApphanceProperty
+import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
+import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
+import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
 
 class AndroidApphancePlugin implements Plugin<Project>{
 
@@ -105,7 +105,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     private void replaceViewsWithApphance(Project project, String variant) {
 
-        if (project[AndroidApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
+        if (project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
             logger.lifecycle("Replacing android views with apphance loggable versions for ${variant}")
             replaceViewWithApphance(project, variant, "Button")
             replaceViewWithApphance(project, variant, "CheckBox")
@@ -290,17 +290,17 @@ class AndroidApphancePlugin implements Plugin<Project>{
         boolean addOnCreateInApplication  = lineToModify.empty
         File newMainClass = new File("newMainClassFile.java")
         def mode
-        if (project[AndroidApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
+        if (project[ApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
             mode = "Apphance.Mode.QA"
         } else {
             mode = "Apphance.Mode.Silent"
         }
-        String appKey = project[AndroidApphanceProperty.APPLICATION_KEY.propertyName]
+        String appKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
         String startSession = "Apphance.startNewSession(this, \"${appKey}\", ${mode});"
         String onCreate = " public void onCreate() { super.onCreate(); Apphance.startNewSession(this, \"${appKey}\", ${mode}); } "
 
 
-        if (project[AndroidApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
+        if (project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true")) {
             startSession = startSession + "com.apphance.android.eventlog.EventLog.setInvertedIdMap(this);";
         }
 
