@@ -27,7 +27,7 @@ class AndroidDependencyDetectionTest extends BaseAndroidTaskTest {
             ProjectHelper projectHelper = new ProjectHelper()
             projectHelper.executeCommand(project, new File("testProjects/android"), ['ant', 'debug'])
             project = getProject()
-            androidConf = confRetriever.getAndroidProjectConfiguration(project)
+            androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         }
         assertNotNull(androidConf.sdkDirectory )
         assertEquals([

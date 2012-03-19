@@ -10,7 +10,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-class RunVerifyErrorsSetupTest {
+class RunVerifyAndroidErrorsSetupTest {
     List BOOLEANS = ['true', 'false']
     File testProject = new File("testProjects/android")
     File gradleProperties = new File(testProject,"gradle.properties")

@@ -10,7 +10,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-class RunVerifyErrorsSetupTest {
+class RunVerifyIosErrorsSetupTest {
     File testIosProject = new File("testProjects/ios/GradleXCode")
     File gradleProperties = new File(testIosProject,"gradle.properties")
     File gradlePropertiesOrig = new File(testIosProject,"gradle.properties.orig")
