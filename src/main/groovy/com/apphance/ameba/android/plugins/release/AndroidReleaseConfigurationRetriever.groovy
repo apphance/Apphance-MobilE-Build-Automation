@@ -10,8 +10,8 @@ class AndroidReleaseConfigurationRetriever {
 
     public static AndroidReleaseConfiguration getAndroidReleaseConfiguration(Project project) {
         if (!project.hasProperty(ANDROID_RELEASE_CONFIGURATION_KEY)) {
-            project[ANDROID_RELEASE_CONFIGURATION_KEY] = new AndroidReleaseConfiguration()
+            project.ext[ANDROID_RELEASE_CONFIGURATION_KEY] = new AndroidReleaseConfiguration()
         }
-        return project[ANDROID_RELEASE_CONFIGURATION_KEY]
+        return project.ext[ANDROID_RELEASE_CONFIGURATION_KEY]
     }
 }

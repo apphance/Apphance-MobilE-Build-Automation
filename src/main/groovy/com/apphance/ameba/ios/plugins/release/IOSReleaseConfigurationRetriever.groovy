@@ -10,8 +10,8 @@ class IOSReleaseConfigurationRetriever {
 
     public static IOSReleaseConfiguration getIosReleaseConfiguration(Project project) {
         if (!project.hasProperty(IOS_RELEASE_CONFIGURATION_KEY)) {
-            project[IOS_RELEASE_CONFIGURATION_KEY] = new IOSReleaseConfiguration()
+            project.ext[IOS_RELEASE_CONFIGURATION_KEY] = new IOSReleaseConfiguration()
         }
-        return project[IOS_RELEASE_CONFIGURATION_KEY]
+        return project.ext[IOS_RELEASE_CONFIGURATION_KEY]
     }
 }

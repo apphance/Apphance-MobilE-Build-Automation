@@ -17,10 +17,10 @@ class IOSXCodeOutputParser {
     static public final String IOS_PROJECT_CONFIGURATION_KEY = 'ios.project.configuration'
 
     static IOSProjectConfiguration getIosProjectConfiguration(Project project){
-        if (!project.hasProperty(IOS_PROJECT_CONFIGURATION_KEY)) {
-            project[IOS_PROJECT_CONFIGURATION_KEY] = new IOSProjectConfiguration()
+        if (!project.ext.hasProperty(IOS_PROJECT_CONFIGURATION_KEY)) {
+            project.ext[IOS_PROJECT_CONFIGURATION_KEY] = new IOSProjectConfiguration()
         }
-        return project[IOS_PROJECT_CONFIGURATION_KEY]
+        return project.ext[IOS_PROJECT_CONFIGURATION_KEY]
     }
 
     static Collection readBuildableConfigurations(List trimmedOutput) {

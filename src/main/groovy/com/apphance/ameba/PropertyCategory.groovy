@@ -156,9 +156,9 @@ class PropertyCategory {
 
     public static ProjectConfiguration getProjectConfiguration(Project project){
         if (!project.hasProperty(PROJECT_CONFIGURATION_KEY)) {
-            project[PROJECT_CONFIGURATION_KEY] = new ProjectConfiguration()
+            project.ext[PROJECT_CONFIGURATION_KEY] = new ProjectConfiguration()
         }
-        return project[PROJECT_CONFIGURATION_KEY]
+        return project.ext[PROJECT_CONFIGURATION_KEY]
     }
 
     public static ProjectConfiguration retrieveBasicProjectData(Project project) {

@@ -145,7 +145,7 @@ class IOSPlugin implements Plugin<Project> {
             throw new GradleException("Error while running ${cmd}:")
         } else {
             IOSProjectConfiguration iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
-            project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  IOSXCodeOutputParser.readProjectName(trimmedListOutput)
+            project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  IOSXCodeOutputParser.readProjectName(trimmedListOutput)
             iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmedListOutput)
             iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedListOutput)
             iosConf.alltargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })

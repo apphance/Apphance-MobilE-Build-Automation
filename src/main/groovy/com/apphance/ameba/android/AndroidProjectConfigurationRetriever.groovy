@@ -18,9 +18,9 @@ public class AndroidProjectConfigurationRetriever {
 
     static AndroidProjectConfiguration getAndroidProjectConfiguration(final Project project){
         if (!project.hasProperty(ANDROID_PROJECT_CONFIGURATION_KEY)) {
-            project[ANDROID_PROJECT_CONFIGURATION_KEY] = new AndroidProjectConfiguration()
+            project.ext[ANDROID_PROJECT_CONFIGURATION_KEY] = new AndroidProjectConfiguration()
         }
-        return project[ANDROID_PROJECT_CONFIGURATION_KEY]
+        return project.ext[ANDROID_PROJECT_CONFIGURATION_KEY]
     }
 
     static void readAndroidProjectConfiguration(Project project) {
