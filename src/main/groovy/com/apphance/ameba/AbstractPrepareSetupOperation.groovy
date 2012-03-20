@@ -50,6 +50,8 @@ abstract class AbstractPrepareSetupOperation {
             project.file('build').absolutePath,
             project.file('ota').absolutePath,
             project.file('tmp').absolutePath,
+            project.file('.hg').absolutePath,
+            project.file('.git').absolutePath,
         ]
         def plistFiles = []
         project.rootDir.traverse([type: type, maxDepth : 7]) {
