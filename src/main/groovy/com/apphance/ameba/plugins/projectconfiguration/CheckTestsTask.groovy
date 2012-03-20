@@ -1,15 +1,17 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
+import groovy.io.FileType
+
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 import org.slf4j.Logger
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups;
-import com.apphance.ameba.ProjectConfiguration;
-import com.apphance.ameba.ProjectHelper;
-import com.apphance.ameba.PropertyCategory;
+import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 
 

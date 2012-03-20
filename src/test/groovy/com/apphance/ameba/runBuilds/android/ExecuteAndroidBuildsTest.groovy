@@ -2,9 +2,10 @@ package com.apphance.ameba.runBuilds.android;
 
 import static org.junit.Assert.*
 
-
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectConfiguration
@@ -14,59 +15,57 @@ import com.apphance.ameba.android.AndroidManifestHelper
 
 class ExecuteAndroidBuildsTest {
 
-    File testProject = new File("testProjects/android")
-    File testNovariantsProject = new File("testProjects/android-novariants")
-    File testAndroidConventionProject = new File("testProjects/android-convention")
-    File testAndroidWrongConventionProject = new File("testProjects/android-convention-wrong-specs")
-    File templateFile = new File("templates/android")
+    static File testProject = new File("testProjects/android")
+    static File testNovariantsProject = new File("testProjects/android-novariants")
+    static File testAndroidConventionProject = new File("testProjects/android-convention")
+    static File testAndroidWrongConventionProject = new File("testProjects/android-convention-wrong-specs")
+    static File templateFile = new File("templates/android")
+    static ProjectConnection connection
+    static ProjectConnection gradleWithPropertiesConnection
+    static ProjectConnection gradleNoVariantsConnection
+    static ProjectConnection testAndroidConventionConnection
+    static ProjectConnection testAndroidWrongConventionConnection
+
+    @BeforeClass
+    static void beforeClass() {
+        connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
+        gradleWithPropertiesConnection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
+        gradleNoVariantsConnection = GradleConnector.newConnector().forProjectDirectory(testNovariantsProject).connect();
+        testAndroidConventionConnection = GradleConnector.newConnector().forProjectDirectory(testAndroidConventionProject).connect()
+        testAndroidWrongConventionConnection = GradleConnector.newConnector().forProjectDirectory(testAndroidWrongConventionProject).connect()
+    }
+
+    @AfterClass
+    static void afterClass() {
+        connection.close()
+        gradleWithPropertiesConnection.close()
+        gradleNoVariantsConnection.close()
+        testAndroidConventionConnection.close()
+        testAndroidWrongConventionConnection.close()
+    }
 
     protected void runGradle(String ... tasks) {
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
-        try {
-            def buildLauncher = connection.newBuild()
-            buildLauncher.forTasks(tasks).run();
-        } finally {
-            connection.close();
-        }
+        def buildLauncher = connection.newBuild()
+        buildLauncher.forTasks(tasks).run();
     }
 
     protected void runGradleWithProperties(Properties p, String ... tasks) {
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
-        try {
-            def buildLauncher = connection.newBuild()
-            def args = p.collect { property , value -> "-D${property}=${value}"}
-            buildLauncher.setJvmArguments(args as String[])
-            buildLauncher.forTasks(tasks).run()
-        } finally {
-            connection.close();
-        }
+        def buildLauncher = gradleWithPropertiesConnection.newBuild()
+        def args = p.collect { property , value -> "-D${property}=${value}"}
+        buildLauncher.setJvmArguments(args as String[])
+        buildLauncher.forTasks(tasks).run()
     }
 
     protected void runGradleNoVariants(String ... tasks) {
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testNovariantsProject).connect();
-        try {
-            connection.newBuild().forTasks(tasks).run();
-        } finally {
-            connection.close();
-        }
+        gradleNoVariantsConnection.newBuild().forTasks(tasks).run();
     }
 
     protected void runGradleAndroidAnalysis(String ... tasks) {
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testAndroidConventionProject).connect();
-        try {
-            connection.newBuild().forTasks(tasks).run();
-        } finally {
-            connection.close();
-        }
+        testAndroidConventionConnection.newBuild().forTasks(tasks).run();
     }
 
     protected void runGradleAndroidAnalysisWrongConvention(String ... tasks) {
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testAndroidWrongConventionProject).connect();
-        try {
-            connection.newBuild().forTasks(tasks).run();
-        } finally {
-            connection.close();
-        }
+        connection.newBuild().forTasks(tasks).run();
     }
 
     @Test
@@ -92,11 +91,11 @@ class ExecuteAndroidBuildsTest {
     void testBuildDebug() {
         runGradle('buildAllDebug')
         assertTrue(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42.apk").exists())
+                        "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                        "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                        "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
 
@@ -104,32 +103,32 @@ class ExecuteAndroidBuildsTest {
     void testBuildRelease() {
         runGradle('buildAllRelease')
         assertTrue(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-1.0.1-SNAPSHOT_42.apk").exists())
+                        "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                        "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                        "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
     @Test
     void testBuildDebugNoVariant() {
         runGradleNoVariants('buildAllDebug')
         assertTrue(new File(testNovariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
+                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
     }
     @Test
     void testBuildReleaseNoVariant() {
         runGradleNoVariants('buildAllRelease')
         assertTrue(new File(testNovariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
+                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
 

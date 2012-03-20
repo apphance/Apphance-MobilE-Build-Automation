@@ -1,35 +1,46 @@
 package com.apphance.ameba.runBuilds.ios;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
 
-import org.gradle.tooling.BuildException;
+import org.gradle.tooling.BuildException
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.After
+import org.junit.AfterClass
 import org.junit.Before
-import org.junit.Test;
+import org.junit.BeforeClass
+import org.junit.Test
 
 
 class CheckIOSPluginDependenciesTest {
-    File testProject = new File("testProjects/test-dependencies")
-    File gradleBuild = new File(testProject,"build.gradle")
+    static File testProject = new File("testProjects/test-dependencies")
+    static File gradleBuild = new File(testProject,"build.gradle")
+    static ProjectConnection connection
 
     @Before
     void before() {
         gradleBuild.delete()
     }
 
-
     @After
     void after() {
         gradleBuild.delete()
     }
 
+    @BeforeClass
+    static void beforeClass() {
+        connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
+    }
+
+    @AfterClass
+    static void afterClass() {
+        connection.close()
+    }
+
     String runTests(File gradleBuildToCopy, String expected, String ... tasks) {
         gradleBuild << gradleBuildToCopy.text
         ByteArrayOutputStream os = new ByteArrayOutputStream()
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
         try {
             BuildLauncher bl = connection.newBuild().forTasks(tasks);
             bl.setStandardOutput(os)
@@ -45,8 +56,6 @@ class CheckIOSPluginDependenciesTest {
             assertTrue(msg.contains(expected))
             println res
             return res
-        } finally {
-            connection.close();
         }
     }
 

@@ -2,51 +2,51 @@ package com.apphance.ameba.runBuilds.ios;
 
 import static org.junit.Assert.*
 
-
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Test
-
-import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.android.AndroidManifestHelper
 
 
 
 class ExecuteIosBuildsTest {
 
-    File testProjectMoreVariants = new File("testProjects/ios-morevariants/GradleXCodeMoreVariants")
-    File testProjectOneVariant = new File("testProjects/ios/GradleXCode")
-    File templateFile = new File("templates/ios")
+    static File testProjectMoreVariants = new File("testProjects/ios-morevariants/GradleXCodeMoreVariants")
+    static File testProjectOneVariant = new File("testProjects/ios/GradleXCode")
+    static File templateFile = new File("templates/ios")
+    static ProjectConnection connection
+    static ProjectConnection gradleWithPropertiesConnection
+    static ProjectConnection gradleOneVariantConnection
+
+    @BeforeClass
+    static void beforeClass() {
+        connection = GradleConnector.newConnector().forProjectDirectory(testProjectMoreVariants).connect();
+        gradleWithPropertiesConnection = GradleConnector.newConnector().forProjectDirectory(testProjectMoreVariants).connect();
+        gradleOneVariantConnection = GradleConnector.newConnector().forProjectDirectory(testProjectOneVariant).connect();
+    }
+
+    @AfterClass
+    static void afterClass() {
+        connection.close()
+        gradleWithPropertiesConnection.close()
+        gradleOneVariantConnection.close()
+    }
 
     protected void runGradleMoreVariants(String ... tasks) {
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProjectMoreVariants).connect();
-        try {
-            def buildLauncher = connection.newBuild()
-            buildLauncher.forTasks(tasks).run();
-        } finally {
-            connection.close();
-        }
+        def buildLauncher = connection.newBuild()
+        buildLauncher.forTasks(tasks).run();
     }
 
     protected void runGradleWithProperties(Properties p, String ... tasks) {
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProjectMoreVariants).connect();
-        try {
-            def buildLauncher = connection.newBuild()
-            def args = p.collect { property , value -> "-D${property}=${value}"}
-            buildLauncher.setJvmArguments(args as String[])
-            buildLauncher.forTasks(tasks).run()
-        } finally {
-            connection.close();
-        }
+        def buildLauncher = gradleWithPropertiesConnection.newBuild()
+        def args = p.collect { property , value -> "-D${property}=${value}"}
+        buildLauncher.setJvmArguments(args as String[])
+        buildLauncher.forTasks(tasks).run()
     }
 
     protected void runGradleOneVariant(String ... tasks) {
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProjectOneVariant).connect();
-        try {
-            connection.newBuild().forTasks(tasks).run();
-        } finally {
-            connection.close();
-        }
+        gradleOneVariantConnection.newBuild().forTasks(tasks).run();
     }
 
     @Test
@@ -69,15 +69,15 @@ class ExecuteIosBuildsTest {
     void testBuildOneVariant() {
         runGradleOneVariant('buildAll')
         assertTrue(new File(testProjectOneVariant,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
         assertTrue(new File(testProjectOneVariant,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32.mobileprovision").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32.mobileprovision").exists())
         assertTrue(new File(testProjectOneVariant,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32.zip").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32.zip").exists())
         assertTrue(new File(testProjectOneVariant,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32_dSYM.zip").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32_dSYM.zip").exists())
         assertFalse(new File(testProjectOneVariant,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/AnotherConfiguration/GradleXCode-AnotherConfiguration-1.0-SNAPSHOT_32.ipa").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/AnotherConfiguration/GradleXCode-AnotherConfiguration-1.0-SNAPSHOT_32.ipa").exists())
     }
 
 
@@ -85,21 +85,21 @@ class ExecuteIosBuildsTest {
     void testBuildMoreVariants() {
         runGradleMoreVariants('buildAll')
         assertTrue(new File(testProjectMoreVariants,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
         assertTrue(new File(testProjectMoreVariants,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32.mobileprovision").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32.mobileprovision").exists())
         assertTrue(new File(testProjectMoreVariants,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32.zip").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32.zip").exists())
         assertTrue(new File(testProjectMoreVariants,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32_dSYM.zip").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32_dSYM.zip").exists())
         assertTrue(new File(testProjectMoreVariants,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/AnotherConfiguration/GradleXCodeMoreVariants-AnotherConfiguration-1.0-SNAPSHOT_32.ipa").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/AnotherConfiguration/GradleXCodeMoreVariants-AnotherConfiguration-1.0-SNAPSHOT_32.ipa").exists())
         assertTrue(new File(testProjectMoreVariants,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/AnotherConfiguration/GradleXCodeMoreVariants-AnotherConfiguration-1.0-SNAPSHOT_32.mobileprovision").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/AnotherConfiguration/GradleXCodeMoreVariants-AnotherConfiguration-1.0-SNAPSHOT_32.mobileprovision").exists())
         assertTrue(new File(testProjectMoreVariants,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/AnotherConfiguration/GradleXCodeMoreVariants-AnotherConfiguration-1.0-SNAPSHOT_32.zip").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/AnotherConfiguration/GradleXCodeMoreVariants-AnotherConfiguration-1.0-SNAPSHOT_32.zip").exists())
         assertTrue(new File(testProjectMoreVariants,
-                "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/AnotherConfiguration/GradleXCodeMoreVariants-AnotherConfiguration-1.0-SNAPSHOT_32_dSYM.zip").exists())
+                        "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/AnotherConfiguration/GradleXCodeMoreVariants-AnotherConfiguration-1.0-SNAPSHOT_32_dSYM.zip").exists())
     }
 
     @Test
@@ -140,5 +140,4 @@ class ExecuteIosBuildsTest {
         assertTrue(file.exists())
         assertTrue(file.size() > 30000)
     }
-
 }

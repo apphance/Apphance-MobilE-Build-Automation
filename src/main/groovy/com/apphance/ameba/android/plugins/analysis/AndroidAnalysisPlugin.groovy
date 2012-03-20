@@ -121,17 +121,17 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
             findbugsFile.delete()
             findbugsFile << findbugsXml.getContent()
             if (project.hasProperty(FINDBUGS_HOME_DIR_PROPERTY)) {
-                findbugsHomeDir = new File(project[FINDBUGS_HOME_DIR_PROPERTY])
+                this.findbugsHomeDir = new File(project[FINDBUGS_HOME_DIR_PROPERTY])
             } else {
-                findbugsHomeDir = new File(FINDBUGS_DEFAULT_HOME)
+                this.findbugsHomeDir = new File(FINDBUGS_DEFAULT_HOME)
             }
-            if (!findbugsHomeDir.exists()  && !findbugsHomeDir.isDirectory()) {
-                throw new GradleException("The file ${findbugsHomeDir} should point to findbugs home directory. You can change it by specifying -Pfindbugs.home.dir=<DIR>")
+            if (!this.findbugsHomeDir.exists()  && !this.findbugsHomeDir.isDirectory()) {
+                throw new GradleException("The file ${this.findbugsHomeDir} should point to findbugs home directory. You can change it by specifying -Pfindbugs.home.dir=<DIR>")
             }
             project.ant {
                 taskdef(name:'findbugs', classname:'edu.umd.cs.findbugs.anttask.FindBugsTask',
                                 classpath: project.configurations.findbugsConf.asPath)
-                findbugs(home: findbugsHomeDir.absolutePath,
+                findbugs(home: this.findbugsHomeDir.absolutePath,
                                 output:'xml', outputFile:"build/analysis/findbugs-result.xml",
                                 excludefilter:"build/analysis/findbugs-exclude.xml") {
                                     sourcePath(path: 'src')

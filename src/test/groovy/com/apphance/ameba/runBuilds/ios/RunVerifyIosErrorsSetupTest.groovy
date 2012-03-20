@@ -7,13 +7,16 @@ import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.After
+import org.junit.AfterClass;
 import org.junit.Before
+import org.junit.BeforeClass;
 import org.junit.Test
 
 class RunVerifyIosErrorsSetupTest {
-    File testIosProject = new File("testProjects/ios/GradleXCode")
-    File gradleProperties = new File(testIosProject,"gradle.properties")
-    File gradlePropertiesOrig = new File(testIosProject,"gradle.properties.orig")
+    static File testIosProject = new File("testProjects/ios/GradleXCode")
+    static File gradleProperties = new File(testIosProject,"gradle.properties")
+    static File gradlePropertiesOrig = new File(testIosProject,"gradle.properties.orig")
+    static ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testIosProject).connect();
 
     @Before
     void before() {
@@ -21,32 +24,36 @@ class RunVerifyIosErrorsSetupTest {
         gradlePropertiesOrig << gradleProperties.text
     }
 
-
     @After
     void after() {
         gradleProperties.delete()
         gradleProperties << gradlePropertiesOrig.text
     }
 
-    String runTests(String ... tasks) {
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testIosProject).connect();
-        try {
-            ByteArrayOutputStream os = new ByteArrayOutputStream()
-            BuildLauncher bl = connection.newBuild().forTasks(tasks);
-            bl.setStandardOutput(os)
-            bl.run();
-            def res = os.toString("UTF-8")
-            println res
-            assertFalse(res.contains('BUILD SUCCESSFUL'))
-            return res
-        } finally {
-            connection.close();
-        }
+    @BeforeClass
+    static void beforeClass() {
+        connection = GradleConnector.newConnector().forProjectDirectory(testIosProject).connect()
     }
+
+    @AfterClass
+    static void afterClass() {
+        connection.close()
+    }
+    String runTests(String ... tasks) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream()
+        BuildLauncher bl = connection.newBuild().forTasks(tasks);
+        bl.setStandardOutput(os)
+        bl.run();
+        def res = os.toString("UTF-8")
+        println res
+        assertFalse(res.contains('BUILD SUCCESSFUL'))
+        return res
+    }
+
     public void runErrorScenario(pattern, String replacement, String expected){
         gradleProperties.delete()
         String newText = gradlePropertiesOrig.text.split('\n')*.
-                replaceFirst(pattern,replacement).join('\n')
+                        replaceFirst(pattern,replacement).join('\n')
         println newText
         gradleProperties << newText
         // HACK ... Run it up to two times just to avoid some random gradle daemon problems
