@@ -44,8 +44,9 @@ test {
 		exclude "**/ios/**/*",
 				"**/ExecuteAndroidBuildsTest.class", // analysis tasks
 				"**/RemoveSymlinksTest.class" // uses ln command
+				"**/ApphanceOTFTest.class" // 'gradle' called directly from ProcessBuilder
 	}
-	else if (os.contains("os x")) {
+	else {
 		exclude "**/wp7/**/*"
 	}
 }

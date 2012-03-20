@@ -20,7 +20,10 @@ class Wp7PPluginTasksTest extends AbstractBaseWp7TasksTest {
 	public void testBuildTasksAvailable() {
 		verifyTasksInGroup(getProject(),[
 			'buildAll',
+			'buildAnyCPUDebug',
+			'buildAnyCPURelease',
 			'clean',
+			'copySources',
 		],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
 	}
 
@@ -49,3 +52,5 @@ class Wp7PPluginTasksTest extends AbstractBaseWp7TasksTest {
 		],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
 	}
 }
+
+

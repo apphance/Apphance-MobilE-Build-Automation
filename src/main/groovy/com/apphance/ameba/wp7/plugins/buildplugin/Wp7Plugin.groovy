@@ -64,8 +64,6 @@ class Wp7Plugin implements Plugin<Project> {
 		def task = project.task('buildAll')
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
 		task.description = 'Builds all target/configuration combinations and produces all artifacts'
-		println("Building all builds")
-
 		File slnFile = wp7ProjectHelper.getSolutionFile(project.rootDir)
 		wp7ProjectHelper.readConfigurationsFromSln(slnFile, wp7Conf)
 

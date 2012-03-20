@@ -35,7 +35,7 @@ class TrxToXmlTransformerTest {
 		def testCase = results.'test-case'[0]
 
 		assertNotNull(testCase)
-		assertEquals(".add", testCase.@name.toString())
+		assertEquals(".TestAlwaysFail", testCase.@name.toString())
 		assertEquals("True", testCase.@executed.toString())
 		assertEquals("1", testCase.@asserts.toString())
 	}
