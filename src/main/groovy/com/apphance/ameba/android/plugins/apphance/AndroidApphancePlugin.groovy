@@ -51,20 +51,16 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     void prepareConvertLogsToApphance(project) {
         def task = project.task('convertLogsToApphance')
-        task.description = "Converts all logs to apphance from android logs for Debug builds"
+        task.description = "Converts all logs to apphance from android logs for the source project"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-        task << { replaceLogsWithApphance(project, variant) }
+        task << { replaceLogsWithApphance(project, null) }
     }
 
     void prepareConvertLogsToAndroid(project) {
         def task = project.task('convertLogsToAndroid')
-        task.description = "Converts all logs to android from apphance logs for Release builds"
+        task.description = "Converts all logs to android from apphance logs for the source project"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-        task << {
-            if (androidConf.debugRelease[variant] == 'Release') {
-                replaceLogsWithAndroid(project, variant)
-            }
-        }
+        task << { replaceLogsWithAndroid(project, null) }
     }
 
     void prepareRemoveApphaceFromManifest(project) {
