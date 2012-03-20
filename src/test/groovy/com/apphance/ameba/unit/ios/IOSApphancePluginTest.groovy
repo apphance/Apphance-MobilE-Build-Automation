@@ -1,37 +1,36 @@
 package com.apphance.ameba.unit.ios;
 
-import static org.junit.Assert.*;
-import org.junit.*
+import static org.junit.Assert.*
 
-import org.codehaus.groovy.runtime.ProcessGroovyMethods
-import com.apphance.ameba.ProjectHelper;
+import org.gradle.tooling.GradleConnector
+import org.gradle.tooling.ProjectConnection
+import org.junit.*
 
 class IOSApphancePluginTest {
 
-	File projectDir
+    File projectDir
 
-	protected void runGradle(String ... tasks) {
-		def cmd = ['gradle']
-		cmd << '--stacktrace'
-		tasks.each { cmd << it }
-		ProcessBuilder processBuilder = new ProcessBuilder()
-		processBuilder.command(cmd).directory(projectDir).redirectErrorStream(true)
-		Process process = processBuilder.start()
-		Thread outputThread = ProcessGroovyMethods.consumeProcessOutputStream(process, System.out)
-		process.waitFor()
-	}
+    protected void runGradle(String ... tasks) {
+        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(projectDir).connect();
+        try {
+            def buildLauncher = connection.newBuild()
+            buildLauncher.forTasks(tasks).run();
+        } finally {
+            connection.close();
+        }
+    }
 
-	@Test
-	void addApphanceTest() {
-		projectDir = new File('testProjects/ios/GradleXCode')
-		runGradle('clean', 'build-GradleXCode-BasicConfiguration')
-		assertTrue(new File(projectDir, "ota/ssasdadasdasd/1-SNAPSHOT_1/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1-SNAPSHOT_1.ipa").exists())
-	}
+    @Test
+    void addApphanceTest() {
+        projectDir = new File('testProjects/ios/GradleXCode')
+        runGradle('clean', 'build-GradleXCode-BasicConfiguration')
+        assertTrue(new File(projectDir, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
+    }
 
-	@Test
-	void addApphanceTestWithApphanceAlreadyInProject() {
-		projectDir = new File('testProjects/ios/GradleXCodeWithApphance')
-		runGradle('clean', 'build-GradleXCodeWithApphance-BasicConfiguration')
-		assertTrue(new File(projectDir, "ota/ssasdadasdasd/1-SNAPSHOT_1/GradleXCodeWithApphance/BasicConfiguration/GradleXCodeWithApphance-BasicConfiguration-1-SNAPSHOT_1.ipa").exists())
-	}
+    @Test
+    void addApphanceTestWithApphanceAlreadyInProject() {
+        projectDir = new File('testProjects/ios/GradleXCodeWithApphance')
+        runGradle('clean', 'build-GradleXCodeWithApphance-BasicConfiguration')
+        assertTrue(new File(projectDir, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeWithApphance/BasicConfiguration/GradleXCodeWithApphance-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
+    }
 }
