@@ -49,11 +49,13 @@ class ProjectReleaseCategory {
                 releaseConf.projectDirectoryName = directory
             } else {
                 // migration from old version TODO: remove me when not needed
-                releaseConf.baseUrl = new URL(project.readProperty('project.url.base'))
-                releaseConf.projectDirectoryName = project.readProperty('project.directory.name')
-                if (releaseConf.baseUrl != null && releaseConf.projectDirectoryName != null) {
-                    project.ext[ProjectReleaseProperty.RELEASE_PROJECT_URL.propertyName] =
-                    new URL(releaseConf.baseUrl, releaseConf.projectDirectoryName)
+                if (project.readProperty('project.url.base') != null) {
+                    releaseConf.baseUrl = new URL(project.readProperty('project.url.base'))
+                    releaseConf.projectDirectoryName = project.readProperty('project.directory.name')
+                    if (releaseConf.baseUrl != null && releaseConf.projectDirectoryName != null) {
+                        project.ext[ProjectReleaseProperty.RELEASE_PROJECT_URL.propertyName] =
+                        new URL(releaseConf.baseUrl, releaseConf.projectDirectoryName)
+                    }
                 }
             }
             def iconFile = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE)
