@@ -49,12 +49,21 @@ class RunVerifyIosErrorsSetupTest {
                 replaceFirst(pattern,replacement).join('\n')
         println newText
         gradleProperties << newText
-        try {
-            runTests('verifySetup')
-        } catch (BuildException e) {
-            println e.cause.cause.cause.message
-            assertTrue(e.cause.cause.cause.message.contains(expected))
+        // HACK ... Run it up to two times just to avoid some random gradle daemon problems
+        String message
+        int count = 2
+        while(--count >0) {
+            try {
+                runTests('verifySetup')
+            } catch (BuildException e) {
+                message =  e.cause.cause.cause.message
+                println message
+                if (message.contains(expected)){
+                    break
+                }
+            }
         }
+        assertTrue(message.contains(expected))
     }
 
     @Test
