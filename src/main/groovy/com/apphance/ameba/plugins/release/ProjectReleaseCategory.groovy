@@ -49,7 +49,7 @@ class ProjectReleaseCategory {
                 releaseConf.projectDirectoryName = directory
             } else {
                 // migration from old version TODO: remove me when not needed
-                releaseConf.baseUrl = project.readProperty('project.url.base')
+                releaseConf.baseUrl = new URL(project.readProperty('project.url.base'))
                 releaseConf.projectDirectoryName = project.readProperty('project.directory.name')
                 if (releaseConf.baseUrl != null && releaseConf.projectDirectoryName != null) {
                     project.ext[ProjectReleaseProperty.RELEASE_PROJECT_URL.propertyName] =
