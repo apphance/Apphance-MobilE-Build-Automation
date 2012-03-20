@@ -16,7 +16,7 @@ class AndroidCommandParser {
             'list',
             'target'
         ]
-        File outFile = new File(project.rootDir,"tmp/android_list_target.txt")
+        File outFile = project.file("tmp/android_list_target.txt")
         outFile.delete()
         outFile.parentFile.mkdirs()
         Process process = projectHelper.executeCommandInBackground(project.rootDir, outFile, commandTarget)

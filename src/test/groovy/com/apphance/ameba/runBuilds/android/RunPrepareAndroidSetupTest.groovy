@@ -67,26 +67,22 @@ class RunPrepareAndroidSetupTest {
 # Or you can re-run the prepareSetup command
 # for guided re-configuration
 ###########################################################
-# Base properties
-###########################################################
-project.icon.file=res/drawable-hdpi/icon.png
-project.url.base=
-project.directory.name=
-project.language=en
-project.country=US
-###########################################################
 # Mercurial properties
 ###########################################################
 hg.commit.user=
 ###########################################################
 # Android properties
 ###########################################################
-android.mainVariant=
+android.mainVariant=market
 android.excluded.builds=
-android.minSdk.target=
+android.minSdk.target=android-7
 ###########################################################
 # Release properties
 ###########################################################
+release.project.icon.file=res/drawable-hdpi/icon.png
+release.project.url=
+release.project.language=en
+release.project.country=US
 release.mail.from=
 release.mail.to=
 release.mail.flags=qrCode,imageMontage

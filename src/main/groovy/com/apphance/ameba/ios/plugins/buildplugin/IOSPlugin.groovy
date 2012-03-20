@@ -36,8 +36,7 @@ class IOSPlugin implements Plugin<Project> {
     ProjectHelper projectHelper
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
-
-    IOSXCodeOutputParser iosXcodeOutputParser
+    IOSSingleVariantBuilder iosSingleVariantBuilder
 
     public static final List<String> FAMILIES = ['iPad', 'iPhone']
 
@@ -46,8 +45,9 @@ class IOSPlugin implements Plugin<Project> {
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
-            this.iosXcodeOutputParser = new IOSXCodeOutputParser()
-            this.iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
+            this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+            this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, project.ant)
+            prepareCopySourcesTask(project)
             prepareReadIosProjectConfigurationTask(project)
             prepareReadIosTargetsAndConfigurationsTask(project)
             prepareReadIosProjectVersionsTask(project)
@@ -74,23 +74,36 @@ class IOSPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task.description = 'Reads iOS project configuration'
         task << {
-            use (PropertyCategory) {
-                this.pListFileName = project.readProperty(IOSProjectProperty.PLIST_FILE)
-                iosConf.mainTarget = project.readProperty(IOSProjectProperty.MAIN_TARGET)
-                iosConf.mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
-                iosConf.sdk = project.readProperty(IOSProjectProperty.IOS_SDK)
-                iosConf.simulatorsdk = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK)
-                iosConf.plistFile = pListFileName == null ? null : project.file(pListFileName)
-                String distDirName = project.readProperty(IOSProjectProperty.DISTRIBUTION_DIR)
-                iosConf.distributionDirectory = distDirName == null ? null : project.file( distDirName)
-                iosConf.families = project.readProperty(IOSProjectProperty.IOS_FAMILIES).split(",")*.trim()
-                iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
-                if (iosConf.plistFile != null) {
-                    conf.commitFilesOnVCS << iosConf.plistFile.absolutePath
-                }
-            }
+            readIosProjectConfiguration(project)
         }
         project.readProjectConfiguration.dependsOn(task)
+    }
+
+    private readIosProjectConfiguration(Project project) {
+        use (PropertyCategory) {
+            readBasicIosProjectProperties(project)
+            iosConf.sdk = project.readProperty(IOSProjectProperty.IOS_SDK)
+            iosConf.simulatorsdk = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK)
+            iosConf.plistFile = pListFileName == null ? null : project.file(pListFileName)
+            String distDirName = project.readProperty(IOSProjectProperty.DISTRIBUTION_DIR)
+            iosConf.distributionDirectory = distDirName == null ? null : project.file( distDirName)
+            iosConf.families = project.readProperty(IOSProjectProperty.IOS_FAMILIES).split(",")*.trim()
+            if (iosConf.plistFile != null) {
+                conf.commitFilesOnVCS << iosConf.plistFile.absolutePath
+            }
+        }
+    }
+
+    private readBasicIosProjectProperties(Project project) {
+        use (PropertyCategory) {
+            this.pListFileName = project.readProperty(IOSProjectProperty.PLIST_FILE)
+            if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
+                iosConf.xCodeProjectDirectory  = new File(project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
+            }
+            iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
+            iosConf.mainTarget = project.readProperty(IOSProjectProperty.MAIN_TARGET)
+            iosConf.mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
+        }
     }
 
     def void prepareReadIosTargetsAndConfigurationsTask(Project project) {
@@ -99,16 +112,6 @@ class IOSPlugin implements Plugin<Project> {
         task.description = 'Reads iOS xCode project parameters'
         task << {
             project.file("bin").mkdirs()
-            def trimmedListOutput = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)*.trim()
-            IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
-            project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  iosXcodeOutputParser.readProjectName(trimmedListOutput)
-            iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmedListOutput)
-            iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmedListOutput)
-            iosConf.alltargets = iosXcodeOutputParser.readBaseTargets(trimmedListOutput, { true })
-            iosConf.allconfigurations = iosXcodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
-            def trimmedSdkOutput = projectHelper.executeCommand(project, ["xcodebuild", "-showsdks"]as String[],false, null, null, 1, true)*.trim()
-            iosConf.allIphoneSDKs = iosXcodeOutputParser.readIphoneSdks(trimmedSdkOutput)
-            iosConf.allIphoneSimulatorSDKs = iosXcodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
             if (iosConf.targets == ['']) {
                 logger.lifecycle("Please specify at least one target")
                 iosConf.targets = []
@@ -133,6 +136,29 @@ class IOSPlugin implements Plugin<Project> {
         project.readProjectConfiguration.dependsOn(task)
     }
 
+    private readProjectConfigurationFromXCode(Project project) {
+        use (PropertyCategory) {
+            if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
+                iosConf.xCodeProjectDirectory  = new File(project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
+            }
+        }
+        def cmd = (iosConf.getXCodeBuildExecutionPath() + [ "-list" ]) as String []
+        def trimmedListOutput = projectHelper.executeCommand(project, cmd, false, null, null, 1, false)*.trim()
+        if (trimmedListOutput.empty || trimmedListOutput[0] == '') {
+            throw new GradleException("Error while running ${cmd}:")
+        } else {
+            IOSProjectConfiguration iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+            project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] =  IOSXCodeOutputParser.readProjectName(trimmedListOutput)
+            iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmedListOutput)
+            iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedListOutput)
+            iosConf.alltargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })
+            iosConf.allconfigurations = IOSXCodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
+            def trimmedSdkOutput = projectHelper.executeCommand(project, (iosConf.getXCodeBuildExecutionPath() + ["-showsdks"]) as String[],false, null, null, 1, true)*.trim()
+            iosConf.allIphoneSDKs = IOSXCodeOutputParser.readIphoneSdks(trimmedSdkOutput)
+            iosConf.allIphoneSimulatorSDKs = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
+        }
+    }
+
 
     void prepareReadIosProjectVersionsTask(Project project) {
         def task = project.task('readIOSProjectVersions')
@@ -144,19 +170,19 @@ class IOSPlugin implements Plugin<Project> {
                 def root = getParsedPlist(project)
                 if (root != null) {
                     XPathAPI.selectNodeList(root,
-                            '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
-                                conf.versionString =  it.nextSibling.nextSibling.textContent
-                            }
+                                    '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
+                                        conf.versionString =  it.nextSibling.nextSibling.textContent
+                                    }
                     XPathAPI.selectNodeList(root,
-                            '/plist/dict/key[text()="CFBundleVersion"]').each{
-                                def versionCodeString = it.nextSibling.nextSibling.textContent
-                                try {
-                                    conf.versionCode = versionCodeString.toLong()
-                                } catch (NumberFormatException e) {
-                                    logger.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
-                                    conf.versionCode = 0
-                                }
-                            }
+                                    '/plist/dict/key[text()="CFBundleVersion"]').each{
+                                        def versionCodeString = it.nextSibling.nextSibling.textContent
+                                        try {
+                                            conf.versionCode = versionCodeString.toLong()
+                                        } catch (NumberFormatException e) {
+                                            logger.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
+                                            conf.versionCode = 0
+                                        }
+                                    }
                     if (!project.isPropertyOrEnvironmentVariableDefined('version.string')) {
                         logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
                         conf.versionString = conf.versionString + "-SNAPSHOT"
@@ -173,14 +199,11 @@ class IOSPlugin implements Plugin<Project> {
         def task = project.task('buildAll')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task.description = 'Builds all target/configuration combinations and produces all artifacts (zip, ipa, messages, etc)'
-        iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
-        def lines = projectHelper.executeCommand(project, ["xcodebuild", "-list"]as String[],false, null, null, 1, true)
-        def trimmed = lines*.trim()
-        iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmed)
-        iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmed)
+        readProjectConfigurationFromXCode(project)
+        readBasicIosProjectProperties(project)
         def targets = iosConf.targets
         def configurations = iosConf.configurations
-        println("Building all builds")
+        println("Preparing all build tasks")
         targets.each { target ->
             configurations.each { configuration ->
                 def id = "${target}-${configuration}".toString()
@@ -190,11 +213,11 @@ class IOSPlugin implements Plugin<Project> {
                     singleTask.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
                     singleTask.description = "Builds target:${target} configuration:${configuration}"
                     singleTask << {
-                        def singleReleaseBuilder = new IOSSingleReleaseBuilder(project, project.ant)
+                        def singleReleaseBuilder = new IOSSingleVariantBuilder(project, project.ant)
                         singleReleaseBuilder.buildRelease(project, target, configuration)
                     }
                     task.dependsOn(singleTask)
-                    singleTask.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.verifySetup)
+                    singleTask.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.verifySetup, project.copySources)
                 } else {
                     println ("Skipping build ${id} - it is excluded in configuration (${iosConf.excludedBuilds})")
                 }
@@ -217,7 +240,10 @@ class IOSPlugin implements Plugin<Project> {
 
 
     private org.w3c.dom.Element getParsedPlist(File file) {
-        def builder     = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        def builderFactory = DocumentBuilderFactory.newInstance()
+        builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        builderFactory.setFeature("http://xml.org/sax/features/validation", false)
+        def builder = builderFactory.newDocumentBuilder()
         return new XMLBomAwareFileReader().readXMLFileIncludingBom(file)
     }
 
@@ -227,13 +253,13 @@ class IOSPlugin implements Plugin<Project> {
         task.description = "Builds single release for iOS. Requires ios.target and ios.configuration properties"
         task << {
             use (PropertyCategory) {
-                def singleReleaseBuilder = new IOSSingleReleaseBuilder(project, this.ant)
+                def singleReleaseBuilder = new IOSSingleVariantBuilder(project, this.ant)
                 String target = project.readExpectedProperty(IOS_TARGET_LOCAL_PROPERTY)
                 String configuration = project.readExpectedProperty(IOS_CONFIGURATION_LOCAL_PROPERTY)
                 singleReleaseBuilder.buildRelease(project, target, configuration)
             }
         }
-        task.dependsOn(project.readProjectConfiguration, project.verifySetup)
+        task.dependsOn(project.readProjectConfiguration, project.verifySetup, project.copySources)
     }
 
 
@@ -245,7 +271,7 @@ class IOSPlugin implements Plugin<Project> {
             projectHelper.executeCommand(project, ["dot_clean", "./"]as String [])
             ant.delete(dir: project.file("build"), verbose: true)
             ant.delete(dir: project.file("bin"), verbose: true)
-            ant.delete(dir: project.file("documentation"), verbose: true)
+            ant.delete(dir: project.file("tmp"), verbose: true)
         }
         task.dependsOn(project.cleanConfiguration)
     }
@@ -366,6 +392,28 @@ class IOSPlugin implements Plugin<Project> {
         return result
     }
 
+    void prepareCopySourcesTask(Project project) {
+        def task = project.task('copySources')
+        task.description = "Copies all sources to tmp directory for build"
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        task << {
+            iosConf.alltargets.each { target ->
+                iosConf.allconfigurations.each { configuration ->
+                    if (!iosConf.isBuildExcluded(target + "-" + configuration)) {
+                        new AntBuilder().sync(toDir : iosSingleVariantBuilder.tmpDir(target, configuration), overwrite:true, verbose:true) {
+                            fileset(dir : "${project.rootDir}/") {
+                                exclude(name: iosSingleVariantBuilder.tmpDir(target, configuration).absolutePath + '/**/*')
+                                conf.sourceExcludes.each {
+                                    exclude(name: it)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 static public final String DESCRIPTION =
 """This is the main iOS build plugin.
 
@@ -374,5 +422,4 @@ Besides tasks explained below, the plugin prepares build-*
 tasks which are dynamically created, based on targets and configurations available.
 There is one task available per each Target-Configuration combination - unless particular
 combination is excluded by the exclude property."""
-
 }

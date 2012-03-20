@@ -305,15 +305,6 @@ class ProjectHelper {
         }
     }
 
-    private void fillMailSubject(Project project, ResourceBundle resourceBundle) {
-        use (PropertyCategory) {
-            ProjectConfiguration conf = project.getProjectConfiguration()
-            String subject = resourceBundle.getString('Subject')
-            conf.releaseMailSubject = Eval.me("conf",conf,/"$subject"/)
-        }
-    }
-
-
     public void removeMissingSymlinks(File baseDirectory) {
         baseDirectory.traverse([type: FileType.FILES, maxDepth: 7]) {
             if (!it.isDirectory()) {

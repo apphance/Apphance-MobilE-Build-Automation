@@ -2,7 +2,6 @@
 package com.apphance.ameba.documentation
 
 import groovy.text.SimpleTemplateEngine
-import groovy.xml.MarkupBuilder
 
 import java.io.File
 import java.util.List
@@ -18,11 +17,11 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.buildplugin.AndroidProjectProperty
 import com.apphance.ameba.android.plugins.jarlibrary.AndroidJarLibraryProperty
 import com.apphance.ameba.android.plugins.test.AndroidTestProperty
+import com.apphance.ameba.apphance.ApphanceProperty;
 import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
 import com.apphance.ameba.ios.plugins.fonemonkey.IOSFoneMonkeyProperty
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
 import com.apphance.ameba.ios.plugins.kif.IOSKifProperty
-import com.apphance.ameba.plugins.projectconfiguration.BaseProperty
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty
 import com.apphance.ameba.vcs.plugins.git.GitProperty
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialProperty
@@ -139,13 +138,17 @@ class AmebaPluginReferenceBuilder {
 
     private String runShowConvention(File conventionsDir, String conventionName) {
         ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(conventionsDir).connect()
-        String upperCaseStartingConventionName = conventionName.replaceAll('^.') { it.toUpperCase() }
-        BuildLauncher bl = connection.newBuild().forTasks("showConvention${upperCaseStartingConventionName}");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream()
-        bl.setStandardOutput(baos)
-        bl.run()
-        String output = baos.toString('utf-8')
-        return output
+        try {
+            String upperCaseStartingConventionName = conventionName.replaceAll('^.') { it.toUpperCase() }
+            BuildLauncher bl = connection.newBuild().forTasks("showConvention${upperCaseStartingConventionName}");
+            ByteArrayOutputStream baos = new ByteArrayOutputStream()
+            bl.setStandardOutput(baos)
+            bl.run()
+            String output = baos.toString('utf-8')
+            return output
+        } finally {
+            connection.close()
+        }
      }
 
     private void addAmebaDocumentation(String groupName, String pluginName, property = null, String conventionName = null) {
@@ -214,17 +217,18 @@ class AmebaPluginReferenceBuilder {
     }
 
     public void buildDocumentation() throws Exception {
-        addAmebaDocumentation(COMMON_TASKS,'ameba-project-configuration', BaseProperty.class, 'amebaPropertyDefaults')
+        addAmebaDocumentation(COMMON_TASKS,'ameba-project-configuration', null, 'amebaPropertyDefaults')
         addAmebaDocumentation(VCS_TASKS, 'ameba-git', GitProperty.class)
         addAmebaDocumentation(VCS_TASKS, 'ameba-mercurial', MercurialProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-build', AndroidProjectProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-build', IOSProjectProperty.class)
         addAmebaDocumentation(COMMON_TASKS, 'ameba-project-release', ProjectReleaseProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-analysis', null, 'androidAnalysis')
-        addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-apphance')
+        addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-apphance', ApphanceProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-jarlibrary', AndroidJarLibraryProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-release')
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-test', AndroidTestProperty.class)
+        addAmebaDocumentation(IOS_TASKS, 'ameba-ios-apphance', ApphanceProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-cedar')
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-fonemonkey',IOSFoneMonkeyProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-framework', IOSFrameworkProperty.class)

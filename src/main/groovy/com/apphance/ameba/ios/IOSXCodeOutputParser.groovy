@@ -16,36 +16,36 @@ class IOSXCodeOutputParser {
 
     static public final String IOS_PROJECT_CONFIGURATION_KEY = 'ios.project.configuration'
 
-    IOSProjectConfiguration getIosProjectConfiguration(Project project){
-        if (!project.hasProperty(IOS_PROJECT_CONFIGURATION_KEY)) {
-            project[IOS_PROJECT_CONFIGURATION_KEY] = new IOSProjectConfiguration()
+    static IOSProjectConfiguration getIosProjectConfiguration(Project project){
+        if (!project.ext.has(IOS_PROJECT_CONFIGURATION_KEY)) {
+            project.ext.set(IOS_PROJECT_CONFIGURATION_KEY,new IOSProjectConfiguration())
         }
-        return project[IOS_PROJECT_CONFIGURATION_KEY]
+        return project.ext.get(IOS_PROJECT_CONFIGURATION_KEY)
     }
 
-    Collection readBuildableConfigurations(List trimmedOutput) {
+    static Collection readBuildableConfigurations(List trimmedOutput) {
         return readBaseConfigurations(trimmedOutput, {it != "Debug" && it != "Release"})
     }
 
-    Collection readBuildableTargets(List trimmedOutput) {
+    static Collection readBuildableTargets(List trimmedOutput) {
         return readBaseTargets(trimmedOutput, {!it.endsWith('Tests') && !it.endsWith('Specs')})
     }
 
-    Collection readBaseConfigurations(List trimmed, Closure filter) {
+    static Collection readBaseConfigurations(List trimmed, Closure filter) {
         def startConfigurations = trimmed.indexOf('Build Configurations:')
         def configurations = trimmed[startConfigurations + 1 ..-1]
         def onlyConfigurations = configurations[0.. configurations.indexOf('') - 1]
         return onlyConfigurations.findAll (filter)
     }
 
-    Collection readBaseTargets(List trimmed, Closure filter) {
+    static Collection readBaseTargets(List trimmed, Closure filter) {
         def startTargets = trimmed.indexOf('Targets:')
         def targets = trimmed[startTargets + 1 ..-1]
         def onlyTargets = targets[0.. targets.indexOf('') - 1 ]
         return onlyTargets.findAll(filter)
     }
 
-    Collection readIphoneSdks(List trimmed) {
+    static Collection readIphoneSdks(List trimmed) {
         def startConfigurations = trimmed.indexOf('iOS SDKs:')
         def configurations = trimmed[startConfigurations + 1 ..-1]
         def onlyConfigurations = configurations[0.. configurations.indexOf('') - 1]
@@ -56,7 +56,7 @@ class IOSXCodeOutputParser {
         return output
     }
 
-    Collection readIphoneSimulatorSdks(List trimmed) {
+    static Collection readIphoneSimulatorSdks(List trimmed) {
         def startConfigurations = trimmed.indexOf('iOS Simulator SDKs:')
         def configurations = trimmed[startConfigurations + 1 ..-1]
         def lastIndex = configurations.indexOf('')
@@ -71,13 +71,13 @@ class IOSXCodeOutputParser {
         return output
     }
 
-    String readProjectName(List trimmed) {
+    static String readProjectName(List trimmed) {
         String firstLine = trimmed[0]
         def matcher = firstLine =~ /.*"(.*)"/
         return matcher[0][1]
     }
 
-    File findMobileProvisionFile(Project project, String target, String configuration) {
+    static File findMobileProvisionFile(Project project, String target, String configuration) {
         IOSProjectConfiguration iosConf = getIosProjectConfiguration(project)
         File f = new File(iosConf.distributionDirectory,"${target}-${configuration}.mobileprovision")
         if (f.exists()) {

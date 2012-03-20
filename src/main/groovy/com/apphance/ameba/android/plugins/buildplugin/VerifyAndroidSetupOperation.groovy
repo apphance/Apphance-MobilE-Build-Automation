@@ -14,14 +14,13 @@ import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
 class VerifyAndroidSetupOperation extends AbstractVerifySetupOperation {
     Logger logger = Logging.getLogger(VerifyAndroidSetupOperation.class)
 
-    AndroidProjectConfigurationRetriever retriever = new AndroidProjectConfigurationRetriever()
     AndroidProjectConfiguration androidConf
     VerifyAndroidSetupOperation() {
         super(AndroidProjectProperty.class)
     }
 
     void verifySetup() {
-        androidConf = retriever.getAndroidProjectConfiguration(project)
+        androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         use (PropertyCategory) {
             Properties projectProperties = readProperties()
             AndroidProjectProperty.each{ checkProperty(projectProperties, it) }

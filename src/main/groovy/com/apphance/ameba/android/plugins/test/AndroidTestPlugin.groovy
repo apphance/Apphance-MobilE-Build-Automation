@@ -33,7 +33,6 @@ class AndroidTestPlugin implements Plugin<Project>{
     private static final String AVD_PATH = 'avds'
 
     ProjectHelper projectHelper
-    AndroidProjectConfigurationRetriever androidConfRetriever
     AndroidProjectConfiguration androidConf
     File androidTestDirectory
     AndroidManifestHelper androidManifestHelper
@@ -67,8 +66,7 @@ class AndroidTestPlugin implements Plugin<Project>{
     public void apply(Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         this.projectHelper = new ProjectHelper()
-        this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
-        this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
+        this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         this.androidManifestHelper = new AndroidManifestHelper()
         this.buildXmlHelper = new AndroidBuildXmlHelper()
         def androidTestConvention = new AndroidTestConvention()

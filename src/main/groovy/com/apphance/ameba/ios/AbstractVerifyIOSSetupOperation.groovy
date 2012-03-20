@@ -13,7 +13,6 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser
 abstract class AbstractVerifyIOSSetupOperation extends AbstractVerifySetupOperation {
     Logger logger = Logging.getLogger(AbstractVerifyIOSSetupOperation.class)
 
-    IOSXCodeOutputParser iosXCodeOutputParser
     IOSProjectConfiguration iosConf
 
     AbstractVerifyIOSSetupOperation(Class<? extends Enum> clazz) {
@@ -21,8 +20,7 @@ abstract class AbstractVerifyIOSSetupOperation extends AbstractVerifySetupOperat
     }
 
     void verifySetup() {
-        iosXCodeOutputParser = new IOSXCodeOutputParser()
-        iosConf = iosXCodeOutputParser.getIosProjectConfiguration(project)
+        iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
     }
 
     void checkPlistFile(property) {

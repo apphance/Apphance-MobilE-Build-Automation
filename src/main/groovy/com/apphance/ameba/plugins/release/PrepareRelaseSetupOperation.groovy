@@ -18,10 +18,16 @@ class PrepareReleaseSetupOperation extends AbstractPrepareSetupOperation {
 
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
+        def files = getFiles { it.name.toLowerCase().equals('icon.png') }
+
         BufferedReader br = getReader()
         use (PropertyCategory) {
             ProjectReleaseProperty.each {
-                project.getProjectPropertyFromUser(it, null, br)
+                if (it == ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE) {
+                    project.getProjectPropertyFromUser(it, files, br)
+                } else {
+                    project.getProjectPropertyFromUser(it, null, br)
+                }
             }
             appendProperties()
         }

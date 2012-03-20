@@ -28,8 +28,8 @@ class CheckIOSPluginDependenciesTest {
 
     String runTests(File gradleBuildToCopy, String expected, String ... tasks) {
         gradleBuild << gradleBuildToCopy.text
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
         ByteArrayOutputStream os = new ByteArrayOutputStream()
+        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
         try {
             BuildLauncher bl = connection.newBuild().forTasks(tasks);
             bl.setStandardOutput(os)

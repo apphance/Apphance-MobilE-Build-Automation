@@ -25,7 +25,7 @@ class EmmaPluginConvention{
 	}
 
 	EmmaPluginConvention(Project project){
-		reportPath 			= "${project.reportsDir.absolutePath}/emma"
+		reportPath 			= "${project.reporting.baseDir.absolutePath}/emma"
 		coverageFileName	= "coverage"
 		tmpDir				= "${project.buildDir}/tmp/emma"
 		instrDir			= "${tmpDir}/instr"
@@ -47,12 +47,12 @@ test{
 	doFirst{
 		ant.taskdef( resource:"emma_ant.properties", classpath: configurations.emma.asPath)
 		ant.path(id:"run.classpath"){
-			pathelement(location:sourceSets.main.classesDir.absolutePath )
+			pathelement(location:sourceSets.main.output.classesDir.absolutePath )
 		}
 		ant.emma(verbosity:"${emmaConvention.verbosityLevel}"){
 			instr(merge:"true", destdir:"${emmaConvention.instrDir}", instrpathref:"run.classpath", metadatafile:"${emmaConvention.metaDataFilePath}"){
 				instrpath{
-					fileset(dir:sourceSets.main.classesDir.absolutePath, includes:"*.class")
+					fileset(dir:sourceSets.main.output.classesDir.absolutePath, includes:"*.class")
 				}
 			}
 		}

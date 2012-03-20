@@ -15,13 +15,14 @@ import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidArtifactBuilderInfo
 import com.apphance.ameba.android.AndroidBuildXmlHelper
+import com.apphance.ameba.android.AndroidBuilderInfo
 import com.apphance.ameba.android.AndroidEnvironment
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.android.AndroidSingleVariantBuilder
+import com.apphance.ameba.android.AndroidSingleVariantApkBuilder
+import com.apphance.ameba.android.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
 /**
@@ -35,10 +36,10 @@ class AndroidPlugin implements Plugin<Project> {
 
     ProjectHelper projectHelper
     ProjectConfiguration conf
-    AndroidProjectConfigurationRetriever androidConfRetriever
     AndroidProjectConfiguration androidConf
     AndroidManifestHelper manifestHelper
-    AndroidSingleVariantBuilder androidBuilder
+    AndroidSingleVariantApkBuilder androidApkBuilder
+    AndroidSingleVariantJarBuilder androidJarBuilder
     AndroidEnvironment androidEnvironment
 
     def void apply (Project project) {
@@ -46,10 +47,10 @@ class AndroidPlugin implements Plugin<Project> {
         use (PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
-            this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
-            this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
+            this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
             this.manifestHelper = new AndroidManifestHelper()
-            this.androidBuilder = new AndroidSingleVariantBuilder(project, this.androidConf)
+            this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, this.androidConf)
+            this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, this.androidConf)
             prepareCopySourcesTask(project)
             prepareAndroidEnvironment(project)
             prepareJavaEnvironment(project)
@@ -337,7 +338,7 @@ class AndroidPlugin implements Plugin<Project> {
     }
 
     private void prepareAllInstallTasks(Project project) {
-        if (androidBuilder.hasVariants()) {
+        if (androidApkBuilder.hasVariants()) {
             loopAllVariants(project,{ directory->
                 prepareInstallTask(project, directory.name)
             }, false)
@@ -348,7 +349,7 @@ class AndroidPlugin implements Plugin<Project> {
     }
 
     private void loopAllVariants(Project project, Closure closure, boolean printToOutput) {
-        androidBuilder.variantsDir.eachDir { directory ->
+        androidApkBuilder.variantsDir.eachDir { directory ->
             if (!androidConf.isBuildExcluded(directory.name)) {
                 closure (directory)
             } else {
@@ -381,11 +382,11 @@ class AndroidPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
             if (androidEnvironment.isLibrary()) {
-                AndroidArtifactBuilderInfo bi = androidBuilder.buildJarArtifactBuilderInfo(project, variant, debugRelease)
-                androidBuilder.buildSingleJar(bi)
+                AndroidBuilderInfo bi = androidJarBuilder.buildJarArtifactBuilderInfo(project, variant, debugRelease)
+                androidJarBuilder.buildSingle(bi)
             } else {
-                AndroidArtifactBuilderInfo bi = androidBuilder.buildApkArtifactBuilderInfo(project, variant, debugRelease)
-                androidBuilder.buildSingleApk(bi)
+                AndroidBuilderInfo bi = androidApkBuilder.buildApkArtifactBuilderInfo(project, variant, debugRelease)
+                androidApkBuilder.buildSingle(bi)
             }
         }
         task.dependsOn(project.readAndroidProjectConfiguration, project.verifySetup, project.copySources)
@@ -421,7 +422,7 @@ class AndroidPlugin implements Plugin<Project> {
     }
 
     void prepareAllVariants(Project project) {
-        if (androidBuilder.hasVariants()) {
+        if (androidApkBuilder.hasVariants()) {
             loopAllVariants (project,{ directory ->
                 prepareSingleVariant(project, directory.name, null)
             }, true)
@@ -446,7 +447,7 @@ class AndroidPlugin implements Plugin<Project> {
                     logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
                 }
                 AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
-                project[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.readProjectName(project.rootDir)
+                project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.readProjectName(project.rootDir)
             }
         }
         project.readProjectConfiguration.dependsOn(task)
@@ -457,9 +458,9 @@ class AndroidPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task.description = 'Reads Android project configuration from properties'
         task << {
-            androidConfRetriever.readAndroidProjectConfiguration(project)
+            AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration(project)
         }
-        androidBuilder.updateAndroidConfigurationWithVariants()
+        androidApkBuilder.updateAndroidConfigurationWithVariants()
         task.dependsOn(project.readProjectConfiguration)
     }
 

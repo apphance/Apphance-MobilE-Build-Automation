@@ -1,6 +1,7 @@
 package com.apphance.ameba.documentation;
 
 import static org.junit.Assert.*;
+import com.apphance.ameba.documentation.AmebaPluginReferenceBuilder
 
 import org.junit.Test;
 

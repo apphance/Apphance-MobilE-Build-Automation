@@ -22,15 +22,13 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
     static final String FINDBUGS_DEFAULT_HOME = '/var/lib/analysis/findbugs'
 
     File findbugsHomeDir
-    AndroidProjectConfigurationRetriever androidConfRetriever
     AndroidProjectConfiguration androidConf
 
     public void apply(Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         def androidAnalysisConvention = new AndroidAnalysisConvention()
         project.convention.plugins.put('androidAnalysis', androidAnalysisConvention)
-        this.androidConfRetriever = new AndroidProjectConfigurationRetriever()
-        this.androidConf = androidConfRetriever.getAndroidProjectConfiguration(project)
+        this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         preparePmdTask(project)
         prepareFindbugsTask(project)
         prepareCpdTask(project)

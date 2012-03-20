@@ -20,6 +20,7 @@ class IOSPropertyTest {
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
+            project[IOSProjectProperty.PROJECT_DIRECTORY.propertyName] = "Project.xcodeproj"
             project[IOSProjectProperty.PLIST_FILE.propertyName] = "test"
             project[IOSProjectProperty.EXCLUDED_BUILDS.propertyName] = ".*"
             project[IOSProjectProperty.IOS_FAMILIES.propertyName] = "iPhone,iPad"
@@ -34,6 +35,7 @@ class IOSPropertyTest {
             assertEquals('''###########################################################
 # iOS properties
 ###########################################################
+ios.project.directory=Project.xcodeproj
 ios.plist.file=test
 ios.excluded.builds=.*
 ios.families=iPhone,iPad
@@ -50,6 +52,7 @@ ios.simulator.sdk=iphonesimulator
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
+            project[IOSProjectProperty.PROJECT_DIRECTORY.propertyName] = "Project.xcodeproj"
             project[IOSProjectProperty.PLIST_FILE.propertyName] = "test"
             project[IOSProjectProperty.EXCLUDED_BUILDS.propertyName] = ".*"
             project[IOSProjectProperty.IOS_FAMILIES.propertyName] = "iPhone,iPad"
@@ -64,6 +67,8 @@ ios.simulator.sdk=iphonesimulator
             assertEquals('''###########################################################
 # iOS properties
 ###########################################################
+# Path to appropriate .xcodeproj directory
+ios.project.directory=Project.xcodeproj
 # Path to plist file of the project
 ios.plist.file=test
 # List of excluded builds. These are coma-separated regular expressions (matched against target-configuration) [optional] default: <>

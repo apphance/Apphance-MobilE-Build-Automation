@@ -14,26 +14,14 @@ import com.apphance.ameba.android.AndroidManifestHelper
 
 class ApphanceOTFTest {
 
-	boolean USE_PROCESS_EXECUTION = true
 	File testNovariantsProject = new File("testProjects/android-novariants")
 
 	protected void runGradleNoVariants(String ... tasks) {
-		if (USE_PROCESS_EXECUTION) {
-			def cmd = ['gradle']
-			cmd << '--stacktrace'
-			tasks.each { cmd << it }
-			ProcessBuilder processBuilder = new ProcessBuilder()
-			processBuilder.command(cmd).directory(testNovariantsProject).redirectErrorStream(true)
-			Process process = processBuilder.start()
-			Thread outputThread = ProcessGroovyMethods.consumeProcessOutputStream(process, System.out)
-			process.waitFor()
-		} else {
-			ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testNovariantsProject).connect();
-			try {
-				connection.newBuild().forTasks(tasks).run();
-			} finally {
-				connection.close();
-			}
+		ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testNovariantsProject).connect();
+		try {
+			connection.newBuild().forTasks(tasks).run();
+		} finally {
+			connection.close();
 		}
 	}
 

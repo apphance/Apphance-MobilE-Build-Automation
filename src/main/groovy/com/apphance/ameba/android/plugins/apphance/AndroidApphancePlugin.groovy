@@ -19,6 +19,10 @@ import com.apphance.ameba.android.AndroidProjectConfiguration;
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
 import com.apphance.ameba.android.AndroidSingleVariantBuilder;
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import com.apphance.ameba.apphance.ApphanceProperty
+import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
+import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
+import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper;
 
@@ -64,7 +68,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             manifestHelper = new AndroidManifestHelper()
-            this.androidConf = new AndroidProjectConfigurationRetriever().getAndroidProjectConfiguration(project)
+            this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
             preprocessBuildsWithApphance(project)
             prepareConvertLogsToApphance(project)
             prepareConvertLogsToAndroid(project)
@@ -284,7 +288,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     }
 
     private replaceLogsWithApphance(Project project, String variant) {
-        logger.lifecycle("Replacing android logs with apphance for ${variant}")
+        logger.lifecycle("Replacing Android logs with Apphance for ${variant}")
         project.ant.replace(casesensitive: 'true', token : 'import android.util.Log;',
                         value: 'import com.apphance.android.Log;', summary: true) {
                             fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
@@ -327,7 +331,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
         if (project[ApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
             mode = "Apphance.Mode.QA"
         } else {
-            mode = "Apphance.Mode.SILENT"
+            mode = "Apphance.Mode.Silent"
         }
         String appKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
         String startSession = "Apphance.startNewSession(this, \"${appKey}\", ${mode});"
@@ -389,12 +393,12 @@ class AndroidApphancePlugin implements Plugin<Project>{
         if (!found) {
             new File(basedir, './libs/').eachFileMatch(".*apphance.*\\.jar") { found = true }
         }
-		if (!found) {
-			found = manifestHelper.isApphanceActivityPresent(basedir)
-		}
-		if (!found) {
-			found = manifestHelper.isApphanceInstrumentationPresent(basedir)
-		}
+        if (!found) {
+            found = manifestHelper.isApphanceActivityPresent(basedir)
+        }
+        if (!found) {
+            found = manifestHelper.isApphanceInstrumentationPresent(basedir)
+        }
         return found
     }
 

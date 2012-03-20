@@ -8,15 +8,19 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 
-import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSArtifactBuilderInfo;
+import com.apphance.ameba.ios.IOSBuilderInfo;
 import com.apphance.ameba.ios.IOSXCodeOutputParser;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.MPParser
+import com.apphance.ameba.ios.plugins.release.IOSReleaseConfiguration;
+import com.apphance.ameba.ios.plugins.release.IOSReleaseConfigurationRetriever;
+import com.apphance.ameba.plugins.release.AmebaArtifact;
+import com.apphance.ameba.plugins.release.ProjectReleaseCategory;
+import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration;
 
 /**
  * Builds iOS simulator projects
@@ -27,22 +31,30 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
     ProjectHelper projectHelper
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
-    IOSXCodeOutputParser iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
+    ProjectReleaseConfiguration releaseConf
+    IOSReleaseConfiguration iosReleaseConf
+    IOSSingleVariantBuilder iosSingleVariantBuilder
 
     IOSBuildAllSimulatorsTask() {
-        use (PropertyCategory) {
-            this.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-            this.description = 'Builds all simulators for the project'
-            this.projectHelper = new ProjectHelper();
-            this.conf = project.getProjectConfiguration()
-            this.dependsOn(project.readProjectConfiguration)
-            this.dependsOn(project.copyMobileProvision)
-        }
+        this.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        this.description = 'Builds all simulators for the project'
+        this.projectHelper = new ProjectHelper();
+        this.conf = PropertyCategory.getProjectConfiguration(project)
+        this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
+        this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, project.ant)
+        this.dependsOn(project.readProjectConfiguration)
+        this.dependsOn(project.copyMobileProvision)
     }
+
+    String getFolderPrefix(IOSBuilderInfo bi) {
+        return "${releaseConf.projectDirectoryName}/${conf.fullVersionString}/${bi.target}/${bi.configuration}"
+    }
+
 
     @TaskAction
     void buildAllSimulators() {
-        iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+        iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+        iosReleaseConf = IOSReleaseConfigurationRetriever.getIosReleaseConfiguration(project)
         iosConf.targets.each { target ->
             buildDebugRelease(project, target)
         }
@@ -59,8 +71,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
                 logger.lifecycle ("* If it does make sure that SKIP_IOS_BUILDS variable is unset    *")
                 logger.lifecycle ("********************************************************************")
             } else {
-                projectHelper.executeCommand(project, [
-                    "xcodebuild" ,
+                projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
                     "-target",
                     target,
                     "-configuration",
@@ -69,14 +80,13 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
                     iosConf.simulatorsdk
                 ])
             }
-            IOSArtifactBuilderInfo bi= new IOSArtifactBuilderInfo()
+            IOSBuilderInfo bi= new IOSBuilderInfo()
             bi.target = target
             bi.configuration = configuration
-            bi.buildDirectory = new File(project.file( "build"),"${configuration}-iphonesimulator")
+            bi.buildDirectory = new File(project.file(iosSingleVariantBuilder.tmpDir(target, configuration) + "/build"),"${configuration}-iphonesimulator")
             bi.fullReleaseName  = "${target}-${configuration}-${conf.fullVersionString}"
-            bi.folderPrefix = "${conf.projectDirectoryName}/${conf.fullVersionString}/${target}/${configuration}"
             bi.filePrefix = "${target}-${configuration}-${conf.fullVersionString}"
-            bi.mobileprovisionFile = iosConfigurationAndTargetRetriever.findMobileProvisionFile(project, bi.target, bi.configuration)
+            bi.mobileprovisionFile = IOSXCodeOutputParser.findMobileProvisionFile(project, bi.target, bi.configuration)
             bi.plistFile = iosConf.plistFile
             iosConf.families.each { device ->
                 bi.id = "${device}-${target}"
@@ -87,17 +97,17 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
         }
     }
 
-    void prepareSimulatorBundleFile(Project project, IOSArtifactBuilderInfo bi, String device) {
+    void prepareSimulatorBundleFile(Project project, IOSBuilderInfo bi, String device) {
         AmebaArtifact file = new AmebaArtifact()
         file.name = "Simulator build for ${device}"
-        file.url = new URL(conf.baseUrl, "${bi.folderPrefix}/${bi.filePrefix}-${device}-simulator-image.dmg")
-        file.location = new File(conf.otaDirectory,"${bi.folderPrefix}/${bi.filePrefix}-${device}-simulator-image.dmg")
+        file.url = new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}-${device}-simulator-image.dmg")
+        file.location = new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}-${device}-simulator-image.dmg")
         file.location.parentFile.mkdirs()
         file.location.delete()
         def File tmpDir = File.createTempFile("${conf.projectName}-${bi.target}-${device}-simulator",".tmp")
         tmpDir.delete()
         tmpDir.mkdir()
-        destDir = new File(tmpDir,"${bi.target} (${device}_Simulator).app")
+        def destDir = new File(tmpDir,"${bi.target} (${device}_Simulator).app")
         destDir.mkdir()
         rsyncTemplatePreservingExecutableFlag(project,destDir)
         File embedDir = new File(destDir, "Contents/Resources/EmbeddedApp")
@@ -117,7 +127,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
             "${conf.projectName}-${bi.target}-${device}"
         ]
         projectHelper.executeCommand(project, prepareDmgCommand)
-        iosConf.dmgImageFiles.put(bi.id,file)
+        iosReleaseConf.dmgImageFiles.put(bi.id,file)
         logger.lifecycle("Simulator zip file created: ${file}")
     }
 
@@ -144,7 +154,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
     }
 
 
-    private updateDeviceFamily(String device, embedDir, IOSArtifactBuilderInfo bi, Project project) {
+    private updateDeviceFamily(String device, embedDir, IOSBuilderInfo bi, Project project) {
         File targetPlistFile = new File(embedDir, "${bi.target}.app/Info.plist")
         String [] deleteDeviceFamilyCommand = [
             "/usr/libexec/PlistBuddy",
@@ -173,7 +183,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
     private resampleIcon(Project project, File tmpDir) {
         String [] iconResampleCommand = [
             "/opt/local/bin/convert",
-            conf.iconFile,
+            releaseConf.iconFile,
             "-resample",
             "128x128",
             new File(tmpDir,"Contents/Resources/Launcher.icns")
@@ -181,7 +191,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
         projectHelper.executeCommand(project, iconResampleCommand)
     }
 
-    private updateBundleId(Project project, IOSArtifactBuilderInfo bi, File tmpDir) {
+    private updateBundleId(Project project, IOSBuilderInfo bi, File tmpDir) {
         def bundleId = MPParser.readBundleIdFromProvisionFile(bi.mobileprovisionFile.toURI().toURL())
         String [] setBundleIdCommand = [
             "/usr/libexec/PlistBuddy",

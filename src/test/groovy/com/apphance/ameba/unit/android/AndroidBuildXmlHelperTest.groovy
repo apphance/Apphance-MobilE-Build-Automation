@@ -19,7 +19,6 @@ class AndroidBuildXmlHelperTest {
         File buildXml = new File("tmp/build.xml")
         File tmpDir = new File("tmp")
         buildXml.delete()
-        tmpDir.delete()
         tmpDir.mkdirs()
         buildXml << new File("testProjects/android/build.xml").text
         AndroidBuildXmlHelper helper = new AndroidBuildXmlHelper()

@@ -25,7 +25,6 @@ class KIFPlugin implements Plugin<Project> {
     Logger logger = Logging.getLogger(KIFPlugin.class)
     Project project
     ProjectHelper projectHelper
-    IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
     String KIFConfiguration
@@ -36,9 +35,8 @@ class KIFPlugin implements Plugin<Project> {
         use (PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
-            this.iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
             this.conf = project.getProjectConfiguration()
-            this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
             this.KIFConfiguration = project.readProperty(IOSKifProperty.KIF_CONFIGURATION)
             prepareKIFTemplatesTask()
             prepareBuildKIFReleaseTask()
@@ -151,8 +149,7 @@ class KIFPlugin implements Plugin<Project> {
             def configuration = "${KIFConfiguration}"
             def target = "KIFTests"
             logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
-            projectHelper.executeCommand(project, [
-                "xcodebuild" ,
+            projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
                 "-target",
                 target,
                 "-configuration",
@@ -204,13 +201,11 @@ class KIFPlugin implements Plugin<Project> {
     }
 
     static public final String DESCRIPTION =
-"""This plugins provides functionality of KIF integration testing for iOS.
+    """This plugins provides functionality of KIF integration testing for iOS.
 
 It executes all tests which are build using KIF test framework.
 
 More description needed ....
 
 """
-
-
 }

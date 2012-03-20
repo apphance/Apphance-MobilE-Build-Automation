@@ -1,15 +1,12 @@
 package com.apphance.ameba
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.text.SimpleDateFormat
-import java.util.ArrayList;
-import java.util.List;
+import java.io.BufferedReader
+import java.util.ArrayList
+import java.util.List
 
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
-import com.apphance.ameba.plugins.projectconfiguration.BaseProperty;
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
 class PropertyCategory {
@@ -112,19 +109,6 @@ class PropertyCategory {
         }
     }
 
-    public static String readReleaseNotes(Project project) {
-        if (project.hasProperty('release.notes')) {
-            return project['release.notes']
-        } else {
-            def notes =  System.getenv('RELEASE_NOTES')
-            if (notes == null || notes == "") {
-                return null
-            }
-            project['release.notes'] = notes
-            return notes
-        }
-    }
-
     public static String readPropertyOrEnvironmentVariable(Project project, Enum property) {
         return readPropertyOrEnvironmentVariable(project, property.propertyName)
     }
@@ -171,43 +155,20 @@ class PropertyCategory {
     }
 
     public static ProjectConfiguration getProjectConfiguration(Project project){
-        if (!project.hasProperty(PROJECT_CONFIGURATION_KEY)) {
-            project[PROJECT_CONFIGURATION_KEY] = new ProjectConfiguration()
+        if (!project.ext.has(PROJECT_CONFIGURATION_KEY)) {
+            project.ext[PROJECT_CONFIGURATION_KEY] = new ProjectConfiguration()
         }
-        return project[PROJECT_CONFIGURATION_KEY]
+        return project.ext[PROJECT_CONFIGURATION_KEY]
     }
 
-    public static void retrieveBasicProjectData(Project project) {
+    public static ProjectConfiguration retrieveBasicProjectData(Project project) {
         use (PropertyCategory) {
             ProjectConfiguration conf = getProjectConfiguration(project)
             conf.projectName = project.readProperty(ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY)
-            conf.projectDirectoryName = project.readProperty(BaseProperty.PROJECT_DIRECTORY)
-            def url = project.readProperty(BaseProperty.PROJECT_URL)
-            conf.baseUrl = url == null ? null : new URL(url)
-            def iconFile = project.readProperty(BaseProperty.PROJECT_ICON_FILE)
-            conf.iconFile = iconFile == null ? null : project.file(iconFile)
-            conf.otaDirectory = project.file('ota')
-            conf.tmpDirectory = project.file( 'tmp')
-            conf.logDirectory = project.file( 'log')
-            conf.buildDirectory = project.file( 'build')
-            project.retrieveLocale()
-            conf.releaseNotes = project.readReleaseNotes()?.tokenize(",")
+            conf.tmpDirectory = project.file('tmp')
+            conf.logDirectory = project.file('log')
+            conf.buildDirectory = project.file('build')
+            return conf
         }
-    }
-
-    public static void retrieveLocale(Project project) {
-        ProjectConfiguration conf = getProjectConfiguration(project)
-        String language = readProperty(project, BaseProperty.PROJECT_LANGUAGE)
-        String country = readProperty(project, BaseProperty.PROJECT_COUNTRY)
-        if (language == null) {
-            conf.locale = Locale.getDefault()
-        } else {
-            if (country == null) {
-                conf.locale = new Locale(language)
-            } else {
-                conf.locale = new Locale(language,country)
-            }
-        }
-        conf.buildDate = new SimpleDateFormat("dd-MM-yyyy HH:mm zzz", conf.locale).format(new Date())
     }
 }

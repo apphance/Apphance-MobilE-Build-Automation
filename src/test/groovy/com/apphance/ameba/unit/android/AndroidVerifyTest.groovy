@@ -1,6 +1,6 @@
 package com.apphance.ameba.unit.android;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -29,9 +29,9 @@ class AndroidVerifyTest {
 
     @Test
     public void testReadTargetsFromAndroidExcution() {
-		ProjectBuilder builder = new ProjectBuilder()
-		builder = builder.withProjectDir(new File('testProjects/android/'))
-		Project project = builder.build()
+        ProjectBuilder projectBuilder = ProjectBuilder.builder()
+        projectBuilder.withProjectDir(new File("testProjects/android"))
+        Project project = projectBuilder.build()
         List targets = AndroidCommandParser.getTargets(project)
         println targets
         assertTrue(targets.size()>0)
