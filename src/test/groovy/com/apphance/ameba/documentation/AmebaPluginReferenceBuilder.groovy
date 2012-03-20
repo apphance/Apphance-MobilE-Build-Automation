@@ -138,13 +138,17 @@ class AmebaPluginReferenceBuilder {
 
     private String runShowConvention(File conventionsDir, String conventionName) {
         ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(conventionsDir).connect()
-        String upperCaseStartingConventionName = conventionName.replaceAll('^.') { it.toUpperCase() }
-        BuildLauncher bl = connection.newBuild().forTasks("showConvention${upperCaseStartingConventionName}");
-        ByteArrayOutputStream baos = new ByteArrayOutputStream()
-        bl.setStandardOutput(baos)
-        bl.run()
-        String output = baos.toString('utf-8')
-        return output
+        try {
+            String upperCaseStartingConventionName = conventionName.replaceAll('^.') { it.toUpperCase() }
+            BuildLauncher bl = connection.newBuild().forTasks("showConvention${upperCaseStartingConventionName}");
+            ByteArrayOutputStream baos = new ByteArrayOutputStream()
+            bl.setStandardOutput(baos)
+            bl.run()
+            String output = baos.toString('utf-8')
+            return output
+        } finally {
+            connection.close()
+        }
      }
 
     private void addAmebaDocumentation(String groupName, String pluginName, property = null, String conventionName = null) {
