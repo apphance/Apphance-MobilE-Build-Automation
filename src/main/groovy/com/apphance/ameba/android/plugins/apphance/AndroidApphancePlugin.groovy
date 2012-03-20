@@ -53,13 +53,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
         def task = project.task('convertLogsToApphance')
         task.description = "Converts all logs to apphance from android logs for Debug builds"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-        task << {
-            androidConf.variants.each { variant ->
-                if (androidConf.debugRelease[variant] == 'Debug') {
-                    replaceLogsWithApphance(project, variant)
-                }
-            }
-        }
+        task << { replaceLogsWithApphance(project, variant) }
     }
 
     void prepareConvertLogsToAndroid(project) {
@@ -67,10 +61,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
         task.description = "Converts all logs to android from apphance logs for Release builds"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
         task << {
-            androidConf.variants.each { variant ->
-                if (androidConf.debugRelease[variant] == 'Release') {
-                    replaceLogsWithAndroid(project, variant)
-                }
+            if (androidConf.debugRelease[variant] == 'Release') {
+                replaceLogsWithAndroid(project, variant)
             }
         }
     }
@@ -243,18 +235,26 @@ class AndroidApphancePlugin implements Plugin<Project>{
     }
 
     private replaceLogsWithAndroid(Project project, String variant) {
-        logger.lifecycle("Replacing apphance logs with android for ${variant}")
+        File dir = project.rootDir
+        if (variant != null) {
+            dir = androidConf.tmpDirs[variant]
+        }
+        logger.lifecycle("Replacing apphance logs with android in ${dir}")
         project.ant.replace(casesensitive: 'true', token : 'import com.apphance.android.Log;',
                         value: 'import android.util.Log;', summary: true) {
-                            fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
+                            fileset(dir: new File(dir, 'src')) { include (name : '**/*.java') }
                         }
     }
 
     private replaceLogsWithApphance(Project project, String variant) {
-        logger.lifecycle("Replacing Android logs with Apphance for ${variant}")
+        File dir = project.rootDir
+        if (variant != null) {
+            dir = androidConf.tmpDirs[variant]
+        }
+        logger.lifecycle("Replacing Android logs with Apphance in ${dir}")
         project.ant.replace(casesensitive: 'true', token : 'import android.util.Log;',
                         value: 'import com.apphance.android.Log;', summary: true) {
-                            fileset(dir: new File(androidConf.tmpDirs[variant], 'src')) { include (name : '**/*.java') }
+                            fileset(dir: new File(dir, 'src')) { include (name : '**/*.java') }
                         }
     }
 
