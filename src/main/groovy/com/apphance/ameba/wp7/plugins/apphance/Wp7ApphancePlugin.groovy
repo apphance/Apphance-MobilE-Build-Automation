@@ -8,10 +8,10 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.plugins.apphance.ApphanceProperty
-import com.apphance.ameba.android.plugins.apphance.PrepareApphanceSetupOperation
-import com.apphance.ameba.android.plugins.apphance.ShowApphancePropertiesOperation
-import com.apphance.ameba.android.plugins.apphance.VerifyApphanceSetupOperation
+import com.apphance.ameba.apphance.ApphanceProperty
+import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
+import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
+import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
 import com.apphance.ameba.wp7.Wp7ProjectConfiguration
 import com.apphance.ameba.wp7.Wp7ProjectHelper
 import com.apphance.ameba.wp7.plugins.buildplugin.Wp7ProjectProperty
