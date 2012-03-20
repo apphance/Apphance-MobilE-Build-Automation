@@ -65,7 +65,7 @@ class ExecuteAndroidBuildsTest {
     }
 
     protected void runGradleAndroidAnalysisWrongConvention(String ... tasks) {
-        connection.newBuild().forTasks(tasks).run();
+        testAndroidWrongConventionConnection.newBuild().forTasks(tasks).run();
     }
 
     @Test
