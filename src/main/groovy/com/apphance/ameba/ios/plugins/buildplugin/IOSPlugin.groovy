@@ -1,6 +1,8 @@
 package com.apphance.ameba.ios.plugins.buildplugin;
 
 
+import groovy.io.FileType
+
 import javax.xml.parsers.DocumentBuilderFactory
 
 import org.gradle.api.GradleException
@@ -12,10 +14,10 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyCategory;
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.XMLBomAwareFileReader
-import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
+import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import com.sun.org.apache.xpath.internal.XPathAPI
 
@@ -372,7 +374,7 @@ class IOSPlugin implements Plugin<Project> {
 
     Collection<File> findAllPlistFiles(Project project) {
         def result = []
-        project.rootDir.traverse([type: FileType.FILES, maxDepth : 7]) {
+        project.rootDir.traverse([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
             if (it.name.endsWith("-Info.plist") && !it.path.contains("/External/") && !it.path.contains('/build/')) {
                 logger.lifecycle("Adding plist file ${it} to processing list")
                 result << it
@@ -383,7 +385,7 @@ class IOSPlugin implements Plugin<Project> {
 
     Collection<File> findAllSourceFiles(Project project) {
         def result = []
-        project.rootDir.traverse([type: FileType.FILES, maxDepth : 7]) {
+        project.rootDir.traverse([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
             if ((it.name.endsWith(".m") || it.name.endsWith(".h")) && !it.path.contains("/External/")) {
                 logger.lifecycle("Adding source file ${it} to processing list")
                 result << it
@@ -422,4 +424,6 @@ Besides tasks explained below, the plugin prepares build-*
 tasks which are dynamically created, based on targets and configurations available.
 There is one task available per each Target-Configuration combination - unless particular
 combination is excluded by the exclude property."""
+
+
 }

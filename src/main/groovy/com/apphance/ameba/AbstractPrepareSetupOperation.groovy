@@ -54,7 +54,7 @@ abstract class AbstractPrepareSetupOperation {
             project.file('.git').absolutePath,
         ]
         def plistFiles = []
-        project.rootDir.traverse([type: type, maxDepth : 7]) {
+        project.rootDir.traverse([type: type, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
             def thePath = it.absolutePath
             if (filter(it)) {
                 if (!paths.any {path -> thePath.startsWith(path)}) {

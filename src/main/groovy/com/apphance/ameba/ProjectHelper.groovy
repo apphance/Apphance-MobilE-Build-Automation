@@ -16,6 +16,7 @@ import org.gradle.api.logging.Logging
 
 
 class FileSystemOutput implements Appendable{
+
     File file
     StringBuilder sb = new StringBuilder()
     Appendable linkedAppendable
@@ -56,6 +57,9 @@ class FileSystemOutput implements Appendable{
 }
 
 class ProjectHelper {
+
+    public static final int MAX_RECURSION_LEVEL = 7
+
     static Logger logger = Logging.getLogger(ProjectHelper.class)
     def replacePasswordsWithStars(originalArray) {
         def newList = []
@@ -306,7 +310,7 @@ class ProjectHelper {
     }
 
     public void removeMissingSymlinks(File baseDirectory) {
-        baseDirectory.traverse([type: FileType.FILES, maxDepth: 7]) {
+        baseDirectory.traverse([type: FileType.FILES, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) {
             if (!it.isDirectory()) {
                 File canonicalFile = it.getCanonicalFile()
                 if (!canonicalFile.exists()) {

@@ -33,7 +33,7 @@ class CheckTestsTask extends DefaultTask {
     void checkTests(){
         List<String> failingTests = new ArrayList<String>();
         File testDir = project.rootDir
-        testDir.traverse {
+        testDir.traverse ([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
             String fileName = it.name
             if( fileName.matches("TEST.*\\.xml") ){
                 Node testsuites = new XmlParser().parse(it)

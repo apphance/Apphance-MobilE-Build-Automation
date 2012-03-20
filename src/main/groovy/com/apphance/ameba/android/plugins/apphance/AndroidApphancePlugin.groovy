@@ -1,5 +1,7 @@
 package com.apphance.ameba.android.plugins.apphance
 
+import groovy.io.FileType;
+
 import java.io.File
 
 import org.gradle.api.Plugin
@@ -343,7 +345,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     public boolean checkIfApphancePresent(Project project, String variant) {
         boolean found = false
         File basedir = androidConf.tmpDirs[variant]
-        basedir.eachFileRecurse { file ->
+        baseDir.traverse([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) { file ->
             if (file.name.endsWith('.java')) {
                 file.eachLine {
                     if (it.contains("Apphance.startNewSession")) {
