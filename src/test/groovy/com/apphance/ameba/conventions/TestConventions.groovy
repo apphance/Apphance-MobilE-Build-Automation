@@ -22,12 +22,16 @@ class TestConventions {
     @Test
     public void testAndroidAnalysisConvention() throws Exception {
          ProjectConnection connection = getProjectConnection(conventionsBase,"ameba-android-analysis")
-         BuildLauncher bl = connection.newBuild().forTasks('showConventionAndroidAnalysis');
-         ByteArrayOutputStream baos = new ByteArrayOutputStream()
-         bl.setStandardOutput(baos)
-         bl.run()
-         String output = baos.toString('utf-8')
-         println output
-         assertTrue(output.contains('androidAnalysis {'))
+         try {
+             BuildLauncher bl = connection.newBuild().forTasks('showConventionAndroidAnalysis');
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()
+             bl.setStandardOutput(baos)
+             bl.run()
+             String output = baos.toString('utf-8')
+             println output
+             assertTrue(output.contains('androidAnalysis {'))
+         } finally {
+             connection.close()
+         }
     }
 }

@@ -14,8 +14,8 @@ abstract class AbstractBaseIOSTaskTest extends BaseTaskTest {
         ProjectBuilder projectBuilder = ProjectBuilder.builder()
         projectBuilder.withProjectDir(new File("testProjects/ios/GradleXCode"))
         Project project = projectBuilder.build()
-        project[IOSProjectProperty.PLIST_FILE.propertyName] = 'Test.plist'
-        project[IOSProjectProperty.DISTRIBUTION_DIR.propertyName] = 'release/distribution_resources'
+        project.ext[IOSProjectProperty.PLIST_FILE.propertyName] = 'Test.plist'
+        project.ext[IOSProjectProperty.DISTRIBUTION_DIR.propertyName] = 'release/distribution_resources'
         project.project.plugins.apply(ProjectConfigurationPlugin.class)
         return project
     }

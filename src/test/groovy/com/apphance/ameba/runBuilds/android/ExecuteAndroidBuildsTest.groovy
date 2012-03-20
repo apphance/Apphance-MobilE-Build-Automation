@@ -174,7 +174,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testAnalysis() {
-        File baseDir = new File("testProjects/android/build/analysis/")
+        File baseDir = new File(testProject, "build/analysis/")
         runGradle('updateProject' ,'analysis')
         assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
         assertTrue(new File(baseDir, "cpd-result.xml").exists())
@@ -243,36 +243,36 @@ class ExecuteAndroidBuildsTest {
     @Test
     void testAnalysisAfterClean() {
         runGradle('clean', 'updateProject' ,'analysis')
-        assertTrue(new File("testProjects/android/build/analysis/checkstyle-report.xml").exists())
-        assertTrue(new File("testProjects/android/build/analysis/cpd-result.xml").exists())
-        assertTrue(new File("testProjects/android/build/analysis/findbugs-result.xml").exists())
-        assertTrue(new File("testProjects/android/build/analysis/pmd-result.xml").exists())
+        assertTrue(new File(testProject, "build/analysis/checkstyle-report.xml").exists())
+        assertTrue(new File(testProject, "build/analysis/cpd-result.xml").exists())
+        assertTrue(new File(testProject, "build/analysis/findbugs-result.xml").exists())
+        assertTrue(new File(testProject, "build/analysis/pmd-result.xml").exists())
     }
 
     @Test
     void testBuildAndPrepareVariantedMailMessage() {
         runGradle('cleanRelease', 'updateProject' ,'buildAll')
         runGradle('prepareImageMontage', 'prepareMailMessage')
-        assertTrue(new File("testProjects/android/ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
-        assertTrue(new File("testProjects/android/ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/icon.png").exists())
-        assertTrue(new File("testProjects/android/ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/index.html").exists())
-        assertTrue(new File("testProjects/android/ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/plain_file_index.html").exists())
-        assertTrue(new File("testProjects/android/ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/qrcode-TestAndroidProject-1.0.1-SNAPSHOT_42.png").exists())
-        assertTrue(new File("testProjects/android/ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42.apk").exists())
-        assertTrue(new File("testProjects/android/ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-1.0.1-SNAPSHOT_42.apk").exists())
+        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
+        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/icon.png").exists())
+        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/index.html").exists())
+        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/plain_file_index.html").exists())
+        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/qrcode-TestAndroidProject-1.0.1-SNAPSHOT_42.png").exists())
+        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42.apk").exists())
+        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
     @Test
     void testBuildAndPrepareNonVariantedMailMessage() {
         runGradleNoVariants('cleanRelease', 'updateProject' ,'buildAll')
         runGradleNoVariants('prepareImageMontage', 'prepareMailMessage')
-        assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
-        assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/icon.png").exists())
-        assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/index.html").exists())
-        assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/plain_file_index.html").exists())
-        assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/qrcode-TestAndroidProject-1.0.1-SNAPSHOT_42.png").exists())
-        assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
-        assertTrue(new File("testProjects/android-novariants/ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
+        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
+        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/icon.png").exists())
+        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/index.html").exists())
+        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/plain_file_index.html").exists())
+        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/qrcode-TestAndroidProject-1.0.1-SNAPSHOT_42.png").exists())
+        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
+        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
     @Test

@@ -1,9 +1,7 @@
 package com.apphance.ameba.plugins.projectconfiguration;
 
 
-import groovy.lang.Closure;
-
-import java.util.Map;
+import groovy.lang.Closure
 
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -11,11 +9,11 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.plugins.release.AmebaArtifact;
 
 
 /**
@@ -33,6 +31,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         projectHelper = new ProjectHelper()
+        conf = PropertyCategory.getProjectConfiguration(project)
         project.convention.plugins.put('amebaPropertyDefaults', new ProjectConfigurationConvention())
         prepareRepositories(project)
         readProjectConfigurationTask(project)
@@ -43,10 +42,6 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         project.task('showConventions', type: ShowConventionsTask.class)
         prepareShowConventionRule(project)
         prepareCleanConfigurationTask(project)
-        prepareCopyGalleryFilesTask(project)
-        project.prepareSetup.prepareSetupOperations << new PrepareBaseSetupOperation()
-        project.verifySetup.verifySetupOperations << new VerifyBaseSetupOperation()
-        project.showSetup.showSetupOperations << new ShowBaseSetupOperation()
     }
 
     private void prepareShowConventionRule(Project project) {
@@ -54,7 +49,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
             if (taskName.startsWith("showConvention")) {
                 project.task(taskName) << {
                     String pluginName = taskName.substring('showConvention'.length()).replaceAll('^.') { it.toLowerCase() }
-                    pluginConventionObject = project.convention.plugins[pluginName]
+                    def pluginConventionObject = project.convention.plugins[pluginName]
                     if (pluginConventionObject == null) {
                         throw new GradleException("There is no convention with ${pluginName} name")
                     }
@@ -75,20 +70,11 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.description = "Reads project's configuration and sets it up in projectConfiguration property of project"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task << {
-            use (PropertyCategory) {
-                this.conf = project.getProjectConfiguration()
-                // NOTE! conf.versionString and conf.versionCode need to
-                // be read before project configuration task -> task reading the version
-                // should be injected here
-                project.retrieveBasicProjectData()
-                prepareGeneratedDirectories(project)
-            }
+            // NOTE! conf.versionString and conf.versionCode need to
+            // be read before project configuration task -> task reading the version
+            // should be injected here
+            this.conf = PropertyCategory.retrieveBasicProjectData(project)
         }
-    }
-
-    private prepareGeneratedDirectories(Project project) {
-        conf.otaDirectory = project.file("ota/")
-        conf.tmpDirectory = project.file("tmp/")
     }
 
     def void prepareCleanConfigurationTask(Project project) {
@@ -106,50 +92,21 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
     }
 
-    private prepareGalleryArtifacts() {
-        conf.galleryCss = new AmebaArtifact(
-                name : "CSS Gallery",
-                url : new URL(conf.versionedApplicationUrl, "_css/jquery.swipegallery.css"),
-                location : new File(conf.targetDirectory, "_css/jquery.swipegallery.css"))
-        conf.galleryJs = new AmebaArtifact(
-                name : "JS Gallery",
-                url : new URL(conf.versionedApplicationUrl, "_res/jquery.swipegallery.js"),
-                location : new File(conf.targetDirectory, "_res/jquery.swipegallery.js"))
-        conf.galleryTrans = new AmebaArtifact(
-                name : "JS Gallery",
-                url : new URL(conf.versionedApplicationUrl, "_res/trans.png"),
-                location : new File(conf.targetDirectory, "_res/trans.png"))
-    }
-
-    def void prepareCopyGalleryFilesTask(Project project) {
-        def task = project.task('copyGalleryFiles')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
-        task.description = "Copy files required by swipe jquerymobile gallery"
-        task << {
-            prepareGalleryArtifacts()
-            conf.galleryCss.location.parentFile.mkdirs()
-            conf.galleryJs.location.parentFile.mkdirs()
-            conf.galleryCss.location.setText(this.class.getResourceAsStream("swipegallery/_css/jquery.swipegallery.css").text,"utf-8")
-            conf.galleryJs.location.setText(this.class.getResourceAsStream("swipegallery/_res/jquery.swipegallery.js").text,"utf-8")
-            conf.galleryTrans.location.setText(this.class.getResourceAsStream("swipegallery/_res/trans.png").text,"utf-8")
-        }
-        task.dependsOn(project.readProjectConfiguration)
-    }
 
     static public final String DESCRIPTION =
-"""This is the base plugin which should be applied by any project.
+    """This is the base plugin which should be applied by any project.
 
 The plugin should be applied before any other plugin. It reads basic project configuration and loads shared
 configuration for all other plugins. Other plugins use this plugin's generated task.
 
 This plugin provides also setup-related tasks. The tasks allow to generate new configuration,
-verify existing configurationa and show the configuration to the user.
+verify existing configuration and show the configuration to the user.
 It also adds several utility tasks that can be used across all types of projects.
 """
 
     static class ProjectConfigurationConvention {
         static public final String DESCRIPTION =
-"""Using this convention object you can specify different defaults
+        """Using this convention object you can specify different defaults
 for properties (for all properties from all plugins). It's enough to
 specify the default as map of values stored in map form     "['property.name' : 'value' ]".
 """
@@ -160,6 +117,4 @@ specify the default as map of values stored in map form     "['property.name' : 
             close.run()
         }
     }
-
-
 }

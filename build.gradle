@@ -10,7 +10,7 @@ apply from:'file:emma.gradle'
 //apply from:'file:release.gradle'
 
 group = 'com.apphance.ameba'
-artifactId = 'Ameba'
+ext.artifactId = 'Ameba'
 
 task sourcesJar(type: Jar, dependsOn:classes, description: 'Prepares .jar file containing the source code of ameba') {
     classifier = 'sources'
@@ -22,7 +22,7 @@ task javadocJar(type: Jar, dependsOn:groovydoc, description: 'Prepares .jar file
     from javadoc.destinationDir
 }
 
-isReleaseVersion = !version.endsWith("SNAPSHOT")
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 artifacts {
     if (isReleaseVersion) {
@@ -140,10 +140,10 @@ dependencies {
 
 file('tmp').mkdirs()
 
-generatedFile = file('tmp/plugins_reference.html')
+ext.generatedFile = file('tmp/plugins_reference.html')
 
 task (buildPluginReference, group: 'Ameba\'s documentation', dependsOn: ['testClasses','processTestResources'], type: JavaExec, description: 'Builds plugin description HTML file') {
-    outputFile = file('tmp/buildDocumentation.out')
+    def outputFile = file('tmp/buildDocumentation.out')
     main = 'com.apphance.ameba.documentation.AmebaPluginReferenceBuilder'
     classpath = sourceSets.test.runtimeClasspath
     standardOutput = outputFile.newOutputStream()

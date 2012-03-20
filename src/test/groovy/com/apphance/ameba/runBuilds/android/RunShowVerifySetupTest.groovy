@@ -32,7 +32,6 @@ class RunShowVerifySetupTest {
     @Test
     public void testShowSetup() {
         String res = runTests('showSetup')
-        assertTrue(res.contains('# Base properties'))
         assertTrue(res.contains('# Android properties'))
         assertTrue(res.contains('# Android jar library properties'))
         assertTrue(res.contains('# Android test properties'))
@@ -43,7 +42,6 @@ class RunShowVerifySetupTest {
     @Test
     public void testVerifySetup() {
         String res = runTests('verifySetup')
-        assertTrue(res.contains('GOOD!!! Base properties'))
         assertTrue(res.contains('GOOD!!! Android properties'))
         assertTrue(res.contains('GOOD!!! Android jar library properties'))
         assertTrue(res.contains('GOOD!!! Android test properties'))

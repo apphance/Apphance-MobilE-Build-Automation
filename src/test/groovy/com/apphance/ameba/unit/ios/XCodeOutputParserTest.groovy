@@ -11,7 +11,6 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser
 class XCodeOutputParserTest {
     def trimmedXCodeList
     def trimmedShowSdkList
-    IOSXCodeOutputParser iosXCodeOutputParser
 
     @Before
     public void setUp() {
@@ -55,17 +54,16 @@ iOS Simulator SDKs:
     Simulator - iOS 5.0             -sdk iphonesimulator5.0
 
 """.split("\n")*.trim()
-        this.iosXCodeOutputParser = new IOSXCodeOutputParser()
     }
 
     @Test
     public void testStandardSelectionOfTargets() {
-        assertThat(iosXCodeOutputParser.readBuildableTargets(this.trimmedXCodeList), new IsEqual(['Some', 'SomeWithMonkey']))
+        assertThat(IOSXCodeOutputParser.readBuildableTargets(this.trimmedXCodeList), new IsEqual(['Some', 'SomeWithMonkey']))
     }
 
     @Test
     public void testStandardSelectionOfConfigurations() {
-        assertThat(iosXCodeOutputParser.readBuildableConfigurations(this.trimmedXCodeList), new IsEqual([
+        assertThat(IOSXCodeOutputParser.readBuildableConfigurations(this.trimmedXCodeList), new IsEqual([
             'QAWithApphance',
             'QAWithoutApphance'
         ]))
@@ -73,12 +71,12 @@ iOS Simulator SDKs:
 
     @Test
     public void testProjectName() {
-        assertThat(iosXCodeOutputParser.readProjectName(this.trimmedXCodeList), new IsEqual('Project name0'))
+        assertThat(IOSXCodeOutputParser.readProjectName(this.trimmedXCodeList), new IsEqual('Project name0'))
     }
 
     @Test
     public void testIphoneSDKS() {
-        assertThat(iosXCodeOutputParser.readIphoneSdks(this.trimmedShowSdkList),
+        assertThat(IOSXCodeOutputParser.readIphoneSdks(this.trimmedShowSdkList),
                 new IsEqual([
                     'iphoneos',
                     'iphoneos4.3',
@@ -88,7 +86,7 @@ iOS Simulator SDKs:
 
     @Test
     public void testIphoneSimulatorSDKS() {
-        assertThat(iosXCodeOutputParser.readIphoneSimulatorSdks(this.trimmedShowSdkList),
+        assertThat(IOSXCodeOutputParser.readIphoneSimulatorSdks(this.trimmedShowSdkList),
                 new IsEqual([
                     'iphonesimulator',
                     'iphonesimulator4.3',

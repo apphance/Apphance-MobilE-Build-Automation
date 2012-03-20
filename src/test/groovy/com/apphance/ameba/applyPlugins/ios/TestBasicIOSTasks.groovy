@@ -26,7 +26,8 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
             'buildSingleRelease',
             'copyMobileProvision',
             'replaceBundleIdPrefix',
-            'unlockKeyChain'
+            'unlockKeyChain',
+			'copySources'
         ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 
@@ -34,7 +35,6 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
     public void testConfigurationTasksAvailable() {
         verifyTasksInGroup(getProject(),[
             'cleanConfiguration',
-            'copyGalleryFiles',
             'readProjectConfiguration',
             'readIOSProjectConfiguration',
             'readIOSParametersFromXcode',
@@ -56,15 +56,12 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
             'showConventions'
         ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
         assertEquals([
-            'PrepareBaseSetupOperation',
             'PrepareIOSSetupOperation'
         ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName } )
         assertEquals([
-            'VerifyBaseSetupOperation',
             'VerifyIOSSetupOperation'
         ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName } )
         assertEquals([
-            'ShowBaseSetupOperation',
             'ShowIOSSetupOperation'
         ], project.showSetup.showSetupOperations.collect { it.class.simpleName } )
     }

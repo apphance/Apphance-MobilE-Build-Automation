@@ -11,14 +11,18 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-import com.apphance.ameba.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
+import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
+import com.apphance.ameba.ios.plugins.release.IOSReleaseConfiguration;
+import com.apphance.ameba.ios.plugins.release.IOSReleaseConfigurationRetriever;
+import com.apphance.ameba.plugins.release.AmebaArtifact;
+import com.apphance.ameba.plugins.release.ProjectReleaseCategory
+import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 
 class FoneMonkeyPlugin implements Plugin<Project> {
 
@@ -27,29 +31,30 @@ class FoneMonkeyPlugin implements Plugin<Project> {
     Logger logger = Logging.getLogger(FoneMonkeyPlugin.class)
     Project project
     ProjectHelper projectHelper
-    IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     ProjectConfiguration conf
+    ProjectReleaseConfiguration releaseConf
     IOSProjectConfiguration iosConf
+    IOSReleaseConfiguration iosReleaseConf
     String foneMonkeyConfiguration
 
     void apply(Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
-        use (PropertyCategory) {
-            this.project = project
-            this.projectHelper = new ProjectHelper()
-            this.iosConfigurationAndTargetRetriever = new IOSXCodeOutputParser()
-            this.conf = project.getProjectConfiguration()
-            this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
-            this.foneMonkeyConfiguration = project.readProperty(IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
-            prepareFoneMonkeyTemplatesTask()
-            prepareBuildFoneMonkeyReleaseTask()
-            prepareRunMonkeyTestsTask()
-            prepareRunSingleFoneMonkeyTestTask()
-            prepareFoneMonkeyReportTask()
-            project.prepareSetup.prepareSetupOperations << new PrepareFoneMonkeySetupOperation()
-            project.verifySetup.verifySetupOperations << new VerifyFoneMonkeySetupOperation()
-            project.showSetup.showSetupOperations << new ShowFoneMonkeySetupOperation()
-        }
+        this.project = project
+        this.projectHelper = new ProjectHelper()
+        this.conf = PropertyCategory.getProjectConfiguration(project)
+        this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
+        this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+        this.iosReleaseConf = IOSReleaseConfigurationRetriever.getIosReleaseConfiguration(project)
+        this.foneMonkeyConfiguration = PropertyCategory.readProperty(project,
+                        IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
+        prepareFoneMonkeyTemplatesTask()
+        prepareBuildFoneMonkeyReleaseTask()
+        prepareRunMonkeyTestsTask()
+        prepareRunSingleFoneMonkeyTestTask()
+        prepareFoneMonkeyReportTask()
+        project.prepareSetup.prepareSetupOperations << new PrepareFoneMonkeySetupOperation()
+        project.verifySetup.verifySetupOperations << new VerifyFoneMonkeySetupOperation()
+        project.showSetup.showSetupOperations << new ShowFoneMonkeySetupOperation()
     }
 
     Collection<String> findAllTests(String family) {
@@ -65,44 +70,44 @@ class FoneMonkeyPlugin implements Plugin<Project> {
     }
 
     void prepareIndexMonkeyArtifacts() {
-        String otaFolderPrefix = "${conf.projectDirectoryName}/${conf.fullVersionString}"
+        String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
         iosConf.families.each { family ->
             def tests = findAllTests(family)
             iosConf.monkeyTests.put(family, tests)
-            iosConf.monkeyTestImages.put(family, new HashMap<String,AmebaArtifact>())
+            iosReleaseConf.monkeyTestImages.put(family, new HashMap<String,AmebaArtifact>())
             iosConf.monkeyTestResults.put(family, new HashMap<String,Collection<AmebaArtifact>>())
             AmebaArtifact file = new AmebaArtifact(
-                    name: "FoneMonkey test results file for ${conf.projectName}",
-                    url : new URL(conf.baseUrl, "${otaFolderPrefix}/fonemonkey_test_results_${family}.html"),
-                    location : new File(conf.otaDirectory,"${otaFolderPrefix}/fonemonkey_test_results_${family}.html"))
-            iosConf.foneMonkeyTestResultFiles.put(family,file)
+                            name: "FoneMonkey test results file for ${conf.projectName}",
+                            url : new URL(releaseConf.baseUrl, "${otaFolderPrefix}/fonemonkey_test_results_${family}.html"),
+                            location : new File(releaseConf.otaDirectory,"${otaFolderPrefix}/fonemonkey_test_results_${family}.html"))
+            iosReleaseConf.foneMonkeyTestResultFiles.put(family,file)
         }
     }
 
     void prepareAllMonkeyArtifacts(){
         prepareIndexMonkeyArtifacts()
-        String otaFolderPrefix = "${conf.projectDirectoryName}/${conf.fullVersionString}"
+        String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
         iosConf.families.each { family ->
             def tests = findAllTests(family)
             tests.each { test ->
                 prepareSingleTestMonkeyArtifacts(family,test,otaFolderPrefix)
             }
-            def foneMonkeyResult = iosConf.foneMonkeyTestResultFiles[family]
+            def foneMonkeyResult = iosReleaseConf.foneMonkeyTestResultFiles[family]
             foneMonkeyResult.location.parentFile.mkdirs()
             foneMonkeyResult.location.delete()
             URL foneMonkeyTestResultTemplate = this.class.getResource("fonemonkey_test_results.html")
             ResourceBundle rb = ResourceBundle.getBundle(\
                 this.class.package.name + ".fonemonkey_test_results",
-                    conf.locale, this.class.classLoader)
+                            releaseConf.locale, this.class.classLoader)
             SimpleTemplateEngine engine = new SimpleTemplateEngine()
             def binding = [
-                        baseUrl : foneMonkeyResult.url,
-                        currentDate: conf.buildDate,
-                        iosConf: iosConf,
-                        family: family,
-                        conf: conf,
-                        rb: rb
-                    ]
+                                baseUrl : foneMonkeyResult.url,
+                                currentDate: conf.buildDate,
+                                iosConf: iosConf,
+                                family: family,
+                                conf: conf,
+                                rb: rb
+                            ]
             def result = engine.createTemplate(foneMonkeyTestResultTemplate).make(binding)
             foneMonkeyResult.location << (result.toString())
             logger.lifecycle("FoneMonkey test result created for ${family}: ${foneMonkeyResult}")
@@ -111,7 +116,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
 
     void prepareSingleTestMonkeyArtifacts(String family, String test, String otaFolderPrefix) {
         File cfFixedDirectory = new File (conf.tmpDirectory, "monkey/${family}/${test}/")
-        File targetDirectory = new File(conf.targetDirectory,"monkey/${family}/${test}/")
+        File targetDirectory = new File(releaseConf.targetDirectory,"monkey/${family}/${test}/")
         targetDirectory.deleteDir()
         targetDirectory.mkdirs()
         def ant = new AntBuilder()
@@ -121,20 +126,20 @@ class FoneMonkeyPlugin implements Plugin<Project> {
                 include (name: "**/FM_SCREENSHOT-*.png")
             }
         }
-        iosConf.monkeyTestImages[family].put(test,new LinkedList<AmebaArtifact>())
+        iosReleaseConf.monkeyTestImages[family].put(test,new LinkedList<AmebaArtifact>())
         targetDirectory.eachFile { file ->
             if (file.name.endsWith(".xml")) {
                 AmebaArtifact testResult = new AmebaArtifact(
-                        name : "Test result for ${family} test: ${test}",
-                        url : new URL(conf.baseUrl,"${otaFolderPrefix}/monkey/${family}/${test}/${file.name}"),
-                        location : new File(conf.otaDirectory,"${otaFolderPrefix}/monkey/${family}/${test}/${file.name}"))
+                                name : "Test result for ${family} test: ${test}",
+                                url : new URL(releaseConf.baseUrl,"${otaFolderPrefix}/monkey/${family}/${test}/${file.name}"),
+                                location : new File(releaseConf.otaDirectory,"${otaFolderPrefix}/monkey/${family}/${test}/${file.name}"))
                 iosConf.monkeyTestResults[family].put(test,testResult)
             } else if (file.name.endsWith(".png")){
                 AmebaArtifact testImage = new AmebaArtifact(
-                        name : "Image test result for ${family} test: ${test}",
-                        url : new URL(conf.baseUrl,"${otaFolderPrefix}/monkey/${family}/${test}/${file.name}"),
-                        location : new File(conf.otaDirectory,"${otaFolderPrefix}/monkey/${family}/${test}/${file.name}"))
-                iosConf.monkeyTestImages[family][test] << testImage
+                                name : "Image test result for ${family} test: ${test}",
+                                url : new URL(releaseConf.baseUrl,"${otaFolderPrefix}/monkey/${family}/${test}/${file.name}"),
+                                location : new File(releaseConf.otaDirectory,"${otaFolderPrefix}/monkey/${family}/${test}/${file.name}"))
+                iosReleaseConf.monkeyTestImages[family][test] << testImage
             }
         }
     }
@@ -219,7 +224,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
                 outFile << instream
             }
         }
-        task.dependsOn(project.readProjectConfiguration, project.copyGalleryFiles)
+        task.dependsOn(project.readProjectConfiguration)
     }
 
 
@@ -228,7 +233,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
         task.description = "Prepares report out of FoneMonkey test execution"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_FONEMONKEY
         task << { prepareAllMonkeyArtifacts() }
-        task.dependsOn(project.readProjectConfiguration, project.copyGalleryFiles)
+        task.dependsOn(project.readProjectConfiguration)
     }
 
     void prepareBuildFoneMonkeyReleaseTask() {
@@ -240,8 +245,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
                 def configuration = project.readProperty(IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
                 def target = "RunMonkeyTests"
                 logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
-                projectHelper.executeCommand(project, [
-                    "xcodebuild" ,
+                projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
                     "-target",
                     target,
                     "-configuration",
@@ -290,12 +294,11 @@ class FoneMonkeyPlugin implements Plugin<Project> {
     }
 
     static public final String DESCRIPTION =
-"""This plugins provides functionality of Fonemonkey integration testing for iOS.
+    """This plugins provides functionality of Fonemonkey integration testing for iOS.
 
 It executes all tests which are build using Fonemonkey test framework.
 
 More description needed ....
 
 """
-
 }

@@ -67,20 +67,13 @@ class RunPrepareIOSSetupTest {
 # Or you can re-run the prepareSetup command
 # for guided re-configuration
 ###########################################################
-# Base properties
-###########################################################
-project.icon.file=icon.png
-project.url.base=
-project.directory.name=
-project.language=en
-project.country=US
-###########################################################
 # Mercurial properties
 ###########################################################
 hg.commit.user=
 ###########################################################
 # iOS properties
 ###########################################################
+ios.project.directory=GradleXCode.xcodeproj
 ios.plist.file=GradleXCode/GradleXCode-Info.plist
 ios.excluded.builds=
 ios.families=iPhone,iPad
@@ -92,6 +85,10 @@ ios.simulator.sdk=iphonesimulator
 ###########################################################
 # Release properties
 ###########################################################
+release.project.icon.file=icon.png
+release.project.url=
+release.project.language=en
+release.project.country=US
 release.mail.from=
 release.mail.to=
 release.mail.flags=qrCode,imageMontage
@@ -111,6 +108,12 @@ ios.framework.configuration=Debug
 ios.framework.version=A
 ios.framework.headers=GradleXCode/gradleXCodeAppDelegate.h
 ios.framework.resources=icon.png
+###########################################################
+# Apphance properties
+###########################################################
+apphance.appkey=
+apphance.mode=QA
+apphance.log.events=false
 """, text)
         println text
     }

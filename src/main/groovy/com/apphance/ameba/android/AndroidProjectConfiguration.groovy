@@ -11,11 +11,11 @@ import java.util.regex.Pattern
 
 import org.gradle.util.GUtil
 
-import com.apphance.ameba.AmebaArtifact
+import com.apphance.ameba.plugins.release.AmebaArtifact;
 
 
 /**
- * TODO: This class should be split into independent pieces. This is "god" class of Android.
+ * Keeps Android-specific configuration of the project.
  */
 class AndroidProjectConfiguration {
     File sdkDirectory
@@ -28,11 +28,6 @@ class AndroidProjectConfiguration {
     Collection<File> sdkJars = []
     Collection<File> libraryJars = []
     Collection<File> linkedLibraryJars = []
-    Map<String,AmebaArtifact> apkFiles = [:]
-    Map<String,AmebaArtifact> jarFiles = [:]
-    AmebaArtifact otaIndexFile
-    AmebaArtifact fileIndexFile
-    AmebaArtifact plainFileIndexFile
     String mainProjectPackage
     String mainProjectName
     List<String> excludedBuilds = []
@@ -49,11 +44,6 @@ class AndroidProjectConfiguration {
         GUtil.join(getAllJars(), File.pathSeparator)
     }
 
-    @Override
-    public String toString() {
-        return this.getProperties()
-    }
-
     boolean isBuildExcluded(String variant) {
         boolean excluded = false
         excludedBuilds.each {
@@ -63,5 +53,10 @@ class AndroidProjectConfiguration {
             }
         }
         return excluded
+    }
+
+    @Override
+    public String toString() {
+        return this.getProperties()
     }
 }

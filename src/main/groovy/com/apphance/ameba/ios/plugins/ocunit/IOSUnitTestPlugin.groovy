@@ -22,7 +22,6 @@ class IOSUnitTestPlugin implements Plugin<Project> {
     Project project
     ProjectConfiguration conf
     ProjectHelper projectHelper
-    IOSXCodeOutputParser iosConfigurationAndTargetRetriever
     IOSProjectConfiguration iosConf
 
     void apply(Project project) {
@@ -30,9 +29,8 @@ class IOSUnitTestPlugin implements Plugin<Project> {
         use (PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
-            this.iosConfigurationAndTargetRetriever  = new IOSXCodeOutputParser()
             this.conf = project.getProjectConfiguration()
-            this.iosConf = iosConfigurationAndTargetRetriever.getIosProjectConfiguration(project)
+            this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
             project.extensions.iosUnitTests = new IOSUnitTestConvention()
             prepareRunUnitTestsTask()
         }
@@ -46,8 +44,7 @@ class IOSUnitTestPlugin implements Plugin<Project> {
             def configuration = project.iosUnitTests.configuration
             def target = project.iosUnitTests.target
             logger.lifecycle( "\n\n\n=== Building DEBUG target ${project.iosUnitTests.target}, configuration ${project.iosUnitTests.configuration}  ===")
-            def result = projectHelper.executeCommand(project, [
-                "xcodebuild" ,
+            def result = projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
                 "-target",
                 project.iosUnitTests.target,
                 "-configuration",
@@ -75,12 +72,11 @@ class IOSUnitTestPlugin implements Plugin<Project> {
     }
 
     static public final String DESCRIPTION =
-"""This plugins provides functionality of standard ocunit testing for iOS.
+    """This plugins provides functionality of standard ocunit testing for iOS.
 
 It executes all tests which are build using ocunit test framework.
 
 More description needed ....
 
 """
-
 }

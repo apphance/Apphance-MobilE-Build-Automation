@@ -29,7 +29,8 @@ class TestFrameworkIOSTasks extends AbstractBaseIOSTaskTest {
             'buildFramework',
             'copyMobileProvision',
             'replaceBundleIdPrefix',
-            'unlockKeyChain'
+            'unlockKeyChain',
+			'copySources'
         ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 }
