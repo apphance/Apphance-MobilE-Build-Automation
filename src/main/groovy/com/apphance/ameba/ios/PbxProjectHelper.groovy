@@ -74,7 +74,7 @@ class PbxProjectHelper {
     }
 
     def getParsedProject(File projectRootDirectory, String targetName) {
-        projectRootDirectory.traverse([type: FileType.DIRECTORIES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
+        projectRootDirectory.traverse([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
             if (it.name.equals("project.pbxproj")) {
                 projectFile = it
                 return
