@@ -53,7 +53,7 @@ class ProjectReleaseCategory {
                 releaseConf.projectDirectoryName = project.readProperty('project.directory.name')
                 if (releaseConf.baseUrl != null && releaseConf.projectDirectoryName != null) {
                     project.ext[ProjectReleaseProperty.RELEASE_PROJECT_URL.propertyName] =
-                    new URL(new URL(releaseConf.baseUrl), releaseConf.projectDirectoryName)
+                    new URL(releaseConf.baseUrl, releaseConf.projectDirectoryName)
                 }
             }
             def iconFile = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE)
