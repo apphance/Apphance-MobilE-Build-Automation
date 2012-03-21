@@ -50,7 +50,7 @@ class PbxProjectHelper {
 
     Object getObject(String objectName) {
         def returnObject = null
-
+		logger.lifecycle("Searching " + objectName)
         def objects = getObjectsList()
         objects.key.each {
             if (it.text().equals(objectName)) {
@@ -58,12 +58,14 @@ class PbxProjectHelper {
                 return
             }
         }
+
         returnObject = getNextNode(returnObject)
         return returnObject
     }
 
     def getNextNode(Object object) {
-        Iterator iter = object.parent().breadthFirst()
+        List list = object.parent().children()
+		Iterator iter = list.iterator()
         while (iter.hasNext()) {
             def obj = iter.next()
             if (object == obj) {
@@ -100,52 +102,37 @@ class PbxProjectHelper {
         int apphanceFrameworkHash = nextHash()
         int apphanceFileFrameworkHash = nextHash()
         def objectsList = getObjectsList()
-        objectsList.appendNode {
-            key(apphanceFrameworkHash.toString())
-        }
-        objectsList.appendNode {
-            dict {
-                key("isa")
-                string("PBXBuildFile")
-                key("fileRef")
-                string(apphanceFileFrameworkHash)
-                key("settings")
-                dict {
-                    key("ATTRIBUTES")
-                    array {
-                        string(strongWeak)
-                    }
-                }
-            }
-        }
-        getProperty(frameworks, "files").appendNode {
-            string(apphanceFrameworkHash.toString())
-        }
-        objectsList.appendNode {
-            key(apphanceFileFrameworkHash.toString())
-            dict {
-                key("isa")
-                string("PBXFileReference")
-                key("lastKnownFileType")
-                string("wrapper.framework")
-                key("name")
-                string(name)
-                key("path")
-                string(path)
-                key("sourceTree")
-                string(group)
-            }
-        }
-//		rootObject.objects.put(apphanceFrameworkHash.toString(), [isa : "PBXBuildFile", fileRef : apphanceFileFrameworkHash, settings : [ATTRIBUTES:[strongWeak,]]])
-//		frameworks.files.add(apphanceFrameworkHash.toString())
-//		rootObject.objects.put(apphanceFileFrameworkHash.toString(), [isa : "PBXFileReference", lastKnownFileType : "wrapper.framework", name : name, path : path, sourceTree : group ])
+
+		objectsList.appendNode("key", apphanceFrameworkHash.toString())
+		def dict = objectsList.appendNode("dict")
+		dict.appendNode("key", "isa")
+		dict.appendNode("string", "PBXBuildFile")
+		dict.appendNode("key", "fileRef")
+		dict.appendNode("string", apphanceFileFrameworkHash.toString())
+		dict.appendNode("key", "settings")
+		def settings = dict.appendNode("dict")
+		settings.appendNode("key", "ATTRIBUTES")
+		def attributes = settings.appendNode("array")
+		attributes.appendNode("string", strongWeak)
+
+		getProperty(frameworks, "files").appendNode("string", apphanceFrameworkHash.toString())
+		objectsList.appendNode("key", apphanceFileFrameworkHash.toString())
+		dict = objectsList.appendNode("dict")
+		dict.appendNode("key", "isa")
+		dict.appendNode("string", "PBXFileReference")
+		dict.appendNode("key", "lastKnownFileType")
+		dict.appendNode("string", "wrapper.framework")
+		dict.appendNode("key", "name")
+		dict.appendNode("string", name)
+		dict.appendNode("key", "path")
+		dict.appendNode("string", path)
+		dict.appendNode("key", "sourceTree")
+		dict.appendNode("string", group)
 
         def project = getObject(getProperty(rootObject.dict, "rootObject").text())
         def mainGroupProp = getProperty(project, "mainGroup")
         def mainGroup = getObject(mainGroupProp.text())
-        getProperty(mainGroup, "children").appendNode {
-            string(apphanceFileFrameworkHash.toString())
-        }
+		getProperty(mainGroup, "children").appendNode("string", apphanceFileFrameworkHash.toString())
     }
 
     boolean findFramework(Object frameworks, String name) {
@@ -189,6 +176,7 @@ class PbxProjectHelper {
 
     String printElementToString(Object node, int level) {
         StringBuilder builder = new StringBuilder()
+		logger.lifecycle("Node name " + node.name())
         if (node.name().equals("dict")) {
             builder << "{\n"
             builder << "\t"*level
@@ -230,7 +218,7 @@ class PbxProjectHelper {
 
     String writePlistToString() {
         StringBuilder builder = new StringBuilder()
-        builder << printElementToString(rootObject.dict, 1)
+        builder << printElementToString(rootObject.dict[0], 1)
         return builder.toString() + "\n"
     }
 
@@ -242,62 +230,36 @@ class PbxProjectHelper {
                 def buildSettings = getProperty(configuration, "buildSettings")
                 def ldflags = getProperty(buildSettings, "OTHER_LDFLAGS")
                 if (ldflags == null) {
-                    buildSettings.appendNode {
-                        key("OTHER_LDFLAGS")
-                    }
-                    buildSettings.appendNode {
-                        array {
-                        }
-                    }
-                    XmlParser slurper = new XmlParser()
-                    rootObject = slurper.parseText(XmlUtil.serialize(rootObject))
-                    buildSettings = getProperty(getObject(it.text()), "buildSettings")
-                    ldflags = getProperty(buildSettings, "OTHER_LDFLAGS")
+					logger.lifecycle("Before adding " + buildSettings.children().size())
+					buildSettings.appendNode("key", "OTHER_LDFLAGS")
+					def array = buildSettings.appendNode("array")
+					array.appendNode("string", "-ObjC")
+					array.appendNode("string", "-all_load")
+                } else {
+					ldflags.appendNode("string", "-ObjC")
+					ldflags.appendNode("string", "-all_load")
                 }
-                ldflags.appendNode {
-                    string("-ObjC")
-                }
-                ldflags.appendNode {
-                    string("-all_load")
-                }
+
                 def frameworkSearchPaths = getProperty(buildSettings, "FRAMEWORK_SEARCH_PATHS")
                 if (frameworkSearchPaths == null) {
-                    buildSettings.appendNode {
-                        key("FRAMEWORK_SEARCH_PATHS")
-                    }
-                    buildSettings.appendNode {
-                        array {
-                            string("\$(inherited)")
-                        }
-                    }
-                    XmlParser slurper = new XmlParser()
-                    rootObject = slurper.parseText(XmlUtil.serialize(rootObject))
-                    buildSettings = getProperty(getObject(it.text()), "buildSettings")
-                    frameworkSearchPaths = getProperty(buildSettings, "FRAMEWORK_SEARCH_PATHS")
+					buildSettings.appendNode("key", "FRAMEWORK_SEARCH_PATHS")
+					def array = buildSettings.appendNode("array")
+					array.appendNode("string", "\$(inherited)")
+					array.appendNode("string", "\$(SRCROOT)/")
+                } else {
+					frameworkSearchPaths.appendNode("string", "\$(SRCROOT)/")
                 }
-                frameworkSearchPaths.appendNode {
-                    string("\$(SRCROOT)/")
-                }
+
                 def librarySearchPaths = getProperty(buildSettings, "LIBRARY_SEARCH_PATHS")
                 if (librarySearchPaths == null) {
-                    buildSettings.appendNode {
-                        key("LIBRARY_SEARCH_PATHS")
-                    }
-                    buildSettings.appendNode {
-                        array {
-                            string("\$(inherited)")
-                        }
-                    }
-                    XmlParser slurper = new XmlParser()
-                    rootObject = slurper.parseText(XmlUtil.serialize(rootObject))
-                    buildSettings = getProperty(getObject(it.text()), "buildSettings")
-                    librarySearchPaths = getProperty(buildSettings, "LIBRARY_SEARCH_PATHS")
+					buildSettings.appendNode("key", "LIBRARY_SEARCH_PATHS")
+					def array = buildSettings.appendNode("array")
+					array.appendNode("string", "\$(inherited)")
+					array.appendNode("string", "\$(SRCROOT)/Apphance-iOS.framework")
+                } else {
+					librarySearchPaths.appendNode("string", "\$(SRCROOT)/Apphance-iOS.framework")
                 }
-                librarySearchPaths.appendNode {
-                    string("\$(SRCROOT)/Apphance-iOS.framework")
-                }
-                XmlParser slurper = new XmlParser()
-                rootObject = slurper.parseText(XmlUtil.serialize(rootObject))
+
             }
         }
     }
