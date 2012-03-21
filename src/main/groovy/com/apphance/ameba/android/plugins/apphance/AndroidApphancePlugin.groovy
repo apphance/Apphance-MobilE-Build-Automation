@@ -8,16 +8,16 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-import com.apphance.ameba.AmebaArtifact;
+import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidArtifactBuilderInfo
+import com.apphance.ameba.android.AndroidBuilderInfo
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration;
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
-import com.apphance.ameba.android.AndroidSingleVariantBuilder;
+import com.apphance.ameba.android.AndroidSingleVariantApkBuilder;
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.apphance.ApphanceProperty
 import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
@@ -49,9 +49,7 @@ import org.apache.http.entity.mime.*
 import org.apache.http.entity.mime.content.*
 import java.nio.charset.Charset
 
-// Uncomment this annotation for eclipse building, leave commented for gradle build
-// Caused by: http://issues.gradle.org/browse/GRADLE-1162
-//@Grab(group='org.apache.httpcomponents', module='httpmime', version='4.1.3')
+
 class AndroidApphancePlugin implements Plugin<Project>{
 
     static Logger logger = Logging.getLogger(AndroidApphancePlugin.class)
@@ -409,8 +407,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
 			uploadTask.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 
 			uploadTask << {
-				AndroidSingleVariantBuilder androidBuilder = new AndroidSingleVariantBuilder(project, androidConf)
-				AndroidArtifactBuilderInfo bi = androidBuilder.buildApkArtifactBuilderInfo(project, variantName, "Debug")
+				AndroidSingleVariantApkBuilder androidBuilder = new AndroidSingleVariantApkBuilder(project, androidConf)
+				AndroidBuilderInfo bi = androidBuilder.buildApkArtifactBuilderInfo(project, variantName, "Debug")
 				AmebaArtifact apkArtifact = androidBuilder.prepareApkArtifact(bi)
 
 				def host = "apphance-app.appspot.com"
