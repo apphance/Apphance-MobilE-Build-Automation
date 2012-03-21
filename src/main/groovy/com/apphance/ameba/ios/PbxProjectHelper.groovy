@@ -87,8 +87,8 @@ class PbxProjectHelper {
         Process proc = Runtime.getRuntime().exec((String[]) command.toArray())
         StringBuffer outBuff = new StringBuffer()
         proc.waitForProcessOutput(outBuff, null)
-        XmlSlurper slurper = new XmlSlurper(false, false)
-        def root = slurper.parseText(outBuff.toString())
+        XmlParser parser = new XmlParser(false, false)
+        def root = parser.parseText(outBuff.toString())
         return root
     }
 
