@@ -97,6 +97,11 @@ class PbxProjectHelper {
         return hash++
     }
 
+	void appendNodeWithKey(Object object, String key, String keyValue, String value, String valueString) {
+		object.appendNode(key, keyValue)
+		object.appendNode(value, valueString)
+	}
+
     void addFramework(Object frameworks, String name, String path, String group, String strongWeak) {
         int apphanceFrameworkHash = nextHash()
         int apphanceFileFrameworkHash = nextHash()
@@ -104,10 +109,8 @@ class PbxProjectHelper {
 
 		objectsList.appendNode("key", apphanceFrameworkHash.toString())
 		def dict = objectsList.appendNode("dict")
-		dict.appendNode("key", "isa")
-		dict.appendNode("string", "PBXBuildFile")
-		dict.appendNode("key", "fileRef")
-		dict.appendNode("string", apphanceFileFrameworkHash.toString())
+		appendNodeWithKey(dict, "key", "isa", "string", "PBXBuildFile")
+		appendNodeWithKey(dict, "key", "fileRef", "string", apphanceFileFrameworkHash.toString())
 		dict.appendNode("key", "settings")
 		def settings = dict.appendNode("dict")
 		settings.appendNode("key", "ATTRIBUTES")
@@ -117,16 +120,11 @@ class PbxProjectHelper {
 		getProperty(frameworks, "files").appendNode("string", apphanceFrameworkHash.toString())
 		objectsList.appendNode("key", apphanceFileFrameworkHash.toString())
 		dict = objectsList.appendNode("dict")
-		dict.appendNode("key", "isa")
-		dict.appendNode("string", "PBXFileReference")
-		dict.appendNode("key", "lastKnownFileType")
-		dict.appendNode("string", "wrapper.framework")
-		dict.appendNode("key", "name")
-		dict.appendNode("string", name)
-		dict.appendNode("key", "path")
-		dict.appendNode("string", path)
-		dict.appendNode("key", "sourceTree")
-		dict.appendNode("string", group)
+		appendNodeWithKey(dict, "key", "isa", "string", "PBXFileReference")
+		appendNodeWithKey(dict, "key", "lastKnownFileType", "string", "wrapper.framework")
+		appendNodeWithKey(dict, "key", "name", "string", name)
+		appendNodeWithKey(dict, "key", "path", "string", path)
+		appendNodeWithKey(dict, "key", "sourceTree", "string", group)
 
         def project = getObject(getProperty(rootObject.dict, "rootObject").text())
         def mainGroupProp = getProperty(project, "mainGroup")
