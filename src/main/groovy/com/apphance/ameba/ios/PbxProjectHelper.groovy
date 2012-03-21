@@ -50,7 +50,6 @@ class PbxProjectHelper {
 
     Object getObject(String objectName) {
         def returnObject = null
-		logger.lifecycle("Searching " + objectName)
         def objects = getObjectsList()
         objects.key.each {
             if (it.text().equals(objectName)) {
@@ -176,7 +175,6 @@ class PbxProjectHelper {
 
     String printElementToString(Object node, int level) {
         StringBuilder builder = new StringBuilder()
-		logger.lifecycle("Node name " + node.name())
         if (node.name().equals("dict")) {
             builder << "{\n"
             builder << "\t"*level
