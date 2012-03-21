@@ -249,7 +249,7 @@ class PbxProjectHelper {
                         array {
                         }
                     }
-                    XmlSlurper slurper = new XmlSlurper()
+                    XmlParser slurper = new XmlParser()
                     rootObject = slurper.parseText(XmlUtil.serialize(rootObject))
                     buildSettings = getProperty(getObject(it.text()), "buildSettings")
                     ldflags = getProperty(buildSettings, "OTHER_LDFLAGS")
@@ -270,7 +270,7 @@ class PbxProjectHelper {
                             string("\$(inherited)")
                         }
                     }
-                    XmlSlurper slurper = new XmlSlurper()
+                    XmlParser slurper = new XmlParser()
                     rootObject = slurper.parseText(XmlUtil.serialize(rootObject))
                     buildSettings = getProperty(getObject(it.text()), "buildSettings")
                     frameworkSearchPaths = getProperty(buildSettings, "FRAMEWORK_SEARCH_PATHS")
@@ -288,7 +288,7 @@ class PbxProjectHelper {
                             string("\$(inherited)")
                         }
                     }
-                    XmlSlurper slurper = new XmlSlurper()
+                    XmlParser slurper = new XmlParser()
                     rootObject = slurper.parseText(XmlUtil.serialize(rootObject))
                     buildSettings = getProperty(getObject(it.text()), "buildSettings")
                     librarySearchPaths = getProperty(buildSettings, "LIBRARY_SEARCH_PATHS")
@@ -296,7 +296,7 @@ class PbxProjectHelper {
                 librarySearchPaths.appendNode {
                     string("\$(SRCROOT)/Apphance-iOS.framework")
                 }
-                XmlSlurper slurper = new XmlSlurper()
+                XmlParser slurper = new XmlParser()
                 rootObject = slurper.parseText(XmlUtil.serialize(rootObject))
             }
         }
