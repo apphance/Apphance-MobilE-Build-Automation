@@ -42,11 +42,13 @@ test {
 	def os = System.getProperty("os.name").toLowerCase()
 	if (os.contains("windows")) {
 		exclude "**/ios/**/*",
+				"**/AndroidVerifyTest.class", // test is based on local sdk configuration
+				"**/ExecuteAndroidIsInPath.class", // 'android' called directly Runtime.getRuntime().exec
 				"**/ExecuteAndroidBuildsTest.class", // analysis tasks
-				"**/RemoveSymlinksTest.class" // uses ln command
-				"**/ApphanceOTFTest.class" // 'gradle' called directly from ProcessBuilder
-				"**/AndroidVerifyTest.class" // test is based on local sdk configuration
-
+				"**/RemoveSymlinksTest.class", // uses ln command
+				"**/ApphanceOTFTest.class", // 'gradle' called directly from ProcessBuilder
+				"**/TestDocumentation.class", // documentation builder uses ios classes
+				"**/RunPrepareAndroidSetupTest.class" // ???
 	}
 	else {
 		exclude "**/wp7/**/*"

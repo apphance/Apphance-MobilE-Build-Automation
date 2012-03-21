@@ -53,8 +53,6 @@ class Wp7ApphancePlugin implements Plugin<Project> {
 		wp7Conf.configurations.each { configuration ->
 			wp7Conf.targets.each { target ->
 
-
-
 				project."build${target}${configuration}".doFirst {
 					if (configuration.toLowerCase().contains("apphance")) {
 						use (PropertyCategory) {

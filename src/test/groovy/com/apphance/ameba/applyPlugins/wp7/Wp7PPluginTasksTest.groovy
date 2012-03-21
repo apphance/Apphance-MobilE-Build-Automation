@@ -31,7 +31,6 @@ class Wp7PPluginTasksTest extends AbstractBaseWp7TasksTest {
 	public void testConfigurationTasksAvailable() {
 		verifyTasksInGroup(getProject(),[
 			'cleanConfiguration',
-			'copyGalleryFiles',
 			'readProjectConfiguration',
 		],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
 	}
