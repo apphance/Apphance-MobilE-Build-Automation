@@ -27,6 +27,7 @@ class RunVerifyAndroidErrorsSetupTest {
     void after() {
         gradleProperties.delete()
         gradleProperties << gradlePropertiesOrig.text
+		gradlePropertiesOrig.delete()
     }
 
     String runTests(String ... tasks) {

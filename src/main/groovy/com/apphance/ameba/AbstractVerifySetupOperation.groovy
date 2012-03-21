@@ -31,7 +31,9 @@ abstract class AbstractVerifySetupOperation {
             throw new GradleException("""The gradle.properties file does not exist.
 !!!!! Please run "gradle prepareSetup --quiet" to correct project's configuration !!!!!""")
         }
-        projectProperties.load(projectPropertiesFile.newInputStream())
+		InputStream is = projectPropertiesFile.newInputStream();
+        projectProperties.load(is)
+		is.close()
         return projectProperties
     }
 

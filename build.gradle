@@ -45,6 +45,8 @@ test {
 				"**/ExecuteAndroidBuildsTest.class", // analysis tasks
 				"**/RemoveSymlinksTest.class" // uses ln command
 				"**/ApphanceOTFTest.class" // 'gradle' called directly from ProcessBuilder
+				"**/AndroidVerifyTest.class" // test is based on local sdk configuration
+
 	}
 	else {
 		exclude "**/wp7/**/*"
