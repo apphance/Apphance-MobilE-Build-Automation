@@ -305,7 +305,7 @@ class IOSPlugin implements Plugin<Project> {
         task.description = "Copies mobile provision file to the user library"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
-            userHome = System.getProperty("user.home")
+            def userHome = System.getProperty("user.home")
             def mobileProvisionDirectory = userHome + "/Library/MobileDevice/Provisioning Profiles/"
             new File(mobileProvisionDirectory).mkdirs()
             ant.copy(todir: mobileProvisionDirectory, overwrite: true) {
