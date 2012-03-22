@@ -35,36 +35,50 @@ class IOSSingleVariantBuilder {
         }
     }
 
-    void buildRelease(Project project, String target, String configuration) {
+    void buildNormalVariant(Project project, String target, String configuration) {
         logger.lifecycle( "\n\n\n=== Building target ${target}, configuration ${configuration}  ===")
-        if (System.getenv()["SKIP_IOS_BUILDS"] != null) {
-            logger.lifecycle ("********************* CAUTION !!!! *********************************")
-            logger.lifecycle ("* Skipping iOS builds because SKIP_IOS_BUILDS variable is set  *")
-            logger.lifecycle ("* This should never happen on actual jenkins build                 *")
-            logger.lifecycle ("* If it does: make sure that SKIP_IOS_BUILDS variable is unset    *")
-            logger.lifecycle ("********************************************************************")
-        } else {
-            projectHelper.executeCommand(project,tmpDir(target,configuration), iosConf.getXCodeBuildExecutionPath() + [
-                "-target",
-                target,
-                "-configuration",
-                configuration,
-                "-sdk",
-                iosConf.sdk
-            ])
-        }
-        IOSBuilderInfo bi = buidSingleBuilderInfo(target, configuration, project)
+        projectHelper.executeCommand(project,tmpDir(target,configuration), iosConf.getXCodeBuildExecutionPath() + [
+            "-target",
+            target,
+            "-configuration",
+            configuration,
+            "-sdk",
+            iosConf.sdk
+        ])
+        IOSBuilderInfo bi = buidSingleBuilderInfo(target, configuration, 'iphoneos', project)
         buildListeners.each {
             it.buildDone(project, bi)
         }
     }
 
-    IOSBuilderInfo buidSingleBuilderInfo(String target, String configuration, Project project) {
+    void buildDebugRelease(Project project, String target) {
+        def configuration = "Debug"
+        logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
+        if (conf.versionString != null) {
+            projectHelper.executeCommand(project, tmpDir(target,configuration), iosConf.getXCodeBuildExecutionPath() + [
+                "-target",
+                target,
+                "-configuration",
+                configuration,
+                "-sdk",
+                iosConf.simulatorsdk
+            ])
+            IOSBuilderInfo bi= buidSingleBuilderInfo(target, configuration, 'iphonesimulator', project)
+            buildListeners.each {
+                it.buildDone(project, bi)
+            }
+        } else {
+            logger.lifecycle("Skipping building debug artifacts -> the build is not versioned")
+        }
+    }
+
+
+    IOSBuilderInfo buidSingleBuilderInfo(String target, String configuration, String outputDirPostfix, Project project) {
         IOSBuilderInfo bi= new IOSBuilderInfo(
                         id : "${target}-${configuration}",
                         target : target,
                         configuration : configuration,
-                        buildDirectory : new File(tmpDir(target, configuration),"/build/${configuration}-iphoneos"),
+                        buildDirectory : new File(tmpDir(target, configuration),"/build/${configuration}-${outputDirPostfix}"),
                         fullReleaseName : "${target}-${configuration}-${conf.fullVersionString}",
                         filePrefix : "${target}-${configuration}-${conf.fullVersionString}",
                         mobileprovisionFile : IOSXCodeOutputParser.findMobileProvisionFile(project, target, configuration),
@@ -75,5 +89,4 @@ class IOSSingleVariantBuilder {
     public File tmpDir(String target, String configuration) {
         return project.file("../tmp-${target}-${configuration}")
     }
-
 }

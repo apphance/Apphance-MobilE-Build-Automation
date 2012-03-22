@@ -50,13 +50,14 @@ class IOSPlugin implements Plugin<Project> {
             this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
             this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, project.ant)
             prepareCopySourcesTask(project)
+            prepareCopyDebugSourcesTask(project)
             prepareReadIosProjectConfigurationTask(project)
             prepareReadIosTargetsAndConfigurationsTask(project)
             prepareReadIosProjectVersionsTask(project)
             prepareCleanTask(project)
             prepareUnlockKeyChainTask(project)
             prepareCopyMobileProvisionTask(project)
-            prepareBuildSingleReleaseTask(project)
+            prepareBuildSingleVariantTask(project)
             project.task('buildAllSimulators', type: IOSBuildAllSimulatorsTask)
             prepareBuildAllTask(project)
             prepareReplaceBundleIdPrefixTask(project)
@@ -75,9 +76,7 @@ class IOSPlugin implements Plugin<Project> {
         def task = project.task('readIOSProjectConfiguration')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
         task.description = 'Reads iOS project configuration'
-        task << {
-            readIosProjectConfiguration(project)
-        }
+        task << { readIosProjectConfiguration(project) }
         project.readProjectConfiguration.dependsOn(task)
     }
 
@@ -144,7 +143,7 @@ class IOSPlugin implements Plugin<Project> {
                 iosConf.xCodeProjectDirectory  = new File(project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
             }
         }
-        def cmd = (iosConf.getXCodeBuildExecutionPath() + [ "-list" ]) as String []
+        def cmd = (iosConf.getXCodeBuildExecutionPath() + ["-list"]) as String []
         def trimmedListOutput = projectHelper.executeCommand(project, cmd, false, null, null, 1, false)*.trim()
         if (trimmedListOutput.empty || trimmedListOutput[0] == '') {
             throw new GradleException("Error while running ${cmd}:")
@@ -215,8 +214,8 @@ class IOSPlugin implements Plugin<Project> {
                     singleTask.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
                     singleTask.description = "Builds target:${target} configuration:${configuration}"
                     singleTask << {
-                        def singleReleaseBuilder = new IOSSingleVariantBuilder(project, project.ant)
-                        singleReleaseBuilder.buildRelease(project, target, configuration)
+                        def singleVariantBuilder = new IOSSingleVariantBuilder(project, project.ant)
+                        singleVariantBuilder.buildNormalVariant(project, target, configuration)
                     }
                     task.dependsOn(singleTask)
                     singleTask.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.verifySetup, project.copySources)
@@ -249,16 +248,16 @@ class IOSPlugin implements Plugin<Project> {
         return new XMLBomAwareFileReader().readXMLFileIncludingBom(file)
     }
 
-    def void prepareBuildSingleReleaseTask(Project project) {
-        def task = project.task('buildSingleRelease')
+    def void prepareBuildSingleVariantTask(Project project) {
+        def task = project.task('buildSingleVariant')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        task.description = "Builds single release for iOS. Requires ios.target and ios.configuration properties"
+        task.description = "Builds single variant for iOS. Requires ios.target and ios.configuration properties"
         task << {
             use (PropertyCategory) {
-                def singleReleaseBuilder = new IOSSingleVariantBuilder(project, this.ant)
+                def singleVariantBuilder = new IOSSingleVariantBuilder(project, this.ant)
                 String target = project.readExpectedProperty(IOS_TARGET_LOCAL_PROPERTY)
                 String configuration = project.readExpectedProperty(IOS_CONFIGURATION_LOCAL_PROPERTY)
-                singleReleaseBuilder.buildRelease(project, target, configuration)
+                singleVariantBuilder.buildNormalVariant(project, target, configuration)
             }
         }
         task.dependsOn(project.readProjectConfiguration, project.verifySetup, project.copySources)
@@ -396,7 +395,7 @@ class IOSPlugin implements Plugin<Project> {
 
     void prepareCopySourcesTask(Project project) {
         def task = project.task('copySources')
-        task.description = "Copies all sources to tmp directory for build"
+        task.description = "Copies all sources to tmp directories for build"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
             iosConf.alltargets.each { target ->
@@ -405,9 +404,7 @@ class IOSPlugin implements Plugin<Project> {
                         new AntBuilder().sync(toDir : iosSingleVariantBuilder.tmpDir(target, configuration), overwrite:true, verbose:true) {
                             fileset(dir : "${project.rootDir}/") {
                                 exclude(name: iosSingleVariantBuilder.tmpDir(target, configuration).absolutePath + '/**/*')
-                                conf.sourceExcludes.each {
-                                    exclude(name: it)
-                                }
+                                conf.sourceExcludes.each { exclude(name: it) }
                             }
                         }
                     }
@@ -416,14 +413,30 @@ class IOSPlugin implements Plugin<Project> {
         }
     }
 
-static public final String DESCRIPTION =
-"""This is the main iOS build plugin.
+    void prepareCopyDebugSourcesTask(Project project) {
+        def task = project.task('copyDebugSources')
+        task.description = "Copies all debug sources to tmp directories for build"
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        def debugConfiguration = 'Debug'
+        task << {
+            iosConf.alltargets.each { target ->
+                new AntBuilder().sync(toDir : iosSingleVariantBuilder.tmpDir(target, debugConfiguration), overwrite:true, verbose:true) {
+                    fileset(dir : "${project.rootDir}/") {
+                        exclude(name: iosSingleVariantBuilder.tmpDir(target, debugConfiguration).absolutePath + '/**/*')
+                        conf.sourceExcludes.each { exclude(name: it) }
+                    }
+                }
+            }
+        }
+    }
+
+
+    static public final String DESCRIPTION =
+    """This is the main iOS build plugin.
 
 The plugin provides all the task needed to build iOS application.
 Besides tasks explained below, the plugin prepares build-*
 tasks which are dynamically created, based on targets and configurations available.
 There is one task available per each Target-Configuration combination - unless particular
 combination is excluded by the exclude property."""
-
-
 }

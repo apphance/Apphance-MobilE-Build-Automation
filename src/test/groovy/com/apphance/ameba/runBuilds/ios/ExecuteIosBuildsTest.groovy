@@ -151,6 +151,17 @@ class ExecuteIosBuildsTest {
     }
 
     @Test
+    void testBuildAllSimulators() {
+        runGradleMoreVariants('buildAllSimulators')
+        File fileIphone = new File(testProjectMoreVariants, 'ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/Debug/GradleXCodeMoreVariants-Debug-1.0-SNAPSHOT_32-iphone-simulator-image.dmg')
+        File fileIpad = new File(testProjectMoreVariants, 'ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/Debug/GradleXCodeMoreVariants-Debug-1.0-SNAPSHOT_32-iPad-simulator-image.dmg')
+        assertTrue(fileIphone.exists())
+        assertTrue(fileIphone.size() > 30000)
+        assertTrue(fileIpad.exists())
+        assertTrue(fileIpad.size() > 30000)
+    }
+
+    @Test
     void testBuildSourcesZip() {
         runGradleMoreVariants('buildSourcesZip')
         File file = new File(testProjectMoreVariants, 'tmp/GradleXCodeMoreVariants-1.0-SNAPSHOT_32-src.zip')

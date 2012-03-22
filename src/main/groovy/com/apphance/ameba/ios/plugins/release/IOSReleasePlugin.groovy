@@ -19,6 +19,7 @@ import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.android.AndroidEnvironment
+import com.apphance.ameba.ios.IOSBuilderInfo;
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser
@@ -59,6 +60,11 @@ class IOSReleasePlugin implements Plugin<Project> {
         IOSSingleVariantBuilder.buildListeners << new IOSReleaseListener(project, project.ant)
     }
 
+    String getFolderPrefix(IOSBuilderInfo bi) {
+        return "${releaseConf.projectDirectoryName}/${conf.fullVersionString}/${bi.target}/${bi.configuration}"
+    }
+
+
     def void prepareBuildDocumentationZipTask(Project project) {
         def task = project.task('buildDocumentationZip')
         task.description = "Builds documentation .zip file."
@@ -78,9 +84,9 @@ class IOSReleasePlugin implements Plugin<Project> {
         task.description = "Cleans release related directories for iOS"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
         task << {
-//            iosConf.tmpDirs.values().each {
-//                project.ant.delete(dir: it)
-//            }
+            //            iosConf.tmpDirs.values().each {
+            //                project.ant.delete(dir: it)
+            //            }
         }
         project.cleanRelease.dependsOn(task)
     }
