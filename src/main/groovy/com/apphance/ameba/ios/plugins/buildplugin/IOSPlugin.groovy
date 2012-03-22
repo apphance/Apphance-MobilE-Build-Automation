@@ -401,7 +401,7 @@ class IOSPlugin implements Plugin<Project> {
             iosConf.alltargets.each { target ->
                 iosConf.allconfigurations.each { configuration ->
                     if (!iosConf.isBuildExcluded(target + "-" + configuration)) {
-                        new AntBuilder().sync(toDir : iosSingleVariantBuilder.tmpDir(target, configuration), overwrite:true, verbose:true) {
+                        new AntBuilder().sync(toDir : iosSingleVariantBuilder.tmpDir(target, configuration), failonerror: false, overwrite:true, verbose:true) {
                             fileset(dir : "${project.rootDir}/") {
                                 exclude(name: iosSingleVariantBuilder.tmpDir(target, configuration).absolutePath + '/**/*')
                                 conf.sourceExcludes.each { exclude(name: it) }
@@ -420,7 +420,7 @@ class IOSPlugin implements Plugin<Project> {
         def debugConfiguration = 'Debug'
         task << {
             iosConf.alltargets.each { target ->
-                new AntBuilder().sync(toDir : iosSingleVariantBuilder.tmpDir(target, debugConfiguration), overwrite:true, verbose:true) {
+                new AntBuilder().sync(toDir : iosSingleVariantBuilder.tmpDir(target, debugConfiguration), failonerror: false, overwrite:true, verbose:true) {
                     fileset(dir : "${project.rootDir}/") {
                         exclude(name: iosSingleVariantBuilder.tmpDir(target, debugConfiguration).absolutePath + '/**/*')
                         conf.sourceExcludes.each { exclude(name: it) }
