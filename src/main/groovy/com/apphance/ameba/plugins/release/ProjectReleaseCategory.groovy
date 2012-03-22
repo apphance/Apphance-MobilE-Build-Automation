@@ -60,7 +60,7 @@ class ProjectReleaseCategory {
                 }
             }
             def iconFile = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE)
-            if (iconFile.empty) {
+            if (iconFile != null && iconFile.empty) {
                 throw new GradleException("Icon file cannot be empty!")
             }
             releaseConf.iconFile = iconFile == null ? null : project.file(iconFile)
