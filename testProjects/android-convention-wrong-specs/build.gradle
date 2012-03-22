@@ -5,7 +5,7 @@ buildscript {
     dependencies {
         classpath files("../../build/tmp/emma/instr/","../../build/tmp/emma/instr/main/",
               '../../bin',  "../../build/classes/main", "../../build/resources/main")
-        classpath 'emma:emma:2.0.5312'
+        classpath 'emma:emma:2.1.5320'
     }
 }
 
