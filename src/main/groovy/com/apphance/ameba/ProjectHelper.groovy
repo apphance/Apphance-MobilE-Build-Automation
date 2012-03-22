@@ -3,9 +3,11 @@ package com.apphance.ameba
 
 
 import groovy.io.FileType
+import groovy.lang.Closure;
 
 import java.io.File
 import java.io.IOException
+import java.util.List;
 
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.api.GradleException
@@ -351,4 +353,43 @@ class ProjectHelper {
             throw new GradleException("There is more than one plugin loaded from the list: ${pluginClasses}, but there should be only one. Please make sure one of them remains")
         }
     }
+
+    public static List getFilesOrDirectories(Project project, FileType type, Closure filter) {
+        List paths = [
+            project.file('bin').absolutePath,
+            project.file('build').absolutePath,
+            project.file('ota').absolutePath,
+            project.file('tmp').absolutePath,
+            project.file('.hg').absolutePath,
+            project.file('.git').absolutePath,
+        ]
+        def plistFiles = []
+        project.rootDir.traverse([type: type, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
+            def thePath = it.absolutePath
+            if (filter(it)) {
+                if (!paths.any {path -> thePath.startsWith(path)}) {
+                    plistFiles << thePath.substring(project.rootDir.path.length() + 1)
+                }
+            }
+        }
+        return plistFiles
+    }
+
+
+    public static List getFiles(Project project, Closure filter) {
+        return getFilesOrDirectories(project, FileType.FILES, filter)
+    }
+
+    public static List getDirectories(Project project, Closure filter) {
+        return getFilesOrDirectories(project, FileType.DIRECTORIES, filter)
+    }
+
+
+    public static List getDirectoriesSortedAccordingToDepth(Project project, Closure filter) {
+        def xCodeProjFiles = getDirectories(project, filter)
+        xCodeProjFiles = xCodeProjFiles.sort { sprintf("%08d",it.findAll('[/\\\\]').size()) }
+        return xCodeProjFiles
+    }
+
+
 }

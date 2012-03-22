@@ -44,32 +44,4 @@ abstract class AbstractPrepareSetupOperation {
         }
     }
 
-    List getFilesOrDirectories(FileType type, Closure filter) {
-        List paths = [
-            project.file('bin').absolutePath,
-            project.file('build').absolutePath,
-            project.file('ota').absolutePath,
-            project.file('tmp').absolutePath,
-            project.file('.hg').absolutePath,
-            project.file('.git').absolutePath,
-        ]
-        def plistFiles = []
-        project.rootDir.traverse([type: type, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
-            def thePath = it.absolutePath
-            if (filter(it)) {
-                if (!paths.any {path -> thePath.startsWith(path)}) {
-                    plistFiles << thePath.substring(project.rootDir.path.length() + 1)
-                }
-            }
-        }
-        return plistFiles
-    }
-
-    List getFiles(Closure filter) {
-        return getFilesOrDirectories(FileType.FILES, filter)
-    }
-
-    List getDirectories(Closure filter) {
-        return getFilesOrDirectories(FileType.DIRECTORIES, filter)
-    }
 }
