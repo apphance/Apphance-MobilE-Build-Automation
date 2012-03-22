@@ -66,7 +66,7 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
             def manifestPropertiesFile = new File(conf.tmpDirectory,'manifest.properties')
             def properties = new Properties()
             properties.setProperty("implementation.title", conf.versionString)
-            properties.setProperty("implementation.version", Integer.toString(conf.versionCode))
+            properties.setProperty("implementation.version", Long.toString(conf.versionCode))
             properties.store(manifestPropertiesFile.newOutputStream(), "Automatically generated with Ameba")
             File resDir = new File(conf.tmpDirectory, "${jarLibraryPrefix}-res")
             project.ant.delete(dir : resDir)
