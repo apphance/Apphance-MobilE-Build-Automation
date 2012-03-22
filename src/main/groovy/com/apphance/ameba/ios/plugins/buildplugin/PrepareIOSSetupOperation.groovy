@@ -21,7 +21,7 @@ class PrepareIOSSetupOperation extends AbstractPrepareSetupOperation {
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
         def plistFiles = ProjectHelper.getFiles(project, {it.name.endsWith(".plist")})
-        def xCodeProjFiles = ProjectHelper.getDirectoriesSortedAccordingToDepth({it.name.endsWith(".xcodeproj")})
+        def xCodeProjFiles = ProjectHelper.getDirectoriesSortedAccordingToDepth(project, {it.name.endsWith(".xcodeproj")})
         if (!xCodeProjFiles.empty && !project.hasProperty(IOSProjectProperty.PROJECT_DIRECTORY.propertyName)) {
             project.ext[IOSProjectProperty.PROJECT_DIRECTORY.propertyName]  = xCodeProjFiles[0]
         }
