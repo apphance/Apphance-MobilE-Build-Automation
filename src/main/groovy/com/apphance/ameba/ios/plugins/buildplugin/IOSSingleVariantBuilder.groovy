@@ -87,6 +87,6 @@ class IOSSingleVariantBuilder {
     }
 
     public File tmpDir(String target, String configuration) {
-        return project.file("../tmp-${target}-${configuration}")
+        return project.file("../tmp-${project.rootDir.name}-${target}-${configuration}")
     }
 }
