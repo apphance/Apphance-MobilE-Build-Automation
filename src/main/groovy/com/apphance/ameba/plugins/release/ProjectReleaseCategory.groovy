@@ -92,7 +92,7 @@ class ProjectReleaseCategory {
         def path = url.path
         def splitPath = path.split('/')
         def lastElement = splitPath[-1]
-        def baseUrl = new URL(url.protocol,url.host, url.port,(splitPath[0 .. -2]).join('/'))
+        def baseUrl = new URL(url.protocol,url.host, url.port,(splitPath[0 .. -2]).join('/') + '/')
         return [baseUrl, lastElement]
     }
 }
