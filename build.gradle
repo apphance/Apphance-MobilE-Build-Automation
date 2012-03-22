@@ -116,7 +116,7 @@ emma{
 }
 
 dependencies {
-    emma 'emma:emma:2.1.5320', 'emma:emma_ant:2.1.5320'
+    emma 'emma:emma:2.0.5312', 'emma:emma_ant:2.1.5320'
     testCompile 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
     testRuntime 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
     mail 'org.apache.ant:ant-javamail:1.8.2',  'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1'
