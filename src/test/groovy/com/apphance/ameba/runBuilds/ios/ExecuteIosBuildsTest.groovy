@@ -8,6 +8,8 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
+import com.google.common.util.concurrent.MoreExecutors;
+
 
 
 class ExecuteIosBuildsTest {
@@ -104,7 +106,22 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testUpdateVersion() {
-        // TODO: update after merging auto-IOS apphance
+        Properties p = new Properties()
+        p.setProperty("version.string", "NEWVERSION")
+        File original = new File(testProjectMoreVariants,'GradleXCodeMoreVariants/GradleXCodeMoreVariants-Info.plist')
+        File tmp = new File(testProjectMoreVariants,'GradleXCodeMoreVariants/GradleXCodeMoreVariants-Info.plist.orig')
+        tmp.delete()
+        tmp << original.text
+        try {
+            runGradleWithProperties(p, 'updateVersion')
+            def newText = new File(original.getAbsolutePath()).text
+            assertTrue(newText.contains('<string>33</string>'))
+            assertTrue(newText.contains('<string>NEWVERSION</string>'))
+        } finally {
+            def text = original.text
+            original.delete()
+            original << tmp.text
+        }
     }
 
     @Test

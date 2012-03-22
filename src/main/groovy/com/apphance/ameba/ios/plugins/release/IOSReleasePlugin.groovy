@@ -239,7 +239,7 @@ class IOSReleasePlugin implements Plugin<Project> {
         task << {
             use (PropertyCategory) {
                 conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
-                iosPlistProcessor.incrementPlistVersion(project)
+                iosPlistProcessor.incrementPlistVersion(project, iosConf, conf)
                 logger.lifecycle("New version code: ${conf.versionCode}")
                 logger.lifecycle("Updated version string to ${conf.versionString}")
             }
