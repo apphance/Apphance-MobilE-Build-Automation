@@ -8,8 +8,6 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
-import com.google.common.util.concurrent.MoreExecutors;
-
 
 
 class ExecuteIosBuildsTest {
@@ -159,6 +157,11 @@ class ExecuteIosBuildsTest {
         assertTrue(fileIphone.size() > 30000)
         assertTrue(fileIpad.exists())
         assertTrue(fileIpad.size() > 30000)
+    }
+
+    @Test
+    void testPrepareAvailableArtifacts() {
+        runGradleMoreVariants('buildAllSimulators', 'prepareImageMontage', 'prepareAvailableArtifactsInfo')
     }
 
     @Test

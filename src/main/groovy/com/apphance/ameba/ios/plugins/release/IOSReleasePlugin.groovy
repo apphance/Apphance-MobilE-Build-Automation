@@ -292,9 +292,13 @@ class IOSReleasePlugin implements Plugin<Project> {
             configurations.each { configuration ->
                 def id = "${target}-${configuration}".toString()
                 if (!iosConf.isBuildExcluded(id)) {
-                    logger.lifecycle("Preparing OTA configuration for ${id}")
-                    def encodedUrl = URLEncoder.encode(iosReleaseConf.manifestFiles[id].url.toString(),"utf-8")
-                    urlMap.put(id,"itms-services://?action=download-manifest&url=${encodedUrl}")
+                    if (iosReleaseConf.manifestFiles[id] != null) {
+                        logger.lifecycle("Preparing OTA configuration for ${id}")
+                        def encodedUrl = URLEncoder.encode(iosReleaseConf.manifestFiles[id].url.toString(),"utf-8")
+                        urlMap.put(id,"itms-services://?action=download-manifest&url=${encodedUrl}")
+                    } else {
+                        logger.warn("Skipping preparing OTA configuration for ${id} -> missing manifest")
+                    }
                 } else {
                     logger.lifecycle("Skipping preparing OTA configuration for ${id} -> excluded by ${iosConf.excludedBuilds}")
                 }
