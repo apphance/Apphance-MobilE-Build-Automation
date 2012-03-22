@@ -55,7 +55,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
         iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
         iosReleaseConf = IOSReleaseConfigurationRetriever.getIosReleaseConfiguration(project)
         iosConf.targets.each { target ->
-            iosSingleVariantBuilder.buildDebugRelease(project, target)
+            iosSingleVariantBuilder.buildDebugVariant(project, target)
         }
     }
 }

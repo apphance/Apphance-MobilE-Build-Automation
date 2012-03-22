@@ -51,7 +51,7 @@ class IOSSingleVariantBuilder {
         }
     }
 
-    void buildDebugRelease(Project project, String target) {
+    void buildDebugVariant(Project project, String target) {
         def configuration = "Debug"
         logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
         if (conf.versionString != null) {

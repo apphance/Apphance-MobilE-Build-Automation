@@ -125,7 +125,20 @@ class ExecuteIosBuildsTest {
     @Test
     void testBuildAndPrepareMoreVariantsMailMessage() {
         runGradleMoreVariants('cleanRelease', 'buildAll')
-        runGradleMoreVariants('prepareImageMontage', 'prepareMailMessage')
+        runGradleMoreVariants('prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
+        assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/file_index.html").exists())
+        assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/icon.png").exists())
+        assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/index.html").exists())
+        assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/plain_file_index.html").exists())
+        assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/qrcode-GradleXCodeMoreVariants-1.0-SNAPSHOT_32.png").exists())
+        assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/AnotherConfiguration/GradleXCodeMoreVariants-AnotherConfiguration-1.0-SNAPSHOT_32.ipa").exists())
+        assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
+    }
+
+   @Test
+    void testBuildAndPrepareMoreVariantsMailMessageWithSimulators() {
+        runGradleMoreVariants('cleanRelease', 'buildAll')
+        runGradleMoreVariants('buildAllSimulators', 'prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/icon.png").exists())
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/index.html").exists())

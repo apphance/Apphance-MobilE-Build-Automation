@@ -59,8 +59,8 @@ class IOSReleaseListener implements IOSBuildListener {
                 prepareManifestFile(project,bi)
                 prepareMobileProvisionFile(project,bi)
             } else {
-                iosConf.families.each { device ->
-                    prepareSimulatorBundleFile(project,bi,device)
+                iosConf.families.each { family ->
+                    prepareSimulatorBundleFile(project,bi,family)
                 }
             }
         } else {
@@ -219,18 +219,17 @@ class IOSReleaseListener implements IOSBuildListener {
         }
     }
 
-
-    void prepareSimulatorBundleFile(Project project, IOSBuilderInfo bi, String device) {
+    void prepareSimulatorBundleFile(Project project, IOSBuilderInfo bi, String family) {
         AmebaArtifact file = new AmebaArtifact()
-        file.name = "Simulator build for ${device}"
-        file.url = new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}-${device}-simulator-image.dmg")
-        file.location = new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}-${device}-simulator-image.dmg")
+        file.name = "Simulator build for ${family}"
+        file.url = new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
+        file.location = new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
         file.location.parentFile.mkdirs()
         file.location.delete()
-        def File tmpDir = File.createTempFile("${conf.projectName}-${bi.target}-${device}-simulator",".tmp")
+        def File tmpDir = File.createTempFile("${conf.projectName}-${bi.target}-${family}-simulator",".tmp")
         tmpDir.delete()
         tmpDir.mkdir()
-        def destDir = new File(tmpDir,"${bi.target} (${device}_Simulator).app")
+        def destDir = new File(tmpDir,"${bi.target} (${family}_Simulator).app")
         destDir.mkdir()
         rsyncTemplatePreservingExecutableFlag(project,destDir)
         File embedDir = new File(destDir, "Contents/Resources/EmbeddedApp")
@@ -239,7 +238,7 @@ class IOSReleaseListener implements IOSBuildListener {
         rsyncEmbeddedAppPreservingExecutableFlag(project,sourceApp, embedDir)
         updateBundleId(project, bi, destDir)
         resampleIcon(project, destDir)
-        updateDeviceFamily(device, embedDir, bi, project)
+        updateDeviceFamily(family, embedDir, bi, project)
         String [] prepareDmgCommand = [
             "hdiutil",
             "create",
@@ -247,11 +246,11 @@ class IOSReleaseListener implements IOSBuildListener {
             "-srcfolder",
             destDir,
             "-volname",
-            "${conf.projectName}-${bi.target}-${device}"
+            "${conf.projectName}-${bi.target}-${family}"
         ]
         projectHelper.executeCommand(project, prepareDmgCommand)
-        iosReleaseConf.dmgImageFiles.put(bi.id,file)
-        logger.lifecycle("Simulator zip file created: ${file}")
+        iosReleaseConf.dmgImageFiles.put("${family}-${iosConf.mainTarget}" as String,file)
+        logger.lifecycle("Simulator zip file created: ${file} for ${family}-${iosConf.mainTarget}")
     }
 
     private rsyncTemplatePreservingExecutableFlag(Project project, File destDir) {
