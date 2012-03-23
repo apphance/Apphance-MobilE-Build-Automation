@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6799F9CE151CA7A700178017 /* emptyPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6799F9CD151CA7A700178017 /* emptyPathView.m */; };
+		6799F9D1151CA7CB00178017 /* NonEmptyPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6799F9D0151CA7CB00178017 /* NonEmptyPathView.m */; };
 		D382B71614703FE500E9CC9B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71514703FE500E9CC9B /* UIKit.framework */; };
 		D382B71814703FE500E9CC9B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71714703FE500E9CC9B /* Foundation.framework */; };
 		D382B71A14703FE500E9CC9B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71914703FE500E9CC9B /* CoreGraphics.framework */; };
@@ -34,6 +36,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6799F9CC151CA7A700178017 /* emptyPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = emptyPathView.h; sourceTree = "<group>"; };
+		6799F9CD151CA7A700178017 /* emptyPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = emptyPathView.m; sourceTree = "<group>"; };
+		6799F9CF151CA7CB00178017 /* NonEmptyPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NonEmptyPathView.h; path = subdir/NonEmptyPathView.h; sourceTree = "<group>"; };
+		6799F9D0151CA7CB00178017 /* NonEmptyPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NonEmptyPathView.m; path = subdir/NonEmptyPathView.m; sourceTree = "<group>"; };
 		D382B71114703FE500E9CC9B /* GradleXCode.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GradleXCode.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D382B71514703FE500E9CC9B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		D382B71714703FE500E9CC9B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -80,6 +86,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6799F9CB151CA7A700178017 /* subdir */ = {
+			isa = PBXGroup;
+			children = (
+				6799F9CC151CA7A700178017 /* emptyPathView.h */,
+				6799F9CD151CA7A700178017 /* emptyPathView.m */,
+			);
+			path = subdir;
+			sourceTree = "<group>";
+		};
 		D382B70614703FE500E9CC9B = {
 			isa = PBXGroup;
 			children = (
@@ -113,6 +128,7 @@
 		D382B71B14703FE500E9CC9B /* GradleXCode */ = {
 			isa = PBXGroup;
 			children = (
+				6799F9CB151CA7A700178017 /* subdir */,
 				D382B72414703FE500E9CC9B /* gradleXCodeAppDelegate.h */,
 				D382B72514703FE500E9CC9B /* gradleXCodeAppDelegate.m */,
 				D382B72714703FE500E9CC9B /* MainStoryboard_iPhone.storyboard */,
@@ -120,6 +136,8 @@
 				D382B72D14703FE500E9CC9B /* gradleXCodeViewController.h */,
 				D382B72E14703FE500E9CC9B /* gradleXCodeViewController.m */,
 				D382B71C14703FE500E9CC9B /* Supporting Files */,
+				6799F9CF151CA7CB00178017 /* NonEmptyPathView.h */,
+				6799F9D0151CA7CB00178017 /* NonEmptyPathView.m */,
 			);
 			path = GradleXCode;
 			sourceTree = "<group>";
@@ -265,6 +283,8 @@
 				D382B72214703FE500E9CC9B /* main.m in Sources */,
 				D382B72614703FE500E9CC9B /* gradleXCodeAppDelegate.m in Sources */,
 				D382B72F14703FE500E9CC9B /* gradleXCodeViewController.m in Sources */,
+				6799F9CE151CA7A700178017 /* emptyPathView.m in Sources */,
+				6799F9D1151CA7CB00178017 /* NonEmptyPathView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

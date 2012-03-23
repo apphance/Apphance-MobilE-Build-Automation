@@ -321,6 +321,8 @@ class PbxProjectHelper {
                     def phaseText = phase.text()
                     if (getProperty(getObject("${phaseText}"), "isa").text().equals("PBXFrameworksBuildPhase")) {
                         addApphanceToFramework(getObject("${phaseText}"))
+                    } else if(getProperty(getObject("${phaseText}"), "isa").text().equals("PBXSourcesBuildPhase")) {
+						replaceLogsWithApphance(projectRootDirectory, getObject("${phaseText}"), project)
                     }
                 }
                 if (!hasApphance) {
@@ -351,4 +353,52 @@ class PbxProjectHelper {
         f.delete()
         return projectFile.text
     }
+
+	String pathForObject(String file, Object group) {
+		String path = ""
+		if (getProperty(group, "path") != null) {
+			path = getProperty(group, "path").text() + "/"
+		}
+		boolean found = false
+		getProperty(group, "children").each {
+			def child = getObject(it.text())
+			if (it.text().equals(file)) {
+				found = true
+				path = path + getProperty(getObject(file), "path").text()
+				return
+			} else if (getProperty(child, "isa").text().equals("PBXGroup") || getProperty(child, "isa").text().equals("PBXVariantGroup")) {
+				String retPath = pathForObject(file, child)
+				if (!retPath.equals("")) {
+					found = true
+					path = path + retPath
+					return
+				}
+			}
+		}
+		if (found) {
+			return path
+		}
+		return ""
+	}
+
+	void replaceLogsWithApphance(File projectRootDir, Object sourcesPhase, Object project) {
+		logger.lifecycle("Replacing APHLog logs with Apphance in ${projectRootDir}")
+		def files = getProperty(sourcesPhase, "files")
+		def paths = []
+		def mainGroup = getObject(getProperty(project, "mainGroup").text())
+		files.'*'.each {
+			paths << pathForObject(getProperty(getObject(it.text()), "fileRef").text(), mainGroup)
+		}
+		paths.each {
+			logger.lifecycle("Replacing logs in file " + it)
+		}
+		new AntBuilder().replace(casesensitive: 'true', token : 'NSLog',
+				value: 'APHLog', summary: true) {
+					fileset(dir: projectRootDir) {
+						paths.each {
+							include (name : it)
+						}
+					}
+				}
+	}
 }
