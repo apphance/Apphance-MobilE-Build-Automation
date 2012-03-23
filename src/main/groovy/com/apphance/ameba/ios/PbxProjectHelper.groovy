@@ -356,7 +356,6 @@ class PbxProjectHelper {
 
 	String pathForObject(String file, Object group) {
 		String path = ""
-		logger.lifecycle("Searching for file " + file)
 		if (getProperty(group, "path") != null) {
 			path = getProperty(group, "path").text() + "/"
 		}
