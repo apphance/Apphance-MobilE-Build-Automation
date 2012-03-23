@@ -321,6 +321,8 @@ class PbxProjectHelper {
                     def phaseText = phase.text()
                     if (getProperty(getObject("${phaseText}"), "isa").text().equals("PBXFrameworksBuildPhase")) {
                         addApphanceToFramework(getObject("${phaseText}"))
+                    } else if(getProperty(getObject("${phaseText}"), "isa").text().equals("PBXSourcesBuildPhase")) {
+						replaceLogsWithApphance(projectRootDirectory, getObject("${phaseText}"))
                     }
                 }
                 if (!hasApphance) {
@@ -351,4 +353,17 @@ class PbxProjectHelper {
         f.delete()
         return projectFile.text
     }
+
+	void replaceLogsWithApphance(File projectRootDir, Object sourcesPhase) {
+		logger.lifecycle("Replacing APHLog logs with Apphance in ${projectRootDir}")
+		def files = getProperty(sourcesPhase, "files")
+		new AntBuilder().replace(casesensitive: 'true', token : 'NSLog',
+				value: 'APHLog', summary: true) {
+					fileset(dir: projectRootDir) {
+						files.'*'.each {
+							include (name : it.text())
+						}
+					}
+				}
+	}
 }

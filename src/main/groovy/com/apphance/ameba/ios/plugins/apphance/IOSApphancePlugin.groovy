@@ -58,7 +58,7 @@ class IOSApphancePlugin implements Plugin<Project> {
                 if (!iosConf.isBuildExcluded(target + "-" + configuration)) {
                     project."build-${target}-${configuration}".doFirst {
                         if (!isApphancePresent(iosSingleVariantBuilder.tmpDir(target, configuration))) {
-                            replaceLogsWithApphance(project, iosSingleVariantBuilder.tmpDir(target, configuration))
+//                            replaceLogsWithApphance(project, iosSingleVariantBuilder.tmpDir(target, configuration))
                             pbxProjectHelper.addApphanceToProject(iosSingleVariantBuilder.tmpDir(target, configuration),
                                 target, configuration, project[ApphanceProperty.APPLICATION_KEY.propertyName])
                             copyApphanceFramework(project, iosSingleVariantBuilder.tmpDir(target, configuration))
