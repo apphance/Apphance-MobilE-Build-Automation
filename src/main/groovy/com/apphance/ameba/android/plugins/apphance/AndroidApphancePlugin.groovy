@@ -280,7 +280,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
         logger.lifecycle("Adding apphance init to file " + mainFile)
         def lineToModify = []
         mainFile.eachLine { line, lineNumber ->
-            if (line.contains('super.onCreate')) {
+            if (line.matches('.*void\\s*onCreate\\(\\).*\\{.*')) {
                 lineToModify << lineNumber
             }
         }
