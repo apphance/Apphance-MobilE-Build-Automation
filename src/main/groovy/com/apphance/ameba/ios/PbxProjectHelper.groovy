@@ -357,11 +357,18 @@ class PbxProjectHelper {
 	void replaceLogsWithApphance(File projectRootDir, Object sourcesPhase) {
 		logger.lifecycle("Replacing APHLog logs with Apphance in ${projectRootDir}")
 		def files = getProperty(sourcesPhase, "files")
+		def paths = []
+		files.'*'.each {
+			paths << getProperty(getObject(getProperty(getObject(it.text()), "fileRef").text()), "path")
+		}
+		paths.each {
+			logger.lifecycle("Searching in file " + it.text())
+		}
 		new AntBuilder().replace(casesensitive: 'true', token : 'NSLog',
 				value: 'APHLog', summary: true) {
 					fileset(dir: projectRootDir) {
-						files.'*'.each {
-							include (name : it.text())
+						paths.each {
+							include (name : it)
 						}
 					}
 				}
