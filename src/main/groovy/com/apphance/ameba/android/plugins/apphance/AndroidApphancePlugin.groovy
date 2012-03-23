@@ -431,13 +431,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
 				networkHelper.closeConnection()
 			}
 		}
-
 		uploadTask.dependsOn(buildTask)
-
-	}
-
-	void uploadApk(Project project, String variant) {
-
 	}
 
 	static public final String DESCRIPTION =
