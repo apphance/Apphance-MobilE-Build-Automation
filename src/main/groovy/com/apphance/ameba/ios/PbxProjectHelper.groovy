@@ -354,49 +354,33 @@ class PbxProjectHelper {
         return projectFile.text
     }
 
-	String pathForObject(String file, Object group) {
-		String path = ""
+	void buildProjectTree(Object group, HashMap<String, String> objects, String actualPath) {
+		String path = actualPath
 		if (getProperty(group, "path") != null) {
-			path = getProperty(group, "path").text() + "/"
+			path = path + getProperty(group, "path").text() + "/"
 		}
 		boolean found = false
 		getProperty(group, "children").each {
 			def child = getObject(it.text())
-			if (it.text().equals(file)) {
-				found = true
-				path = path + getProperty(getObject(file), "path").text()
-				return
-			} else if (getProperty(child, "isa").text().equals("PBXGroup") || getProperty(child, "isa").text().equals("PBXVariantGroup")) {
-				String retPath = pathForObject(file, child)
-				if (!retPath.equals("")) {
-					found = true
-					path = path + retPath
-					return
-				}
+			if (getProperty(child, "isa").text().equals("PBXFileReference")) {
+				objects.put(it.text(), path + getProperty(getObject(it.text()), "path").text())
+			} else if (getProperty(child, "isa").text().equals("PBXGroup")) {
+				buildProjectTree(child, objects, path)
 			}
 		}
-		if (found) {
-			return path
-		}
-		return ""
 	}
 
 	void replaceLogsWithApphance(File projectRootDir, Object sourcesPhase, Object project) {
 		logger.lifecycle("Replacing APHLog logs with Apphance in ${projectRootDir}")
 		def files = getProperty(sourcesPhase, "files")
-		def paths = []
 		def mainGroup = getObject(getProperty(project, "mainGroup").text())
-		files.'*'.each {
-			paths << pathForObject(getProperty(getObject(it.text()), "fileRef").text(), mainGroup)
-		}
-		paths.each {
-			logger.lifecycle("Replacing logs in file " + it)
-		}
+		HashMap<String, String> objects = new HashMap<String, String>()
+		buildProjectTree(mainGroup, objects, "")
 		new AntBuilder().replace(casesensitive: 'true', token : 'NSLog',
 				value: 'APHLog', summary: true) {
 					fileset(dir: projectRootDir) {
-						paths.each {
-							include (name : it)
+						files.each {
+							include (name : objects[getProperty(getObject(it.text()), "fileRef").text()])
 						}
 					}
 				}
