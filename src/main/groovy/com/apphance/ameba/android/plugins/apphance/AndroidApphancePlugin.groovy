@@ -372,7 +372,10 @@ class AndroidApphancePlugin implements Plugin<Project>{
             }
         }
         if (!found) {
-            new File(directory, './libs/').eachFileMatch(".*apphance.*\\.jar") { found = true }
+            File libsDir = new File(directory, 'libs/')
+            if (libsDir.exists()) {
+                libsDir.eachFileMatch(".*apphance.*\\.jar") { found = true }
+            }
         }
         if (!found) {
             found = manifestHelper.isApphanceActivityPresent(directory)
