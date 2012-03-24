@@ -312,7 +312,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     }
 
     String getApphanceMode(Project project) {
-        if (project[ApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
+        if (project.hasProperty(ApphanceProperty.APPHANCE_MODE.propertyName) && project[ApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
             return "Apphance.Mode.QA"
         } else {
             return "Apphance.Mode.Silent"
