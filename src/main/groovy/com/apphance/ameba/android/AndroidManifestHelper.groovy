@@ -389,27 +389,4 @@ class AndroidManifestHelper {
         }
     }
 
-    void restoreBeforeApphanceRemoval(File projectDirectory) {
-        def file = new File("${projectDirectory}/AndroidManifest.xml")
-        def originalBeforeApphance = new File("${projectDirectory}/AndroidManifest.xml.beforeApphance.orig")
-        if (originalBeforeApphance.exists()) {
-            file.delete()
-            file << originalBeforeApphance.text
-        } else {
-            logger.warn("Could not restore original file. It's missing!")
-        }
-        originalBeforeApphance.delete()
-    }
-
-    void restoreBeforePackageReplace(File projectDirectory) {
-        def file = new File("${projectDirectory}/AndroidManifest.xml")
-        def originalBeforePackageReplace = new File("${projectDirectory}/AndroidManifest.xml.beforePackageReplace.orig")
-        if (originalBeforePackageReplace.exists()) {
-            file.delete()
-            file << originalBeforePackageReplace.text
-        } else {
-            logger.warn("Could not restore original file. It's missing!")
-        }
-        originalBeforePackageReplace.delete()
-    }
 }

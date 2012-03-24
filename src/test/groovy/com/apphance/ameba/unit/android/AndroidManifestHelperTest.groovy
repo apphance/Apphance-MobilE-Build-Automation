@@ -104,31 +104,6 @@ class AndroidManifestHelperTest {
     }
 
     @Test
-    void testRemoveApphanceOnlyAndRestoreBeforeApphance() {
-        ProjectConfiguration projectConfiguration = new ProjectConfiguration()
-        manifestHelper.restoreOriginalManifest(tmpDir)
-        def file = new File(tmpDir,"AndroidManifest.xml")
-        projectConfiguration.setVersionString("2.0.3")
-        manifestHelper.updateVersion(tmpDir, projectConfiguration)
-        String updatedText = file.text
-        verifyApphanceIsPresent()
-        manifestHelper.removeApphance(tmpDir)
-        def origFile = new File(tmpDir,"AndroidManifest.xml.beforeUpdate.orig")
-        def beforeApphanceFile = new File(tmpDir,"AndroidManifest.xml.beforeApphance.orig")
-        try {
-            verifyApphanceIsRemoved()
-            assertTrue(origFile.exists())
-            assertTrue(beforeApphanceFile.exists())
-        } finally {
-            manifestHelper.restoreBeforeApphanceRemoval(tmpDir)
-        }
-        assertFalse(beforeApphanceFile.exists())
-        assertTrue(origFile.exists())
-        def fileAgain = new File(tmpDir,"AndroidManifest.xml")
-        assertEquals(updatedText, fileAgain.text)
-    }
-
-    @Test
     void testReplacePackageOnly() {
         ProjectConfiguration projectConfiguration = new ProjectConfiguration()
         manifestHelper.restoreOriginalManifest(tmpDir)
