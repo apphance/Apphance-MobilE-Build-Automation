@@ -93,8 +93,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
         replaceActivityWithApphance(directory, "Activity", ant)
         replaceActivityWithApphance(directory, "ActivityGroup", ant)
     }
-    private void replaceActivityWithApphance(File directory, String activityName) {
-        replaceActivityExtendsWithApphance(directory, activityName)
+    private void replaceActivityWithApphance(File directory, String activityName, AntBuilder ant) {
+        replaceActivityExtendsWithApphance(directory, activityName, ant)
     }
 
     private void replaceViewWithApphance(File directory, String viewName, AntBuilder ant) {
