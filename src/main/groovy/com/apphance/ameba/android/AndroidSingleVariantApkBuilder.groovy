@@ -44,7 +44,7 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
         def variantPropertiesDir = new File(variantsDir, bi.variant)
         if (bi.variant != null && variantPropertiesDir.exists()) {
             project.ant {
-                sync(todir : new File(androidConf.tmpDirs[bi.variant],'res/raw'), failonerror:false, overwrite:'true', verbose:'true') {
+                copy(todir : new File(androidConf.tmpDirs[bi.variant],'res/raw'), failonerror:false, overwrite:'true', verbose:'true') {
                     fileset(dir: variantPropertiesDir,
                                     includes:'*', excludes:'market_variant.txt')
                 }
