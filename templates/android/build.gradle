@@ -19,3 +19,4 @@ apply plugin: 'ameba-android-release'
 apply plugin: 'ameba-android-analysis'
 //apply plugin: 'ameba-android-test'
 //apply plugin: 'ameba-android-jarlibrary'
+
