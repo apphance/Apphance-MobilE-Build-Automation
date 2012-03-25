@@ -79,19 +79,6 @@ class IOSReleasePlugin implements Plugin<Project> {
         }
     }
 
-    def void prepareCleanIosReleaseTask(Project project) {
-        def task = project.task('cleanIosRelease')
-        task.description = "Cleans release related directories for iOS"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task << {
-            //            iosConf.tmpDirs.values().each {
-            //                project.ant.delete(dir: it)
-            //            }
-        }
-        project.cleanRelease.dependsOn(task)
-    }
-
-
     private void prepareAvailableArtifactsInfoTask(Project project) {
         def task = project.task('prepareAvailableArtifactsInfo')
         task.description = "Prepares information about available artifacts for mail message to include"

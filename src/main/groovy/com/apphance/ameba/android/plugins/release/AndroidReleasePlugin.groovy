@@ -262,18 +262,6 @@ class AndroidReleasePlugin implements Plugin<Project>{
         logger.lifecycle("QRCode created: ${qrCodeArtifact.location}")
     }
 
-    def void prepareCleanAndroidReleaseTask(Project project) {
-        def task = project.task('cleanAndroidRelease')
-        task.description = "Cleans release related directories for android"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task << {
-            androidConf.tmpDirs.values().each {
-                project.ant.delete(dir: it)
-            }
-        }
-        project.cleanRelease.dependsOn(task)
-    }
-
     void prepareUpdateVersionTask(Project project) {
         def task = project.task('updateVersion')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
