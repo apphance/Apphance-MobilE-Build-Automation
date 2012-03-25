@@ -10,5 +10,5 @@ buildscript {
 apply plugin: 'ameba-project-configuration'
 
 amebaPropertyDefaults {
-    defaults = "['project.url.base' = 'http://mycompany.com']"
+    defaults = "['release.project.url' : 'http://mycompany.com/ext/directory']"
 }
