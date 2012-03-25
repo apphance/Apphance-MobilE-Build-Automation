@@ -11,6 +11,8 @@ import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.model.GradleProject;
 import org.junit.Test;
 
+import com.apphance.ameba.ProjectHelper;
+
 class TestConventions {
     private static File conventionsBase = new File("testProjects/conventions")
 
@@ -26,6 +28,7 @@ class TestConventions {
              BuildLauncher bl = connection.newBuild().forTasks('showConventionAndroidAnalysis');
              ByteArrayOutputStream baos = new ByteArrayOutputStream()
              bl.setStandardOutput(baos)
+             bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
              bl.run()
              String output = baos.toString('utf-8')
              println output

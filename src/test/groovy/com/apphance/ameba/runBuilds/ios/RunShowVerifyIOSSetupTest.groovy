@@ -1,15 +1,17 @@
 package com.apphance.ameba.runBuilds.ios;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
 
-import java.io.File;
+import java.io.File
 
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.AfterClass
+import org.junit.BeforeClass
+import org.junit.Test
+
+import com.apphance.ameba.ProjectHelper
 
 
 class RunShowVerifyIOSSetupTest {
@@ -30,6 +32,7 @@ class RunShowVerifyIOSSetupTest {
         ByteArrayOutputStream os = new ByteArrayOutputStream()
         BuildLauncher bl = connection.newBuild().forTasks(tasks);
         bl.setStandardOutput(os)
+        bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         bl.run()
         def res = os.toString("UTF-8")
         println res

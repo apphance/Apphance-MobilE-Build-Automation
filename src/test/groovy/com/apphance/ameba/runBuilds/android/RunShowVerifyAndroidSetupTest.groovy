@@ -11,6 +11,8 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
+import com.apphance.ameba.ProjectHelper
+
 
 class RunShowVerifyAndroidSetupTest {
     static File testIosProject = new File("testProjects/android")
@@ -30,6 +32,7 @@ class RunShowVerifyAndroidSetupTest {
         ByteArrayOutputStream os = new ByteArrayOutputStream()
         BuildLauncher bl = connection.newBuild().forTasks(tasks);
         bl.setStandardOutput(os)
+        bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         bl.run()
         def res = os.toString("UTF-8")
         println res

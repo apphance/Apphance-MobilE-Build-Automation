@@ -8,6 +8,8 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
+import com.apphance.ameba.ProjectHelper
+
 
 
 class ExecuteIosBuildsTest {
@@ -35,18 +37,21 @@ class ExecuteIosBuildsTest {
 
     protected void runGradleMoreVariants(String ... tasks) {
         def buildLauncher = connection.newBuild()
+        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run();
     }
 
     protected void runGradleWithProperties(Properties p, String ... tasks) {
         def buildLauncher = gradleWithPropertiesConnection.newBuild()
         def args = p.collect { property , value -> "-D${property}=${value}"}
-        buildLauncher.setJvmArguments(args as String[])
+        buildLauncher.setJvmArguments((args + ProjectHelper.GRADLE_DAEMON_ARGS) as String[])
         buildLauncher.forTasks(tasks).run()
     }
 
     protected void runGradleOneVariant(String ... tasks) {
-        gradleOneVariantConnection.newBuild().forTasks(tasks).run();
+        def buildLauncher = gradleOneVariantConnection.newBuild()
+        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        buildLauncher.forTasks(tasks).run();
     }
 
     @Test
@@ -135,7 +140,7 @@ class ExecuteIosBuildsTest {
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
     }
 
-   @Test
+    @Test
     void testBuildAndPrepareMoreVariantsMailMessageWithSimulators() {
         runGradleMoreVariants('cleanRelease', 'buildAll')
         runGradleMoreVariants('buildAllSimulators', 'prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')

@@ -45,6 +45,7 @@ class RunPrepareIOSSetupTest {
         BuildLauncher bl = connection.newBuild().forTasks(tasks);
         bl.setStandardInput(new ByteArrayInputStream(input.bytes))
         bl.setStandardOutput(os)
+        bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         bl.run();
         def res = os.toString("UTF-8")
         println res

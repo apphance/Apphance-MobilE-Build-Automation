@@ -12,6 +12,8 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 
+import com.apphance.ameba.ProjectHelper
+
 class RunVerifyAndroidErrorsSetupTest {
     static List BOOLEANS = ['true', 'false']
     static File testProject = new File("testProjects/android")
@@ -47,6 +49,7 @@ class RunVerifyAndroidErrorsSetupTest {
         ByteArrayOutputStream os = new ByteArrayOutputStream()
         BuildLauncher bl = connection.newBuild().forTasks(tasks);
         bl.setStandardOutput(os)
+        bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         bl.run();
         def res = os.toString("UTF-8")
         println res

@@ -9,6 +9,7 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.android.AndroidManifestHelper
 
 
@@ -46,13 +47,14 @@ class ExecuteAndroidBuildsTest {
 
     protected void runGradle(String ... tasks) {
         def buildLauncher = connection.newBuild()
+        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run();
     }
 
     protected void runGradleWithProperties(Properties p, String ... tasks) {
         def buildLauncher = gradleWithPropertiesConnection.newBuild()
         def args = p.collect { property , value -> "-D${property}=${value}"}
-        buildLauncher.setJvmArguments(args as String[])
+        buildLauncher.setJvmArguments((args + ProjectHelper.GRADLE_DAEMON_ARGS) as String[])
         buildLauncher.forTasks(tasks).run()
     }
 

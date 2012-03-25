@@ -6,6 +6,8 @@ import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.*
 
+import com.apphance.ameba.ProjectHelper
+
 class IOSApphancePluginTest {
 
     File projectDir
@@ -14,6 +16,7 @@ class IOSApphancePluginTest {
         ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(projectDir).connect();
         try {
             def buildLauncher = connection.newBuild()
+            buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
             buildLauncher.forTasks(tasks).run();
         } finally {
             connection.close();

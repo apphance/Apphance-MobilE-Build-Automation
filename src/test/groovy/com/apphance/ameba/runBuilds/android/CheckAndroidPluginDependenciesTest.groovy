@@ -7,10 +7,12 @@ import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.After
-import org.junit.AfterClass;
+import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
+
+import com.apphance.ameba.ProjectHelper
 
 
 class CheckAndroidPluginDependenciesTest {
@@ -45,6 +47,7 @@ class CheckAndroidPluginDependenciesTest {
         try {
             BuildLauncher bl = connection.newBuild().forTasks(tasks);
             bl.setStandardOutput(os)
+            bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
             bl.run();
             def res = os.toString("UTF-8")
             println res

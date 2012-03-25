@@ -10,6 +10,8 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
+import com.apphance.ameba.ProjectHelper
+
 class ExecuteApphanceBuildsTest {
 
     static File tApplicationProject = new File("testProjects/android-no-apphance-application")
@@ -49,21 +51,25 @@ class ExecuteApphanceBuildsTest {
 
     protected void runNoApphanceApplicationGradle(String ... tasks) {
         def buildLauncher = tApplicationProjectConnection.newBuild()
+        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run()
     }
 
     protected void runNoApphanceNoApplicationGradle(String ... tasks) {
         def buildLauncher = tNoApplicationProjectConnection.newBuild()
+        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run()
     }
 
     protected void runNoApphanceApplicationGradleNoOnCreate(String ... tasks) {
         def buildLauncher = tApplicationProjectConnectionNoOnCreate.newBuild()
+        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run()
     }
 
     protected void runNoApphanceNoApplicationGradleNoOnCreate(String ... tasks) {
         def buildLauncher = tNoApplicationProjectConnectionNoOnCreate.newBuild()
+        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run()
     }
 

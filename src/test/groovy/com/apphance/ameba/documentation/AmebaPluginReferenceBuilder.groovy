@@ -13,11 +13,12 @@ import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.gradle.tooling.model.GradleProject
 
+import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.buildplugin.AndroidProjectProperty
 import com.apphance.ameba.android.plugins.jarlibrary.AndroidJarLibraryProperty
 import com.apphance.ameba.android.plugins.test.AndroidTestProperty
-import com.apphance.ameba.apphance.ApphanceProperty;
+import com.apphance.ameba.apphance.ApphanceProperty
 import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
 import com.apphance.ameba.ios.plugins.fonemonkey.IOSFoneMonkeyProperty
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
@@ -143,6 +144,7 @@ class AmebaPluginReferenceBuilder {
             BuildLauncher bl = connection.newBuild().forTasks("showConvention${upperCaseStartingConventionName}");
             ByteArrayOutputStream baos = new ByteArrayOutputStream()
             bl.setStandardOutput(baos)
+            bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
             bl.run()
             String output = baos.toString('utf-8')
             return output

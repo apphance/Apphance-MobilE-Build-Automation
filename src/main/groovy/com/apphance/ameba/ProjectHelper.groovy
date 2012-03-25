@@ -61,6 +61,8 @@ class FileSystemOutput implements Appendable{
 class ProjectHelper {
 
     public static final int MAX_RECURSION_LEVEL = 7
+    public static final String [] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=512m', '-XX:+CMSClassUnloadingEnabled',
+             '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
     static Logger logger = Logging.getLogger(ProjectHelper.class)
     def replacePasswordsWithStars(originalArray) {

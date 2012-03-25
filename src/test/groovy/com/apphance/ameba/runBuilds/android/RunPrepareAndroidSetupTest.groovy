@@ -11,6 +11,8 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 
+import com.apphance.ameba.ProjectHelper;
+
 class RunPrepareAndroidSetupTest {
     static File testProject = new File("testProjects/android")
     static File gradleProperties = new File(testProject,"gradle.properties")
@@ -44,6 +46,7 @@ class RunPrepareAndroidSetupTest {
         BuildLauncher bl = connection.newBuild().forTasks(tasks);
         bl.setStandardInput(new ByteArrayInputStream(input.bytes))
         bl.setStandardOutput(os)
+        bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         bl.run();
         def res = os.toString("UTF-8")
         println res

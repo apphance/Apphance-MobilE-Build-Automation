@@ -43,6 +43,7 @@ class RunVerifyIosErrorsSetupTest {
         ByteArrayOutputStream os = new ByteArrayOutputStream()
         BuildLauncher bl = connection.newBuild().forTasks(tasks);
         bl.setStandardOutput(os)
+        bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         bl.run();
         def res = os.toString("UTF-8")
         println res

@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test
 
 import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.ProjectHelper;
 import com.apphance.ameba.android.AndroidManifestHelper
 
 class ApphanceOTFTest {
@@ -30,7 +31,9 @@ class ApphanceOTFTest {
     }
 
     protected void runGradleNoVariants(String ... tasks) {
-        connection.newBuild().forTasks(tasks).run();
+        def launcher = connection.newBuild().forTasks(tasks)
+        launcher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        launcher.run()
     }
 
     @Test
