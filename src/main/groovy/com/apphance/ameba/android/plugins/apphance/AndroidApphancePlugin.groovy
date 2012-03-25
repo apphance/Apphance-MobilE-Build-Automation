@@ -80,15 +80,15 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     private void replaceViewsWithApphance(File directory, AntBuilder ant) {
         logger.lifecycle("Replacing android views with apphance loggable versions for ${directory}")
-        replaceViewWithApphance(directory, "Button")
-        replaceViewWithApphance(directory, "CheckBox")
-        replaceViewWithApphance(directory, "EditText")
-        replaceViewWithApphance(directory, "ImageButton")
-        replaceViewWithApphance(directory, "ListView")
-        replaceViewWithApphance(directory, "RadioGroup")
-        replaceViewWithApphance(directory, "SeekBar")
-        replaceViewWithApphance(directory, "Spinner")
-        replaceViewWithApphance(directory, "TextView")
+        replaceViewWithApphance(directory, "Button", ant)
+        replaceViewWithApphance(directory, "CheckBox", ant)
+        replaceViewWithApphance(directory, "EditText", ant)
+        replaceViewWithApphance(directory, "ImageButton", ant)
+        replaceViewWithApphance(directory, "ListView", ant)
+        replaceViewWithApphance(directory, "RadioGroup", ant)
+        replaceViewWithApphance(directory, "SeekBar", ant)
+        replaceViewWithApphance(directory, "Spinner", ant)
+        replaceViewWithApphance(directory, "TextView", ant)
 
         replaceActivityWithApphance(directory, "Activity", ant)
         replaceActivityWithApphance(directory, "ActivityGroup", ant)
@@ -97,8 +97,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
         replaceActivityExtendsWithApphance(directory, activityName)
     }
 
-    private void replaceViewWithApphance(File directory, String viewName) {
-        replaceViewExtendsWithApphance(directory, viewName);
+    private void replaceViewWithApphance(File directory, String viewName, AntBuilder ant) {
+        replaceViewExtendsWithApphance(directory, viewName, ant);
         replaceTagResourcesOpeningTag(directory, viewName, EVENT_LOG_WIDGET_PACKAGE+"."+viewName);
         replaceTagResourcesClosingTag(directory, viewName, EVENT_LOG_WIDGET_PACKAGE+"."+viewName);
     }
