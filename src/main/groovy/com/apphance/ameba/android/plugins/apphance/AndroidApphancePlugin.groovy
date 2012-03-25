@@ -99,8 +99,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     private void replaceViewWithApphance(File directory, String viewName, AntBuilder ant) {
         replaceViewExtendsWithApphance(directory, viewName, ant);
-        replaceTagResourcesOpeningTag(directory, viewName, EVENT_LOG_WIDGET_PACKAGE+"."+viewName);
-        replaceTagResourcesClosingTag(directory, viewName, EVENT_LOG_WIDGET_PACKAGE+"."+viewName);
+        replaceTagResourcesOpeningTag(directory, viewName, EVENT_LOG_WIDGET_PACKAGE+"."+viewName, ant);
+        replaceTagResourcesClosingTag(directory, viewName, EVENT_LOG_WIDGET_PACKAGE+"."+viewName, ant);
     }
 
     private void replaceActivityExtendsWithApphance(File directory, String activityName, AntBuilder ant) {
