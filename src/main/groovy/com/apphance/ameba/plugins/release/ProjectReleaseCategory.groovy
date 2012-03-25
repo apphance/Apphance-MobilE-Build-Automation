@@ -59,8 +59,8 @@ class ProjectReleaseCategory {
                     }
                 }
             }
-            def iconFile = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE)
-            releaseConf.iconFile = iconFile == null ? null : project.file(iconFile)
+            String iconFileName = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE)
+            releaseConf.iconFile = (iconFileName == null || iconFileName.empty) ? null : project.file(iconFileName)
             releaseConf.otaDirectory = project.file('ota')
             retrieveLocale(project)
             releaseConf.releaseNotes = readReleaseNotes(project)?.tokenize(",")
