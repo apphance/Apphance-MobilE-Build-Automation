@@ -2,12 +2,13 @@ package com.apphance.ameba.unit.android;
 
 import static org.junit.Assert.*
 
+import org.junit.AfterClass
 import org.junit.Before
 import org.junit.Test
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.android.AndroidManifestHelper
-
+import com.apphance.ameba.unit.EmmaDumper
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 class AndroidManifestHelperTest {
@@ -110,7 +111,7 @@ class AndroidManifestHelperTest {
         def file = new File(tmpDir,"AndroidManifest.xml")
         String originalText = file.text
         manifestHelper.replacePackage(tmpDir, projectConfiguration, 'com.apphance.amebaTest.android',
-                'com.apphance.amebaTest.android.new',null)
+                        'com.apphance.amebaTest.android.new',null)
         def origFile = new File(tmpDir,"AndroidManifest.xml.beforePackageReplace.orig")
         try {
             def root = manifestHelper.getParsedManifest(tmpDir)
@@ -134,7 +135,7 @@ class AndroidManifestHelperTest {
         def file = new File(tmpDir,"AndroidManifest.xml")
         String originalText = file.text
         manifestHelper.replacePackage(tmpDir, projectConfiguration, 'com.apphance.amebaTest.android',
-                'com.apphance.amebaTest.android.new','newLabel')
+                        'com.apphance.amebaTest.android.new','newLabel')
         def origFile = new File(tmpDir,"AndroidManifest.xml.beforePackageReplace.orig")
         try {
             def root = manifestHelper.getParsedManifest(tmpDir)
@@ -158,4 +159,8 @@ class AndroidManifestHelperTest {
         assertTrue(mainActivity.contains('HomeActivity'))
     }
 
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
+    }
 }

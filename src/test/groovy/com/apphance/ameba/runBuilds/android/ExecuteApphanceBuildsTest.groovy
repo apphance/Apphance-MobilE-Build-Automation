@@ -11,6 +11,7 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.unit.EmmaDumper
 
 class ExecuteApphanceBuildsTest {
 
@@ -42,11 +43,12 @@ class ExecuteApphanceBuildsTest {
     }
 
     @AfterClass
-    static void afterClass() {
+    static public void afterClass() {
         tApplicationProjectConnection.close()
         tNoApplicationProjectConnection.close()
         tApplicationProjectConnectionNoOnCreate.close()
         tNoApplicationProjectConnectionNoOnCreate.close()
+        EmmaDumper.dumpEmmaCoverage()
     }
 
     protected void runNoApphanceApplicationGradle(String ... tasks) {

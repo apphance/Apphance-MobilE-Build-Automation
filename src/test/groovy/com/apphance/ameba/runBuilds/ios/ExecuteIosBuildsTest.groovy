@@ -9,6 +9,7 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.unit.EmmaDumper
 
 
 
@@ -29,10 +30,11 @@ class ExecuteIosBuildsTest {
     }
 
     @AfterClass
-    static void afterClass() {
+    static public void afterClass() {
         connection.close()
         gradleWithPropertiesConnection.close()
         gradleOneVariantConnection.close()
+        EmmaDumper.dumpEmmaCoverage()
     }
 
     protected void runGradleMoreVariants(String ... tasks) {

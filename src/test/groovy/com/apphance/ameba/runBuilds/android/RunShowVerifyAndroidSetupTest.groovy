@@ -12,6 +12,7 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.unit.EmmaDumper
 
 
 class RunShowVerifyAndroidSetupTest {
@@ -24,8 +25,9 @@ class RunShowVerifyAndroidSetupTest {
     }
 
     @AfterClass
-    static void afterClass() {
+    static public void afterClass() {
         connection.close()
+        EmmaDumper.dumpEmmaCoverage()
     }
 
     String runTests(String ... tasks) {

@@ -13,6 +13,7 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.unit.EmmaDumper
 
 class RunVerifyAndroidErrorsSetupTest {
     static List BOOLEANS = ['true', 'false']
@@ -43,6 +44,7 @@ class RunVerifyAndroidErrorsSetupTest {
     @AfterClass
     static void afterClass() {
         connection.close()
+        EmmaDumper.dumpEmmaCoverage()
     }
 
     String runTests(String ... tasks) {

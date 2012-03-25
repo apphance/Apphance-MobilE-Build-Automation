@@ -13,6 +13,7 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.unit.EmmaDumper
 
 
 class CheckAndroidPluginDependenciesTest {
@@ -37,8 +38,9 @@ class CheckAndroidPluginDependenciesTest {
 
     }
     @AfterClass
-    static void afterClass() {
-        connection.close();
+    static public void afterClass() {
+        connection.close()
+        EmmaDumper.dumpEmmaCoverage()
     }
 
     String runTests(File gradleBuildToCopy, String expected, String ... tasks) {

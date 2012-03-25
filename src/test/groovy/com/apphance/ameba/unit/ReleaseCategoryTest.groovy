@@ -2,6 +2,7 @@ package com.apphance.ameba.unit;
 
 import static org.junit.Assert.*
 
+import org.junit.AfterClass;
 import org.junit.Test
 
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
@@ -28,5 +29,10 @@ class ReleaseCategoryTest {
         (baseUrl, directory) = ProjectReleaseCategory.splitUrl("http://www.example.com/test/")
         assertEquals(new URL("http://www.example.com/"),baseUrl)
         assertEquals("test",directory)
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
     }
 }

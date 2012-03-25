@@ -6,10 +6,12 @@ import groovy.xml.DOMBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 
 import org.hamcrest.core.IsEqual
+import org.junit.AfterClass
 import org.junit.Before
 import org.junit.Test
 
 import com.apphance.ameba.ios.MPParser
+import com.apphance.ameba.unit.EmmaDumper
 
 class MPParserTest {
 
@@ -83,5 +85,10 @@ class MPParserTest {
             "d236d087781bf2d33426e227ceb1bbf84d60f862",
             "57a2821a2ff87efc075a15e48182ee8321494780"
         ]))
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
     }
 }

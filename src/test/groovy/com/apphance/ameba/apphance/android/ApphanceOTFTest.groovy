@@ -1,19 +1,18 @@
 package com.apphance.ameba.apphance.android;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
 
-import java.io.File;
+import java.io.File
 
-import org.codehaus.groovy.runtime.ProcessGroovyMethods
-import org.gradle.tooling.GradleConnector;
+import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Test
 
-import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper;
-import com.apphance.ameba.android.AndroidManifestHelper
+import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.unit.EmmaDumper;
+import com.vladium.emma.rt.RT;
 
 class ApphanceOTFTest {
 
@@ -26,9 +25,11 @@ class ApphanceOTFTest {
     }
 
     @AfterClass
-    static void afterClass() {
+    static public void afterClass() {
         connection.close()
+        EmmaDumper.dumpEmmaCoverage()
     }
+
 
     protected void runGradleNoVariants(String ... tasks) {
         def launcher = connection.newBuild().forTasks(tasks)

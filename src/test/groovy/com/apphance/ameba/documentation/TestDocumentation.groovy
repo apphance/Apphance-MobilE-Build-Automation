@@ -1,9 +1,11 @@
 package com.apphance.ameba.documentation;
 
-import static org.junit.Assert.*;
-import com.apphance.ameba.documentation.AmebaPluginReferenceBuilder
+import static org.junit.Assert.*
 
-import org.junit.Test;
+import org.junit.AfterClass
+import org.junit.Test
+
+import com.apphance.ameba.unit.EmmaDumper
 
 class TestDocumentation {
     @Test
@@ -13,5 +15,11 @@ class TestDocumentation {
         pluginsReference.delete()
         documentationBuilder.buildDocumentation()
         assertTrue(pluginsReference.exists())
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
+
     }
 }

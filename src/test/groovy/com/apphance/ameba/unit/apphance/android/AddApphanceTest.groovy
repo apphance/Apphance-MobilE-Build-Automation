@@ -1,14 +1,14 @@
 package com.apphance.ameba.unit.apphance.android
 
 import static org.junit.Assert.*
-
-import java.io.File;
-
 import groovy.util.slurpersupport.GPathResult
+
+import java.io.File
 
 import org.junit.*
 
-import com.apphance.ameba.android.AndroidManifestHelper;
+import com.apphance.ameba.android.AndroidManifestHelper
+import com.apphance.ameba.unit.EmmaDumper
 
 class AddApphanceTest {
 
@@ -53,5 +53,10 @@ class AddApphanceTest {
     void checkApphanceInstrumentation() {
         AndroidManifestHelper helper = new AndroidManifestHelper()
         assertTrue(helper.isApphanceInstrumentationPresent(new File('testProjects/android/')))
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
     }
 }

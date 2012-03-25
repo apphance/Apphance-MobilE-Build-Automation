@@ -4,6 +4,7 @@ import static org.junit.Assert.*
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.AfterClass;
 import org.junit.Test
 
 import com.apphance.ameba.PropertyCategory
@@ -70,5 +71,10 @@ release.mail.to=no-reply@apphance.com
 release.mail.flags=qrCode,imageMontage
 ''',s)
         }
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
     }
 }

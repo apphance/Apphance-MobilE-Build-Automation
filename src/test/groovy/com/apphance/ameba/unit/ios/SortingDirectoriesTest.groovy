@@ -2,11 +2,13 @@ package com.apphance.ameba.unit.ios;
 
 import static org.junit.Assert.*
 
-import org.gradle.api.Project;
+import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.AfterClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.unit.EmmaDumper
 
 class SortingDirectoriesTest {
 
@@ -23,5 +25,10 @@ class SortingDirectoriesTest {
             assertTrue(current >= last)
             last = current
         }
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
     }
 }
