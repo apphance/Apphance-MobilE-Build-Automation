@@ -182,8 +182,10 @@ class AmebaPluginReferenceBuilder {
                     plugin.tasks.put(task.path, task)
                 }
             }
+            Properties p = new Properties()
+            p.load(new File(projectDir,'gradle.properties').newReader())
             if (property != null) {
-                plugin.props = AmebaDocumentationHelper.getBlockTextWithComments(PropertyCategory.listProperties(project, property, true))
+                plugin.props = AmebaDocumentationHelper.getBlockTextWithComments(PropertyCategory.listProperties(project, property, true, p))
             }
         } finally {
             connection.close()
