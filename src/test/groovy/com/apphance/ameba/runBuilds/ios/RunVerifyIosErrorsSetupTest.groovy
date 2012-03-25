@@ -1,16 +1,18 @@
 package com.apphance.ameba.runBuilds.ios;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
 
 import org.gradle.tooling.BuildException
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.After
-import org.junit.AfterClass;
+import org.junit.AfterClass
 import org.junit.Before
-import org.junit.BeforeClass;
+import org.junit.BeforeClass
 import org.junit.Test
+
+import com.apphance.ameba.ProjectHelper
 
 class RunVerifyIosErrorsSetupTest {
     static File testIosProject = new File("testProjects/ios/GradleXCode")

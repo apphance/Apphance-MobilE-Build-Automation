@@ -11,6 +11,8 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 
+import com.apphance.ameba.ProjectHelper
+
 class RunPrepareIOSSetupTest {
     static File testIosProject = new File("testProjects/ios/GradleXCode")
     static File gradleProperties = new File(testIosProject,"gradle.properties")
