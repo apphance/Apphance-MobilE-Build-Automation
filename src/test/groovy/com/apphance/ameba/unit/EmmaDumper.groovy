@@ -6,7 +6,7 @@ class EmmaDumper {
     static dumpEmmaCoverage() {
         String outFileName = System.getProperty("emma.coverage.out.file")
         if (outFileName != null) {
-            RT.dumpCoverageData(new File(), true, false)
+            RT.dumpCoverageData(new File(outFileName), true, false)
         }
     }
 

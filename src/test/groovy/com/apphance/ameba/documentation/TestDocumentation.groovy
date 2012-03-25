@@ -20,6 +20,5 @@ class TestDocumentation {
     @AfterClass
     static public void afterClass() {
         EmmaDumper.dumpEmmaCoverage()
-
     }
 }
