@@ -38,7 +38,7 @@ class PropertyCategory {
             if (project.hasProperty(it.propertyName)) {
                 String propertyValue = project[it.propertyName]
                 propString = propString + propertyValue
-            } else if (properties != null) {
+            } else if (properties != null && extraProperties != null) {
                 String propertyValue = extraProperties.get(it.propertyName)
                 propString = propString + propertyValue
             }

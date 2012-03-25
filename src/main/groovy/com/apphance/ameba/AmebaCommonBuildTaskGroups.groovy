@@ -1,5 +1,9 @@
 package com.apphance.ameba
 
+/**
+ * All task groups defined for Ameba.
+ *
+ */
 class AmebaCommonBuildTaskGroups {
     static final String AMEBA_BUILD = 'Ameba build'
     static final String AMEBA_TEST = 'Ameba test'

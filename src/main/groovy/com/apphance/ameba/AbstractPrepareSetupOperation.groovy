@@ -11,6 +11,11 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.PropertyCategory;
 
 
+/**
+ * Abstract class that is superclass for all 'prepare setup' class.
+ * It provides framework for setting values of properties for various plugins.
+ *
+ */
 abstract class AbstractPrepareSetupOperation {
 
     private static BufferedReader br = null

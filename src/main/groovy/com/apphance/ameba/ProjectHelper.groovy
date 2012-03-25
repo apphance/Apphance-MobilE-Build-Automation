@@ -1,7 +1,5 @@
 package com.apphance.ameba
 
-
-
 import groovy.io.FileType
 import groovy.lang.Closure;
 
@@ -16,7 +14,9 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 
-
+/**
+ * Shows
+ */
 class FileSystemOutput implements Appendable{
 
     File file
