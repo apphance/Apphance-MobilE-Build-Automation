@@ -6,6 +6,10 @@ import org.gradle.api.tasks.TaskAction;
 import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 
+/**
+ * Verifies all properties.
+ *
+ */
 class VerifySetupTask extends DefaultTask {
     VerifySetupTask() {
         this.description = "Verifies if the project can be build properly"

@@ -16,6 +16,10 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.sun.tools.jdi.JDWP.ClassType.Superclass;
 
 
+/**
+ * Builds APK from the project - one per variant.
+ *
+ */
 class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder {
 
     AndroidSingleVariantApkBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration) {

@@ -9,6 +9,10 @@ import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.PropertyCategory
 
 
+/**
+ * Sets up android jar library properties.
+ *
+ */
 class PrepareAndroidJarLibrarySetupOperation extends AbstractPrepareSetupOperation {
     Logger logger = Logging.getLogger(PrepareAndroidJarLibrarySetupOperation.class)
 

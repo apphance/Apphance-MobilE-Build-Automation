@@ -28,6 +28,10 @@ import com.apphance.ameba.plugins.release.ProjectReleaseCategory;
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration;
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin;
 
+/**
+ * Plugin that provides release functionality for android.
+ *
+ */
 class AndroidReleasePlugin implements Plugin<Project>{
 
     static Logger logger = Logging.getLogger(AndroidReleasePlugin.class)

@@ -9,6 +9,10 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.vcs.plugins.git.GitPlugin
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
 
+/**
+ * Abstract plugin for all VCS-related plugins.
+ *
+ */
 abstract class AbstractVCSPlugin implements Plugin<Project> {
     ProjectConfiguration conf
 

@@ -10,6 +10,10 @@ import com.sun.org.apache.xpath.internal.XPathAPI
 
 
 
+/**
+ * Retrieves android project configuration.
+ *
+ */
 public class AndroidProjectConfigurationRetriever {
     static Logger logger = Logging.getLogger(AndroidProjectConfigurationRetriever.class)
     public static final String ANDROID_PROJECT_CONFIGURATION_KEY = 'android.project.configuration'

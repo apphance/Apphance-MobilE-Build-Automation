@@ -17,6 +17,10 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 
+/**
+ * Listener that builds .jar file for library.
+ *
+ */
 class AndroidReleaseJarListener implements AndroidBuildListener {
 
     ProjectHelper projectHelper

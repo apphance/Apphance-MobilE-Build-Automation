@@ -23,6 +23,10 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 
+/**
+ * Build listener for releases.
+ *
+ */
 class IOSReleaseListener implements IOSBuildListener {
 
     ProjectHelper projectHelper

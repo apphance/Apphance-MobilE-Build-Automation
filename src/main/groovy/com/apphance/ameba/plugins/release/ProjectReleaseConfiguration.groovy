@@ -7,6 +7,10 @@ import java.util.Locale
 
 import com.apphance.ameba.ProjectConfiguration
 
+/**
+ * Configuration for project release.
+ *
+ */
 class ProjectReleaseConfiguration {
 
     ProjectConfiguration projectConfiguration

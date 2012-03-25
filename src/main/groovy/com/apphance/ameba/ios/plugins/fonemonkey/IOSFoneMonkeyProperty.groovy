@@ -1,4 +1,8 @@
 package com.apphance.ameba.ios.plugins.fonemonkey
+/**
+ * Properties for Fone Monkey tests.
+ *
+ */
 public enum IOSFoneMonkeyProperty {
     FONE_MONKEY_CONFIGURATION('ios.fonemonkey.configuration', 'FoneMonkey build configuration', 'Debug'),
 

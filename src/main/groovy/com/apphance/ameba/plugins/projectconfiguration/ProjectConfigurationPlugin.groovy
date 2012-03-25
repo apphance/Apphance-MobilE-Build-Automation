@@ -17,7 +17,7 @@ import com.apphance.ameba.plugins.release.AmebaArtifact;
 
 
 /**
- * Plugin for Mercurial implementation of VCS system
+ * Plugin for basic project configuration.
  *
  */
 class ProjectConfigurationPlugin implements Plugin<Project> {

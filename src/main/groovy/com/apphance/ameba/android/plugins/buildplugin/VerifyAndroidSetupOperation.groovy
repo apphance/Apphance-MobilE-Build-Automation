@@ -11,6 +11,10 @@ import com.apphance.ameba.android.AndroidProjectConfiguration;
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
 
 
+/**
+ * Verifies if all android properties are correctly setup.
+ *
+ */
 class VerifyAndroidSetupOperation extends AbstractVerifySetupOperation {
     Logger logger = Logging.getLogger(VerifyAndroidSetupOperation.class)
 

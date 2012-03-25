@@ -16,6 +16,10 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser;
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 
+/**
+ * Builds and executes KIF tests.
+ *
+ */
 class KIFPlugin implements Plugin<Project> {
 
     static final String AMEBA_IOS_KIF = 'Ameba iOS KIF'

@@ -1,7 +1,5 @@
 package com.apphance.ameba.android.plugins.test
 
-
-
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
@@ -9,7 +7,10 @@ import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidCommandParser;
 
-
+/**
+ * Prepares configuration for android tests.
+ *
+ */
 class PrepareAndroidTestSetupOperation extends AbstractPrepareSetupOperation {
     Logger logger = Logging.getLogger(PrepareAndroidTestSetupOperation.class)
     List BOOLEANS=['true', 'false']

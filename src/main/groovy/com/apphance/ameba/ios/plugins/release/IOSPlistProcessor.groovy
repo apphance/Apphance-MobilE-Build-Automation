@@ -9,6 +9,10 @@ import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.sun.org.apache.xpath.internal.XPathAPI
 
+/**
+ * Manipulation of .plist file.
+ *
+ */
 class IOSPlistProcessor {
 
     static Logger logger = Logging.getLogger(IOSReleasePlugin.class)

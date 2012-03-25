@@ -9,6 +9,10 @@ import org.gradle.api.Project
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 
+/**
+ *  Category used to get release-specific methods.
+ *
+ */
 class ProjectReleaseCategory {
 
     public static final String PROJECT_RELEASE_CONFIGURATION_KEY = 'project.release.configuration'

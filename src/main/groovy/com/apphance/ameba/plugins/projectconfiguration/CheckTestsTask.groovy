@@ -15,6 +15,10 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 
 
+/**
+ * Checks if all tests are ok.
+ *
+ */
 class CheckTestsTask extends DefaultTask {
     Logger logger = Logging.getLogger(CheckTestsTask.class)
     ProjectHelper projectHelper

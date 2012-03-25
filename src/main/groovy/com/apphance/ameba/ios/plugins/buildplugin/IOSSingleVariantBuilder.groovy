@@ -15,6 +15,10 @@ import com.apphance.ameba.ios.IOSBuilderInfo
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 
+/**
+ * Builds single variant for iOS projects.
+ *
+ */
 class IOSSingleVariantBuilder {
 
     static Logger logger = Logging.getLogger(IOSSingleVariantBuilder.class)

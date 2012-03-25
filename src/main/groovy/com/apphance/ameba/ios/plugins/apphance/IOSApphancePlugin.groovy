@@ -20,6 +20,10 @@ import com.apphance.ameba.ios.PbxProjectHelper
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleVariantBuilder;
 
+/**
+ * Plugin for all apphance-relate IOS tasks.
+ *
+ */
 class IOSApphancePlugin implements Plugin<Project> {
 
     static Logger logger = Logging.getLogger(IOSApphancePlugin.class)

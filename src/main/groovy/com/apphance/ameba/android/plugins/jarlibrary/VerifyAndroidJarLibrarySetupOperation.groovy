@@ -7,6 +7,10 @@ import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.PropertyCategory
 
 
+/**
+ * Verifies all android jar library properties.
+ *
+ */
 class VerifyAndroidJarLibrarySetupOperation extends AbstractVerifySetupOperation {
     Logger logger = Logging.getLogger(VerifyAndroidJarLibrarySetupOperation.class)
 

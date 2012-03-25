@@ -1,4 +1,8 @@
 package com.apphance.ameba.ios.plugins.buildplugin
+/**
+ * Properties for IOS builds.
+ *
+ */
 public enum IOSProjectProperty {
     PROJECT_DIRECTORY('ios.project.directory', 'Path to appropriate .xcodeproj directory'),
     PLIST_FILE('ios.plist.file', 'Path to plist file of the project'),

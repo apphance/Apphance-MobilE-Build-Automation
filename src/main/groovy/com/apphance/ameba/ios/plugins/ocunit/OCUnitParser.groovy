@@ -7,6 +7,10 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 
+/**
+ * Parses text output of OCUNIT.
+ *
+ */
 class OCUnitParser {
     static  Logger logger = Logging.getLogger(OCUnitParser.class)
     static def TEST_STARTED = ~/^\s*Test\s+Suite\s+'\s*(\S.+(?:\.octest).*\S)\s*'\s+started\s+at\s+(\S.+\S)\s*$/

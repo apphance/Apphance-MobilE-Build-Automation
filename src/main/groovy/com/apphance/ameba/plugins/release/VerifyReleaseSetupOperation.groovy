@@ -12,6 +12,10 @@ import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.IOSXCodeOutputParser;
 
 
+/**
+ * Verifies all release-specific properties.
+ *
+ */
 class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
 
     public static final def ALL_EMAIL_FLAGS = [

@@ -4,6 +4,10 @@ import org.gradle.api.Project;
 
 import com.apphance.ameba.ProjectConfiguration;
 
+/**
+ * Retrieves release configuration.
+ *
+ */
 class AndroidReleaseConfigurationRetriever {
 
     public static final String ANDROID_RELEASE_CONFIGURATION_KEY = 'android.release.configuration'

@@ -32,7 +32,7 @@ import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**
- * Plugin for preparing reports after successful build.
+ * Plugin for releasing iOS build.
  *
  */
 class IOSReleasePlugin implements Plugin<Project> {

@@ -15,6 +15,10 @@ import com.apphance.ameba.android.plugins.buildplugin.AndroidBuildListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
 
 
+/**
+ * Builds Jar for the project - one per variant.
+ *
+ */
 class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder {
 
     AndroidSingleVariantJarBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration) {

@@ -23,7 +23,7 @@ import com.apphance.ameba.plugins.release.ProjectReleaseCategory;
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration;
 
 /**
- * Builds iOS simulator projects
+ * Task to build iOS simulators - executable images that can be run on OSX.
  */
 class IOSBuildAllSimulatorsTask extends DefaultTask {
 

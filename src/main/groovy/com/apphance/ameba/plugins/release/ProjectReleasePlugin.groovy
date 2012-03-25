@@ -25,7 +25,7 @@ import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
 
 
 /**
- * Plugin for Mercurial implementation of VCS system
+ * Plugin for releasing projects.
  *
  */
 class ProjectReleasePlugin implements Plugin<Project> {

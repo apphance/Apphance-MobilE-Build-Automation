@@ -1,6 +1,5 @@
 package com.apphance.ameba.ios.plugins.framework
 
-
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
@@ -11,6 +10,10 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 
+/**
+ * Prepares properties for framework preparation.
+ *
+ */
 class PrepareFrameworkSetupOperation extends AbstractPrepareSetupOperation {
 
     Logger logger = Logging.getLogger(PrepareFrameworkSetupOperation.class)

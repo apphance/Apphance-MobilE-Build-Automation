@@ -9,6 +9,10 @@ import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.ProjectHelper;
 
+/**
+ * Helper parsing PBX project file.
+ *
+ */
 class PbxProjectHelper {
 
     static Logger logger = Logging.getLogger(PbxProjectHelper.class)
@@ -64,7 +68,7 @@ class PbxProjectHelper {
 
     def getNextNode(Object object) {
         List list = object.parent().children()
-		Iterator iter = list.iterator()
+        Iterator iter = list.iterator()
         while (iter.hasNext()) {
             def obj = iter.next()
             if (object == obj) {
@@ -97,39 +101,39 @@ class PbxProjectHelper {
         return hash++
     }
 
-	void appendNodeWithKey(Object object, String key, String keyValue, String value, String valueString) {
-		object.appendNode(key, keyValue)
-		object.appendNode(value, valueString)
-	}
+    void appendNodeWithKey(Object object, String key, String keyValue, String value, String valueString) {
+        object.appendNode(key, keyValue)
+        object.appendNode(value, valueString)
+    }
 
     void addFramework(Object frameworks, String name, String path, String group, String strongWeak) {
         int apphanceFrameworkHash = nextHash()
         int apphanceFileFrameworkHash = nextHash()
         def objectsList = getObjectsList()
 
-		objectsList.appendNode("key", apphanceFrameworkHash.toString())
-		def dict = objectsList.appendNode("dict")
-		appendNodeWithKey(dict, "key", "isa", "string", "PBXBuildFile")
-		appendNodeWithKey(dict, "key", "fileRef", "string", apphanceFileFrameworkHash.toString())
-		dict.appendNode("key", "settings")
-		def settings = dict.appendNode("dict")
-		settings.appendNode("key", "ATTRIBUTES")
-		def attributes = settings.appendNode("array")
-		attributes.appendNode("string", strongWeak)
+        objectsList.appendNode("key", apphanceFrameworkHash.toString())
+        def dict = objectsList.appendNode("dict")
+        appendNodeWithKey(dict, "key", "isa", "string", "PBXBuildFile")
+        appendNodeWithKey(dict, "key", "fileRef", "string", apphanceFileFrameworkHash.toString())
+        dict.appendNode("key", "settings")
+        def settings = dict.appendNode("dict")
+        settings.appendNode("key", "ATTRIBUTES")
+        def attributes = settings.appendNode("array")
+        attributes.appendNode("string", strongWeak)
 
-		getProperty(frameworks, "files").appendNode("string", apphanceFrameworkHash.toString())
-		objectsList.appendNode("key", apphanceFileFrameworkHash.toString())
-		dict = objectsList.appendNode("dict")
-		appendNodeWithKey(dict, "key", "isa", "string", "PBXFileReference")
-		appendNodeWithKey(dict, "key", "lastKnownFileType", "string", "wrapper.framework")
-		appendNodeWithKey(dict, "key", "name", "string", name)
-		appendNodeWithKey(dict, "key", "path", "string", path)
-		appendNodeWithKey(dict, "key", "sourceTree", "string", group)
+        getProperty(frameworks, "files").appendNode("string", apphanceFrameworkHash.toString())
+        objectsList.appendNode("key", apphanceFileFrameworkHash.toString())
+        dict = objectsList.appendNode("dict")
+        appendNodeWithKey(dict, "key", "isa", "string", "PBXFileReference")
+        appendNodeWithKey(dict, "key", "lastKnownFileType", "string", "wrapper.framework")
+        appendNodeWithKey(dict, "key", "name", "string", name)
+        appendNodeWithKey(dict, "key", "path", "string", path)
+        appendNodeWithKey(dict, "key", "sourceTree", "string", group)
 
         def project = getObject(getProperty(rootObject.dict, "rootObject").text())
         def mainGroupProp = getProperty(project, "mainGroup")
         def mainGroup = getObject(mainGroupProp.text())
-		getProperty(mainGroup, "children").appendNode("string", apphanceFileFrameworkHash.toString())
+        getProperty(mainGroup, "children").appendNode("string", apphanceFileFrameworkHash.toString())
     }
 
     boolean findFramework(Object frameworks, String name) {
@@ -226,34 +230,34 @@ class PbxProjectHelper {
                 def buildSettings = getProperty(configuration, "buildSettings")
                 def ldflags = getProperty(buildSettings, "OTHER_LDFLAGS")
                 if (ldflags == null) {
-					logger.lifecycle("Before adding " + buildSettings.children().size())
-					buildSettings.appendNode("key", "OTHER_LDFLAGS")
-					def array = buildSettings.appendNode("array")
-					array.appendNode("string", "-ObjC")
-					array.appendNode("string", "-all_load")
+                    logger.lifecycle("Before adding " + buildSettings.children().size())
+                    buildSettings.appendNode("key", "OTHER_LDFLAGS")
+                    def array = buildSettings.appendNode("array")
+                    array.appendNode("string", "-ObjC")
+                    array.appendNode("string", "-all_load")
                 } else {
-					ldflags.appendNode("string", "-ObjC")
-					ldflags.appendNode("string", "-all_load")
+                    ldflags.appendNode("string", "-ObjC")
+                    ldflags.appendNode("string", "-all_load")
                 }
 
                 def frameworkSearchPaths = getProperty(buildSettings, "FRAMEWORK_SEARCH_PATHS")
                 if (frameworkSearchPaths == null) {
-					buildSettings.appendNode("key", "FRAMEWORK_SEARCH_PATHS")
-					def array = buildSettings.appendNode("array")
-					array.appendNode("string", "\$(inherited)")
-					array.appendNode("string", "\$(SRCROOT)/")
+                    buildSettings.appendNode("key", "FRAMEWORK_SEARCH_PATHS")
+                    def array = buildSettings.appendNode("array")
+                    array.appendNode("string", "\$(inherited)")
+                    array.appendNode("string", "\$(SRCROOT)/")
                 } else {
-					frameworkSearchPaths.appendNode("string", "\$(SRCROOT)/")
+                    frameworkSearchPaths.appendNode("string", "\$(SRCROOT)/")
                 }
 
                 def librarySearchPaths = getProperty(buildSettings, "LIBRARY_SEARCH_PATHS")
                 if (librarySearchPaths == null) {
-					buildSettings.appendNode("key", "LIBRARY_SEARCH_PATHS")
-					def array = buildSettings.appendNode("array")
-					array.appendNode("string", "\$(inherited)")
-					array.appendNode("string", "\$(SRCROOT)/Apphance-iOS.framework")
+                    buildSettings.appendNode("key", "LIBRARY_SEARCH_PATHS")
+                    def array = buildSettings.appendNode("array")
+                    array.appendNode("string", "\$(inherited)")
+                    array.appendNode("string", "\$(SRCROOT)/Apphance-iOS.framework")
                 } else {
-					librarySearchPaths.appendNode("string", "\$(SRCROOT)/Apphance-iOS.framework")
+                    librarySearchPaths.appendNode("string", "\$(SRCROOT)/Apphance-iOS.framework")
                 }
 
             }
@@ -322,7 +326,7 @@ class PbxProjectHelper {
                     if (getProperty(getObject("${phaseText}"), "isa").text().equals("PBXFrameworksBuildPhase")) {
                         addApphanceToFramework(getObject("${phaseText}"))
                     } else if(getProperty(getObject("${phaseText}"), "isa").text().equals("PBXSourcesBuildPhase")) {
-						replaceLogsWithApphance(projectRootDirectory, getObject("${phaseText}"), project)
+                        replaceLogsWithApphance(projectRootDirectory, getObject("${phaseText}"), project)
                     }
                 }
                 if (!hasApphance) {
@@ -354,35 +358,35 @@ class PbxProjectHelper {
         return projectFile.text
     }
 
-	void buildProjectTree(Object group, HashMap<String, String> objects, String actualPath) {
-		String path = actualPath
-		if (getProperty(group, "path") != null) {
-			path = path + getProperty(group, "path").text() + "/"
-		}
-		boolean found = false
-		getProperty(group, "children").each {
-			def child = getObject(it.text())
-			if (getProperty(child, "isa").text().equals("PBXFileReference")) {
-				objects.put(it.text(), path + getProperty(getObject(it.text()), "path").text())
-			} else if (getProperty(child, "isa").text().equals("PBXGroup")) {
-				buildProjectTree(child, objects, path)
-			}
-		}
-	}
+    void buildProjectTree(Object group, HashMap<String, String> objects, String actualPath) {
+        String path = actualPath
+        if (getProperty(group, "path") != null) {
+            path = path + getProperty(group, "path").text() + "/"
+        }
+        boolean found = false
+        getProperty(group, "children").each {
+            def child = getObject(it.text())
+            if (getProperty(child, "isa").text().equals("PBXFileReference")) {
+                objects.put(it.text(), path + getProperty(getObject(it.text()), "path").text())
+            } else if (getProperty(child, "isa").text().equals("PBXGroup")) {
+                buildProjectTree(child, objects, path)
+            }
+        }
+    }
 
-	void replaceLogsWithApphance(File projectRootDir, Object sourcesPhase, Object project) {
-		logger.lifecycle("Replacing APHLog logs with Apphance in ${projectRootDir}")
-		def files = getProperty(sourcesPhase, "files")
-		def mainGroup = getObject(getProperty(project, "mainGroup").text())
-		HashMap<String, String> objects = new HashMap<String, String>()
-		buildProjectTree(mainGroup, objects, "")
-		new AntBuilder().replace(casesensitive: 'true', token : 'NSLog',
-				value: 'APHLog', summary: true) {
-					fileset(dir: projectRootDir) {
-						files.each {
-							include (name : objects[getProperty(getObject(it.text()), "fileRef").text()])
-						}
-					}
-				}
-	}
+    void replaceLogsWithApphance(File projectRootDir, Object sourcesPhase, Object project) {
+        logger.lifecycle("Replacing APHLog logs with Apphance in ${projectRootDir}")
+        def files = getProperty(sourcesPhase, "files")
+        def mainGroup = getObject(getProperty(project, "mainGroup").text())
+        HashMap<String, String> objects = new HashMap<String, String>()
+        buildProjectTree(mainGroup, objects, "")
+        new AntBuilder().replace(casesensitive: 'true', token : 'NSLog',
+                value: 'APHLog', summary: true) {
+                    fileset(dir: projectRootDir) {
+                        files.each {
+                            include (name : objects[getProperty(getObject(it.text()), "fileRef").text()])
+                        }
+                    }
+                }
+    }
 }

@@ -14,6 +14,10 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.apphance.ApphanceProperty;
 import com.sun.org.apache.xpath.internal.XPathAPI
 
+/**
+ * Helps to parse and process android manifest.
+ *
+ */
 class AndroidManifestHelper {
 
     static Logger logger = Logging.getLogger(AndroidManifestHelper.class)

@@ -6,7 +6,10 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.AbstractPrepareSetupOperation;
 import com.apphance.ameba.PropertyCategory;
 
-
+/**
+ * Prepares Git-related properties.
+ *
+ */
 class PrepareGitSetupOperation extends AbstractPrepareSetupOperation {
     Logger logger = Logging.getLogger(PrepareGitSetupOperation.class)
 

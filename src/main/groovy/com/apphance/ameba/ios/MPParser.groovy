@@ -13,6 +13,10 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.XMLBomAwareFileReader
 import com.sun.org.apache.xpath.internal.XPathAPI
 
+/**
+ * Parses plist file.
+ *
+ */
 class MPParser {
     static Logger logger = Logging.getLogger(MPParser.class)
 

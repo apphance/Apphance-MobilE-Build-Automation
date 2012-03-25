@@ -23,8 +23,6 @@ import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**
  * Plugin for various X-Code related tasks.
- * Requires plistFileName set in project properties
- * (set to point to main project .plist file)
  *
  */
 class IOSPlugin implements Plugin<Project> {

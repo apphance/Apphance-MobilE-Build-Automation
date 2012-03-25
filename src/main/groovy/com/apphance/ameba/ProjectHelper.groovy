@@ -15,7 +15,7 @@ import org.gradle.api.logging.Logging
 
 
 /**
- * Shows
+ * System output that also writes to file.
  */
 class FileSystemOutput implements Appendable{
 
@@ -58,6 +58,10 @@ class FileSystemOutput implements Appendable{
     }
 }
 
+/**
+ * Useful helper for common project-related methods.
+ *
+ */
 class ProjectHelper {
 
     public static final int MAX_RECURSION_LEVEL = 7

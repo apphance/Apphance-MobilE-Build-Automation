@@ -1,12 +1,14 @@
 package com.apphance.ameba.ios.plugins.fonemonkey
 
-
-
 import com.apphance.ameba.ios.AbstractVerifyIOSSetupOperation
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 
 
+/**
+ * Verifies if all FoneMonkey properties are setup properly.
+ *
+ */
 class VerifyFoneMonkeySetupOperation extends AbstractVerifyIOSSetupOperation {
 
     VerifyFoneMonkeySetupOperation() {

@@ -1,5 +1,9 @@
 package com.apphance.ameba.android.plugins.buildplugin;
 
+/**
+ * Properties for Android plugin.
+ *
+ */
 public enum AndroidProjectProperty {
 
     MAIN_VARIANT('android.mainVariant',"Main variant used when releasing the aplication",''),

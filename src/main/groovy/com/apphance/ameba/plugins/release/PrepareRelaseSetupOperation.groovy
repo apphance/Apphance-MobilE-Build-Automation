@@ -8,6 +8,10 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 
+/**
+ * Prepares properties for release plugin.
+ *
+ */
 class PrepareReleaseSetupOperation extends AbstractPrepareSetupOperation {
 
     Logger logger = Logging.getLogger(PrepareReleaseSetupOperation.class)

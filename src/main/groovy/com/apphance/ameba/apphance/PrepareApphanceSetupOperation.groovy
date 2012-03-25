@@ -8,6 +8,10 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.apphance.ApphanceProperty;
 
+/**
+ * Prepares properties for Apphance integration.
+ *
+ */
 class PrepareApphanceSetupOperation extends AbstractPrepareSetupOperation {
 
     Logger logger = Logging.getLogger(PrepareApphanceSetupOperation.class)

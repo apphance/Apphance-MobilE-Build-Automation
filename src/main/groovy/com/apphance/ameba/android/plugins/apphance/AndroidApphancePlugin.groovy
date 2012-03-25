@@ -22,6 +22,10 @@ import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
 import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
 import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
 
+/**
+ * Adds Apphance in automated way.
+ *
+ */
 class AndroidApphancePlugin implements Plugin<Project>{
 
     static Logger logger = Logging.getLogger(AndroidApphancePlugin.class)

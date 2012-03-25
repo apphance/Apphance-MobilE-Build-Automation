@@ -10,7 +10,10 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.IOSXCodeOutputParser;
 
-
+/**
+ * Prepares IOS properties.
+ *
+ */
 class PrepareIOSSetupOperation extends AbstractPrepareSetupOperation {
     Logger logger = Logging.getLogger(PrepareIOSSetupOperation.class)
 

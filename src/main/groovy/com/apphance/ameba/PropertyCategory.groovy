@@ -9,6 +9,10 @@ import org.gradle.api.Project
 
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
+/**
+ * Helper property-related class. Can be used as Groovy category.
+ *
+ */
 class PropertyCategory {
 
 

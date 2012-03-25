@@ -7,6 +7,10 @@ import org.gradle.api.Project
 import com.apphance.ameba.ProjectHelper
 
 
+/**
+ * Parses android utility command line output.
+ *
+ */
 class AndroidCommandParser {
 
     public static List getTargets(Project project) {

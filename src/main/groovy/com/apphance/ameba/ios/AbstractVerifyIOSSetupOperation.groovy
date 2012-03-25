@@ -10,6 +10,10 @@ import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 
 
+/**
+ * Abstract class for verification of all ios-related properties.
+ *
+ */
 abstract class AbstractVerifyIOSSetupOperation extends AbstractVerifySetupOperation {
     Logger logger = Logging.getLogger(AbstractVerifyIOSSetupOperation.class)
 

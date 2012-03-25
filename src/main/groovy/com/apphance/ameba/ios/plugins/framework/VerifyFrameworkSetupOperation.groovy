@@ -1,6 +1,5 @@
 package com.apphance.ameba.ios.plugins.framework
 
-
 import org.gradle.api.GradleException
 
 import com.apphance.ameba.PropertyCategory
@@ -9,6 +8,10 @@ import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 
 
+/**
+ * Verifies properties for framework building.
+ *
+ */
 class VerifyFrameworkSetupOperation extends AbstractVerifyIOSSetupOperation {
 
     IOSProjectConfiguration iosConf

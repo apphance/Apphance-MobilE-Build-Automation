@@ -14,6 +14,10 @@ import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 
+/**
+ * Provides static code analysis.
+ *
+ */
 class AndroidAnalysisPlugin implements Plugin<Project>{
     static Logger logger = Logging.getLogger(AndroidAnalysisPlugin.class)
 

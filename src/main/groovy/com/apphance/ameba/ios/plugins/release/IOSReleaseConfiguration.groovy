@@ -6,6 +6,10 @@ import java.util.Map;
 
 import com.apphance.ameba.plugins.release.AmebaArtifact;
 
+/**
+ * Keeps configuration of iOS project release.
+ *
+ */
 class IOSReleaseConfiguration {
     Map<String,AmebaArtifact> distributionZipFiles = [:]
     Map<String,AmebaArtifact> dSYMZipFiles = [:]

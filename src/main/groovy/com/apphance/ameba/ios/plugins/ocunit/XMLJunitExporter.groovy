@@ -6,6 +6,10 @@ import java.io.File;
 import java.util.Collection;
 
 
+/**
+ * Exports XML JUnit-like result from text output of OCUnit.
+ *
+ */
 class XMLJunitExporter {
     Collection<OCUnitTestSuite> testSuites
     File outputFile

@@ -6,7 +6,6 @@ import java.io.File
  * Information used to build artifacts.  Useful information grouped together needed
  * by various artifacts generated along the way.
  */
-
 class AndroidBuilderInfo  {
     String variant
     String debugRelease
