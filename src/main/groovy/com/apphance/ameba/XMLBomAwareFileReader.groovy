@@ -4,6 +4,10 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 import org.apache.tools.ant.filters.StringInputStream
 
+/**
+ * Reads BOM file (iOS) without validation.
+ *
+ */
 public class XMLBomAwareFileReader {
     public readXMLFileIncludingBom(File pListFile) {
         def builderFactory = DocumentBuilderFactory.newInstance()

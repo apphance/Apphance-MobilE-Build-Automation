@@ -48,7 +48,7 @@ class AmebaSiteRetrieval {
             });
             f.eachFile {
                 println "Deleting file ${it}"
-                f.delete()
+                it.delete()
             }
         }
     }

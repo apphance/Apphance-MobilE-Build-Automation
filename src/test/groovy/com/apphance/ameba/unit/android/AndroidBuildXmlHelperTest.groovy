@@ -2,9 +2,11 @@ package com.apphance.ameba.unit.android;
 
 import static org.junit.Assert.*
 
+import org.junit.AfterClass
 import org.junit.Test
 
 import com.apphance.ameba.android.AndroidBuildXmlHelper
+import com.apphance.ameba.unit.EmmaDumper
 
 class AndroidBuildXmlHelperTest {
 
@@ -25,5 +27,10 @@ class AndroidBuildXmlHelperTest {
         assertEquals('TestAndroidProject', helper.readProjectName(new File('tmp')))
         helper.replaceProjectName(new File('tmp'), "NewName")
         assertEquals('NewName', helper.readProjectName(new File('tmp')))
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
     }
 }

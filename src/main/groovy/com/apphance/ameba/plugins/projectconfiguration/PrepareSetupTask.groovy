@@ -12,6 +12,10 @@ import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.PropertyCategory
 
+/**
+ * Prepares properties for the standard setup.
+ *
+ */
 class PrepareSetupTask extends DefaultTask {
     PrepareSetupTask() {
         this.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP

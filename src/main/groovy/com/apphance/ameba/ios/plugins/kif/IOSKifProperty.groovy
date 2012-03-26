@@ -1,4 +1,8 @@
 package com.apphance.ameba.ios.plugins.kif
+/**
+ * Properties for IOS KIF framework.
+ *
+ */
 public enum IOSKifProperty {
     KIF_CONFIGURATION('ios.kif.configuration', 'KIF build configuration', 'Debug');
 

@@ -6,6 +6,10 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 
+/**
+ * Filter for image names.
+ *
+ */
 class ImageNameFilter  {
     static Logger logger = Logging.getLogger(ImageNameFilter.class)
     private static  String [] validExtensions=[

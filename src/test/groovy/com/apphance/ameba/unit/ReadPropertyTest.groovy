@@ -4,6 +4,7 @@ import static org.junit.Assert.*
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.AfterClass;
 import org.junit.Test
 
 import com.apphance.ameba.PropertyCategory
@@ -48,4 +49,8 @@ public class ReadPropertyTest {
             assertEquals('aaaa',project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_COUNTRY))
         }
     }
-}
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
+    }}

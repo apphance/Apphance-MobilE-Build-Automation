@@ -3,6 +3,10 @@ package com.apphance.ameba.ios.plugins.ocunit
 import java.util.Collection
 
 
+/**
+ * Test suite POJO.
+ *
+ */
 class OCUnitTestSuite {
     String name
     String startTimestamp

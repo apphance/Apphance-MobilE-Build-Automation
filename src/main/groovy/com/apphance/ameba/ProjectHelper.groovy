@@ -1,11 +1,11 @@
 package com.apphance.ameba
 
-
-
 import groovy.io.FileType
+import groovy.lang.Closure;
 
 import java.io.File
 import java.io.IOException
+import java.util.List;
 
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.api.GradleException
@@ -14,8 +14,11 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 
-
+/**
+ * System output that also writes to file.
+ */
 class FileSystemOutput implements Appendable{
+
     File file
     StringBuilder sb = new StringBuilder()
     Appendable linkedAppendable
@@ -55,7 +58,16 @@ class FileSystemOutput implements Appendable{
     }
 }
 
+/**
+ * Useful helper for common project-related methods.
+ *
+ */
 class ProjectHelper {
+
+    public static final int MAX_RECURSION_LEVEL = 7
+    public static final String [] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=512m', '-XX:+CMSClassUnloadingEnabled',
+             '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
+
     static Logger logger = Logging.getLogger(ProjectHelper.class)
     def replacePasswordsWithStars(originalArray) {
         def newList = []
@@ -306,7 +318,7 @@ class ProjectHelper {
     }
 
     public void removeMissingSymlinks(File baseDirectory) {
-        baseDirectory.traverse([type: FileType.FILES, maxDepth: 7]) {
+        baseDirectory.traverse([type: FileType.FILES, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) {
             if (!it.isDirectory()) {
                 File canonicalFile = it.getCanonicalFile()
                 if (!canonicalFile.exists()) {
@@ -347,4 +359,43 @@ class ProjectHelper {
             throw new GradleException("There is more than one plugin loaded from the list: ${pluginClasses}, but there should be only one. Please make sure one of them remains")
         }
     }
+
+    public static List getFilesOrDirectories(Project project, FileType type, Closure filter) {
+        List paths = [
+            project.file('bin').absolutePath,
+            project.file('build').absolutePath,
+            project.file('ota').absolutePath,
+            project.file('tmp').absolutePath,
+            project.file('.hg').absolutePath,
+            project.file('.git').absolutePath,
+        ]
+        def plistFiles = []
+        project.rootDir.traverse([type: type, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
+            def thePath = it.absolutePath
+            if (filter(it)) {
+                if (!paths.any {path -> thePath.startsWith(path)}) {
+                    plistFiles << thePath.substring(project.rootDir.path.length() + 1)
+                }
+            }
+        }
+        return plistFiles
+    }
+
+
+    public static List getFiles(Project project, Closure filter) {
+        return getFilesOrDirectories(project, FileType.FILES, filter)
+    }
+
+    public static List getDirectories(Project project, Closure filter) {
+        return getFilesOrDirectories(project, FileType.DIRECTORIES, filter)
+    }
+
+
+    public static List getDirectoriesSortedAccordingToDepth(Project project, Closure filter) {
+        def xCodeProjFiles = getDirectories(project, filter)
+        xCodeProjFiles = xCodeProjFiles.sort { sprintf("%08d",it.findAll('[/\\\\]').size()) }
+        return xCodeProjFiles
+    }
+
+
 }

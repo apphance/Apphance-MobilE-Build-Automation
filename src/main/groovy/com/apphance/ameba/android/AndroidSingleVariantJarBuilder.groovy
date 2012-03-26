@@ -15,6 +15,10 @@ import com.apphance.ameba.android.plugins.buildplugin.AndroidBuildListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
 
 
+/**
+ * Builds Jar for the project - one per variant.
+ *
+ */
 class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder {
 
     AndroidSingleVariantJarBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration) {
@@ -44,7 +48,7 @@ class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder
         projectHelper.executeCommand(project, , androidConf.tmpDirs[bi.variant], ['ant', 'clean'])
         if (bi.variant != null) {
             project.ant {
-                copy(todir : new File(androidConf.tmpDirs[bi.variant], 'res/raw'), overwrite:'true', verbose:'true') {
+                copy(todir : new File(androidConf.tmpDirs[bi.variant], 'res/raw'), failonerror:false,  overwrite:'true', verbose:'true') {
                     fileset(dir: new File(variantsDir, bi.variant),
                                     includes:'*', excludes:'market_variant.txt')
                 }

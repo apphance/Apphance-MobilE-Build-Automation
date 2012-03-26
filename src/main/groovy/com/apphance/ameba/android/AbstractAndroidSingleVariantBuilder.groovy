@@ -15,6 +15,10 @@ import com.apphance.ameba.android.plugins.buildplugin.AndroidBuildListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
 
 
+/**
+ * Base builder. Builds binary files - APK or JAR- depends on implementation.
+ *
+ */
 abstract class AbstractAndroidSingleVariantBuilder {
 
     static Logger logger = Logging.getLogger(AbstractAndroidSingleVariantBuilder.class)

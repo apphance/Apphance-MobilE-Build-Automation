@@ -8,6 +8,11 @@ import org.gradle.logging.StyledTextOutput;
 import org.gradle.logging.StyledTextOutput.Style;
 import org.gradle.logging.StyledTextOutputFactory;
 
+/**
+ * Abstract class for showing all setup for values plugins.
+ * It provides framework for displaying various properties.
+ *
+ */
 abstract class AbstractShowSetupOperation {
     Logger logger = Logging.getLogger(AbstractShowSetupOperation.class)
     final String propertyDescription

@@ -25,7 +25,7 @@ import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
 
 
 /**
- * Plugin for Mercurial implementation of VCS system
+ * Plugin for releasing projects.
  *
  */
 class ProjectReleasePlugin implements Plugin<Project> {
@@ -141,7 +141,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
             Collection<String>  command = new LinkedList<String>()
             command << "montage"
             ImageNameFilter imageFilter = new ImageNameFilter();
-            project.rootDir.traverse([type: FileType.FILES, maxDepth : 7]) { file ->
+            project.rootDir.traverse([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) { file ->
                 if (imageFilter.isValid(project.rootDir, file)) {
                     command << file
                 }

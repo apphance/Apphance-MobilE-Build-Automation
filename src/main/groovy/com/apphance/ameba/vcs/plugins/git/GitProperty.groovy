@@ -1,5 +1,9 @@
 package com.apphance.ameba.vcs.plugins.git
 
+/**
+ * Git-related properties.
+ *
+ */
 enum GitProperty {
     GIT_BRANCH("git.branch", "Branch which is used for git operations", 'master')
     public static final String DESCRIPTION = "Git properties"

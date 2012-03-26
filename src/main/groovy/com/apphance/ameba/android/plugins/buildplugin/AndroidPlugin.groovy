@@ -95,6 +95,7 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = "Performs code generation/compile tasks for android (if needed)"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
+            logger.lifecycle("Prepares to compile Java for static code analysis")
             File gen = project.file('gen')
             if (!gen.exists() || gen.list().length == 0) {
                 logger.lifecycle("Regenerating gen directory by running debug project")
@@ -155,13 +156,7 @@ class AndroidPlugin implements Plugin<Project> {
             androidConf.targetName = target
             androidConf.minSdkTargetName = project.readProperty(AndroidProjectProperty.MIN_SDK_TARGET)
             if (androidConf.minSdkTargetName.empty) {
-                AndroidManifestHelper helper = new AndroidManifestHelper()
-                def targetVersion = helper.readMinSdkVersion(project.rootDir)
-                if (targetVersion != null) {
-                    androidConf.minSdkTargetName = 'android-' + targetVersion
-                } else {
-                    androidConf.minSdkTargetName = androidConf.targetName
-                }
+                androidConf.minSdkTargetName = androidConf.targetName
             }
             logger.lifecycle("Min SDK target name = " + androidConf.minSdkTargetName)
             updateSdkJars()
@@ -399,7 +394,7 @@ class AndroidPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
             androidConf.variants.each { variant ->
-                new AntBuilder().sync(toDir : androidConf.tmpDirs[variant], overwrite:true, verbose:true) {
+                new AntBuilder().sync(toDir : androidConf.tmpDirs[variant], overwrite:true, failonerror: false, verbose:false) {
                     fileset(dir : "${project.rootDir}/") {
                         exclude(name: androidConf.tmpDirs[variant].absolutePath + '/**/*')
                         conf.sourceExcludes.each {

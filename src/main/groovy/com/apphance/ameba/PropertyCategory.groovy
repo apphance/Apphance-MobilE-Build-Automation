@@ -9,6 +9,10 @@ import org.gradle.api.Project
 
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
+/**
+ * Helper property-related class. Can be used as Groovy category.
+ *
+ */
 class PropertyCategory {
 
 
@@ -22,7 +26,7 @@ class PropertyCategory {
     }
 
     public static final String PROJECT_CONFIGURATION_KEY = 'project.configuration'
-    public static List<String> listProperties(Project project, Class<Enum> properties, boolean useComments) {
+    public static List<String> listProperties(Project project, Class<Enum> properties, boolean useComments, Properties extraProperties = null) {
         String description = properties.getField('DESCRIPTION').get(null)
         List<String> s = []
         s << "###########################################################"
@@ -36,7 +40,11 @@ class PropertyCategory {
                 comment = comment + " [optional] default: <${defaultValue}>"
             }
             if (project.hasProperty(it.propertyName)) {
-                propString = propString + project[it.propertyName]
+                String propertyValue = project[it.propertyName]
+                propString = propString + propertyValue
+            } else if (properties != null && extraProperties != null) {
+                String propertyValue = extraProperties.get(it.propertyName)
+                propString = propString + propertyValue
             }
             if (useComments == true) {
                 s << comment

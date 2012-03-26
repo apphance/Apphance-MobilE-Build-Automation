@@ -4,6 +4,10 @@ import java.util.Map;
 
 import com.apphance.ameba.plugins.release.AmebaArtifact;
 
+/**
+ * Keeps configuration for android release.
+ *
+ */
 class AndroidReleaseConfiguration {
     Map<String,AmebaArtifact> apkFiles = [:]
     Map<String,AmebaArtifact> jarFiles = [:]

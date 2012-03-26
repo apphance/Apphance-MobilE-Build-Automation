@@ -1,5 +1,9 @@
 package com.apphance.ameba.android.plugins.test
 
+/**
+ * Properties for the android test plugin.
+ *
+ */
 public enum AndroidTestProperty {
     EMULATOR_SKIN('android.test.emulator.skin', 'Android emulator skin', 'WVGA800'),
     EMULATOR_CARDSIZE('android.test.emulator.cardSize','Size of the sd card attached to emulator','200M'),

@@ -24,7 +24,7 @@ import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**
- * Performs standard android testing.
+ * Performs android testing.
  */
 class AndroidTestPlugin implements Plugin<Project>{
     static Logger logger = Logging.getLogger(AndroidTestPlugin.class)

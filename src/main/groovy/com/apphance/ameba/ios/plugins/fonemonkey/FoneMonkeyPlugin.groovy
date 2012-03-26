@@ -24,6 +24,10 @@ import com.apphance.ameba.plugins.release.AmebaArtifact;
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 
+/**
+ * Plugin for FoneMonkey tests.
+ *
+ */
 class FoneMonkeyPlugin implements Plugin<Project> {
 
     static final String IPHONESIMULATOR = 'iphonesimulator'

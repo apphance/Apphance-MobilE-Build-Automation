@@ -12,6 +12,10 @@ import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.IOSXCodeOutputParser;
 
 
+/**
+ * Verifies all release-specific properties.
+ *
+ */
 class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
 
     public static final def ALL_EMAIL_FLAGS = [
@@ -31,7 +35,7 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
         iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
 
         ProjectReleaseProperty.each {
-            if (!it.defaultValue != null) {
+            if (it.defaultValue == null && it != ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE) {
                 checkProperty(projectProperties, it)
             }
         }

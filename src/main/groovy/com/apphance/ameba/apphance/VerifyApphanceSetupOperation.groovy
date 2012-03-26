@@ -6,6 +6,10 @@ import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.apphance.ApphanceProperty;
 
+/**
+ * Verifies properties of Apphance integration.
+ *
+ */
 class VerifyApphanceSetupOperation extends AbstractVerifySetupOperation {
 
     VerifyApphanceSetupOperation() {

@@ -5,6 +5,10 @@ import org.gradle.api.logging.Logging;
 
 import com.apphance.ameba.AbstractVerifySetupOperation
 
+/**
+ * Verifies Mercurial-related properties.
+ *
+ */
 class VerifyMercurialSetupOperation extends  AbstractVerifySetupOperation {
     Logger logger = Logging.getLogger(VerifyMercurialSetupOperation.class)
 

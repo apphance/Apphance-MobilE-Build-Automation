@@ -1,5 +1,9 @@
 package com.apphance.ameba.ios.plugins.ocunit
 
+/**
+ * Test Error POJO.
+ *
+ */
 class OCUnitTestError {
     String file
     int line

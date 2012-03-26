@@ -1,19 +1,24 @@
 package com.apphance.ameba.runBuilds.android;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
 
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.After
+import org.junit.AfterClass
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 
-class RunPrepareAndroidSetupTest {
-    File testProject = new File("testProjects/android")
-    File gradleProperties = new File(testProject,"gradle.properties")
-    File gradlePropertiesOrig = new File(testProject,"gradle.properties.orig")
+import com.apphance.ameba.ProjectHelper;
+import com.apphance.ameba.unit.EmmaDumper;
 
+class RunPrepareAndroidSetupTest {
+    static File testProject = new File("testProjects/android")
+    static File gradleProperties = new File(testProject,"gradle.properties")
+    static File gradlePropertiesOrig = new File(testProject,"gradle.properties.orig")
+    static ProjectConnection connection
     @Before
     void before() {
         gradlePropertiesOrig.delete()
@@ -27,21 +32,28 @@ class RunPrepareAndroidSetupTest {
         gradleProperties << gradlePropertiesOrig.text
     }
 
+    @BeforeClass
+    static void beforeClass() {
+        connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        connection.close()
+        EmmaDumper.dumpEmmaCoverage()
+    }
+
     String runTests(String input, String ... tasks) {
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
-        try {
-            ByteArrayOutputStream os = new ByteArrayOutputStream()
-            BuildLauncher bl = connection.newBuild().forTasks(tasks);
-            bl.setStandardInput(new ByteArrayInputStream(input.bytes))
-            bl.setStandardOutput(os)
-            bl.run();
-            def res = os.toString("UTF-8")
-            println res
-            assertTrue(res.contains('BUILD SUCCESSFUL'))
-            return res
-        } finally {
-            connection.close();
-        }
+        ByteArrayOutputStream os = new ByteArrayOutputStream()
+        BuildLauncher bl = connection.newBuild().forTasks(tasks);
+        bl.setStandardInput(new ByteArrayInputStream(input.bytes))
+        bl.setStandardOutput(os)
+        bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        bl.run();
+        def res = os.toString("UTF-8")
+        println res
+        assertTrue(res.contains('BUILD SUCCESSFUL'))
+        return res
     }
 
     @Test

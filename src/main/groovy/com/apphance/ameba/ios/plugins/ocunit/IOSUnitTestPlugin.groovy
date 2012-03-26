@@ -14,6 +14,10 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 
+/**
+ * Unit test plugin - all unit tests are run here.
+ *
+ */
 class IOSUnitTestPlugin implements Plugin<Project> {
 
     static final String AMEBA_IOS_UNIT = 'Ameba iOS OCUnit tests'

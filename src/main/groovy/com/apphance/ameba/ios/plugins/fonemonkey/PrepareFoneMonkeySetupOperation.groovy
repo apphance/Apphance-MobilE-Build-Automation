@@ -1,6 +1,5 @@
 package com.apphance.ameba.ios.plugins.fonemonkey
 
-
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
@@ -9,6 +8,10 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 
+/**
+ * Prepares properties for FoneMonkey.
+ *
+ */
 class PrepareFoneMonkeySetupOperation extends AbstractPrepareSetupOperation {
 
     Logger logger = Logging.getLogger(PrepareFoneMonkeySetupOperation.class)

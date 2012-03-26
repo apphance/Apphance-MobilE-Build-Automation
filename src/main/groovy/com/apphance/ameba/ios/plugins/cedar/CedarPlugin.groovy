@@ -14,6 +14,10 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 
+/**
+ * Plugin for running Cedar tests.
+ *
+ */
 class CedarPlugin implements Plugin<Project> {
 
     static final String AMEBA_IOS_CEDAR = 'Ameba iOS Cedar'

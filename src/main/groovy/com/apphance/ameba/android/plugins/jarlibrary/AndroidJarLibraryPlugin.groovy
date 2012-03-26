@@ -18,7 +18,7 @@ import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 
 /**
  * Helps building the library with resources embedded. It is useful in case we want to generate libraries like
- * apphance.jar that want to have the resources embedded (in res-raw)
+ * *.jar that wants to have the resources embedded.
  */
 class AndroidJarLibraryPlugin implements Plugin<Project>{
 
@@ -66,7 +66,7 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
             def manifestPropertiesFile = new File(conf.tmpDirectory,'manifest.properties')
             def properties = new Properties()
             properties.setProperty("implementation.title", conf.versionString)
-            properties.setProperty("implementation.version", Integer.toString(conf.versionCode))
+            properties.setProperty("implementation.version", Long.toString(conf.versionCode))
             properties.store(manifestPropertiesFile.newOutputStream(), "Automatically generated with Ameba")
             File resDir = new File(conf.tmpDirectory, "${jarLibraryPrefix}-res")
             project.ant.delete(dir : resDir)

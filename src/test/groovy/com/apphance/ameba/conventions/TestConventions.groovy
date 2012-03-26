@@ -1,15 +1,17 @@
 package com.apphance.ameba.conventions;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
 
-import java.io.File;
+import java.io.File
 
-import org.gradle.api.internal.artifacts.ivyservice.projectmodule.ProjectModuleRegistry;
-import org.gradle.tooling.BuildLauncher;
-import org.gradle.tooling.GradleConnector;
-import org.gradle.tooling.ProjectConnection;
-import org.gradle.tooling.model.GradleProject;
-import org.junit.Test;
+import org.gradle.tooling.BuildLauncher
+import org.gradle.tooling.GradleConnector
+import org.gradle.tooling.ProjectConnection
+import org.junit.AfterClass
+import org.junit.Test
+
+import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.unit.EmmaDumper
 
 class TestConventions {
     private static File conventionsBase = new File("testProjects/conventions")
@@ -26,6 +28,7 @@ class TestConventions {
              BuildLauncher bl = connection.newBuild().forTasks('showConventionAndroidAnalysis');
              ByteArrayOutputStream baos = new ByteArrayOutputStream()
              bl.setStandardOutput(baos)
+             bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
              bl.run()
              String output = baos.toString('utf-8')
              println output
@@ -33,5 +36,10 @@ class TestConventions {
          } finally {
              connection.close()
          }
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
     }
 }

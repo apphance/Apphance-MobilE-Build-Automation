@@ -25,12 +25,13 @@ class TestFrameworkIOSTasks extends AbstractBaseIOSTaskTest {
             'buildAll',
             'buildAllSimulators',
             'build-GradleXCode-BasicConfiguration',
-            'buildSingleRelease',
+            'buildSingleVariant',
             'buildFramework',
             'copyMobileProvision',
             'replaceBundleIdPrefix',
             'unlockKeyChain',
-			'copySources'
+            'copySources',
+            'copyDebugSources',
         ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 }

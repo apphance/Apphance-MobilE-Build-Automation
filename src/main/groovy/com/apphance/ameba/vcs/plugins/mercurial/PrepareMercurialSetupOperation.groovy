@@ -6,7 +6,10 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.AbstractPrepareSetupOperation;
 import com.apphance.ameba.PropertyCategory;
 
-
+/**
+ * Sets up all mercurial-related properties.
+ *
+ */
 class PrepareMercurialSetupOperation extends AbstractPrepareSetupOperation {
     Logger logger = Logging.getLogger(PrepareMercurialSetupOperation.class)
 

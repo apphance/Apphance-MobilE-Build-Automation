@@ -3,6 +3,10 @@ package com.apphance.ameba.plugins.projectconfiguration
 import org.gradle.api.internal.DynamicObjectHelper;
 import org.gradle.api.tasks.SourceSet;
 
+/**
+ * Shows all conventions.
+ *
+ */
 class ShowConventionHelper {
 
     private static final int INDENT = 4

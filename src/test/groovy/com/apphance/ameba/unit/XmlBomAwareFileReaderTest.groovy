@@ -2,6 +2,7 @@ package com.apphance.ameba.unit;
 
 import static org.junit.Assert.*;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import com.apphance.ameba.XMLBomAwareFileReader
@@ -12,5 +13,10 @@ class XmlBomAwareFileReaderTest {
         File f = new File("testProjects/ios/testBom.plist")
         def element = new XMLBomAwareFileReader().readXMLFileIncludingBom(f)
         assertNotNull(element)
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
     }
 }

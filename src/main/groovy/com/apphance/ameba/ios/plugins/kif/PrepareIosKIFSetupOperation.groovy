@@ -9,6 +9,10 @@ import com.apphance.ameba.PropertyCategory;
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 
+/**
+ * Prepares KIF properties.
+ *
+ */
 class PrepareIosKIFSetupOperation extends AbstractPrepareSetupOperation {
 
     Logger logger = Logging.getLogger(PrepareIosKIFSetupOperation.class)

@@ -1,0 +1,19 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath files("../../build/tmp/emma/instr/","../../build/tmp/emma/instr/main/",
+             '../../bin', "../../build/classes/main", "../../build/resources/main")
+        classpath 'emma:emma:2.0.5312'
+    }
+}
+
+apply plugin: 'ameba-project-configuration'
+apply plugin: 'ameba-mercurial'
+apply plugin: 'ameba-android-build'
+apply plugin: 'ameba-project-release'
+apply plugin: 'ameba-android-release'
+
+apply plugin: 'ameba-android-analysis'
+apply plugin: 'ameba-android-apphance'

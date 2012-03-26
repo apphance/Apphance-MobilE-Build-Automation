@@ -16,6 +16,10 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.sun.tools.jdi.JDWP.ClassType.Superclass;
 
 
+/**
+ * Builds APK from the project - one per variant.
+ *
+ */
 class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder {
 
     AndroidSingleVariantApkBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration) {
@@ -44,7 +48,7 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
         def variantPropertiesDir = new File(variantsDir, bi.variant)
         if (bi.variant != null && variantPropertiesDir.exists()) {
             project.ant {
-                copy(todir : new File(androidConf.tmpDirs[bi.variant],'res/raw'), overwrite:'true', verbose:'true') {
+                copy(todir : new File(androidConf.tmpDirs[bi.variant],'res/raw'), failonerror:false, overwrite:'true', verbose:'true') {
                     fileset(dir: variantPropertiesDir,
                                     includes:'*', excludes:'market_variant.txt')
                 }

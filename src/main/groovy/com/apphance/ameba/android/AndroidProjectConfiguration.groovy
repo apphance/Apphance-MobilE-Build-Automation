@@ -55,6 +55,10 @@ class AndroidProjectConfiguration {
         return excluded
     }
 
+    Collection<String> getBuildableVariants() {
+        return variants.findAll({ variant -> !isBuildExcluded(variant) })
+    }
+
     @Override
     public String toString() {
         return this.getProperties()

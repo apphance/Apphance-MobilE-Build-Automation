@@ -19,6 +19,7 @@ import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.android.AndroidEnvironment
+import com.apphance.ameba.ios.IOSBuilderInfo;
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser
@@ -31,7 +32,7 @@ import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**
- * Plugin for preparing reports after successful build.
+ * Plugin for releasing iOS build.
  *
  */
 class IOSReleasePlugin implements Plugin<Project> {
@@ -59,6 +60,11 @@ class IOSReleasePlugin implements Plugin<Project> {
         IOSSingleVariantBuilder.buildListeners << new IOSReleaseListener(project, project.ant)
     }
 
+    String getFolderPrefix(IOSBuilderInfo bi) {
+        return "${releaseConf.projectDirectoryName}/${conf.fullVersionString}/${bi.target}/${bi.configuration}"
+    }
+
+
     def void prepareBuildDocumentationZipTask(Project project) {
         def task = project.task('buildDocumentationZip')
         task.description = "Builds documentation .zip file."
@@ -72,19 +78,6 @@ class IOSReleasePlugin implements Plugin<Project> {
             // ant.zip(destfile: destZip ) { fileset(dir: documentationDir) }
         }
     }
-
-    def void prepareCleanIosReleaseTask(Project project) {
-        def task = project.task('cleanIosRelease')
-        task.description = "Cleans release related directories for iOS"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task << {
-//            iosConf.tmpDirs.values().each {
-//                project.ant.delete(dir: it)
-//            }
-        }
-        project.cleanRelease.dependsOn(task)
-    }
-
 
     private void prepareAvailableArtifactsInfoTask(Project project) {
         def task = project.task('prepareAvailableArtifactsInfo')
@@ -239,7 +232,7 @@ class IOSReleasePlugin implements Plugin<Project> {
         task << {
             use (PropertyCategory) {
                 conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
-                iosPlistProcessor.incrementPlistVersion(project)
+                iosPlistProcessor.incrementPlistVersion(project, iosConf, conf)
                 logger.lifecycle("New version code: ${conf.versionCode}")
                 logger.lifecycle("Updated version string to ${conf.versionString}")
             }
@@ -286,9 +279,13 @@ class IOSReleasePlugin implements Plugin<Project> {
             configurations.each { configuration ->
                 def id = "${target}-${configuration}".toString()
                 if (!iosConf.isBuildExcluded(id)) {
-                    logger.lifecycle("Preparing OTA configuration for ${id}")
-                    def encodedUrl = URLEncoder.encode(iosReleaseConf.manifestFiles[id].url.toString(),"utf-8")
-                    urlMap.put(id,"itms-services://?action=download-manifest&url=${encodedUrl}")
+                    if (iosReleaseConf.manifestFiles[id] != null) {
+                        logger.lifecycle("Preparing OTA configuration for ${id}")
+                        def encodedUrl = URLEncoder.encode(iosReleaseConf.manifestFiles[id].url.toString(),"utf-8")
+                        urlMap.put(id,"itms-services://?action=download-manifest&url=${encodedUrl}")
+                    } else {
+                        logger.warn("Skipping preparing OTA configuration for ${id} -> missing manifest")
+                    }
                 } else {
                     logger.lifecycle("Skipping preparing OTA configuration for ${id} -> excluded by ${iosConf.excludedBuilds}")
                 }

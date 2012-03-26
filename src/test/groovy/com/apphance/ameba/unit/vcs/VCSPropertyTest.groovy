@@ -1,15 +1,15 @@
 package com.apphance.ameba.unit.vcs;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.AfterClass
 import org.junit.Test
 
-
-
-import com.apphance.ameba.PropertyCategory;
-import com.apphance.ameba.vcs.plugins.git.GitProperty;
+import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.unit.EmmaDumper
+import com.apphance.ameba.vcs.plugins.git.GitProperty
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialProperty
 
 class PropertyVCSTest {
@@ -71,5 +71,10 @@ hg.commit.user=Test Apphance <test@apphance.com>
 hg.commit.user=Test Apphance <test@apphance.com>
 ''',s)
         }
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
     }
 }

@@ -5,7 +5,7 @@ import java.util.Collection
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 
-import com.apphance.ameba.applyPlugins.android.BaseTaskTest;
+import com.apphance.ameba.BaseTaskTest;
 import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty;
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin;
 

@@ -25,11 +25,12 @@ class TestFoneMonkeyTasks extends AbstractBaseIOSTaskTest {
             'buildAll',
             'buildAllSimulators',
             'build-GradleXCode-BasicConfiguration',
-            'buildSingleRelease',
+            'buildSingleVariant',
             'copyMobileProvision',
             'replaceBundleIdPrefix',
             'unlockKeyChain',
-			'copySources'
+            'copySources',
+            'copyDebugSources',
         ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 

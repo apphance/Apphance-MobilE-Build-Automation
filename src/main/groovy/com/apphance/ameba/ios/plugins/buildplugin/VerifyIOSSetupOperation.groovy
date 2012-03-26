@@ -9,6 +9,10 @@ import com.apphance.ameba.ios.AbstractVerifyIOSSetupOperation
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 
 
+/**
+ * Verifies if all IOS properties are setup properly.
+ *
+ */
 class VerifyIOSSetupOperation extends AbstractVerifyIOSSetupOperation {
     Logger logger = Logging.getLogger(VerifyIOSSetupOperation.class)
 

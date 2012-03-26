@@ -10,6 +10,10 @@ import org.gradle.api.tasks.TaskAction;
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 
+/**
+ * Task for showing all conventions.
+ *
+ */
 class ShowConventionsTask extends DefaultTask {
 
     ShowConventionHelper showConventionHelper = new ShowConventionHelper()

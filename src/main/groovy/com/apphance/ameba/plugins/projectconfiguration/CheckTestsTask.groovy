@@ -1,18 +1,24 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
+import groovy.io.FileType
+
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 import org.slf4j.Logger
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups;
-import com.apphance.ameba.ProjectConfiguration;
-import com.apphance.ameba.ProjectHelper;
-import com.apphance.ameba.PropertyCategory;
+import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 
 
+/**
+ * Checks if all tests are ok.
+ *
+ */
 class CheckTestsTask extends DefaultTask {
     Logger logger = Logging.getLogger(CheckTestsTask.class)
     ProjectHelper projectHelper
@@ -33,7 +39,7 @@ class CheckTestsTask extends DefaultTask {
     void checkTests(){
         List<String> failingTests = new ArrayList<String>();
         File testDir = project.rootDir
-        testDir.traverse {
+        testDir.traverse ([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
             String fileName = it.name
             if( fileName.matches("TEST.*\\.xml") ){
                 Node testsuites = new XmlParser().parse(it)
