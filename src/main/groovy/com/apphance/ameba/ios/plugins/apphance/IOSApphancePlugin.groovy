@@ -59,8 +59,11 @@ class IOSApphancePlugin implements Plugin<Project> {
     void preprocessBuildsWithApphance(Project project) {
         iosConf.configurations.each { configuration ->
             iosConf.targets.each { target ->
-                if (!iosConf.isBuildExcluded(target + "-" + configuration)) {
-                    project."build-${target}-${configuration}".doFirst {
+				def id = "${target}-${configuration}".toString()
+                if (!iosConf.isBuildExcluded(id)) {
+					def noSpaceId = id.replaceAll(' ','_')
+					def singleTask = project.task("build-${noSpaceId}")
+                    singleTask.doFirst {
                         if (!isApphancePresent(iosSingleVariantBuilder.tmpDir(target, configuration))) {
 //                            replaceLogsWithApphance(project, iosSingleVariantBuilder.tmpDir(target, configuration))
                             pbxProjectHelper.addApphanceToProject(iosSingleVariantBuilder.tmpDir(target, configuration),
