@@ -62,7 +62,7 @@ class IOSApphancePlugin implements Plugin<Project> {
 				def id = "${target}-${configuration}".toString()
                 if (!iosConf.isBuildExcluded(id)) {
 					def noSpaceId = id.replaceAll(' ','_')
-					def singleTask = project.task("build-${noSpaceId}")
+					def singleTask = project."build-${noSpaceId}"
                     singleTask.doFirst {
                         if (!isApphancePresent(iosSingleVariantBuilder.tmpDir(target, configuration))) {
 //                            replaceLogsWithApphance(project, iosSingleVariantBuilder.tmpDir(target, configuration))
