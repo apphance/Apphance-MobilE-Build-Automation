@@ -79,21 +79,13 @@ class PbxProjectHelper {
     }
 
     def getParsedProject(File projectRootDirectory, String targetName) {
-        projectRootDirectory.traverse([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
-            if (it.name.equals("project.pbxproj")) {
-                projectFile = it
-                return
-            }
-        }
-        if (projectFile == null) {
-            throw new GradleException("There is no project file in directory " + projectRootDirectory.canonicalPath + " with name " + targetName)
-        }
-        def command = ["plutil", "-convert", "xml1", "-o", "-", "${projectFile}"]
-        Process proc = Runtime.getRuntime().exec((String[]) command.toArray())
-        StringBuffer outBuff = new StringBuffer()
-        proc.waitForProcessOutput(outBuff, null)
-        XmlParser parser = new XmlParser(false, false)
-        def root = parser.parseText(outBuff.toString())
+		def command = ["plutil", "-convert", "xml1", "-o", "-", "${projectRootDirectory}"]
+		Process proc = Runtime.getRuntime().exec((String[]) command.toArray())
+		StringBuffer outBuff = new StringBuffer()
+		proc.waitForProcessOutput(outBuff, null)
+		XmlParser parser = new XmlParser(false, false)
+		def root = parser.parseText(outBuff.toString())
+
         return root
     }
 
@@ -264,13 +256,12 @@ class PbxProjectHelper {
         }
     }
 
-    String findAppDelegateFile(File projectRootDirectory) {
-        String appFilename = ""
+    def findAppDelegateFile(File projectRootDirectory) {
+        def appFilename = []
         projectRootDirectory.traverse([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
             if (it.name.endsWith(".h") && it.text.contains("UIApplicationDelegate")) {
-                appFilename = it.canonicalPath
+                appFilename << it.canonicalPath
                 logger.lifecycle("Application delegate found in file " + it)
-                return
             }
         }
         return appFilename
@@ -280,23 +271,27 @@ class PbxProjectHelper {
         def launchingPattern = /(application.*didFinishLaunchingWithOptions[^\n]*\s+\{)/
         def initApphance = "[APHLogger startNewSessionWithApplicationKey:@\"" + "${appKey}" + "\" apphanceMode:kAPHApphanceModeQA];"
         def setExceptionHandler = "NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);"
-        String appFilename = findAppDelegateFile(projectRootDirectory)
-        if (appFilename.equals("")) {
+        def appFilename = findAppDelegateFile(projectRootDirectory)
+        if (appFilename.count == 0) {
             throw new GradleException("Cannot find file with UIApplicationDelegate")
         }
-        appFilename = appFilename.replace(".h", ".m")
-        File appDelegateFile = new File(appFilename)
+        appFilename.each {
+			it = it.replace(".h", ".m")
+			File appDelegateFile = new File(it)
+			if (appDelegateFile.exists()) {
+				File newAppDelegate = new File("newAppDelegate.m")
+				newAppDelegate.delete()
+				newAppDelegate.withWriter { out ->
+					 out << appDelegateFile.text.replaceAll(launchingPattern, "\$1"+initApphance+setExceptionHandler)
+				}
+				appDelegateFile.delete()
+				appDelegateFile.withWriter { out ->
+					out << newAppDelegate.text
+				}
+				newAppDelegate.delete()
+			}
+        }
 
-        File newAppDelegate = new File("newAppDelegate.m")
-        newAppDelegate.delete()
-        newAppDelegate.withWriter { out ->
-             out << appDelegateFile.text.replaceAll(launchingPattern, "\$1"+initApphance+setExceptionHandler)
-        }
-        appDelegateFile.delete()
-        appDelegateFile.withWriter { out ->
-            out << newAppDelegate.text
-        }
-        newAppDelegate.delete()
     }
 
     void addApphanceToPch(File pchFile) {
@@ -313,8 +308,9 @@ class PbxProjectHelper {
         newPch.delete()
     }
 
-    String addApphanceToProject(File projectRootDirectory, String targetName, String configurationName, String appKey) {
-        rootObject = getParsedProject(projectRootDirectory, targetName)
+    String addApphanceToProject(File projectRootDirectory, File xcodeProject, String targetName, String configurationName, String appKey) {
+        logger.lifecycle("Adding Apphance to target " + targetName + " configuration " + configurationName)
+		rootObject = getParsedProject(new File(xcodeProject, "project.pbxproj"), targetName)
         def project = getObject(getProperty(rootObject.dict, "rootObject").text())
         getProperty(project, "targets").'*'.each { target ->
             def targetText = target.text()
@@ -351,6 +347,11 @@ class PbxProjectHelper {
         f.withWriter { writer ->
             writer << writePlistToString()
         }
+		String[] paths = xcodeProject.canonicalPath.split("/")
+		String xcodeProjectFileName = paths[paths.size() - 1]
+		projectFile = new File(projectRootDirectory, "${xcodeProjectFileName}/project.pbxproj")
+		logger.lifecycle("Writing file " + projectFile)
+		projectFile.delete()
         projectFile.withWriter { out ->
             out << f.text
         }
