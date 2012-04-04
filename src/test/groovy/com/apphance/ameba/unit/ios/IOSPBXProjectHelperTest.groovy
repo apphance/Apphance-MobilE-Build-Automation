@@ -12,7 +12,7 @@ class IOSPBXProjectHelperTest {
     @Test
     void parseProjectTest() {
         PbxProjectHelper helper = new PbxProjectHelper()
-        Object o = helper.getParsedProject(new File("testProjects/ios/GradleXCode/"), "GradleXCode")
+        Object o = helper.getParsedProject(new File("testProjects/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj"), "GradleXCode")
         helper.setRootObject(o)
         assertNotNull(helper.getObject("D382B70814703FE500E9CC9B"))
         assertEquals("D382B70B14703FE500E9CC9B", helper.getProperty(helper.getObject("D382B70814703FE500E9CC9B"), "buildConfigurationList").text())
