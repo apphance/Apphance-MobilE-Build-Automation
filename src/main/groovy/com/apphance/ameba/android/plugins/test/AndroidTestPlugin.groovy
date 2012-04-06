@@ -62,8 +62,10 @@ class AndroidTestPlugin implements Plugin<Project>{
     int emulatorPort
     Process emulatorProcess
     Process logcatProcess
+    Project project
 
     public void apply(Project project) {
+        this.project = project
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         this.projectHelper = new ProjectHelper()
         this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
