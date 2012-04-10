@@ -64,7 +64,7 @@ class Wp7ReleasePlugin implements Plugin<Project> {
 		task << {
 			use (PropertyCategory) {
 				conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
-				wp7projectHelper.updateVersion(project.rootDir, conf)
+				wp7ProjectHelper.updateVersion(project.rootDir, conf)
 				logger.lifecycle("New version code: ${conf.versionCode}")
 				logger.lifecycle("Updated version string to ${conf.versionString}")
 				logger.lifecycle("Configuration : ${conf}")
