@@ -13,6 +13,7 @@ import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration;
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin;
 import com.apphance.ameba.wp7.Wp7ProjectHelper
 import com.apphance.ameba.wp7.plugins.buildplugin.Wp7Plugin;
+import com.apphance.ameba.plugins.release.ProjectReleaseCategory;
 
 /**
 * Plugin that provides release functionality for Wp7.
@@ -33,6 +34,15 @@ class Wp7ReleasePlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		ProjectHelper.checkAllPluginsAreLoaded(project, this.class, Wp7Plugin.class, ProjectReleasePlugin.class)
+		use (PropertyCategory) {
+			this.project = project
+			this.projectHelper = new ProjectHelper();
+			this.conf = project.getProjectConfiguration()
+			this.wp7projectHelper = new Wp7ProjectHelper()
+		}
+		use (ProjectReleaseCategory) {
+			this.releaseConf = project.getProjectReleaseConfiguration()
+		}
 		prepareUpdateVersionTask(project)
 	}
 
