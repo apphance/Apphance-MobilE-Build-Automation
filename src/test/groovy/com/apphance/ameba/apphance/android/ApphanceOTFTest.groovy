@@ -12,7 +12,7 @@ import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.unit.EmmaDumper;
-import com.vladium.emma.rt.RT;
+
 
 class ApphanceOTFTest {
 

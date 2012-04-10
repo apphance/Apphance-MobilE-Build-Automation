@@ -1,6 +1,6 @@
 package com.apphance.ameba.unit
 
-import com.vladium.emma.rt.RT;
+import com.vladium.emma.rt.RT
 
 class EmmaDumper {
     static dumpEmmaCoverage() {

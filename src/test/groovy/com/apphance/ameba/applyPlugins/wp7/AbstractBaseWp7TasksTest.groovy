@@ -3,7 +3,8 @@ package com.apphance.ameba.applyPlugins.wp7
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 
-import com.apphance.ameba.applyPlugins.android.BaseTaskTest
+
+import com.apphance.ameba.BaseTaskTest
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
 abstract class AbstractBaseWp7TasksTest extends BaseTaskTest {
