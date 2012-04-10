@@ -51,6 +51,7 @@ class Wp7ReleasePlugin implements Plugin<Project> {
 		use (ProjectReleaseCategory) {
 			this.releaseConf = project.getProjectReleaseConfiguration()
 		}
+		prepareAvailableArtifactsInfoTask(project)
 		prepareUpdateVersionTask(project)
 		prepareMailMessageTask(project)
 	}
@@ -73,6 +74,10 @@ class Wp7ReleasePlugin implements Plugin<Project> {
 		//TODO task.dependsOn(project.readAndroidProjectConfiguration)
 	}
 
+	private void prepareAvailableArtifactsInfoTask(Project project) {
+		def task = project.task('prepareAvailableArtifactsInfo')
+	}
+
 	private void prepareMailMessageTask(Project project) {
 		def task = project.task('prepareMailMessage')
 		task.description = "Prepares mail message which summarises the release"
@@ -84,7 +89,7 @@ class Wp7ReleasePlugin implements Plugin<Project> {
 			URL mailTemplate = this.class.getResource("mail_message.html")
 			//def mainBuild = "${androidConf.mainVariant}"
 			//logger.lifecycle("Main build used for size calculation: ${mainBuild}")
-			//def fileSize = androidReleaseConf.apkFiles[mainBuild].location.size()
+			def fileSize = 0//androidReleaseConf.apkFiles[mainBuild].location.size()
 			ResourceBundle rb = ResourceBundle.getBundle(\
 				this.class.package.name + ".mail_message",
 							releaseConf.locale, this.class.classLoader)
@@ -94,10 +99,10 @@ class Wp7ReleasePlugin implements Plugin<Project> {
 								title : conf.projectName,
 								version :conf.fullVersionString,
 								currentDate: releaseConf.buildDate,
-								//otaUrl : androidReleaseConf.otaIndexFile?.url,
-								//fileIndexUrl: androidReleaseConf.fileIndexFile?.url,
+								otaUrl : "",//androidReleaseConf.otaIndexFile?.url,
+								fileIndexUrl: "",//androidReleaseConf.fileIndexFile?.url,
 								releaseNotes : releaseConf.releaseNotes,
-								//fileSize : projectHelper.getHumanReadableSize(fileSize),
+								fileSize : projectHelper.getHumanReadableSize(fileSize),
 								releaseMailFlags : releaseConf.releaseMailFlags,
 								rb :rb
 							]
