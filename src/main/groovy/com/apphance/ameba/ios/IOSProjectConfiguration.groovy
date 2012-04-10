@@ -19,6 +19,7 @@ class IOSProjectConfiguration {
     String mainConfiguration
     File distributionDirectory
     File xCodeProjectDirectory
+    def xCodeProjectDirectories = [:]
     List<String> targets = []
     List<String> configurations = []
     List<String> alltargets = []
@@ -47,6 +48,18 @@ class IOSProjectConfiguration {
         return excluded
     }
 
+    def String getVariant(String target, String configuration) {
+        return "${target}-${configuration}"
+    }
+
+    def getXCodeBuildExecutionPath(String target, String configuration) {
+        if (xCodeProjectDirectory == null || xCodeProjectDirectory == '') {
+            return ['xcodebuild']
+        } else {
+            return ['xcodebuild' , '-project', xCodeProjectDirectories[getVariant(target,configuration)]]
+        }
+    }
+
     def getXCodeBuildExecutionPath() {
         if (xCodeProjectDirectory == null || xCodeProjectDirectory == '') {
             return ['xcodebuild']
@@ -54,4 +67,5 @@ class IOSProjectConfiguration {
             return ['xcodebuild' , '-project', xCodeProjectDirectory]
         }
     }
+
 }

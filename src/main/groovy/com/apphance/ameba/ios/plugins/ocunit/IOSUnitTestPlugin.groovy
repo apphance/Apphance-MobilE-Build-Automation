@@ -42,17 +42,17 @@ class IOSUnitTestPlugin implements Plugin<Project> {
 
     private void prepareRunUnitTestsTask() {
         def task = project.task('runUnitTests')
-        task.description = "Build and executes Unit tests. Requires UnitTests target. Produces result in tmp directory ${project.iosUnitTests.target} ${project.iosUnitTests.configuration}"
+        task.description = "Build and executes Unit tests. Requires UnitTests target."
         task.group = AMEBA_IOS_UNIT
         task << {
             def configuration = project.iosUnitTests.configuration
             def target = project.iosUnitTests.target
-            logger.lifecycle( "\n\n\n=== Building DEBUG target ${project.iosUnitTests.target}, configuration ${project.iosUnitTests.configuration}  ===")
-            def result = projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
+            logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
+            def result = projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(target, configuration) + [
                 "-target",
-                project.iosUnitTests.target,
+                target,
                 "-configuration",
-                project.iosUnitTests.configuration,
+                configuration,
                 "-sdk",
                 iosConf.simulatorsdk
             ], failOnError = false)

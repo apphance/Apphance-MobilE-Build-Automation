@@ -179,7 +179,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
     }
 
     private xcodeBuilds() {
-        projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
+        projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(frameworkTarget, frameworkConfiguration) + [
             "-target",
             frameworkTarget,
             "-configuration",
@@ -191,7 +191,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
             "clean",
             "build"
         ])
-        projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
+        projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(frameworkTarget, frameworkConfiguration) + [
             "-target",
             frameworkTarget,
             "-configuration",

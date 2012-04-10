@@ -41,7 +41,7 @@ class IOSSingleVariantBuilder {
 
     void buildNormalVariant(Project project, String target, String configuration) {
         logger.lifecycle( "\n\n\n=== Building target ${target}, configuration ${configuration}  ===")
-        projectHelper.executeCommand(project,tmpDir(target,configuration), iosConf.getXCodeBuildExecutionPath() + [
+        projectHelper.executeCommand(project,tmpDir(target,configuration), iosConf.getXCodeBuildExecutionPath(target,configuration) + [
             "-target",
             target,
             "-configuration",
@@ -59,7 +59,8 @@ class IOSSingleVariantBuilder {
         def configuration = "Debug"
         logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
         if (conf.versionString != null) {
-            projectHelper.executeCommand(project, tmpDir(target,configuration), iosConf.getXCodeBuildExecutionPath() + [
+            projectHelper.executeCommand(project, tmpDir(target,configuration),
+                iosConf.getXCodeBuildExecutionPath(target, configuration) + [
                 "-target",
                 target,
                 "-configuration",

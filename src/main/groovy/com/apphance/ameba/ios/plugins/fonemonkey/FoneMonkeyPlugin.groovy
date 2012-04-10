@@ -249,7 +249,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
                 def configuration = project.readProperty(IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
                 def target = "RunMonkeyTests"
                 logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
-                projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
+                projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(target, configuration) + [
                     "-target",
                     target,
                     "-configuration",

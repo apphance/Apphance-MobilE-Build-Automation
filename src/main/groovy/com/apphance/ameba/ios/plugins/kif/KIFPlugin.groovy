@@ -153,7 +153,7 @@ class KIFPlugin implements Plugin<Project> {
             def configuration = "${KIFConfiguration}"
             def target = "KIFTests"
             logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
-            projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
+            projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(target, configuration) + [
                 "-target",
                 target,
                 "-configuration",

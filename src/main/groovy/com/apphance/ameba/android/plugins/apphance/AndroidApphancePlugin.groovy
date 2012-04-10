@@ -327,7 +327,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     private def addApphanceInit(File directory, File mainFile, String appKey,
         String apphanceMode, boolean logEvents, boolean isActivity) {
         logger.lifecycle("Adding apphance init to file " + mainFile)
-        File newMainClassFile = new File("newMainClassFile.java")
+        File newMainClassFile = new File(directory, "newMainClassFile.java")
         String startSession = "Apphance.startNewSession(this, \"${appKey}\", ${apphanceMode});"
         if (logEvents) {
             startSession = startSession + "com.apphance.android.eventlog.EventLog.setInvertedIdMap(this);";

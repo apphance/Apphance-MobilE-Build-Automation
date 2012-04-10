@@ -17,6 +17,8 @@ class PbxProjectHelper {
 
     static Logger logger = Logging.getLogger(PbxProjectHelper.class)
 
+    static final String PROJECT_PBXPROJ = "project.pbxproj"
+
     Object rootObject
     Object objects
     private int hash = 0
@@ -78,13 +80,15 @@ class PbxProjectHelper {
         return null
     }
 
-    def getParsedProject(File projectRootDirectory, String targetName) {
-		def command = ["plutil", "-convert", "xml1", "-o", "-", "${projectRootDirectory}"]
-		Process proc = Runtime.getRuntime().exec((String[]) command.toArray())
-		StringBuffer outBuff = new StringBuffer()
-		proc.waitForProcessOutput(outBuff, null)
-		XmlParser parser = new XmlParser(false, false)
-		def root = parser.parseText(outBuff.toString())
+    def getParsedProject(File projectFile, String targetName) {
+        def command = ["plutil", "-convert", "xml1", "-o", "-", projectFile.absolutePath]
+        logger.info("Executing ${command}")
+        Process proc = Runtime.getRuntime().exec((String[]) command.toArray())
+        StringBuffer outBuff = new StringBuffer()
+        proc.waitForProcessOutput(outBuff, null)
+        XmlParser parser = new XmlParser(false, false)
+        logger.debug("Received: ${outBuff}")
+        def root = parser.parseText(outBuff.toString())
 
         return root
     }
@@ -276,20 +280,20 @@ class PbxProjectHelper {
             throw new GradleException("Cannot find file with UIApplicationDelegate")
         }
         appFilename.each {
-			it = it.replace(".h", ".m")
-			File appDelegateFile = new File(it)
-			if (appDelegateFile.exists()) {
-				File newAppDelegate = new File("newAppDelegate.m")
-				newAppDelegate.delete()
-				newAppDelegate.withWriter { out ->
-					 out << appDelegateFile.text.replaceAll(launchingPattern, "\$1"+initApphance+setExceptionHandler)
-				}
-				appDelegateFile.delete()
-				appDelegateFile.withWriter { out ->
-					out << newAppDelegate.text
-				}
-				newAppDelegate.delete()
-			}
+            it = it.replace(".h", ".m")
+            File appDelegateFile = new File(it)
+            if (appDelegateFile.exists()) {
+                File newAppDelegate = new File("newAppDelegate.m")
+                newAppDelegate.delete()
+                newAppDelegate.withWriter { out ->
+                     out << appDelegateFile.text.replaceAll(launchingPattern, "\$1"+initApphance+setExceptionHandler)
+                }
+                appDelegateFile.delete()
+                appDelegateFile.withWriter { out ->
+                    out << newAppDelegate.text
+                }
+                newAppDelegate.delete()
+            }
         }
 
     }
@@ -310,7 +314,7 @@ class PbxProjectHelper {
 
     String addApphanceToProject(File projectRootDirectory, File xcodeProject, String targetName, String configurationName, String appKey) {
         logger.lifecycle("Adding Apphance to target " + targetName + " configuration " + configurationName)
-		rootObject = getParsedProject(new File(xcodeProject, "project.pbxproj"), targetName)
+        rootObject = getParsedProject(new File(xcodeProject, PROJECT_PBXPROJ), targetName)
         def project = getObject(getProperty(rootObject.dict, "rootObject").text())
         getProperty(project, "targets").'*'.each { target ->
             def targetText = target.text()
@@ -347,11 +351,11 @@ class PbxProjectHelper {
         f.withWriter { writer ->
             writer << writePlistToString()
         }
-		String[] paths = xcodeProject.canonicalPath.split("/")
-		String xcodeProjectFileName = paths[paths.size() - 1]
-		projectFile = new File(projectRootDirectory, "${xcodeProjectFileName}/project.pbxproj")
-		logger.lifecycle("Writing file " + projectFile)
-		projectFile.delete()
+        String[] paths = xcodeProject.canonicalPath.split("/")
+        String xcodeProjectFileName = paths[paths.size() - 1]
+        projectFile = new File(new File(projectRootDirectory, "${xcodeProjectFileName}"), PROJECT_PBXPROJ)
+        logger.lifecycle("Writing file " + projectFile)
+        projectFile.delete()
         projectFile.withWriter { out ->
             out << f.text
         }

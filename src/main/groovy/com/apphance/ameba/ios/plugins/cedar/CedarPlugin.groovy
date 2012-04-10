@@ -67,7 +67,7 @@ class CedarPlugin implements Plugin<Project> {
             def targets = iosConf.alltargets.findAll { it.endsWith('Specs')}
             targets.each { target ->
                 logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
-                projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
+                projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(target, configuration) + [
                     "-target",
                     target,
                     "-configuration",

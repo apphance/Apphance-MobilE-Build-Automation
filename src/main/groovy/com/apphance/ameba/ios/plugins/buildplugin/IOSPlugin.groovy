@@ -96,12 +96,33 @@ class IOSPlugin implements Plugin<Project> {
     private readBasicIosProjectProperties(Project project) {
         use (PropertyCategory) {
             this.pListFileName = project.readProperty(IOSProjectProperty.PLIST_FILE)
-            if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
-                iosConf.xCodeProjectDirectory  = new File(project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
-            }
+            readProjectDirectory(project)
             iosConf.excludedBuilds = project.readProperty(IOSProjectProperty.EXCLUDED_BUILDS).split(",")*.trim()
             iosConf.mainTarget = project.readProperty(IOSProjectProperty.MAIN_TARGET)
             iosConf.mainConfiguration = project.readProperty(IOSProjectProperty.MAIN_CONFIGURATION)
+        }
+    }
+
+    private readProjectDirectory(Project project) {
+        use (PropertyCategory){
+            if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
+                iosConf.xCodeProjectDirectory  = new File(project.rootDir,project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
+            }
+        }
+    }
+
+    private readVariantedProjectDirectories(Project project) {
+        use (PropertyCategory){
+            if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
+                iosConf.alltargets.each { target ->
+                    iosConf.allconfigurations.each { configuration ->
+                        String variant = iosConf.getVariant(target, configuration)
+                        iosConf.xCodeProjectDirectories[variant]  = new File(iosSingleVariantBuilder.tmpDir(target, configuration),
+                            project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
+
+                    }
+                }
+            }
         }
     }
 
@@ -136,11 +157,7 @@ class IOSPlugin implements Plugin<Project> {
     }
 
     private readProjectConfigurationFromXCode(Project project) {
-        use (PropertyCategory) {
-            if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
-                iosConf.xCodeProjectDirectory  = new File(project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
-            }
-        }
+        readProjectDirectory(project)
         def cmd = (iosConf.getXCodeBuildExecutionPath() + ["-list"]) as String []
         def trimmedListOutput = projectHelper.executeCommand(project, cmd, false, null, null, 1, false)*.trim()
         if (trimmedListOutput.empty || trimmedListOutput[0] == '') {
@@ -155,6 +172,7 @@ class IOSPlugin implements Plugin<Project> {
             def trimmedSdkOutput = projectHelper.executeCommand(project, (iosConf.getXCodeBuildExecutionPath() + ["-showsdks"]) as String[],false, null, null, 1, true)*.trim()
             iosConf.allIphoneSDKs = IOSXCodeOutputParser.readIphoneSdks(trimmedSdkOutput)
             iosConf.allIphoneSimulatorSDKs = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
+            readVariantedProjectDirectories(project)
         }
     }
 

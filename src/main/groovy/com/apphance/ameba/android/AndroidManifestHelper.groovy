@@ -27,7 +27,7 @@ class AndroidManifestHelper {
         builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
         builderFactory.setFeature("http://xml.org/sax/features/validation", false)
         def builder = builderFactory.newDocumentBuilder()
-        def inputStream = new FileInputStream("${projectDirectory}/AndroidManifest.xml")
+        def inputStream = new FileInputStream(new File(projectDirectory,"AndroidManifest.xml"))
         return builder.parse(inputStream).documentElement
     }
 
@@ -81,8 +81,8 @@ class AndroidManifestHelper {
     }
     void updateVersion(File projectDirectory, ProjectConfiguration conf) {
         println("${projectDirectory}")
-        def file = new File("${projectDirectory}/AndroidManifest.xml")
-        def originalFile = new File("${projectDirectory}/AndroidManifest.xml.beforeUpdate.orig")
+        def file = new File(projectDirectory,"AndroidManifest.xml")
+        def originalFile = new File(projectDirectory,"AndroidManifest.xml.beforeUpdate.orig")
         originalFile.delete()
         originalFile << file.text
         def root = getParsedManifest(projectDirectory)
@@ -102,8 +102,8 @@ class AndroidManifestHelper {
     }
 
     void replacePackage(File projectDirectory, ProjectConfiguration conf, String oldPackage, String newPackage, String newLabel) {
-        def file = new File("${projectDirectory}/AndroidManifest.xml")
-        def originalFile = new File("${projectDirectory}/AndroidManifest.xml.beforePackageReplace.orig")
+        def file = new File(projectDirectory,"AndroidManifest.xml")
+        def originalFile = new File(projectDirectory,"AndroidManifest.xml.beforePackageReplace.orig")
         originalFile.delete()
         originalFile << file.text
         def root = getParsedManifest(projectDirectory)
@@ -136,9 +136,9 @@ class AndroidManifestHelper {
 
 
     void removeApphance(File projectDirectory) {
-        def file = new File("${projectDirectory}/AndroidManifest.xml")
+        def file = new File(projectDirectory,"AndroidManifest.xml")
         def root = getParsedManifest(projectDirectory)
-        def originalFile = new File("${projectDirectory}/AndroidManifest.xml.beforeApphance.orig")
+        def originalFile = new File(projectDirectory,"AndroidManifest.xml.beforeApphance.orig")
         originalFile.delete()
         originalFile<< file.text
         def manifestNode = XPathAPI.selectSingleNode(root, '/manifest')
@@ -184,14 +184,14 @@ class AndroidManifestHelper {
                 }
             }
         }
-        def fileAgain = new File("${projectDirectory}/AndroidManifest.xml")
+        def fileAgain = new File(projectDirectory,"AndroidManifest.xml")
         fileAgain.delete()
         fileAgain.write(root as String)
     }
 
     public void addApphanceToManifest(File projectDirectory) {
-        def file = new File("${projectDirectory}/AndroidManifest.xml")
-        def originalFile = new File("${projectDirectory}/AndroidManifest.xml.beforeApphance.orig")
+        def file = new File(projectDirectory,"AndroidManifest.xml")
+        def originalFile = new File(projectDirectory,"AndroidManifest.xml.beforeApphance.orig")
         originalFile.delete()
         originalFile<< file.text
 
@@ -271,7 +271,7 @@ class AndroidManifestHelper {
     }
 
     public String getMainActivityName(File projectDirectory) {
-        def file = new File("${projectDirectory}/AndroidManifest.xml")
+        def file = new File(projectDirectory,"AndroidManifest.xml")
 
         def manifest = new XmlSlurper(false, true).parse(file)
 
@@ -321,7 +321,7 @@ class AndroidManifestHelper {
     }
 
     public String getApplicationName(File projectDirectory) {
-        def file = new File("${projectDirectory}/AndroidManifest.xml")
+        def file = new File(projectDirectory,"AndroidManifest.xml")
 
         def manifest = new XmlSlurper().parse(file)
         String className = manifest.@package
@@ -342,7 +342,7 @@ class AndroidManifestHelper {
     public boolean isApphanceActivityPresent(File projectDirectory) {
         def activityFound = false
 
-        def file = new File("${projectDirectory}/AndroidManifest.xml")
+        def file = new File(projectDirectory,"AndroidManifest.xml")
         def manifest = new XmlSlurper().parse(file)
 
         manifest.activity.each {
@@ -358,7 +358,7 @@ class AndroidManifestHelper {
     public boolean isApphanceInstrumentationPresent(File projectDirectory) {
         def instrumentationFound = false
 
-        def file = new File("${projectDirectory}/AndroidManifest.xml")
+        def file = new File(projectDirectory,"AndroidManifest.xml")
         def manifest = new XmlSlurper().parse(file)
 
         manifest.instrumentation.each {
@@ -371,10 +371,10 @@ class AndroidManifestHelper {
     }
 
     void restoreOriginalManifest(File projectDirectory) {
-        def file = new File("${projectDirectory}/AndroidManifest.xml")
-        def originalBeforeApphance = new File("${projectDirectory}/AndroidManifest.xml.beforeApphance.orig")
-        def originalBeforePackageReplace = new File("${projectDirectory}/AndroidManifest.xml.beforePackageReplace.orig")
-        def originalBeforeUpdate = new File("${projectDirectory}/AndroidManifest.xml.beforeUpdate.orig")
+        def file = new File(projectDirectory,"AndroidManifest.xml")
+        def originalBeforeApphance = new File(projectDirectory,"AndroidManifest.xml.beforeApphance.orig")
+        def originalBeforePackageReplace = new File(projectDirectory,"AndroidManifest.xml.beforePackageReplace.orig")
+        def originalBeforeUpdate = new File(projectDirectory,"AndroidManifest.xml.beforeUpdate.orig")
         if (originalBeforeUpdate.exists()) {
             originalBeforeApphance.delete()
             file.delete()
