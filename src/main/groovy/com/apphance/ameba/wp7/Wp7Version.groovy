@@ -34,7 +34,7 @@ class Wp7Version {
 
 	@Override
 	public String toString() {
-		return major+"."+minor+"."+build+"."+revision+"."
+		return major+"."+minor+"."+build+"."+revision
 	}
 
 
