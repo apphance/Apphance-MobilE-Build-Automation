@@ -15,3 +15,5 @@ apply plugin: 'ameba-wp7-build'
 apply plugin: 'ameba-wp7-apphance'
 apply plugin: 'ameba-wp7-test'
 
+apply plugin: 'ameba-project-release'
+apply plugin: 'ameba-wp7-release'

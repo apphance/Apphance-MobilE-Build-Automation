@@ -6,7 +6,8 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.ProjectConfiguration
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+import com.sun.org.apache.xpath.internal.XPathAPI
+import javax.xml.parsers.DocumentBuilderFactory
 
 
 /**
@@ -16,8 +17,47 @@ class Wp7ProjectHelper {
 
 	static Logger logger = Logging.getLogger(Wp7ProjectHelper.class)
 
-	String getCsprojName(File projectDir) {
+	void updateVersion(File projectDirectory, ProjectConfiguration conf) {
+		println("${projectDirectory}")
+		def file = new File("${projectDirectory}/Properties/WMAppManifest.xml")
+		def originalFile = new File("${projectDirectory}/Properties/WMAppManifest.xml.beforeUpdate.orig")
+		originalFile.delete()
+		originalFile << file.text
+		def root = getParsedWMAppManifest(projectDirectory)
+		XPathAPI.selectNodeList(root,'/Deployment/App').each{ manifest ->
+			manifest.attributes.nodes.each { attribute ->
+				if (attribute.name == 'Version') {
+					Wp7Version version = Wp7Version.fromString(attribute.value)
+					version.minor++
+					conf.versionCode += version.minor
+					conf.versionString = version.toString()
+					attribute.value = version.toString()
+				}
+			}
+		}
+		file.delete()
+		file.write(root as String)
+	}
 
+	void readVersionFromWMAppManifest(File WMAppManifest, ProjectConfiguration conf) {
+		def xmlSlurper = new XmlSlurper()
+		def Deployment = xmlSlurper.parse(WMAppManifest)
+		conf.versionString = Deployment.App[0].@Version.text()
+		conf.versionCode = Wp7Version.fromString(conf.versionString).minor
+
+	}
+
+	org.w3c.dom.Element getParsedWMAppManifest(File projectDirectory) {
+		def builderFactory = DocumentBuilderFactory.newInstance()
+		builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+		builderFactory.setFeature("http://xml.org/sax/features/validation", false)
+		def builder = builderFactory.newDocumentBuilder()
+		def inputStream = new FileInputStream("${projectDirectory}/Properties/WMAppManifest.xml")
+		return builder.parse(inputStream).documentElement
+	}
+
+
+	String getCsprojName(File projectDir) {
 
 		String[] files = projectDir.list(new FilenameFilter() {
 					public boolean accept(File dir, String name) {
@@ -97,9 +137,5 @@ class Wp7ProjectHelper {
 		wp7conf.configurations = configurations.toArray(new String[configurations.size()]);
 	}
 
-	void readVersionFromWMAppManifest(File WMAppManifest, ProjectConfiguration conf) {
-		def xmlSlurper = new XmlSlurper()
-		def Deployment = xmlSlurper.parse(WMAppManifest)
-		conf.versionString = Deployment.App[0].@Version.text()
-	}
+
 }

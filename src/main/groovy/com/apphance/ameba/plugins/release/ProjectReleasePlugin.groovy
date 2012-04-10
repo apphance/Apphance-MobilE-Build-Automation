@@ -22,6 +22,7 @@ import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.vcs.plugins.git.GitPlugin
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
+import com.apphance.ameba.wp7.plugins.buildplugin.Wp7Plugin
 
 
 /**
@@ -37,7 +38,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
     ProjectReleaseConfiguration releaseConf
 
     void apply(Project project) {
-        ProjectHelper.checkAnyPluginIsLoaded(project, this.class, AndroidPlugin.class, IOSPlugin.class)
+        ProjectHelper.checkAnyPluginIsLoaded(project, this.class, AndroidPlugin.class, IOSPlugin.class, Wp7Plugin.class)
         ProjectHelper.checkAnyPluginIsLoaded(project, this.class, MercurialPlugin.class, GitPlugin.class)
         projectHelper = new ProjectHelper()
         conf = PropertyCategory.getProjectConfiguration(project)
