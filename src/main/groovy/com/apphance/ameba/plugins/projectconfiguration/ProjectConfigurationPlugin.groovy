@@ -17,7 +17,7 @@ import com.apphance.ameba.plugins.release.AmebaArtifact;
 
 
 /**
- * Plugin for Mercurial implementation of VCS system
+ * Plugin for basic project configuration.
  *
  */
 class ProjectConfigurationPlugin implements Plugin<Project> {
@@ -96,19 +96,25 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
     static public final String DESCRIPTION =
     """This is the base plugin which should be applied by any project.
 
-The plugin should be applied before any other plugin. It reads basic project configuration and loads shared
-configuration for all other plugins. Other plugins use this plugin's generated task.
+The plugin should be applied before any other Ameba plugin. It reads basic project configuration and loads shared
+configuration for all other plugins.
 
-This plugin provides also setup-related tasks. The tasks allow to generate new configuration,
+This plugin provides setup-related tasks. The tasks allow to generate new configuration,
 verify existing configuration and show the configuration to the user.
 It also adds several utility tasks that can be used across all types of projects.
+
+Conventions defined in this task are used to provide default values for properties from all other plugins.
+Defining such defaults and importing them from your shared location is the easiest way to provide
+organisation-specific defaults across your projects.
+
 """
 
     static class ProjectConfigurationConvention {
         static public final String DESCRIPTION =
         """Using this convention object you can specify different defaults
-for properties (for all properties from all plugins). It's enough to
-specify the default as map of values stored in map form     "['property.name' : 'value' ]".
+for properties (for all properties from all plugins). You need to specify it as string map of the form
+"['property.name' : 'value' ]". Note that you can use groovy to calculate values and use dynamically
+calculated values in this map.
 """
         def String defaults = '[:]'
 

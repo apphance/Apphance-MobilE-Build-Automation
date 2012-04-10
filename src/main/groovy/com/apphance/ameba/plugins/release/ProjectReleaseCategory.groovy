@@ -3,11 +3,16 @@ package com.apphance.ameba.plugins.release
 import java.text.SimpleDateFormat
 import java.util.ResourceBundle
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Project
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 
+/**
+ *  Category used to get release-specific methods.
+ *
+ */
 class ProjectReleaseCategory {
 
     public static final String PROJECT_RELEASE_CONFIGURATION_KEY = 'project.release.configuration'
@@ -47,9 +52,19 @@ class ProjectReleaseCategory {
                 (baseUrl, directory) = splitUrl(urlString)
                 releaseConf.baseUrl = baseUrl
                 releaseConf.projectDirectoryName = directory
+            } else {
+                // migration from old version TODO: remove me when not needed
+                if (project.readProperty('project.url.base') != null) {
+                    releaseConf.baseUrl = new URL(project.readProperty('project.url.base'))
+                    releaseConf.projectDirectoryName = project.readProperty('project.directory.name')
+                    if (releaseConf.baseUrl != null && releaseConf.projectDirectoryName != null) {
+                        project.ext[ProjectReleaseProperty.RELEASE_PROJECT_URL.propertyName] =
+                        new URL(releaseConf.baseUrl, releaseConf.projectDirectoryName)
+                    }
+                }
             }
-            def iconFile = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE)
-            releaseConf.iconFile = iconFile == null ? null : project.file(iconFile)
+            String iconFileName = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE)
+            releaseConf.iconFile = (iconFileName == null || iconFileName.empty) ? null : project.file(iconFileName)
             releaseConf.otaDirectory = project.file('ota')
             retrieveLocale(project)
             releaseConf.releaseNotes = readReleaseNotes(project)?.tokenize(",")
@@ -82,7 +97,7 @@ class ProjectReleaseCategory {
         def path = url.path
         def splitPath = path.split('/')
         def lastElement = splitPath[-1]
-        def baseUrl = new URL(url.protocol,url.host, url.port,(splitPath[0 .. -2]).join('/'))
+        def baseUrl = new URL(url.protocol,url.host, url.port,(splitPath[0 .. -2]).join('/') + '/')
         return [baseUrl, lastElement]
     }
 }

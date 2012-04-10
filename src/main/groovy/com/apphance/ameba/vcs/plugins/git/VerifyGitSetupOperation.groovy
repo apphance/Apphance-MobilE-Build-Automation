@@ -5,6 +5,10 @@ import org.gradle.api.logging.Logging;
 
 import com.apphance.ameba.AbstractVerifySetupOperation
 
+/**
+ * Verifies all git-related properties.
+ *
+ */
 class VerifyGitSetupOperation extends  AbstractVerifySetupOperation {
     Logger logger = Logging.getLogger(VerifyGitSetupOperation.class)
 

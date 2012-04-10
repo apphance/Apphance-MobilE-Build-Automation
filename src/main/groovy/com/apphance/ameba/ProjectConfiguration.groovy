@@ -6,7 +6,7 @@ import java.util.Collection
 import java.util.Locale
 
 /**
- * Keeps basic configuration about the project.
+ * Keeps basic configuration of the project.
  */
 class ProjectConfiguration  {
     String projectName

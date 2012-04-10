@@ -6,6 +6,9 @@ import java.util.Properties
 import org.gradle.api.Project
 
 
+/**
+ * Stores android build environment properties.
+ */
 class AndroidEnvironment {
 
     Properties androidProperties

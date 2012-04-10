@@ -17,6 +17,10 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 
+/**
+ * Build listener that provides .apk file in ota dir.
+ *
+ */
 class AndroidReleaseApkListener implements AndroidBuildListener {
 
     ProjectHelper projectHelper

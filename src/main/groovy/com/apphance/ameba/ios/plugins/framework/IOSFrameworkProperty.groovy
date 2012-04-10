@@ -1,4 +1,8 @@
 package com.apphance.ameba.ios.plugins.framework
+/**
+ * Properties for IOS framework preparation.
+ *
+ */
 public enum IOSFrameworkProperty {
     FRAMEWORK_TARGET('ios.framework.target', 'Target to build framework project with'),
     FRAMEWORK_CONFIGURATION('ios.framework.configuration', 'Configuration to build framework project with', 'Debug'),

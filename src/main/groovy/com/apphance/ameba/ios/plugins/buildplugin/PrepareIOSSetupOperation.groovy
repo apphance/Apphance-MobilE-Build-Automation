@@ -5,11 +5,15 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.AbstractPrepareSetupOperation
+import com.apphance.ameba.ProjectHelper;
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration;
 import com.apphance.ameba.ios.IOSXCodeOutputParser;
 
-
+/**
+ * Prepares IOS properties.
+ *
+ */
 class PrepareIOSSetupOperation extends AbstractPrepareSetupOperation {
     Logger logger = Logging.getLogger(PrepareIOSSetupOperation.class)
 
@@ -19,8 +23,8 @@ class PrepareIOSSetupOperation extends AbstractPrepareSetupOperation {
 
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        def plistFiles = getFiles {it.name.endsWith(".plist")}
-        def xCodeProjFiles = getDirectories {it.name.endsWith(".xcodeproj")}
+        def plistFiles = ProjectHelper.getFiles(project, {it.name.endsWith(".plist")})
+        def xCodeProjFiles = ProjectHelper.getDirectoriesSortedAccordingToDepth(project, {it.name.endsWith(".xcodeproj")})
         if (!xCodeProjFiles.empty && !project.hasProperty(IOSProjectProperty.PROJECT_DIRECTORY.propertyName)) {
             project.ext[IOSProjectProperty.PROJECT_DIRECTORY.propertyName]  = xCodeProjFiles[0]
         }
@@ -58,4 +62,5 @@ class PrepareIOSSetupOperation extends AbstractPrepareSetupOperation {
             appendProperties()
         }
     }
+
 }

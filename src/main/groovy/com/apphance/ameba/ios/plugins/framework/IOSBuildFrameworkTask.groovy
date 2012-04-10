@@ -17,7 +17,7 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser;
 
 
 /**
- * Builds iOS simulator projects
+ * Builds iOS framework.
  */
 class IOSBuildFrameworkTask extends DefaultTask {
 

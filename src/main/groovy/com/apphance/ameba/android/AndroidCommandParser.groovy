@@ -7,6 +7,10 @@ import org.gradle.api.Project
 import com.apphance.ameba.ProjectHelper
 
 
+/**
+ * Parses android utility command line output.
+ *
+ */
 class AndroidCommandParser {
 
     public static List getTargets(Project project) {
@@ -16,14 +20,8 @@ class AndroidCommandParser {
             'list',
             'target'
         ]
-        File outFile = project.file("tmp/android_list_target.txt")
-        outFile.delete()
-        outFile.parentFile.mkdirs()
-        Process process = projectHelper.executeCommandInBackground(project.rootDir, outFile, commandTarget)
-        process.waitFor()
-
-        def res = outFile.text
-        return extractTargets(res)
+        def targets = projectHelper.executeCommand(project,commandTarget)
+        return extractTargets(targets.join('\n'))
     }
 
 

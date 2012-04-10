@@ -24,7 +24,7 @@ import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**
- * Performs standard android testing.
+ * Performs android testing.
  */
 class AndroidTestPlugin implements Plugin<Project>{
     static Logger logger = Logging.getLogger(AndroidTestPlugin.class)
@@ -62,8 +62,10 @@ class AndroidTestPlugin implements Plugin<Project>{
     int emulatorPort
     Process emulatorProcess
     Process logcatProcess
+    Project project
 
     public void apply(Project project) {
+        this.project = project
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         this.projectHelper = new ProjectHelper()
         this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)

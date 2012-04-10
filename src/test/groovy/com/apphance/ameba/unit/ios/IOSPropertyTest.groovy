@@ -1,18 +1,18 @@
 package com.apphance.ameba.unit.ios;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.AfterClass
 import org.junit.Test
 
-
-
-import com.apphance.ameba.PropertyCategory;
-import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty;
-import com.apphance.ameba.ios.plugins.fonemonkey.IOSFoneMonkeyProperty;
-import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty;
-import com.apphance.ameba.ios.plugins.kif.IOSKifProperty;
+import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
+import com.apphance.ameba.ios.plugins.fonemonkey.IOSFoneMonkeyProperty
+import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
+import com.apphance.ameba.ios.plugins.kif.IOSKifProperty
+import com.apphance.ameba.unit.EmmaDumper
 
 class IOSPropertyTest {
     @Test
@@ -203,5 +203,10 @@ ios.framework.headers=Headers/test.h, Headers/test2.h
 ios.framework.resources=Resources/x.png
 ''',s)
         }
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
     }
 }

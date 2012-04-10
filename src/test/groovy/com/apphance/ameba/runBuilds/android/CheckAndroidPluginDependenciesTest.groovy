@@ -1,19 +1,25 @@
 package com.apphance.ameba.runBuilds.android;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*
 
-import org.gradle.tooling.BuildException;
+import org.gradle.tooling.BuildException
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.After
+import org.junit.AfterClass
 import org.junit.Before
-import org.junit.Test;
+import org.junit.BeforeClass
+import org.junit.Test
+
+import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.unit.EmmaDumper
 
 
 class CheckAndroidPluginDependenciesTest {
-    File testProject = new File("testProjects/test-dependencies")
-    File gradleBuild = new File(testProject,"build.gradle")
+    static File testProject = new File("testProjects/test-dependencies")
+    static File gradleBuild = new File(testProject,"build.gradle")
+    static ProjectConnection connection
 
     @Before
     void before() {
@@ -26,13 +32,24 @@ class CheckAndroidPluginDependenciesTest {
         gradleBuild.delete()
     }
 
+    @BeforeClass
+    static void beforeClass() {
+        connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
+
+    }
+    @AfterClass
+    static public void afterClass() {
+        connection.close()
+        EmmaDumper.dumpEmmaCoverage()
+    }
+
     String runTests(File gradleBuildToCopy, String expected, String ... tasks) {
         gradleBuild << gradleBuildToCopy.text
         ByteArrayOutputStream os = new ByteArrayOutputStream()
-        ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
         try {
             BuildLauncher bl = connection.newBuild().forTasks(tasks);
             bl.setStandardOutput(os)
+            bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
             bl.run();
             def res = os.toString("UTF-8")
             println res
@@ -45,8 +62,6 @@ class CheckAndroidPluginDependenciesTest {
             assertTrue(msg.contains(expected))
             println res
             return res
-        } finally {
-            connection.close();
         }
     }
 

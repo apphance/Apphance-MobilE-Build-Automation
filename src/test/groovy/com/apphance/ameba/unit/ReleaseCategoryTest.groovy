@@ -2,6 +2,7 @@ package com.apphance.ameba.unit;
 
 import static org.junit.Assert.*
 
+import org.junit.AfterClass;
 import org.junit.Test
 
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
@@ -11,7 +12,7 @@ class ReleaseCategoryTest {
     public void testExtUrl() throws Exception {
         def baseUrl, directory
         (baseUrl, directory) = ProjectReleaseCategory.splitUrl("http://www.example.com/ext/test")
-        assertEquals(new URL("http://www.example.com/ext"),baseUrl)
+        assertEquals(new URL("http://www.example.com/ext/"),baseUrl)
         assertEquals("test",directory)
     }
 
@@ -19,14 +20,19 @@ class ReleaseCategoryTest {
     public void testBaseUrl() throws Exception {
         def baseUrl, directory
         (baseUrl, directory) = ProjectReleaseCategory.splitUrl("http://www.example.com/test")
-        assertEquals(new URL("http://www.example.com"),baseUrl)
+        assertEquals(new URL("http://www.example.com/"),baseUrl)
         assertEquals("test",directory)
     }
     @Test
     public void testSlashEndingUrl() throws Exception {
         def baseUrl, directory
         (baseUrl, directory) = ProjectReleaseCategory.splitUrl("http://www.example.com/test/")
-        assertEquals(new URL("http://www.example.com"),baseUrl)
+        assertEquals(new URL("http://www.example.com/"),baseUrl)
         assertEquals("test",directory)
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
     }
 }

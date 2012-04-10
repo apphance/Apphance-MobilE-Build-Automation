@@ -1,5 +1,7 @@
 package com.apphance.ameba.ios.plugins.apphance
 
+import groovy.io.FileType;
+
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -18,6 +20,10 @@ import com.apphance.ameba.ios.PbxProjectHelper
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleVariantBuilder;
 
+/**
+ * Plugin for all apphance-relate IOS tasks.
+ *
+ */
 class IOSApphancePlugin implements Plugin<Project> {
 
     static Logger logger = Logging.getLogger(IOSApphancePlugin.class)
@@ -53,12 +59,15 @@ class IOSApphancePlugin implements Plugin<Project> {
     void preprocessBuildsWithApphance(Project project) {
         iosConf.configurations.each { configuration ->
             iosConf.targets.each { target ->
-                if (!iosConf.isBuildExcluded(target + "-" + configuration)) {
-                    project."build-${target}-${configuration}".doFirst {
+				def id = "${target}-${configuration}".toString()
+                if (!iosConf.isBuildExcluded(id)) {
+					def noSpaceId = id.replaceAll(' ','_')
+					def singleTask = project."build-${noSpaceId}"
+                    singleTask.doFirst {
                         if (!isApphancePresent(iosSingleVariantBuilder.tmpDir(target, configuration))) {
-                            replaceLogsWithApphance(project, iosSingleVariantBuilder.tmpDir(target, configuration))
+//                            replaceLogsWithApphance(project, iosSingleVariantBuilder.tmpDir(target, configuration))
                             pbxProjectHelper.addApphanceToProject(iosSingleVariantBuilder.tmpDir(target, configuration),
-                                target, configuration, project[ApphanceProperty.APPLICATION_KEY.propertyName])
+                                iosConf.xCodeProjectDirectory, target, configuration, project[ApphanceProperty.APPLICATION_KEY.propertyName])
                             copyApphanceFramework(project, iosSingleVariantBuilder.tmpDir(target, configuration))
                         }
                     }
@@ -78,7 +87,7 @@ class IOSApphancePlugin implements Plugin<Project> {
     private copyApphanceFramework(Project project, File libsDir) {
         logger.lifecycle("Copying apphance into directory " + libsDir)
         libsDir.mkdirs()
-        libsDir.eachFileRecurse { framework ->
+        libsDir.traverse([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) { framework ->
             if (framework == ".*[aA]pphance.*\\.framework") {
                 logger.lifecycle("Removing old apphance framework: " + framework.name)
                 def delClos = {
@@ -109,7 +118,7 @@ class IOSApphancePlugin implements Plugin<Project> {
     boolean isApphancePresent(File projectDir) {
         def apphancePresent = false
 
-        projectDir.eachFileRecurse { framework ->
+        projectDir.traverse([type: FileType.DIRECTORIES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) { framework ->
             if (framework =~ ".*[aA]pphance.*\\.framework") {
                 apphancePresent = true
             }

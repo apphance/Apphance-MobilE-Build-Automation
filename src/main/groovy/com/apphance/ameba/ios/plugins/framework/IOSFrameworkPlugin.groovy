@@ -1,7 +1,5 @@
 package com.apphance.ameba.ios.plugins.framework;
 
-
-
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -10,10 +8,8 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
 
-
-
 /**
- * Plugin for preparing reports after successful build.
+ * Plugin for preparing reports after successful IOS build.
  *
  */
 class IOSFrameworkPlugin implements Plugin<Project> {

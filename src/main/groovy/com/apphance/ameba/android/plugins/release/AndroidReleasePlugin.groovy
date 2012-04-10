@@ -28,6 +28,10 @@ import com.apphance.ameba.plugins.release.ProjectReleaseCategory;
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration;
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin;
 
+/**
+ * Plugin that provides release functionality for android.
+ *
+ */
 class AndroidReleasePlugin implements Plugin<Project>{
 
     static Logger logger = Logging.getLogger(AndroidReleasePlugin.class)
@@ -260,18 +264,6 @@ class AndroidReleasePlugin implements Plugin<Project>{
                         location : outputFile)
         releaseConf.qrCodeFile  = qrCodeArtifact
         logger.lifecycle("QRCode created: ${qrCodeArtifact.location}")
-    }
-
-    def void prepareCleanAndroidReleaseTask(Project project) {
-        def task = project.task('cleanAndroidRelease')
-        task.description = "Cleans release related directories for android"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task << {
-            androidConf.tmpDirs.values().each {
-                project.ant.delete(dir: it)
-            }
-        }
-        project.cleanRelease.dependsOn(task)
     }
 
     void prepareUpdateVersionTask(Project project) {

@@ -2,6 +2,7 @@ package com.apphance.ameba.unit;
 
 import static org.junit.Assert.*;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import com.apphance.ameba.ProjectHelper;
@@ -23,5 +24,10 @@ class RemoveSymlinksTest {
         ph.removeMissingSymlinks(currentDir)
         assertFalse(currentDir.list().any { it == 'missingFileLink'})
         assertFalse(new File(currentDir,"missingFileLink").canonicalFile.exists())
+    }
+
+    @AfterClass
+    static public void afterClass() {
+        EmmaDumper.dumpEmmaCoverage()
     }
 }

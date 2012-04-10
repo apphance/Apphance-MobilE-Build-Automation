@@ -6,6 +6,10 @@ import org.gradle.api.tasks.TaskAction;
 import com.apphance.ameba.AbstractShowSetupOperation
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 
+/**
+ * Shows all setup properties for basic configuration plugin.
+ *
+ */
 class ShowSetupTask extends DefaultTask {
     ShowSetupTask() {
         this.description = "Shows all available project properties"

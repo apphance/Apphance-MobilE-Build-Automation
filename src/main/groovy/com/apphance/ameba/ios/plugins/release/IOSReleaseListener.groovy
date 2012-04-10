@@ -23,6 +23,10 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 
+/**
+ * Build listener for releases.
+ *
+ */
 class IOSReleaseListener implements IOSBuildListener {
 
     ProjectHelper projectHelper
@@ -52,11 +56,17 @@ class IOSReleaseListener implements IOSBuildListener {
 
     public void buildDone(Project project, IOSBuilderInfo bi) {
         if (conf.versionString != null) {
-            prepareDistributionZipFile(project, bi)
-            prepareDSYMZipFile(project, bi)
-            prepareIpaFile(project, bi)
-            prepareManifestFile(project,bi)
-            prepareMobileProvisionFile(project,bi)
+            if (bi.configuration != 'Debug') {
+                prepareDistributionZipFile(project, bi)
+                prepareDSYMZipFile(project, bi)
+                prepareIpaFile(project, bi)
+                prepareManifestFile(project,bi)
+                prepareMobileProvisionFile(project,bi)
+            } else {
+                iosConf.families.each { family ->
+                    prepareSimulatorBundleFile(project,bi,family)
+                }
+            }
         } else {
             logger.lifecycle("Skipping building artifacts -> the build is not versioned")
         }
@@ -202,7 +212,7 @@ class IOSReleaseListener implements IOSBuildListener {
     void buildArtifactsOnly(Project project, String target, String configuration) {
         if (conf.versionString != null) {
             IOSSingleVariantBuilder builder = new IOSSingleVariantBuilder(project, project.ant)
-            IOSBuilderInfo bi = builder.buidSingleBuilderInfo(target, configuration, project)
+            IOSBuilderInfo bi = builder.buidSingleBuilderInfo(target, configuration, 'iphoneos', project)
             prepareDistributionZipArtifact(bi, true)
             prepareDSYMZipArtifact(bi, true)
             prepareIpaArtifact(bi, true)
@@ -211,5 +221,110 @@ class IOSReleaseListener implements IOSBuildListener {
         } else {
             logger.lifecycle("Skipping building artifacts -> the build is not versioned")
         }
+    }
+
+    void prepareSimulatorBundleFile(Project project, IOSBuilderInfo bi, String family) {
+        AmebaArtifact file = new AmebaArtifact()
+        file.name = "Simulator build for ${family}"
+        file.url = new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
+        file.location = new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
+        file.location.parentFile.mkdirs()
+        file.location.delete()
+        def File tmpDir = File.createTempFile("${conf.projectName}-${bi.target}-${family}-simulator",".tmp")
+        tmpDir.delete()
+        tmpDir.mkdir()
+        def destDir = new File(tmpDir,"${bi.target} (${family}_Simulator).app")
+        destDir.mkdir()
+        rsyncTemplatePreservingExecutableFlag(project,destDir)
+        File embedDir = new File(destDir, "Contents/Resources/EmbeddedApp")
+        embedDir.mkdirs()
+        File sourceApp = new File(bi.buildDirectory,"${bi.target}.app")
+        rsyncEmbeddedAppPreservingExecutableFlag(project,sourceApp, embedDir)
+        updateBundleId(project, bi, destDir)
+        resampleIcon(project, destDir)
+        updateDeviceFamily(family, embedDir, bi, project)
+        String [] prepareDmgCommand = [
+            "hdiutil",
+            "create",
+            file.location,
+            "-srcfolder",
+            destDir,
+            "-volname",
+            "${conf.projectName}-${bi.target}-${family}"
+        ]
+        projectHelper.executeCommand(project, prepareDmgCommand)
+        iosReleaseConf.dmgImageFiles.put("${family}-${iosConf.mainTarget}" as String,file)
+        logger.lifecycle("Simulator zip file created: ${file} for ${family}-${iosConf.mainTarget}")
+    }
+
+    private rsyncTemplatePreservingExecutableFlag(Project project, File destDir) {
+        String [] rsyncCommand = [
+            "rsync",
+            "-aE",
+            "--exclude",
+            "Contents/Resources/EmbeddedApp",
+            "/Applications/Simulator Bundler.app/Contents/Resources/Launcher.app/",
+            destDir
+        ]
+        projectHelper.executeCommand(project, rsyncCommand)
+    }
+
+    private rsyncEmbeddedAppPreservingExecutableFlag(Project project, File sourceAppDir, File embedDir) {
+        String [] rsyncCommand = [
+            "rsync",
+            "-aE",
+            sourceAppDir,
+            embedDir
+        ]
+        projectHelper.executeCommand(project, rsyncCommand)
+    }
+
+
+    private updateDeviceFamily(String device, embedDir, IOSBuilderInfo bi, Project project) {
+        File targetPlistFile = new File(embedDir, "${bi.target}.app/Info.plist")
+        String [] deleteDeviceFamilyCommand = [
+            "/usr/libexec/PlistBuddy",
+            "-c",
+            "Delete UIDeviceFamily",
+            targetPlistFile
+        ]
+        projectHelper.executeCommand(project, deleteDeviceFamilyCommand, false)
+        String [] addDeviceFamilyCommand = [
+            "/usr/libexec/PlistBuddy",
+            "-c",
+            "Add UIDeviceFamily array",
+            targetPlistFile
+        ]
+        projectHelper.executeCommand(project, addDeviceFamilyCommand)
+        String family = (device == "iPhone" ? "1" : "2")
+        String [] updateDeviceFamilyCommand = [
+            "/usr/libexec/PlistBuddy",
+            "-c",
+            "Add UIDeviceFamily:0 integer ${family}",
+            targetPlistFile
+        ]
+        projectHelper.executeCommand(project, updateDeviceFamilyCommand)
+    }
+
+    private resampleIcon(Project project, File tmpDir) {
+        String [] iconResampleCommand = [
+            "/opt/local/bin/convert",
+            releaseConf.iconFile,
+            "-resample",
+            "128x128",
+            new File(tmpDir,"Contents/Resources/Launcher.icns")
+        ]
+        projectHelper.executeCommand(project, iconResampleCommand)
+    }
+
+    private updateBundleId(Project project, IOSBuilderInfo bi, File tmpDir) {
+        def bundleId = MPParser.readBundleIdFromProvisionFile(bi.mobileprovisionFile.toURI().toURL())
+        String [] setBundleIdCommand = [
+            "/usr/libexec/PlistBuddy",
+            "-c",
+            "Set :CFBundleIdentifier ${bundleId}.launchsim",
+            new File(tmpDir,"Contents/Info.plist")
+        ]
+        projectHelper.executeCommand(project, setBundleIdCommand)
     }
 }

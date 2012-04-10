@@ -4,6 +4,10 @@ import org.gradle.api.Project;
 
 import com.apphance.ameba.ProjectConfiguration;
 
+/**
+ * Retrieves iOS release.
+ *
+ */
 class IOSReleaseConfigurationRetriever {
 
     public static final String IOS_RELEASE_CONFIGURATION_KEY = 'ios.release.configuration'

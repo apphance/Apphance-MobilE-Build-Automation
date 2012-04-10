@@ -11,6 +11,11 @@ import org.gradle.api.logging.Logging
 import com.apphance.ameba.PropertyCategory;
 
 
+/**
+ * Abstract class that is superclass for all 'prepare setup' class.
+ * It provides framework for setting values of properties for various plugins.
+ *
+ */
 abstract class AbstractPrepareSetupOperation {
 
     private static BufferedReader br = null
@@ -44,30 +49,4 @@ abstract class AbstractPrepareSetupOperation {
         }
     }
 
-    List getFilesOrDirectories(FileType type, Closure filter) {
-        List paths = [
-            project.file('bin').absolutePath,
-            project.file('build').absolutePath,
-            project.file('ota').absolutePath,
-            project.file('tmp').absolutePath,
-        ]
-        def plistFiles = []
-        project.rootDir.traverse([type: type, maxDepth : 7]) {
-            def thePath = it.absolutePath
-            if (filter(it)) {
-                if (!paths.any {path -> thePath.startsWith(path)}) {
-                    plistFiles << thePath.substring(project.rootDir.path.length() + 1)
-                }
-            }
-        }
-        return plistFiles
-    }
-
-    List getFiles(Closure filter) {
-        return getFilesOrDirectories(FileType.FILES, filter)
-    }
-
-    List getDirectories(Closure filter) {
-        return getFilesOrDirectories(FileType.DIRECTORIES, filter)
-    }
 }

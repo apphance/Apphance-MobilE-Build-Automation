@@ -9,6 +9,10 @@ import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.PropertyCategory
 
 
+/**
+ * Verifies if android properties are setup correctly.
+ *
+ */
 class VerifyAndroidTestSetupOperation extends AbstractVerifySetupOperation {
     Logger logger = Logging.getLogger(VerifyAndroidTestSetupOperation.class)
 

@@ -7,6 +7,10 @@ import javax.xml.parsers.DocumentBuilderFactory
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 
+/**
+ * Performs various Android manifest XML operations.
+ *
+ */
 class AndroidBuildXmlHelper {
     org.w3c.dom.Element getParsedBuildXml(File projectDirectory) {
         def builderFactory = DocumentBuilderFactory.newInstance()

@@ -8,6 +8,10 @@ import org.gradle.api.Project;
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+/**
+ * Abstract superclass for all 'verify' operations. It provides basic methods to be used
+ * in all verify operations.
+ */
 abstract class AbstractVerifySetupOperation {
 
 

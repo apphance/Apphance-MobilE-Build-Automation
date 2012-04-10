@@ -18,10 +18,10 @@ task ask (group: 'Ameba\'s documentation', description: 'Asks for user/password 
     def console = System.console()
     if (console) {
         if (!project.hasProperty('username')) {
-            project['username'] = console.readLine('> Please enter your username: ')
+            project.ext['username'] = console.readLine('> Please enter your username: ')
         }
         if (!project.hasProperty('password')) {
-            project['password'] = new String(console.readPassword('> Please enter your password: '))
+            project.ext['password'] = new String(console.readPassword('> Please enter your password: '))
         }
     } else {
         logger.error "Cannot get console."
