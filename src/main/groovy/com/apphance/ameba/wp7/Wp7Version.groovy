@@ -16,10 +16,14 @@ class Wp7Version {
 		def matcher = ( versionString =~ versionRegex )
 
 		if(matcher.matches()) {
-			major =  matcher[0][0]
-			minor =  matcher[0][1]
-			build =  matcher[0][2]
-			revision =  matcher[0][3]
+			try {
+				major =  Integer.parseInt(matcher[0][1])
+				minor =  Integer.parseInt(matcher[0][2])
+				build =  Integer.parseInt(matcher[0][3])
+				revision = Integer.parseInt(matcher[0][4])
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
 		}
 		else {
 

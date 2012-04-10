@@ -30,6 +30,20 @@ class Wp7ProjectHelperTest {
 	}
 
 	@Test
+	void testUpdateVersion() {
+		def properties = new File(tmpDir,"Properties")
+		properties.mkdirs()
+
+		def WMAppManifest = new File(properties,"WMAppManifest.xml")
+		def originalWMAppManifest = new File(projectDir,"Properties/WMAppManifest.xml")
+		WMAppManifest.delete()
+
+		WMAppManifest << originalWMAppManifest.text
+		wp7ProjectHelper.updateVersion(tmpDir, conf)
+	}
+
+
+	@Test
 	void testGetCsprojName() {
 
 		def csproj = new File(tmpDir,"AmebaTest.csproj")

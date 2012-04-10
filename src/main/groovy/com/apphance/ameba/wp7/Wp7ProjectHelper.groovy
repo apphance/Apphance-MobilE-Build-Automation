@@ -24,8 +24,8 @@ class Wp7ProjectHelper {
 		originalFile.delete()
 		originalFile << file.text
 		def root = getParsedWMAppManifest(projectDirectory)
-		XPathAPI.selectNodeList(root,'/Deployment/App').each{ manifest ->
-			manifest.attributes.nodes.each { attribute ->
+		XPathAPI.selectNodeList(root,'/Deployment/App').each{ App ->
+			App.attributes.nodes.each { attribute ->
 				if (attribute.name == 'Version') {
 					Wp7Version version = Wp7Version.fromString(attribute.value)
 					version.minor++
