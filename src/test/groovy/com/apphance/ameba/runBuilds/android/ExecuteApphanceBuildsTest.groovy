@@ -4,6 +4,7 @@ import static org.junit.Assert.*
 
 import java.io.File
 
+import org.bouncycastle.math.ec.Tnaf;
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
@@ -19,10 +20,12 @@ class ExecuteApphanceBuildsTest {
     static File tNoApplicationProject = new File("testProjects/android-no-apphance-no-application")
     static File tApplicationProjectNoOnCreate = new File("testProjects/android-no-apphance-application-nooncreate")
     static File tNoApplicationProjectNoOnCreate = new File("testProjects/android-no-apphance-no-application-nooncreate")
-    static ProjectConnection tApplicationProjectConnection
-    static ProjectConnection tNoApplicationProjectConnection
-    static ProjectConnection tApplicationProjectConnectionNoOnCreate
-    static ProjectConnection tNoApplicationProjectConnectionNoOnCreate
+    static File tNoApplicationProjectDifferentFormatting = new File("testProjects/android-no-apphance-no-application-different-formatting")
+    static ProjectConnection tApplication
+    static ProjectConnection tNoApplication
+    static ProjectConnection tNoApplicationDifferentFormatting
+    static ProjectConnection tApplicationNoOnCreate
+    static ProjectConnection tNoApplicationNoOnCreate
 
      File getMainApplicationFile(File directory, String variant) {
         File tmpDir = new File(directory.parentFile, 'tmp-'  +  directory.name + '-' + variant)
@@ -36,48 +39,32 @@ class ExecuteApphanceBuildsTest {
 
     @BeforeClass
     static void beforeClass() {
-        tApplicationProjectConnection = GradleConnector.newConnector().forProjectDirectory(tApplicationProject).connect();
-        tNoApplicationProjectConnection = GradleConnector.newConnector().forProjectDirectory(tNoApplicationProject).connect();
-        tApplicationProjectConnectionNoOnCreate = GradleConnector.newConnector().forProjectDirectory(tApplicationProjectNoOnCreate).connect();
-        tNoApplicationProjectConnectionNoOnCreate = GradleConnector.newConnector().forProjectDirectory(tNoApplicationProjectNoOnCreate).connect();
+        tApplication = GradleConnector.newConnector().forProjectDirectory(tApplicationProject).connect();
+        tNoApplication = GradleConnector.newConnector().forProjectDirectory(tNoApplicationProject).connect();
+        tNoApplicationDifferentFormatting = GradleConnector.newConnector().forProjectDirectory(tNoApplicationProjectDifferentFormatting).connect();
+        tApplicationNoOnCreate = GradleConnector.newConnector().forProjectDirectory(tApplicationProjectNoOnCreate).connect();
+        tNoApplicationNoOnCreate = GradleConnector.newConnector().forProjectDirectory(tNoApplicationProjectNoOnCreate).connect();
     }
 
     @AfterClass
     static public void afterClass() {
-        tApplicationProjectConnection.close()
-        tNoApplicationProjectConnection.close()
-        tApplicationProjectConnectionNoOnCreate.close()
-        tNoApplicationProjectConnectionNoOnCreate.close()
+        tApplication.close()
+        tNoApplication.close()
+        tNoApplicationDifferentFormatting.close()
+        tApplicationNoOnCreate.close()
+        tNoApplicationNoOnCreate.close()
         EmmaDumper.dumpEmmaCoverage()
     }
 
-    protected void runNoApphanceApplicationGradle(String ... tasks) {
-        def buildLauncher = tApplicationProjectConnection.newBuild()
-        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
-        buildLauncher.forTasks(tasks).run()
-    }
-
-    protected void runNoApphanceNoApplicationGradle(String ... tasks) {
-        def buildLauncher = tNoApplicationProjectConnection.newBuild()
-        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
-        buildLauncher.forTasks(tasks).run()
-    }
-
-    protected void runNoApphanceApplicationGradleNoOnCreate(String ... tasks) {
-        def buildLauncher = tApplicationProjectConnectionNoOnCreate.newBuild()
-        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
-        buildLauncher.forTasks(tasks).run()
-    }
-
-    protected void runNoApphanceNoApplicationGradleNoOnCreate(String ... tasks) {
-        def buildLauncher = tNoApplicationProjectConnectionNoOnCreate.newBuild()
+    protected void run(ProjectConnection projectConnection, String ... tasks) {
+        def buildLauncher = projectConnection.newBuild()
         buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run()
     }
 
     @Test
     public void testNoApphanceNoApplicationBuild() throws Exception {
-        runNoApphanceNoApplicationGradle('buildAll')
+        run(tNoApplication,'buildAll')
         assertTrue(getMainActivityFile(tNoApplicationProject,'Debug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProject,'Debug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tNoApplicationProject,'Debug').text.contains('import android.util.Log'))
@@ -93,7 +80,7 @@ class ExecuteApphanceBuildsTest {
 
         @Test
     public void testNoApphanceApplicationBuild() throws Exception {
-        runNoApphanceApplicationGradle('buildAll')
+        run(tApplication,'buildAll')
         assertFalse(getMainActivityFile(tApplicationProject,'Debug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tApplicationProject,'Debug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tApplicationProject,'Debug').text.contains('import android.util.Log'))
@@ -113,7 +100,7 @@ class ExecuteApphanceBuildsTest {
 
         @Test
     public void testNoApphanceNoApplicationBuildNoOnCreate() throws Exception {
-        runNoApphanceNoApplicationGradleNoOnCreate('buildAll')
+        run(tNoApplicationNoOnCreate,'buildAll')
         assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate,'Debug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate,'Debug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tNoApplicationProjectNoOnCreate,'Debug').text.contains('import android.util.Log'))
@@ -127,9 +114,9 @@ class ExecuteApphanceBuildsTest {
         assertFalse(getMainApplicationFile(tNoApplicationProjectNoOnCreate,'Release').exists())
     }
 
-        @Test
+    @Test
     public void testNoApphanceApplicationBuildNoOnCreate() throws Exception {
-        runNoApphanceApplicationGradleNoOnCreate('buildAll')
+        run(tApplicationNoOnCreate, 'buildAll')
         assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate,'Debug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tApplicationProjectNoOnCreate,'Debug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate,'Debug').text.contains('import android.util.Log'))
@@ -145,6 +132,20 @@ class ExecuteApphanceBuildsTest {
         assertFalse(getMainApplicationFile(tApplicationProjectNoOnCreate,'Release').text.contains('Apphance.startNewSession('))
         assertFalse(getMainApplicationFile(tApplicationProjectNoOnCreate,'Release').text.contains('import com.apphance.android.Log'))
         assertTrue(getMainActivityFile(tApplicationProjectNoOnCreate,'Release').text.contains('import android.util.Log'))
+    }
+
+    @Test
+    public void testNoApphanceNoApplicationDifferentBuild() throws Exception {
+        run(tNoApplicationDifferentFormatting, 'buildAll')
+                assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting,'Debug').text.contains('Apphance.startNewSession('))
+        assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting,'Debug').text.contains('Apphance.startNewSession('))
+        assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting,'Debug').text.contains('import com.apphance.android.Log'))
+        assertFalse(getMainActivityFile(tNoApplicationProjectDifferentFormatting,'Debug').text.contains('import android.util.Log'))
+        assertFalse(getMainApplicationFile(tNoApplicationProjectDifferentFormatting,'Debug').exists())
+        assertFalse(getMainActivityFile(tNoApplicationProjectDifferentFormatting,'Release').text.contains('Apphance.startNewSession('))
+        assertFalse(getMainActivityFile(tNoApplicationProjectDifferentFormatting,'Release').text.contains('import com.apphance.android.Log'))
+        assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting,'Release').text.contains('import android.util.Log'))
+        assertFalse(getMainApplicationFile(tNoApplicationProjectDifferentFormatting,'Release').exists())
     }
 
 }

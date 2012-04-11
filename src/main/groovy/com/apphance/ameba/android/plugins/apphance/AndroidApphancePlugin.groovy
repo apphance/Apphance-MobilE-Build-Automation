@@ -291,13 +291,17 @@ class AndroidApphancePlugin implements Plugin<Project>{
 
     private void addApphanceInitToExistingOnCreate(String startSession, String importApphance, File mainFile, File newMainClassFile) {
         boolean onCreateAdded = false
+        boolean searchingForOpeningBrace = false
         newMainClassFile.withWriter { out ->
             mainFile.eachLine { line ->
-                if (line.matches('.*void.*onCreate\\(.*\\{.*') && !onCreateAdded) {
-                    out.println(line << startSession)
-                    onCreateAdded = true
+                if (line.matches('.*void\\sonCreate\\(.*') && !onCreateAdded) {
+                    searchingForOpeningBrace = true
                 } else if (line.matches('package\\s*.*')) {
-                    out.println(line << importApphance)
+                    line = "${line} ${importApphance}"
+                }
+                if (!onCreateAdded && searchingForOpeningBrace && line.matches('.*\\{.*')) {
+                    out.println(line.replaceAll('\\{',"{ ${startSession}"))
+                    onCreateAdded = true
                 } else {
                     out.println(line)
                 }
@@ -308,7 +312,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
     private boolean isOnCreatePresent(File mainFile) {
         boolean present = false
         mainFile.eachLine { line, lineNumber ->
-            if (line.matches('.*void.*onCreate\\(.*\\{.*')) {
+            if (line.matches('.*void.*onCreate\\(.*')) {
                 present = true
             }
         }
