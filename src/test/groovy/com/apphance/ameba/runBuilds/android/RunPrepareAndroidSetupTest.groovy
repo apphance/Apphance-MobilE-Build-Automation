@@ -114,6 +114,7 @@ android.test.emulator.noWindow=true
 android.test.emulator.target=Google Inc.:Google APIs:10
 android.test.directory=test/android
 android.test.perPackage=false
+android.test.mockLocation=false
 android.useEmma=true
 ###########################################################
 # Android jar library properties

@@ -60,7 +60,7 @@ class AndroidManifestHelperTest {
         String originalText = file.text
         verifyApphanceIsPresent()
         manifestHelper.removeApphance(tmpDir)
-        def origFile = new File(tmpDir,"AndroidManifest.xml.beforeApphance.orig")
+        def origFile = new File(tmpDir,"AndroidManifest.xml.orig")
         try {
             verifyApphanceIsRemoved()
             assertTrue(origFile.exists())
@@ -112,12 +112,32 @@ class AndroidManifestHelperTest {
         String originalText = file.text
         manifestHelper.replacePackage(tmpDir, projectConfiguration, 'com.apphance.amebaTest.android',
                         'com.apphance.amebaTest.android.new',null)
-        def origFile = new File(tmpDir,"AndroidManifest.xml.beforePackageReplace.orig")
+        def origFile = new File(tmpDir,"AndroidManifest.xml.orig")
         try {
             def root = manifestHelper.getParsedManifest(tmpDir)
             assertEquals(1,XPathAPI.selectNodeList(root,'/manifest[@package="com.apphance.amebaTest.android.new"]').length)
             assertEquals(0,XPathAPI.selectNodeList(root,'/manifest/application[@label="newLabel"]').length)
             assertEquals(1,XPathAPI.selectNodeList(root,'/manifest/application[@label="@string/app_name"]').length)
+            assertTrue(origFile.exists())
+        } finally {
+            manifestHelper.restoreOriginalManifest(tmpDir)
+        }
+        assertFalse(origFile.exists())
+        def fileAgain = new File(tmpDir,"AndroidManifest.xml")
+        assertEquals(originalText, fileAgain.text)
+    }
+
+    @Test
+    void testAddPermissions() {
+        ProjectConfiguration projectConfiguration = new ProjectConfiguration()
+        manifestHelper.restoreOriginalManifest(tmpDir)
+        def file = new File(tmpDir,"AndroidManifest.xml")
+        String originalText = file.text
+        manifestHelper.addPermissionsToManifest(tmpDir, ['android.permission.ACCESS_MOCK_LOCATION'])
+        def origFile = new File(tmpDir,"AndroidManifest.xml.orig")
+        try {
+            def root = manifestHelper.getParsedManifest(tmpDir)
+            assertEquals(1,XPathAPI.selectNodeList(root,'/manifest/uses-permission[@name="android.permission.ACCESS_MOCK_LOCATION"]').length)
             assertTrue(origFile.exists())
         } finally {
             manifestHelper.restoreOriginalManifest(tmpDir)
@@ -136,7 +156,7 @@ class AndroidManifestHelperTest {
         String originalText = file.text
         manifestHelper.replacePackage(tmpDir, projectConfiguration, 'com.apphance.amebaTest.android',
                         'com.apphance.amebaTest.android.new','newLabel')
-        def origFile = new File(tmpDir,"AndroidManifest.xml.beforePackageReplace.orig")
+        def origFile = new File(tmpDir,"AndroidManifest.xml.orig")
         try {
             def root = manifestHelper.getParsedManifest(tmpDir)
             assertEquals(1,XPathAPI.selectNodeList(root,'/manifest[@package="com.apphance.amebaTest.android.new"]').length)

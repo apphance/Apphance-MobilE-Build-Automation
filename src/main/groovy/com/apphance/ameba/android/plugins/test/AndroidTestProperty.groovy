@@ -12,6 +12,7 @@ public enum AndroidTestProperty {
     EMULATOR_TARGET('android.test.emulator.target', 'Target of the emulator'),
     TEST_DIRECTORY('android.test.directory','Directory where Robotium test project is located','test/android'),
     TEST_PER_PACKAGE('android.test.perPackage','Flag specifying if tests should be run per package. If false, then all are run at once','false'),
+    MOCK_LOCATION('android.test.mockLocation', 'Whether the test application should be build with location mocking enabled (for testing location-based apps)', 'false'),
     USE_EMMA('android.useEmma', 'Whether emma test coverage should be run', 'true'),
 
     public static final DESCRIPTION = 'Android test properties'

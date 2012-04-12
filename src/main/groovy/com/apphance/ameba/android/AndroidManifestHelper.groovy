@@ -82,9 +82,7 @@ class AndroidManifestHelper {
     void updateVersion(File projectDirectory, ProjectConfiguration conf) {
         println("${projectDirectory}")
         def file = new File(projectDirectory,"AndroidManifest.xml")
-        def originalFile = new File(projectDirectory,"AndroidManifest.xml.beforeUpdate.orig")
-        originalFile.delete()
-        originalFile << file.text
+        saveOriginalFile(projectDirectory, file)
         def root = getParsedManifest(projectDirectory)
         XPathAPI.selectNodeList(root,'/manifest').each{ manifest ->
             manifest.attributes.nodes.each { attribute ->
@@ -103,9 +101,7 @@ class AndroidManifestHelper {
 
     void replacePackage(File projectDirectory, ProjectConfiguration conf, String oldPackage, String newPackage, String newLabel) {
         def file = new File(projectDirectory,"AndroidManifest.xml")
-        def originalFile = new File(projectDirectory,"AndroidManifest.xml.beforePackageReplace.orig")
-        originalFile.delete()
-        originalFile << file.text
+        saveOriginalFile(projectDirectory, file)
         def root = getParsedManifest(projectDirectory)
         XPathAPI.selectNodeList(root,'/manifest').each{ manifest ->
             manifest.attributes.nodes.each { attribute ->
@@ -134,13 +130,18 @@ class AndroidManifestHelper {
         file.write(root as String)
     }
 
+    private saveOriginalFile(File projectDirectory, File file) {
+        def originalFile = new File(projectDirectory,file.name + ".orig")
+        if (!originalFile.exists()) {
+            originalFile << file.text
+        }
+    }
+
 
     void removeApphance(File projectDirectory) {
         def file = new File(projectDirectory,"AndroidManifest.xml")
         def root = getParsedManifest(projectDirectory)
-        def originalFile = new File(projectDirectory,"AndroidManifest.xml.beforeApphance.orig")
-        originalFile.delete()
-        originalFile<< file.text
+        saveOriginalFile(projectDirectory, file)
         def manifestNode = XPathAPI.selectSingleNode(root, '/manifest')
         if (manifestNode.attributes.getNamedItem('xmlns:apphance') != null) {
             manifestNode.attributes.removeNamedItem('xmlns:apphance')
@@ -189,12 +190,44 @@ class AndroidManifestHelper {
         fileAgain.write(root as String)
     }
 
+    public void addPermissionsToManifest(File projectDirectory, def permissionsToAdd) {
+        def file = new File(projectDirectory,"AndroidManifest.xml")
+        saveOriginalFile(projectDirectory, file)
+        XmlSlurper slurper = new XmlSlurper(false, true)
+        GPathResult manifest = slurper.parse(file)
+        String androidName = "android:name"
+        String packageName = manifest.@package
+
+        // Add permissions
+        def permissions = manifest."uses-permission"
+        logger.lifecycle(permissions.text())
+        permissionsToAdd.each { currentPermission ->
+            logger.lifecycle("Finding permission " + currentPermission)
+            def foundPermission = permissions.find { it.@"${androidName}".text().equals(currentPermission)}
+            if (foundPermission == null || foundPermission.isEmpty()) {
+                logger.lifecycle("Permission " + currentPermission + " not found")
+                manifest.appendNode({'uses-permission'("${androidName}":currentPermission)})
+            } else {
+                logger.lifecycle("Permission " + foundPermission.@"${androidName}".text() + " found")
+            }
+        }
+        file.delete()
+        def outputBuilder = new groovy.xml.StreamingMarkupBuilder()
+        outputBuilder.encoding = 'UTF-8'
+        outputBuilder.useDoubleQuotes = true
+
+        String result = outputBuilder.bind{
+            mkp.xmlDeclaration()
+            mkp.yield manifest
+        }
+        file.withWriter { writer ->
+            writer << result.replace(">", ">\n").replace("xmlns:tag0=\"\"", "").replace("tag0:", "")
+        }
+    }
+
     public void addApphanceToManifest(File projectDirectory) {
         def file = new File(projectDirectory,"AndroidManifest.xml")
-        def originalFile = new File(projectDirectory,"AndroidManifest.xml.beforeApphance.orig")
-        originalFile.delete()
-        originalFile<< file.text
-
+        saveOriginalFile(projectDirectory, file)
         XmlSlurper slurper = new XmlSlurper(false, true)
         GPathResult manifest = slurper.parse(file)
         String androidName = "android:name"
@@ -269,6 +302,7 @@ class AndroidManifestHelper {
             writer << result.replace(">", ">\n").replace("xmlns:tag0=\"\"", "").replace("tag0:", "")
         }
     }
+
 
     public String getMainActivityName(File projectDirectory) {
         def file = new File(projectDirectory,"AndroidManifest.xml")
@@ -372,22 +406,11 @@ class AndroidManifestHelper {
 
     void restoreOriginalManifest(File projectDirectory) {
         def file = new File(projectDirectory,"AndroidManifest.xml")
-        def originalBeforeApphance = new File(projectDirectory,"AndroidManifest.xml.beforeApphance.orig")
-        def originalBeforePackageReplace = new File(projectDirectory,"AndroidManifest.xml.beforePackageReplace.orig")
-        def originalBeforeUpdate = new File(projectDirectory,"AndroidManifest.xml.beforeUpdate.orig")
-        if (originalBeforeUpdate.exists()) {
-            originalBeforeApphance.delete()
+        def originalFile = new File(projectDirectory,file.name + ".orig")
+        if (originalFile.exists()) {
             file.delete()
-            file << originalBeforeUpdate.text
-            originalBeforeUpdate.delete()
-        } else  if (originalBeforePackageReplace.exists()) {
-            file.delete()
-            file << originalBeforePackageReplace.text
-            originalBeforePackageReplace.delete()
-        } else  if (originalBeforeApphance.exists()) {
-            file.delete()
-            file << originalBeforeApphance.text
-            originalBeforeApphance.delete()
+            file << originalFile.text
+            originalFile.delete()
         } else {
             logger.warn("Could not restore original file. It's missing!")
         }

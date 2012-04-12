@@ -272,22 +272,32 @@ class AndroidTestPlugin implements Plugin<Project>{
             "ant",
             "clean"
         ]
-        projectHelper.executeCommand(project, androidTestDirectory,commandAnt)
-        projectHelper.executeCommand(project,project.rootDir,commandAnt)
-        String [] commandAntTest = [
-            "ant",
-            "emma",
-            "clean",
-            "instrument",
-            "-Dtest.runner=${TEST_RUNNER}"
-        ]
-        projectHelper.executeCommand(project, androidTestDirectory,commandAntTest)
-        File localEmFile  = new File(androidTestDirectory,'coverage.em')
-        if (localEmFile.exists()) {
-            boolean res = localEmFile.renameTo(coverageEmFile)
-            logger.lifecycle("Renamed ${localEmFile} to ${coverageEmFile} with result: ${res}")
-        } else {
-            logger.lifecycle("No ${localEmFile}. Not renaming to ${coverageEmFile}")
+        boolean useMockLocation = PropertyCategory.readProperty(project, AndroidTestProperty.MOCK_LOCATION)
+        if (useMockLocation) {
+            androidManifestHelper.addPermissionsToManifest(project.rootDir, ['android.permission.ACCESS_MOCK_LOCATION'])
+        }
+        try {
+            projectHelper.executeCommand(project, androidTestDirectory,commandAnt)
+            projectHelper.executeCommand(project,project.rootDir,commandAnt)
+            String [] commandAntTest = [
+                "ant",
+                "emma",
+                "clean",
+                "instrument",
+                "-Dtest.runner=${TEST_RUNNER}"
+            ]
+            projectHelper.executeCommand(project, androidTestDirectory,commandAntTest)
+            File localEmFile  = new File(androidTestDirectory,'coverage.em')
+            if (localEmFile.exists()) {
+                boolean res = localEmFile.renameTo(coverageEmFile)
+                logger.lifecycle("Renamed ${localEmFile} to ${coverageEmFile} with result: ${res}")
+            } else {
+                logger.lifecycle("No ${localEmFile}. Not renaming to ${coverageEmFile}")
+            }
+        } finally {
+            if (useMockLocation) {
+                androidManifestHelper.restoreOriginalManifest(project.rootDir)
+            }
         }
     }
 
