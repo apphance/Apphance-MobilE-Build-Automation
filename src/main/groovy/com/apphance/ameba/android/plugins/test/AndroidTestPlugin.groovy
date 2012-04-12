@@ -86,6 +86,7 @@ class AndroidTestPlugin implements Plugin<Project>{
     }
 
     private void readConfiguration(Project project) {
+        AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration(project)
         use(PropertyCategory) {
             androidTestDirectory = project.file(project.readProperty(AndroidTestProperty.TEST_DIRECTORY))
             rawDir = project.file( 'res/raw')
@@ -107,7 +108,7 @@ class AndroidTestPlugin implements Plugin<Project>{
     }
 
     int findFreeEmulatorPort() {
-        AndroidTestConvention convention = project.convention.plugins.androidTest
+        AndroidTestConvention convention = this.project.convention.plugins.androidTest
         int startPort = convention.startPort
         int endPort = convention.endPort
         for (int port = startPort; port<= endPort; port+=2) {
