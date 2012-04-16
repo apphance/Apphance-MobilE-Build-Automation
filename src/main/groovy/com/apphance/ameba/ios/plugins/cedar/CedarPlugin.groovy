@@ -5,14 +5,15 @@ import java.io.File
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging;
+import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.IOSProjectConfiguration
+import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
+import com.apphance.ameba.unit.ios.XCodeOutputParserTest;
 
 /**
  * Plugin for running Cedar tests.
@@ -22,7 +23,7 @@ class CedarPlugin implements Plugin<Project> {
 
     static final String AMEBA_IOS_CEDAR = 'Ameba iOS Cedar'
 
-    String IPHONE_SIMULATOR_SDK = "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/"
+    String IPHONE_SIMULATOR_SDK = "/Platforms/iPhoneSimulator.platform/Developer/SDKs/"
     Logger logger = Logging.getLogger(CedarPlugin.class)
     Project project
     ProjectHelper projectHelper
@@ -86,6 +87,11 @@ class CedarPlugin implements Plugin<Project> {
         task.description = "Executes cedar test. Requires *Specs targets defined in the project"
         task.group = AMEBA_IOS_CEDAR
         task << {
+            String simulator = iosConf.simulatorsdk.replace('iphonesimulator', 'iPhoneSimulator')
+            if (simulator.equals('iPhoneSimulator')) {
+                simulator = 'iPhoneSimulator4.3'
+            }
+            String platform = IOSXCodeOutputParser.getXcodeInstallationPath(project)
             def targets = iosConf.alltargets.findAll { it.endsWith('Specs')}
             targets.each { target ->
                 def family = "iPhone"
@@ -99,8 +105,8 @@ class CedarPlugin implements Plugin<Project> {
                 documentsDirectory.mkdirs();
                 File runTestScript = new File(conf.tmpDirectory,"run_cedar_tests_${family}.bash")
                 String baseScript = """#!/bin/bash
-export DYLD_ROOT_PATH="${IPHONE_SIMULATOR_SDK}"
-export IPHONE_SIMULATOR_ROOT="${IPHONE_SIMULATOR_SDK}"
+export DYLD_ROOT_PATH="${platform}${IPHONE_SIMULATOR_SDK}${simulator}.sdk/"
+export IPHONE_SIMULATOR_ROOT="${platform}${IPHONE_SIMULATOR_SDK}${simulator}.sdk/"
 export CFFIXED_USER_HOME=${cfFixedDirectory}
 export CEDAR_HEADLESS_SPECS="1"
 export CEDAR_REPORTER_CLASS="CDRJenkinsReporter"
