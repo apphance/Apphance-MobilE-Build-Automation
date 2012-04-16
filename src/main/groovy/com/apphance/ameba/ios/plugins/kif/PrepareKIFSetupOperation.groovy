@@ -13,13 +13,13 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser
  * Prepares KIF properties.
  *
  */
-class PrepareIosKIFSetupOperation extends AbstractPrepareSetupOperation {
+class PrepareKIFSetupOperation extends AbstractPrepareSetupOperation {
 
-    Logger logger = Logging.getLogger(PrepareIosKIFSetupOperation.class)
+    Logger logger = Logging.getLogger(PrepareKIFSetupOperation.class)
     ProjectConfiguration conf
 
-    PrepareIosKIFSetupOperation() {
-        super(IOSKifProperty.class)
+    PrepareKIFSetupOperation() {
+        super(KifProperty.class)
     }
 
     void prepareSetup() {
@@ -28,9 +28,9 @@ class PrepareIosKIFSetupOperation extends AbstractPrepareSetupOperation {
         use (PropertyCategory) {
             IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
             IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
-            IOSKifProperty.each {
+            KifProperty.each {
                 switch(it) {
-                    case IOSKifProperty.KIF_CONFIGURATION:
+                    case KifProperty.KIF_CONFIGURATION:
                         project.getProjectPropertyFromUser(it, iosConf.allconfigurations, br)
                         break
                     default:

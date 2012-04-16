@@ -6,9 +6,9 @@ import com.apphance.ameba.AbstractShowSetupOperation;
  * Shows KIF-related properties.
  *
  */
-class ShowIosKIFSetupOperation extends AbstractShowSetupOperation {
-    ShowIosKIFSetupOperation() {
-        super(IOSKifProperty.class)
+class ShowKIFSetupOperation extends AbstractShowSetupOperation {
+    ShowKIFSetupOperation() {
+        super(KifProperty.class)
     }
 }
 

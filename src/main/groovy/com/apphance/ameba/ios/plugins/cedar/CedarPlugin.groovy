@@ -22,7 +22,7 @@ class CedarPlugin implements Plugin<Project> {
 
     static final String AMEBA_IOS_CEDAR = 'Ameba iOS Cedar'
 
-    String IPHONE_SIMULATOR_SDK = "/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/"
+    String IPHONE_SIMULATOR_SDK = "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator4.3.sdk/"
     Logger logger = Logging.getLogger(CedarPlugin.class)
     Project project
     ProjectHelper projectHelper
@@ -112,7 +112,7 @@ echo Running cedar tests in directory ${cfFixedDirectory}
 ${project.rootDir}/build/Debug-iphonesimulator/${target}.app/${target} -RegisterForSystemEvents >${cedarOutput} 2>&1
 RESULT=\$?
 cat ${cedarOutput}
-return RESULT
+return $RESULT
                     """
                 runTestScript.text = baseScript
                 projectHelper.executeCommand(project, [

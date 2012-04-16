@@ -50,7 +50,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
         this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
         this.iosReleaseConf = IOSReleaseConfigurationRetriever.getIosReleaseConfiguration(project)
         this.foneMonkeyConfiguration = PropertyCategory.readProperty(project,
-                        IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
+                        FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
         prepareFoneMonkeyTemplatesTask()
         prepareBuildFoneMonkeyReleaseTask()
         prepareRunMonkeyTestsTask()
@@ -246,7 +246,7 @@ class FoneMonkeyPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_FONEMONKEY
         task << {
             use (PropertyCategory) {
-                def configuration = project.readProperty(IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
+                def configuration = project.readProperty(FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
                 def target = "RunMonkeyTests"
                 logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
                 projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(target, configuration) + [

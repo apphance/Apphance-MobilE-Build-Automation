@@ -41,14 +41,14 @@ class KIFPlugin implements Plugin<Project> {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
-            this.KIFConfiguration = project.readProperty(IOSKifProperty.KIF_CONFIGURATION)
+            this.KIFConfiguration = project.readProperty(KifProperty.KIF_CONFIGURATION)
             prepareKIFTemplatesTask()
             prepareBuildKIFReleaseTask()
             prepareRunKIFTestsTask()
             prepareRunSingleKIFTestTask()
-            project.prepareSetup.prepareSetupOperations << new PrepareIosKIFSetupOperation()
-            project.verifySetup.verifySetupOperations << new VerifyIosKIFSetupOperation()
-            project.showSetup.showSetupOperations << new ShowIosKIFSetupOperation()
+            project.prepareSetup.prepareSetupOperations << new PrepareKIFSetupOperation()
+            project.verifySetup.verifySetupOperations << new VerifyKIFSetupOperation()
+            project.showSetup.showSetupOperations << new ShowKIFSetupOperation()
         }
     }
 

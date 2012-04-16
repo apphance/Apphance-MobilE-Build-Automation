@@ -17,7 +17,7 @@ class PrepareFoneMonkeySetupOperation extends AbstractPrepareSetupOperation {
     Logger logger = Logging.getLogger(PrepareFoneMonkeySetupOperation.class)
 
     PrepareFoneMonkeySetupOperation() {
-        super(IOSFoneMonkeyProperty.class)
+        super(FoneMonkeyProperty.class)
     }
 
     void prepareSetup() {
@@ -26,9 +26,9 @@ class PrepareFoneMonkeySetupOperation extends AbstractPrepareSetupOperation {
         use (PropertyCategory) {
             IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
             IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
-            IOSFoneMonkeyProperty.each {
+            FoneMonkeyProperty.each {
                 switch (it) {
-                    case IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION:
+                    case FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION:
                         project.getProjectPropertyFromUser(it, iosConf.allconfigurations, br)
                         break
                     default:

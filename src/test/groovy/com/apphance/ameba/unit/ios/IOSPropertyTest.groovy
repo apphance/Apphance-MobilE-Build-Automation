@@ -9,9 +9,9 @@ import org.junit.Test
 
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
-import com.apphance.ameba.ios.plugins.fonemonkey.IOSFoneMonkeyProperty
+import com.apphance.ameba.ios.plugins.fonemonkey.FoneMonkeyProperty
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
-import com.apphance.ameba.ios.plugins.kif.IOSKifProperty
+import com.apphance.ameba.ios.plugins.kif.KifProperty
 import com.apphance.ameba.unit.EmmaDumper
 
 class IOSPropertyTest {
@@ -29,8 +29,8 @@ class IOSPropertyTest {
             project[IOSProjectProperty.MAIN_CONFIGURATION.propertyName] = "MainConfiguration"
             project[IOSProjectProperty.IOS_SDK.propertyName] = "iphoneos"
             project[IOSProjectProperty.IOS_SIMULATOR_SDK.propertyName] = "iphonesimulator"
-            project[IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
-            project[IOSKifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
+            project[FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
+            project[KifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
             String s = project.listPropertiesAsString(IOSProjectProperty.class, false)
             assertEquals('''###########################################################
 # iOS properties
@@ -61,8 +61,8 @@ ios.simulator.sdk=iphonesimulator
             project[IOSProjectProperty.MAIN_CONFIGURATION.propertyName] = "MainConfiguration"
             project[IOSProjectProperty.IOS_SDK.propertyName] = "iphoneos"
             project[IOSProjectProperty.IOS_SIMULATOR_SDK.propertyName] = "iphonesimulator"
-            project[IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
-            project[IOSKifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
+            project[FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
+            project[KifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
             String s = project.listPropertiesAsString(IOSProjectProperty.class, true)
             assertEquals('''###########################################################
 # iOS properties
@@ -94,8 +94,8 @@ ios.simulator.sdk=iphonesimulator
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
-            project[IOSKifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
-            String s = project.listPropertiesAsString(IOSKifProperty.class, false)
+            project[KifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
+            String s = project.listPropertiesAsString(KifProperty.class, false)
             assertEquals('''###########################################################
 # iOS KIF properties
 ###########################################################
@@ -109,8 +109,8 @@ ios.kif.configuration=Kif
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
-            project[IOSKifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
-            String s = project.listPropertiesAsString(IOSKifProperty.class, true)
+            project[KifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
+            String s = project.listPropertiesAsString(KifProperty.class, true)
             assertEquals('''###########################################################
 # iOS KIF properties
 ###########################################################
@@ -121,12 +121,12 @@ ios.kif.configuration=Kif
     }
 
     @Test
-    void testIOSFoneMonkeyPropertyNoComments () {
+    void testFoneMonkeyPropertyNoComments () {
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
-            project[IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
-            String s = project.listPropertiesAsString(IOSFoneMonkeyProperty.class, false)
+            project[FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
+            String s = project.listPropertiesAsString(FoneMonkeyProperty.class, false)
             assertEquals('''###########################################################
 # iOS FoneMonkey properties
 ###########################################################
@@ -137,12 +137,12 @@ ios.fonemonkey.configuration=FoneMonkey
 
 
     @Test
-    void testIOSFoneMonkeyPropertyComments () {
+    void testFoneMonkeyPropertyComments () {
         use (PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
-            project[IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
-            String s = project.listPropertiesAsString(IOSFoneMonkeyProperty.class, true)
+            project[FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
+            String s = project.listPropertiesAsString(FoneMonkeyProperty.class, true)
             assertEquals('''###########################################################
 # iOS FoneMonkey properties
 ###########################################################

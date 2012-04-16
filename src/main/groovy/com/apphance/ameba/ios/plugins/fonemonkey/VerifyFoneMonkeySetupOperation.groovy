@@ -12,18 +12,18 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser
 class VerifyFoneMonkeySetupOperation extends AbstractVerifyIOSSetupOperation {
 
     VerifyFoneMonkeySetupOperation() {
-        super(IOSFoneMonkeyProperty.class)
+        super(FoneMonkeyProperty.class)
     }
 
     void verifySetup() {
         super.verifySetup()
         def projectProperties = readProperties()
-        IOSFoneMonkeyProperty.each {
+        FoneMonkeyProperty.each {
             if (!it.defaultValue != null) {
                 checkProperty(projectProperties, it)
             }
         }
-        checkConfiguration(IOSFoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
+        checkConfiguration(FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION)
         allPropertiesOK()
     }
 }

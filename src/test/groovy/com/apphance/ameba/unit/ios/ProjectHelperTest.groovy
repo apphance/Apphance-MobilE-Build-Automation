@@ -35,6 +35,7 @@ class ProjectHelperTest {
                         new ProjectHelper().getJenkinsURL(project, map))
     }
 
+
     @AfterClass
     static public void afterClass() {
         EmmaDumper.dumpEmmaCoverage()

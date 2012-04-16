@@ -2,6 +2,8 @@ package com.apphance.ameba.unit.ios;
 
 import static org.junit.Assert.*
 
+import org.gradle.api.Project;
+import org.gradle.testfixtures.ProjectBuilder;
 import org.hamcrest.core.IsEqual
 import org.junit.AfterClass
 import org.junit.Before
@@ -95,6 +97,17 @@ iOS Simulator SDKs:
                             'iphonesimulator5.0'
                         ]))
     }
+
+
+    @Test
+    public void testXCodeInstallationPath() {
+        ProjectBuilder projectBuilder = ProjectBuilder.builder()
+        projectBuilder.withProjectDir(new File("testProjects/ios"))
+        Project project = projectBuilder.build()
+        assertEquals('/Developer', IOSXCodeOutputParser.getXcodeInstallationPath(project))
+    }
+
+
 
     @AfterClass
     static public void afterClass() {

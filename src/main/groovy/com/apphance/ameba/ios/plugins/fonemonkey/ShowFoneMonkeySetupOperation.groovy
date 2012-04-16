@@ -8,7 +8,7 @@ import com.apphance.ameba.AbstractShowSetupOperation;
  */
 class ShowFoneMonkeySetupOperation extends AbstractShowSetupOperation {
     ShowFoneMonkeySetupOperation() {
-        super(IOSFoneMonkeyProperty.class)
+        super(FoneMonkeyProperty.class)
     }
 }
 

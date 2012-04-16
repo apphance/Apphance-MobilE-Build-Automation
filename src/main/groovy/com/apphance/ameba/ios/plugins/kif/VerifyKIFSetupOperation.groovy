@@ -8,21 +8,21 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser;
  * Verifies KIF-related properties.
  *
  */
-class VerifyIosKIFSetupOperation extends AbstractVerifyIOSSetupOperation {
+class VerifyKIFSetupOperation extends AbstractVerifyIOSSetupOperation {
 
-    VerifyIosKIFSetupOperation() {
-        super(IOSKifProperty.class)
+    VerifyKIFSetupOperation() {
+        super(KifProperty.class)
     }
 
     void verifySetup() {
         super.verifySetup()
         def projectProperties = readProperties()
-        IOSKifProperty.each {
+        KifProperty.each {
             if (!it.defaultValue == null) {
                 checkProperty(projectProperties, it)
             }
         }
-        checkConfiguration(IOSKifProperty.KIF_CONFIGURATION)
+        checkConfiguration(KifProperty.KIF_CONFIGURATION)
         allPropertiesOK()
     }
 }

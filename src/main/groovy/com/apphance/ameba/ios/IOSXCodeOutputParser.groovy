@@ -11,6 +11,8 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import com.apphance.ameba.ProjectHelper;
+
 /**
  * Parses xcodebuild output.
  *
@@ -79,6 +81,12 @@ class IOSXCodeOutputParser {
         String firstLine = trimmed[0]
         def matcher = firstLine =~ /.*"(.*)"/
         return matcher[0][1]
+    }
+
+    static String getXcodeInstallationPath(Project project) {
+        ProjectHelper ph = new ProjectHelper()
+        def result = ph.executeCommand(project, ['xcode-select','-print-path'])
+        return result[0]
     }
 
     static File findMobileProvisionFile(Project project, String target, String configuration) {

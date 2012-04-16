@@ -3,8 +3,8 @@ package com.apphance.ameba.ios.plugins.kif
  * Properties for IOS KIF framework.
  *
  */
-public enum IOSKifProperty {
-    KIF_CONFIGURATION('ios.kif.configuration', 'KIF build configuration', 'Debug');
+public enum KifProperty {
+    KIF_CONFIGURATION('ios.kif.configuration', 'KIF build configuration', 'Debug'),
 
     public static final String DESCRIPTION = 'iOS KIF properties'
 
@@ -12,7 +12,7 @@ public enum IOSKifProperty {
     final String description
     final String defaultValue
 
-    IOSKifProperty(String propertyName, String description, String defaultValue = null) {
+    KifProperty(String propertyName, String description, String defaultValue = null) {
         this.propertyName = propertyName
         this.description = description
         this.defaultValue = defaultValue
