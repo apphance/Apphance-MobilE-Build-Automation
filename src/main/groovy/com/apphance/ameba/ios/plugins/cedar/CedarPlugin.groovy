@@ -112,7 +112,7 @@ echo Running cedar tests in directory ${cfFixedDirectory}
 ${project.rootDir}/build/Debug-iphonesimulator/${target}.app/${target} -RegisterForSystemEvents >${cedarOutput} 2>&1
 RESULT=\$?
 cat ${cedarOutput}
-return $RESULT
+return \$RESULT
                     """
                 runTestScript.text = baseScript
                 projectHelper.executeCommand(project, [
