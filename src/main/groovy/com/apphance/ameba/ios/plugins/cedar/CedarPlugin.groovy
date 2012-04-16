@@ -13,7 +13,6 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
-import com.apphance.ameba.unit.ios.XCodeOutputParserTest;
 
 /**
  * Plugin for running Cedar tests.
