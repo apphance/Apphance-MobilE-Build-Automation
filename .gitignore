@@ -17,6 +17,7 @@ proguard-project.txt
 local.properties
 emma
 .gradle
+/bin
 /build/
 /tmp
 /.classpath
