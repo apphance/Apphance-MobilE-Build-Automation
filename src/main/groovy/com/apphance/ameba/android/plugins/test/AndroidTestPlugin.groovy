@@ -3,6 +3,7 @@ package com.apphance.ameba.android.plugins.test
 
 import groovy.lang.Closure;
 
+import java.io.File;
 import java.io.IOException
 import java.net.Inet4Address
 import java.net.ServerSocket
@@ -12,6 +13,9 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
+import org.gradle.tooling.BuildLauncher
+import org.gradle.tooling.ProjectConnection
+import org.gradle.tooling.GradleConnector
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectHelper;
@@ -80,6 +84,9 @@ class AndroidTestPlugin implements Plugin<Project>{
 		prepareCleanAvdTask(project)
 		prepareStartEmulatorTask(project)
 		prepareStopAllEmulatorsTask(project)
+		prepareAndroidTestStructure(project)
+		prepareAndroidRobolectricStructure(project)
+		prepareAndroidRobolectricTask(project)
 		project.prepareSetup.prepareSetupOperations << new PrepareAndroidTestSetupOperation()
 		project.verifySetup.verifySetupOperations << new VerifyAndroidTestSetupOperation()
 		project.showSetup.showSetupOperations << new ShowAndroidTestSetupOperation()
@@ -233,6 +240,31 @@ class AndroidTestPlugin implements Plugin<Project>{
 			}
 		}
 		task.dependsOn(project.createAVD)
+	}
+	private ProjectConnection getProjectConnection(File baseFolder, String dirName) {
+		def projectDir = new File(baseFolder, dirName)
+		return  GradleConnector.newConnector().forProjectDirectory(projectDir).connect()
+	}
+	private void prepareAndroidRobolectricTask(Project project){
+		def task = project.task('testRobolectric')
+		task.description = "Runs android tests on the project"
+		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
+		// TODO:
+		task << {
+			ProjectConnection connection = getProjectConnection(project.rootDir,"test/robolectric")
+			try {
+				BuildLauncher bl = connection.newBuild().forTasks('test');
+				ByteArrayOutputStream baos = new ByteArrayOutputStream()
+				bl.setStandardOutput(baos)
+				bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+				bl.run()
+				String output = baos.toString('utf-8')
+				println output
+			} finally {
+				connection.close()
+			}
+		}
+		task.dependsOn(project.compileJava)
 	}
 
 	private boolean deleteNonEmptyDirectory(File path) {
@@ -505,6 +537,20 @@ class AndroidTestPlugin implements Plugin<Project>{
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
 		task << { startEmulator(project, true, false) }
 		task.dependsOn(project.readAndroidProjectConfiguration)
+	}
+
+	private void prepareAndroidTestStructure(Project project){
+		def task = project.task('createAndroidTestStructure')
+		task.description = "Some commnent"
+		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
+		// TODO:
+	}
+
+	private void prepareAndroidRobolectricStructure(Project project){
+		def task = project.task('createRobolectricTestStructure')
+		task.description = "Some robolectric comment"
+		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
+		// TODO:
 	}
 
 	static class AndroidTestConvention {
