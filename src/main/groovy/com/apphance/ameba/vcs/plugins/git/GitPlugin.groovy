@@ -97,13 +97,20 @@ class GitPlugin extends AbstractVCSPlugin {
                 revision
             ]
             projectHelper.executeCommand(project, tagCommand)
+            String[] pullCommand = [
+                "git",
+                "pull",
+                "origin"
+            ]
+            projectHelper.executeCommand(project, pullCommand)
             String[] pushTagsCommand = [
                 "git",
                 "push",
                 "origin",
                 "--tags"
             ]
-            projectHelper.executeCommand(project, pushTagsCommand)
+            projectHelper.executeCommand(project, tagCommand)
+            projectHelper.executeCommand(project, pullCommand)
             String[] pushAllCommand = [
                 "git",
                 "push",
