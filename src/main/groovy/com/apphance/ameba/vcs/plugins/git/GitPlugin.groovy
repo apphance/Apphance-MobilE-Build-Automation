@@ -95,7 +95,7 @@ class GitPlugin extends AbstractVCSPlugin {
                 "push",
                 "--tags"
             ]
-            projectHelper.executeCommand(project, pushAllCommand)
+            projectHelper.executeCommand(project, pushTagsCommand)
             logger.lifecycle("Commited, tagged and pushed ${conf.versionString} (${conf.versionCode})")
         }
     }
