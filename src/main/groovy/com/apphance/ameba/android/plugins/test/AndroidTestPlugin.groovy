@@ -2,6 +2,7 @@ package com.apphance.ameba.android.plugins.test
 
 
 import groovy.lang.Closure;
+import groovy.text.SimpleTemplateEngine
 
 import java.io.File;
 import java.io.IOException
@@ -254,13 +255,13 @@ class AndroidTestPlugin implements Plugin<Project>{
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
 		// TODO:
 		task << {
-			
+
 			AndroidTestConvention convention = project.convention.plugins.androidTest
 			def path = new File(project.rootDir.path + convention.robolectricPath)
 			if(!(path.exists())){
 				throw new GradleException("Running Robolectric test has failed. No valid tests present nor test project had been created under ${project.rootDir.path}${convention.robolectricPath}. Run createRobolectricTestStructure taks to (re)create unit test project.")
 			}
-			
+
 			ProjectConnection connection = getProjectConnection(project.rootDir,convention.robolectricPath)
 			try {
 				BuildLauncher bl = connection.newBuild().forTasks('test');
@@ -566,12 +567,52 @@ class AndroidTestPlugin implements Plugin<Project>{
 			AndroidTestConvention convention = project.convention.plugins.androidTest
 			File path = new File(project.rootDir.path + convention.robolectricPath)
 			if(path.exists()){
-				println "Im here!!"
+				println "Robolectric test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
 			} else {
-				println "I'm not here :("
+				path.mkdirs()
+				copyBuildGrade(path)
+				makeRobolectricDirs(path)
+				copyFirstTestActivity(path)
 			}
 
 		}
+	}
+
+	private void copyBuildGrade(File path){
+		FileOutputStream output = new FileOutputStream(path.path + File.separator + 'build.gradle')
+		InputStream stream = this.class.getResource("build.gradle_").openStream();
+
+		byte [] buffer = new byte[256];
+
+		while(true){
+			def bytesRead = stream.read(buffer)
+			if( bytesRead == -1)
+				break;
+			output.write(buffer, 0, bytesRead)
+		}
+	}
+
+	private void copyFirstTestActivity(File path){
+		File output = new File(roboPath(path)+ File.separator + 'MyFirstTest.java')
+
+		URL testClassTemplate = this.class.getResource("MyFirstTest.java_")
+
+		SimpleTemplateEngine engine = new SimpleTemplateEngine()
+		def binding = [ packageName : androidConf.mainProjectPackage]
+		def result = engine.createTemplate(testClassTemplate).make(binding)
+		output.write(result.toString())
+
+	}
+
+	private void makeRobolectricDirs(File path){
+		new File(path.path + File.separator + 'libs').mkdirs()
+		new File(path.path + File.separator + 'src' + File.separator + 'main' + File.separator + 'java' ).mkdirs()
+		new File(roboPath(path)).mkdirs()
+	}
+
+	private String roboPath(File path){
+		String _path = androidConf.mainProjectPackage.replace('.', File.separator)
+		return path.path + File.separator + 'src' + File.separator + 'test' + File.separator + 'java' +  File.separator + _path + File.separator + 'test'
 	}
 
 	static class AndroidTestConvention {
