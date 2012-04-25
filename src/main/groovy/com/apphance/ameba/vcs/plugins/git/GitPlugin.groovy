@@ -49,19 +49,6 @@ class GitPlugin extends AbstractVCSPlugin {
         task.description = "Commits and pushes changes to repository."
         task.group = AmebaCommonBuildTaskGroups.AMEBA_VERSION_CONTROL
         task << {
-            def gitBranch
-            use (PropertyCategory) {
-                gitBranch = project.readProperty("git.branch")
-            }
-            if (gitBranch == null) {
-                gitBranch = "master"
-            }
-            String[] checkoutCommand = [
-                "git",
-                "checkout",
-                "${gitBranch}"
-            ]
-            projectHelper.executeCommand(project, checkoutCommand)
             String[] stageCommand = [
                 "git",
                 "stage",
