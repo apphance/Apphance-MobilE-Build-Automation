@@ -49,12 +49,6 @@ class GitPlugin extends AbstractVCSPlugin {
         task.description = "Commits and pushes changes to repository."
         task.group = AmebaCommonBuildTaskGroups.AMEBA_VERSION_CONTROL
         task << {
-            String[] stageCommand = [
-                "git",
-                "stage",
-                "."
-            ]
-            projectHelper.executeCommand(project, stageCommand)
             def commitCommand = [
                 "git",
                 "commit",
@@ -68,6 +62,20 @@ class GitPlugin extends AbstractVCSPlugin {
                 conf.commitFilesOnVCS.each {commitCommand << it }
             }
             projectHelper.executeCommand(project, commitCommand as String[])
+            String[] pullCommand = [
+                "git",
+                "pull",
+                "origin",
+                "HEAD:master"
+            ]
+            projectHelper.executeCommand(project, pullCommand)
+            String[] pushCommand = [
+                "git",
+                "push",
+                "origin",
+                "HEAD:master"
+            ]
+            projectHelper.executeCommand(project, pushCommand)
             String[] revParseCommand = [
                 "git",
                 "rev-parse",
@@ -84,16 +92,11 @@ class GitPlugin extends AbstractVCSPlugin {
                 revision
             ]
             projectHelper.executeCommand(project, tagCommand)
-            String[] pullCommand = [
-                "git",
-                "push",
-                "--all"
-            ]
-            projectHelper.executeCommand(project, pullCommand)
             String[] pushTagsCommand = [
                 "git",
                 "push",
-                "--tags"
+                "--tags",
+                "origin"
             ]
             projectHelper.executeCommand(project, pushTagsCommand)
             logger.lifecycle("Commited, tagged and pushed ${conf.versionString} (${conf.versionCode})")
