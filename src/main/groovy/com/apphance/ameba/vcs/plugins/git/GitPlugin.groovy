@@ -86,23 +86,13 @@ class GitPlugin extends AbstractVCSPlugin {
             projectHelper.executeCommand(project, tagCommand)
             String[] pullCommand = [
                 "git",
-                "pull",
-                "origin"
+                "pull"
             ]
             projectHelper.executeCommand(project, pullCommand)
             String[] pushTagsCommand = [
                 "git",
                 "push",
-                "origin",
                 "--tags"
-            ]
-            projectHelper.executeCommand(project, pushTagsCommand)
-            projectHelper.executeCommand(project, pullCommand)
-            String[] pushAllCommand = [
-                "git",
-                "push",
-                "origin",
-                "--all"
             ]
             projectHelper.executeCommand(project, pushAllCommand)
             logger.lifecycle("Commited, tagged and pushed ${conf.versionString} (${conf.versionCode})")
