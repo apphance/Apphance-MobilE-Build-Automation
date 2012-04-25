@@ -13,6 +13,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
+import org.gradle.testfixtures.ProjectBuilder;
+import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.ProjectConnection
 import org.gradle.tooling.GradleConnector
@@ -252,8 +254,10 @@ class AndroidTestPlugin implements Plugin<Project>{
 		// TODO:
 		task << {
 			ProjectConnection connection = getProjectConnection(project.rootDir,"test/robolectric")
+			
 			try {
 				BuildLauncher bl = connection.newBuild().forTasks('test');
+				
 				ByteArrayOutputStream baos = new ByteArrayOutputStream()
 				bl.setStandardOutput(baos)
 				bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
