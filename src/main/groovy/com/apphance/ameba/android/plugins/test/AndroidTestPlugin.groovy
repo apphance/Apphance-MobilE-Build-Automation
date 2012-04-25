@@ -27,6 +27,7 @@ import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import com.sun.jmx.snmp.tasks.Task;
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**
@@ -253,11 +254,17 @@ class AndroidTestPlugin implements Plugin<Project>{
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
 		// TODO:
 		task << {
-			ProjectConnection connection = getProjectConnection(project.rootDir,"test/robolectric")
 			
+			AndroidTestConvention convention = project.convention.plugins.androidTest
+			def path = new File(project.rootDir.path + convention.robolectricPath)
+			if(!(path.exists())){
+				throw new GradleException("Running Robolectric test has failed. No valid tests present nor test project had been created under ${project.rootDir.path}${convention.robolectricPath}. Run createRobolectricTestStructure taks to (re)create unit test project.")
+			}
+			
+			ProjectConnection connection = getProjectConnection(project.rootDir,convention.robolectricPath)
 			try {
 				BuildLauncher bl = connection.newBuild().forTasks('test');
-				
+
 				ByteArrayOutputStream baos = new ByteArrayOutputStream()
 				bl.setStandardOutput(baos)
 				bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
@@ -555,6 +562,16 @@ class AndroidTestPlugin implements Plugin<Project>{
 		task.description = "Some robolectric comment"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
 		// TODO:
+		task << {
+			AndroidTestConvention convention = project.convention.plugins.androidTest
+			File path = new File(project.rootDir.path + convention.robolectricPath)
+			if(path.exists()){
+				println "Im here!!"
+			} else {
+				println "I'm not here :("
+			}
+
+		}
 	}
 
 	static class AndroidTestConvention {
