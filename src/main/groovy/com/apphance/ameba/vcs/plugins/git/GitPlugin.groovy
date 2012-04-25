@@ -109,7 +109,7 @@ class GitPlugin extends AbstractVCSPlugin {
                 "origin",
                 "--tags"
             ]
-            projectHelper.executeCommand(project, tagCommand)
+            projectHelper.executeCommand(project, pushTagsCommand)
             projectHelper.executeCommand(project, pullCommand)
             String[] pushAllCommand = [
                 "git",
