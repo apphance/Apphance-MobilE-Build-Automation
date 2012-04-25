@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException
 import java.net.Inet4Address
 import java.net.ServerSocket
+import java.net.URL;
 
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -563,6 +564,9 @@ class AndroidTestPlugin implements Plugin<Project>{
 		task.description = "Some robolectric comment"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
 		// TODO:
+		project.configurations.add('robolectric')
+		project.dependencies.add('robolectric','com.pivotallabs:robolectric:1.1')
+		project.dependencies.add('robolectric','junit:junit:4.10')
 		task << {
 			AndroidTestConvention convention = project.convention.plugins.androidTest
 			File path = new File(project.rootDir.path + convention.robolectricPath)
@@ -570,14 +574,25 @@ class AndroidTestPlugin implements Plugin<Project>{
 				println "Robolectric test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
 			} else {
 				path.mkdirs()
-				copyBuildGrade(path)
 				makeRobolectricDirs(path)
+				project.configurations.robolectric.each {
+					downloadFile(project, it.toURI().toURL(), new File(path.path + File.separator + 'libs' + File.separator + it.name))
+				}
+				copyBuildGrade(path)
 				copyFirstTestActivity(path)
 			}
 
 		}
 	}
 
+	void downloadFile(Project project, URL url, File file) {
+		logger.info("Downloading file from ${url} to ${file}")
+		def stream = new FileOutputStream(file)
+		def out = new BufferedOutputStream(stream)
+		out << url.openStream()
+		out.close()
+	}
+	
 	private void copyBuildGrade(File path){
 		FileOutputStream output = new FileOutputStream(path.path + File.separator + 'build.gradle')
 		InputStream stream = this.class.getResource("build.gradle_").openStream();
