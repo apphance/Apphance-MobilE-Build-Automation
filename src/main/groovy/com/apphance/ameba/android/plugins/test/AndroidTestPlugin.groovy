@@ -252,9 +252,8 @@ class AndroidTestPlugin implements Plugin<Project>{
 	}
 	private void prepareAndroidRobolectricTask(Project project){
 		def task = project.task('testRobolectric')
-		task.description = "Runs android tests on the project"
+		task.description = "Runs Robolectric test on the project"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
-		// TODO:
 		task << {
 
 			AndroidTestConvention convention = project.convention.plugins.androidTest
@@ -553,36 +552,40 @@ class AndroidTestPlugin implements Plugin<Project>{
 	}
 
 	private void prepareAndroidTestStructure(Project project){
-		def task = project.task('createAndroidTestStructure')
-		task.description = "Some commnent"
+		def task = project.task('prepareRobotium')
+		task.description = "Prepares file structure for Robotium test framework"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
 		// TODO:
 	}
 
 	private void prepareAndroidRobolectricStructure(Project project){
-		def task = project.task('createRobolectricTestStructure')
-		task.description = "Some robolectric comment"
+		def task = project.task('prepareRobolectric')
+		task.description = "Prepares file structure for Robolectric test framework"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
-		// TODO:
 		project.configurations.add('robolectric')
 		project.dependencies.add('robolectric','com.pivotallabs:robolectric:1.1')
 		project.dependencies.add('robolectric','junit:junit:4.10')
 		task << {
 			AndroidTestConvention convention = project.convention.plugins.androidTest
 			File path = new File(project.rootDir.path + convention.robolectricPath)
-			path.mkdirs()
-			makeRobolectricDirs(path)
-			project.configurations.robolectric.each {
-				downloadFile(project, it.toURI().toURL(), new File(path.path + File.separator + 'libs' + File.separator + it.name))
-			}
-			copyBuildGrade(path)
-			if(path.exists()){
+			if(path.exists()){ 
 				println "Robolectric test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
+				setUpRobolectricProject(path)
 			} else {
+				setUpRobolectricProject(path)
+				copyBuildGrade(path)
 				copyFirstTestActivity(path)
 			}
-
 		}
+	}
+
+	private void setUpRobolectricProject(Project project, File path){
+		path.mkdirs()
+		makeRobolectricDirs(path)
+		project.configurations.robolectric.each {
+			downloadFile(project, it.toURI().toURL(), new File(path.path + File.separator + 'libs' + File.separator + it.name))
+		}
+		copyFindSdkGrade(path)
 	}
 
 	void downloadFile(Project project, URL url, File file) {
@@ -594,8 +597,16 @@ class AndroidTestPlugin implements Plugin<Project>{
 	}
 
 	private void copyBuildGrade(File path){
-		FileOutputStream output = new FileOutputStream(path.path + File.separator + 'build.gradle')
-		InputStream stream = this.class.getResource("build.gradle_").openStream();
+		copyFromResources(path, 'build.gradle');
+	}
+
+	private void copyFindSdkGrade(File path){
+		copyFromResources(path, 'findSdk.gradle');
+	}
+
+	private void copyFromResources(File path, String fileName){
+		FileOutputStream output = new FileOutputStream(path.path + File.separator + fileName)
+		InputStream stream = this.class.getResource(fileName + '_').openStream();
 
 		byte [] buffer = new byte[256];
 
