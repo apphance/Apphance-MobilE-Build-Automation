@@ -25,7 +25,10 @@ class TestTestAndroidTasks extends BaseAndroidTaskTest {
             'cleanAVD',
             'createAVD',
             'startEmulator',
-            'stopAllEmulators'
+            'stopAllEmulators',
+			'createAndroidTestStructure',
+			'createRobolectricTestStructure',
+			'testRobolectric'
         ],AmebaCommonBuildTaskGroups.AMEBA_TEST)
     }
 }
