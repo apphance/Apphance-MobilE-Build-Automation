@@ -49,25 +49,6 @@ class GitPlugin extends AbstractVCSPlugin {
         task.description = "Commits and pushes changes to repository."
         task.group = AmebaCommonBuildTaskGroups.AMEBA_VERSION_CONTROL
         task << {
-            def gitBranch
-            use (PropertyCategory) {
-                gitBranch = project.readProperty("git.branch")
-            }
-            if (gitBranch == null) {
-                gitBranch = "master"
-            }
-            String[] checkoutCommand = [
-                "git",
-                "checkout",
-                "${gitBranch}"
-            ]
-            projectHelper.executeCommand(project, checkoutCommand)
-            String[] stageCommand = [
-                "git",
-                "stage",
-                "."
-            ]
-            projectHelper.executeCommand(project, stageCommand)
             def commitCommand = [
                 "git",
                 "commit",
@@ -81,6 +62,20 @@ class GitPlugin extends AbstractVCSPlugin {
                 conf.commitFilesOnVCS.each {commitCommand << it }
             }
             projectHelper.executeCommand(project, commitCommand as String[])
+            String[] pullCommand = [
+                "git",
+                "pull",
+                "origin",
+                "HEAD:master"
+            ]
+            projectHelper.executeCommand(project, pullCommand)
+            String[] pushCommand = [
+                "git",
+                "push",
+                "origin",
+                "HEAD:master"
+            ]
+            projectHelper.executeCommand(project, pushCommand)
             String[] revParseCommand = [
                 "git",
                 "rev-parse",
@@ -100,17 +95,10 @@ class GitPlugin extends AbstractVCSPlugin {
             String[] pushTagsCommand = [
                 "git",
                 "push",
-                "origin",
-                "--tags"
+                "--tags",
+                "origin"
             ]
             projectHelper.executeCommand(project, pushTagsCommand)
-            String[] pushAllCommand = [
-                "git",
-                "push",
-                "origin",
-                "--all"
-            ]
-            projectHelper.executeCommand(project, pushAllCommand)
             logger.lifecycle("Commited, tagged and pushed ${conf.versionString} (${conf.versionCode})")
         }
     }

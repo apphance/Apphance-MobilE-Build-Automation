@@ -570,15 +570,15 @@ class AndroidTestPlugin implements Plugin<Project>{
 		task << {
 			AndroidTestConvention convention = project.convention.plugins.androidTest
 			File path = new File(project.rootDir.path + convention.robolectricPath)
+			path.mkdirs()
+			makeRobolectricDirs(path)
+			project.configurations.robolectric.each {
+				downloadFile(project, it.toURI().toURL(), new File(path.path + File.separator + 'libs' + File.separator + it.name))
+			}
+			copyBuildGrade(path)
 			if(path.exists()){
 				println "Robolectric test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
 			} else {
-				path.mkdirs()
-				makeRobolectricDirs(path)
-				project.configurations.robolectric.each {
-					downloadFile(project, it.toURI().toURL(), new File(path.path + File.separator + 'libs' + File.separator + it.name))
-				}
-				copyBuildGrade(path)
 				copyFirstTestActivity(path)
 			}
 
@@ -592,7 +592,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 		out << url.openStream()
 		out.close()
 	}
-	
+
 	private void copyBuildGrade(File path){
 		FileOutputStream output = new FileOutputStream(path.path + File.separator + 'build.gradle')
 		InputStream stream = this.class.getResource("build.gradle_").openStream();

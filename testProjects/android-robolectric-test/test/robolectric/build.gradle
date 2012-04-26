@@ -1,0 +1,116 @@
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+
+import org.gradle.api.Project;
+repositories { mavenCentral() }
+
+apply plugin: 'java'
+//apply from : 'file:emma.gradle'
+
+test {
+	workingDir = new File('../../')
+	//listening to test execution events
+	beforeTest { descriptor ->
+		logger.lifecycle("Running test: " + descriptor)
+	}
+	onOutput { descriptor, event ->
+		logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
+	}
+	scanForTestClasses = true
+	include '**/*Test.class'
+}
+/*
+ emma {
+ reportPath="emma"
+ verbosityLevel="verbose"
+ }
+ */
+sourceSets {
+	main {
+		java { srcDir 'src/main/java' }
+		resources { srcDir 'src/main/resources' }
+	}
+}
+
+Properties androidProperties = new Properties()
+
+PROPERTIES_FILES = [
+	'local',
+	'build',
+	'default',
+	'project'
+]
+
+PROPERTIES_FILES.each {
+	File propFile = file("../../${it}.properties")
+	if (propFile.exists()) {
+		androidProperties.load(new FileInputStream(propFile))
+	}
+}
+
+def sdkDir = androidProperties.get('sdk.dir')
+String target = androidProperties.get('target')
+File sdkDirectory = sdkDir == null ? null : new File(sdkDir)
+if (sdkDirectory == null) {
+	def androidHome = System.getenv("ANDROID_HOME")
+	if (androidHome != null) {
+		sdkDirectory = new File(androidHome)
+	}
+}
+File androidJar = new File("${sdkDir}/platforms/${target}/android.jar")
+if (sdkDirectory == null) {
+	throw new GradleException('Unable to find location of Android SDK, either\
+set it in local.properties or in ANDROID_HOME environment variable')
+}
+if (target == null) {
+	throw new GradleException("target is not defined. Please run 'android update project' or 'android create project' as appropriate")
+}
+
+Collection<File> sdkJars = []
+if (target.startsWith('android')) {
+	String version= target.split("-")[1]
+	sdkJars << new File(sdkDirectory,"platforms/android-" + version + "/android.jar")
+} else {
+	List splitTarget = target.split(':')
+	if (splitTarget.size() > 2) {
+		String version= splitTarget[2]
+		Integer numVersion = version as Integer
+		sdkJars << new File(sdkDirectory,"platforms/android-" + version + "/android.jar")
+		if (target.startsWith('Google')) {
+			def mapJarFiles = new FileNameFinder().getFileNames(sdkDirectory.path,
+					"add-ons/addon*google*apis*google*inc*${version}/libs/maps.jar")
+			for (path in mapJarFiles) {
+				sdkJars << new File(path)
+			}
+		}
+		if (target.startsWith('KYOCERA Corporation:DTS')) {
+			sdkJars << new File(sdkDirectory,"add-ons/addon_dual_screen_apis_kyocera_corporation_" +
+					version + "/libs/dualscreen.jar")
+		}
+		if (target.startsWith('LGE:Real3D')) {
+			sdkJars << new File(sdkDirectory,"add-ons/addon_real3d_lge_" +
+					version + "/libs/real3d.jar")
+		}
+		if (target.startsWith('Sony Ericsson Mobile Communications AB:EDK')) {
+			sdkJars << new File(sdkDirectory,"add-ons/addon_edk_sony_ericsson_mobile_communications_ab_" +
+					version + "/libs/com.sonyericsson.eventstream_1.jar")
+		}
+	}
+}
+
+dependencies {
+	//    emma 'emma:emma:2.1.5320', 'emma:emma_ant:2.1.5320'
+
+	compile fileTree(dir: 'libs', include: 'robolectric*.jar') // make sure robolectric is first on path
+	sdkJars.each { compile files("${it}") }
+	compile fileTree(dir: 'libs', include: '*.jar')
+	compile files('../../bin/classes')
+	compile fileTree(dir: '../../libs', include: '*.jar')
+}
+
+

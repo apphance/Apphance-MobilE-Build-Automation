@@ -1,0 +1,16 @@
+package com.apphance.amebaTest.android;
+
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.xtremelabs.robolectric.RobolectricTestRunner;
+
+@RunWith(RobolectricTestRunner.class)
+public class MyFirstTest {
+	@Test
+    public void myFirstRobolectricTest() {
+		assertTrue(true);
+    }
+}
