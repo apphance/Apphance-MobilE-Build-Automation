@@ -8,6 +8,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
+import com.apphance.ameba.unit.ReadPropertyTest;
 
 /**
  * Helper property-related class. Can be used as Groovy category.
@@ -121,7 +122,11 @@ class PropertyCategory {
         return readPropertyOrEnvironmentVariable(project, property.propertyName)
     }
 
-    public static String readPropertyOrEnvironmentVariable(Project project, String propertyName) {
+    public static String readOptionalPropertyOrEnvironmentVariable(Project project, Enum property) {
+        return readOptionalPropertyOrEnvironmentVariable(project, property.propertyName)
+    }
+
+    public static String readPropertyOrEnvironmentVariable(Project project, String propertyName, boolean optional) {
         if (project.hasProperty(propertyName)) {
             return project[propertyName]
         } else if (System.getProperty(propertyName) != null){
@@ -130,10 +135,23 @@ class PropertyCategory {
             def envVariable = propertyName.toUpperCase().replace(".","_")
             def val = System.getenv(envVariable)
             if (val == null) {
+                if (optional) {
+                    return null
+                }
                 throw new GradleException("The property ${propertyName} was not defined (neither in project nor system) and ${envVariable} environment variable is missing.")
             }
             return val
         }
+    }
+
+    public static String readPropertyOrEnvironmentVariable(Project project, String propertyName) {
+        return readPropertyOrEnvironmentVariable(project, propertyName, false)
+    }
+
+
+
+    public static String readOptionalPropertyOrEnvironmentVariable(Project project, String propertyName) {
+        return readPropertyOrEnvironmentVariable(project, propertyName, true)
     }
 
     public static String isPropertyOrEnvironmentVariableDefined(Project project, Enum property) {

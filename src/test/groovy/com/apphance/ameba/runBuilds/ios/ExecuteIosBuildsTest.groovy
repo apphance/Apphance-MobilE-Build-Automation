@@ -75,7 +75,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildOneVariant() {
-        runGradleOneVariant('buildAll')
+        runGradleOneVariant('unlockKeyChain', 'buildAll')
         assertTrue(new File(testProjectOneVariant,
                         "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
         assertTrue(new File(testProjectOneVariant,
@@ -91,7 +91,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildMoreVariants() {
-        runGradleMoreVariants('buildAll')
+        runGradleMoreVariants('unlockKeyChain', 'buildAll')
         assertTrue(new File(testProjectMoreVariants,
                         "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
         assertTrue(new File(testProjectMoreVariants,
@@ -132,7 +132,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareMoreVariantsMailMessage() {
-        runGradleMoreVariants('cleanRelease', 'buildAll')
+        runGradleMoreVariants('cleanRelease','unlockKeyChain',  'buildAll')
         runGradleMoreVariants('prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/icon.png").exists())
@@ -145,7 +145,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareMoreVariantsMailMessageWithSimulators() {
-        runGradleMoreVariants('cleanRelease', 'buildAll')
+        runGradleMoreVariants('cleanRelease','unlockKeyChain',  'buildAll')
         runGradleMoreVariants('buildAllSimulators', 'prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/icon.png").exists())
@@ -158,7 +158,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareOneVariantMailMessage() {
-        runGradleOneVariant('cleanRelease', 'buildAll')
+        runGradleOneVariant('cleanRelease','unlockKeyChain',  'buildAll')
         runGradleOneVariant('prepareImageMontage', 'prepareMailMessage')
         assertTrue(new File(testProjectOneVariant, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/file_index.html").exists())
         assertTrue(new File(testProjectOneVariant, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/icon.png").exists())

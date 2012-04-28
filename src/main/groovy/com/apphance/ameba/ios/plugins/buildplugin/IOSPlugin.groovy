@@ -297,19 +297,23 @@ class IOSPlugin implements Plugin<Project> {
         def task = project.task('unlockKeyChain')
         task.description = """Unlocks key chain used during project building.
               Requires osx.keychain.password and osx.keychain.location properties
-              or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION"""
+              or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION environment variable"""
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
             use(PropertyCategory) {
-                def keychainPassword = project.readPropertyOrEnvironmentVariable("osx.keychain.password")
-                def keychainLocation = project.readPropertyOrEnvironmentVariable("osx.keychain.location")
-                projectHelper.executeCommand(project, [
-                    "security",
-                    "unlock-keychain",
-                    "-p",
-                    keychainPassword,
-                    keychainLocation
-                ])
+                def keychainPassword = project.readOptionalPropertyOrEnvironmentVariable("osx.keychain.password")
+                def keychainLocation = project.readOptionalPropertyOrEnvironmentVariable("osx.keychain.location")
+                if (keychainLocation != null && keychainPassword != null) {
+                    projectHelper.executeCommand(project, [
+                        "security",
+                        "unlock-keychain",
+                        "-p",
+                        keychainPassword,
+                        keychainLocation
+                    ])
+                } else {
+                    logger.warn("Seems that no keychain parameters are provided. Skipping unlocking the keychain.")
+                }
             }
         }
         task.dependsOn(project.readProjectConfiguration)

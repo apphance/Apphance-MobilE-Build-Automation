@@ -27,14 +27,14 @@ class IOSApphancePluginTest {
     @Test
     void addApphanceTest() {
         projectDir = new File('testProjects/ios/GradleXCode')
-        runGradle('clean', 'build-GradleXCode-BasicConfiguration')
+        runGradle('clean', 'unlockKeyChain', 'build-GradleXCode-BasicConfiguration')
         assertTrue(new File(projectDir, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
     }
 
     @Test
     void addApphanceTestWithApphanceAlreadyInProject() {
         projectDir = new File('testProjects/ios/GradleXCodeWithApphance')
-        runGradle('clean', 'build-GradleXCodeWithApphance-BasicConfiguration')
+        runGradle('clean', 'unlockKeyChain', 'build-GradleXCodeWithApphance-BasicConfiguration')
         assertTrue(new File(projectDir, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeWithApphance/BasicConfiguration/GradleXCodeWithApphance-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
     }
 
