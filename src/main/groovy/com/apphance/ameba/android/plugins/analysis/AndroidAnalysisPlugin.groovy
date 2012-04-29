@@ -220,7 +220,8 @@ It provides analysis task, that executes checkstyle, findbugs, pmd tasks (soon a
 
 Note that the findbugs plugin requires findbugs to be installed and it's home has to be configured.
 By default the home of findbugs is in '${FINDBUGS_DEFAULT_HOME}' but it can be configured
-by specifying gradle's property: ${FINDBUGS_HOME_DIR_PROPERTY}.
+by specifying gradle's property: ${FINDBUGS_HOME_DIR_PROPERTY}. Currently supported findbugs version is 2.0.0 and
+this version has to be installed.
 
 The Easiest way it is to add it in gradle.properties or specified in organisation-specific conventions:
 <code>
