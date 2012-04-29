@@ -45,7 +45,7 @@ abstract class AbstractPrepareSetupOperation {
             String propertyString = project.listPropertiesAsString(clazz, false)
             String oldValue = project.readProperty(GENERATED_GRADLE_PROPERTIES, '')
             String newValue = oldValue + propertyString
-            project[GENERATED_GRADLE_PROPERTIES] = newValue
+            project.ext[GENERATED_GRADLE_PROPERTIES] = newValue
         }
     }
 

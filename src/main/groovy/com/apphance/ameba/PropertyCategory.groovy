@@ -93,11 +93,11 @@ class PropertyCategory {
             // skip setting = we already have some value
         } else if (defaultValue != null) {
             // or choose default if exists
-            project[property.propertyName] = defaultValue
+            project.ext[property.propertyName] = defaultValue
         } else if (options != null) {
             // or pre-select first option if present
             if (options.size > 0 && options[0] != null) {
-                project[property.propertyName] = options[0]
+                project.ext[property.propertyName] = options[0]
             }
         }
         System.out.println(s)
