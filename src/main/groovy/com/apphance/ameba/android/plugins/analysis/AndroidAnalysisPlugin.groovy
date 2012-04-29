@@ -115,8 +115,8 @@ class AndroidAnalysisPlugin implements Plugin<Project>{
         task.description = "Runs Findbugs analysis on project"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
         project.configurations.add('findbugsConf')
-        project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs:1.3.9' )
-        project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs-ant:1.3.9' )
+        project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs:2.0.0' )
+        project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs-ant:2.0.0' )
         task << {
             URL findbugsXml = getResourceUrl(project, 'findbugs-exclude.xml')
             def analysisDir = project.file('build/analysis')
