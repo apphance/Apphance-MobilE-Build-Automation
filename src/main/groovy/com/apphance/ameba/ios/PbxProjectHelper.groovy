@@ -333,7 +333,7 @@ class PbxProjectHelper {
         }
     }
     void replaceLogsWithApphance(File projectRootDir, Object sourcesPhase, Object project) {
-        logger.lifecycle("Replacing APHLog logs with Apphance in ${projectRootDir}")
+        logger.lifecycle("Replacing NSLog logs with Apphance in ${projectRootDir}")
         def files = getProperty(sourcesPhase, "files")
         def mainGroup = getObject(getProperty(project, "mainGroup").text())
         HashMap<String, String> objects = new HashMap<String, String>()
