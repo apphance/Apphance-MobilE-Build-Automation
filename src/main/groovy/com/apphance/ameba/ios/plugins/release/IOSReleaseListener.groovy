@@ -236,8 +236,8 @@ class IOSReleaseListener implements IOSBuildListener {
     void prepareSimulatorBundleFile(Project project, IOSBuilderInfo bi, String family) {
         AmebaArtifact file = new AmebaArtifact()
         file.name = "Simulator build for ${family}"
-        file.url = new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image-${conf.versionString}_${conf.versionCode}.dmg")
-        file.location = new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image-${conf.versionString}_${conf.versionCode}.dmg")
+        file.url = new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
+        file.location = new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
         file.location.parentFile.mkdirs()
         file.location.delete()
         def File tmpDir = File.createTempFile("${conf.projectName}-${bi.target}-${family}-simulator",".tmp")
