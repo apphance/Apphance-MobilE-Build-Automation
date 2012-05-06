@@ -114,6 +114,7 @@ class IOSPlugin implements Plugin<Project> {
     private readVariantedProjectDirectories(Project project) {
         use (PropertyCategory){
             if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
+                readBasicIosProjectProperties(project)
                 iosConf.alltargets.each { target ->
                     iosConf.allconfigurations.each { configuration ->
                         String variant = iosConf.getVariant(target, configuration)
@@ -122,6 +123,10 @@ class IOSPlugin implements Plugin<Project> {
 
                     }
                 }
+                logger.info("Adding project directory: ${this.iosConf.mainTarget}-Debug")
+                iosConf.xCodeProjectDirectories["${this.iosConf.mainTarget}-Debug".toString()] =
+                    new File(iosSingleVariantBuilder.tmpDir(this.iosConf.mainTarget, 'Debug'),
+                    project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
             }
         }
     }

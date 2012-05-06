@@ -1,13 +1,17 @@
 package com.apphance.ameba.ios
 
+import java.io.File;
+
 import groovy.io.FileType
 import groovy.xml.XmlUtil
 
+import org.apache.tools.ant.filters.StringInputStream;
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import com.apphance.ameba.ProjectHelper;
+import com.apphance.ameba.ios.plugins.apphance.IOSApphanceSourceHelper;
 
 /**
  * Helper parsing PBX project file.
@@ -24,6 +28,7 @@ class PbxProjectHelper {
     private int hash = 0
     boolean hasApphance = false
     def projectFile = null
+    IOSApphanceSourceHelper apphanceSourceHelper = new IOSApphanceSourceHelper()
 
     Object getProperty(Object object, String propertyName) {
         def returnObject = null
@@ -89,7 +94,6 @@ class PbxProjectHelper {
         XmlParser parser = new XmlParser(false, false)
         logger.debug("Received: ${outBuff}")
         def root = parser.parseText(outBuff.toString())
-
         return root
     }
 
@@ -260,62 +264,12 @@ class PbxProjectHelper {
         }
     }
 
-    def findAppDelegateFile(File projectRootDirectory) {
-        def appFilename = []
-        projectRootDirectory.traverse([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
-            if (it.name.endsWith(".h") && it.text.contains("UIApplicationDelegate")) {
-                appFilename << it.canonicalPath
-                logger.lifecycle("Application delegate found in file " + it)
-            }
-        }
-        return appFilename
-    }
-
-    void addApphanceInit(File projectRootDirectory, String appKey) {
-        def launchingPattern = /(application.*didFinishLaunchingWithOptions[^\n]*\s+\{)/
-        def initApphance = "[APHLogger startNewSessionWithApplicationKey:@\"" + "${appKey}" + "\" apphanceMode:kAPHApphanceModeQA];"
-        def setExceptionHandler = "NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);"
-        def appFilename = findAppDelegateFile(projectRootDirectory)
-        if (appFilename.count == 0) {
-            throw new GradleException("Cannot find file with UIApplicationDelegate")
-        }
-        appFilename.each {
-            it = it.replace(".h", ".m")
-            File appDelegateFile = new File(it)
-            if (appDelegateFile.exists()) {
-                File newAppDelegate = new File("newAppDelegate.m")
-                newAppDelegate.delete()
-                newAppDelegate.withWriter { out ->
-                     out << appDelegateFile.text.replaceAll(launchingPattern, "\$1"+initApphance+setExceptionHandler)
-                }
-                appDelegateFile.delete()
-                appDelegateFile.withWriter { out ->
-                    out << newAppDelegate.text
-                }
-                newAppDelegate.delete()
-            }
-        }
-
-    }
-
-    void addApphanceToPch(File pchFile) {
-        logger.lifecycle("Adding apphance header to file " + pchFile)
-        File newPch = new File("newPch.pch")
-        newPch.delete()
-        newPch.withWriter { out ->
-            out << pchFile.text.replace("#ifdef __OBJC__", "#ifdef __OBJC__\n#import <Apphance-iOS/APHLogger.h>")
-        }
-        pchFile.delete()
-        pchFile.withWriter { out ->
-            out << newPch.text
-        }
-        newPch.delete()
-    }
 
     String addApphanceToProject(File projectRootDirectory, File xcodeProject, String targetName, String configurationName, String appKey) {
         logger.lifecycle("Adding Apphance to target " + targetName + " configuration " + configurationName)
         rootObject = getParsedProject(new File(xcodeProject, PROJECT_PBXPROJ), targetName)
         def project = getObject(getProperty(rootObject.dict, "rootObject").text())
+        IOSApphanceSourceHelper sourceHelper = this.apphanceSourceHelper
         getProperty(project, "targets").'*'.each { target ->
             def targetText = target.text()
             if (getProperty(getObject("${targetText}"), "name").text().equals(targetName)) {
@@ -334,7 +288,7 @@ class PbxProjectHelper {
                     def buildConfigurationList = getProperty(getObject("${targetText}"), "buildConfigurationList")
                     getProperty(getObject(buildConfigurationList.text()), "buildConfigurations").'*'.each { configuration ->
                         if (getProperty(getObject(configuration.text()), "name").text().equals(configurationName)) {
-                            addApphanceToPch(new File(projectRootDirectory, getProperty(getProperty(getObject(configuration.text()), "buildSettings"),
+                            sourceHelper.addApphanceToPch(new File(projectRootDirectory, getProperty(getProperty(getObject(configuration.text()), "buildSettings"),
                                 "GCC_PREFIX_HEADER").text()))
                         }
                     }
@@ -343,7 +297,7 @@ class PbxProjectHelper {
         }
         if (!hasApphance) {
             addFlagsAndPathsToProject(project, configurationName)
-            addApphanceInit(projectRootDirectory, appKey)
+            apphanceSourceHelper.addApphanceInit(projectRootDirectory, appKey)
         }
 
         File f = new File(projectRootDirectory, "newProject.pbxproj")
@@ -378,7 +332,6 @@ class PbxProjectHelper {
             }
         }
     }
-
     void replaceLogsWithApphance(File projectRootDir, Object sourcesPhase, Object project) {
         logger.lifecycle("Replacing APHLog logs with Apphance in ${projectRootDir}")
         def files = getProperty(sourcesPhase, "files")
@@ -394,4 +347,5 @@ class PbxProjectHelper {
                     }
                 }
     }
+
 }

@@ -307,6 +307,9 @@ class AndroidApphancePlugin implements Plugin<Project>{
                 }
             }
         }
+        if (!onCreateAdded) {
+            logger.warn("Could not find onCreate(). Apphance not added.")
+        }
     }
 
     private boolean isOnCreatePresent(File mainFile) {
