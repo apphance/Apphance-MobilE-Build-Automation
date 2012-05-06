@@ -50,6 +50,16 @@ class IOSReleaseListener implements IOSBuildListener {
         }
     }
 
+    private runPlistBuddy(Project project, String command, File targetPlistFile, boolean failOnError = true) {
+        String [] executedCommand = [
+            "/usr/libexec/PlistBuddy",
+            "-c",
+            command,
+            targetPlistFile
+        ]
+        projectHelper.executeCommand(project,executedCommand, failOnError)
+    }
+
     String getFolderPrefix(IOSBuilderInfo bi) {
         return "${releaseConf.projectDirectoryName}/${conf.fullVersionString}/${bi.target}/${bi.configuration}"
     }
@@ -226,14 +236,14 @@ class IOSReleaseListener implements IOSBuildListener {
     void prepareSimulatorBundleFile(Project project, IOSBuilderInfo bi, String family) {
         AmebaArtifact file = new AmebaArtifact()
         file.name = "Simulator build for ${family}"
-        file.url = new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
-        file.location = new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
+        file.url = new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image-${conf.versionString}_${conf.versionCode}.dmg")
+        file.location = new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image-${conf.versionString}_${conf.versionCode}.dmg")
         file.location.parentFile.mkdirs()
         file.location.delete()
         def File tmpDir = File.createTempFile("${conf.projectName}-${bi.target}-${family}-simulator",".tmp")
         tmpDir.delete()
         tmpDir.mkdir()
-        def destDir = new File(tmpDir,"${bi.target} (${family}_Simulator).app")
+        def destDir = new File(tmpDir,"${bi.target} (${family}_Simulator) ${conf.versionString}_${conf.versionCode}.app")
         destDir.mkdir()
         rsyncTemplatePreservingExecutableFlag(project,destDir)
         File embedDir = new File(destDir, "Contents/Resources/EmbeddedApp")
@@ -242,7 +252,8 @@ class IOSReleaseListener implements IOSBuildListener {
         rsyncEmbeddedAppPreservingExecutableFlag(project,sourceApp, embedDir)
         updateBundleId(project, bi, destDir)
         resampleIcon(project, destDir)
-        updateDeviceFamily(family, embedDir, bi, project)
+        updateDeviceFamily(project, family, embedDir, bi)
+        updateVersions(project, embedDir, bi, conf)
         String [] prepareDmgCommand = [
             "hdiutil",
             "create",
@@ -280,30 +291,20 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
 
-    private updateDeviceFamily(String device, embedDir, IOSBuilderInfo bi, Project project) {
+    private updateDeviceFamily(Project project, String device, File embedDir, IOSBuilderInfo bi) {
         File targetPlistFile = new File(embedDir, "${bi.target}.app/Info.plist")
-        String [] deleteDeviceFamilyCommand = [
-            "/usr/libexec/PlistBuddy",
-            "-c",
-            "Delete UIDeviceFamily",
-            targetPlistFile
-        ]
-        projectHelper.executeCommand(project, deleteDeviceFamilyCommand, false)
-        String [] addDeviceFamilyCommand = [
-            "/usr/libexec/PlistBuddy",
-            "-c",
-            "Add UIDeviceFamily array",
-            targetPlistFile
-        ]
-        projectHelper.executeCommand(project, addDeviceFamilyCommand)
+        runPlistBuddy(project, 'Delete UIDeviceFamily', targetPlistFile, false)
+        runPlistBuddy(project, 'Add UIDeviceFamily array', targetPlistFile)
         String family = (device == "iPhone" ? "1" : "2")
-        String [] updateDeviceFamilyCommand = [
-            "/usr/libexec/PlistBuddy",
-            "-c",
-            "Add UIDeviceFamily:0 integer ${family}",
-            targetPlistFile
-        ]
-        projectHelper.executeCommand(project, updateDeviceFamilyCommand)
+        runPlistBuddy(project, "Add UIDeviceFamily:0 integer ${family}", targetPlistFile)
+    }
+
+    private updateVersions(Project project, File embedDir, IOSBuilderInfo bi, ProjectConfiguration conf) {
+        File targetPlistFile = new File(embedDir, "${bi.target}.app/Info.plist")
+        runPlistBuddy(project, 'Delete CFBundleVersion', targetPlistFile, false)
+        runPlistBuddy(project, "Add CFBundleVersion string ${conf.versionCode}", targetPlistFile)
+        runPlistBuddy(project, 'Delete CFBundleShortVersionString', targetPlistFile, false)
+        runPlistBuddy(project, "Add CFBundleShortVersionString string ${conf.versionString}", targetPlistFile)
     }
 
     private resampleIcon(Project project, File tmpDir) {
@@ -319,12 +320,7 @@ class IOSReleaseListener implements IOSBuildListener {
 
     private updateBundleId(Project project, IOSBuilderInfo bi, File tmpDir) {
         def bundleId = MPParser.readBundleIdFromProvisionFile(bi.mobileprovisionFile.toURI().toURL())
-        String [] setBundleIdCommand = [
-            "/usr/libexec/PlistBuddy",
-            "-c",
-            "Set :CFBundleIdentifier ${bundleId}.launchsim",
-            new File(tmpDir,"Contents/Info.plist")
-        ]
-        projectHelper.executeCommand(project, setBundleIdCommand)
+        File contentsPlist = new File(tmpDir,"Contents/Info.plist")
+        runPlistBuddy(project, "Set :CFBundleIdentifier ${bundleId}.launchsim", contentsPlist)
     }
 }

@@ -1,7 +1,10 @@
 package com.apphance.ameba.ios.plugins.apphance
 
-import groovy.io.FileType;
+import groovy.io.FileType
 
+import java.io.File
+
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -18,7 +21,7 @@ import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.PbxProjectHelper
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
-import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleVariantBuilder;
+import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleVariantBuilder
 
 /**
  * Plugin for all apphance-relate IOS tasks.
@@ -141,7 +144,7 @@ class IOSApphancePlugin implements Plugin<Project> {
         return apphancePresent
     }
 
-        static public final String DESCRIPTION =
+    static public final String DESCRIPTION =
 """This plugins provides automated adding of Apphance libraries to the project.
 """
 

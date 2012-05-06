@@ -1,0 +1,569 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		671DF93A1510CBB5001613B7 /* Apphance-iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671DF9391510CBB5001613B7 /* Apphance-iOS.framework */; };
+		671DF93C1510CCD1001613B7 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671DF93B1510CCD1001613B7 /* QuartzCore.framework */; };
+		671DF93E1510CCD7001613B7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671DF93D1510CCD7001613B7 /* AudioToolbox.framework */; };
+		671DF9401510CCE8001613B7 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671DF93F1510CCE8001613B7 /* CoreLocation.framework */; };
+		671DF9421510CCF2001613B7 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671DF9411510CCF2001613B7 /* CoreTelephony.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		671DF9441510CCFE001613B7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671DF9431510CCFE001613B7 /* SystemConfiguration.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		D382B71614703FE500E9CC9B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71514703FE500E9CC9B /* UIKit.framework */; };
+		D382B71814703FE500E9CC9B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71714703FE500E9CC9B /* Foundation.framework */; };
+		D382B71A14703FE500E9CC9B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71914703FE500E9CC9B /* CoreGraphics.framework */; };
+		D382B72014703FE500E9CC9B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D382B71E14703FE500E9CC9B /* InfoPlist.strings */; };
+		D382B72214703FE500E9CC9B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D382B72114703FE500E9CC9B /* main.m */; };
+		D382B72614703FE500E9CC9B /* gradleXCodeAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D382B72514703FE500E9CC9B /* gradleXCodeAppDelegate.m */; };
+		D382B72914703FE500E9CC9B /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D382B72714703FE500E9CC9B /* MainStoryboard_iPhone.storyboard */; };
+		D382B72C14703FE500E9CC9B /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D382B72A14703FE500E9CC9B /* MainStoryboard_iPad.storyboard */; };
+		D382B72F14703FE500E9CC9B /* gradleXCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D382B72E14703FE500E9CC9B /* gradleXCodeViewController.m */; };
+		D382B73714703FE500E9CC9B /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B73614703FE500E9CC9B /* SenTestingKit.framework */; };
+		D382B73814703FE500E9CC9B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71514703FE500E9CC9B /* UIKit.framework */; };
+		D382B73914703FE500E9CC9B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71714703FE500E9CC9B /* Foundation.framework */; };
+		D382B74114703FE500E9CC9B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D382B73F14703FE500E9CC9B /* InfoPlist.strings */; };
+		D382B74414703FE500E9CC9B /* GradleXCodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D382B74314703FE500E9CC9B /* GradleXCodeTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D382B73A14703FE500E9CC9B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D382B70814703FE500E9CC9B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D382B71014703FE500E9CC9B;
+			remoteInfo = GradleXCode;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		671DF9381510CA8F001613B7 /* GradleXCode copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GradleXCode copy-Info.plist"; path = "/Users/blazejmarcinkiewicz/projects/Ameba/testProjects/ios/GradleXCodeWithApphance/GradleXCode copy-Info.plist"; sourceTree = "<absolute>"; };
+		671DF9391510CBB5001613B7 /* Apphance-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Apphance-iOS.framework"; path = "GradleXCode/Apphance-iOS.framework"; sourceTree = "<group>"; };
+		671DF93B1510CCD1001613B7 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		671DF93D1510CCD7001613B7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		671DF93F1510CCE8001613B7 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		671DF9411510CCF2001613B7 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		671DF9431510CCFE001613B7 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		D382B71114703FE500E9CC9B /* GradleXCodeWithApphance.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GradleXCodeWithApphance.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D382B71514703FE500E9CC9B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		D382B71714703FE500E9CC9B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		D382B71914703FE500E9CC9B /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		D382B71D14703FE500E9CC9B /* GradleXCode-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GradleXCode-Info.plist"; sourceTree = "<group>"; };
+		D382B71F14703FE500E9CC9B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D382B72114703FE500E9CC9B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		D382B72314703FE500E9CC9B /* GradleXCode-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GradleXCode-Prefix.pch"; sourceTree = "<group>"; };
+		D382B72414703FE500E9CC9B /* gradleXCodeAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gradleXCodeAppDelegate.h; sourceTree = "<group>"; };
+		D382B72514703FE500E9CC9B /* gradleXCodeAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = gradleXCodeAppDelegate.m; sourceTree = "<group>"; };
+		D382B72814703FE500E9CC9B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
+		D382B72B14703FE500E9CC9B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
+		D382B72D14703FE500E9CC9B /* gradleXCodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gradleXCodeViewController.h; sourceTree = "<group>"; };
+		D382B72E14703FE500E9CC9B /* gradleXCodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = gradleXCodeViewController.m; sourceTree = "<group>"; };
+		D382B73514703FE500E9CC9B /* GradleXCodeTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GradleXCodeTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D382B73614703FE500E9CC9B /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		D382B73E14703FE500E9CC9B /* GradleXCodeTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GradleXCodeTests-Info.plist"; sourceTree = "<group>"; };
+		D382B74014703FE500E9CC9B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		D382B74214703FE500E9CC9B /* GradleXCodeTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GradleXCodeTests.h; sourceTree = "<group>"; };
+		D382B74314703FE500E9CC9B /* GradleXCodeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GradleXCodeTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D382B70E14703FE500E9CC9B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				671DF9441510CCFE001613B7 /* SystemConfiguration.framework in Frameworks */,
+				671DF9421510CCF2001613B7 /* CoreTelephony.framework in Frameworks */,
+				671DF9401510CCE8001613B7 /* CoreLocation.framework in Frameworks */,
+				671DF93E1510CCD7001613B7 /* AudioToolbox.framework in Frameworks */,
+				671DF93C1510CCD1001613B7 /* QuartzCore.framework in Frameworks */,
+				D382B71614703FE500E9CC9B /* UIKit.framework in Frameworks */,
+				D382B71814703FE500E9CC9B /* Foundation.framework in Frameworks */,
+				D382B71A14703FE500E9CC9B /* CoreGraphics.framework in Frameworks */,
+				671DF93A1510CBB5001613B7 /* Apphance-iOS.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D382B73114703FE500E9CC9B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D382B73714703FE500E9CC9B /* SenTestingKit.framework in Frameworks */,
+				D382B73814703FE500E9CC9B /* UIKit.framework in Frameworks */,
+				D382B73914703FE500E9CC9B /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D382B70614703FE500E9CC9B = {
+			isa = PBXGroup;
+			children = (
+				671DF9431510CCFE001613B7 /* SystemConfiguration.framework */,
+				671DF9411510CCF2001613B7 /* CoreTelephony.framework */,
+				671DF93F1510CCE8001613B7 /* CoreLocation.framework */,
+				671DF93D1510CCD7001613B7 /* AudioToolbox.framework */,
+				671DF93B1510CCD1001613B7 /* QuartzCore.framework */,
+				D382B71B14703FE500E9CC9B /* GradleXCode */,
+				D382B73C14703FE500E9CC9B /* GradleXCodeTests */,
+				D382B71414703FE500E9CC9B /* Frameworks */,
+				D382B71214703FE500E9CC9B /* Products */,
+				671DF9381510CA8F001613B7 /* GradleXCode copy-Info.plist */,
+			);
+			sourceTree = "<group>";
+		};
+		D382B71214703FE500E9CC9B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D382B71114703FE500E9CC9B /* GradleXCodeWithApphance.app */,
+				D382B73514703FE500E9CC9B /* GradleXCodeTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D382B71414703FE500E9CC9B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				671DF9391510CBB5001613B7 /* Apphance-iOS.framework */,
+				D382B71514703FE500E9CC9B /* UIKit.framework */,
+				D382B71714703FE500E9CC9B /* Foundation.framework */,
+				D382B71914703FE500E9CC9B /* CoreGraphics.framework */,
+				D382B73614703FE500E9CC9B /* SenTestingKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D382B71B14703FE500E9CC9B /* GradleXCode */ = {
+			isa = PBXGroup;
+			children = (
+				D382B72414703FE500E9CC9B /* gradleXCodeAppDelegate.h */,
+				D382B72514703FE500E9CC9B /* gradleXCodeAppDelegate.m */,
+				D382B72714703FE500E9CC9B /* MainStoryboard_iPhone.storyboard */,
+				D382B72A14703FE500E9CC9B /* MainStoryboard_iPad.storyboard */,
+				D382B72D14703FE500E9CC9B /* gradleXCodeViewController.h */,
+				D382B72E14703FE500E9CC9B /* gradleXCodeViewController.m */,
+				D382B71C14703FE500E9CC9B /* Supporting Files */,
+			);
+			path = GradleXCode;
+			sourceTree = "<group>";
+		};
+		D382B71C14703FE500E9CC9B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				D382B71D14703FE500E9CC9B /* GradleXCode-Info.plist */,
+				D382B71E14703FE500E9CC9B /* InfoPlist.strings */,
+				D382B72114703FE500E9CC9B /* main.m */,
+				D382B72314703FE500E9CC9B /* GradleXCode-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D382B73C14703FE500E9CC9B /* GradleXCodeTests */ = {
+			isa = PBXGroup;
+			children = (
+				D382B74214703FE500E9CC9B /* GradleXCodeTests.h */,
+				D382B74314703FE500E9CC9B /* GradleXCodeTests.m */,
+				D382B73D14703FE500E9CC9B /* Supporting Files */,
+			);
+			path = GradleXCodeTests;
+			sourceTree = "<group>";
+		};
+		D382B73D14703FE500E9CC9B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				D382B73E14703FE500E9CC9B /* GradleXCodeTests-Info.plist */,
+				D382B73F14703FE500E9CC9B /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D382B71014703FE500E9CC9B /* GradleXCodeWithApphance */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D382B74714703FE500E9CC9B /* Build configuration list for PBXNativeTarget "GradleXCodeWithApphance" */;
+			buildPhases = (
+				D382B70D14703FE500E9CC9B /* Sources */,
+				D382B70E14703FE500E9CC9B /* Frameworks */,
+				D382B70F14703FE500E9CC9B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GradleXCodeWithApphance;
+			productName = GradleXCode;
+			productReference = D382B71114703FE500E9CC9B /* GradleXCodeWithApphance.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D382B73414703FE500E9CC9B /* GradleXCodeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D382B74A14703FE500E9CC9B /* Build configuration list for PBXNativeTarget "GradleXCodeTests" */;
+			buildPhases = (
+				D382B73014703FE500E9CC9B /* Sources */,
+				D382B73114703FE500E9CC9B /* Frameworks */,
+				D382B73214703FE500E9CC9B /* Resources */,
+				D382B73314703FE500E9CC9B /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D382B73B14703FE500E9CC9B /* PBXTargetDependency */,
+			);
+			name = GradleXCodeTests;
+			productName = GradleXCodeTests;
+			productReference = D382B73514703FE500E9CC9B /* GradleXCodeTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D382B70814703FE500E9CC9B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = Apphance;
+			};
+			buildConfigurationList = D382B70B14703FE500E9CC9B /* Build configuration list for PBXProject "GradleXCode" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = D382B70614703FE500E9CC9B;
+			productRefGroup = D382B71214703FE500E9CC9B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D382B71014703FE500E9CC9B /* GradleXCodeWithApphance */,
+				D382B73414703FE500E9CC9B /* GradleXCodeTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D382B70F14703FE500E9CC9B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D382B72014703FE500E9CC9B /* InfoPlist.strings in Resources */,
+				D382B72914703FE500E9CC9B /* MainStoryboard_iPhone.storyboard in Resources */,
+				D382B72C14703FE500E9CC9B /* MainStoryboard_iPad.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D382B73214703FE500E9CC9B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D382B74114703FE500E9CC9B /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D382B73314703FE500E9CC9B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D382B70D14703FE500E9CC9B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D382B72214703FE500E9CC9B /* main.m in Sources */,
+				D382B72614703FE500E9CC9B /* gradleXCodeAppDelegate.m in Sources */,
+				D382B72F14703FE500E9CC9B /* gradleXCodeViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D382B73014703FE500E9CC9B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D382B74414703FE500E9CC9B /* GradleXCodeTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D382B73B14703FE500E9CC9B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D382B71014703FE500E9CC9B /* GradleXCodeWithApphance */;
+			targetProxy = D382B73A14703FE500E9CC9B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		D382B71E14703FE500E9CC9B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D382B71F14703FE500E9CC9B /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		D382B72714703FE500E9CC9B /* MainStoryboard_iPhone.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D382B72814703FE500E9CC9B /* en */,
+			);
+			name = MainStoryboard_iPhone.storyboard;
+			sourceTree = "<group>";
+		};
+		D382B72A14703FE500E9CC9B /* MainStoryboard_iPad.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D382B72B14703FE500E9CC9B /* en */,
+			);
+			name = MainStoryboard_iPad.storyboard;
+			sourceTree = "<group>";
+		};
+		D382B73F14703FE500E9CC9B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D382B74014703FE500E9CC9B /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		D382B74514703FE500E9CC9B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D382B74614703FE500E9CC9B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D382B74814703FE500E9CC9B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/GradleXCode\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "GradleXCode/GradleXCode-Prefix.pch";
+				INFOPLIST_FILE = "GradleXCode/GradleXCode-Info.plist";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		D382B74914703FE500E9CC9B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/GradleXCode\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "GradleXCode/GradleXCode-Prefix.pch";
+				INFOPLIST_FILE = "GradleXCode/GradleXCode-Info.plist";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		D382B74B14703FE500E9CC9B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/GradleXCode.app/GradleXCode";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "GradleXCode/GradleXCode-Prefix.pch";
+				INFOPLIST_FILE = "GradleXCodeTests/GradleXCodeTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		D382B74C14703FE500E9CC9B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/GradleXCode.app/GradleXCode";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "GradleXCode/GradleXCode-Prefix.pch";
+				INFOPLIST_FILE = "GradleXCodeTests/GradleXCodeTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+		D382B75114704A4700E9CC9B /* BasicConfiguration */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = BasicConfiguration;
+		};
+		D382B75214704A4700E9CC9B /* BasicConfiguration */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/GradleXCode\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "GradleXCode/GradleXCode-Prefix.pch";
+				INFOPLIST_FILE = "GradleXCode/GradleXCode-Info.plist";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = BasicConfiguration;
+		};
+		D382B75314704A4700E9CC9B /* BasicConfiguration */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/GradleXCode.app/GradleXCode";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "GradleXCode/GradleXCode-Prefix.pch";
+				INFOPLIST_FILE = "GradleXCodeTests/GradleXCodeTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = BasicConfiguration;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D382B70B14703FE500E9CC9B /* Build configuration list for PBXProject "GradleXCode" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D382B74514703FE500E9CC9B /* Debug */,
+				D382B74614703FE500E9CC9B /* Release */,
+				D382B75114704A4700E9CC9B /* BasicConfiguration */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D382B74714703FE500E9CC9B /* Build configuration list for PBXNativeTarget "GradleXCodeWithApphance" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D382B74814703FE500E9CC9B /* Debug */,
+				D382B74914703FE500E9CC9B /* Release */,
+				D382B75214704A4700E9CC9B /* BasicConfiguration */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D382B74A14703FE500E9CC9B /* Build configuration list for PBXNativeTarget "GradleXCodeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D382B74B14703FE500E9CC9B /* Debug */,
+				D382B74C14703FE500E9CC9B /* Release */,
+				D382B75314704A4700E9CC9B /* BasicConfiguration */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D382B70814703FE500E9CC9B /* Project object */;
+}
