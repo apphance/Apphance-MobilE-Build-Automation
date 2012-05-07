@@ -43,7 +43,7 @@ class IOSSingleVariantBuilder {
     private checkVersions() {
         logger.info("Application version: ${conf.versionCode} string: ${conf.versionString}" )
         if (conf.versionCode == 0) {
-            throw new GradleException("The CFBundleVersion key is missing from ${iosConf.plistFile} or its value is 0. Please add it or increase the value.")
+            throw new GradleException("The CFBundleVersion key is missing from ${iosConf.plistFile} or its value is 0. Please add it or increase the value. Integers are only valid values")
         }
         if (conf.versionString.startsWith('NOVERSION')) {
             throw new GradleException("The CFBundleShortVersionString key is missing from ${iosConf.plistFile}. Please add it.")
