@@ -342,7 +342,7 @@ class PbxProjectHelper {
                 value: 'APHLog', summary: true) {
                     fileset(dir: projectRootDir) {
                         files.each {
-                            property = getProperty(getObject(it.text()), "fileRef")
+                            def property = getProperty(getObject(it.text()), "fileRef")
                             if (property != null){
                             	include (name : objects[property.text()])
 			    }
