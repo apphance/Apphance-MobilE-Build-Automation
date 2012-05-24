@@ -53,18 +53,36 @@ class IOSSingleVariantBuilder {
     void buildNormalVariant(Project project, String target, String configuration) {
         checkVersions()
         logger.lifecycle( "\n\n\n=== Building target ${target}, configuration ${configuration}  ===")
-        projectHelper.executeCommand(project,tmpDir(target,configuration), iosConf.getXCodeBuildExecutionPath(target,configuration) + [
-            "-target",
-            target,
-            "-configuration",
-            configuration,
-            "-sdk",
-            iosConf.sdk
-        ])
-        IOSBuilderInfo bi = buidSingleBuilderInfo(target, configuration, 'iphoneos', project)
-        buildListeners.each {
-            it.buildDone(project, bi)
-        }
+        if(target != "Frankified"){ 
+        	projectHelper.executeCommand(project,tmpDir(target,configuration), iosConf.getXCodeBuildExecutionPath(target,configuration) + [
+            		"-target",
+            		target,
+            		"-configuration",
+            		configuration,
+            		"-sdk",
+            		iosConf.sdk
+        	])
+ 
+	    		IOSBuilderInfo bi = buidSingleBuilderInfo(target, configuration, 'iphoneos', project)
+            		buildListeners.each {
+            		it.buildDone(project, bi)
+			}
+	}
+	else{
+                projectHelper.executeCommand(project,tmpDir(target,configuration), iosConf.getXCodeBuildExecutionPath(target,configuration) + [
+            		"-target",
+            		target,
+            		"-configuration",
+            		configuration,
+            		"-sdk",
+            		iosConf.simulatorsdk,
+            		"-arch",
+            		"i386"
+                	])
+           
+
+            	}
+    	
     }
 
     void buildDebugVariant(Project project, String target) {

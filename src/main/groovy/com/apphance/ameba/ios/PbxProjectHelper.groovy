@@ -141,17 +141,20 @@ class PbxProjectHelper {
         getProperty(frameworks, "files").'*'.each { file ->
             // find file reference in objects
             def fileString = file.text()
-            def fileRef = getProperty(getObject("${fileString}"), "fileRef").text()
-            def frameworkName = getProperty(getObject("${fileRef}"), "name")
-            def frameworkPath = getProperty(getObject("${fileRef}"), "path")
-            if ((frameworkName != null && frameworkName.text().toLowerCase().contains(name)) || (frameworkPath != null && frameworkPath.text().toLowerCase().endsWith(name))) {
-                // apphance already added
-                foundFramework = true
-                if (name.equals("apphance")) {
-                    hasApphance = true
-                }
-                return
-            }
+            def property = getProperty(getObject("${fileString}"), "fileRef")
+            if (property != null) {
+            	def fileRef = property.text()
+            	def frameworkName = getProperty(getObject("${fileRef}"), "name")
+            	def frameworkPath = getProperty(getObject("${fileRef}"), "path")
+            	if ((frameworkName != null && frameworkName.text().toLowerCase().contains(name)) || (frameworkPath != null && frameworkPath.text().toLowerCase().endsWith(name))) {
+                	// apphance already added
+                	foundFramework = true
+                	if (name.equals("apphance")) {
+                    	hasApphance = true
+                	}
+                	return
+            	}
+	   }
         }
         return foundFramework
     }
