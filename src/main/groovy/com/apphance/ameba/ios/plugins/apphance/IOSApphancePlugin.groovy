@@ -114,12 +114,12 @@ class IOSApphancePlugin implements Plugin<Project> {
             }
         }
 
-        InputStream apphanceZip = this.class.getResourceAsStream("Apphance-iOS.framework.zip")
-        def projectApphanceZip = new File(libsDir, "apphance.zip")
-        projectApphanceZip.delete()
-        projectApphanceZip.withOutputStream { out ->
-            out << apphanceZip.getBytes()
-        }
+
+        File projectApphanceZip =new File(libsDir, "apphance.zip")
+        libsApphance.delete()
+        URL apphanceUrl = new URL("http://dev.polidea.pl/ext/32092342903/latest_ios_apphance.zip")
+        projectApphanceZip << apphanceUrl.getContent()
+	projectApphanceZip.close()
 
         logger.lifecycle("Unpacking file " + projectApphanceZip)
         logger.lifecycle("Exists " + projectApphanceZip.exists())
