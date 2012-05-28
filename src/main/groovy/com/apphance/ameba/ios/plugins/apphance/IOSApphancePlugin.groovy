@@ -115,9 +115,9 @@ class IOSApphancePlugin implements Plugin<Project> {
         }
 
 
-        File projectApphanceZip =new File(libsDir, "apphance.zip")
+        def projectApphanceZip =new File(libsDir, "apphance.zip")
         libsApphance.delete()
-        URL apphanceUrl = new URL("http://dev.polidea.pl/ext/32092342903/latest_ios_apphance.zip")
+        def apphanceUrl = new URL("http://dev.polidea.pl/ext/32092342903/latest_ios_apphance.zip")
         projectApphanceZip << apphanceUrl.getContent()
 	projectApphanceZip.close()
 
