@@ -76,6 +76,7 @@ class CedarPlugin implements Plugin<Project> {
                     iosConf.simulatorsdk
                 ])
             }
+         
         }
         task.dependsOn(project.prepareCedarTemplates)
         task.dependsOn(project.readProjectConfiguration)
@@ -96,6 +97,7 @@ class CedarPlugin implements Plugin<Project> {
                 def family = "iPhone"
                 logger.lifecycle("Running cedar tests for ${family}")
                 File cfFixedDirectory = new File (conf.tmpDirectory, "cedar/${family}/tests")
+                                
                 cfFixedDirectory.mkdirs()
                 cfFixedDirectory.deleteDir();
                 def ant = new AntBuilder()
@@ -108,13 +110,16 @@ export DYLD_ROOT_PATH="${platform}${IPHONE_SIMULATOR_SDK}${simulator}.sdk/"
 export IPHONE_SIMULATOR_ROOT="${platform}${IPHONE_SIMULATOR_SDK}${simulator}.sdk/"
 export CFFIXED_USER_HOME=${cfFixedDirectory}
 export CEDAR_HEADLESS_SPECS="1"
-export CEDAR_REPORTER_CLASS="CDRJenkinsReporter"
+export CEDAR_REPORTER_CLASS="CDRColorizedReporter"
                     """
                 File cedarOutput = new File(conf.tmpDirectory,"cedar_output_${family}.txt")
 
+                def configuration = "Debug"
+                def tmpProjectDir = iosConf.xCodeProjectDirectories[iosConf.getVariant(target,configuration)].parentFile
+
                 baseScript += """
 echo Running cedar tests in directory ${cfFixedDirectory}
-${project.rootDir}/build/Debug-iphonesimulator/${target}.app/${target} -RegisterForSystemEvents >${cedarOutput} 2>&1
+${tmpProjectDir}/build/Debug-iphonesimulator/${target}.app/${target} -RegisterForSystemEvents >${cedarOutput} 2>&1
 RESULT=\$?
 cat ${cedarOutput}
 exit \$RESULT
