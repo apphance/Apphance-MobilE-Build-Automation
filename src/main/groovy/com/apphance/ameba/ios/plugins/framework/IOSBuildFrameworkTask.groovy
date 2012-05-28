@@ -123,9 +123,9 @@ class IOSBuildFrameworkTask extends DefaultTask {
     private setLinkLibraries() {
         logger.lifecycle("Set link libraries")
         this.iphoneosLibrary = new File(project.buildDir, frameworkConfiguration + '-' +
-                        'iphoneos/lib' +  conf.projectName + '.a')
+                        'iphoneos/lib' + frameworkTarget + '.a')
         this.iphonesimulatorLibrary = new File(project.buildDir, frameworkConfiguration + '-' +
-                        'iphonesimulator/lib' +  conf.projectName + '.a')
+                        'iphonesimulator/lib' + frameworkTarget + '.a')
     }
 
     private createSymlinks() {
@@ -179,7 +179,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
     }
 
     private xcodeBuilds() {
-        projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(frameworkTarget, frameworkConfiguration) + [
+        projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
             "-target",
             frameworkTarget,
             "-configuration",
@@ -191,7 +191,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
             "clean",
             "build"
         ])
-        projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(frameworkTarget, frameworkConfiguration) + [
+        projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
             "-target",
             frameworkTarget,
             "-configuration",
