@@ -109,13 +109,14 @@ class IOSReleaseListener implements IOSBuildListener {
         AmebaArtifact ipaArtifact = prepareIpaArtifact(bi)
         ipaArtifact.location.parentFile.mkdirs()
         ipaArtifact.location.delete()
+        def appList = bi.buildDirectory.list([accept:{d, f-> f ==~ /.*\.app/ }] as FilenameFilter)
         String[] command = [
             "/usr/bin/xcrun",
             "-sdk",
             iosConf.sdk,
             "PackageApplication",
             "-v",
-            new File(bi.buildDirectory,"${bi.target}.app"),
+            new File(bi.buildDirectory, appList[0]),
             "-o",
             ipaArtifact.location,
             "--embed",

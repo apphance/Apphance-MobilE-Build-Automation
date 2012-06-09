@@ -394,7 +394,7 @@ class AndroidPlugin implements Plugin<Project> {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
             androidConf.variants.each { variant ->
-                new AntBuilder().sync(toDir : androidConf.tmpDirs[variant], overwrite:true, failonerror: false, verbose:false) {
+                new AntBuilder().sync(toDir : androidConf.tmpDirs[variant], overwrite:false, failonerror: false, verbose:false) {
                     fileset(dir : "${project.rootDir}/") {
                         exclude(name: androidConf.tmpDirs[variant].absolutePath + '/**/*')
                         conf.sourceExcludes.each {

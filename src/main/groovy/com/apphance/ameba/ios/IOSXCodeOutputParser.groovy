@@ -89,24 +89,34 @@ class IOSXCodeOutputParser {
         return result[0]
     }
 
-    static File findMobileProvisionFile(Project project, String target, String configuration) {
+    static File findMobileProvisionFile(Project project, String target, String configuration,
+        boolean checkForNewBundleId = true) {
         IOSProjectConfiguration iosConf = getIosProjectConfiguration(project)
-        File f = new File(iosConf.distributionDirectory,"${target}-${configuration}.mobileprovision")
+
+        File distributionDirectory = iosConf.distributionDirectory
+        if (checkForNewBundleId && iosConf.distributionDirectories[configuration] != null) {
+            distributionDirectory = iosConf.distributionDirectories[configuration];
+            if (!distributionDirectory.exists()) {
+                throw new GradleException("The directory ${distributionDirectory} must exist\
+ and mobile provision files must be placed there")
+            }
+        }
+        File f = new File(distributionDirectory,"${target}-${configuration}.mobileprovision")
         if (f.exists()) {
             logger.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}" )
             return f
         }
-        f = new File(iosConf.distributionDirectory,"${target}.mobileprovision")
+        f = new File(distributionDirectory,"${target}.mobileprovision")
         if (f.exists()) {
             logger.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}" )
             return f
         }
-        f = new File(iosConf.distributionDirectory,"${iosConf.mainTarget}.mobileprovision")
+        f = new File(distributionDirectory,"${iosConf.mainTarget}.mobileprovision")
         if (f.exists()) {
             logger.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}" )
             return f
         }
-        iosConf.distributionDirectory.eachFile {
+        distributionDirectory.eachFile {
             if (it.name.endsWith('.mobileprovision')) {
                 f = it
             }
