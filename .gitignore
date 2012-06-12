@@ -13,6 +13,8 @@ testProjects/*/build
 testProjects/*/gen
 testProjects/*/ota
 testProjects/*/bin
+testProjects/android*/test/*/libs
+testProjects/android*/test/*/build
 proguard-project.txt
 local.properties
 emma

@@ -100,11 +100,12 @@ class AndroidTestPlugin implements Plugin<Project>{
 	private void readConfiguration(Project project) {
 		AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration(project)
 		use(PropertyCategory) {
-			androidTestDirectory = project.file(project.readProperty(AndroidTestProperty.TEST_DIRECTORY))
+			// TODO: what to do when no test directory exists ?? should I automaticly make one ??
+			//			androidTestDirectory = project.file(project.readProperty(AndroidTestProperty.TEST_DIRECTORY))
+			//			testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
+			//			testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
+			//			testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
 			rawDir = project.file( 'res/raw')
-			testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
-			testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
-			testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
 			emulatorName = project.rootDir.getAbsolutePath().replaceAll('[\\\\ /]','_')
 			emulatorTargetName = project.readProperty(AndroidTestProperty.EMULATOR_TARGET)
 			if (emulatorTargetName == null || emulatorTargetName.empty) {
@@ -556,6 +557,8 @@ class AndroidTestPlugin implements Plugin<Project>{
 		task.description = "Prepares file structure for Robotium test framework"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
 		// TODO:
+		// recreate configuration after creating test structure
+		// readConfiguration(project)
 	}
 
 	private void prepareAndroidRobolectricStructure(Project project){
@@ -568,11 +571,11 @@ class AndroidTestPlugin implements Plugin<Project>{
 		task << {
 			AndroidTestConvention convention = project.convention.plugins.androidTest
 			File path = new File(project.rootDir.path + convention.robolectricPath)
-			if(path.exists()){ 
+			if(path.exists()){
 				println "Robolectric test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
-				setUpRobolectricProject(path)
+				setUpRobolectricProject(project,path)
 			} else {
-				setUpRobolectricProject(path)
+				setUpRobolectricProject(project,path)
 				copyBuildGrade(path)
 				copyFirstTestActivity(path)
 			}
