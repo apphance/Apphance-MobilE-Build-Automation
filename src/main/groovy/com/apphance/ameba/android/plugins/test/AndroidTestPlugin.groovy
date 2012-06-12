@@ -559,6 +559,37 @@ class AndroidTestPlugin implements Plugin<Project>{
 		// TODO:
 		// recreate configuration after creating test structure
 		// readConfiguration(project)
+
+		task << {
+			AndroidTestConvention convention = project.convention.plugins.androidTest
+			File path = new File(project.rootDir.path + convention.robotiumPath)
+			if(path.exists()){
+				println "Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
+				setUpRobotiumProject(project,path)
+			} else {
+				setUpRobotiumProject(project,path)
+				//				copyBuildGrade(path)
+				//				copyFirstTestActivity(path)
+			}
+		}
+	}
+
+	private void setUpRobotiumProject(project, path){
+		// TODO:
+
+		String [] createCommand =[
+			'android',
+			'-v',
+			'create',
+			'test-project',
+			'-p',
+			'.',
+			'-m',
+			'../..',
+			'-n',
+			'test'
+		]
+		projectHelper.executeCommand(project, path, createCommand)
 	}
 
 	private void prepareAndroidRobolectricStructure(Project project){
