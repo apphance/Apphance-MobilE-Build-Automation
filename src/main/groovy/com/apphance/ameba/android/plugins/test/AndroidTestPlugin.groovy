@@ -563,33 +563,42 @@ class AndroidTestPlugin implements Plugin<Project>{
 		task << {
 			AndroidTestConvention convention = project.convention.plugins.androidTest
 			File path = new File(project.rootDir.path + convention.robotiumPath)
-			if(path.exists()){
-				println "Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
-				setUpRobotiumProject(project,path)
-			} else {
-				setUpRobotiumProject(project,path)
-				//				copyBuildGrade(path)
-				//				copyFirstTestActivity(path)
-			}
+			setUpAndroidUnitTestProject(project, path)
 		}
 	}
 
-	private void setUpRobotiumProject(project, path){
+	private void setUpAndroidUnitTestProject(Project project, File path){
 		// TODO:
-
-		String [] createCommand =[
-			'android',
-			'-v',
-			'create',
-			'test-project',
-			'-p',
-			'.',
-			'-m',
-			'../..',
-			'-n',
-			'test'
-		]
-		projectHelper.executeCommand(project, path, createCommand)
+		String[] command
+		if(path.exists()){
+			println "Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
+			command =[
+				'android',
+				'-v',
+				'update',
+				'test-project',
+				'-p',
+				'.',
+				'-m',
+				'../..'
+			]
+		} else {
+			println "No Robotium project detected, new one is going to be created"
+			path.mkdirs()
+			command = [
+				'android',
+				'-v',
+				'create',
+				'test-project',
+				'-p',
+				'.',
+				'-m',
+				'../..',
+				'-n',
+				'test'
+			]
+		}
+		projectHelper.executeCommand(project, path, command)
 	}
 
 	private void prepareAndroidRobolectricStructure(Project project){
