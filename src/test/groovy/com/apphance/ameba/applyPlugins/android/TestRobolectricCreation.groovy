@@ -30,7 +30,7 @@ class TestRobolectricCreation {
 		assert !roboPath.exists()
 		ProjectConnection connection = getProjectConnection(conventionsBase,"")
 		try {
-			BuildLauncher bl = connection.newBuild().forTasks('createRobolectricTestStructure');
+			BuildLauncher bl = connection.newBuild().forTasks('prepareRobolectric');
 			ByteArrayOutputStream baos = new ByteArrayOutputStream()
 			bl.setStandardOutput(baos)
 			bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
@@ -49,23 +49,24 @@ class TestRobolectricCreation {
 	public void testReCreatingRobolectric(){
 		ProjectConnection connection = getProjectConnection(conventionsBase,"")
 		try {
-			BuildLauncher bl = connection.newBuild().forTasks('createRobolectricTestStructure');
-			bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
-			bl.run()
-
 			def f = new File(roboPath.path + '/build.gradle');
-			assert f.exists()
+			assert !f.exists()
+			BuildLauncher bl = connection.newBuild().forTasks('prepareRobolectric');
+			bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+			bl.run()
+
 			String text = f.getText()
-			
-			f.write(text.replace('f', 'd'))
 
+			def replace = text.replace('f', 'd')
 
-			bl = connection.newBuild().forTasks('createRobolectricTestStructure');
+			f.write(replace)
+
+			bl = connection.newBuild().forTasks('prepareRobolectric');
 			bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
 			bl.run()
 			
-			
-			assertEquals( f.getText(), text)
+			def newText = f.getText()
+			assertEquals( newText, text)
 		} finally {
 			connection.close()
 		}

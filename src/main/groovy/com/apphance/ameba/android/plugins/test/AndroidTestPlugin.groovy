@@ -616,7 +616,6 @@ class AndroidTestPlugin implements Plugin<Project>{
 				setUpRobolectricProject(project,path)
 			} else {
 				setUpRobolectricProject(project,path)
-				copyBuildGrade(path)
 				copyFirstTestActivity(path)
 			}
 		}
@@ -629,6 +628,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 			downloadFile(project, it.toURI().toURL(), new File(path.path + File.separator + 'libs' + File.separator + it.name))
 		}
 		copyFindSdkGrade(path)
+		copyBuildGrade(path)
 	}
 
 	void downloadFile(Project project, URL url, File file) {
