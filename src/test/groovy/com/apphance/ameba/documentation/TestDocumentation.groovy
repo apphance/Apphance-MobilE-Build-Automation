@@ -5,8 +5,6 @@ import static org.junit.Assert.*
 import org.junit.AfterClass
 import org.junit.Test
 
-import com.apphance.ameba.unit.EmmaDumper
-
 class TestDocumentation {
     @Test
     public void testGenerateDocumentation() throws Exception {
@@ -15,10 +13,5 @@ class TestDocumentation {
         pluginsReference.delete()
         documentationBuilder.buildDocumentation()
         assertTrue(pluginsReference.exists())
-    }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
     }
 }

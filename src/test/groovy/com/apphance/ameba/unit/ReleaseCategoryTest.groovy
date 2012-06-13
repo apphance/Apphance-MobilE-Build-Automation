@@ -30,9 +30,4 @@ class ReleaseCategoryTest {
         assertEquals(new URL("http://www.example.com/"),baseUrl)
         assertEquals("test",directory)
     }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
-    }
 }

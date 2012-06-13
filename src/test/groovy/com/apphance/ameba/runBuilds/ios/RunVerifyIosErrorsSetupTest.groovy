@@ -13,7 +13,6 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.unit.EmmaDumper
 
 class RunVerifyIosErrorsSetupTest {
     static File testIosProject = new File("testProjects/ios/GradleXCode")
@@ -41,7 +40,6 @@ class RunVerifyIosErrorsSetupTest {
     @AfterClass
     static public void afterClass() {
         connection.close()
-        EmmaDumper.dumpEmmaCoverage()
     }
     String runTests(String ... tasks) {
         ByteArrayOutputStream os = new ByteArrayOutputStream()

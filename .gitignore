@@ -17,7 +17,6 @@ testProjects/android*/test/*/libs
 testProjects/android*/test/*/build
 proguard-project.txt
 local.properties
-emma
 .gradle
 /bin
 /build/
@@ -27,3 +26,13 @@ emma
 /.settings*
 /tmpCopy
 /coverage.ec
+
+*\.orig
+
+# Intellij IDEA
+ameba\.ipr
+ameba\.iws
+ameba\.iml
+\.idea
+/out
+

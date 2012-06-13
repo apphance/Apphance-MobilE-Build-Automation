@@ -93,11 +93,11 @@ class PropertyCategory {
             // skip setting = we already have some value
         } else if (defaultValue != null) {
             // or choose default if exists
-            project[property.propertyName] = defaultValue
+            project.ext[property.propertyName] = defaultValue
         } else if (options != null) {
             // or pre-select first option if present
             if (options.size > 0 && options[0] != null) {
-                project[property.propertyName] = options[0]
+                project.ext[property.propertyName] = options[0]
             }
         }
         System.out.println(s)
@@ -121,7 +121,11 @@ class PropertyCategory {
         return readPropertyOrEnvironmentVariable(project, property.propertyName)
     }
 
-    public static String readPropertyOrEnvironmentVariable(Project project, String propertyName) {
+    public static String readOptionalPropertyOrEnvironmentVariable(Project project, Enum property) {
+        return readOptionalPropertyOrEnvironmentVariable(project, property.propertyName)
+    }
+
+    public static String readPropertyOrEnvironmentVariable(Project project, String propertyName, boolean optional) {
         if (project.hasProperty(propertyName)) {
             return project[propertyName]
         } else if (System.getProperty(propertyName) != null){
@@ -130,10 +134,23 @@ class PropertyCategory {
             def envVariable = propertyName.toUpperCase().replace(".","_")
             def val = System.getenv(envVariable)
             if (val == null) {
+                if (optional) {
+                    return null
+                }
                 throw new GradleException("The property ${propertyName} was not defined (neither in project nor system) and ${envVariable} environment variable is missing.")
             }
             return val
         }
+    }
+
+    public static String readPropertyOrEnvironmentVariable(Project project, String propertyName) {
+        return readPropertyOrEnvironmentVariable(project, propertyName, false)
+    }
+
+
+
+    public static String readOptionalPropertyOrEnvironmentVariable(Project project, String propertyName) {
+        return readPropertyOrEnvironmentVariable(project, propertyName, true)
     }
 
     public static String isPropertyOrEnvironmentVariableDefined(Project project, Enum property) {

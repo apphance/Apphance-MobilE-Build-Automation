@@ -12,7 +12,6 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
 import com.apphance.ameba.ios.plugins.fonemonkey.FoneMonkeyProperty
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
 import com.apphance.ameba.ios.plugins.kif.KifProperty
-import com.apphance.ameba.unit.EmmaDumper
 
 class IOSPropertyTest {
     @Test
@@ -203,10 +202,5 @@ ios.framework.headers=Headers/test.h, Headers/test2.h
 ios.framework.resources=Resources/x.png
 ''',s)
         }
-    }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
     }
 }

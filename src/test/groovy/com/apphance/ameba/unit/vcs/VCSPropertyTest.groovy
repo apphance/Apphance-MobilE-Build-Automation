@@ -8,7 +8,6 @@ import org.junit.AfterClass
 import org.junit.Test
 
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.unit.EmmaDumper
 import com.apphance.ameba.vcs.plugins.git.GitProperty
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialProperty
 
@@ -71,10 +70,5 @@ hg.commit.user=Test Apphance <test@apphance.com>
 hg.commit.user=Test Apphance <test@apphance.com>
 ''',s)
         }
-    }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
     }
 }

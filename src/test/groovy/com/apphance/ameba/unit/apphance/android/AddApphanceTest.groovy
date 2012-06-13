@@ -8,7 +8,6 @@ import java.io.File
 import org.junit.*
 
 import com.apphance.ameba.android.AndroidManifestHelper
-import com.apphance.ameba.unit.EmmaDumper
 
 class AddApphanceTest {
 
@@ -53,10 +52,5 @@ class AddApphanceTest {
     void checkApphanceInstrumentation() {
         AndroidManifestHelper helper = new AndroidManifestHelper()
         assertTrue(helper.isApphanceInstrumentationPresent(new File('testProjects/android/')))
-    }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
     }
 }

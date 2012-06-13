@@ -9,7 +9,6 @@ import org.junit.Test
 
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.buildplugin.AndroidProjectProperty
-import com.apphance.ameba.unit.EmmaDumper
 
 class AndroidPropertyTest {
     @Test
@@ -52,10 +51,5 @@ android.excluded.builds=.*
 android.minSdk.target=android-8
 ''',s)
         }
-    }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
     }
 }

@@ -99,7 +99,7 @@ class IOSReleasePlugin implements Plugin<Project> {
                         logger.lifecycle("Skipping preparing artifact for ${id} -> excluded by ${iosConf.excludedBuilds}")
                     }
                 }
-                File mobileprovisionFile = IOSXCodeOutputParser.findMobileProvisionFile(project, target, configurations[0])
+                File mobileprovisionFile = IOSXCodeOutputParser.findMobileProvisionFile(project, target, configurations[0], true)
                 if (conf.versionString != null){
                     udids.put(target, MPParser.readUdids(mobileprovisionFile.toURI().toURL()))
                 } else {

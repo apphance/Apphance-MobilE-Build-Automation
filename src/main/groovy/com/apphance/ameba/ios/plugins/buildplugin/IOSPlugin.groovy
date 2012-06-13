@@ -18,6 +18,7 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
+import com.apphance.ameba.ios.MPParser;
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import com.sun.org.apache.xpath.internal.XPathAPI
 
@@ -58,7 +59,6 @@ class IOSPlugin implements Plugin<Project> {
             prepareBuildSingleVariantTask(project)
             project.task('buildAllSimulators', type: IOSBuildAllSimulatorsTask)
             prepareBuildAllTask(project)
-            prepareReplaceBundleIdPrefixTask(project)
             addIosSourceExcludes()
             project.prepareSetup.prepareSetupOperations << new PrepareIOSSetupOperation()
             project.verifySetup.verifySetupOperations << new  VerifyIOSSetupOperation()
@@ -114,6 +114,7 @@ class IOSPlugin implements Plugin<Project> {
     private readVariantedProjectDirectories(Project project) {
         use (PropertyCategory){
             if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
+                readBasicIosProjectProperties(project)
                 iosConf.alltargets.each { target ->
                     iosConf.allconfigurations.each { configuration ->
                         String variant = iosConf.getVariant(target, configuration)
@@ -122,6 +123,10 @@ class IOSPlugin implements Plugin<Project> {
 
                     }
                 }
+                logger.info("Adding project directory: ${this.iosConf.mainTarget}-Debug")
+                iosConf.xCodeProjectDirectories["${this.iosConf.mainTarget}-Debug".toString()] =
+                    new File(iosSingleVariantBuilder.tmpDir(this.iosConf.mainTarget, 'Debug'),
+                    project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
             }
         }
     }
@@ -184,7 +189,7 @@ class IOSPlugin implements Plugin<Project> {
         task << {
             use (PropertyCategory) {
                 this.pListFileName = project.readProperty(IOSProjectProperty.PLIST_FILE)
-                def root = getParsedPlist(project)
+                def root = MPParser.getParsedPlist(pListFileName, project)
                 if (root != null) {
                     XPathAPI.selectNodeList(root,
                                     '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
@@ -244,25 +249,6 @@ class IOSPlugin implements Plugin<Project> {
     }
 
 
-    private org.w3c.dom.Element getParsedPlist(Project project) {
-        if (pListFileName == null) {
-            return null
-        }
-        File pListFile = new File("${project.rootDir}/${pListFileName}")
-        if (!pListFile.exists() || !pListFile.isFile()) {
-            return null
-        }
-        return new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
-    }
-
-
-    private org.w3c.dom.Element getParsedPlist(File file) {
-        def builderFactory = DocumentBuilderFactory.newInstance()
-        builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-        builderFactory.setFeature("http://xml.org/sax/features/validation", false)
-        def builder = builderFactory.newDocumentBuilder()
-        return new XMLBomAwareFileReader().readXMLFileIncludingBom(file)
-    }
 
     def void prepareBuildSingleVariantTask(Project project) {
         def task = project.task('buildSingleVariant')
@@ -297,19 +283,23 @@ class IOSPlugin implements Plugin<Project> {
         def task = project.task('unlockKeyChain')
         task.description = """Unlocks key chain used during project building.
               Requires osx.keychain.password and osx.keychain.location properties
-              or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION"""
+              or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION environment variable"""
         task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
         task << {
             use(PropertyCategory) {
-                def keychainPassword = project.readPropertyOrEnvironmentVariable("osx.keychain.password")
-                def keychainLocation = project.readPropertyOrEnvironmentVariable("osx.keychain.location")
-                projectHelper.executeCommand(project, [
-                    "security",
-                    "unlock-keychain",
-                    "-p",
-                    keychainPassword,
-                    keychainLocation
-                ])
+                def keychainPassword = project.readOptionalPropertyOrEnvironmentVariable("osx.keychain.password")
+                def keychainLocation = project.readOptionalPropertyOrEnvironmentVariable("osx.keychain.location")
+                if (keychainLocation != null && keychainPassword != null) {
+                    projectHelper.executeCommand(project, [
+                        "security",
+                        "unlock-keychain",
+                        "-p",
+                        keychainPassword,
+                        keychainLocation
+                    ])
+                } else {
+                    logger.warn("Seems that no keychain parameters are provided. Skipping unlocking the keychain.")
+                }
             }
         }
         task.dependsOn(project.readProjectConfiguration)
@@ -328,85 +318,6 @@ class IOSPlugin implements Plugin<Project> {
             }
         }
         task.dependsOn(project.readProjectConfiguration)
-    }
-
-    private void prepareReplaceBundleIdPrefixTask(Project project) {
-        def task = project.task('replaceBundleIdPrefix')
-        task.description = """Replaces bundleId prefix with a new one. Requires oldBundleIdPrefix and newBundleIdPrefix
-           parameters. The .mobileprovision files need to be in 'newBundleIdPrefix' sub-directory of distribution directory"""
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        task << {
-            use (PropertyCategory) {
-                def oldBundleIdPrefix = project.readExpectedProperty("oldBundleIdPrefix")
-                logger.lifecycle("Old bundleId ${oldBundleIdPrefix}")
-                def newBundleIdPrefix = project.readExpectedProperty("newBundleIdPrefix")
-                logger.lifecycle("New bundleId ${newBundleIdPrefix}")
-                replaceBundleInAllPlists(project, newBundleIdPrefix, oldBundleIdPrefix)
-                replaceBundleInAllSourceFiles(project, newBundleIdPrefix, oldBundleIdPrefix)
-                iosConf.distributionDirectory = new File(iosConf.distributionDirectory, newBundleIdPrefix)
-                logger.lifecycle("New distribution directory: ${iosConf.distributionDirectory}")
-                logger.lifecycle("Replaced the bundleIdprefix everywhere")
-            }
-        }
-    }
-
-    private void replaceBundleInAllPlists(Project project, String newBundleIdPrefix, String oldBundleIdPrefix) {
-        logger.lifecycle("Finding all plists")
-        def plistFiles = findAllPlistFiles(project)
-        plistFiles.each {  file ->
-            def root = getParsedPlist(file)
-            XPathAPI.selectNodeList(root,'/plist/dict/key[text()="CFBundleIdentifier"]').each {
-                String bundleToReplace = it.nextSibling.nextSibling.textContent
-                if (bundleToReplace.startsWith(oldBundleIdPrefix)) {
-                    String newResult = newBundleIdPrefix + bundleToReplace.substring(oldBundleIdPrefix.length())
-                    it.nextSibling.nextSibling.textContent  = newResult
-                    file.write(root as String)
-                    logger.lifecycle("Replaced the bundleId to ${newResult} from ${bundleToReplace} in ${file}")
-                } else if (bundleToReplace.startsWith(newBundleIdPrefix)) {
-                    logger.lifecycle("Already replaced the bundleId to ${bundleToReplace} in ${file}")
-                } else {
-                    throw new GradleException("The bundle to replace ${bundleToReplace} does not start with expected ${oldBundleIdPrefix} in ${file}. Not replacing !!!!!!!.")
-                }
-            }
-        }
-        logger.lifecycle("Finished processing all plists")
-    }
-
-    private void replaceBundleInAllSourceFiles(Project project, String newBundleIdPrefix, String oldBundleIdPrefix) {
-        logger.lifecycle("Finding all source files")
-        def sourceFiles = findAllSourceFiles(project)
-        String valueToFind = 'bundleWithIdentifier:@"' + oldBundleIdPrefix
-        String valueToReplace = 'bundleWithIdentifier:@"' + newBundleIdPrefix
-        sourceFiles.each {  file ->
-            String t = file.text
-            if (t.contains(valueToFind)) {
-                file.write(t.replace(valueToFind, valueToReplace))
-                logger.lifecycle("Replaced the ${valueToFind} with ${valueToReplace} in ${file}")
-            }
-        }
-        logger.lifecycle("Finished processing all source files")
-    }
-
-    Collection<File> findAllPlistFiles(Project project) {
-        def result = []
-        project.rootDir.traverse([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
-            if (it.name.endsWith("-Info.plist") && !it.path.contains("/External/") && !it.path.contains('/build/')) {
-                logger.lifecycle("Adding plist file ${it} to processing list")
-                result << it
-            }
-        }
-        return result
-    }
-
-    Collection<File> findAllSourceFiles(Project project) {
-        def result = []
-        project.rootDir.traverse([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
-            if ((it.name.endsWith(".m") || it.name.endsWith(".h")) && !it.path.contains("/External/")) {
-                logger.lifecycle("Adding source file ${it} to processing list")
-                result << it
-            }
-        }
-        return result
     }
 
     void prepareCopySourcesTask(Project project) {

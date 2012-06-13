@@ -7,6 +7,7 @@ import java.util.Collection
 import javax.xml.parsers.DocumentBuilderFactory
 
 import org.gradle.api.GradleException
+import org.gradle.api.Project;
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
@@ -79,4 +80,25 @@ class MPParser {
         def xml = rest[0..rest.findIndexOf {it.startsWith('</plist')}]
         return xml.join("\n")
     }
+
+    private static org.w3c.dom.Element getParsedPlist(String pListFileName, Project project) {
+        if (pListFileName == null) {
+            return null
+        }
+        File pListFile = new File("${project.rootDir}/${pListFileName}")
+        if (!pListFile.exists() || !pListFile.isFile()) {
+            return null
+        }
+        return new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
+    }
+
+
+    private static org.w3c.dom.Element getParsedPlist(File file) {
+        def builderFactory = DocumentBuilderFactory.newInstance()
+        builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        builderFactory.setFeature("http://xml.org/sax/features/validation", false)
+        def builder = builderFactory.newDocumentBuilder()
+        return new XMLBomAwareFileReader().readXMLFileIncludingBom(file)
+    }
+
 }

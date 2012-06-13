@@ -2,6 +2,7 @@ package com.apphance.ameba.runBuilds.ios;
 
 import static org.junit.Assert.*
 
+import org.gradle.tooling.BuildException
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
@@ -9,24 +10,27 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.unit.EmmaDumper
-
-
 
 class ExecuteIosBuildsTest {
 
     static File testProjectMoreVariants = new File("testProjects/ios-morevariants/GradleXCodeMoreVariants")
     static File testProjectOneVariant = new File("testProjects/ios/GradleXCode")
+    static File testProjectNoVersion = new File("testProjects/ios/GradleXCodeNoVersion")
+    static File testProjectNoVersionString = new File("testProjects/ios/GradleXCodeNoVersionString")
     static File templateFile = new File("templates/ios")
     static ProjectConnection connection
     static ProjectConnection gradleWithPropertiesConnection
     static ProjectConnection gradleOneVariantConnection
+    static ProjectConnection gradleNoVersionConnection
+    static ProjectConnection gradleNoVersionStringConnection
 
     @BeforeClass
     static void beforeClass() {
         connection = GradleConnector.newConnector().forProjectDirectory(testProjectMoreVariants).connect();
         gradleWithPropertiesConnection = GradleConnector.newConnector().forProjectDirectory(testProjectMoreVariants).connect();
         gradleOneVariantConnection = GradleConnector.newConnector().forProjectDirectory(testProjectOneVariant).connect();
+        gradleNoVersionConnection = GradleConnector.newConnector().forProjectDirectory(testProjectNoVersion).connect();
+        gradleNoVersionStringConnection = GradleConnector.newConnector().forProjectDirectory(testProjectNoVersionString).connect();
     }
 
     @AfterClass
@@ -34,7 +38,8 @@ class ExecuteIosBuildsTest {
         connection.close()
         gradleWithPropertiesConnection.close()
         gradleOneVariantConnection.close()
-        EmmaDumper.dumpEmmaCoverage()
+        gradleNoVersionConnection.close()
+        gradleNoVersionStringConnection.close()
     }
 
     protected void runGradleMoreVariants(String ... tasks) {
@@ -57,6 +62,18 @@ class ExecuteIosBuildsTest {
         buildLauncher.forTasks(tasks).run();
     }
 
+    protected void runGradleNoVersion(String ... tasks) {
+        def buildLauncher = gradleNoVersionConnection.newBuild()
+        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        buildLauncher.forTasks(tasks).run();
+    }
+    protected void runGradleNoVersionString(String ... tasks) {
+        def buildLauncher = gradleNoVersionStringConnection.newBuild()
+        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        buildLauncher.forTasks(tasks).run();
+    }
+
+
     @Test
     void testCleanCheckTests() {
         runGradleMoreVariants('clean','checkTests')
@@ -75,7 +92,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildOneVariant() {
-        runGradleOneVariant('buildAll')
+        runGradleOneVariant('unlockKeyChain', 'buildAll')
         assertTrue(new File(testProjectOneVariant,
                         "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
         assertTrue(new File(testProjectOneVariant,
@@ -91,7 +108,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildMoreVariants() {
-        runGradleMoreVariants('buildAll')
+        runGradleMoreVariants('unlockKeyChain', 'buildAll')
         assertTrue(new File(testProjectMoreVariants,
                         "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
         assertTrue(new File(testProjectMoreVariants,
@@ -132,7 +149,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareMoreVariantsMailMessage() {
-        runGradleMoreVariants('cleanRelease', 'buildAll')
+        runGradleMoreVariants('cleanRelease','unlockKeyChain',  'buildAll')
         runGradleMoreVariants('prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/icon.png").exists())
@@ -145,7 +162,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareMoreVariantsMailMessageWithSimulators() {
-        runGradleMoreVariants('cleanRelease', 'buildAll')
+        runGradleMoreVariants('cleanRelease','unlockKeyChain',  'buildAll')
         runGradleMoreVariants('buildAllSimulators', 'prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/icon.png").exists())
@@ -158,7 +175,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareOneVariantMailMessage() {
-        runGradleOneVariant('cleanRelease', 'buildAll')
+        runGradleOneVariant('cleanRelease','unlockKeyChain',  'buildAll')
         runGradleOneVariant('prepareImageMontage', 'prepareMailMessage')
         assertTrue(new File(testProjectOneVariant, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/file_index.html").exists())
         assertTrue(new File(testProjectOneVariant, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/icon.png").exists())
@@ -167,6 +184,50 @@ class ExecuteIosBuildsTest {
         assertTrue(new File(testProjectOneVariant, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/qrcode-GradleXCode-1.0-SNAPSHOT_32.png").exists())
         assertFalse(new File(testProjectOneVariant, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/AnotherConfiguration/GradleXCode-AnotherConfiguration-1.0-SNAPSHOT_32.ipa").exists())
         assertTrue(new File(testProjectOneVariant, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
+    }
+
+    @Test
+    void testBuildNoVersion() {
+        try {
+            runGradleNoVersion('cleanRelease', 'buildAll')
+            fail("There should be a version exception thrown!")
+        } catch(BuildException e) {
+            String message = e.cause.cause.cause.message
+            assertTrue("Wrong message: " + message, message.contains("The CFBundleVersion key is missing"))
+        }
+    }
+
+    @Test
+    void testBuildNoVersionString() {
+        try {
+            runGradleNoVersionString('cleanRelease', 'buildAll')
+            fail("There should be a version exception thrown!")
+        } catch(BuildException e) {
+            String message = e.cause.cause.cause.message
+            assertTrue("Wrong message: " + message , message.contains("The CFBundleShortVersionString key is missing"))
+        }
+    }
+
+    @Test
+    void testBuildSimulatorsNoVersion() {
+        try {
+            runGradleNoVersion('cleanRelease', 'buildAllSimulators')
+            fail("There should be a version exception thrown!")
+        } catch(BuildException e) {
+            String message = e.cause.cause.cause.message
+            assertTrue("Wrong message: " + message, message.contains("The CFBundleVersion key is missing"))
+        }
+    }
+
+    @Test
+    void testBuildSimulatorsNoVersionString() {
+        try {
+            runGradleNoVersionString('cleanRelease', 'buildAllSimulators')
+            fail("There should be a version exception thrown!")
+        } catch(BuildException e) {
+            String message = e.cause.cause.cause.message
+            assertTrue("Wrong message: " + message , message.contains("The CFBundleShortVersionString key is missing"))
+        }
     }
 
     @Test

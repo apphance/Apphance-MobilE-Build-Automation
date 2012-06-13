@@ -18,6 +18,7 @@ class IOSProjectConfiguration {
     String mainTarget
     String mainConfiguration
     File distributionDirectory
+    def distributionDirectories = [:]
     File xCodeProjectDirectory
     def xCodeProjectDirectories = [:]
     List<String> targets = []

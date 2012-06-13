@@ -68,7 +68,7 @@
            <% configurations.each { configuration -> %>
               <% def id = "${target}-${configuration}".toString() %>
               <% def map = [ 'target': target, 'configuration': configuration, 'id': id] %>
-              <% if (!iosConf.isBuildExcluded(id) && main_id != id) { other_installs << map } %>
+              <% if (!iosConf.isBuildExcluded(id) && main_id != id && target != "Frankified") { other_installs << map } %>
            <% } %>
         <% } %>
         <% if (other_installs.size > 0) { %>

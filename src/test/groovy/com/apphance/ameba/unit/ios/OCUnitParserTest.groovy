@@ -6,7 +6,6 @@ import org.junit.AfterClass
 import org.junit.Test
 
 import com.apphance.ameba.ios.plugins.ocunit.OCUnitParser
-import com.apphance.ameba.unit.EmmaDumper
 
 class OCUnitParserTest {
 
@@ -103,10 +102,5 @@ Touch build/Debug-iphonesimulator/UnitTests.octest
             'SMModelSharedTest',
             'UnitTests'
         ], parser.testSuites.collect {it.name})
-    }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
     }
 }

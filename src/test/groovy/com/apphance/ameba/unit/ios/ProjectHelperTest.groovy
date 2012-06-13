@@ -8,7 +8,6 @@ import org.junit.AfterClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.unit.EmmaDumper
 
 class ProjectHelperTest {
 
@@ -33,11 +32,5 @@ class ProjectHelperTest {
                             WORKSPACE:  new File("testProjects").getCanonicalFile().getParentFile().getCanonicalPath()]
         assertEquals('http://example.com/jenkins/test/job/ws/testProjects/android',
                         new ProjectHelper().getJenkinsURL(project, map))
-    }
-
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
     }
 }

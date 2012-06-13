@@ -25,9 +25,4 @@ class RemoveSymlinksTest {
         assertFalse(currentDir.list().any { it == 'missingFileLink'})
         assertFalse(new File(currentDir,"missingFileLink").canonicalFile.exists())
     }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
-    }
 }

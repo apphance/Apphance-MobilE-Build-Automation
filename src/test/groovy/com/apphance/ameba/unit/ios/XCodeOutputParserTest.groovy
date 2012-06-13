@@ -10,7 +10,6 @@ import org.junit.Before
 import org.junit.Test
 
 import com.apphance.ameba.ios.IOSXCodeOutputParser
-import com.apphance.ameba.unit.EmmaDumper
 
 class XCodeOutputParserTest {
     def trimmedXCodeList
@@ -104,13 +103,6 @@ iOS Simulator SDKs:
         ProjectBuilder projectBuilder = ProjectBuilder.builder()
         projectBuilder.withProjectDir(new File("testProjects/ios"))
         Project project = projectBuilder.build()
-        assertEquals('/Developer', IOSXCodeOutputParser.getXcodeInstallationPath(project))
-    }
-
-
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
+        assertEquals('/Applications/XCode.app/Contents/Developer', IOSXCodeOutputParser.getXcodeInstallationPath(project))
     }
 }

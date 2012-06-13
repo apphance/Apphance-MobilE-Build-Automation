@@ -32,9 +32,4 @@ class ReadingPackageTest {
         ].sort()
         assertArrayEquals(currentPackage.toString(), packagesList, (String[]) currentPackage)
     }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
-    }
 }

@@ -386,26 +386,25 @@ class AndroidPlugin implements Plugin<Project> {
 		project.tasks["buildAll${debugRelease}"].dependsOn(task)
 	}
 
-	void prepareCopySourcesTask(Project project) {
-		def task = project.task('copySources')
-		task.description = "Copies all sources to tmp directory for build"
-		task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-		task << {
-			androidConf.variants.each { variant ->
-				new AntBuilder().sync(toDir : androidConf.tmpDirs[variant], overwrite:true, failonerror: false, verbose:false) {
-					fileset(dir : "${project.rootDir}/") {
-						exclude(name: androidConf.tmpDirs[variant].absolutePath + '/**/*')
-						conf.sourceExcludes.each {
-							if (!it.equals('**/local.properties') && !it.equals('**/gen/**')) {
-								exclude(name: it)
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
+    void prepareCopySourcesTask(Project project) {
+        def task = project.task('copySources')
+        task.description = "Copies all sources to tmp directory for build"
+        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        task << {
+            androidConf.variants.each { variant ->
+                new AntBuilder().sync(toDir : androidConf.tmpDirs[variant], overwrite:false, failonerror: false, verbose:false) {
+                    fileset(dir : "${project.rootDir}/") {
+                        exclude(name: androidConf.tmpDirs[variant].absolutePath + '/**/*')
+                        conf.sourceExcludes.each {
+                            if (!it.equals('**/local.properties') && !it.equals('**/gen/**')) {
+                                exclude(name: it)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 	void prepareBuildAllTask(Project project) {
 		def task = project.task('buildAll')
