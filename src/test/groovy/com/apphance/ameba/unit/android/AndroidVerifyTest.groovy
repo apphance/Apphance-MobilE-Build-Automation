@@ -8,7 +8,6 @@ import org.junit.AfterClass
 import org.junit.Test
 
 import com.apphance.ameba.android.AndroidCommandParser
-import com.apphance.ameba.unit.EmmaDumper
 
 class AndroidVerifyTest {
     @Test
@@ -38,10 +37,5 @@ class AndroidVerifyTest {
         List targets = AndroidCommandParser.getTargets(project)
         println targets
         assertTrue(targets.size()>0)
-    }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
     }
 }

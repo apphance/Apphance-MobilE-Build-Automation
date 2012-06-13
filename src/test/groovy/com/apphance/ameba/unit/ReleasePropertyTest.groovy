@@ -72,9 +72,4 @@ release.mail.flags=qrCode,imageMontage
 ''',s)
         }
     }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
-    }
 }

@@ -7,7 +7,6 @@ import org.gradle.tooling.ProjectConnection
 import org.junit.*
 
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.unit.EmmaDumper
 
 class IOSApphancePluginTest {
 
@@ -36,10 +35,5 @@ class IOSApphancePluginTest {
         projectDir = new File('testProjects/ios/GradleXCodeWithApphance')
         runGradle('clean', 'unlockKeyChain', 'build-GradleXCodeWithApphance-BasicConfiguration')
         assertTrue(new File(projectDir, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeWithApphance/BasicConfiguration/GradleXCodeWithApphance-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
-    }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
     }
 }

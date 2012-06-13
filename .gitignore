@@ -15,7 +15,6 @@ testProjects/*/ota
 testProjects/*/bin
 proguard-project.txt
 local.properties
-emma
 .gradle
 /build/
 /tmp
@@ -24,3 +23,13 @@ emma
 /.settings*
 /tmpCopy
 /coverage.ec
+
+*\.orig
+
+# Intellij IDEA
+ameba\.ipr
+ameba\.iws
+ameba\.iml
+\.idea
+/out
+

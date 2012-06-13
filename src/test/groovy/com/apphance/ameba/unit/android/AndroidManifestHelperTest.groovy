@@ -8,7 +8,6 @@ import org.junit.Test
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.android.AndroidManifestHelper
-import com.apphance.ameba.unit.EmmaDumper
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 class AndroidManifestHelperTest {
@@ -177,10 +176,5 @@ class AndroidManifestHelperTest {
         def file = new File("testProjects/apphance-updates/")
         String mainActivity = manifestHelper.getMainActivityName(file)
         assertTrue(mainActivity.contains('HomeActivity'))
-    }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
     }
 }

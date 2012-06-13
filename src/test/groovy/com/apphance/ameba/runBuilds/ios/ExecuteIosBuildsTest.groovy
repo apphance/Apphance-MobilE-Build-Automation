@@ -10,9 +10,6 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.unit.EmmaDumper
-
-
 
 class ExecuteIosBuildsTest {
 
@@ -43,7 +40,6 @@ class ExecuteIosBuildsTest {
         gradleOneVariantConnection.close()
         gradleNoVersionConnection.close()
         gradleNoVersionStringConnection.close()
-        EmmaDumper.dumpEmmaCoverage()
     }
 
     protected void runGradleMoreVariants(String ... tasks) {

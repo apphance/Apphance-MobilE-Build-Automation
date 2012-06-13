@@ -49,8 +49,4 @@ public class ReadPropertyTest {
             assertEquals('aaaa',project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_COUNTRY))
         }
     }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
-    }}
+}

@@ -12,7 +12,6 @@ import org.junit.BeforeClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.unit.EmmaDumper
 
 class ExecuteApphanceBuildsTest {
 
@@ -53,7 +52,6 @@ class ExecuteApphanceBuildsTest {
         tNoApplicationDifferentFormatting.close()
         tApplicationNoOnCreate.close()
         tNoApplicationNoOnCreate.close()
-        EmmaDumper.dumpEmmaCoverage()
     }
 
     protected void run(ProjectConnection projectConnection, String ... tasks) {

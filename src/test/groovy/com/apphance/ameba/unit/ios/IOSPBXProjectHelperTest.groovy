@@ -5,7 +5,6 @@ import static org.junit.Assert.*
 import org.junit.*
 
 import com.apphance.ameba.ios.PbxProjectHelper
-import com.apphance.ameba.unit.EmmaDumper
 
 class IOSPBXProjectHelperTest {
 
@@ -22,10 +21,5 @@ class IOSPBXProjectHelperTest {
         assertNotNull(object)
         String s = helper.writePlistToString();
         assertNotNull(o)
-    }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
     }
 }

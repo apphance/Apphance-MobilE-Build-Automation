@@ -11,9 +11,6 @@ import org.junit.Test
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.android.AndroidManifestHelper
-import com.apphance.ameba.unit.EmmaDumper;
-
-
 
 class ExecuteAndroidBuildsTest {
 
@@ -44,7 +41,6 @@ class ExecuteAndroidBuildsTest {
         gradleNoVariantsConnection.close()
         testAndroidConventionConnection.close()
         testAndroidWrongConventionConnection.close()
-        EmmaDumper.dumpEmmaCoverage()
     }
 
     protected void runGradle(String ... tasks) {

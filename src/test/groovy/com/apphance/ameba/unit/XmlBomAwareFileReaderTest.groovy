@@ -14,9 +14,4 @@ class XmlBomAwareFileReaderTest {
         def element = new XMLBomAwareFileReader().readXMLFileIncludingBom(f)
         assertNotNull(element)
     }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
-    }
 }

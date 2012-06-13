@@ -11,7 +11,6 @@ import org.junit.AfterClass
 import org.junit.Test
 
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.unit.EmmaDumper
 
 class TestConventions {
     private static File conventionsBase = new File("testProjects/conventions")
@@ -36,10 +35,5 @@ class TestConventions {
          } finally {
              connection.close()
          }
-    }
-
-    @AfterClass
-    static public void afterClass() {
-        EmmaDumper.dumpEmmaCoverage()
     }
 }

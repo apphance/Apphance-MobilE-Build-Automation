@@ -13,7 +13,6 @@ import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.buildplugin.AndroidBuildListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import com.sun.tools.jdi.JDWP.ClassType.Superclass;
 
 
 /**
