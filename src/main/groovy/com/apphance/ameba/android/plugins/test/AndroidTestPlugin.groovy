@@ -552,7 +552,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 		task.dependsOn(project.readAndroidProjectConfiguration)
 	}
 
-	private void prepareAndroidTestStructure(Project project){
+	private void prepareAndroidRobotiumStructure(Project project){
 		def task = project.task('prepareRobotium')
 		task.description = "Prepares file structure for Robotium test framework"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
@@ -563,11 +563,11 @@ class AndroidTestPlugin implements Plugin<Project>{
 		task << {
 			AndroidTestConvention convention = project.convention.plugins.androidTest
 			File path = new File(project.rootDir.path + convention.robotiumPath)
-			setUpAndroidUnitTestProject(project, path)
+			setUpAndroidRobotiumProject(project, path)
 		}
 	}
 
-	private void setUpAndroidUnitTestProject(Project project, File path){
+	private void setUpAndroidRobotiumProject(Project project, File path){
 		// TODO:
 		String[] command
 		if(path.exists()){
