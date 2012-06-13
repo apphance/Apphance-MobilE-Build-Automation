@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite errors="0" failures="0" hostname="przemek-laptop" name="com.apphance.amebaTest.android.MyFirstTest" tests="1" time="3.539" timestamp="2012-04-26T15:14:17">
+<testsuite errors="0" failures="0" hostname="przemek-laptop" name="com.apphance.amebaTest.android.MyFirstTest" tests="1" time="4.622" timestamp="2012-06-13T09:58:56">
   <properties />
   <testcase classname="com.apphance.amebaTest.android.MyFirstTest" name="myFirstRobolectricTest" time="0.0010" />
   <system-out><![CDATA[Warning: an error occurred while binding shadow class: ShadowAndroidHttpClient
