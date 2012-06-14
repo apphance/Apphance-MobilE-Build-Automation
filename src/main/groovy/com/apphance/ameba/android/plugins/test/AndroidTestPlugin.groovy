@@ -53,6 +53,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 	File coverageEmFile
 	File coverageEcFile
 	File adbBinary
+	File androidBinary
 	File avdDir
 	AndroidBuildXmlHelper buildXmlHelper
 
@@ -89,7 +90,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 		prepareCleanAvdTask(project)
 		prepareStartEmulatorTask(project)
 		prepareStopAllEmulatorsTask(project)
-		prepareAndroidTestStructure(project)
+		prepareAndroidRobotiumStructure(project)
 		prepareAndroidRobolectricStructure(project)
 		prepareAndroidRobolectricTask(project)
 		project.prepareSetup.prepareSetupOperations << new PrepareAndroidTestSetupOperation()
@@ -162,6 +163,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 		coverageEmFile = new File(coverageDir,'coverage.em')
 		coverageEcFile = new File(coverageDir,'coverage.ec')
 		adbBinary = new File(androidConf.sdkDirectory,'platform-tools/adb')
+		androidBinary = new File(androidConf.sdkDirectory,'tools/android')
 		avdDir = project.file(AVD_PATH)
 	}
 
@@ -564,6 +566,9 @@ class AndroidTestPlugin implements Plugin<Project>{
 			AndroidTestConvention convention = project.convention.plugins.androidTest
 			File path = new File(project.rootDir.path + convention.robotiumPath)
 			setUpAndroidRobotiumProject(project, path)
+			// Add Polidea test runner
+			// Add Robotium library
+			// Make first Robotium test
 		}
 	}
 
@@ -573,7 +578,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 		if(path.exists()){
 			println "Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
 			command =[
-				'android',
+				androidBinary,
 				'-v',
 				'update',
 				'test-project',
@@ -586,7 +591,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 			println "No Robotium project detected, new one is going to be created"
 			path.mkdirs()
 			command = [
-				'android',
+				androidBinary,
 				'-v',
 				'create',
 				'test-project',
@@ -598,6 +603,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 				'test'
 			]
 		}
+
 		projectHelper.executeCommand(project, path, command)
 	}
 
