@@ -21,11 +21,6 @@ class TestRobotiumCreation {
 	@Before
 	void cleanDirectories(){
 		roboPath.deleteDir()
-	}
-
-	@Test
-	public void testCreationAndroidTest(){
-		assert !roboPath.exists()
 		ProjectConnection connection = getProjectConnection(conventionsBase,"")
 		try {
 			BuildLauncher bl = connection.newBuild().forTasks('prepareRobotium');
@@ -38,7 +33,18 @@ class TestRobotiumCreation {
 		} finally {
 			connection.close()
 		}
+	}
+
+	@Test
+	public void testCreationAndroidTest(){
 		assert roboPath.exists()
 		assert new File(roboPath.path + "/AndroidManifest.xml").exists()
+	}
+	
+	@Test
+	public void testInstrumentationChange(){
+		File manifest = new File(roboPath.path + "/AndroidManifest.xml")
+		def manifestXML = new XmlSlurper().parseText(manifest.text)
+		assert manifestXML.instrumentation.@'android:name'.toString().equals("pl.polidea.instrumentation.PolideaInstrumentationTestRunner")
 	}
 }

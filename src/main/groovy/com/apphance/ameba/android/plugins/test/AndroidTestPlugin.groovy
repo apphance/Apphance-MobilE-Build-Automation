@@ -567,13 +567,13 @@ class AndroidTestPlugin implements Plugin<Project>{
 			File path = new File(project.rootDir.path + convention.robotiumPath)
 			setUpAndroidRobotiumProject(project, path)
 			// Add Polidea test runner
+			replaceInstrumentationLibrary(project, path)
 			// Add Robotium library
 			// Make first Robotium test
 		}
 	}
 
 	private void setUpAndroidRobotiumProject(Project project, File path){
-		// TODO:
 		String[] command
 		if(path.exists()){
 			println "Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
@@ -603,10 +603,15 @@ class AndroidTestPlugin implements Plugin<Project>{
 				'test'
 			]
 		}
-
 		projectHelper.executeCommand(project, path, command)
 	}
 
+	private void replaceInstrumentationLibrary(Project project, File path){
+		File manifest = new File(path.path + "/AndroidManifest.xml")
+		String input = manifest.text.replace("android.test.InstrumentationTestRunner", "pl.polidea.instrumentation.PolideaInstrumentationTestRunner");
+		manifest.write(input)
+	}
+	
 	private void prepareAndroidRobolectricStructure(Project project){
 		def task = project.task('prepareRobolectric')
 		task.description = "Prepares file structure for Robolectric test framework"
