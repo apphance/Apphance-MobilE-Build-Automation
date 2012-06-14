@@ -45,7 +45,6 @@ class AndroidTestPlugin implements Plugin<Project>{
 	AndroidProjectConfiguration androidConf
 	File androidTestDirectory
 	AndroidManifestHelper androidManifestHelper
-	def testProjectManifest
 	String emmaDumpFile
 	String xmlJUnitDir
 	File coverageDir
@@ -57,11 +56,13 @@ class AndroidTestPlugin implements Plugin<Project>{
 	File avdDir
 	AndroidBuildXmlHelper buildXmlHelper
 
+	def testProjectManifest
+	def testProjectPackage
+	def testProjectName
+	
 	String emulatorName
 	String emulatorTargetName
 
-	String testProjectPackage
-	String testProjectName
 	String emulatorSkin
 	String emulatorCardSize
 	boolean emulatorSnapshotsEnabled
@@ -108,6 +109,11 @@ class AndroidTestPlugin implements Plugin<Project>{
 				emulatorTargetName = androidConf.targetName
 			}
 			androidTestDirectory = project.file(project.readProperty(AndroidTestProperty.TEST_DIRECTORY))
+			if(androidTestDirectory.exists()){
+				testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
+				testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
+				testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
+			}
 			emulatorSkin = project.readProperty(AndroidTestProperty.EMULATOR_SKIN)
 			emulatorCardSize = project.readProperty(AndroidTestProperty.EMULATOR_CARDSIZE)
 			emulatorSnapshotsEnabled = project.readProperty(AndroidTestProperty.EMULATOR_SNAPSHOT_ENABLED).toBoolean()
@@ -239,10 +245,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 				println "Test directory not found. Please run gradle prepareRobotium in order to create simple Robotium project. Aborting"
 				return
 			}
-			testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
-			testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
-			testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
-
+			
 			prepareTestBuilds(project)
 			startEmulator(project, emulatorNoWindow)
 			try {
@@ -267,7 +270,8 @@ class AndroidTestPlugin implements Plugin<Project>{
 			AndroidTestConvention convention = project.convention.plugins.androidTest
 			def path = new File(project.rootDir.path + convention.robolectricPath)
 			if(!(path.exists())){
-				throw new GradleException("Running Robolectric test has failed. No valid tests present nor test project had been created under ${project.rootDir.path}${convention.robolectricPath}. Run createRobolectricTestStructure taks to (re)create unit test project.")
+				println "Running Robolectric test has failed. No valid tests present nor test project had been created under ${project.rootDir.path}${convention.robolectricPath}. Run prepareRobolectric taks to (re)create unit test project."
+				return
 			}
 
 			ProjectConnection connection = getProjectConnection(project.rootDir,convention.robolectricPath)
