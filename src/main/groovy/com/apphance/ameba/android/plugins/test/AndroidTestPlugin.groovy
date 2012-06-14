@@ -101,17 +101,13 @@ class AndroidTestPlugin implements Plugin<Project>{
 	private void readConfiguration(Project project) {
 		AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration(project)
 		use(PropertyCategory) {
-			// TODO: what to do when no test directory exists ?? should I automaticly make one ??
-			//			androidTestDirectory = project.file(project.readProperty(AndroidTestProperty.TEST_DIRECTORY))
-			//			testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
-			//			testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
-			//			testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
 			rawDir = project.file( 'res/raw')
 			emulatorName = project.rootDir.getAbsolutePath().replaceAll('[\\\\ /]','_')
 			emulatorTargetName = project.readProperty(AndroidTestProperty.EMULATOR_TARGET)
 			if (emulatorTargetName == null || emulatorTargetName.empty) {
 				emulatorTargetName = androidConf.targetName
 			}
+			androidTestDirectory = project.file(project.readProperty(AndroidTestProperty.TEST_DIRECTORY))
 			emulatorSkin = project.readProperty(AndroidTestProperty.EMULATOR_SKIN)
 			emulatorCardSize = project.readProperty(AndroidTestProperty.EMULATOR_CARDSIZE)
 			emulatorSnapshotsEnabled = project.readProperty(AndroidTestProperty.EMULATOR_SNAPSHOT_ENABLED).toBoolean()
@@ -238,6 +234,15 @@ class AndroidTestPlugin implements Plugin<Project>{
 		task.description = "Runs android tests on the project"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
 		task << {
+			// TODO: what to do when no test directory exists ?? should I automaticly make one ??
+			if(!androidTestDirectory.exists()){
+				println "Test directory not found. Please run gradle prepareRobotium in order to create simple Robotium project. Aborting"
+				return
+			}
+			testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
+			testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
+			testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
+
 			prepareTestBuilds(project)
 			startEmulator(project, emulatorNoWindow)
 			try {
@@ -613,14 +618,14 @@ class AndroidTestPlugin implements Plugin<Project>{
 		String input = manifest.text.replace("android.test.InstrumentationTestRunner", "pl.polidea.instrumentation.PolideaInstrumentationTestRunner");
 		manifest.write(input)
 	}
-	
+
 	private void addApphanceInstrumentation(Project project, File path){
 		println "Downloading PolideaInstrumentationTestRunner library"
 		def libs = new File(path.path + '/libs/')
 		libs.mkdirs()
 		copyFromResources(libs, 'the-missing-android-xml-junit-test-runner-release-1.3_2.jar');
 	}
-	
+
 	private void addRobotiumLibrary(Project project, File path){
 		println "Downloading Robotium library"
 		def libs = new File(path.path + '/libs/')
@@ -629,7 +634,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 			downloadFile(project, it.toURI().toURL(), new File(path.path + File.separator + 'libs' + File.separator + it.name))
 		}
 	}
-	
+
 	private void prepareAndroidRobolectricStructure(Project project){
 		def task = project.task('prepareRobolectric')
 		task.description = "Prepares file structure for Robolectric test framework"
