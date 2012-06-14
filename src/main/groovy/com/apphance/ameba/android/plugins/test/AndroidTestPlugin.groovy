@@ -569,6 +569,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 			// Add Polidea test runner
 			replaceInstrumentationLibrary(project, path)
 			// Add Robotium library
+			addApphanceInstrumentation(project, path)
 			// Make first Robotium test
 		}
 	}
@@ -610,6 +611,12 @@ class AndroidTestPlugin implements Plugin<Project>{
 		File manifest = new File(path.path + "/AndroidManifest.xml")
 		String input = manifest.text.replace("android.test.InstrumentationTestRunner", "pl.polidea.instrumentation.PolideaInstrumentationTestRunner");
 		manifest.write(input)
+	}
+	
+	private void addApphanceInstrumentation(Project project, File path){
+		def libs = new File(path.path + '/libs/')
+		libs.mkdirs()
+		copyFromResources(libs, 'the-missing-android-xml-junit-test-runner-release-1.3_2.jar');
 	}
 	
 	private void prepareAndroidRobolectricStructure(Project project){

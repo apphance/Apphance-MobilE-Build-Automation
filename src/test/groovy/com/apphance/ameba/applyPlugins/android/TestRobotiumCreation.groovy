@@ -46,5 +46,9 @@ class TestRobotiumCreation {
 		File manifest = new File(roboPath.path + "/AndroidManifest.xml")
 		def manifestXML = new XmlSlurper().parseText(manifest.text)
 		assert manifestXML.instrumentation.@'android:name'.toString().equals("pl.polidea.instrumentation.PolideaInstrumentationTestRunner")
+		
+		assert new File(roboPath.path + '/libs/').list().findAll {it.matches('the-missing-android-xml-junit-test-runner.*\\.jar')}.size() == 1
 	}
+	
+	
 }
