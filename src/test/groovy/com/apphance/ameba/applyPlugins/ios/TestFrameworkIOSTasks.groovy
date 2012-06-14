@@ -28,7 +28,6 @@ class TestFrameworkIOSTasks extends AbstractBaseIOSTaskTest {
             'buildSingleVariant',
             'buildFramework',
             'copyMobileProvision',
-            'replaceBundleIdPrefix',
             'unlockKeyChain',
             'copySources',
             'copyDebugSources',
