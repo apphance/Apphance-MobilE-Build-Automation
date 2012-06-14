@@ -558,6 +558,8 @@ class AndroidTestPlugin implements Plugin<Project>{
 		def task = project.task('prepareRobotium')
 		task.description = "Prepares file structure for Robotium test framework"
 		task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
+		project.configurations.add('robotium')
+		project.dependencies.add('robotium','com.jayway.android.robotium:robotium-solo:3.1')
 		// TODO:
 		// recreate configuration after creating test structure
 		// readConfiguration(project)
@@ -566,11 +568,9 @@ class AndroidTestPlugin implements Plugin<Project>{
 			AndroidTestConvention convention = project.convention.plugins.androidTest
 			File path = new File(project.rootDir.path + convention.robotiumPath)
 			setUpAndroidRobotiumProject(project, path)
-			// Add Polidea test runner
 			replaceInstrumentationLibrary(project, path)
-			// Add Robotium library
 			addApphanceInstrumentation(project, path)
-			// Make first Robotium test
+			addRobotiumLibrary(project, path)
 		}
 	}
 
@@ -608,15 +608,26 @@ class AndroidTestPlugin implements Plugin<Project>{
 	}
 
 	private void replaceInstrumentationLibrary(Project project, File path){
+		println "Chanigin Android Manifest file: PolideaInstrumentationTestRunner will be in use"
 		File manifest = new File(path.path + "/AndroidManifest.xml")
 		String input = manifest.text.replace("android.test.InstrumentationTestRunner", "pl.polidea.instrumentation.PolideaInstrumentationTestRunner");
 		manifest.write(input)
 	}
 	
 	private void addApphanceInstrumentation(Project project, File path){
+		println "Downloading PolideaInstrumentationTestRunner library"
 		def libs = new File(path.path + '/libs/')
 		libs.mkdirs()
 		copyFromResources(libs, 'the-missing-android-xml-junit-test-runner-release-1.3_2.jar');
+	}
+	
+	private void addRobotiumLibrary(Project project, File path){
+		println "Downloading Robotium library"
+		def libs = new File(path.path + '/libs/')
+		libs.mkdirs()
+		project.configurations.robotium.each {
+			downloadFile(project, it.toURI().toURL(), new File(path.path + File.separator + 'libs' + File.separator + it.name))
+		}
 	}
 	
 	private void prepareAndroidRobolectricStructure(Project project){
