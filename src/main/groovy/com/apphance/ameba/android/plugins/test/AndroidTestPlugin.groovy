@@ -336,7 +336,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 			projectHelper.executeCommand(project,project.rootDir,commandAnt)
 			String [] commandAntTest = [
 				"ant",
-				"emma",
+				//"emma",
 				"clean",
 				"instrument",
 				"-Dtest.runner=${TEST_RUNNER}"
@@ -376,7 +376,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 			'-s',
 			"emulator-${emulatorPort}",
 			'install',
-			"bin/${androidConf.mainProjectName}-instrumented.apk"
+			"bin/${androidConf.mainProjectName}-debug.apk"
 		])
 		projectHelper.executeCommand(project, androidTestDirectory,[
 			adbBinary,
