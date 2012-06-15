@@ -60,4 +60,10 @@ class TestRobotiumCreation {
 	public void testRobotiumLibPresence(){
 		assert new File(roboPath.path + '/libs/').list().findAll {it.matches('robotium-solo.*\\.jar')}.size() == 1
 	}
+	
+	@Test
+	public void testNewTestClasses(){
+		String orignalClass = new File(roboPath.path + '/src/com/apphance/amebaTest/android/TestActivityTest.java').text
+		assert orignalClass.length() > 0
+	}
 }

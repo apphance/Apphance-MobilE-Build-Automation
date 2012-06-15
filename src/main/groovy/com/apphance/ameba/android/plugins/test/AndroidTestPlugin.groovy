@@ -580,6 +580,8 @@ class AndroidTestPlugin implements Plugin<Project>{
 			replaceInstrumentationLibrary(project, path)
 			addApphanceInstrumentation(project, path)
 			addRobotiumLibrary(project, path)
+			// TODO: copy template test activities
+			copyTemplateTestActivity(project, path)
 		}
 	}
 
@@ -637,6 +639,13 @@ class AndroidTestPlugin implements Plugin<Project>{
 		project.configurations.robotium.each {
 			downloadFile(project, it.toURI().toURL(), new File(path.path + File.separator + 'libs' + File.separator + it.name))
 		}
+	}
+	
+	private void copyTemplateTestActivity(Project project, File path){
+		println "Coping template Robotium test Activity class"
+		// TODO: copy the base class from a template 
+		
+		// TODO: copy just simple class checkign if hello shows on the screen
 	}
 
 	private void prepareAndroidRobolectricStructure(Project project){
