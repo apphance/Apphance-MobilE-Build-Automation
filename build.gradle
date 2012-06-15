@@ -38,14 +38,8 @@ signing {
     }
 }
 
-def uploadUsername = ''
-def uploadPassword = ''
-if (project.hasProperty('sonatypeUsername')) {
-    uploadUsername = project['sonatypeUsername']
-}
-if (project.hasProperty('sonatypePassword')) {
-    uploadPassword = project['sonatypePassword']
-}
+def uploadUsername = project['sonatypeUsername'] ?: ''
+def uploadPassword = project['sonatypePassword'] ?: ''
 
 uploadArchives {
     repositories {
@@ -90,6 +84,10 @@ uploadArchives {
                     developer {
                         id 'blazej.marcinkiewicz'
                         name 'Blazej Marcinkiewicz'
+                    }
+                    developer {
+                        id 'wojtek.erbetowski'
+                        name 'Wojtek Erbetowski'
                     }
                 }
             }
