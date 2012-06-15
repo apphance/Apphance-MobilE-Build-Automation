@@ -38,8 +38,8 @@ signing {
     }
 }
 
-def uploadUsername = project['sonatypeUsername'] ?: ''
-def uploadPassword = project['sonatypePassword'] ?: ''
+def uploadUsername = project.hasProperty('sonatypeUsername') ? project['sonatypeUsername'] : ''
+def uploadPassword = project.hasProperty('sonatypePassword') ? project['sonatypePassword'] : ''
 
 uploadArchives {
     repositories {
