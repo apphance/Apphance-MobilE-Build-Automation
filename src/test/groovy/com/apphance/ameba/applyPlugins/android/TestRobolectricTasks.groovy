@@ -7,6 +7,7 @@ import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.After;
 
 import com.apphance.ameba.ProjectHelper
 
@@ -31,10 +32,13 @@ class TestRobolectricTasks {
 	@Test
 	public void testBuildingRobolectric() throws Exception {
 		
-//		assert !roboPath.exists()
 		ProjectConnection connection = getProjectConnection(conventionsBase,"")
 		try {
-			BuildLauncher bl = connection.newBuild().forTasks('testRobolectric');
+			BuildLauncher bl = connection.newBuild().forTasks('prepareRobolectric');
+			bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+			bl.run()
+			
+			bl = connection.newBuild().forTasks('testRobolectric');
 			ByteArrayOutputStream baos = new ByteArrayOutputStream()
 			bl.setStandardOutput(baos)
 			bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
@@ -46,8 +50,10 @@ class TestRobolectricTasks {
 		} finally {
 			connection.close()
 		}
-//		assert roboPath.exists()
-//		assert new File(roboPath.path + '/libs/').list().findAll {it.matches('robolectric.*\\.jar')}.size() == 1
-//		assert new File(roboPath.path + '/libs/').list().findAll {it.matches('junit.*\\.jar')}.size() == 1
+	}
+	
+	@After
+	public void deleteLibs(){
+		new File(roboPath.path + '/libs').delete()
 	}
 }
