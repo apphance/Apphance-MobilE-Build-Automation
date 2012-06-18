@@ -1,0 +1,9 @@
+package ${packageName};
+
+public class TestHello extends BaseTestCase {
+
+	public void testHello() {
+		assertTrue(solo.searchText("Hello"));
+	}
+
+}

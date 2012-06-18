@@ -59,7 +59,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 	def testProjectManifest
 	def testProjectPackage
 	def testProjectName
-	
+
 	String emulatorName
 	String emulatorTargetName
 
@@ -245,7 +245,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 				println "Test directory not found. Please run gradle prepareRobotium in order to create simple Robotium project. Aborting"
 				return
 			}
-			
+
 			prepareTestBuilds(project)
 			startEmulator(project, emulatorNoWindow)
 			try {
@@ -619,7 +619,7 @@ class AndroidTestPlugin implements Plugin<Project>{
 	}
 
 	private void replaceInstrumentationLibrary(Project project, File path){
-		println "Chanigin Android Manifest file: PolideaInstrumentationTestRunner will be in use"
+		println "Changing Android Manifest file: PolideaInstrumentationTestRunner will be in use"
 		File manifest = new File(path.path + "/AndroidManifest.xml")
 		String input = manifest.text.replace("android.test.InstrumentationTestRunner", "pl.polidea.instrumentation.PolideaInstrumentationTestRunner");
 		manifest.write(input)
@@ -640,12 +640,29 @@ class AndroidTestPlugin implements Plugin<Project>{
 			downloadFile(project, it.toURI().toURL(), new File(path.path + File.separator + 'libs' + File.separator + it.name))
 		}
 	}
-	
+
 	private void copyTemplateTestActivity(Project project, File path){
 		println "Coping template Robotium test Activity class"
-		// TODO: copy the base class from a template 
+		File srcDir = new File(path.path + '/src/' + androidConf.mainProjectPackage.replace('.', File.separator))
+		srcDir.mkdirs()
+
+		// Delete the default test class
+		new File(srcDir.path + "/TestActivityTest.java").delete()
+
+		File baseCase = new File(srcDir.path + File.separator + 'BaseTestCase.java')
+		URL baseCaseTemplate = this.class.getResource("BaseTestCase.java_")
+		File helloCase = new File(srcDir.path + File.separator + 'TestHello.java')
+		URL helloCaseTemplate = this.class.getResource("TestHello.java_")
 		
-		// TODO: copy just simple class checkign if hello shows on the screen
+		
+		SimpleTemplateEngine engine = new SimpleTemplateEngine()
+		def binding = [ packageName : androidConf.mainProjectPackage, mainActivity : androidManifestHelper.getMainActivityName(project.rootDir)]
+		def baseCaseResult = engine.createTemplate(baseCaseTemplate).make(binding)
+		def helloCaseResult = engine.createTemplate(helloCaseTemplate).make(binding)
+		
+		baseCase.write(baseCaseResult.toString())
+		helloCase.write(helloCaseResult.toString())
+
 	}
 
 	private void prepareAndroidRobolectricStructure(Project project){

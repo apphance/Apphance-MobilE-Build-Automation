@@ -1,0 +1,48 @@
+package ${packageName};
+
+import com.jayway.android.robotium.solo.Solo;
+
+import android.app.Instrumentation;
+import android.test.ActivityInstrumentationTestCase2;
+
+public class BaseTestCase extends
+		ActivityInstrumentationTestCase2 {
+
+	protected static final String TARGET_PACKAGE_ID = "${packageName}";
+	protected static final String LAUNCHER_ACTIVITY_FULL_CLASSNAME = "${mainActivity}";
+	protected static Class<?> launcherActivityClass;
+	protected Solo solo;
+
+	protected Instrumentation inst;
+
+	static {
+		try {
+			launcherActivityClass = Class
+					.forName(LAUNCHER_ACTIVITY_FULL_CLASSNAME);
+		} catch (final ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public BaseTestCase() {
+		super(TARGET_PACKAGE_ID, launcherActivityClass);
+	}
+
+	@Override
+	protected void setUp() throws Exception {
+		inst = getInstrumentation();
+		solo = new Solo(inst, getActivity());
+	}
+
+	@Override
+	protected void tearDown() throws Exception {
+
+		solo.sleep(100);
+		try {
+			solo.finishOpenedActivities();
+		} catch (final Throwable e) {
+			e.printStackTrace();
+		}
+		super.tearDown();
+	}
+}
