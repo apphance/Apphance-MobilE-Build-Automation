@@ -1,0 +1,3 @@
+dependencies {
+    testCompile 'org.easytesting:fest-assert:1.4'
+}

@@ -1,11 +1,30 @@
+allprojects {
+    apply {
+        plugin 'java'
+        plugin 'groovy'
+        plugin 'eclipse'
+        plugin 'idea'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+}
+
 apply {
-    plugin 'java'
-    plugin 'groovy'
     plugin 'maven'
     plugin 'signing'
-    plugin 'eclipse'
-    plugin 'idea'
 }
+
+project(':core') { // plugin modules are in directory plugins/
+
+    dependencies {
+        testCompile 'junit:junit:4+'
+        compile gradleApi()
+        groovy localGroovy()
+    }
+}
+
 
 //apply from:'file:release.gradle'
 
@@ -104,8 +123,6 @@ configure(install.repositories.mavenInstaller) {
 //compileGroovy.options.debug = true
 //compileGroovy.options.debugOptions.debugLevel = 'lines,source,vars'
 
-repositories { mavenCentral() }
-
 configurations { mail }
 
 dependencies {
@@ -115,6 +132,8 @@ dependencies {
     compile 'javax.mail:mail:1.4', gradleApi(), fileTree(dir: 'libs', include: '*.jar')
         runtime 'org.apache.ant:ant-javamail:1.8.2',  'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1', fileTree(dir: 'libs', include: '*.jar')
     groovy localGroovy()
+
+    compile project(':core')
 }
 
 file('tmp').mkdirs()

@@ -22,7 +22,7 @@ import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.vcs.plugins.git.GitPlugin
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
-
+import com.apphance.ameba.plugins.core.CorePlugin
 
 /**
  * Plugin for releasing projects.
@@ -36,7 +36,13 @@ class ProjectReleasePlugin implements Plugin<Project> {
     ProjectConfiguration conf
     ProjectReleaseConfiguration releaseConf
 
+    void installDependencies(Project project) {
+        project.plugins.apply(CorePlugin.class)
+    }
+
     void apply(Project project) {
+        installDependencies(project)
+
         ProjectHelper.checkAnyPluginIsLoaded(project, this.class, AndroidPlugin.class, IOSPlugin.class)
         ProjectHelper.checkAnyPluginIsLoaded(project, this.class, MercurialPlugin.class, GitPlugin.class)
         projectHelper = new ProjectHelper()

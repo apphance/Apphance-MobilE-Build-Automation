@@ -30,9 +30,9 @@ local.properties
 *\.orig
 
 # Intellij IDEA
-ameba\.ipr
-ameba\.iws
-ameba\.iml
+*.ipr
+*.iws
+*.iml
 \.idea
 /out
 
