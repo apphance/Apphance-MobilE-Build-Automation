@@ -1,12 +1,6 @@
 buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath files("../../build/tmp/emma/instr/","../../build/tmp/emma/instr/main/",
-             '../../bin', "../../build/classes/main", "../../build/resources/main")
-        classpath 'emma:emma:2.0.5312'
-    }
+    amebaProjectPath = file('../..').absolutePath
+    apply from: "$amebaProjectPath/ameba_in_classpath.gradle"
 }
 
 apply plugin: 'ameba-project-configuration'

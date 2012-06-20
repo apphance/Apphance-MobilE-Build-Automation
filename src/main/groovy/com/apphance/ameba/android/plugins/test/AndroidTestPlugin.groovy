@@ -29,7 +29,6 @@ import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
-import com.sun.jmx.snmp.tasks.Task;
 import com.sun.org.apache.xpath.internal.XPathAPI
 
 /**

@@ -1,0 +1,24 @@
+rootProject.buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath files(
+                "$amebaProjectPath/bin",  // TODO: remove?
+                "$amebaProjectPath/build/classes/main",
+                "$amebaProjectPath/build/resources/main"
+        )
+
+        file("$amebaProjectPath/plugins")
+                .listFiles()
+                .findAll{it.isDirectory()}
+                .collect{it.path}
+                .each { classpathDir ->
+
+            classpath files(
+                    classpathDir + "/build/resources/main",
+                    classpathDir + "/build/classes/main"
+            )
+        }
+    }
+}
