@@ -28,6 +28,7 @@ local.properties
 /coverage.ec
 
 *\.orig
+*.swp$
 
 # Intellij IDEA
 *.ipr

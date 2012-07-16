@@ -103,6 +103,9 @@ iOS Simulator SDKs:
         ProjectBuilder projectBuilder = ProjectBuilder.builder()
         projectBuilder.withProjectDir(new File("testProjects/ios"))
         Project project = projectBuilder.build()
-        assertEquals('/Applications/XCode.app/Contents/Developer', IOSXCodeOutputParser.getXcodeInstallationPath(project))
+        assertEquals(
+                new File('/Applications/XCode.app/Contents/Developer').absolute,
+                new File(IOSXCodeOutputParser.getXcodeInstallationPath(project)).absolute // case insensitive check
+        )
     }
 }
