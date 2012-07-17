@@ -17,6 +17,7 @@ apply {
 }
 
 project(':core') { // plugin modules are in directory plugins/
+    apply plugin: 'maven'
 
     dependencies {
         testCompile 'junit:junit:4+'

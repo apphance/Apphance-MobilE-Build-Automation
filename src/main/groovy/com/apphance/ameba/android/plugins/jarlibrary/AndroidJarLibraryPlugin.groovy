@@ -42,6 +42,7 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
                 jarLibraryPrefix = this.androidConf.mainProjectName
             }
             prepareJarLibraryTask(project)
+            prepareJarLibraryUploadTask(project)
             project.prepareSetup.prepareSetupOperations << new PrepareAndroidJarLibrarySetupOperation()
             project.verifySetup.verifySetupOperations << new VerifyAndroidJarLibrarySetupOperation()
             project.showSetup.showSetupOperations << new ShowAndroidJarLibrarySetupOperation()
@@ -74,7 +75,7 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
             project.ant.copy(todir: resDir) {
                 fileset(dir: project.file( 'res'))
             }
-            File destFile = project.file("bin/${androidConf.mainProjectName}_${conf.versionString}.jar")
+            File destFile = project.file(getJarLibraryFilePath())
             File classesDir = project.file( "bin/classes")
             destFile.delete()
             project.ant.jar(destfile: destFile, manifest: manifestFile, manifestencoding: 'utf-8') {
@@ -92,6 +93,36 @@ class AndroidJarLibraryPlugin implements Plugin<Project>{
             }
         }
         task.dependsOn(project.readAndroidProjectConfiguration)
+    }
+
+    private GString getJarLibraryFilePath() {
+        "bin/${androidConf.mainProjectName}_${conf.versionString}.jar"
+    }
+
+    public void prepareJarLibraryUploadTask(Project project) {
+        project.configurations {
+            // this makes uploadJarLibraryConfiguration task visible
+            // we need to specify archives for this configuration
+            jarLibraryConfiguration
+        }
+
+        project.uploadJarLibraryConfiguration.doFirst {
+
+            project.uploadJarLibraryConfiguration {
+
+                repositories {
+                    mavenDeployer {
+                        pom.version = pom.version == '0' ?  conf.versionString : pom.version
+                    }
+                }
+            }
+
+            project.artifacts {
+                jarLibraryConfiguration file: project.file(getJarLibraryFilePath()), name: androidConf.mainProjectName
+            }
+        }
+
+        project.uploadJarLibraryConfiguration.dependsOn project.jarLibrary
     }
 
     static public final String DESCRIPTION =
