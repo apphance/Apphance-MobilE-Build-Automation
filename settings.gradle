@@ -1,4 +1,1 @@
 include 'gdata'
-
-include 'core' // most plugins use data in core, so they enable core plugin
-project(':core').projectDir = new File('plugins/core')
