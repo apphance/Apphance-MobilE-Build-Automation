@@ -14,6 +14,7 @@ allprojects {
 apply {
     plugin 'maven'
     plugin 'signing'
+    plugin 'codenarc'
 }
 
 //apply from:'file:release.gradle'
@@ -39,6 +40,10 @@ artifacts {
         archives javadocJar
         archives jar
     }
+}
+
+codenarc {
+    configFile = file('codenarc.groovy')
 }
 
 signing {
