@@ -122,6 +122,7 @@ configurations { mail }
 
 dependencies {
     testCompile 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
+    testCompile "org.spockframework:spock-core:0.6-groovy-1.8"
     testRuntime 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
     mail 'org.apache.ant:ant-javamail:1.8.2',  'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1'
     compile 'javax.mail:mail:1.4', gradleApi(), fileTree(dir: 'libs', include: '*.jar')

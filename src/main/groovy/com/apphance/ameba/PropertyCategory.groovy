@@ -168,6 +168,19 @@ class PropertyCategory {
             return (val != null)
         }
     }
+
+    public static String getPropertyOrEnvironmentVariableDefined(Project project, String property) {
+        if (project.hasProperty(property)) {
+            return project.properties[property]
+        } else if (System.getProperty(property, null) != null){
+            return System.getProperty(property)
+        } else {
+            def envVariable = property.toUpperCase().replace(".","_")
+            def val = System.getenv(envVariable)
+            return val
+        }
+    }
+
     public static String readExpectedProperty(Project project, Enum property) {
         return readExpectedProperty(project, property.propertyName)
     }

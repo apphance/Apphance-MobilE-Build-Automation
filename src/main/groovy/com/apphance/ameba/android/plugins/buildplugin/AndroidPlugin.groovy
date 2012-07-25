@@ -436,8 +436,9 @@ class AndroidPlugin implements Plugin<Project> {
 					logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
 					conf.versionString = conf.versionString + "-SNAPSHOT"
 				} else {
-					logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
-				}
+                    conf.versionString = project.getPropertyOrEnvironmentVariableDefined('version.string')
+                    logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build. Given version is ${conf.versionString}")
+                }
 				AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
 				project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.readProjectName(project.rootDir)
 			}
