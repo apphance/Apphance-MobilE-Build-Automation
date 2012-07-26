@@ -26,7 +26,7 @@ import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
  * Adds Apphance in automated way.
  *
  */
-class AndroidApphancePlugin implements Plugin<Project>{
+class AndroidApphancePlugin implements Plugin<Project> {
 
     static Logger logger = Logging.getLogger(AndroidApphancePlugin.class)
 
@@ -42,6 +42,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
             this.conf = project.getProjectConfiguration()
             manifestHelper = new AndroidManifestHelper()
             this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
+
+            prepareApphanceJarVersion(project)
             preprocessBuildsWithApphance(project)
             prepareConvertLogsToApphance(project)
             prepareConvertLogsToAndroid(project)
@@ -50,6 +52,28 @@ class AndroidApphancePlugin implements Plugin<Project>{
             project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
             project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
         }
+    }
+
+    private void prepareApphanceJarVersion(Project project) {
+        project.configurations {
+
+            // for user use (to override Apphance version)
+            // if no version is
+            apphance
+        }
+
+        project.configurations.apphance {
+            // causes fast reloading of Apphance when new version occurs
+            // we pay with frequent version checks
+            resolutionStrategy.cacheDynamicVersionsFor 0, 'minutes'
+        }
+
+        // Apphance is being kept in Polidea repository
+        project.repositories {
+            maven{url 'https://dev.polidea.pl/artifactory/libs-release-local/'}
+            maven{url 'https://dev.polidea.pl/artifactory/libs-snapshot-local/'}
+        }
+
     }
 
     void prepareConvertLogsToApphance(project) {
@@ -197,7 +221,8 @@ class AndroidApphancePlugin implements Plugin<Project>{
                                         project.ant,
                                         project[ApphanceProperty.APPLICATION_KEY.propertyName],
                                         apphanceMode,
-                                        project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true"))
+                                        project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true"),
+                                        project)
                     }
                 } else {
                     def task = project["buildRelease-${variant}"]
@@ -218,7 +243,12 @@ class AndroidApphancePlugin implements Plugin<Project>{
         return dir
     }
 
-    private addApphanceToProject(File directory, AntBuilder ant, String appKey, String apphanceMode, boolean logEvents) {
+    private addApphanceToProject(File directory,
+                                 AntBuilder ant,
+                                 String appKey,
+                                 String apphanceMode,
+                                 boolean logEvents,
+                                 Project project) {
         if (!checkIfApphancePresent(directory)) {
             logger.lifecycle("Apphance not found in project: ${directory}")
             File mainFile
@@ -230,7 +260,7 @@ class AndroidApphancePlugin implements Plugin<Project>{
                     replaceViewsWithApphance(directory, ant)
                 }
                 addApphanceInit(directory, mainFile, appKey, apphanceMode, logEvents, isActivity)
-                copyApphanceJar(directory)
+                copyApphanceJar(directory, project)
                 addApphanceToManifest(directory)
             }
         } else {
@@ -357,18 +387,26 @@ class AndroidApphancePlugin implements Plugin<Project>{
         newMainClassFile.delete()
     }
 
-    private copyApphanceJar(File directory) {
+    private copyApphanceJar(File directory, Project project) {
+        // if user didn't overwrite the dependency add the newest
+        if(project.configurations.apphance.dependencies.isEmpty()) {
+            project.dependencies {apphance 'com.apphance:apphance-android-library:+'}
+        }
+
         def libsDir = new File(directory, 'libs')
         libsDir.mkdirs()
+
         libsDir.eachFileMatch(".*apphance.*\\.jar") {
             logger.lifecycle("Removing old apphance jar: " + it.name)
             it.delete()
         }
-        File libsApphance = new File(directory, 'libs/apphance.jar')
-        libsApphance.delete()
-        logger.lifecycle("Copying apphance jar: to ${libsApphance}")
-        URL apphanceUrl = this.class.getResource("apphance-android-library_1.5-event-log.jar")
-        libsApphance << apphanceUrl.getContent()
+
+        logger.lifecycle("Copying apphance jar: to ${libsDir}")
+
+        project.copy {
+            from {project.configurations.apphance}
+            into libsDir
+        }
     }
 
     public boolean checkIfApphancePresent(File directory) {
