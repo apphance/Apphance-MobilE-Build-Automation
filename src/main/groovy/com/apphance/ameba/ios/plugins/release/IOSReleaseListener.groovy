@@ -134,11 +134,13 @@ class IOSReleaseListener implements IOSBuildListener {
 
         URL manifestTemplate = this.class.getResource("manifest.plist")
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
+        def bundleId = MPParser.readBundleIdFromPlist(bi.plistFile.toURI().toURL())
         def binding = [
                             ipaUrl : iosReleaseConf.ipaFiles.get(bi.id).url,
                             title : bi.target,
-                            bundleId : MPParser.readBundleIdFromPlist(bi.plistFile.toURI().toURL())
+                            bundleId : bundleId
                         ]
+        logger.lifecycle("Building manifest from ${bi.plistFile}, bundleId: ${bundleId}")
         def result = engine.createTemplate(manifestTemplate).make(binding)
         manifestArtifact.location << (result.toString())
         logger.lifecycle("Manifest file created: ${manifestArtifact}")
