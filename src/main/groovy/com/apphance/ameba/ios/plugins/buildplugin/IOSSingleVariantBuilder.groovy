@@ -198,7 +198,7 @@ class IOSSingleVariantBuilder {
                         fullReleaseName : "${target}-${configuration}-${conf.fullVersionString}",
                         filePrefix : "${target}-${configuration}-${conf.fullVersionString}",
                         mobileprovisionFile : IOSXCodeOutputParser.findMobileProvisionFile(project, target, configuration, true),
-                        plistFile : new File(tmpDir(target,configuration), project.readProperty(IOSProjectProperty.PLIST_FILE)))
+                        plistFile : new File(tmpDir(target,configuration), PropertyCategory.readProperty(project,IOSProjectProperty.PLIST_FILE)))
         return bi
     }
 
