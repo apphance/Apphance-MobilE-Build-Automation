@@ -26,7 +26,8 @@ class IOSApphanceSourceHelper {
 
     void addApphanceInit(File projectRootDirectory, String appKey) {
         def appFilename = findAppDelegateFile(projectRootDirectory)
-        if (appFilename.count == 0) {
+
+        if (appFilename.size() == 0) {
             throw new GradleException("Cannot find file with UIApplicationDelegate")
         }
         appFilename.each {
