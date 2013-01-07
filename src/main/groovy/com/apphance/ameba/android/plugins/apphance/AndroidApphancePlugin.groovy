@@ -1,57 +1,23 @@
 package com.apphance.ameba.android.plugins.apphance
 
-import groovy.io.FileType;
-
-import java.io.File
-
-import org.gradle.api.GradleException
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
-
-import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidBuilderInfo
-import com.apphance.ameba.android.AndroidManifestHelper
-import com.apphance.ameba.android.AndroidProjectConfiguration;
-import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
-import com.apphance.ameba.android.AndroidSingleVariantApkBuilder;
+import com.apphance.ameba.android.*
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
-import com.apphance.ameba.android.plugins.test.ApphanceNetworkHelper;
+import com.apphance.ameba.android.plugins.test.ApphanceNetworkHelper
 import com.apphance.ameba.apphance.ApphanceProperty
 import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
 import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
 import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
-import groovy.json.JsonBuilder
-import groovy.json.JsonSlurper;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache
-import org.apache.http.client.RedirectStrategy;
-import org.apache.http.client.ResponseHandler
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.auth.BasicScheme
-import org.apache.http.impl.client.BasicAuthCache
-import org.apache.http.impl.client.BasicResponseHandler
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.DefaultRedirectStrategy
-import org.apache.http.protocol.BasicHttpContext
-import org.apache.http.util.EntityUtils;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.entity.StringEntity
-import org.apache.http.entity.mime.*
-import org.apache.http.entity.mime.content.*
-import java.nio.charset.Charset
-
+import groovy.io.FileType
+import groovy.json.JsonSlurper
+import org.apache.http.HttpResponse
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Adds Apphance in automated way.
