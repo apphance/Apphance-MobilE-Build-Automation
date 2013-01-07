@@ -393,7 +393,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     private copyApphanceJar(File directory, Project project) {
         // if user didn't overwrite the dependency add the newest
         if(project.configurations.apphance.dependencies.isEmpty()) {
-            project.dependencies {apphance 'com.apphance:apphance-android-library:+'}
+            project.dependencies {apphance 'com.apphance:apphance-android-library:1.+'}
         }
 
         def libsDir = new File(directory, 'libs')
