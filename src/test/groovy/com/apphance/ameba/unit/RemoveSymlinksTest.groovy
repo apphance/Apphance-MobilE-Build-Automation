@@ -1,11 +1,10 @@
-package com.apphance.ameba.unit;
+package com.apphance.ameba.unit
 
-import static org.junit.Assert.*;
+import com.apphance.ameba.ProjectHelper
+import org.junit.Test
 
-import org.junit.AfterClass;
-import org.junit.Test;
-
-import com.apphance.ameba.ProjectHelper;
+import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertTrue;
 
 class RemoveSymlinksTest {
     @Test
@@ -13,16 +12,16 @@ class RemoveSymlinksTest {
         ProjectHelper ph = new ProjectHelper()
         File currentDir = new File("testProjects/android")
         [
-            'ln',
-            '-s',
-            'missingFile',
-            'missingFileLink',
+                'ln',
+                '-s',
+                'missingFile',
+                'missingFileLink',
         ].execute([], currentDir)
         def l = currentDir.list()
-        assertTrue(currentDir.list().any { it == 'missingFileLink'})
-        assertFalse(new File(currentDir,"missingFileLink").canonicalFile.exists())
+        assertTrue(currentDir.list().any { it == 'missingFileLink' })
+        assertFalse(new File(currentDir, "missingFileLink").canonicalFile.exists())
         ph.removeMissingSymlinks(currentDir)
-        assertFalse(currentDir.list().any { it == 'missingFileLink'})
-        assertFalse(new File(currentDir,"missingFileLink").canonicalFile.exists())
+        assertFalse(currentDir.list().any { it == 'missingFileLink' })
+        assertFalse(new File(currentDir, "missingFileLink").canonicalFile.exists())
     }
 }

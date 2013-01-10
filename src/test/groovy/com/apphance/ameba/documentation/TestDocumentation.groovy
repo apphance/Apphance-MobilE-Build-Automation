@@ -1,9 +1,8 @@
-package com.apphance.ameba.documentation;
+package com.apphance.ameba.documentation
 
-import static org.junit.Assert.*
-
-import org.junit.AfterClass
 import org.junit.Test
+
+import static org.junit.Assert.assertTrue
 
 class TestDocumentation {
     @Test
