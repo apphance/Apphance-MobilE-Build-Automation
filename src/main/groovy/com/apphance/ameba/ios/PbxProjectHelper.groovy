@@ -151,12 +151,15 @@ class PbxProjectHelper {
     }
 
     void addApphanceToFramework(Object frameworks) {
-        def frameworksToAdd = [["name": "Apphance-iOS.framework", "path": "Apphance-iOS.framework", "group": "<group>", "searchName": "apphance", "strong": "Required"],
+        def frameworksToAdd = [
+                ["name": "Apphance-iOS.framework", "path": "Apphance-iOS.framework", "group": "<group>", "searchName": "apphance", "strong": "Required"],
                 ["name": "CoreLocation.framework", "path": "System/Library/Frameworks/CoreLocation.framework", "group": "SDKROOT", "searchName": "corelocation.framework", "strong": "Required"],
                 ["name": "QuartzCore.framework", "path": "System/Library/Frameworks/QuartzCore.framework", "group": "SDKROOT", "searchName": "quartzcore.framework", "strong": "Required"],
                 ["name": "SystemConfiguration.framework", "path": "System/Library/Frameworks/SystemConfiguration.framework", "group": "SDKROOT", "searchName": "systemconfiguration.framework", "strong": "Weak"],
                 ["name": "CoreTelephony.framework", "path": "System/Library/Frameworks/CoreTelephony.framework", "group": "SDKROOT", "searchName": "coretelephony.framework", "strong": "Weak"],
-                ["name": "AudioToolbox.framework", "path": "System/Library/Frameworks/AudioToolbox.framework", "group": "SDKROOT", "searchName": "audiotoolbox.framework", "strong": "Required"]]
+                ["name": "AudioToolbox.framework", "path": "System/Library/Frameworks/AudioToolbox.framework", "group": "SDKROOT", "searchName": "audiotoolbox.framework", "strong": "Required"],
+                ["name": "Security.framework", "path": "System/Library/Frameworks/Security.framework", "group": "SDKROOT", "searchName": "security.framework", "strong": "Required"]
+        ]
 
         frameworksToAdd.each { framework ->
             if (findFramework(frameworks, framework["searchName"])) {
