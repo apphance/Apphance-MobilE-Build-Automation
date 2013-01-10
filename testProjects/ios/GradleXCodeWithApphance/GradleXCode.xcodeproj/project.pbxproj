@@ -13,6 +13,7 @@
 		671DF9401510CCE8001613B7 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671DF93F1510CCE8001613B7 /* CoreLocation.framework */; };
 		671DF9421510CCF2001613B7 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671DF9411510CCF2001613B7 /* CoreTelephony.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		671DF9441510CCFE001613B7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671DF9431510CCFE001613B7 /* SystemConfiguration.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		6A52E4F6169F01EF0082C2CE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A52E4F5169F01EF0082C2CE /* Security.framework */; };
 		D382B71614703FE500E9CC9B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71514703FE500E9CC9B /* UIKit.framework */; };
 		D382B71814703FE500E9CC9B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71714703FE500E9CC9B /* Foundation.framework */; };
 		D382B71A14703FE500E9CC9B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71914703FE500E9CC9B /* CoreGraphics.framework */; };
@@ -47,6 +48,7 @@
 		671DF93F1510CCE8001613B7 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		671DF9411510CCF2001613B7 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		671DF9431510CCFE001613B7 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		6A52E4F5169F01EF0082C2CE /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		D382B71114703FE500E9CC9B /* GradleXCodeWithApphance.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GradleXCodeWithApphance.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D382B71514703FE500E9CC9B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		D382B71714703FE500E9CC9B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -74,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6A52E4F6169F01EF0082C2CE /* Security.framework in Frameworks */,
 				671DF9441510CCFE001613B7 /* SystemConfiguration.framework in Frameworks */,
 				671DF9421510CCF2001613B7 /* CoreTelephony.framework in Frameworks */,
 				671DF9401510CCE8001613B7 /* CoreLocation.framework in Frameworks */,
@@ -102,6 +105,7 @@
 		D382B70614703FE500E9CC9B = {
 			isa = PBXGroup;
 			children = (
+				6A52E4F5169F01EF0082C2CE /* Security.framework */,
 				671DF9431510CCFE001613B7 /* SystemConfiguration.framework */,
 				671DF9411510CCF2001613B7 /* CoreTelephony.framework */,
 				671DF93F1510CCE8001613B7 /* CoreLocation.framework */,
