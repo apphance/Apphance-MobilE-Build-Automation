@@ -74,7 +74,7 @@ class IOSApphanceSourceHelper {
         File newPch = new File("newPch.pch")
         newPch.delete()
         newPch.withWriter { out ->
-            out << pchFile.text.replace("#ifdef __OBJC__", "#ifdef __OBJC__\n#import <Apphance-iOS/APHLogger.h>")
+            out << pchFile.text.replace("#ifdef __OBJC__", "#ifdef __OBJC__\n#import <Apphance-Pre-Production/APHLogger.h>")
         }
         pchFile.delete()
         pchFile.withWriter { out ->

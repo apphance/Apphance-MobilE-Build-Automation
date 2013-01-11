@@ -152,7 +152,7 @@ class PbxProjectHelper {
 
     void addApphanceToFramework(Object frameworks) {
         def frameworksToAdd = [
-                ["name": "Apphance-iOS.framework", "path": "Apphance-iOS.framework", "group": "<group>", "searchName": "apphance", "strong": "Required"],
+                ["name": "Apphance-Pre-Production.framework", "path": "Apphance-Pre-Production.framework", "group": "<group>", "searchName": "apphance", "strong": "Required"],
                 ["name": "CoreLocation.framework", "path": "System/Library/Frameworks/CoreLocation.framework", "group": "SDKROOT", "searchName": "corelocation.framework", "strong": "Required"],
                 ["name": "QuartzCore.framework", "path": "System/Library/Frameworks/QuartzCore.framework", "group": "SDKROOT", "searchName": "quartzcore.framework", "strong": "Required"],
                 ["name": "SystemConfiguration.framework", "path": "System/Library/Frameworks/SystemConfiguration.framework", "group": "SDKROOT", "searchName": "systemconfiguration.framework", "strong": "Weak"],
@@ -252,9 +252,9 @@ class PbxProjectHelper {
                     buildSettings.appendNode("key", "LIBRARY_SEARCH_PATHS")
                     def array = buildSettings.appendNode("array")
                     array.appendNode("string", "\$(inherited)")
-                    array.appendNode("string", "\$(SRCROOT)/Apphance-iOS.framework")
+                    array.appendNode("string", "\$(SRCROOT)/Apphance-Pre-Production.framework")
                 } else {
-                    librarySearchPaths.appendNode("string", "\$(SRCROOT)/Apphance-iOS.framework")
+                    librarySearchPaths.appendNode("string", "\$(SRCROOT)/Apphance-Pre-Production.framework")
                 }
 
             }
