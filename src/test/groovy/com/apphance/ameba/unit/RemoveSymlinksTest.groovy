@@ -16,8 +16,7 @@ class RemoveSymlinksTest {
                 '-s',
                 'missingFile',
                 'missingFileLink',
-        ].execute([], currentDir)
-        def l = currentDir.list()
+        ].execute([], currentDir).waitFor()
         assertTrue(currentDir.list().any { it == 'missingFileLink' })
         assertFalse(new File(currentDir, "missingFileLink").canonicalFile.exists())
         ph.removeMissingSymlinks(currentDir)
