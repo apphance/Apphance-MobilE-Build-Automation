@@ -1,8 +1,8 @@
 package com.apphance.ameba.android
 
-import org.gradle.util.GUtil
-
 import java.util.regex.Pattern
+
+import static java.io.File.pathSeparator
 
 /**
  * Keeps Android-specific configuration of the project.
@@ -32,7 +32,7 @@ class AndroidProjectConfiguration {
     }
 
     public String getAllJarsAsPath() {
-        GUtil.join(getAllJars(), File.pathSeparator)
+        getAllJars().join(pathSeparator)
     }
 
     boolean isBuildExcluded(String variant) {
