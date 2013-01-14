@@ -3,7 +3,6 @@ package com.apphance.ameba.ios.plugins.apphance
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.apphance.ApphanceProperty
 import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
 import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
 import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
@@ -12,11 +11,15 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.PbxProjectHelper
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleVariantBuilder
-import groovy.io.FileType
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+
+import static com.apphance.ameba.ProjectHelper.MAX_RECURSION_LEVEL
+import static com.apphance.ameba.apphance.ApphanceProperty.APPLICATION_KEY
+import static groovy.io.FileType.DIRECTORIES
+import static groovy.io.FileType.FILES
 
 /**
  * Plugin for all apphance-relate IOS tasks.
@@ -25,6 +28,7 @@ import org.gradle.api.logging.Logging
 class IOSApphancePlugin implements Plugin<Project> {
 
     static Logger logger = Logging.getLogger(IOSApphancePlugin.class)
+    static final String FRAMEWORK_PATTERN = ".*[aA]pphance.*\\.framework"
 
     ProjectHelper projectHelper
     ProjectConfiguration conf
@@ -47,6 +51,7 @@ class IOSApphancePlugin implements Plugin<Project> {
             iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmedListOutput)
             iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmedListOutput)
             preprocessBuildsWithApphance(project)
+            prepareApphanceFrameworkVersion(project)
 
             project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
             project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
@@ -54,7 +59,21 @@ class IOSApphancePlugin implements Plugin<Project> {
         }
     }
 
-    void preprocessBuildsWithApphance(Project project) {
+    private void prepareApphanceFrameworkVersion(Project project) {
+        project.configurations {
+            apphance
+        }
+
+        project.configurations.apphance {
+            resolutionStrategy.cacheDynamicVersionsFor 0, 'minutes'
+        }
+
+        project.repositories {
+            maven { url 'https://dev.polidea.pl/artifactory/ext-releases-local/' }
+        }
+    }
+
+    private void preprocessBuildsWithApphance(Project project) {
         iosConf.configurations.each { configuration ->
             iosConf.targets.each { target ->
                 def variant = "${target}-${configuration}".toString()
@@ -77,25 +96,40 @@ class IOSApphancePlugin implements Plugin<Project> {
                 logger.info("Adding Apphance to ${variant} (${target}, ${configuration}): " +
                         "${builder.tmpDir(target, configuration)}. Project file = ${projConf.xCodeProjectDirectories[variant]}")
                 pbxProjectHelper.addApphanceToProject(builder.tmpDir(target, configuration),
-                        projConf.xCodeProjectDirectories[variant], target, configuration, project[ApphanceProperty.APPLICATION_KEY.propertyName])
+                        projConf.xCodeProjectDirectories[variant], target, configuration, project[APPLICATION_KEY.propertyName])
                 copyApphanceFramework(project, builder.tmpDir(target, configuration))
             }
         }
     }
 
-    void replaceLogsWithApphance(Project project, File tmpDir) {
-        logger.lifecycle("Replacing NSLog logs with Apphance in ${tmpDir}")
-        project.ant.replace(casesensitive: 'true', token: 'NSLog',
-                value: 'APHLog', summary: true) {
-            fileset(dir: tmpDir) { include(name: '**/*.m') }
+    private copyApphanceFramework(Project project, File libsDir) {
+        project.dependencies { apphance 'com.apphance:ios.pre-production.armv7:1.8+' }
+        libsDir.mkdirs()
+        clearLibsDir(libsDir)
+        logger.lifecycle("Copying apphance framework directory " + libsDir)
+
+        project.copy {
+            from { project.configurations.apphance }
+            into libsDir
+            rename { String filename ->
+                'apphance.zip'
+            }
+        }
+
+        def projectApphanceZip = new File(libsDir, "apphance.zip")
+        logger.lifecycle("Unpacking file " + projectApphanceZip)
+        logger.lifecycle("Exists " + projectApphanceZip.exists())
+        def command = ["unzip", "${projectApphanceZip}", "-d", "${libsDir}"]
+        projectHelper.executeCommand(project, libsDir, command)
+
+        project.delete {
+            projectApphanceZip
         }
     }
 
-    private copyApphanceFramework(Project project, File libsDir) {
-        logger.lifecycle("Copying apphance into directory " + libsDir)
-        libsDir.mkdirs()
-        libsDir.traverse([type: FileType.FILES, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) { framework ->
-            if (framework == ".*[aA]pphance.*\\.framework") {
+    private clearLibsDir(File libsDir) {
+        libsDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { framework ->
+            if (framework.name =~ FRAMEWORK_PATTERN) {
                 logger.lifecycle("Removing old apphance framework: " + framework.name)
                 def delClos = {
                     it.eachDir(delClos);
@@ -108,35 +142,22 @@ class IOSApphancePlugin implements Plugin<Project> {
                 delClos(new File(framework.canonicalPath))
             }
         }
-
-
-        def projectApphanceZip = new File(libsDir, "apphance.zip")
-        projectApphanceZip.delete()
-        def apphanceUrl = new URL("http://dev.polidea.pl/ext/32092342903/latest_ios_apphance_new.zip")
-
-        projectApphanceZip << apphanceUrl.getContent()
-
-        logger.lifecycle("Unpacking file " + projectApphanceZip)
-        logger.lifecycle("Exists " + projectApphanceZip.exists())
-        def command = ["unzip", "${projectApphanceZip}", "-d", "${libsDir}"]
-        projectHelper.executeCommand(project, libsDir, command)
     }
 
     boolean isApphancePresent(File projectDir) {
         def apphancePresent = false
 
-        projectDir.traverse([type: FileType.DIRECTORIES, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) { framework ->
-            if (framework =~ ".*[aA]pphance.*\\.framework") {
+        projectDir.traverse([type: DIRECTORIES, maxDepth: MAX_RECURSION_LEVEL]) { framework ->
+            if (framework =~ FRAMEWORK_PATTERN) {
                 apphancePresent = true
             }
         }
 
-        if (apphancePresent) {
-            logger.lifecycle("Apphance already in project")
-        } else {
+        apphancePresent ?
+            logger.lifecycle("Apphance already in project") :
             logger.lifecycle("Apphance not in project")
-        }
-        return apphancePresent
+
+        apphancePresent
     }
 
     static public final String DESCRIPTION =
