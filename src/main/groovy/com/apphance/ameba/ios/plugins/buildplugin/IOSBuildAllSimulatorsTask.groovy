@@ -1,26 +1,20 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
-import java.io.File
-
-import org.gradle.api.DefaultTask
-import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
-import org.gradle.api.tasks.TaskAction
-
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSBuilderInfo;
-import com.apphance.ameba.ios.IOSXCodeOutputParser;
-import com.apphance.ameba.ios.IOSProjectConfiguration;
-import com.apphance.ameba.ios.MPParser
-import com.apphance.ameba.ios.plugins.release.IOSReleaseConfiguration;
-import com.apphance.ameba.ios.plugins.release.IOSReleaseConfigurationRetriever;
-import com.apphance.ameba.plugins.release.AmebaArtifact;
-import com.apphance.ameba.plugins.release.ProjectReleaseCategory;
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration;
+import com.apphance.ameba.ios.IOSBuilderInfo
+import com.apphance.ameba.ios.IOSProjectConfiguration
+import com.apphance.ameba.ios.IOSXCodeOutputParser
+import com.apphance.ameba.ios.plugins.release.IOSReleaseConfiguration
+import com.apphance.ameba.ios.plugins.release.IOSReleaseConfigurationRetriever
+import com.apphance.ameba.plugins.release.ProjectReleaseCategory
+import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
+import org.gradle.api.DefaultTask
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
+import org.gradle.api.tasks.TaskAction
 
 /**
  * Task to build iOS simulators - executable images that can be run on OSX.
@@ -42,7 +36,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
         this.conf = PropertyCategory.getProjectConfiguration(project)
         this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
         this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, project.ant)
-        this.dependsOn(project.readProjectConfiguration,project.copyMobileProvision,project.copyDebugSources)
+        this.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.copyDebugSources)
     }
 
     String getFolderPrefix(IOSBuilderInfo bi) {

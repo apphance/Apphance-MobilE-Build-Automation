@@ -1,15 +1,14 @@
 package com.apphance.ameba.vcs.plugins.git
 
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
-
 import com.apphance.ameba.AbstractVerifySetupOperation
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Verifies all git-related properties.
  *
  */
-class VerifyGitSetupOperation extends  AbstractVerifySetupOperation {
+class VerifyGitSetupOperation extends AbstractVerifySetupOperation {
     Logger logger = Logging.getLogger(VerifyGitSetupOperation.class)
 
     VerifyGitSetupOperation() {

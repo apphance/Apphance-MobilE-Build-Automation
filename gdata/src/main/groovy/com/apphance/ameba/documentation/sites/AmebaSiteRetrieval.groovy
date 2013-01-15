@@ -1,10 +1,5 @@
 package com.apphance.ameba.documentation.sites
 
-import java.net.URL
-import java.util.regex.Pattern
-
-import org.w3c.dom.css.CSSImportRule;
-
 import com.google.gdata.data.sites.ContentEntry
 
 class AmebaSiteRetrieval {
@@ -17,7 +12,7 @@ class AmebaSiteRetrieval {
     public final static String TTF_FILE_PREFIX = 'js'
 
     private static final CSS_ARRAY = ['.css']
-    private static final IMAGE_ARRAY = ['.jpg','.JPG', '.png','.PNG','.gif','.GIF','.jpeg','.JPEG','.ico','.ICO']
+    private static final IMAGE_ARRAY = ['.jpg', '.JPG', '.png', '.PNG', '.gif', '.GIF', '.jpeg', '.JPEG', '.ico', '.ICO']
     private static final JS_ARRAY = ['.js']
     private static final TTF_ARRAY = ['.ttf']
 
@@ -36,15 +31,15 @@ class AmebaSiteRetrieval {
         File localFileName
     }
 
-    private Map<URL,Mapping> textMap = [:]
-    private Map<URL,Mapping> binaryMap = [:]
+    private Map<URL, Mapping> textMap = [:]
+    private Map<URL, Mapping> binaryMap = [:]
     private File targetDirectory
 
-    private  deleteRecursive (File f) {
+    private deleteRecursive(File f) {
         if (f.exists()) {
-            f.eachDir( {
+            f.eachDir({
                 println "Deleting directory ${it}"
-                deleteRecursive (it)
+                deleteRecursive(it)
             });
             f.eachFile {
                 println "Deleting file ${it}"
@@ -74,7 +69,7 @@ class AmebaSiteRetrieval {
             String[] fromDirectories = fromPath.split("/");
             String[] toDirectories = toPath.split("/");
             int length = fromDirectories.length < toDirectories.length ?
-                            fromDirectories.length : toDirectories.length;
+                fromDirectories.length : toDirectories.length;
             int lastCommonRoot = -1;
             int index;
             for (index = 0; index < length; index++) {
@@ -86,7 +81,7 @@ class AmebaSiteRetrieval {
             }
             if (lastCommonRoot != -1) {
                 relativePath = new StringBuilder();
-                for (index = lastCommonRoot + 1; index < fromDirectories.length-1; index++) {
+                for (index = lastCommonRoot + 1; index < fromDirectories.length - 1; index++) {
                     if (fromDirectories[index].length() > 0) {
                         relativePath.append("../");
                     }
@@ -100,7 +95,7 @@ class AmebaSiteRetrieval {
         return relativePath == null ? null : relativePath.toString();
     }
 
-    private  List readPageInfo(List pages) {
+    private List readPageInfo(List pages) {
         println "Reading pages information"
         List<PageInfo> pageInfoList = pages.collect { contentEntry ->
             PageInfo pageInfo = new PageInfo()
@@ -117,15 +112,15 @@ class AmebaSiteRetrieval {
         return pageInfoList
     }
 
-    private  int countUp(File f) {
+    private int countUp(File f) {
         return (f == null) ? 0 : countUp(f.parentFile)
     }
 
-    private  String getSiteURL(String shortName) {
+    private String getSiteURL(String shortName) {
         return "${SITE_PREFIX}${shortName}"
     }
 
-    private  String getAbsoluteURL(String shortName) {
+    private String getAbsoluteURL(String shortName) {
         return "${ABSOLUTE_PREFIX}${shortName}"
     }
 
@@ -146,7 +141,7 @@ class AmebaSiteRetrieval {
             println "New mapping"
             Mapping mapping = new Mapping()
             mapping.url = new URL(context, stringUrl)
-            mapping.localFileName = new File(directory, prefix +  (imageNumber++) + extension)
+            mapping.localFileName = new File(directory, prefix + (imageNumber++) + extension)
             urlMap.put(url, mapping)
             return mapping
         } else {
@@ -158,27 +153,27 @@ class AmebaSiteRetrieval {
         println "Matched url:'${stringUrl}' in context '${context}'"
         def match, extension
         if (!binaryOnly) {
-            (match, extension)  = matchesAny(stringUrl, CSS_ARRAY)
+            (match, extension) = matchesAny(stringUrl, CSS_ARRAY)
             if (match) {
                 return putNextMapping(context, stringUrl, CSS_FILE_PREFIX, extension, textMap)
             }
-            (match, extension)  = matchesAny(stringUrl, JS_ARRAY)
+            (match, extension) = matchesAny(stringUrl, JS_ARRAY)
             if (match) {
                 return putNextMapping(context, stringUrl, JS_FILE_PREFIX, extension, textMap)
             }
         }
-        (match, extension)  = matchesAny(stringUrl, IMAGE_ARRAY)
+        (match, extension) = matchesAny(stringUrl, IMAGE_ARRAY)
         if (match) {
             return putNextMapping(context, stringUrl, IMAGE_FILE_PREFIX, extension, binaryMap)
         }
-        (match, extension)  = matchesAny(stringUrl, TTF_ARRAY)
+        (match, extension) = matchesAny(stringUrl, TTF_ARRAY)
         if (match) {
             return putNextMapping(context, stringUrl, TTF_FILE_PREFIX, extension, binaryMap)
         }
         return null
     }
 
-    private String downloadReplacingPatterns (URL context, File localFileName, boolean binaryOnly) {
+    private String downloadReplacingPatterns(URL context, File localFileName, boolean binaryOnly) {
         String pageText = context.getText('utf-8')
         (pageText =~ /href="([^\s"]*)"/).each { matchString, stringUrl ->
             Mapping mapping = matchUrl(context, stringUrl, binaryOnly)
@@ -201,9 +196,9 @@ class AmebaSiteRetrieval {
         return pageText
     }
 
-    private  void downloadPage(List<PageInfo> pageInfoList, PageInfo pageInfo) {
+    private void downloadPage(List<PageInfo> pageInfoList, PageInfo pageInfo) {
         URL context = new URL(pageInfo.href)
-        String pageText = downloadReplacingPatterns(context,pageInfo.localFileName, false)
+        String pageText = downloadReplacingPatterns(context, pageInfo.localFileName, false)
         pageInfoList.each { pageToReplace ->
             String relativizedPath = convertToRelativePath(pageInfo.localFileName, pageToReplace.localFileName)
             String absolute = getAbsoluteURL(pageToReplace.shortName)
@@ -213,7 +208,7 @@ class AmebaSiteRetrieval {
             pageText = pageText.replaceAll("href=\"${site}\"", "href=\"${relativizedPath}\"")
         }
         pageText = pageText.replace('<head>', '<head><meta http-equiv="Content-type" content="text/html;charset=UTF-8">')
-        pageInfo.localFileName.append(pageText,'utf-8')
+        pageInfo.localFileName.append(pageText, 'utf-8')
     }
 
     public void downloadText(URL url, File file) {
@@ -227,12 +222,12 @@ class AmebaSiteRetrieval {
         println "Downloading ${url} to ${file}"
         file.parentFile.mkdirs()
         file.withOutputStream { out ->
-          out << url.openStream()
+            out << url.openStream()
         }
     }
 
 
-    private  downloadPages(List<PageInfo> pageInfoList) {
+    private downloadPages(List<PageInfo> pageInfoList) {
         pageInfoList.each { pageInfo ->
             println "Downloading page ${pageInfo.shortName}"
             pageInfo.localFileName.parentFile.mkdirs()

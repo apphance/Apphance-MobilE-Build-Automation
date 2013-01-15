@@ -1,20 +1,18 @@
-package com.apphance.ameba.unit;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-import org.junit.AfterClass;
-import org.junit.Test
+package com.apphance.ameba.unit
 
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Test
+
+import static org.junit.Assert.assertEquals
 
 class ReleasePropertyTest {
 
     @Test
-    void testReleasePropertyNoComments () {
-        use (PropertyCategory) {
+    void testReleasePropertyNoComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE.propertyName] = "Icon.png"
@@ -35,13 +33,13 @@ release.project.country=PL
 release.mail.from=test@apphance.com
 release.mail.to=no-reply@apphance.com
 release.mail.flags=qrCode,imageMontage
-''',s)
+''', s)
         }
     }
 
     @Test
-    void testReleasePropertyWithComments () {
-        use (PropertyCategory) {
+    void testReleasePropertyWithComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE.propertyName] = "Icon.png"
@@ -69,7 +67,7 @@ release.mail.from=test@apphance.com
 release.mail.to=no-reply@apphance.com
 # Flags for release email [optional] default: <qrCode,imageMontage>
 release.mail.flags=qrCode,imageMontage
-''',s)
+''', s)
         }
     }
 }

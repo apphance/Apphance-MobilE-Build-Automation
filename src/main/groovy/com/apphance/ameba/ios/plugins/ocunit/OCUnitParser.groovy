@@ -1,18 +1,14 @@
 package com.apphance.ameba.ios.plugins.ocunit
 
-import java.util.Collection
-import java.util.List
-
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-
 
 /**
  * Parses text output of OCUNIT.
  *
  */
 class OCUnitParser {
-    static  Logger logger = Logging.getLogger(OCUnitParser.class)
+    static Logger logger = Logging.getLogger(OCUnitParser.class)
     static def TEST_STARTED = ~/^\s*Test\s+Suite\s+'\s*(\S.+(?:\.octest).*\S)\s*'\s+started\s+at\s+(\S.+\S)\s*$/
     static def TEST_FINISHED = ~/^\s*Test\s+Suite\s+'\s*(\S.+(?:\.octest).*\S)\s*'\s+finished\s+at\s+(\S.+\S)\s*$/
     static def TEST_SUITE_STARTED = ~/^\s*Test\s+Suite\s+'\s*(\S.+\S)\s*'\s+started\s+at\s+(\S.+\S)\s*$/
@@ -44,7 +40,7 @@ class OCUnitParser {
             return
         }
         def testSuiteStartedMatcher = TEST_SUITE_STARTED.matcher(line)
-        if (testSuiteStartedMatcher.matches()){
+        if (testSuiteStartedMatcher.matches()) {
             logger.info("Starting test suite .... ${testSuiteStartedMatcher[0][1]}")
             OCUnitTestSuite ts = new OCUnitTestSuite()
             ts.name = testSuiteStartedMatcher[0][1]
@@ -58,7 +54,7 @@ class OCUnitParser {
             return
         }
         def testSuiteFinishedMatcher = TEST_SUITE_FINISHED.matcher(line)
-        if (testSuiteFinishedMatcher.matches()){
+        if (testSuiteFinishedMatcher.matches()) {
             logger.info("Finishing test suite .... ${testSuiteFinishedMatcher[0][1]}")
             assert currentSuite.name == testSuiteFinishedMatcher[0][1]
             currentSuite.endTimestamp = testSuiteFinishedMatcher[0][2]
@@ -68,7 +64,7 @@ class OCUnitParser {
         if (testCaseStartedMatcher.matches()) {
             logger.info("Starting test case .... ${testCaseStartedMatcher[0][1]}")
             assert testCaseStartedMatcher[0][1].startsWith(currentSuite.name)
-            OCUnitTestCase tc  = new OCUnitTestCase()
+            OCUnitTestCase tc = new OCUnitTestCase()
             tc.name = testCaseStartedMatcher[0][1].substring(currentSuite.name.length() + 1)
             currentSuite.testCases << tc
             return

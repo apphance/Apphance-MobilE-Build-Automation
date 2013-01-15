@@ -1,12 +1,10 @@
 package com.apphance.ameba.ios.plugins.framework
 
-import org.gradle.api.GradleException
-
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.AbstractVerifyIOSSetupOperation
-import com.apphance.ameba.ios.IOSProjectConfiguration;
+import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
-
+import org.gradle.api.GradleException
 
 /**
  * Verifies properties for framework building.
@@ -38,7 +36,7 @@ class VerifyFrameworkSetupOperation extends AbstractVerifyIOSSetupOperation {
     }
 
     void checkFilesExist(property) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             String files = project.readProperty(property)
             if (files != '') {
                 files.split(',').each {

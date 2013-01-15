@@ -1,13 +1,12 @@
 package com.apphance.ameba.ios.plugins.release
 
-import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
-
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.sun.org.apache.xpath.internal.XPathAPI
+import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Manipulation of .plist file.
@@ -25,14 +24,14 @@ class IOSPlistProcessor {
     public void incrementPlistVersion(Project project, IOSProjectConfiguration iosConf, ProjectConfiguration conf) {
         def root = getParsedPlist(project, iosConf)
         XPathAPI.selectNodeList(root,
-                '/plist/dict/key[text()="CFBundleShortVersionString"]').each{
-                    it.nextSibling.nextSibling.textContent = conf.versionString
-                }
+                '/plist/dict/key[text()="CFBundleShortVersionString"]').each {
+            it.nextSibling.nextSibling.textContent = conf.versionString
+        }
         conf.versionCode += 1
         XPathAPI.selectNodeList(root,
-                '/plist/dict/key[text()="CFBundleVersion"]').each{
-                    it.nextSibling.nextSibling.textContent = conf.versionCode
-                }
+                '/plist/dict/key[text()="CFBundleVersion"]').each {
+            it.nextSibling.nextSibling.textContent = conf.versionCode
+        }
         iosConf.plistFile.write(root as String)
     }
 

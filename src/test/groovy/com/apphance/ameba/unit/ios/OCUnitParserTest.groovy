@@ -1,11 +1,9 @@
-package com.apphance.ameba.unit.ios;
-
-import static org.junit.Assert.*
-
-import org.junit.AfterClass
-import org.junit.Test
+package com.apphance.ameba.unit.ios
 
 import com.apphance.ameba.ios.plugins.ocunit.OCUnitParser
+import org.junit.Test
+
+import static org.junit.Assert.assertEquals
 
 class OCUnitParserTest {
 
@@ -92,15 +90,16 @@ Touch build/Debug-iphonesimulator/UnitTests.octest
     setenv PATH "/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin:/Developer/usr/bin:/data/gradle/bin:/Library/Frameworks/Python.framework/Versions/2.7/bin:/opt/local/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/Users/potiuk/bin:/Applications/android-sdk-mac_x86/tools:/Applications/android-sdk/tools:/Applications/android-sdk/platform-tools:/Volumes/Android/build:/Library/Groovy/groovy/bin"
     /usr/bin/touch -c /Users/potiuk/Documents/workspace/SomeApp/build/Debug-iphonesimulator/UnitTests.octest
 '''
+
     @Test
     void testParsingOutput() {
-        OCUnitParser parser= new OCUnitParser()
+        OCUnitParser parser = new OCUnitParser()
         parser.parse(TEST_RESULT.split('\n') as List)
         assertEquals([
-            'SMSomeTest',
-            'SMCoreDataHandlerTest',
-            'SMModelSharedTest',
-            'UnitTests'
-        ], parser.testSuites.collect {it.name})
+                'SMSomeTest',
+                'SMCoreDataHandlerTest',
+                'SMModelSharedTest',
+                'UnitTests'
+        ], parser.testSuites.collect { it.name })
     }
 }

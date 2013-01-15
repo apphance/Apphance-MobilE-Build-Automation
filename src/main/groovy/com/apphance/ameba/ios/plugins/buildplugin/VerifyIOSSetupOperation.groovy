@@ -1,13 +1,10 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
-import org.gradle.api.GradleException
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
-
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.AbstractVerifyIOSSetupOperation
-import com.apphance.ameba.ios.IOSProjectConfiguration;
-
+import org.gradle.api.GradleException
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Verifies if all IOS properties are setup properly.
@@ -23,9 +20,9 @@ class VerifyIOSSetupOperation extends AbstractVerifyIOSSetupOperation {
 
     void verifySetup() {
         super.verifySetup()
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             def projectProperties = readProperties()
-            IOSProjectProperty.each{ checkProperty(projectProperties, it) }
+            IOSProjectProperty.each { checkProperty(projectProperties, it) }
             checkPlistFile(IOSProjectProperty.PLIST_FILE)
             checkFamilies()
             checkDistributionDir()
@@ -38,7 +35,7 @@ class VerifyIOSSetupOperation extends AbstractVerifyIOSSetupOperation {
     }
 
     void checkSDKs() {
-        use (PropertyCategory){
+        use(PropertyCategory) {
             String sdk = project.readProperty(IOSProjectProperty.IOS_SDK)
             if (!iosConf.allIphoneSDKs.contains(sdk)) {
                 throw new GradleException("iPhone sdk ${IOSProjectProperty.IOS_SDK.propertyName}:${sdk} is not on the list of sdks ${iosConf.allIphoneSDKs}")
@@ -51,7 +48,7 @@ class VerifyIOSSetupOperation extends AbstractVerifyIOSSetupOperation {
     }
 
     void checkDistributionDir() {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             if (!iosConf.distributionDirectory.exists() || !iosConf.distributionDirectory.isDirectory()) {
                 throw new GradleException("""The distribution resources directory (${iosConf.distributionDirectory}) does not exist or is not a directory. Please run 'gradle prepareSetup' to correct it.""")
             }
@@ -68,7 +65,7 @@ class VerifyIOSSetupOperation extends AbstractVerifyIOSSetupOperation {
     }
 
     void checkFamilies() {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             String[] families = project.readProperty(IOSProjectProperty.IOS_FAMILIES).split(',')
             families.each { family ->
                 if (!IOSPlugin.FAMILIES.contains(family)) {
@@ -79,14 +76,14 @@ class VerifyIOSSetupOperation extends AbstractVerifyIOSSetupOperation {
     }
 
     void checkTargetsAndConfigurations() {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             if (iosConf.targets == ['']) {
                 throw new GradleException("You must specify at least one target")
             }
             if (iosConf.configurations == ['']) {
                 throw new GradleException("You must specify at least one configuration")
             }
-            if (iosConf.excludedBuilds != ['.*']&& iosConf.excludedBuilds.size != iosConf.targets.size * iosConf.configurations.size) {
+            if (iosConf.excludedBuilds != ['.*'] && iosConf.excludedBuilds.size != iosConf.targets.size * iosConf.configurations.size) {
                 if (!iosConf.targets.contains(iosConf.mainTarget)) {
                     throw new GradleException("Main target ${iosConf.mainTarget} is not on the list of targets ${iosConf.targets}")
                 }

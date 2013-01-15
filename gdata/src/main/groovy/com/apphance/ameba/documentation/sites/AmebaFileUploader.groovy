@@ -1,12 +1,10 @@
 package com.apphance.ameba.documentation.sites
 
-import com.google.gdata.data.sites.ContentEntry;
-import com.google.gdata.data.sites.FileCabinetPageEntry;
-import com.google.gdata.data.sites.PageEntry
+import com.google.gdata.data.sites.ContentEntry
 
 class AmebaFileUploader {
-    private static File getZipFile(String ... args) {
-        if (args.length <3) {
+    private static File getZipFile(String... args) {
+        if (args.length < 3) {
             throw new IllegalArgumentException("The third argument of the call should be file name")
         }
         File documentationZip = new File(args[2])

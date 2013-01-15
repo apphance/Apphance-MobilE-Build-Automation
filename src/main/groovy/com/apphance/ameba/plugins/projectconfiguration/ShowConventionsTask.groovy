@@ -1,14 +1,8 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
-import java.lang.reflect.Array;
-
-import org.gradle.api.DefaultTask
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.DynamicObjectHelper;
-import org.gradle.api.tasks.SourceSet;
-import org.gradle.api.tasks.TaskAction;
-
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
 /**
  * Task for showing all conventions.

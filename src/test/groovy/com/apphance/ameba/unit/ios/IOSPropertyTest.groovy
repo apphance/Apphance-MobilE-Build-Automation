@@ -1,22 +1,20 @@
-package com.apphance.ameba.unit.ios;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-import org.junit.AfterClass
-import org.junit.Test
+package com.apphance.ameba.unit.ios
 
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
 import com.apphance.ameba.ios.plugins.fonemonkey.FoneMonkeyProperty
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
 import com.apphance.ameba.ios.plugins.kif.KifProperty
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Test
+
+import static org.junit.Assert.assertEquals
 
 class IOSPropertyTest {
     @Test
-    void testIOSPropertyNoComments () {
-        use (PropertyCategory) {
+    void testIOSPropertyNoComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[IOSProjectProperty.PROJECT_DIRECTORY.propertyName] = "Project.xcodeproj"
@@ -43,12 +41,13 @@ ios.mainTarget=MainTarget
 ios.mainConfiguration=MainConfiguration
 ios.sdk=iphoneos
 ios.simulator.sdk=iphonesimulator
-''',s)
+''', s)
         }
     }
+
     @Test
-    void testIOSPropertyWithComments () {
-        use (PropertyCategory) {
+    void testIOSPropertyWithComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[IOSProjectProperty.PROJECT_DIRECTORY.propertyName] = "Project.xcodeproj"
@@ -84,13 +83,13 @@ ios.mainConfiguration=MainConfiguration
 ios.sdk=iphoneos
 # SDK used to build simulator targets (-sdk option of xcodebuild) [optional] default: <iphonesimulator>
 ios.simulator.sdk=iphonesimulator
-''',s)
+''', s)
         }
     }
 
     @Test
-    void testIOSKIFPropertyNoComments () {
-        use (PropertyCategory) {
+    void testIOSKIFPropertyNoComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[KifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
@@ -99,13 +98,13 @@ ios.simulator.sdk=iphonesimulator
 # iOS KIF properties
 ###########################################################
 ios.kif.configuration=Kif
-''',s)
+''', s)
         }
     }
 
     @Test
-    void testIOSKIFPropertyComments () {
-        use (PropertyCategory) {
+    void testIOSKIFPropertyComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[KifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
@@ -115,13 +114,13 @@ ios.kif.configuration=Kif
 ###########################################################
 # KIF build configuration [optional] default: <Debug>
 ios.kif.configuration=Kif
-''',s)
+''', s)
         }
     }
 
     @Test
-    void testFoneMonkeyPropertyNoComments () {
-        use (PropertyCategory) {
+    void testFoneMonkeyPropertyNoComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
@@ -130,14 +129,14 @@ ios.kif.configuration=Kif
 # iOS FoneMonkey properties
 ###########################################################
 ios.fonemonkey.configuration=FoneMonkey
-''',s)
+''', s)
         }
     }
 
 
     @Test
-    void testFoneMonkeyPropertyComments () {
-        use (PropertyCategory) {
+    void testFoneMonkeyPropertyComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
@@ -147,13 +146,13 @@ ios.fonemonkey.configuration=FoneMonkey
 ###########################################################
 # FoneMonkey build configuration [optional] default: <Debug>
 ios.fonemonkey.configuration=FoneMonkey
-''',s)
+''', s)
         }
     }
 
     @Test
-    void testIOSFrameworkPropertyNoComments () {
-        use (PropertyCategory) {
+    void testIOSFrameworkPropertyNoComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[IOSFrameworkProperty.FRAMEWORK_TARGET.propertyName] = "Target"
@@ -171,13 +170,13 @@ ios.framework.configuration=Debug
 ios.framework.version=A
 ios.framework.headers=Headers/test.h, Headers/test2.h
 ios.framework.resources=Resources/x.png
-''',s)
+''', s)
         }
     }
 
     @Test
-    void testIOSFrameworkPropertyComments () {
-        use (PropertyCategory) {
+    void testIOSFrameworkPropertyComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[IOSFrameworkProperty.FRAMEWORK_TARGET.propertyName] = "Target"
@@ -200,7 +199,7 @@ ios.framework.version=A
 ios.framework.headers=Headers/test.h, Headers/test2.h
 # List of resources (coma separated) that should be copied to the framework
 ios.framework.resources=Resources/x.png
-''',s)
+''', s)
         }
     }
 }

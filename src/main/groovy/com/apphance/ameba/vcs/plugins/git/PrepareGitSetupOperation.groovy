@@ -1,10 +1,9 @@
 package com.apphance.ameba.vcs.plugins.git
 
-import org.gradle.api.logging.Logger;
+import com.apphance.ameba.AbstractPrepareSetupOperation
+import com.apphance.ameba.PropertyCategory
+import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-
-import com.apphance.ameba.AbstractPrepareSetupOperation;
-import com.apphance.ameba.PropertyCategory;
 
 /**
  * Prepares Git-related properties.

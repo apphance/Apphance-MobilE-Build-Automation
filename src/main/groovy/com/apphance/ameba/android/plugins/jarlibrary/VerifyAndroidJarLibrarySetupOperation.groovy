@@ -1,11 +1,9 @@
 package com.apphance.ameba.android.plugins.jarlibrary
 
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
-
 import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.PropertyCategory
-
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Verifies all android jar library properties.
@@ -19,9 +17,9 @@ class VerifyAndroidJarLibrarySetupOperation extends AbstractVerifySetupOperation
     }
 
     void verifySetup() {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             def projectProperties = readProperties()
-            AndroidJarLibraryProperty.each{ checkProperty(projectProperties, it) }
+            AndroidJarLibraryProperty.each { checkProperty(projectProperties, it) }
             allPropertiesOK()
         }
     }

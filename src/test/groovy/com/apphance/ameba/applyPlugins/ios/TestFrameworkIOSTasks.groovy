@@ -1,13 +1,10 @@
-package com.apphance.ameba.applyPlugins.ios;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
-import org.junit.Test
+package com.apphance.ameba.applyPlugins.ios
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkPlugin
+import org.gradle.api.Project
+import org.junit.Test
 
 class TestFrameworkIOSTasks extends AbstractBaseIOSTaskTest {
 
@@ -20,17 +17,17 @@ class TestFrameworkIOSTasks extends AbstractBaseIOSTaskTest {
 
     @Test
     public void testBuildTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'clean',
-            'buildAll',
-            'buildAllSimulators',
-            'build-GradleXCode-BasicConfiguration',
-            'buildSingleVariant',
-            'buildFramework',
-            'copyMobileProvision',
-            'unlockKeyChain',
-            'copySources',
-            'copyDebugSources',
-        ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
+        verifyTasksInGroup(getProject(), [
+                'clean',
+                'buildAll',
+                'buildAllSimulators',
+                'build-GradleXCode-BasicConfiguration',
+                'buildSingleVariant',
+                'buildFramework',
+                'copyMobileProvision',
+                'unlockKeyChain',
+                'copySources',
+                'copyDebugSources',
+        ], AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 }

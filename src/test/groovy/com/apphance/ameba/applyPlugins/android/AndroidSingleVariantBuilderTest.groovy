@@ -1,28 +1,23 @@
-package com.apphance.ameba.applyPlugins.android;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
+package com.apphance.ameba.applyPlugins.android
 
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidBuilderInfo
-import com.apphance.ameba.android.AndroidBuildXmlHelper
-import com.apphance.ameba.android.AndroidManifestHelper
-import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.android.AndroidSingleVariantApkBuilder
+import com.apphance.ameba.android.*
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
+import org.gradle.api.Project
+
+import static org.junit.Assert.assertEquals
 
 class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
 
     private AndroidSingleVariantApkBuilder prepareEnvironment(Project project) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
             manifestHelper.readVersion(project.rootDir, project.getProjectConfiguration())
             AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
             Properties props = new Properties()
             props.load(new FileInputStream(project.file("gradle.properties")))
-            props.keys().each { key->
-                project[key]=props.getProperty(key)
+            props.keys().each { key ->
+                project[key] = props.getProperty(key)
             }
             project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.readProjectName(project.rootDir)
             project.retrieveBasicProjectData()

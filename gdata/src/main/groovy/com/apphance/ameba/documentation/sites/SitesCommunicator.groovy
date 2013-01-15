@@ -1,23 +1,17 @@
 package com.apphance.ameba.documentation.sites
 
-import java.io.File
-import java.io.IOException
-
-import javax.activation.MimetypesFileTypeMap
-
 import com.google.gdata.client.sites.ContentQuery
 import com.google.gdata.client.sites.SitesService
-import com.google.gdata.data.PlainTextConstruct
 import com.google.gdata.data.ILink.Type
+import com.google.gdata.data.PlainTextConstruct
 import com.google.gdata.data.media.MediaFileSource
 import com.google.gdata.data.sites.AttachmentEntry
-import com.google.gdata.data.sites.BasePageEntry
 import com.google.gdata.data.sites.ContentEntry
 import com.google.gdata.data.sites.ContentFeed
-import com.google.gdata.data.sites.FileCabinetPageEntry
 import com.google.gdata.data.sites.SitesLink
-import com.google.gdata.data.sites.WebPageEntry;
 import com.google.gdata.util.ServiceException
+
+import javax.activation.MimetypesFileTypeMap
 
 class SitesCommunicator {
     public static final String APP_NAME = 'apphance-ameba-v0.99.3'
@@ -27,7 +21,7 @@ class SitesCommunicator {
     String password = null
     SitesService service = null
 
-    public readUserPassword(String ... args) {
+    public readUserPassword(String... args) {
         username = args[0]
         println "Username: ${username}"
         password = args[1]
@@ -48,7 +42,7 @@ class SitesCommunicator {
         ContentQuery query = new ContentQuery(new URL(CONTENT_URL));
         query.setPath('/introduction/plugin-reference/')
         ContentFeed contentFeed = service.getFeed(query, ContentFeed.class)
-        def entries  = contentFeed.getEntries()
+        def entries = contentFeed.getEntries()
         ContentEntry page = entries.get(0)
         return page
     }
@@ -57,8 +51,8 @@ class SitesCommunicator {
         println "Retrieving download page"
         ContentQuery query = new ContentQuery(new URL(CONTENT_URL));
         query.setKind('filecabinet')
-        ContentFeed contentFeed = service.getFeed(query,ContentFeed.class);
-        def entries  = contentFeed.getEntries()
+        ContentFeed contentFeed = service.getFeed(query, ContentFeed.class);
+        def entries = contentFeed.getEntries()
         entries.each {
             println it.title.text
         }
@@ -77,7 +71,7 @@ class SitesCommunicator {
     }
 
     public AttachmentEntry uploadAttachment(File file, ContentEntry parentPage,
-        String title, String description) throws IOException, ServiceException {
+                                            String title, String description) throws IOException, ServiceException {
         println "Uploading attachment"
         MimetypesFileTypeMap mediaTypes = new MimetypesFileTypeMap();
         mediaTypes.addMimeTypes("application/zip zip");

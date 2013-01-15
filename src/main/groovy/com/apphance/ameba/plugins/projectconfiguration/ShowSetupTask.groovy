@@ -1,10 +1,9 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
-import org.gradle.api.DefaultTask;
-import org.gradle.api.tasks.TaskAction;
-
 import com.apphance.ameba.AbstractShowSetupOperation
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
 /**
  * Shows all setup properties for basic configuration plugin.

@@ -1,18 +1,13 @@
 package com.apphance.ameba.ios
 
-import java.io.File;
-import java.net.URL
-import java.util.Collection
-
-import javax.xml.parsers.DocumentBuilderFactory
-
+import com.apphance.ameba.XMLBomAwareFileReader
+import com.sun.org.apache.xpath.internal.XPathAPI
 import org.gradle.api.GradleException
-import org.gradle.api.Project;
+import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-import com.apphance.ameba.XMLBomAwareFileReader
-import com.sun.org.apache.xpath.internal.XPathAPI
+import javax.xml.parsers.DocumentBuilderFactory
 
 /**
  * Parses plist file.
@@ -26,14 +21,14 @@ class MPParser {
         def builderFactory = DocumentBuilderFactory.newInstance()
         builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
         builderFactory.setFeature("http://xml.org/sax/features/validation", false)
-        def builder     = builderFactory.newDocumentBuilder()
+        def builder = builderFactory.newDocumentBuilder()
         InputStream is = new ByteArrayInputStream(xml.getBytes("UTF-8"))
-        def root        = builder.parse(is).documentElement
+        def root = builder.parse(is).documentElement
         String bundleId;
         XPathAPI.selectNodeList(root,
-                '/plist/dict/dict/key[text()="application-identifier"]').each{
-                    bundleId = it.nextSibling.nextSibling.textContent
-                }
+                '/plist/dict/dict/key[text()="application-identifier"]').each {
+            bundleId = it.nextSibling.nextSibling.textContent
+        }
         bundleId = bundleId.split("\\.")[1..-1].join(".")
         return bundleId
     }
@@ -43,9 +38,9 @@ class MPParser {
         def root = new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
         String bundleId;
         XPathAPI.selectNodeList(root,
-                '/plist/dict/key[text()="CFBundleIdentifier"]').each{
-                    bundleId = it.nextSibling.nextSibling.textContent
-                }
+                '/plist/dict/key[text()="CFBundleIdentifier"]').each {
+            bundleId = it.nextSibling.nextSibling.textContent
+        }
         return bundleId
     }
 
@@ -54,30 +49,30 @@ class MPParser {
         def builderFactory = DocumentBuilderFactory.newInstance()
         builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
         builderFactory.setFeature("http://xml.org/sax/features/validation", false)
-        def builder     = builderFactory.newDocumentBuilder()
+        def builder = builderFactory.newDocumentBuilder()
         InputStream is = new ByteArrayInputStream(xml.getBytes("UTF-8"))
-        def root        = builder.parse(is).documentElement
-        def provisionedDevicesList = new LinkedList<String> ()
+        def root = builder.parse(is).documentElement
+        def provisionedDevicesList = new LinkedList<String>()
         XPathAPI.selectNodeList(root,
-                '/plist/dict/key[text()="ProvisionedDevices"]').each{
-                    def provisionedDevicesArray = it.nextSibling.nextSibling.childNodes
-                    provisionedDevicesArray.each {
-                        if(it.nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
-                            if (it.nodeName != "string") {
-                                throw new GradleException("Expecting element name 'string' and got ${it.nodeName}")
-                            }
-                            provisionedDevicesList << it.firstChild.nodeValue.toString()
-                        }
+                '/plist/dict/key[text()="ProvisionedDevices"]').each {
+            def provisionedDevicesArray = it.nextSibling.nextSibling.childNodes
+            provisionedDevicesArray.each {
+                if (it.nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
+                    if (it.nodeName != "string") {
+                        throw new GradleException("Expecting element name 'string' and got ${it.nodeName}")
                     }
+                    provisionedDevicesList << it.firstChild.nodeValue.toString()
                 }
+            }
+        }
         return provisionedDevicesList
     }
 
     static String extractXML(URL mobileprovisionUrl) {
         def lines = mobileprovisionUrl.readLines("utf-8")*.trim()
-        def startPlist = lines.findIndexOf {it.startsWith('<plist')}
-        def rest = lines[startPlist .. -1]
-        def xml = rest[0..rest.findIndexOf {it.startsWith('</plist')}]
+        def startPlist = lines.findIndexOf { it.startsWith('<plist') }
+        def rest = lines[startPlist..-1]
+        def xml = rest[0..rest.findIndexOf { it.startsWith('</plist') }]
         return xml.join("\n")
     }
 

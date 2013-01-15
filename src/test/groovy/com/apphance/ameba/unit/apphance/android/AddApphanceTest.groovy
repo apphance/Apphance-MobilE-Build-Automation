@@ -1,22 +1,19 @@
 package com.apphance.ameba.unit.apphance.android
 
-import static org.junit.Assert.*
-import groovy.util.slurpersupport.GPathResult
-
-import java.io.File
-
-import org.junit.*
-
 import com.apphance.ameba.android.AndroidManifestHelper
+import groovy.util.slurpersupport.GPathResult
+import org.junit.Test
+
+import static org.junit.Assert.*
 
 class AddApphanceTest {
 
     File noApphanceNoApplicationDirectory = new File('testProjects/android-no-apphance-no-application')
     File tmpDir = new File('tmp/testApphance')
 
-    private def deleteRecursive (File f) {
+    private def deleteRecursive(File f) {
         if (f.exists()) {
-            f.eachDir( { deleteRecursive (it) })
+            f.eachDir({ deleteRecursive(it) })
             f.eachFile { it.delete() }
         }
     }

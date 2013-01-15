@@ -1,12 +1,11 @@
-package com.apphance.ameba.applyPlugins.ios;
+package com.apphance.ameba.applyPlugins.ios
 
-import static org.junit.Assert.*
-
+import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.Project
 import org.junit.Test
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
+import static org.junit.Assert.assertEquals;
 
 class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
 
@@ -18,51 +17,51 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
 
     @Test
     public void testBuildTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'clean',
-            'buildAll',
-            'buildAllSimulators',
-            'build-GradleXCode-BasicConfiguration',
-            'buildSingleVariant',
-            'copyMobileProvision',
-            'unlockKeyChain',
-            'copySources',
-            'copyDebugSources',
-        ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
+        verifyTasksInGroup(getProject(), [
+                'clean',
+                'buildAll',
+                'buildAllSimulators',
+                'build-GradleXCode-BasicConfiguration',
+                'buildSingleVariant',
+                'copyMobileProvision',
+                'unlockKeyChain',
+                'copySources',
+                'copyDebugSources',
+        ], AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 
     @Test
     public void testConfigurationTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'cleanConfiguration',
-            'readProjectConfiguration',
-            'readIOSProjectConfiguration',
-            'readIOSParametersFromXcode',
-            'readIOSProjectVersions',
-        ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
+        verifyTasksInGroup(getProject(), [
+                'cleanConfiguration',
+                'readProjectConfiguration',
+                'readIOSProjectConfiguration',
+                'readIOSParametersFromXcode',
+                'readIOSProjectVersions',
+        ], AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
     }
 
     @Test
     public void testReleaseTasksAvailable() {
-        verifyTasksInGroup(getProject(),[],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
+        verifyTasksInGroup(getProject(), [], AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }
 
     @Test
     public void testSetupTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'prepareSetup',
-            'verifySetup',
-            'showSetup',
-            'showConventions'
-        ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
+        verifyTasksInGroup(getProject(), [
+                'prepareSetup',
+                'verifySetup',
+                'showSetup',
+                'showConventions'
+        ], AmebaCommonBuildTaskGroups.AMEBA_SETUP)
         assertEquals([
-            'PrepareIOSSetupOperation'
-        ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName } )
+                'PrepareIOSSetupOperation'
+        ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName })
         assertEquals([
-            'VerifyIOSSetupOperation'
-        ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName } )
+                'VerifyIOSSetupOperation'
+        ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName })
         assertEquals([
-            'ShowIOSSetupOperation'
-        ], project.showSetup.showSetupOperations.collect { it.class.simpleName } )
+                'ShowIOSSetupOperation'
+        ], project.showSetup.showSetupOperations.collect { it.class.simpleName })
     }
 }

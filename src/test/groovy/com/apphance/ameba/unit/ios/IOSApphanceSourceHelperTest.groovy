@@ -1,10 +1,9 @@
-package com.apphance.ameba.unit.ios;
-
-import static org.junit.Assert.*
-
-import org.junit.Test
+package com.apphance.ameba.unit.ios
 
 import com.apphance.ameba.ios.plugins.apphance.IOSApphanceSourceHelper
+import org.junit.Test
+
+import static org.junit.Assert.assertTrue
 
 class IOSApphanceSourceHelperTest {
     private void baseAddApphanceInitBraceInLine(File baseDir) throws Exception {
@@ -14,7 +13,7 @@ class IOSApphanceSourceHelperTest {
         temp.delete()
         temp.text = f.text
         try {
-            helper.addApphanceInit(baseDir,"TESTKEY")
+            helper.addApphanceInit(baseDir, "TESTKEY")
             assertTrue(f.text.contains("TESTKEY"))
         } finally {
             f.delete()

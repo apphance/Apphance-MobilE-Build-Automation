@@ -5,7 +5,7 @@ package com.apphance.ameba.android.plugins.jarlibrary
  *
  */
 public enum AndroidJarLibraryProperty {
-    RES_PREFIX('android.jarLibrary.resPrefix', 'Internal directory name used to embed resources in the jar',''),
+    RES_PREFIX('android.jarLibrary.resPrefix', 'Internal directory name used to embed resources in the jar', ''),
 
     public static final String DESCRIPTION = 'Android jar library properties'
     final String propertyName

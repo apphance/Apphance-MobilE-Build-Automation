@@ -1,16 +1,15 @@
-package com.apphance.ameba.runBuilds.android;
+package com.apphance.ameba.runBuilds.android
 
-import static org.junit.Assert.*
-
+import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.android.AndroidManifestHelper
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
-import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.android.AndroidManifestHelper
+import static org.junit.Assert.*
 
 class ExecuteAndroidBuildsTest {
 
@@ -43,48 +42,48 @@ class ExecuteAndroidBuildsTest {
         testAndroidWrongConventionConnection.close()
     }
 
-    protected void runGradle(String ... tasks) {
+    protected void runGradle(String... tasks) {
         def buildLauncher = connection.newBuild()
         buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run();
     }
 
-    protected void runGradleWithProperties(Properties p, String ... tasks) {
+    protected void runGradleWithProperties(Properties p, String... tasks) {
         def buildLauncher = gradleWithPropertiesConnection.newBuild()
-        def args = p.collect { property , value -> "-D${property}=${value}"}
+        def args = p.collect { property, value -> "-D${property}=${value}" }
         ProjectHelper.GRADLE_DAEMON_ARGS.each { args << it }
         buildLauncher.setJvmArguments(args as String[])
         buildLauncher.forTasks(tasks).run()
     }
 
-    protected void runGradleNoVariants(String ... tasks) {
+    protected void runGradleNoVariants(String... tasks) {
         gradleNoVariantsConnection.newBuild().forTasks(tasks).run();
     }
 
-    protected void runGradleAndroidAnalysis(String ... tasks) {
+    protected void runGradleAndroidAnalysis(String... tasks) {
         testAndroidConventionConnection.newBuild().forTasks(tasks).run();
     }
 
-    protected void runGradleAndroidAnalysisWrongConvention(String ... tasks) {
+    protected void runGradleAndroidAnalysisWrongConvention(String... tasks) {
         testAndroidWrongConventionConnection.newBuild().forTasks(tasks).run();
     }
 
     @Test
     void testCleanCheckTests() {
-        runGradle('updateProject', 'clean','checkTests')
-        assertFalse(new File(testProject,"bin").exists())
-        assertFalse(new File(testProject,"gen").exists())
-        assertFalse(new File(testProject,"build").exists())
-        assertFalse(new File(testProject,"tmp").exists())
+        runGradle('updateProject', 'clean', 'checkTests')
+        assertFalse(new File(testProject, "bin").exists())
+        assertFalse(new File(testProject, "gen").exists())
+        assertFalse(new File(testProject, "build").exists())
+        assertFalse(new File(testProject, "tmp").exists())
     }
 
     @Test
     void testOta() {
         runGradle('updateProject', 'cleanRelease')
-        assertTrue(new File(testProject,"ota").exists())
-        assertEquals(0,new File(testProject,"ota").listFiles().length)
-        assertTrue(new File(testProject,"tmp").exists())
-        assertEquals(0,new File(testProject,"tmp").listFiles().length)
+        assertTrue(new File(testProject, "ota").exists())
+        assertEquals(0, new File(testProject, "ota").listFiles().length)
+        assertTrue(new File(testProject, "tmp").exists())
+        assertEquals(0, new File(testProject, "tmp").listFiles().length)
     }
 
 
@@ -92,11 +91,11 @@ class ExecuteAndroidBuildsTest {
     void testBuildDebug() {
         runGradle('buildAllDebug')
         assertTrue(new File(testProject,
-                        "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testProject,
-                        "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testProject,
-                        "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
 
@@ -104,47 +103,48 @@ class ExecuteAndroidBuildsTest {
     void testBuildRelease() {
         runGradle('buildAllRelease')
         assertTrue(new File(testProject,
-                        "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testProject,
-                        "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testProject,
-                        "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
     @Test
     void testBuildDebugNoVariant() {
         runGradleNoVariants('buildAllDebug')
         assertTrue(new File(testNovariantsProject,
-                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
-                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
-                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
     }
+
     @Test
     void testBuildReleaseNoVariant() {
         runGradleNoVariants('buildAllRelease')
         assertTrue(new File(testNovariantsProject,
-                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
-                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
         assertFalse(new File(testNovariantsProject,
-                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
 
     @Test
     void testJavadoc() {
         runGradle('updateProject', 'javadoc')
-        assertTrue(new File(testProject,"build/docs").isDirectory())
-        assertFalse(new File(testProject,"build/docs").listFiles().length == 0)
+        assertTrue(new File(testProject, "build/docs").isDirectory())
+        assertFalse(new File(testProject, "build/docs").listFiles().length == 0)
     }
 
     @Test
     void testUpdateProject() {
-        File localProperties = new File(testProject,"local.properties")
-        File localPropertiesSubproject = new File(testProject,"subproject/local.properties")
-        File localPropertiesSubsubproject = new File(testProject,"subproject/subsubproject/local.properties")
+        File localProperties = new File(testProject, "local.properties")
+        File localPropertiesSubproject = new File(testProject, "subproject/local.properties")
+        File localPropertiesSubsubproject = new File(testProject, "subproject/subsubproject/local.properties")
         localProperties.delete()
         localPropertiesSubproject.delete()
         localPropertiesSubsubproject.delete()
@@ -175,7 +175,7 @@ class ExecuteAndroidBuildsTest {
     @Test
     void testAnalysis() {
         File baseDir = new File(testProject, "build/analysis/")
-        runGradle('updateProject' ,'analysis')
+        runGradle('updateProject', 'analysis')
         assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
         assertTrue(new File(baseDir, "cpd-result.xml").exists())
         assertTrue(new File(baseDir, "findbugs-result.xml").exists())
@@ -194,7 +194,7 @@ class ExecuteAndroidBuildsTest {
     void testAnalysisFromConfig() {
         File baseDir = new File(testNovariantsProject, "build/analysis/")
         File configBaseDir = new File(testNovariantsProject, "config/analysis/")
-        runGradleNoVariants('updateProject' ,'analysis')
+        runGradleNoVariants('updateProject', 'analysis')
         assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
         assertTrue(new File(baseDir, "cpd-result.xml").exists())
         assertTrue(new File(baseDir, "findbugs-result.xml").exists())
@@ -216,7 +216,7 @@ class ExecuteAndroidBuildsTest {
     @Test
     void testAnalysisFromRemote() {
         File baseDir = new File(testAndroidConventionProject, "build/analysis/")
-        runGradleAndroidAnalysis('updateProject' ,'analysis')
+        runGradleAndroidAnalysis('updateProject', 'analysis')
         assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
         assertTrue(new File(baseDir, "cpd-result.xml").exists())
         assertTrue(new File(baseDir, "findbugs-result.xml").exists())
@@ -230,7 +230,7 @@ class ExecuteAndroidBuildsTest {
     @Test
     void testAnalysisFromRemoteWrongConvention() {
         File baseDir = new File(testAndroidWrongConventionProject, "build/analysis/")
-        runGradleAndroidAnalysisWrongConvention('updateProject' ,'analysis')
+        runGradleAndroidAnalysisWrongConvention('updateProject', 'analysis')
         assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
         assertTrue(new File(baseDir, "cpd-result.xml").exists())
         assertTrue(new File(baseDir, "findbugs-result.xml").exists())
@@ -242,7 +242,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testAnalysisAfterClean() {
-        runGradle('clean', 'updateProject' ,'analysis')
+        runGradle('clean', 'updateProject', 'analysis')
         assertTrue(new File(testProject, "build/analysis/checkstyle-report.xml").exists())
         assertTrue(new File(testProject, "build/analysis/cpd-result.xml").exists())
         assertTrue(new File(testProject, "build/analysis/findbugs-result.xml").exists())
@@ -251,7 +251,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildAndPrepareVariantedMailMessage() {
-        runGradle('cleanRelease', 'updateProject' ,'buildAll')
+        runGradle('cleanRelease', 'updateProject', 'buildAll')
         runGradle('prepareImageMontage', 'prepareMailMessage')
         assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
         assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/icon.png").exists())
@@ -264,7 +264,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildAndPrepareNonVariantedMailMessage() {
-        runGradleNoVariants('cleanRelease', 'updateProject' ,'buildAll')
+        runGradleNoVariants('cleanRelease', 'updateProject', 'buildAll')
         runGradleNoVariants('prepareImageMontage', 'prepareMailMessage')
         assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
         assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/icon.png").exists())
@@ -302,15 +302,15 @@ class ExecuteAndroidBuildsTest {
     void testRunAndroidCreateAVD() {
         runGradle('cleanAVD', 'createAVD')
         def files = [
-            'config.ini',
-            'sdcard.img',
-            'snapshots.img',
-            'userdata.img'
+                'config.ini',
+                'sdcard.img',
+                'snapshots.img',
+                'userdata.img'
         ]
         File avdsDirectory = new File('testProjects/android/avds')
         assertTrue(avdsDirectory.exists())
         files.each {
-            assertTrue(it, new File(avdsDirectory,it).exists())
+            assertTrue(it, new File(avdsDirectory, it).exists())
         }
     }
 }

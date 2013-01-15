@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Extra">
-	<import file="build.xml"/>
-	<target name="compile" depends="-compile">
-	</target>
+    <import file="build.xml"/>
+    <target name="compile" depends="-compile">
+    </target>
 </project>

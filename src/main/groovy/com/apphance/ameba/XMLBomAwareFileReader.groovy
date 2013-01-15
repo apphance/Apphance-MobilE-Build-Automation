@@ -1,8 +1,8 @@
 package com.apphance.ameba
 
-import javax.xml.parsers.DocumentBuilderFactory
-
 import org.apache.tools.ant.filters.StringInputStream
+
+import javax.xml.parsers.DocumentBuilderFactory
 
 /**
  * Reads BOM file (iOS) without validation.
@@ -21,7 +21,7 @@ public class XMLBomAwareFileReader {
         CharsetToolkit toolkit = new CharsetToolkit(pListFile)
         BufferedReader reader = toolkit.getReader();
         String xml = reader.text
-        StringInputStream xmlStream = new StringInputStream(xml,"utf-8")
+        StringInputStream xmlStream = new StringInputStream(xml, "utf-8")
         return builder.parse(xmlStream)
     }
 }

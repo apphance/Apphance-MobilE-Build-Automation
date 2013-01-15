@@ -1,12 +1,9 @@
 package com.apphance.ameba.android
-
-import java.io.File
-
 /**
  * Information used to build artifacts.  Useful information grouped together needed
  * by various artifacts generated along the way.
  */
-class AndroidBuilderInfo  {
+class AndroidBuilderInfo {
     String variant
     String debugRelease
     File buildDirectory

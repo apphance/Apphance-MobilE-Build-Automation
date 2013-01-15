@@ -1,22 +1,18 @@
-package com.apphance.ameba.runBuilds.ios;
+package com.apphance.ameba.runBuilds.ios
 
-import static org.junit.Assert.*
-
+import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
-import org.junit.After
-import org.junit.AfterClass
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
+import org.junit.*
 
-import com.apphance.ameba.ProjectHelper
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertTrue
 
 class RunPrepareIOSSetupTest {
     static File testIosProject = new File("testProjects/ios/GradleXCode")
-    static File gradleProperties = new File(testIosProject,"gradle.properties")
-    static File gradlePropertiesOrig = new File(testIosProject,"gradle.properties.orig")
+    static File gradleProperties = new File(testIosProject, "gradle.properties")
+    static File gradlePropertiesOrig = new File(testIosProject, "gradle.properties.orig")
     static ProjectConnection connection
 
     @Before
@@ -42,7 +38,7 @@ class RunPrepareIOSSetupTest {
         connection.close()
     }
 
-    String runTests(String input, String ... tasks) {
+    String runTests(String input, String... tasks) {
         ByteArrayOutputStream os = new ByteArrayOutputStream()
         BuildLauncher bl = connection.newBuild().forTasks(tasks);
         bl.setStandardInput(new ByteArrayInputStream(input.bytes))
@@ -57,7 +53,7 @@ class RunPrepareIOSSetupTest {
 
     @Test
     public void testGenerateNoChange() throws Exception {
-        String res = runTests('\n'*50 + 'y\n', 'prepareSetup')
+        String res = runTests('\n' * 50 + 'y\n', 'prepareSetup')
         String text = gradleProperties.text
         String originalText = gradlePropertiesOrig.text
         assertEquals(originalText, text)
@@ -67,7 +63,7 @@ class RunPrepareIOSSetupTest {
     @Test
     public void testGenerateDefaults() throws Exception {
         gradleProperties.delete()
-        String res = runTests('\n'*50 + 'y\n', 'prepareSetup')
+        String res = runTests('\n' * 50 + 'y\n', 'prepareSetup')
         assertTrue(gradleProperties.exists())
         String text = gradleProperties.text
         String originalText = gradlePropertiesOrig.text

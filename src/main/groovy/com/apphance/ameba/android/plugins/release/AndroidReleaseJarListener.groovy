@@ -1,21 +1,20 @@
 package com.apphance.ameba.android.plugins.release
 
-import org.gradle.api.AntBuilder
-import org.gradle.api.Project
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
-
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyCategory;
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidBuilderInfo
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.android.AndroidSingleVariantJarBuilder;
+import com.apphance.ameba.android.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.android.plugins.buildplugin.AndroidBuildListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
+import org.gradle.api.AntBuilder
+import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Listener that builds .jar file for library.
@@ -33,7 +32,7 @@ class AndroidReleaseJarListener implements AndroidBuildListener {
     static Logger logger = Logging.getLogger(AndroidReleaseApkListener.class)
 
     AndroidReleaseJarListener(Project project, AntBuilder ant) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
@@ -50,7 +49,7 @@ class AndroidReleaseJarListener implements AndroidBuildListener {
     public void buildDone(Project project, AndroidBuilderInfo bi) {
         AmebaArtifact apkArtifact = prepareJarArtifact(bi)
         project.ant {
-            copy (file: bi.originalFile, tofile: apkArtifact.location)
+            copy(file: bi.originalFile, tofile: apkArtifact.location)
         }
     }
 

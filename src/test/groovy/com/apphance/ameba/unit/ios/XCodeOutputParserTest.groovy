@@ -1,15 +1,14 @@
-package com.apphance.ameba.unit.ios;
+package com.apphance.ameba.unit.ios
 
-import static org.junit.Assert.*
-
-import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
+import com.apphance.ameba.ios.IOSXCodeOutputParser
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 import org.hamcrest.core.IsEqual
-import org.junit.AfterClass
 import org.junit.Before
 import org.junit.Test
 
-import com.apphance.ameba.ios.IOSXCodeOutputParser
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertThat
 
 class XCodeOutputParserTest {
     def trimmedXCodeList
@@ -67,8 +66,8 @@ iOS Simulator SDKs:
     @Test
     public void testStandardSelectionOfConfigurations() {
         assertThat(IOSXCodeOutputParser.readBuildableConfigurations(this.trimmedXCodeList), new IsEqual([
-            'QAWithApphance',
-            'QAWithoutApphance'
+                'QAWithApphance',
+                'QAWithoutApphance'
         ]))
     }
 
@@ -80,21 +79,21 @@ iOS Simulator SDKs:
     @Test
     public void testIphoneSDKS() {
         assertThat(IOSXCodeOutputParser.readIphoneSdks(this.trimmedShowSdkList),
-                        new IsEqual([
-                            'iphoneos',
-                            'iphoneos4.3',
-                            'iphoneos5.0'
-                        ]))
+                new IsEqual([
+                        'iphoneos',
+                        'iphoneos4.3',
+                        'iphoneos5.0'
+                ]))
     }
 
     @Test
     public void testIphoneSimulatorSDKS() {
         assertThat(IOSXCodeOutputParser.readIphoneSimulatorSdks(this.trimmedShowSdkList),
-                        new IsEqual([
-                            'iphonesimulator',
-                            'iphonesimulator4.3',
-                            'iphonesimulator5.0'
-                        ]))
+                new IsEqual([
+                        'iphonesimulator',
+                        'iphonesimulator4.3',
+                        'iphonesimulator5.0'
+                ]))
     }
 
 

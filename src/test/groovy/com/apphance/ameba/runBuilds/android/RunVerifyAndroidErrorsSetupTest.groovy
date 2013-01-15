@@ -1,26 +1,22 @@
-package com.apphance.ameba.runBuilds.android;
+package com.apphance.ameba.runBuilds.android
 
-import static org.junit.Assert.*
-
+import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.BuildException
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
-import org.junit.After
-import org.junit.AfterClass
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
+import org.junit.*
 
-import com.apphance.ameba.ProjectHelper
+import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertTrue
 
 class RunVerifyAndroidErrorsSetupTest {
     static List BOOLEANS = ['true', 'false']
     static File testProject = new File("testProjects/android")
     static ProjectConnection connection
 
-    File gradleProperties = new File(testProject,"gradle.properties")
-    File gradlePropertiesOrig = new File(testProject,"gradle.properties.orig")
+    File gradleProperties = new File(testProject, "gradle.properties")
+    File gradlePropertiesOrig = new File(testProject, "gradle.properties.orig")
 
     @Before
     void before() {
@@ -45,7 +41,7 @@ class RunVerifyAndroidErrorsSetupTest {
         connection.close()
     }
 
-    String runTests(String ... tasks) {
+    String runTests(String... tasks) {
         ByteArrayOutputStream os = new ByteArrayOutputStream()
         BuildLauncher bl = connection.newBuild().forTasks(tasks);
         bl.setStandardOutput(os)
@@ -56,10 +52,11 @@ class RunVerifyAndroidErrorsSetupTest {
         assertFalse(res.contains('BUILD SUCCESSFUL'))
         return res
     }
-    public void runErrorScenario(pattern, String replacement, String expected){
+
+    public void runErrorScenario(pattern, String replacement, String expected) {
         gradleProperties.delete()
         String newText = gradlePropertiesOrig.text.split('\n')*.
-                        replaceFirst(pattern,replacement).join('\n')
+                replaceFirst(pattern, replacement).join('\n')
         println newText
         gradleProperties << newText
         try {
@@ -72,36 +69,36 @@ class RunVerifyAndroidErrorsSetupTest {
 
     @Test
     void testMainVariantFile() {
-        runErrorScenario(/^(android\.mainVariant.*)=(.*)$/,'$1=missingvariant', 'The main variant')
+        runErrorScenario(/^(android\.mainVariant.*)=(.*)$/, '$1=missingvariant', 'The main variant')
     }
 
     @Test
     void testMinSdkTargetFile() {
-        runErrorScenario(/^(android\.minSdk\.target.*)=(.*)$/,'$1=missingtarget', 'The min sdk target')
+        runErrorScenario(/^(android\.minSdk\.target.*)=(.*)$/, '$1=missingtarget', 'The min sdk target')
     }
 
     @Test
     void testEmulatorNoWindow() {
-        runErrorScenario(/^(android\.test\.emulator\.noWindow.*)=(.*)$/,'$1=nottruefalse', 'noWindow')
+        runErrorScenario(/^(android\.test\.emulator\.noWindow.*)=(.*)$/, '$1=nottruefalse', 'noWindow')
     }
 
     @Test
     void testEmulatorSnapshot() {
-        runErrorScenario(/^(android\.test\.emulator\.snapshotEnabled.*)=(.*)$/,'$1=nottruefalse', 'snapshotEnabled')
+        runErrorScenario(/^(android\.test\.emulator\.snapshotEnabled.*)=(.*)$/, '$1=nottruefalse', 'snapshotEnabled')
     }
 
     @Test
     void testEmulatorTestPerPackage() {
-        runErrorScenario(/^(android\.test\.perPackage.*)=(.*)$/,'$1=nottruefalse', 'perPackage')
+        runErrorScenario(/^(android\.test\.perPackage.*)=(.*)$/, '$1=nottruefalse', 'perPackage')
     }
 
     @Test
     void testEmulatorUseEmma() {
-        runErrorScenario(/^(android\.useEmma.*)=(.*)$/,'$1=nottruefalse', 'useEmma')
+        runErrorScenario(/^(android\.useEmma.*)=(.*)$/, '$1=nottruefalse', 'useEmma')
     }
 
     @Test
     void testDirectory() {
-        runErrorScenario(/^(android\.test\.directory.*)=(.*)$/,'$1=missingdirectory', 'directory')
+        runErrorScenario(/^(android\.test\.directory.*)=(.*)$/, '$1=missingdirectory', 'directory')
     }
 }

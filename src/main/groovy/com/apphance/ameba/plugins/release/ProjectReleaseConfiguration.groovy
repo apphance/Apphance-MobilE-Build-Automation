@@ -1,10 +1,5 @@
 package com.apphance.ameba.plugins.release
 
-import java.io.File
-import java.net.URL
-import java.util.Collection
-import java.util.Locale
-
 import com.apphance.ameba.ProjectConfiguration
 
 /**
@@ -42,7 +37,7 @@ class ProjectReleaseConfiguration {
 
     File getTargetDirectory() {
         return new File(new File(otaDirectory, projectDirectoryName),
-        projectConfiguration.fullVersionString)
+                projectConfiguration.fullVersionString)
     }
 
     URL getVersionedApplicationUrl() {

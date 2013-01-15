@@ -6,10 +6,10 @@ class PluginDocumentation {
     Class clazz
     String name
     String description
-    Map<String,Task> tasks = [:]
+    Map<String, Task> tasks = [:]
     String props = null
     String example = null
-    String conventions  = null
+    String conventions = null
 
     String getNiceName() {
         def words = name.split('-')
@@ -29,7 +29,7 @@ class PluginDocumentation {
 
 class PluginGroupDocumentation {
     String name
-    Map<String,PluginDocumentation> plugins = [:]
+    Map<String, PluginDocumentation> plugins = [:]
     List<String> pluginNames = []
 
     @Override
@@ -39,7 +39,7 @@ class PluginGroupDocumentation {
 }
 
 class AmebaDocumentation {
-    Map<String,Task> tasks = [:]
+    Map<String, Task> tasks = [:]
     Map<String, PluginGroupDocumentation> groups = [:]
     List<String> groupNames = []
 

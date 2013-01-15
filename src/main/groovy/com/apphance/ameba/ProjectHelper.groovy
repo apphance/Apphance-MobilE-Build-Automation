@@ -1,31 +1,26 @@
 package com.apphance.ameba
 
 import groovy.io.FileType
-import groovy.lang.Closure;
-
-import java.io.File
-import java.io.IOException
-import java.util.List;
-
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-
 /**
  * System output that also writes to file.
  */
-class FileSystemOutput implements Appendable{
+class FileSystemOutput implements Appendable {
 
     File file
     StringBuilder sb = new StringBuilder()
     Appendable linkedAppendable
+
     FileSystemOutput(File file, Appendable linkedAppendable = null) {
         this.file = file
         this.linkedAppendable = linkedAppendable
     }
+
     Appendable append(char arg0) throws IOException {
         if (file != null) {
             file << arg0
@@ -36,6 +31,7 @@ class FileSystemOutput implements Appendable{
         }
         return this
     }
+
     Appendable append(CharSequence arg0) throws IOException {
         if (file != null) {
             file << arg0
@@ -46,6 +42,7 @@ class FileSystemOutput implements Appendable{
         }
         return this
     }
+
     Appendable append(CharSequence arg0, int arg1, int arg2) throws IOException {
         if (file != null) {
             file << arg0?.subSequence(arg1, arg1)
@@ -65,10 +62,11 @@ class FileSystemOutput implements Appendable{
 class ProjectHelper {
 
     public static final int MAX_RECURSION_LEVEL = 7
-    public static final String [] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=512m', '-XX:+CMSClassUnloadingEnabled',
-             '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=512m', '-XX:+CMSClassUnloadingEnabled',
+            '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
     static Logger logger = Logging.getLogger(ProjectHelper.class)
+
     def replacePasswordsWithStars(originalArray) {
         def newList = []
         def nextPassword = false
@@ -77,7 +75,7 @@ class ProjectHelper {
                 newList << "*************"
                 nextPassword = false
             } else {
-                if (it  == null) {
+                if (it == null) {
                     throw new GradleException("One of the elements in ${originalArray} is null!")
                 }
                 if (it.toString().toLowerCase().contains("password")) {
@@ -86,7 +84,7 @@ class ProjectHelper {
                         newList << it.split("=")[0] + "=****************"
                     } else {
                         nextPassword = true;
-                        newList <<it
+                        newList << it
                     }
                 } else {
                     newList << it
@@ -96,8 +94,8 @@ class ProjectHelper {
         return newList
     }
 
-    Collection<String> executeCommand(Project project, command, boolean failOnError = true, String [] envp = null,
-    input = null, int retryTimes = 1, boolean silentLogging = false) {
+    Collection<String> executeCommand(Project project, command, boolean failOnError = true, String[] envp = null,
+                                      input = null, int retryTimes = 1, boolean silentLogging = false) {
         def runDirectory = new File("${project.rootDir}")
         return executeCommand(project, runDirectory, command, failOnError, envp, input, retryTimes, silentLogging)
     }
@@ -113,7 +111,7 @@ class ProjectHelper {
         }
         def currentPath = project.rootDir.canonicalPath
         def workspacePath = new File(env['WORKSPACE']).canonicalPath
-        def relativeUrlOfProjectDir = currentPath.substring(workspacePath.length()).replaceAll('\\\\','/')
+        def relativeUrlOfProjectDir = currentPath.substring(workspacePath.length()).replaceAll('\\\\', '/')
         if (relativeUrlOfProjectDir != '' && !relativeUrlOfProjectDir.startsWith('/')) {
             relativeUrlOfProjectDir = '/' + relativeUrlOfProjectDir
         }
@@ -122,17 +120,17 @@ class ProjectHelper {
     }
 
     String getCurrentFileNumber(File logDir) {
-        File f = new File(logDir,"file_number.txt")
+        File f = new File(logDir, "file_number.txt")
         f.parentFile.mkdirs()
         int number = 0
         try {
             number = new Integer(f.text)
-        } catch(Exception e) {
+        } catch (Exception e) {
             // do nothing
         }
         f.delete()
         f << (number + 1)
-        return String.format('%04d',number)
+        return String.format('%04d', number)
     }
 
     void findAllPackages(String currentPackage, File directory, currentPackageList) {
@@ -148,13 +146,13 @@ class ProjectHelper {
     }
 
     String getFileNameFromCommand(Project project, File logDir, String command, String postFix) {
-        String fileAbleCommandName = command.replaceAll(' |\\p{Punct}',"_")
-        fileAbleCommandName = fileAbleCommandName.substring(0,Math.min(80, fileAbleCommandName.length()))
+        String fileAbleCommandName = command.replaceAll(' |\\p{Punct}', "_")
+        fileAbleCommandName = fileAbleCommandName.substring(0, Math.min(80, fileAbleCommandName.length()))
         return getCurrentFileNumber(logDir) + '-' + fileAbleCommandName + postFix
     }
 
     FileSystemOutput getSystemOutput(Project project, File logDir, String commandToDisplay, postfix, String jenkinsURL) {
-        String outFileName = getFileNameFromCommand(project, logDir, commandToDisplay,postfix)
+        String outFileName = getFileNameFromCommand(project, logDir, commandToDisplay, postfix)
         File outFile = new File(logDir, outFileName)
         outFile.delete()
         outFile << ''
@@ -167,9 +165,9 @@ class ProjectHelper {
         return new FileSystemOutput(outFile)
     }
 
-    Collection<String> executeCommand(Project project, File runDirectory, command, boolean failOnError = true, String [] envp = null,
-    input = null, int retryTimes = 1, boolean silentLogging = false) {
-        File logDir = project.file( "log")
+    Collection<String> executeCommand(Project project, File runDirectory, command, boolean failOnError = true, String[] envp = null,
+                                      input = null, int retryTimes = 1, boolean silentLogging = false) {
+        File logDir = project.file("log")
         if (!logDir.exists()) {
             logDir.mkdirs()
         }
@@ -177,7 +175,7 @@ class ProjectHelper {
         def commandToDisplay = getCommandToDisplay(command)
         while (timesLeft-- > 0) {
             String extraText = ''
-            if (retryTimes>1) {
+            if (retryTimes > 1) {
                 extraText = " for the ${retryTimes - timesLeft}. time (maximum number of retries: ${retryTimes})"
             }
             logger.lifecycle("Executing command:\n${commandToDisplay}\nin ${runDirectory} ${extraText}")
@@ -234,12 +232,12 @@ class ProjectHelper {
         }
     }
 
-    Process executeCommandInBackground(Project project, File outErrFile, command, String [] envp = null, input = null) {
+    Process executeCommandInBackground(Project project, File outErrFile, command, String[] envp = null, input = null) {
         def runDirectory = new File("${project.rootDir}")
         return executeCommandInBackground(project, runDirectory, outErrFile, command, envp, input)
     }
 
-    Process executeCommandInBackground(File runDirectory, File outErrFile, command, String [] envp = null, input = null) {
+    Process executeCommandInBackground(File runDirectory, File outErrFile, command, String[] envp = null, input = null) {
         def commandToDisplay = getCommandToDisplay(command)
         logger.lifecycle("Executing command:\n${commandToDisplay}\nin ${runDirectory} in background")
         logger.lifecycle("Standard output/error is stored in ${outErrFile}")
@@ -298,7 +296,7 @@ class ProjectHelper {
             commandToDisplayTmp.each {
                 if (it.toString().contains(' ')) {
                     commandToDisplay.append('"')
-                    commandToDisplay.append(it.toString().replaceAll('"','\"'))
+                    commandToDisplay.append(it.toString().replaceAll('"', '\"'))
                     commandToDisplay.append('" ')
                 } else {
                     commandToDisplay.append(it.toString())
@@ -310,10 +308,10 @@ class ProjectHelper {
     }
 
     String getHumanReadableSize(long byteSize) {
-        if (byteSize >= 1024L*1024L) {
-            return String.format("%.2f",byteSize*1.0/1024.0/1024.0) + " MB"
+        if (byteSize >= 1024L * 1024L) {
+            return String.format("%.2f", byteSize * 1.0 / 1024.0 / 1024.0) + " MB"
         } else {
-            return String.format("%.2f",byteSize*1.0/1024.0) + " kB"
+            return String.format("%.2f", byteSize * 1.0 / 1024.0) + " kB"
         }
     }
 
@@ -330,7 +328,7 @@ class ProjectHelper {
 
     public static void checkAllPluginsAreLoaded(Project project, def myPluginClass, def ... pluginClasses) {
         pluginClasses.each {
-            if (!project.plugins.collect{it.class}.contains(it)) {
+            if (!project.plugins.collect { it.class }.contains(it)) {
                 throw new GradleException("The plugin ${it} has not been loaded yet. Please make sure you put it before ${myPluginClass}")
             }
         }
@@ -339,7 +337,7 @@ class ProjectHelper {
     public static void checkAnyPluginIsLoaded(Project project, def myPluginClass, def ... pluginClasses) {
         boolean anyPluginLoaded = false
         pluginClasses.each {
-            if (project.plugins.collect{it.class}.contains(it)) {
+            if (project.plugins.collect { it.class }.contains(it)) {
                 anyPluginLoaded = true
             }
         }
@@ -351,8 +349,8 @@ class ProjectHelper {
     public static void checkExactlyOnePluginIsLoaded(Project project, def myPluginClass, def ... pluginClasses) {
         int count = 0
         pluginClasses.each {
-            if (project.plugins.collect{plugin -> plugin.class}.contains(it) || it == myPluginClass) {
-                count ++
+            if (project.plugins.collect { plugin -> plugin.class }.contains(it) || it == myPluginClass) {
+                count++
             }
         }
         if (count > 1) {
@@ -362,18 +360,18 @@ class ProjectHelper {
 
     public static List getFilesOrDirectories(Project project, FileType type, Closure filter) {
         List paths = [
-            project.file('bin').absolutePath,
-            project.file('build').absolutePath,
-            project.file('ota').absolutePath,
-            project.file('tmp').absolutePath,
-            project.file('.hg').absolutePath,
-            project.file('.git').absolutePath,
+                project.file('bin').absolutePath,
+                project.file('build').absolutePath,
+                project.file('ota').absolutePath,
+                project.file('tmp').absolutePath,
+                project.file('.hg').absolutePath,
+                project.file('.git').absolutePath,
         ]
         def plistFiles = []
-        project.rootDir.traverse([type: type, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
+        project.rootDir.traverse([type: type, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) {
             def thePath = it.absolutePath
             if (filter(it)) {
-                if (!paths.any {path -> thePath.startsWith(path)}) {
+                if (!paths.any { path -> thePath.startsWith(path) }) {
                     plistFiles << thePath.substring(project.rootDir.path.length() + 1)
                 }
             }
@@ -393,7 +391,7 @@ class ProjectHelper {
 
     public static List getDirectoriesSortedAccordingToDepth(Project project, Closure filter) {
         def xCodeProjFiles = getDirectories(project, filter)
-        xCodeProjFiles = xCodeProjFiles.sort { sprintf("%08d",it.findAll('[/\\\\]').size()) }
+        xCodeProjFiles = xCodeProjFiles.sort { sprintf("%08d", it.findAll('[/\\\\]').size()) }
         return xCodeProjFiles
     }
 

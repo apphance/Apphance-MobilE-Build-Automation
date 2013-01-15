@@ -1,15 +1,14 @@
 package com.apphance.ameba.vcs.plugins.mercurial
 
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
-
 import com.apphance.ameba.AbstractVerifySetupOperation
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Verifies Mercurial-related properties.
  *
  */
-class VerifyMercurialSetupOperation extends  AbstractVerifySetupOperation {
+class VerifyMercurialSetupOperation extends AbstractVerifySetupOperation {
     Logger logger = Logging.getLogger(VerifyMercurialSetupOperation.class)
 
     VerifyMercurialSetupOperation() {

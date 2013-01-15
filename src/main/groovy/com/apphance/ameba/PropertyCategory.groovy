@@ -1,13 +1,8 @@
 package com.apphance.ameba
 
-import java.io.BufferedReader
-import java.util.ArrayList
-import java.util.List
-
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 
 /**
  * Helper property-related class. Can be used as Groovy category.
@@ -26,6 +21,7 @@ class PropertyCategory {
     }
 
     public static final String PROJECT_CONFIGURATION_KEY = 'project.configuration'
+
     public static List<String> listProperties(Project project, Class<Enum> properties, boolean useComments, Properties extraProperties = null) {
         String description = properties.getField('DESCRIPTION').get(null)
         List<String> s = []
@@ -83,7 +79,7 @@ class PropertyCategory {
     }
 
     public static String getProjectPropertyFromUser(Project project, Enum property,
-    ArrayList options, BufferedReader br) {
+                                                    ArrayList options, BufferedReader br) {
         def defaultValue = getDefaultForProperty(project, property)
         String s = "Enter ${property.propertyName}\n${property.description}"
         if (options != null) {
@@ -128,10 +124,10 @@ class PropertyCategory {
     public static String readPropertyOrEnvironmentVariable(Project project, String propertyName, boolean optional) {
         if (project.hasProperty(propertyName)) {
             return project[propertyName]
-        } else if (System.getProperty(propertyName) != null){
+        } else if (System.getProperty(propertyName) != null) {
             return System.getProperty(propertyName)
         } else {
-            def envVariable = propertyName.toUpperCase().replace(".","_")
+            def envVariable = propertyName.toUpperCase().replace(".", "_")
             def val = System.getenv(envVariable)
             if (val == null) {
                 if (optional) {
@@ -160,10 +156,10 @@ class PropertyCategory {
     public static boolean isPropertyOrEnvironmentVariableDefined(Project project, String property) {
         if (project.hasProperty(property)) {
             return true
-        } else if (System.getProperty(property) != null){
+        } else if (System.getProperty(property) != null) {
             return true
         } else {
-            def envVariable = property.toUpperCase().replace(".","_")
+            def envVariable = property.toUpperCase().replace(".", "_")
             def val = System.getenv(envVariable)
             return (val != null)
         }
@@ -172,10 +168,10 @@ class PropertyCategory {
     public static String getPropertyOrEnvironmentVariableDefined(Project project, String property) {
         if (project.hasProperty(property)) {
             return project.properties[property]
-        } else if (System.getProperty(property, null) != null){
+        } else if (System.getProperty(property, null) != null) {
             return System.getProperty(property)
         } else {
-            def envVariable = property.toUpperCase().replace(".","_")
+            def envVariable = property.toUpperCase().replace(".", "_")
             def val = System.getenv(envVariable)
             return val
         }
@@ -192,7 +188,7 @@ class PropertyCategory {
         return project[property]
     }
 
-    public static ProjectConfiguration getProjectConfiguration(Project project){
+    public static ProjectConfiguration getProjectConfiguration(Project project) {
         if (!project.ext.has(PROJECT_CONFIGURATION_KEY)) {
             project.ext[PROJECT_CONFIGURATION_KEY] = new ProjectConfiguration()
         }
@@ -200,7 +196,7 @@ class PropertyCategory {
     }
 
     public static ProjectConfiguration retrieveBasicProjectData(Project project) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             ProjectConfiguration conf = getProjectConfiguration(project)
             conf.projectName = project.readProperty(ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY)
             conf.tmpDirectory = project.file('tmp')

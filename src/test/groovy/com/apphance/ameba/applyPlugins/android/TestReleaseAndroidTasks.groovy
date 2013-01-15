@@ -1,15 +1,12 @@
-package com.apphance.ameba.applyPlugins.android;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
-import org.junit.Test
+package com.apphance.ameba.applyPlugins.android
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin;
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.android.plugins.release.AndroidReleasePlugin
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
+import org.gradle.api.Project
+import org.junit.Test
 
 class TestReleaseAndroidTasks extends BaseAndroidTaskTest {
     protected Project getProject() {
@@ -23,17 +20,17 @@ class TestReleaseAndroidTasks extends BaseAndroidTaskTest {
 
     @Test
     public void testReleaseTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'cleanRelease',
-            'updateVersion',
-            'buildDocumentationZip',
-            'buildSourcesZip',
-            'prepareAvailableArtifactsInfo',
-            'prepareForRelease',
-            'prepareImageMontage',
-            'prepareMailMessage',
-            'sendMailMessage',
-            'verifyReleaseNotes'
-        ],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
+        verifyTasksInGroup(getProject(), [
+                'cleanRelease',
+                'updateVersion',
+                'buildDocumentationZip',
+                'buildSourcesZip',
+                'prepareAvailableArtifactsInfo',
+                'prepareForRelease',
+                'prepareImageMontage',
+                'prepareMailMessage',
+                'sendMailMessage',
+                'verifyReleaseNotes'
+        ], AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }
 }

@@ -1,13 +1,10 @@
-package com.apphance.ameba.applyPlugins.android;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
-import org.junit.Test
+package com.apphance.ameba.applyPlugins.android
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin;
-import com.apphance.ameba.android.plugins.test.AndroidTestPlugin;
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import com.apphance.ameba.android.plugins.test.AndroidTestPlugin
+import org.gradle.api.Project
+import org.junit.Test
 
 class TestTestAndroidTasks extends BaseAndroidTaskTest {
     protected Project getProject() {
@@ -19,16 +16,16 @@ class TestTestAndroidTasks extends BaseAndroidTaskTest {
 
     @Test
     public void testBuildTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'checkTests',
-            'testAndroid',
-            'cleanAVD',
-            'createAVD',
-            'startEmulator',
-            'stopAllEmulators',
-			'prepareRobotium',
-			'prepareRobolectric',
-			'testRobolectric'
-        ],AmebaCommonBuildTaskGroups.AMEBA_TEST)
+        verifyTasksInGroup(getProject(), [
+                'checkTests',
+                'testAndroid',
+                'cleanAVD',
+                'createAVD',
+                'startEmulator',
+                'stopAllEmulators',
+                'prepareRobotium',
+                'prepareRobolectric',
+                'testRobolectric'
+        ], AmebaCommonBuildTaskGroups.AMEBA_TEST)
     }
 }

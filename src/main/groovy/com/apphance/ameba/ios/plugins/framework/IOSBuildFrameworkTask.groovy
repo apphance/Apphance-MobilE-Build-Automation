@@ -1,20 +1,15 @@
 package com.apphance.ameba.ios.plugins.framework
 
-
-import java.util.List;
-
+import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.ios.IOSProjectConfiguration
+import com.apphance.ameba.ios.IOSXCodeOutputParser
 import org.gradle.api.DefaultTask
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
-
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyCategory;
-import com.apphance.ameba.ios.IOSProjectConfiguration;
-import com.apphance.ameba.ios.IOSXCodeOutputParser;
-
 
 /**
  * Builds iOS framework.
@@ -45,7 +40,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
     File destinationZipFile
 
     IOSBuildFrameworkTask() {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             this.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
             this.description = 'Builds iOS framework project'
             this.projectHelper = new ProjectHelper();
@@ -57,7 +52,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
 
     @TaskAction
     void buildIOSFramework() {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
             frameworkTarget = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
             frameworkConfiguration = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_CONFIGURATION)
@@ -80,10 +75,10 @@ class IOSBuildFrameworkTask extends DefaultTask {
         destinationZipFile = new File(project.buildDir, conf.projectName + '_' + conf.versionString + '.zip')
         destinationZipFile.delete()
         projectHelper.executeCommand(project, this.frameworkMainDir, [
-            "zip",
-            "-ry",
-            destinationZipFile,
-            frameworkAppDir.name
+                "zip",
+                "-ry",
+                destinationZipFile,
+                frameworkAppDir.name
         ])
     }
 
@@ -92,14 +87,14 @@ class IOSBuildFrameworkTask extends DefaultTask {
         def outputFile = new File(this.frameworkVersionsVersionDir, conf.projectName)
         outputFile.parentFile.mkdirs()
         projectHelper.executeCommand(project,
-                        [
-                            "lipo",
-                            "-create",
-                            this.iphoneosLibrary,
-                            this.iphonesimulatorLibrary,
-                            "-output",
-                            outputFile]
-                        )
+                [
+                        "lipo",
+                        "-create",
+                        this.iphoneosLibrary,
+                        this.iphonesimulatorLibrary,
+                        "-output",
+                        outputFile]
+        )
     }
 
     private copyingResources() {
@@ -123,36 +118,36 @@ class IOSBuildFrameworkTask extends DefaultTask {
     private setLinkLibraries() {
         logger.lifecycle("Set link libraries")
         this.iphoneosLibrary = new File(project.buildDir, frameworkConfiguration + '-' +
-                        'iphoneos/lib' + frameworkTarget + '.a')
+                'iphoneos/lib' + frameworkTarget + '.a')
         this.iphonesimulatorLibrary = new File(project.buildDir, frameworkConfiguration + '-' +
-                        'iphonesimulator/lib' + frameworkTarget + '.a')
+                'iphonesimulator/lib' + frameworkTarget + '.a')
     }
 
     private createSymlinks() {
         logger.lifecycle("Creating symlinks")
         projectHelper.executeCommand(project, frameworkVersionsDir, [
-            "ln",
-            "-s",
-            frameworkVersion,
-            "Current"
+                "ln",
+                "-s",
+                frameworkVersion,
+                "Current"
         ])
         projectHelper.executeCommand(project, frameworkAppDir, [
-            "ln",
-            "-s",
-            "Versions/Current/Headers",
-            "Headers"
+                "ln",
+                "-s",
+                "Versions/Current/Headers",
+                "Headers"
         ])
         projectHelper.executeCommand(project, frameworkAppDir, [
-            "ln",
-            "-s",
-            "Versions/Current/Resources",
-            "Resources"
+                "ln",
+                "-s",
+                "Versions/Current/Resources",
+                "Resources"
         ])
         projectHelper.executeCommand(project, frameworkAppDir, [
-            "ln",
-            "-s",
-            "Versions/Current/${conf.projectName}",
-            conf.projectName
+                "ln",
+                "-s",
+                "Versions/Current/${conf.projectName}",
+                conf.projectName
         ])
     }
 
@@ -180,27 +175,27 @@ class IOSBuildFrameworkTask extends DefaultTask {
 
     private xcodeBuilds() {
         projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
-            "-target",
-            frameworkTarget,
-            "-configuration",
-            frameworkConfiguration,
-            "-sdk",
-            iosConf.simulatorsdk,
-            "-arch",
-            "i386",
-            "clean",
-            "build"
+                "-target",
+                frameworkTarget,
+                "-configuration",
+                frameworkConfiguration,
+                "-sdk",
+                iosConf.simulatorsdk,
+                "-arch",
+                "i386",
+                "clean",
+                "build"
         ])
         projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath() + [
-            "-target",
-            frameworkTarget,
-            "-configuration",
-            frameworkConfiguration,
-            "-sdk",
-            iosConf.
-            sdk,
-            "clean",
-            "build"
+                "-target",
+                frameworkTarget,
+                "-configuration",
+                frameworkConfiguration,
+                "-sdk",
+                iosConf.
+                        sdk,
+                "clean",
+                "build"
         ])
     }
 }

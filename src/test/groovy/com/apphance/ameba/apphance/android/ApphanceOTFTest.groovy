@@ -1,16 +1,13 @@
-package com.apphance.ameba.apphance.android;
+package com.apphance.ameba.apphance.android
 
-import static org.junit.Assert.*
-
-import java.io.File
-
+import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
-import com.apphance.ameba.ProjectHelper
+import static org.junit.Assert.assertTrue
 
 class ApphanceOTFTest {
 
@@ -28,7 +25,7 @@ class ApphanceOTFTest {
     }
 
 
-    protected void runGradleNoVariants(String ... tasks) {
+    protected void runGradleNoVariants(String... tasks) {
         def launcher = connection.newBuild().forTasks(tasks)
         launcher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
         launcher.run()
@@ -43,7 +40,7 @@ class ApphanceOTFTest {
 
         runGradleNoVariants('updateProject', 'cleanRelease', 'buildDebug')
         assertTrue(new File(testNovariantsProject,
-                        "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
+                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
 
         mainActivityFile.delete()
         mainActivityFile << tmpCopy.getText()

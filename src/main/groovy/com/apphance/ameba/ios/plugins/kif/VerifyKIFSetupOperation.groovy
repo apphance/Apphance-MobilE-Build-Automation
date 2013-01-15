@@ -1,8 +1,6 @@
 package com.apphance.ameba.ios.plugins.kif
 
 import com.apphance.ameba.ios.AbstractVerifyIOSSetupOperation
-import com.apphance.ameba.ios.IOSProjectConfiguration;
-import com.apphance.ameba.ios.IOSXCodeOutputParser;
 
 /**
  * Verifies KIF-related properties.

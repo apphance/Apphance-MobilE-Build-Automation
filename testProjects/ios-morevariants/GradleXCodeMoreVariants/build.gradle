@@ -15,5 +15,5 @@ apply plugin: 'ameba-ios-cedar'
 apply plugin: 'ameba-ios-framework'
 
 iosUnitTests {
-  configuration = 'Debug'
+    configuration = 'Debug'
 }

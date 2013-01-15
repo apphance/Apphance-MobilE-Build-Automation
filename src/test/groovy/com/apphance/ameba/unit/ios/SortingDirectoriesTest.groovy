@@ -1,13 +1,11 @@
-package com.apphance.ameba.unit.ios;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-import org.junit.AfterClass
-import org.junit.Test
+package com.apphance.ameba.unit.ios
 
 import com.apphance.ameba.ProjectHelper
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Test
+
+import static org.junit.Assert.assertTrue
 
 class SortingDirectoriesTest {
 
@@ -17,7 +15,7 @@ class SortingDirectoriesTest {
         projectBuilder.withProjectDir(new File("testProjects/ios/GradleXCode"))
         Project project = projectBuilder.build()
         List res = ProjectHelper.getDirectoriesSortedAccordingToDepth(project, { true })
-        List newRes = res.collect { sprintf("%08d",it.findAll('[/\\\\]').size()) }
+        List newRes = res.collect { sprintf("%08d", it.findAll('[/\\\\]').size()) }
         int last = 0
         newRes.each {
             int current = Integer.parseInt(it)

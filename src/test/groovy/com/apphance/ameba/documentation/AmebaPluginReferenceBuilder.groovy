@@ -1,17 +1,4 @@
-
 package com.apphance.ameba.documentation
-
-import groovy.text.SimpleTemplateEngine
-
-import java.io.File
-import java.util.List
-
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-import org.gradle.tooling.BuildLauncher
-import org.gradle.tooling.GradleConnector
-import org.gradle.tooling.ProjectConnection
-import org.gradle.tooling.model.GradleProject
 
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
@@ -26,34 +13,41 @@ import com.apphance.ameba.ios.plugins.kif.KifProperty
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty
 import com.apphance.ameba.vcs.plugins.git.GitProperty
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialProperty
+import groovy.text.SimpleTemplateEngine
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+import org.gradle.tooling.BuildLauncher
+import org.gradle.tooling.GradleConnector
+import org.gradle.tooling.ProjectConnection
+import org.gradle.tooling.model.GradleProject
 
 class AmebaPluginReferenceBuilder {
 
-    String COMMON_TASKS  = "Common tasks"
+    String COMMON_TASKS = "Common tasks"
     String VCS_TASKS = "VCS tasks"
     String IOS_TASKS = "iOS tasks"
     String ANDROID_TASKS = "Android tasks"
 
     AmebaDocumentation amebaDocumentation = new AmebaDocumentation()
     def excludedPath = [
-        ':assemble',
-        ':build',
-        ':buildNeeded',
-        ':classes',
-        ':compileJava',
-        ':compileTestJava',
-        ':jar',
-        ':processResources',
-        ':processTestResources',
-        ':test',
-        ':testClasses',
-        ':build-GradleXCode-BasicConfiguration',
-        ':build--',
+            ':assemble',
+            ':build',
+            ':buildNeeded',
+            ':classes',
+            ':compileJava',
+            ':compileTestJava',
+            ':jar',
+            ':processResources',
+            ':processTestResources',
+            ':test',
+            ':testClasses',
+            ':build-GradleXCode-BasicConfiguration',
+            ':build--',
     ]
 
     def vcsPath = [
-        ':cleanVCS',
-        ':saveReleaseInfoInVCS'
+            ':cleanVCS',
+            ':saveReleaseInfoInVCS'
     ]
 
     private getProjectConnectionAndModel(File projectDir) {
@@ -86,7 +80,7 @@ class AmebaPluginReferenceBuilder {
 
     private addHeaderFromTemplate(File templateDir, list) {
         boolean enabled = true
-        new File(templateDir,'build.gradle').text.split ('\n').each {
+        new File(templateDir, 'build.gradle').text.split('\n').each {
             if (it.trim().startsWith('apply')) {
                 enabled = false
             }
@@ -98,7 +92,7 @@ class AmebaPluginReferenceBuilder {
 
     private List addAppliesFromProjectDir(File projectDir, List list) {
         boolean enabled = false
-        new File(projectDir,'build.gradle').text.split ('\n').each {
+        new File(projectDir, 'build.gradle').text.split('\n').each {
             if (it.trim().startsWith('apply')) {
                 enabled = true
             }
@@ -117,7 +111,7 @@ class AmebaPluginReferenceBuilder {
 
     private List addAppliesFromOutput(String output, List list) {
         boolean enabled = false
-        output.split ('\n').each {
+        output.split('\n').each {
             if (it.trim().startsWith('//')) {
                 enabled = true
             }
@@ -151,14 +145,14 @@ class AmebaPluginReferenceBuilder {
         } finally {
             connection.close()
         }
-     }
+    }
 
     private void addAmebaDocumentation(String groupName, String pluginName, property = null, String conventionName = null) {
         def projectDir = new File("testProjects/documentation/${pluginName}")
         def conventionsDir = new File("testProjects/conventions/${pluginName}")
         def templateDir = new File("templates/android")
         Project project = getProject(projectDir)
-        project.apply plugin:'ameba-project-configuration'
+        project.apply plugin: 'ameba-project-configuration'
         ProjectConnection connection
         GradleProject gradleProject
         (connection, gradleProject) = getProjectConnectionAndModel(projectDir)
@@ -183,7 +177,7 @@ class AmebaPluginReferenceBuilder {
                 }
             }
             Properties p = new Properties()
-            p.load(new File(projectDir,'gradle.properties').newReader())
+            p.load(new File(projectDir, 'gradle.properties').newReader())
             if (property != null) {
                 plugin.props = AmebaDocumentationHelper.getBlockTextWithComments(PropertyCategory.listProperties(project, property, true, p))
             }
@@ -193,11 +187,11 @@ class AmebaPluginReferenceBuilder {
     }
 
     private PluginGroupDocumentation getPluginGroupDocumentation(String groupName) {
-        if (amebaDocumentation.groups.containsKey(groupName) ) {
+        if (amebaDocumentation.groups.containsKey(groupName)) {
             return amebaDocumentation.groups[groupName]
         } else {
             def PluginGroupDocumentation = new PluginGroupDocumentation()
-            amebaDocumentation.groups[groupName]  = PluginGroupDocumentation
+            amebaDocumentation.groups[groupName] = PluginGroupDocumentation
             PluginGroupDocumentation.name = groupName
             amebaDocumentation.groupNames << groupName
             return PluginGroupDocumentation
@@ -211,17 +205,17 @@ class AmebaPluginReferenceBuilder {
         Properties p = new Properties()
         new File('gradle.properties').withInputStream { p.load(it) }
         def binding = [
-                            amebaDocumentation : amebaDocumentation,
-                            version: p.get('version'),
-                            date: new Date().format('yyyy-MM-dd HH-mm zzz'),
-                        ]
+                amebaDocumentation: amebaDocumentation,
+                version: p.get('version'),
+                date: new Date().format('yyyy-MM-dd HH-mm zzz'),
+        ]
         def result = engine.createTemplate(pluginsReferenceTemplate).make(binding)
         new File('tmp').mkdirs()
         new File("tmp/plugins_reference.html").write(result.toString(), "utf-8")
     }
 
     public void buildDocumentation() throws Exception {
-        addAmebaDocumentation(COMMON_TASKS,'ameba-project-configuration', null, 'amebaPropertyDefaults')
+        addAmebaDocumentation(COMMON_TASKS, 'ameba-project-configuration', null, 'amebaPropertyDefaults')
         addAmebaDocumentation(VCS_TASKS, 'ameba-git', GitProperty.class)
         addAmebaDocumentation(VCS_TASKS, 'ameba-mercurial', MercurialProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-build', AndroidProjectProperty.class)
@@ -234,7 +228,7 @@ class AmebaPluginReferenceBuilder {
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-test', AndroidTestProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-apphance', ApphanceProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-cedar')
-        addAmebaDocumentation(IOS_TASKS, 'ameba-ios-fonemonkey',FoneMonkeyProperty.class)
+        addAmebaDocumentation(IOS_TASKS, 'ameba-ios-fonemonkey', FoneMonkeyProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-framework', IOSFrameworkProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-kif', KifProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-ocunit')

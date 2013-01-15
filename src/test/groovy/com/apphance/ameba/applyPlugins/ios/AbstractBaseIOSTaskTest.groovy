@@ -1,13 +1,10 @@
 package com.apphance.ameba.applyPlugins.ios
 
-import java.util.Collection
-
+import com.apphance.ameba.BaseTaskTest
+import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-
-import com.apphance.ameba.BaseTaskTest;
-import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty;
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin;
 
 abstract class AbstractBaseIOSTaskTest extends BaseTaskTest {
     protected Project getProject() {

@@ -15,7 +15,7 @@ apply plugin: 'ameba-android-test'
 apply plugin: 'ameba-android-jarlibrary'
 
 amebaPropertyDefaults {
-        defaults = "['project.url.base':'http://www.example.com']"
+    defaults = "['project.url.base':'http://www.example.com']"
 }
 
 androidAnalysis {

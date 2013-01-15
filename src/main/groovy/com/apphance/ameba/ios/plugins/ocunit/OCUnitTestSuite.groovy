@@ -1,8 +1,4 @@
 package com.apphance.ameba.ios.plugins.ocunit
-
-import java.util.Collection
-
-
 /**
  * Test suite POJO.
  *
@@ -16,26 +12,26 @@ class OCUnitTestSuite {
 
     int getTestsCount() {
         int count = 0;
-        testSuites.each { testSuite-> count += testSuite.testCount }
+        testSuites.each { testSuite -> count += testSuite.testCount }
         return count + testCases.size()
     }
 
     int getFailureCount() {
         int count = 0;
-        testSuites.each { testSuite-> count += testSuite.failureCount }
-        return count + testCases.findAll {it.result == OCUnitTestResult.FAILURE}.size()
+        testSuites.each { testSuite -> count += testSuite.failureCount }
+        return count + testCases.findAll { it.result == OCUnitTestResult.FAILURE }.size()
     }
 
     int getSuccessCount() {
         int count = 0;
-        testSuites.each { testSuite-> count += testSuite.successCount }
-        return count + testCases.findAll {it.result == OCUnitTestResult.SUCCESS}.size()
+        testSuites.each { testSuite -> count += testSuite.successCount }
+        return count + testCases.findAll { it.result == OCUnitTestResult.SUCCESS }.size()
     }
 
     double getDuration() {
         double duration = 0.0
-        testSuites.each { testSuite-> duration += testSuite.duration }
-        testCases.each { duration += it.duration}
+        testSuites.each { testSuite -> duration += testSuite.duration }
+        testCases.each { duration += it.duration }
         return duration
     }
 

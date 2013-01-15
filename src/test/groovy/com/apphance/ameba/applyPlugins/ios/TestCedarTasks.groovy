@@ -1,12 +1,9 @@
-package com.apphance.ameba.applyPlugins.ios;
+package com.apphance.ameba.applyPlugins.ios
 
-import static org.junit.Assert.*
-
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
+import com.apphance.ameba.ios.plugins.cedar.CedarPlugin
 import org.gradle.api.Project
 import org.junit.Test
-
-import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
-import com.apphance.ameba.ios.plugins.cedar.CedarPlugin;
 
 class TestCedarTasks extends AbstractBaseIOSTaskTest {
 
@@ -19,10 +16,10 @@ class TestCedarTasks extends AbstractBaseIOSTaskTest {
 
     @Test
     public void testCedarTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'buildCedarReleases',
-            'prepareCedarTemplates',
-            'runCedarTests',
-        ],CedarPlugin.AMEBA_IOS_CEDAR)
+        verifyTasksInGroup(getProject(), [
+                'buildCedarReleases',
+                'prepareCedarTemplates',
+                'runCedarTests',
+        ], CedarPlugin.AMEBA_IOS_CEDAR)
     }
 }

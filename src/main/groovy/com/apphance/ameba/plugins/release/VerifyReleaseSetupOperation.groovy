@@ -1,16 +1,10 @@
 package com.apphance.ameba.plugins.release
 
-
-import java.util.Properties;
-
-import org.gradle.api.GradleException
-import org.gradle.api.tasks.TaskAction
-
 import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSProjectConfiguration;
-import com.apphance.ameba.ios.IOSXCodeOutputParser;
-
+import com.apphance.ameba.ios.IOSProjectConfiguration
+import com.apphance.ameba.ios.IOSXCodeOutputParser
+import org.gradle.api.GradleException
 
 /**
  * Verifies all release-specific properties.
@@ -19,9 +13,9 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser;
 class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
 
     public static final def ALL_EMAIL_FLAGS = [
-        'installableSimulator',
-        'qrCode',
-        'imageMontage'
+            'installableSimulator',
+            'qrCode',
+            'imageMontage'
     ]
     IOSProjectConfiguration iosConf
 
@@ -50,7 +44,7 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
     }
 
     void checkReleaseMailFlags() {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             String flags = project.readProperty(ProjectReleaseProperty.RELEASE_MAIL_FLAGS)
             if (flags != null) {
                 flags.split(',').each {
@@ -63,7 +57,7 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
     }
 
     void checkEmail(property) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             String email = project.readProperty(property)
             if (!(email ==~ /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/)) {
                 throw new GradleException("The email in ${property.propertyName}: ${email} is not valid")
@@ -72,7 +66,7 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
     }
 
     void checkIconFile(Properties projectProperties) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             String iconPath = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE)
             if (iconPath != null && !iconPath.empty) {
                 File iconFile = project.file(iconPath)
@@ -85,18 +79,18 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
     }
 
     private checkUrl(Properties projectProperties) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             String urlString = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_URL)
             try {
                 URL url = new URL(urlString)
-            } catch( MalformedURLException e) {
+            } catch (MalformedURLException e) {
                 throw new GradleException("The ${ProjectReleaseProperty.RELEASE_PROJECT_URL.propertyName}:${urlString} property is not a valid URL: ${e}")
             }
         }
     }
 
-        private checkLanguage(Properties projectProperties) {
-        use (PropertyCategory) {
+    private checkLanguage(Properties projectProperties) {
+        use(PropertyCategory) {
             String language = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_LANGUAGE)
             if (language.length() != 2 || language.toLowerCase() != language) {
                 throw new GradleException("The ${ProjectReleaseProperty.RELEASE_PROJECT_LANGUAGE.propertyName}: ${language} property is not a valid language: should be 2 letter lowercase")
@@ -105,7 +99,7 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
     }
 
     private checkCountry(Properties projectProperties) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             String country = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_COUNTRY)
             if (country.length() != 2 || country.toUpperCase() != country) {
                 throw new GradleException("The ${ProjectReleaseProperty.RELEASE_PROJECT_COUNTRY.propertyName}: ${country} property is not a valid country: should be 2 letter UPPERCASE")

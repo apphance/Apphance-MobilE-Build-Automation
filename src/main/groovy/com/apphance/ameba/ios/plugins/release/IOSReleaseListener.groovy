@@ -1,15 +1,5 @@
 package com.apphance.ameba.ios.plugins.release
 
-import groovy.text.SimpleTemplateEngine
-
-import java.io.File
-import java.net.URL
-
-import org.gradle.api.AntBuilder
-import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
-
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
@@ -22,6 +12,11 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
+import groovy.text.SimpleTemplateEngine
+import org.gradle.api.AntBuilder
+import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Build listener for releases.
@@ -40,7 +35,7 @@ class IOSReleaseListener implements IOSBuildListener {
 
 
     IOSReleaseListener(Project project, AntBuilder ant) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
@@ -51,13 +46,13 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
     private runPlistBuddy(Project project, String command, File targetPlistFile, boolean failOnError = true) {
-        String [] executedCommand = [
-            "/usr/libexec/PlistBuddy",
-            "-c",
-            command,
-            targetPlistFile
+        String[] executedCommand = [
+                "/usr/libexec/PlistBuddy",
+                "-c",
+                command,
+                targetPlistFile
         ]
-        projectHelper.executeCommand(project,executedCommand, failOnError)
+        projectHelper.executeCommand(project, executedCommand, failOnError)
     }
 
     String getFolderPrefix(IOSBuilderInfo bi) {
@@ -70,11 +65,11 @@ class IOSReleaseListener implements IOSBuildListener {
                 prepareDistributionZipFile(project, bi)
                 prepareDSYMZipFile(project, bi)
                 prepareIpaFile(project, bi)
-                prepareManifestFile(project,bi)
-                prepareMobileProvisionFile(project,bi)
+                prepareManifestFile(project, bi)
+                prepareMobileProvisionFile(project, bi)
             } else {
                 iosConf.families.each { family ->
-                    prepareSimulatorBundleFile(project,bi,family)
+                    prepareSimulatorBundleFile(project, bi, family)
                 }
             }
         } else {
@@ -88,8 +83,8 @@ class IOSReleaseListener implements IOSBuildListener {
         distributionZipArtifact.location.delete()
         ant.zip(destfile: distributionZipArtifact.location) {
             zipfileset(dir: iosConf.distributionDirectory,
-                            includes: IOSXCodeOutputParser.findMobileProvisionFile(project, bi.target, bi.configuration).name)
-            zipfileset(dir: bi.buildDirectory , includes: "${bi.target}.app/**")
+                    includes: IOSXCodeOutputParser.findMobileProvisionFile(project, bi.target, bi.configuration).name)
+            zipfileset(dir: bi.buildDirectory, includes: "${bi.target}.app/**")
         }
         logger.lifecycle("Distribution zip file created: ${distributionZipArtifact}")
     }
@@ -99,7 +94,7 @@ class IOSReleaseListener implements IOSBuildListener {
         dSYMZipArtifact.location.parentFile.mkdirs()
         dSYMZipArtifact.location.delete()
         ant.zip(destfile: dSYMZipArtifact.location) {
-            zipfileset(dir: bi.buildDirectory , includes: "${bi.target}.app.dSYM/**")
+            zipfileset(dir: bi.buildDirectory, includes: "${bi.target}.app.dSYM/**")
         }
         logger.lifecycle("dSYM zip file created: ${dSYMZipArtifact}")
     }
@@ -109,20 +104,20 @@ class IOSReleaseListener implements IOSBuildListener {
         AmebaArtifact ipaArtifact = prepareIpaArtifact(bi)
         ipaArtifact.location.parentFile.mkdirs()
         ipaArtifact.location.delete()
-        def appList = bi.buildDirectory.list([accept:{d, f-> f ==~ /.*\.app/ }] as FilenameFilter)
+        def appList = bi.buildDirectory.list([accept: { d, f -> f ==~ /.*\.app/ }] as FilenameFilter)
         String[] command = [
-            "/usr/bin/xcrun",
-            "-sdk",
-            iosConf.sdk,
-            "PackageApplication",
-            "-v",
-            new File(bi.buildDirectory, appList[0]),
-            "-o",
-            ipaArtifact.location,
-            "--embed",
-            bi.mobileprovisionFile
+                "/usr/bin/xcrun",
+                "-sdk",
+                iosConf.sdk,
+                "PackageApplication",
+                "-v",
+                new File(bi.buildDirectory, appList[0]),
+                "-o",
+                ipaArtifact.location,
+                "--embed",
+                bi.mobileprovisionFile
         ]
-        projectHelper.executeCommand(project,command)
+        projectHelper.executeCommand(project, command)
         logger.lifecycle("ipa file created: ${ipaArtifact}")
     }
 
@@ -136,10 +131,10 @@ class IOSReleaseListener implements IOSBuildListener {
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         def bundleId = MPParser.readBundleIdFromPlist(bi.plistFile.toURI().toURL())
         def binding = [
-                            ipaUrl : iosReleaseConf.ipaFiles.get(bi.id).url,
-                            title : bi.target,
-                            bundleId : bundleId
-                        ]
+                ipaUrl: iosReleaseConf.ipaFiles.get(bi.id).url,
+                title: bi.target,
+                bundleId: bundleId
+        ]
         logger.lifecycle("Building manifest from ${bi.plistFile}, bundleId: ${bundleId}")
         def result = engine.createTemplate(manifestTemplate).make(binding)
         manifestArtifact.location << (result.toString())
@@ -157,11 +152,11 @@ class IOSReleaseListener implements IOSBuildListener {
 
     private AmebaArtifact prepareDistributionZipArtifact(IOSBuilderInfo bi, boolean checkIfExists = false) {
         AmebaArtifact distributionZipArtifact = new AmebaArtifact(
-                        name : "Distribution zip",
-                        url : new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}.zip"),
-                        location : new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}.zip"))
+                name: "Distribution zip",
+                url: new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}.zip"),
+                location: new File(releaseConf.otaDirectory, "${getFolderPrefix(bi)}/${bi.filePrefix}.zip"))
         if (!checkIfExists || distributionZipArtifact.location.exists()) {
-            iosReleaseConf.distributionZipFiles.put(bi.id,distributionZipArtifact)
+            iosReleaseConf.distributionZipFiles.put(bi.id, distributionZipArtifact)
         } else {
             logger.lifecycle("Skipping preparing distribution zip for ${bi} -> missing")
         }
@@ -171,11 +166,11 @@ class IOSReleaseListener implements IOSBuildListener {
 
     private AmebaArtifact prepareDSYMZipArtifact(IOSBuilderInfo bi, boolean checkIfExists = false) {
         AmebaArtifact dSYMZipArtifact = new AmebaArtifact(
-                        name : "dSYM zip",
-                        url : new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}_dSYM.zip"),
-                        location : new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}_dSYM.zip"))
-        if (!checkIfExists || dSYMZipArtifact.location.exists() ) {
-            iosReleaseConf.dSYMZipFiles.put(bi.id,dSYMZipArtifact)
+                name: "dSYM zip",
+                url: new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}_dSYM.zip"),
+                location: new File(releaseConf.otaDirectory, "${getFolderPrefix(bi)}/${bi.filePrefix}_dSYM.zip"))
+        if (!checkIfExists || dSYMZipArtifact.location.exists()) {
+            iosReleaseConf.dSYMZipFiles.put(bi.id, dSYMZipArtifact)
         } else {
             logger.lifecycle("Skipping preparing dSYM artifact for ${bi.id} : ${dSYMZipArtifact.location} -> missing")
         }
@@ -185,11 +180,11 @@ class IOSReleaseListener implements IOSBuildListener {
 
     private AmebaArtifact prepareIpaArtifact(IOSBuilderInfo bi, boolean checkIfExists = false) {
         AmebaArtifact ipaArtifact = new AmebaArtifact(
-                        name : "The ipa file",
-                        url : new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}.ipa"),
-                        location : new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}.ipa"))
+                name: "The ipa file",
+                url: new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}.ipa"),
+                location: new File(releaseConf.otaDirectory, "${getFolderPrefix(bi)}/${bi.filePrefix}.ipa"))
         if (!checkIfExists || ipaArtifact.location.exists()) {
-            iosReleaseConf.ipaFiles.put(bi.id,ipaArtifact)
+            iosReleaseConf.ipaFiles.put(bi.id, ipaArtifact)
         } else {
             logger.lifecycle("Skipping preparing ipa artifact for ${bi.id} : ${ipaArtifact.location} -> missing")
         }
@@ -198,11 +193,11 @@ class IOSReleaseListener implements IOSBuildListener {
 
     private AmebaArtifact prepareManifestArtifact(IOSBuilderInfo bi, boolean checkIfExists = false) {
         AmebaArtifact manifestArtifact = new AmebaArtifact(
-                        name : "The manifest file",
-                        url : new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/manifest.plist"),
-                        location : new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/manifest.plist"))
+                name: "The manifest file",
+                url: new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/manifest.plist"),
+                location: new File(releaseConf.otaDirectory, "${getFolderPrefix(bi)}/manifest.plist"))
         if (!checkIfExists || manifestArtifact.location.exists()) {
-            iosReleaseConf.manifestFiles.put(bi.id,manifestArtifact)
+            iosReleaseConf.manifestFiles.put(bi.id, manifestArtifact)
         } else {
             logger.lifecycle("Skipping preparing manifest artifact for ${bi.id} : ${manifestArtifact.location} -> missing")
         }
@@ -211,11 +206,11 @@ class IOSReleaseListener implements IOSBuildListener {
 
     private AmebaArtifact prepareMobileProvisionArtifact(IOSBuilderInfo bi, boolean checkIfExists = false) {
         AmebaArtifact mobileProvisionArtifact = new AmebaArtifact(
-                        name : "The mobile provision file",
-                        url : new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}.mobileprovision"),
-                        location : new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}.mobileprovision"))
+                name: "The mobile provision file",
+                url: new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}.mobileprovision"),
+                location: new File(releaseConf.otaDirectory, "${getFolderPrefix(bi)}/${bi.filePrefix}.mobileprovision"))
         if (!checkIfExists || mobileProvisionArtifact.location.exists()) {
-            iosReleaseConf.mobileProvisionFiles.put(bi.id,mobileProvisionArtifact)
+            iosReleaseConf.mobileProvisionFiles.put(bi.id, mobileProvisionArtifact)
         } else {
             logger.lifecycle("Skipping preparing mobileProvision artifact for ${bi.id} : ${mobileProvisionArtifact.location} -> missing")
         }
@@ -240,55 +235,55 @@ class IOSReleaseListener implements IOSBuildListener {
         AmebaArtifact file = new AmebaArtifact()
         file.name = "Simulator build for ${family}"
         file.url = new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
-        file.location = new File(releaseConf.otaDirectory,"${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
+        file.location = new File(releaseConf.otaDirectory, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
         file.location.parentFile.mkdirs()
         file.location.delete()
-        def File tmpDir = File.createTempFile("${conf.projectName}-${bi.target}-${family}-simulator",".tmp")
+        def File tmpDir = File.createTempFile("${conf.projectName}-${bi.target}-${family}-simulator", ".tmp")
         tmpDir.delete()
         tmpDir.mkdir()
-        def destDir = new File(tmpDir,"${bi.target} (${family}_Simulator) ${conf.versionString}_${conf.versionCode}.app")
+        def destDir = new File(tmpDir, "${bi.target} (${family}_Simulator) ${conf.versionString}_${conf.versionCode}.app")
         destDir.mkdir()
-        rsyncTemplatePreservingExecutableFlag(project,destDir)
+        rsyncTemplatePreservingExecutableFlag(project, destDir)
         File embedDir = new File(destDir, "Contents/Resources/EmbeddedApp")
         embedDir.mkdirs()
-        File sourceApp = new File(bi.buildDirectory,"${bi.target}.app")
-        rsyncEmbeddedAppPreservingExecutableFlag(project,sourceApp, embedDir)
+        File sourceApp = new File(bi.buildDirectory, "${bi.target}.app")
+        rsyncEmbeddedAppPreservingExecutableFlag(project, sourceApp, embedDir)
         updateBundleId(project, bi, destDir)
         resampleIcon(project, destDir)
         updateDeviceFamily(project, family, embedDir, bi)
         updateVersions(project, embedDir, bi, conf)
-        String [] prepareDmgCommand = [
-            "hdiutil",
-            "create",
-            file.location,
-            "-srcfolder",
-            destDir,
-            "-volname",
-            "${conf.projectName}-${bi.target}-${family}"
+        String[] prepareDmgCommand = [
+                "hdiutil",
+                "create",
+                file.location,
+                "-srcfolder",
+                destDir,
+                "-volname",
+                "${conf.projectName}-${bi.target}-${family}"
         ]
         projectHelper.executeCommand(project, prepareDmgCommand)
-        iosReleaseConf.dmgImageFiles.put("${family}-${iosConf.mainTarget}" as String,file)
+        iosReleaseConf.dmgImageFiles.put("${family}-${iosConf.mainTarget}" as String, file)
         logger.lifecycle("Simulator zip file created: ${file} for ${family}-${iosConf.mainTarget}")
     }
 
     private rsyncTemplatePreservingExecutableFlag(Project project, File destDir) {
-        String [] rsyncCommand = [
-            "rsync",
-            "-aE",
-            "--exclude",
-            "Contents/Resources/EmbeddedApp",
-            "/Applications/Simulator Bundler.app/Contents/Resources/Launcher.app/",
-            destDir
+        String[] rsyncCommand = [
+                "rsync",
+                "-aE",
+                "--exclude",
+                "Contents/Resources/EmbeddedApp",
+                "/Applications/Simulator Bundler.app/Contents/Resources/Launcher.app/",
+                destDir
         ]
         projectHelper.executeCommand(project, rsyncCommand)
     }
 
     private rsyncEmbeddedAppPreservingExecutableFlag(Project project, File sourceAppDir, File embedDir) {
-        String [] rsyncCommand = [
-            "rsync",
-            "-aE",
-            sourceAppDir,
-            embedDir
+        String[] rsyncCommand = [
+                "rsync",
+                "-aE",
+                sourceAppDir,
+                embedDir
         ]
         projectHelper.executeCommand(project, rsyncCommand)
     }
@@ -311,19 +306,19 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
     private resampleIcon(Project project, File tmpDir) {
-        String [] iconResampleCommand = [
-            "/opt/local/bin/convert",
-            releaseConf.iconFile,
-            "-resample",
-            "128x128",
-            new File(tmpDir,"Contents/Resources/Launcher.icns")
+        String[] iconResampleCommand = [
+                "/opt/local/bin/convert",
+                releaseConf.iconFile,
+                "-resample",
+                "128x128",
+                new File(tmpDir, "Contents/Resources/Launcher.icns")
         ]
         projectHelper.executeCommand(project, iconResampleCommand)
     }
 
     private updateBundleId(Project project, IOSBuilderInfo bi, File tmpDir) {
         def bundleId = MPParser.readBundleIdFromProvisionFile(bi.mobileprovisionFile.toURI().toURL())
-        File contentsPlist = new File(tmpDir,"Contents/Info.plist")
+        File contentsPlist = new File(tmpDir, "Contents/Info.plist")
         runPlistBuddy(project, "Set :CFBundleIdentifier ${bundleId}.launchsim", contentsPlist)
     }
 }

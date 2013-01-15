@@ -1,13 +1,12 @@
-package com.apphance.ameba.applyPlugins.vcs;
+package com.apphance.ameba.applyPlugins.vcs
 
-import static org.junit.Assert.*
-
+import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.BaseTaskTest
+import com.apphance.ameba.vcs.plugins.git.GitPlugin
 import org.gradle.api.Project
 import org.junit.Test
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.BaseTaskTest;
-import com.apphance.ameba.vcs.plugins.git.GitPlugin;
+import static org.junit.Assert.assertEquals;
 
 class GitPluginTest extends BaseTaskTest {
 
@@ -19,28 +18,28 @@ class GitPluginTest extends BaseTaskTest {
 
     @Test
     public void testGitTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'cleanVCS',
-            'saveReleaseInfoInVCS',
-        ],AmebaCommonBuildTaskGroups.AMEBA_VERSION_CONTROL)
+        verifyTasksInGroup(getProject(), [
+                'cleanVCS',
+                'saveReleaseInfoInVCS',
+        ], AmebaCommonBuildTaskGroups.AMEBA_VERSION_CONTROL)
     }
 
     @Test
     public void testSetupTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'prepareSetup',
-            'verifySetup',
-            'showSetup',
-            'showConventions',
-        ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
+        verifyTasksInGroup(getProject(), [
+                'prepareSetup',
+                'verifySetup',
+                'showSetup',
+                'showConventions',
+        ], AmebaCommonBuildTaskGroups.AMEBA_SETUP)
         assertEquals([
-            'PrepareGitSetupOperation',
-        ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName } )
+                'PrepareGitSetupOperation',
+        ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName })
         assertEquals([
-            'VerifyGitSetupOperation',
-        ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName } )
+                'VerifyGitSetupOperation',
+        ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName })
         assertEquals([
-            'ShowGitSetupOperation',
-        ], project.showSetup.showSetupOperations.collect { it.class.simpleName } )
+                'ShowGitSetupOperation',
+        ], project.showSetup.showSetupOperations.collect { it.class.simpleName })
     }
 }

@@ -1,14 +1,8 @@
 package com.apphance.ameba
-
-import java.io.File
-import java.net.URL
-import java.util.Collection
-import java.util.Locale
-
 /**
  * Keeps basic configuration of the project.
  */
-class ProjectConfiguration  {
+class ProjectConfiguration {
     String projectName
     File tmpDirectory
     File logDirectory

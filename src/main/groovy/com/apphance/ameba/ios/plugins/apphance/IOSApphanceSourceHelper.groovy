@@ -1,21 +1,17 @@
 package com.apphance.ameba.ios.plugins.apphance
 
+import com.apphance.ameba.ProjectHelper
 import groovy.io.FileType
-
-import java.io.File
-
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-
-import com.apphance.ameba.ProjectHelper
 
 class IOSApphanceSourceHelper {
     static Logger logger = Logging.getLogger(IOSApphanceSourceHelper.class)
 
     def findAppDelegateFile(File projectRootDirectory) {
         def appFilename = []
-        projectRootDirectory.traverse([type: FileType.FILES, maxDepth : ProjectHelper.MAX_RECURSION_LEVEL]) {
+        projectRootDirectory.traverse([type: FileType.FILES, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) {
             if (it.name.endsWith(".h") && it.text.contains("UIApplicationDelegate")) {
                 appFilename << it.canonicalPath
                 logger.lifecycle("Application delegate found in file " + it)
@@ -57,7 +53,7 @@ class IOSApphanceSourceHelper {
                     searchingForOpeningBrace = true
                 }
                 if (!startNewSessionAdded && searchingForOpeningBrace && line.matches('.*\\{.*')) {
-                    out.println(line.replace('{',"{ ${initApphance}${setExceptionHandler}"))
+                    out.println(line.replace('{', "{ ${initApphance}${setExceptionHandler}"))
                     startNewSessionAdded = true
                 } else {
                     out.println(line)

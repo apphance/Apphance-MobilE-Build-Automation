@@ -1,12 +1,9 @@
-package com.apphance.ameba.applyPlugins.android;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
-import org.junit.Test
+package com.apphance.ameba.applyPlugins.android
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin;
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import org.gradle.api.Project
+import org.junit.Test
 
 class TestAndroidTasksNoVariant extends BaseAndroidTaskTest {
     protected Project getProject() {
@@ -17,20 +14,20 @@ class TestAndroidTasksNoVariant extends BaseAndroidTaskTest {
 
     @Test
     public void testBuildTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'cleanAndroid',
-            'cleanClasses',
-            'compileAndroid',
-            'buildAll',
-            'buildAllDebug',
-            'buildAllRelease',
-            'buildDebug-Debug',
-            'buildRelease-Release',
-            'installDebug',
-            'installRelease',
-            'replacePackage',
-            'updateProject',
-            'copySources'
-        ],AmebaCommonBuildTaskGroups.AMEBA_BUILD)
+        verifyTasksInGroup(getProject(), [
+                'cleanAndroid',
+                'cleanClasses',
+                'compileAndroid',
+                'buildAll',
+                'buildAllDebug',
+                'buildAllRelease',
+                'buildDebug-Debug',
+                'buildRelease-Release',
+                'installDebug',
+                'installRelease',
+                'replacePackage',
+                'updateProject',
+                'copySources'
+        ], AmebaCommonBuildTaskGroups.AMEBA_BUILD)
     }
 }

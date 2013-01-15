@@ -1,12 +1,11 @@
 package com.apphance.ameba.ios.plugins.fonemonkey
 
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
-
-import com.apphance.ameba.AbstractPrepareSetupOperation;
+import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Prepares properties for FoneMonkey.
@@ -23,7 +22,7 @@ class PrepareFoneMonkeySetupOperation extends AbstractPrepareSetupOperation {
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
         BufferedReader br = getReader()
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
             IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
             FoneMonkeyProperty.each {

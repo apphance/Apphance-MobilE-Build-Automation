@@ -1,13 +1,9 @@
 package com.apphance.ameba.plugins.release
 
-import java.io.File
-import java.net.URL
-
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-
-class AmebaArtifact  {
+class AmebaArtifact {
     private static Logger logger = Logging.getLogger(AmebaArtifact.class)
     String name
     URL url

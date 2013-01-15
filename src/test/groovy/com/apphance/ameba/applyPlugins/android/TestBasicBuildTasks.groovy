@@ -1,14 +1,10 @@
-package com.apphance.ameba.applyPlugins.android;
-
-import static org.junit.Assert.*
-
-import org.junit.Test
+package com.apphance.ameba.applyPlugins.android
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import org.junit.Test
 
-
-class TestBasicBuildTasks extends BaseAndroidTaskTest{
+class TestBasicBuildTasks extends BaseAndroidTaskTest {
 
     @Override
     protected void setUp() throws Exception {
@@ -18,28 +14,29 @@ class TestBasicBuildTasks extends BaseAndroidTaskTest{
 
     @Test
     public void testTestTasksAvailable() {
-        verifyTasksInGroup(getProject(),['checkTests'],AmebaCommonBuildTaskGroups.AMEBA_TEST)
+        verifyTasksInGroup(getProject(), ['checkTests'], AmebaCommonBuildTaskGroups.AMEBA_TEST)
     }
 
     @Test
     public void testReleaseTasksAvailable() {
-        verifyTasksInGroup(getProject(),[],AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
+        verifyTasksInGroup(getProject(), [], AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
     }
 
     @Test
     public void testConfigurationTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'cleanConfiguration',
-            'readProjectConfiguration',
-        ],AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
+        verifyTasksInGroup(getProject(), [
+                'cleanConfiguration',
+                'readProjectConfiguration',
+        ], AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION)
     }
+
     @Test
     public void testSetupTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'prepareSetup',
-            'verifySetup',
-            'showConventions',
-            'showSetup',
-        ],AmebaCommonBuildTaskGroups.AMEBA_SETUP)
+        verifyTasksInGroup(getProject(), [
+                'prepareSetup',
+                'verifySetup',
+                'showConventions',
+                'showSetup',
+        ], AmebaCommonBuildTaskGroups.AMEBA_SETUP)
     }
 }

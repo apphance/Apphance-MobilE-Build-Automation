@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
-import org.gradle.api.internal.DynamicObjectHelper;
-import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.internal.DynamicObjectHelper
+import org.gradle.api.tasks.SourceSet
 
 /**
  * Shows all conventions.
@@ -22,7 +22,7 @@ class ShowConventionHelper {
         sb << " " * indent + ']'
     }
 
-    void getObjectRepr(StringBuilder sb, Object obj,  int indent) {
+    void getObjectRepr(StringBuilder sb, Object obj, int indent) {
         if (obj == null || obj.class == null || obj.class == java.lang.Package.class) {
             sb << null
             return
@@ -58,7 +58,7 @@ class ShowConventionHelper {
         def clazz = pluginConventionObject.class
         sb << "// Conventions for ${pluginName} plugin" << '\n'
         try {
-            def conventionDescription =  clazz.getField('DESCRIPTION').get(null).split('\n')
+            def conventionDescription = clazz.getField('DESCRIPTION').get(null).split('\n')
             conventionDescription.each {
                 sb << "// ${it}" << '\n'
             }

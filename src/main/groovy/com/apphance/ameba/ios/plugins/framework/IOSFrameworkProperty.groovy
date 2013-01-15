@@ -6,7 +6,7 @@ package com.apphance.ameba.ios.plugins.framework
 public enum IOSFrameworkProperty {
     FRAMEWORK_TARGET('ios.framework.target', 'Target to build framework project with'),
     FRAMEWORK_CONFIGURATION('ios.framework.configuration', 'Configuration to build framework project with', 'Debug'),
-    FRAMEWORK_VERSION('ios.framework.version', 'Version of framework (usually single alphabet letter A)','A'),
+    FRAMEWORK_VERSION('ios.framework.version', 'Version of framework (usually single alphabet letter A)', 'A'),
     FRAMEWORK_HEADERS('ios.framework.headers', 'List of headers (coma separated) that should be copied to the framework'),
     FRAMEWORK_RESOURCES('ios.framework.resources', 'List of resources (coma separated) that should be copied to the framework'),
 

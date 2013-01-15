@@ -1,20 +1,14 @@
-package com.apphance.ameba.plugins.projectconfiguration;
-
-
-import groovy.lang.Closure
-
-import org.gradle.api.GradleException
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+package com.apphance.ameba.plugins.projectconfiguration
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.plugins.release.AmebaArtifact;
-
+import org.gradle.api.GradleException
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Plugin for basic project configuration.
@@ -94,7 +88,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
 
 
     static public final String DESCRIPTION =
-    """This is the base plugin which should be applied by any project.
+        """This is the base plugin which should be applied by any project.
 
 The plugin should be applied before any other Ameba plugin. It reads basic project configuration and loads shared
 configuration for all other plugins.
@@ -111,7 +105,7 @@ organisation-specific defaults across your projects.
 
     static class ProjectConfigurationConvention {
         static public final String DESCRIPTION =
-        """Using this convention object you can specify different defaults
+            """Using this convention object you can specify different defaults
 for properties (for all properties from all plugins). You need to specify it as string map of the form
 "['property.name' : 'value' ]". Note that you can use groovy to calculate values and use dynamically
 calculated values in this map.

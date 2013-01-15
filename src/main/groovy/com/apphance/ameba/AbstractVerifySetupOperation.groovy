@@ -1,10 +1,7 @@
 package com.apphance.ameba
 
-import java.util.List;
-import java.util.Properties;
-
 import org.gradle.api.GradleException
-import org.gradle.api.Project;
+import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
@@ -23,6 +20,7 @@ abstract class AbstractVerifySetupOperation {
     Project project
 
     abstract void verifySetup()
+
     public AbstractVerifySetupOperation(Class<? extends Enum> clazz) {
         this.clazz = clazz
         this.propertyDescription = clazz.getField('DESCRIPTION').get(null)
@@ -51,7 +49,7 @@ abstract class AbstractVerifySetupOperation {
     }
 
     protected void checkBoolean(property) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             String value = project.readProperty(property.propertyName)
             if (!BOOLEANS.contains(value)) {
                 throw new GradleException("""The value in ${property.propertyName}: ${value} can only be one of ${BOOLEANS}""")
@@ -60,9 +58,9 @@ abstract class AbstractVerifySetupOperation {
     }
 
     protected void checkIsOnList(property, list) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             String value = project.readProperty(property.propertyName)
-            if (!list.any { it == value}) {
+            if (!list.any { it == value }) {
                 throw new GradleException("""The value in ${property.propertyName}: ${value} can only be one of ${list}""")
             }
         }

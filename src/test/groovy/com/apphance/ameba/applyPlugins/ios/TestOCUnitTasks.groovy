@@ -1,12 +1,9 @@
-package com.apphance.ameba.applyPlugins.ios;
+package com.apphance.ameba.applyPlugins.ios
 
-import static org.junit.Assert.*
-
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
+import com.apphance.ameba.ios.plugins.ocunit.IOSUnitTestPlugin
 import org.gradle.api.Project
 import org.junit.Test
-
-import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin;
-import com.apphance.ameba.ios.plugins.ocunit.IOSUnitTestPlugin;
 
 class TestOCUnitTasks extends AbstractBaseIOSTaskTest {
 
@@ -19,8 +16,8 @@ class TestOCUnitTasks extends AbstractBaseIOSTaskTest {
 
     @Test
     public void testCOCUnitTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'runUnitTests',
-        ],IOSUnitTestPlugin.AMEBA_IOS_UNIT)
+        verifyTasksInGroup(getProject(), [
+                'runUnitTests',
+        ], IOSUnitTestPlugin.AMEBA_IOS_UNIT)
     }
 }

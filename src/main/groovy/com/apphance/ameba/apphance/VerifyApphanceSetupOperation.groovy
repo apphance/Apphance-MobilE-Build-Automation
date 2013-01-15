@@ -1,10 +1,7 @@
 package com.apphance.ameba.apphance
 
-import org.gradle.api.tasks.TaskAction
-
 import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.apphance.ApphanceProperty;
 
 /**
  * Verifies properties of Apphance integration.
@@ -17,7 +14,7 @@ class VerifyApphanceSetupOperation extends AbstractVerifySetupOperation {
     }
 
     void verifySetup() {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             def projectProperties = readProperties()
             ApphanceProperty.each {
                 checkProperty(projectProperties, it)

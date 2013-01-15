@@ -1,18 +1,17 @@
-package com.apphance.ameba.unit.ios;
-
-import static org.junit.Assert.*
-
-import org.gradle.tooling.GradleConnector
-import org.gradle.tooling.ProjectConnection
-import org.junit.*
+package com.apphance.ameba.unit.ios
 
 import com.apphance.ameba.ProjectHelper
+import org.gradle.tooling.GradleConnector
+import org.gradle.tooling.ProjectConnection
+import org.junit.Test
+
+import static org.junit.Assert.assertTrue
 
 class IOSApphancePluginTest {
 
     File projectDir
 
-    protected void runGradle(String ... tasks) {
+    protected void runGradle(String... tasks) {
         ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(projectDir).connect();
         try {
             def buildLauncher = connection.newBuild()

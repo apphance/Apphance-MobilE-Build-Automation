@@ -1,8 +1,4 @@
 package com.apphance.ameba.ios.plugins.ocunit
-
-import java.util.Collection
-
-
 /**
  * Test Case POJO.
  *

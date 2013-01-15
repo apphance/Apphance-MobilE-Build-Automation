@@ -1,16 +1,11 @@
 package com.apphance.ameba.documentation.sites
 
-import com.google.gdata.client.sites.ContentQuery
-import com.google.gdata.client.sites.SitesService
-import com.google.gdata.data.HtmlTextConstruct;
-import com.google.gdata.data.TextConstruct
+import com.google.gdata.data.HtmlTextConstruct
 import com.google.gdata.data.sites.ContentEntry
-import com.google.gdata.data.sites.ContentFeed
-import com.google.gdata.util.XmlBlob
 
 class AmebaPluginReferenceSender {
-    private static File getPluginReferenceFile(String ... args) {
-        if (args.length <3) {
+    private static File getPluginReferenceFile(String... args) {
+        if (args.length < 3) {
             throw new IllegalArgumentException("The third argument of the call should be file name")
         }
         File documentation = new File(args[2])
@@ -19,6 +14,7 @@ class AmebaPluginReferenceSender {
         }
         return documentation
     }
+
     private static uploadPluginReference(ContentEntry page, File documentation) {
         println "Uploading new content"
         page.setContent(new HtmlTextConstruct(documentation.text))

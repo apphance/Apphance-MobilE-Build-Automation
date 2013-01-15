@@ -9,12 +9,12 @@ repositories { mavenCentral() }
 dependencies {
     testCompile 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
     testRuntime 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
-    compile 'org.apache.ant:ant-javamail:1.8.2',  'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1', fileTree(dir: 'libs', include: '*.jar')
-    runtime 'org.apache.ant:ant-javamail:1.8.2',  'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1', fileTree(dir: 'libs', include: '*.jar')
+    compile 'org.apache.ant:ant-javamail:1.8.2', 'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1', fileTree(dir: 'libs', include: '*.jar')
+    runtime 'org.apache.ant:ant-javamail:1.8.2', 'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1', fileTree(dir: 'libs', include: '*.jar')
     groovy localGroovy()
 }
 
-task ask (group: 'Ameba\'s documentation', description: 'Asks for user/password in case not specified as username/password properties') << {
+task ask(group: 'Ameba\'s documentation', description: 'Asks for user/password in case not specified as username/password properties') << {
     def console = System.console()
     if (console) {
         if (!project.hasProperty('username')) {
@@ -49,13 +49,13 @@ task downloadPages(group: 'Ameba\'s documentation', description: 'Downloads all 
         classpath = sourceSets.main.runtimeClasspath
         args project['username'], project['password'], file('tmp/documentation')
     }
-    ant.zip (destfile : file("tmp/Ameba-doc-${version}.zip")) {
+    ant.zip(destfile: file("tmp/Ameba-doc-${version}.zip")) {
         zipfileset(dir: file('tmp/documentation'))
     }
 }
 project.downloadPages.dependsOn(project.classes, project.ask)
 
-task sendZipDocumentation (group: 'Ameba\'s documentation', description: 'Sends .prepared zip file to Ameba\'s sites') << {
+task sendZipDocumentation(group: 'Ameba\'s documentation', description: 'Sends .prepared zip file to Ameba\'s sites') << {
     javaexec {
         workingDir = getRootDir()
         main = 'com.apphance.ameba.documentation.sites.AmebaFileUploader'

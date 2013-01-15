@@ -1,19 +1,13 @@
 package com.apphance.ameba.android
 
-import java.io.File
-import java.util.Collection
-
-import org.gradle.api.GradleException
-import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
-
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.buildplugin.AndroidBuildListener
-import com.apphance.ameba.plugins.release.AmebaArtifact
-
+import org.gradle.api.GradleException
+import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Base builder. Builds binary files - APK or JAR- depends on implementation.
@@ -31,7 +25,7 @@ abstract class AbstractAndroidSingleVariantBuilder {
     File variantsDir
 
     AbstractAndroidSingleVariantBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
@@ -41,7 +35,7 @@ abstract class AbstractAndroidSingleVariantBuilder {
     }
 
     File getTmpDirectory(Project project, String variant) {
-        return new File(project.rootDir.parent,("tmp-${project.rootDir.name}-" + variant).replaceAll('[\\\\ /]','_'))
+        return new File(project.rootDir.parent, ("tmp-${project.rootDir.name}-" + variant).replaceAll('[\\\\ /]', '_'))
     }
 
     String getDebugRelease(Project project, String variant) {
@@ -65,7 +59,7 @@ abstract class AbstractAndroidSingleVariantBuilder {
             throw new GradleException("variants directory should contain at least one variant!")
         }
         androidConf.variants.each { variant ->
-            androidConf.tmpDirs[variant] = getTmpDirectory(project,variant)
+            androidConf.tmpDirs[variant] = getTmpDirectory(project, variant)
             androidConf.debugRelease[variant] = getDebugRelease(project, variant)
         }
     }

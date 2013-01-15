@@ -1,18 +1,15 @@
 package com.apphance.ameba.ios.plugins.ocunit
 
-import groovy.lang.Closure
-
+import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.ios.IOSProjectConfiguration
+import com.apphance.ameba.ios.IOSXCodeOutputParser
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-
-import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSXCodeOutputParser
-import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 
 /**
  * Unit test plugin - all unit tests are run here.
@@ -30,7 +27,7 @@ class IOSUnitTestPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
@@ -47,20 +44,20 @@ class IOSUnitTestPlugin implements Plugin<Project> {
         task << {
             def configuration = project.iosUnitTests.configuration
             def target = project.iosUnitTests.target
-            logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
+            logger.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
             def result = projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(target, configuration) + [
-                "-target",
-                target,
-                "-configuration",
-                configuration,
-                "-sdk",
-                iosConf.simulatorsdk
+                    "-target",
+                    target,
+                    "-configuration",
+                    configuration,
+                    "-sdk",
+                    iosConf.simulatorsdk
             ], failOnError = false)
             OCUnitParser parser = new OCUnitParser()
             parser.parse(result)
-            File unitTestFile = new File (conf.tmpDirectory, "TEST-all.xml")
+            File unitTestFile = new File(conf.tmpDirectory, "TEST-all.xml")
             conf.tmpDirectory.mkdirs()
-            new XMLJunitExporter(unitTestFile,parser.testSuites).export()
+            new XMLJunitExporter(unitTestFile, parser.testSuites).export()
         }
         task.dependsOn(project.readProjectConfiguration)
     }
@@ -76,7 +73,7 @@ class IOSUnitTestPlugin implements Plugin<Project> {
     }
 
     static public final String DESCRIPTION =
-    """This plugins provides functionality of standard ocunit testing for iOS.
+        """This plugins provides functionality of standard ocunit testing for iOS.
 
 It executes all tests which are build using ocunit test framework.
 

@@ -1,13 +1,9 @@
 package com.apphance.ameba.android.plugins.jarlibrary
 
-
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
-import org.gradle.api.Project
-
 import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.PropertyCategory
-
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Sets up android jar library properties.
@@ -22,7 +18,7 @@ class PrepareAndroidJarLibrarySetupOperation extends AbstractPrepareSetupOperati
 
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             BufferedReader br = getReader()
             AndroidJarLibraryProperty.each {
                 switch (it) {

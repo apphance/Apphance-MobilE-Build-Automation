@@ -1,13 +1,12 @@
-package com.apphance.ameba.unit.android;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-import org.junit.AfterClass
-import org.junit.Test
+package com.apphance.ameba.unit.android
 
 import com.apphance.ameba.android.AndroidCommandParser
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Test
+
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertTrue
 
 class AndroidVerifyTest {
     @Test
@@ -36,6 +35,6 @@ class AndroidVerifyTest {
         Project project = projectBuilder.build()
         List targets = AndroidCommandParser.getTargets(project)
         println targets
-        assertTrue(targets.size()>0)
+        assertTrue(targets.size() > 0)
     }
 }

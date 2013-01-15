@@ -1,10 +1,10 @@
-package com.apphance.ameba.unit.ios;
-
-import static org.junit.Assert.*
-
-import org.junit.*
+package com.apphance.ameba.unit.ios
 
 import com.apphance.ameba.ios.PbxProjectHelper
+import org.junit.Test
+
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertNotNull
 
 class IOSPBXProjectHelperTest {
 

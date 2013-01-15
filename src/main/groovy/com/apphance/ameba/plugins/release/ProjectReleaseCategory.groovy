@@ -1,13 +1,10 @@
 package com.apphance.ameba.plugins.release
 
-import java.text.SimpleDateFormat
-import java.util.ResourceBundle
-
-import org.gradle.api.GradleException;
-import org.gradle.api.Project
-
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
+import org.gradle.api.Project
+
+import java.text.SimpleDateFormat
 
 /**
  *  Category used to get release-specific methods.
@@ -17,9 +14,9 @@ class ProjectReleaseCategory {
 
     public static final String PROJECT_RELEASE_CONFIGURATION_KEY = 'project.release.configuration'
 
-    public static ProjectReleaseConfiguration getProjectReleaseConfiguration(Project project){
+    public static ProjectReleaseConfiguration getProjectReleaseConfiguration(Project project) {
         if (!project.ext.has(PROJECT_RELEASE_CONFIGURATION_KEY)) {
-            project.ext.set(PROJECT_RELEASE_CONFIGURATION_KEY,new ProjectReleaseConfiguration())
+            project.ext.set(PROJECT_RELEASE_CONFIGURATION_KEY, new ProjectReleaseConfiguration())
         }
         return project.ext.get(PROJECT_RELEASE_CONFIGURATION_KEY)
     }
@@ -35,7 +32,7 @@ class ProjectReleaseCategory {
                 if (country == null) {
                     releaseConf.locale = new Locale(language)
                 } else {
-                    releaseConf.locale = new Locale(language,country)
+                    releaseConf.locale = new Locale(language, country)
                 }
             }
             releaseConf.buildDate = new SimpleDateFormat("dd-MM-yyyy HH:mm zzz", releaseConf.locale).format(new Date())
@@ -43,7 +40,7 @@ class ProjectReleaseCategory {
     }
 
     public static ProjectReleaseConfiguration retrieveProjectReleaseData(Project project) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             ProjectReleaseConfiguration releaseConf = getProjectReleaseConfiguration(project)
             releaseConf.projectConfiguration = project.getProjectConfiguration()
             String urlString = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_URL)
@@ -59,7 +56,7 @@ class ProjectReleaseCategory {
                     releaseConf.projectDirectoryName = project.readProperty('project.directory.name')
                     if (releaseConf.baseUrl != null && releaseConf.projectDirectoryName != null) {
                         project.ext[ProjectReleaseProperty.RELEASE_PROJECT_URL.propertyName] =
-                        new URL(releaseConf.baseUrl, releaseConf.projectDirectoryName)
+                            new URL(releaseConf.baseUrl, releaseConf.projectDirectoryName)
                     }
                 }
             }
@@ -76,7 +73,7 @@ class ProjectReleaseCategory {
         if (project.hasProperty('release.notes')) {
             return project['release.notes']
         } else {
-            def notes =  System.getenv('RELEASE_NOTES')
+            def notes = System.getenv('RELEASE_NOTES')
             if (notes == null || notes == "") {
                 return null
             }
@@ -89,7 +86,7 @@ class ProjectReleaseCategory {
         ProjectConfiguration conf = PropertyCategory.getProjectConfiguration(project)
         ProjectReleaseConfiguration releaseConf = getProjectReleaseConfiguration(project)
         String subject = resourceBundle.getString('Subject')
-        releaseConf.releaseMailSubject = Eval.me("conf",conf,/"$subject"/)
+        releaseConf.releaseMailSubject = Eval.me("conf", conf, /"$subject"/)
     }
 
     public static splitUrl(String urlString) {
@@ -97,7 +94,7 @@ class ProjectReleaseCategory {
         def path = url.path
         def splitPath = path.split('/')
         def lastElement = splitPath[-1]
-        def baseUrl = new URL(url.protocol,url.host, url.port,(splitPath[0 .. -2]).join('/') + '/')
+        def baseUrl = new URL(url.protocol, url.host, url.port, (splitPath[0..-2]).join('/') + '/')
         return [baseUrl, lastElement]
     }
 }

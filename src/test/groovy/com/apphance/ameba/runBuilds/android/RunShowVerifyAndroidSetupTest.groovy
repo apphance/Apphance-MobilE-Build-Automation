@@ -1,9 +1,6 @@
-package com.apphance.ameba.runBuilds.android;
+package com.apphance.ameba.runBuilds.android
 
-import static org.junit.Assert.*
-
-import java.io.File
-
+import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
@@ -11,7 +8,7 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
-import com.apphance.ameba.ProjectHelper
+import static org.junit.Assert.assertTrue
 
 
 class RunShowVerifyAndroidSetupTest {
@@ -28,7 +25,7 @@ class RunShowVerifyAndroidSetupTest {
         connection.close()
     }
 
-    String runTests(String ... tasks) {
+    String runTests(String... tasks) {
         ByteArrayOutputStream os = new ByteArrayOutputStream()
         BuildLauncher bl = connection.newBuild().forTasks(tasks);
         bl.setStandardOutput(os)

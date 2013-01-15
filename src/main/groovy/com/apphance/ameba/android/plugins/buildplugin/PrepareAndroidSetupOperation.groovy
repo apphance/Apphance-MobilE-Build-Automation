@@ -1,14 +1,11 @@
 package com.apphance.ameba.android.plugins.buildplugin
 
-import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
-
 import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidCommandParser;
-import com.apphance.ameba.android.AndroidProjectConfiguration;
-import com.apphance.ameba.android.AndroidProjectConfigurationRetriever;
+import com.apphance.ameba.android.AndroidCommandParser
+import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Sets up android properties.
@@ -24,7 +21,7 @@ class PrepareAndroidSetupOperation extends AbstractPrepareSetupOperation {
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
         def androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             BufferedReader br = getReader()
             AndroidProjectProperty.each {
                 switch (it) {

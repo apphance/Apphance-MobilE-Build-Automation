@@ -1,8 +1,6 @@
 package com.apphance.ameba.ios.plugins.release
 
-import org.gradle.api.Project;
-
-import com.apphance.ameba.ProjectConfiguration;
+import org.gradle.api.Project
 
 /**
  * Retrieves iOS release.

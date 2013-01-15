@@ -1,11 +1,9 @@
-package com.apphance.ameba.unit;
-
-import static org.junit.Assert.*;
-
-import org.junit.AfterClass;
-import org.junit.Test;
+package com.apphance.ameba.unit
 
 import com.apphance.ameba.XMLBomAwareFileReader
+import org.junit.Test
+
+import static org.junit.Assert.assertNotNull
 
 class XmlBomAwareFileReaderTest {
     @Test

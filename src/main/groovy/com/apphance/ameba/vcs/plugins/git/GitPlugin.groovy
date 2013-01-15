@@ -1,14 +1,11 @@
-package com.apphance.ameba.vcs.plugins.git;
+package com.apphance.ameba.vcs.plugins.git
 
+import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.vcs.plugins.AbstractVCSPlugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ProjectHelper;
-import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.vcs.plugins.AbstractVCSPlugin;
-
 
 /**
  * Plugin for Git implementation of VCS system
@@ -35,9 +32,9 @@ class GitPlugin extends AbstractVCSPlugin {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_VERSION_CONTROL
         task << {
             String[] gitResetHardCommand = [
-                "git",
-                "reset",
-                "--hard"
+                    "git",
+                    "reset",
+                    "--hard"
             ]
             projectHelper.executeCommand(project, gitResetHardCommand)
             logger.lifecycle("Restored git workspace to original state")
@@ -50,61 +47,61 @@ class GitPlugin extends AbstractVCSPlugin {
         task.group = AmebaCommonBuildTaskGroups.AMEBA_VERSION_CONTROL
         task << {
             def commitCommand = [
-                "git",
-                "commit",
+                    "git",
+                    "commit",
             ]
             if (conf.commitFilesOnVCS.empty) {
-                conf.commitFilesOnVCS.each {commitCommand << "-a" }
+                conf.commitFilesOnVCS.each { commitCommand << "-a" }
             }
             commitCommand << "-m"
-            commitCommand <<  "Incrementing application version to ${conf.versionString} (${conf.versionCode})"
+            commitCommand << "Incrementing application version to ${conf.versionString} (${conf.versionCode})"
             if (!conf.commitFilesOnVCS.empty) {
-                conf.commitFilesOnVCS.each {commitCommand << it }
+                conf.commitFilesOnVCS.each { commitCommand << it }
             }
             projectHelper.executeCommand(project, commitCommand as String[])
             String[] pullCommand = [
-                "git",
-                "pull",
-                "origin",
-                "HEAD:master"
+                    "git",
+                    "pull",
+                    "origin",
+                    "HEAD:master"
             ]
             projectHelper.executeCommand(project, pullCommand)
             String[] pushCommand = [
-                "git",
-                "push",
-                "origin",
-                "HEAD:master"
+                    "git",
+                    "push",
+                    "origin",
+                    "HEAD:master"
             ]
             projectHelper.executeCommand(project, pushCommand)
             String[] revParseCommand = [
-                "git",
-                "rev-parse",
-                "HEAD"
+                    "git",
+                    "rev-parse",
+                    "HEAD"
             ]
             def revision = projectHelper.executeCommand(project, revParseCommand)[0]
             String[] tagCommand = [
-                "git",
-                "tag",
-                "-a",
-                "-m",
-                "Tagging Revision ${conf.versionString}_${conf.versionCode}",
-                "Release_${conf.versionString}_${conf.versionCode}",
-                revision
+                    "git",
+                    "tag",
+                    "-a",
+                    "-m",
+                    "Tagging Revision ${conf.versionString}_${conf.versionCode}",
+                    "Release_${conf.versionString}_${conf.versionCode}",
+                    revision
             ]
             projectHelper.executeCommand(project, tagCommand)
             String[] pushTagsCommand = [
-                "git",
-                "push",
-                "--tags",
-                "origin"
+                    "git",
+                    "push",
+                    "--tags",
+                    "origin"
             ]
             projectHelper.executeCommand(project, pushTagsCommand)
             logger.lifecycle("Commited, tagged and pushed ${conf.versionString} (${conf.versionCode})")
         }
     }
 
-    def String [] getVCSExcludes(Project project) {
-        return ["**/.git/*"]as String[]
+    def String[] getVCSExcludes(Project project) {
+        return ["**/.git/*"] as String[]
     }
 
     void prepareShowPropertiesTask(Project arg0) {
@@ -112,7 +109,7 @@ class GitPlugin extends AbstractVCSPlugin {
     }
 
     static public final String DESCRIPTION =
-"""This is the VCS (version control system) plugin which supports git VCS.
+        """This is the VCS (version control system) plugin which supports git VCS.
 
 The plugin should be applied before the main build plugin.
 """

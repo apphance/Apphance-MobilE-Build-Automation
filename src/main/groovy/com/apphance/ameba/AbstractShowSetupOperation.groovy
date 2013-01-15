@@ -1,12 +1,11 @@
 package com.apphance.ameba
 
-
-import org.gradle.api.Project;
+import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-import org.gradle.logging.StyledTextOutput;
-import org.gradle.logging.StyledTextOutput.Style;
-import org.gradle.logging.StyledTextOutputFactory;
+import org.gradle.logging.StyledTextOutput
+import org.gradle.logging.StyledTextOutput.Style
+import org.gradle.logging.StyledTextOutputFactory
 
 /**
  * Abstract class for showing all setup for values plugins.
@@ -25,7 +24,7 @@ abstract class AbstractShowSetupOperation {
     }
 
     public void showSetup() {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             StyledTextOutput o = project.showSetup.services.get(StyledTextOutputFactory).create(this.class)
             List props = project.listProperties(clazz, true)
             props.each {

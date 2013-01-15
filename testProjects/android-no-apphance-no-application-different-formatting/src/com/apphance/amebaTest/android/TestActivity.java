@@ -7,10 +7,11 @@ import android.util.Log;
 public class TestActivity extends Activity {
     private static final String TAG = TestActivity.class.getSimpleName();
 
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
-    public void onCreate(final Bundle savedInstanceState)
-    {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         Log.e(TAG, "Test");

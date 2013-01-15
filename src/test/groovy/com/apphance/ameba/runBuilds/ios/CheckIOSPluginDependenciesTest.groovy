@@ -1,22 +1,18 @@
-package com.apphance.ameba.runBuilds.ios;
+package com.apphance.ameba.runBuilds.ios
 
-import static org.junit.Assert.*
-
+import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.BuildException
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
-import org.junit.After
-import org.junit.AfterClass
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
+import org.junit.*
 
-import com.apphance.ameba.ProjectHelper
+import static org.junit.Assert.assertFalse
+import static org.junit.Assert.assertTrue
 
 class CheckIOSPluginDependenciesTest {
     static File testProject = new File("testProjects/test-dependencies")
-    static File gradleBuild = new File(testProject,"build.gradle")
+    static File gradleBuild = new File(testProject, "build.gradle")
     static ProjectConnection connection
 
     @Before
@@ -39,7 +35,7 @@ class CheckIOSPluginDependenciesTest {
         connection.close()
     }
 
-    String runTests(File gradleBuildToCopy, String expected, String ... tasks) {
+    String runTests(File gradleBuildToCopy, String expected, String... tasks) {
         gradleBuild << gradleBuildToCopy.text
         ByteArrayOutputStream os = new ByteArrayOutputStream()
         try {
@@ -98,6 +94,7 @@ class CheckIOSPluginDependenciesTest {
         String res = runTests(new File(testProject, 'ios-fonemonkey.gradle'), 'IOSPlugin has not been loaded yet')
         println res
     }
+
     @Test
     public void testIosCedarPluginDependencies() throws Exception {
         String res = runTests(new File(testProject, 'ios-cedar.gradle'), 'IOSPlugin has not been loaded yet')

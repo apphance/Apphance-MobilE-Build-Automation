@@ -1,20 +1,18 @@
-package com.apphance.ameba.unit.vcs;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-import org.junit.AfterClass
-import org.junit.Test
+package com.apphance.ameba.unit.vcs
 
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.vcs.plugins.git.GitProperty
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialProperty
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Test
+
+import static org.junit.Assert.assertEquals
 
 class PropertyVCSTest {
     @Test
-    void testGitPropertyNoComments () {
-        use (PropertyCategory) {
+    void testGitPropertyNoComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project['git.branch'] = "master"
@@ -23,12 +21,13 @@ class PropertyVCSTest {
 # Git properties
 ###########################################################
 git.branch=master
-''',s)
+''', s)
         }
     }
+
     @Test
-    void testGitPropertyWithComments () {
-        use (PropertyCategory) {
+    void testGitPropertyWithComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project['git.branch'] = "master"
@@ -38,13 +37,13 @@ git.branch=master
 ###########################################################
 # Branch which is used for git operations [optional] default: <master>
 git.branch=master
-''',s)
+''', s)
         }
     }
 
     @Test
-    void testMercurialPropertyNoComments () {
-        use (PropertyCategory) {
+    void testMercurialPropertyNoComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project['hg.commit.user'] = "Test Apphance <test@apphance.com>"
@@ -53,12 +52,13 @@ git.branch=master
 # Mercurial properties
 ###########################################################
 hg.commit.user=Test Apphance <test@apphance.com>
-''',s)
+''', s)
         }
     }
+
     @Test
-    void testMercurialPropertyWithComments () {
-        use (PropertyCategory) {
+    void testMercurialPropertyWithComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project['hg.commit.user'] = "Test Apphance <test@apphance.com>"
@@ -68,7 +68,7 @@ hg.commit.user=Test Apphance <test@apphance.com>
 ###########################################################
 # Commit user for mercurial - usually in form of "Name <e-mail>"
 hg.commit.user=Test Apphance <test@apphance.com>
-''',s)
+''', s)
         }
     }
 }

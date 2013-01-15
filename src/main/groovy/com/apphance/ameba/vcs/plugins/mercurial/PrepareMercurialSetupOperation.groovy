@@ -1,10 +1,9 @@
 package com.apphance.ameba.vcs.plugins.mercurial
 
-import org.gradle.api.logging.Logger;
+import com.apphance.ameba.AbstractPrepareSetupOperation
+import com.apphance.ameba.PropertyCategory
+import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-
-import com.apphance.ameba.AbstractPrepareSetupOperation;
-import com.apphance.ameba.PropertyCategory;
 
 /**
  * Sets up all mercurial-related properties.

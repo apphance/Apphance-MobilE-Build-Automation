@@ -11,9 +11,9 @@ rootProject.buildscript {
 
         file("$amebaProjectPath/plugins")
                 .listFiles()
-                .findAll{it.isDirectory()}
-                .collect{it.path}
-                .each { classpathDir ->
+                .findAll { it.isDirectory() }
+        .collect { it.path }
+        .each { classpathDir ->
 
             classpath files(
                     classpathDir + "/build/resources/main",

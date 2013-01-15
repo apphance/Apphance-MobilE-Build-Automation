@@ -1,14 +1,11 @@
-package com.apphance.ameba.android;
-
-import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+package com.apphance.ameba.android
 
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.buildplugin.AndroidProjectProperty
 import com.sun.org.apache.xpath.internal.XPathAPI
-
-
+import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Retrieves android project configuration.
@@ -20,15 +17,15 @@ public class AndroidProjectConfigurationRetriever {
     static AndroidManifestHelper androidManifestHelper = new AndroidManifestHelper()
     static AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
 
-    static AndroidProjectConfiguration getAndroidProjectConfiguration(final Project project){
+    static AndroidProjectConfiguration getAndroidProjectConfiguration(final Project project) {
         if (!project.ext.has(ANDROID_PROJECT_CONFIGURATION_KEY)) {
-            project.ext.set(ANDROID_PROJECT_CONFIGURATION_KEY,new AndroidProjectConfiguration())
+            project.ext.set(ANDROID_PROJECT_CONFIGURATION_KEY, new AndroidProjectConfiguration())
         }
         return project.ext.get(ANDROID_PROJECT_CONFIGURATION_KEY)
     }
 
     static void readAndroidProjectConfiguration(Project project) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             AndroidProjectConfiguration androidConf = getAndroidProjectConfiguration(project)
             androidConf.mainVariant = project.readProperty(AndroidProjectProperty.MAIN_VARIANT)
             if (androidConf.mainVariant == null || androidConf.mainVariant.empty) {

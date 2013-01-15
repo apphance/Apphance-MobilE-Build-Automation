@@ -1,11 +1,10 @@
 package com.apphance.ameba.android.plugins.test
 
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
-
 import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidCommandParser;
+import com.apphance.ameba.android.AndroidCommandParser
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Prepares configuration for android tests.
@@ -13,7 +12,7 @@ import com.apphance.ameba.android.AndroidCommandParser;
  */
 class PrepareAndroidTestSetupOperation extends AbstractPrepareSetupOperation {
     Logger logger = Logging.getLogger(PrepareAndroidTestSetupOperation.class)
-    List BOOLEANS=['true', 'false']
+    List BOOLEANS = ['true', 'false']
 
     PrepareAndroidTestSetupOperation() {
         super(AndroidTestProperty.class)
@@ -21,7 +20,7 @@ class PrepareAndroidTestSetupOperation extends AbstractPrepareSetupOperation {
 
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             BufferedReader br = getReader()
             AndroidTestProperty.each {
                 switch (it) {

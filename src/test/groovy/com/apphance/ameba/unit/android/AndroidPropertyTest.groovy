@@ -1,19 +1,17 @@
-package com.apphance.ameba.unit.android;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-import org.junit.AfterClass
-import org.junit.Test
+package com.apphance.ameba.unit.android
 
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.buildplugin.AndroidProjectProperty
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Test
+
+import static org.junit.Assert.assertEquals
 
 class AndroidPropertyTest {
     @Test
-    void testAndroidPropertyNoComments () {
-        use (PropertyCategory) {
+    void testAndroidPropertyNoComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[AndroidProjectProperty.MAIN_VARIANT.propertyName] = "mainVariant"
@@ -27,12 +25,13 @@ class AndroidPropertyTest {
 android.mainVariant=mainVariant
 android.excluded.builds=.*
 android.minSdk.target=android-8
-''',s)
+''', s)
         }
     }
+
     @Test
-    void testAndroidPropertyWithComments () {
-        use (PropertyCategory) {
+    void testAndroidPropertyWithComments() {
+        use(PropertyCategory) {
             ProjectBuilder projectBuilder = ProjectBuilder.builder()
             Project project = projectBuilder.build()
             project[AndroidProjectProperty.MAIN_VARIANT.propertyName] = "mainVariant"
@@ -49,7 +48,7 @@ android.mainVariant=mainVariant
 android.excluded.builds=.*
 # Minimum target against which source code analysis is done - the project will fail Java compilation in case classes from higher target are used [optional] default: <>
 android.minSdk.target=android-8
-''',s)
+''', s)
         }
     }
 }

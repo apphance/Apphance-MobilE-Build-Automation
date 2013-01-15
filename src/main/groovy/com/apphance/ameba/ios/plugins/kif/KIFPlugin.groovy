@@ -1,20 +1,16 @@
 package com.apphance.ameba.ios.plugins.kif
 
-import java.io.File;
-import java.util.Collection;
-
-import org.codehaus.groovy.runtime.DefaultGroovyMethods
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging
-
-import com.apphance.ameba.ProjectConfiguration;
-import com.apphance.ameba.ProjectHelper;
+import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSXCodeOutputParser;
-import com.apphance.ameba.ios.IOSProjectConfiguration;
+import com.apphance.ameba.ios.IOSProjectConfiguration
+import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
+import org.codehaus.groovy.runtime.DefaultGroovyMethods
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Builds and executes KIF tests.
@@ -36,7 +32,7 @@ class KIFPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
@@ -54,7 +50,7 @@ class KIFPlugin implements Plugin<Project> {
 
     Collection<String> findAllTests(String family) {
         def tests = []
-        File KIFTests = new File (project.rootDir, "KIFTests/Tests")
+        File KIFTests = new File(project.rootDir, "KIFTests/Tests")
         DefaultGroovyMethods.eachFile(KIFTests, {
             if (it.name.endsWith(family + ".m")) {
                 logger.lifecycle("Adding test ${it}")
@@ -66,14 +62,14 @@ class KIFPlugin implements Plugin<Project> {
 
     private runSingleKIFTest(String test, String family) {
         logger.lifecycle("Running test ${test} for ${family}")
-        File cfFixedDirectory = new File (conf.tmpDirectory, "KIF/${family}/${test}")
+        File cfFixedDirectory = new File(conf.tmpDirectory, "KIF/${family}/${test}")
         cfFixedDirectory.mkdirs()
         cfFixedDirectory.deleteDir();
         def ant = new AntBuilder()
         ant.unzip(src: getKIFTemplate(family), dest: cfFixedDirectory, overwrite: true)
-        File documentsDirectory = new File (cfFixedDirectory, "Documents")
+        File documentsDirectory = new File(cfFixedDirectory, "Documents")
         documentsDirectory.mkdirs();
-        File runTestScript = new File(conf.tmpDirectory,"run_test_${family}_${test}.bash")
+        File runTestScript = new File(conf.tmpDirectory, "run_test_${family}_${test}.bash")
         String baseScript = """#!/bin/bash
     export CFFIXED_USER_HOME=${cfFixedDirectory}
     """
@@ -81,8 +77,8 @@ class KIFPlugin implements Plugin<Project> {
     killall "iPhone Simulator"
     """
         baseScript += killall
-        File KIFError = new File(conf.tmpDirectory,"KIF_error_${family}_${test}.txt")
-        File KIFOutput = new File(conf.tmpDirectory,"KIF_output_${family}_${test}.txt")
+        File KIFError = new File(conf.tmpDirectory, "KIF_error_${family}_${test}.txt")
+        File KIFOutput = new File(conf.tmpDirectory, "KIF_output_${family}_${test}.txt")
 
         def simulatorSdk = '5.0'
         if (iosConf.simulatorsdk.startsWith(IPHONESIMULATOR) && iosConf.simulatorsdk != IPHONESIMULATOR) {
@@ -108,20 +104,20 @@ class KIFPlugin implements Plugin<Project> {
 """
         runTestScript.text = baseScript
         projectHelper.executeCommand(project, [
-            "chmod",
-            "a+x",
-            "${runTestScript}"
+                "chmod",
+                "a+x",
+                "${runTestScript}"
         ])
 
-        File applicationAppFile = project.file( "build/${KIFConfiguration}-iphonesimulator/KIFTests.app")
+        File applicationAppFile = project.file("build/${KIFConfiguration}-iphonesimulator/KIFTests.app")
         projectHelper.executeCommand(project, [
-            "/bin/bash",
-            "${runTestScript}"
+                "/bin/bash",
+                "${runTestScript}"
         ],
-        true,
-        null,
-        null,
-        4
+                true,
+                null,
+                null,
+                4
         )
     }
 
@@ -152,14 +148,14 @@ class KIFPlugin implements Plugin<Project> {
         task << {
             def configuration = "${KIFConfiguration}"
             def target = "KIFTests"
-            logger.lifecycle( "\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
+            logger.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
             projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(target, configuration) + [
-                "-target",
-                target,
-                "-configuration",
-                configuration,
-                "-sdk",
-                this.iosConf.simulatorsdk
+                    "-target",
+                    target,
+                    "-configuration",
+                    configuration,
+                    "-sdk",
+                    this.iosConf.simulatorsdk
             ])
         }
         task.dependsOn(project.readProjectConfiguration)
@@ -182,7 +178,7 @@ class KIFPlugin implements Plugin<Project> {
             logger.lifecycle("Finished processing KIF test")
             project.ant {
                 move(todir: conf.tmpDirectory, flatten: true) {
-                    fileset(dir: new File(conf.tmpDirectory, 'KIF')) { include(name:'**/TEST*.xml') }
+                    fileset(dir: new File(conf.tmpDirectory, 'KIF')) { include(name: '**/TEST*.xml') }
                 }
             }
         }
@@ -205,7 +201,7 @@ class KIFPlugin implements Plugin<Project> {
     }
 
     static public final String DESCRIPTION =
-    """This plugins provides functionality of KIF integration testing for iOS.
+        """This plugins provides functionality of KIF integration testing for iOS.
 
 It executes all tests which are build using KIF test framework.
 

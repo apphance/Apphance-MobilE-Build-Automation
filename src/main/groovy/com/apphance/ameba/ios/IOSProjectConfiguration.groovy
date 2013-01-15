@@ -1,13 +1,6 @@
 package com.apphance.ameba.ios
 
-import java.io.File
-import java.util.Collection
-import java.util.HashMap
-import java.util.List
-import java.util.Map
 import java.util.regex.Pattern
-
-import com.apphance.ameba.plugins.release.AmebaArtifact;
 
 /**
  * Keeps IOS-specific configuration for the project.
@@ -57,7 +50,7 @@ class IOSProjectConfiguration {
         if (xCodeProjectDirectory == null || xCodeProjectDirectory == '') {
             return ['xcodebuild']
         } else {
-            return ['xcodebuild' , '-project', xCodeProjectDirectories[getVariant(target,configuration)]]
+            return ['xcodebuild', '-project', xCodeProjectDirectories[getVariant(target, configuration)]]
         }
     }
 
@@ -65,7 +58,7 @@ class IOSProjectConfiguration {
         if (xCodeProjectDirectory == null || xCodeProjectDirectory == '') {
             return ['xcodebuild']
         } else {
-            return ['xcodebuild' , '-project', xCodeProjectDirectory]
+            return ['xcodebuild', '-project', xCodeProjectDirectory]
         }
     }
 

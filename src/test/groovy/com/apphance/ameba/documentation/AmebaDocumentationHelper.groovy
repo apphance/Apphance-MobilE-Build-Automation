@@ -20,11 +20,11 @@ class AmebaDocumentationHelper {
     }
 
     private static String surroundBlockLineOrange(String text) {
-        return BLOCK_LINE_START_ORANGE  + escapeAndNbspText(text) + BLOCK_LINE_END
+        return BLOCK_LINE_START_ORANGE + escapeAndNbspText(text) + BLOCK_LINE_END
     }
 
     private static String surroundBlockLineGreen(String text) {
-        return BLOCK_LINE_START_GREEN  + escapeAndNbspText(text) + BLOCK_LINE_END
+        return BLOCK_LINE_START_GREEN + escapeAndNbspText(text) + BLOCK_LINE_END
     }
 
     private static String surroundBlockLine(String text) {
@@ -82,7 +82,7 @@ class AmebaDocumentationHelper {
                 sb << '</div>'
                 sb << CODE_BLOCK_HEADER
                 inCode = true
-            } else if (it.startsWith('</code>')){
+            } else if (it.startsWith('</code>')) {
                 sb << CODE_BLOCK_FOOTER
                 sb << '<div>'
                 inCode = false
@@ -93,7 +93,7 @@ class AmebaDocumentationHelper {
                     if (it.startsWith("<")) {
                         sb << it
                     } else {
-                        sb <<  escapeAndNbspText(it)
+                        sb << escapeAndNbspText(it)
                     }
                     sb << ' '
                 }

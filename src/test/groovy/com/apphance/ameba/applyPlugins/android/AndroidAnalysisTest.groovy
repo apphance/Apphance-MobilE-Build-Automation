@@ -1,13 +1,10 @@
-package com.apphance.ameba.applyPlugins.android;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
-import org.junit.Test
+package com.apphance.ameba.applyPlugins.android
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.android.plugins.analysis.AndroidAnalysisPlugin;
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin;
+import com.apphance.ameba.android.plugins.analysis.AndroidAnalysisPlugin
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import org.gradle.api.Project
+import org.junit.Test
 
 class AndroidAnalysisTest extends BaseAndroidTaskTest {
 
@@ -20,12 +17,12 @@ class AndroidAnalysisTest extends BaseAndroidTaskTest {
 
     @Test
     public void testTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'analysis',
-            'checkstyle',
-            'cpd',
-            'findbugs',
-            'pmd',
-        ],AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS)
+        verifyTasksInGroup(getProject(), [
+                'analysis',
+                'checkstyle',
+                'cpd',
+                'findbugs',
+                'pmd',
+        ], AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS)
     }
 }

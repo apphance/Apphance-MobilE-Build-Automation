@@ -1,13 +1,10 @@
-package com.apphance.ameba.applyPlugins.android;
-
-import static org.junit.Assert.*
-
-import org.gradle.api.Project
-import org.junit.Test
+package com.apphance.ameba.applyPlugins.android
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.android.plugins.apphance.AndroidApphancePlugin;
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin;
+import com.apphance.ameba.android.plugins.apphance.AndroidApphancePlugin
+import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import org.gradle.api.Project
+import org.junit.Test
 
 class TestApphanceAndroidTasks extends BaseAndroidTaskTest {
     protected Project getProject() {
@@ -19,10 +16,10 @@ class TestApphanceAndroidTasks extends BaseAndroidTaskTest {
 
     @Test
     public void testReportsTasksAvailable() {
-        verifyTasksInGroup(getProject(),[
-            'convertLogsToAndroid',
-            'convertLogsToApphance',
-            'removeApphanceFromManifest',
-        ],AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE)
+        verifyTasksInGroup(getProject(), [
+                'convertLogsToAndroid',
+                'convertLogsToApphance',
+                'removeApphanceFromManifest',
+        ], AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE)
     }
 }

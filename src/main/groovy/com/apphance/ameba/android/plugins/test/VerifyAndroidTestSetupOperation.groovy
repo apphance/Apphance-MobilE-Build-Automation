@@ -1,13 +1,10 @@
 package com.apphance.ameba.android.plugins.test
 
-
-import org.gradle.api.GradleException
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
-
 import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.PropertyCategory
-
+import org.gradle.api.GradleException
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Verifies if android properties are setup correctly.
@@ -21,9 +18,9 @@ class VerifyAndroidTestSetupOperation extends AbstractVerifySetupOperation {
     }
 
     void verifySetup() {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             def projectProperties = readProperties()
-            AndroidTestProperty.each{ checkProperty(projectProperties, it) }
+            AndroidTestProperty.each { checkProperty(projectProperties, it) }
             checkBoolean(AndroidTestProperty.EMULATOR_NO_WINDOW)
             checkBoolean(AndroidTestProperty.EMULATOR_SNAPSHOT_ENABLED)
             checkBoolean(AndroidTestProperty.TEST_PER_PACKAGE)
@@ -34,7 +31,7 @@ class VerifyAndroidTestSetupOperation extends AbstractVerifySetupOperation {
     }
 
     void checkDirectory(property) {
-        use (PropertyCategory) {
+        use(PropertyCategory) {
             def dirName = project.readProperty(property)
             File dir = project.file(dirName)
             if (!dir.exists()) {

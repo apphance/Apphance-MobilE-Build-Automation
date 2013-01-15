@@ -1,7 +1,4 @@
-package com.apphance.ameba.ios;
-
-import java.io.File
-
+package com.apphance.ameba.ios
 /**
  * Information for single artict being built. Useful information grouped together needed
  * by various artifacts generated along the way.

@@ -1,10 +1,6 @@
 package com.apphance.ameba.ios.plugins.ocunit
 
-import groovy.xml.MarkupBuilder;
-
-import java.io.File;
-import java.util.Collection;
-
+import groovy.xml.MarkupBuilder
 
 /**
  * Exports XML JUnit-like result from text output of OCUnit.
@@ -29,28 +25,28 @@ class XMLJunitExporter {
     }
 
     void processTestSuite(MarkupBuilder xml, OCUnitTestSuite testSuite) {
-        xml.testsuite (
+        xml.testsuite(
                 errors: 0,
                 failures: testSuite.failureCount,
                 hostname: 'autobuild',
                 time: testSuite.duration,
                 name: testSuite.name) {
-                    testSuite.testSuites.each { ts -> processTestSuite(xml, ts) }
-                    testSuite.testCases.each { testCase ->
-                        xml.testcase (
-                                classname : testSuite.name,
-                                name: testCase.name,
-                                time: testCase.duration) {
-                                    if (testCase.result == OCUnitTestResult.FAILURE) {
-                                        testCase.errors.each { error ->
-                                            xml.failure(
-                                                    message: error.errorMessage,
-                                                    type: "Failure",
-                                                    "${error.file}:${error.line}: ")
-                                        }
-                                    }
-                                }
+            testSuite.testSuites.each { ts -> processTestSuite(xml, ts) }
+            testSuite.testCases.each { testCase ->
+                xml.testcase(
+                        classname: testSuite.name,
+                        name: testCase.name,
+                        time: testCase.duration) {
+                    if (testCase.result == OCUnitTestResult.FAILURE) {
+                        testCase.errors.each { error ->
+                            xml.failure(
+                                    message: error.errorMessage,
+                                    type: "Failure",
+                                    "${error.file}:${error.line}: ")
+                        }
                     }
                 }
+            }
+        }
     }
 }
