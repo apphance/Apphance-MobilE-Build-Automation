@@ -67,8 +67,8 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
         // Apphance is being kept in Polidea repository
         project.repositories {
-            maven { url 'https://dev.polidea.pl/artifactory/libs-release-local/' }
-            maven { url 'https://dev.polidea.pl/artifactory/libs-snapshot-local/' }
+            maven { url 'https://dev.polidea.pl/artifactory/libs-releases-local/' }
+            maven { url 'https://dev.polidea.pl/artifactory/libs-snapshots-local/' }
         }
 
     }
@@ -394,7 +394,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     private copyApphanceJar(File directory, Project project) {
         // if user didn't overwrite the dependency add the newest
         if (project.configurations.apphance.dependencies.isEmpty()) {
-            project.dependencies { apphance 'com.apphance:apphance-android-library:1.+' }
+            project.dependencies { apphance 'com.apphance:android.pre-production:1.8+' }
         }
 
         def libsDir = new File(directory, 'libs')

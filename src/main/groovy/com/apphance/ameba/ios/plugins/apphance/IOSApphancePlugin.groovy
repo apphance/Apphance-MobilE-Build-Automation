@@ -69,7 +69,10 @@ class IOSApphancePlugin implements Plugin<Project> {
         }
 
         project.repositories {
-            maven { url 'https://dev.polidea.pl/artifactory/ext-releases-local/' }
+            project.repositories {
+                maven { url 'https://dev.polidea.pl/artifactory/libs-releases-local/' }
+                maven { url 'https://dev.polidea.pl/artifactory/libs-snapshots-local/' }
+            }
         }
     }
 
