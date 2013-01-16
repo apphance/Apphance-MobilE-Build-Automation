@@ -9,7 +9,7 @@ enum ApphanceProperty {
     APPLICATION_KEY("apphance.appkey", "Application key in Apphance"),
     APPHANCE_MODE("apphance.mode", "Apphance mode", "QA"),
     APPHANCE_LOG_EVENTS("apphance.log.events", "(experimental) Log events from standard widgets (one of [true,false]", "false"),
-    public static final String DESCRIPTION = 'Apphance properties'
+    APPHANCE_LIB("apphance.lib", "Library version to be used with apphance (groovy style dependency)")
 
     final String propertyName
     final String description
@@ -20,5 +20,7 @@ enum ApphanceProperty {
         this.description = description
         this.defaultValue = defaultValue
     }
+
+    public static final String DESCRIPTION = 'Apphance properties'
 
 }

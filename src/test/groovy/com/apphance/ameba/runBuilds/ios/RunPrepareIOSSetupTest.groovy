@@ -121,6 +121,7 @@ ios.framework.resources=icon.png
 apphance.appkey=
 apphance.mode=QA
 apphance.log.events=false
+apphance.lib=
 """, text)
         println text
     }

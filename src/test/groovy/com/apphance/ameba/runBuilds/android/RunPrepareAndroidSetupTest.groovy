@@ -19,6 +19,7 @@ class RunPrepareAndroidSetupTest {
     void before() {
         gradlePropertiesOrig.delete()
         gradlePropertiesOrig << gradleProperties.text
+        println gradlePropertiesOrig.text
     }
 
 
@@ -99,6 +100,7 @@ release.mail.flags=qrCode,imageMontage
 apphance.appkey=
 apphance.mode=QA
 apphance.log.events=false
+apphance.lib=
 ###########################################################
 # Android test properties
 ###########################################################

@@ -37,8 +37,8 @@ abstract class AbstractVerifySetupOperation {
         return projectProperties
     }
 
-    protected static void checkProperty(Properties projectProperties, Enum property) {
-        if (projectProperties.getProperty(property.propertyName) == null && property.defaultValue == null) {
+    protected static void checkProperty(Properties projectProperties, Enum property, List excludedProperties = null) {
+        if (projectProperties.getProperty(property.propertyName) == null && property.defaultValue == null && !(property in excludedProperties)) {
             throw new GradleException("""Property ${property.propertyName} should be defined in gradle.properties.
 !!!!! Please run "gradle prepareSetup --quiet" to correct it """)
         }
