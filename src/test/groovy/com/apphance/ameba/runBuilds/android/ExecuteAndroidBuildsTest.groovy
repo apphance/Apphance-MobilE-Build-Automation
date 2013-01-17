@@ -3,34 +3,37 @@ package com.apphance.ameba.runBuilds.android
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.android.AndroidManifestHelper
-import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
+import static com.apphance.ameba.ProjectHelper.GRADLE_DAEMON_ARGS
+import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.*
 
 class ExecuteAndroidBuildsTest {
 
     static File testProject = new File("testProjects/android")
-    static File testNovariantsProject = new File("testProjects/android-novariants")
+    static File testNoVariantsProject = new File("testProjects/android-novariants")
     static File testAndroidConventionProject = new File("testProjects/android-convention")
     static File testAndroidWrongConventionProject = new File("testProjects/android-convention-wrong-specs")
-    static File templateFile = new File("templates/android")
+    static File testAndroidNoApphanceApplication = new File("testProjects/android-no-apphance-application")
     static ProjectConnection connection
     static ProjectConnection gradleWithPropertiesConnection
     static ProjectConnection gradleNoVariantsConnection
     static ProjectConnection testAndroidConventionConnection
     static ProjectConnection testAndroidWrongConventionConnection
+    static ProjectConnection testAndroidNoApphanceApplicationConnection
 
     @BeforeClass
     static void beforeClass() {
-        connection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
-        gradleWithPropertiesConnection = GradleConnector.newConnector().forProjectDirectory(testProject).connect();
-        gradleNoVariantsConnection = GradleConnector.newConnector().forProjectDirectory(testNovariantsProject).connect();
-        testAndroidConventionConnection = GradleConnector.newConnector().forProjectDirectory(testAndroidConventionProject).connect()
-        testAndroidWrongConventionConnection = GradleConnector.newConnector().forProjectDirectory(testAndroidWrongConventionProject).connect()
+        connection = newConnector().forProjectDirectory(testProject).connect();
+        gradleWithPropertiesConnection = newConnector().forProjectDirectory(testProject).connect();
+        gradleNoVariantsConnection = newConnector().forProjectDirectory(testNoVariantsProject).connect();
+        testAndroidConventionConnection = newConnector().forProjectDirectory(testAndroidConventionProject).connect()
+        testAndroidWrongConventionConnection = newConnector().forProjectDirectory(testAndroidWrongConventionProject).connect()
+        testAndroidNoApphanceApplicationConnection = newConnector().forProjectDirectory(testAndroidNoApphanceApplication).connect()
     }
 
     @AfterClass
@@ -44,14 +47,14 @@ class ExecuteAndroidBuildsTest {
 
     protected void runGradle(String... tasks) {
         def buildLauncher = connection.newBuild()
-        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run();
     }
 
-    protected void runGradleWithProperties(Properties p, String... tasks) {
-        def buildLauncher = gradleWithPropertiesConnection.newBuild()
+    protected void runGradleWithProperties(Properties p, ProjectConnection pc = gradleWithPropertiesConnection, String... tasks) {
+        def buildLauncher = pc.newBuild()
         def args = p.collect { property, value -> "-D${property}=${value}" }
-        ProjectHelper.GRADLE_DAEMON_ARGS.each { args << it }
+        GRADLE_DAEMON_ARGS.each { args << it }
         buildLauncher.setJvmArguments(args as String[])
         buildLauncher.forTasks(tasks).run()
     }
@@ -113,22 +116,22 @@ class ExecuteAndroidBuildsTest {
     @Test
     void testBuildDebugNoVariant() {
         runGradleNoVariants('buildAllDebug')
-        assertTrue(new File(testNovariantsProject,
+        assertTrue(new File(testNoVariantsProject,
                 "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
-        assertFalse(new File(testNovariantsProject,
+        assertFalse(new File(testNoVariantsProject,
                 "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
-        assertFalse(new File(testNovariantsProject,
+        assertFalse(new File(testNoVariantsProject,
                 "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
     @Test
     void testBuildReleaseNoVariant() {
         runGradleNoVariants('buildAllRelease')
-        assertTrue(new File(testNovariantsProject,
+        assertTrue(new File(testNoVariantsProject,
                 "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
-        assertFalse(new File(testNovariantsProject,
+        assertFalse(new File(testNoVariantsProject,
                 "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
-        assertFalse(new File(testNovariantsProject,
+        assertFalse(new File(testNoVariantsProject,
                 "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
@@ -192,17 +195,16 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testAnalysisFromConfig() {
-        File baseDir = new File(testNovariantsProject, "build/analysis/")
-        File configBaseDir = new File(testNovariantsProject, "config/analysis/")
+        File baseDir = new File(testNoVariantsProject, "build/analysis/")
         runGradleNoVariants('updateProject', 'analysis')
         assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
         assertTrue(new File(baseDir, "cpd-result.xml").exists())
         assertTrue(new File(baseDir, "findbugs-result.xml").exists())
-        assertConfigSameAsBuild(testNovariantsProject, "checkstyle-local-suppressions.xml")
-        assertConfigSameAsBuild(testNovariantsProject, "checkstyle-suppressions.xml")
-        assertConfigSameAsBuild(testNovariantsProject, "checkstyle.xml")
-        assertConfigSameAsBuild(testNovariantsProject, "findbugs-exclude.xml")
-        assertConfigSameAsBuild(testNovariantsProject, "pmd-rules.xml")
+        assertConfigSameAsBuild(testNoVariantsProject, "checkstyle-local-suppressions.xml")
+        assertConfigSameAsBuild(testNoVariantsProject, "checkstyle-suppressions.xml")
+        assertConfigSameAsBuild(testNoVariantsProject, "checkstyle.xml")
+        assertConfigSameAsBuild(testNoVariantsProject, "findbugs-exclude.xml")
+        assertConfigSameAsBuild(testNoVariantsProject, "pmd-rules.xml")
     }
 
     private assertRemoteSameAsBuild(File projectDirectory, File configDirectory, String fileName) {
@@ -220,11 +222,11 @@ class ExecuteAndroidBuildsTest {
         assertTrue(new File(baseDir, "checkstyle-report.xml").exists())
         assertTrue(new File(baseDir, "cpd-result.xml").exists())
         assertTrue(new File(baseDir, "findbugs-result.xml").exists())
-        assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "checkstyle-local-suppressions.xml")
-        assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "checkstyle-suppressions.xml")
-        assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "checkstyle.xml")
-        assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "findbugs-exclude.xml")
-        assertRemoteSameAsBuild(testAndroidConventionProject, testNovariantsProject, "pmd-rules.xml")
+        assertRemoteSameAsBuild(testAndroidConventionProject, testNoVariantsProject, "checkstyle-local-suppressions.xml")
+        assertRemoteSameAsBuild(testAndroidConventionProject, testNoVariantsProject, "checkstyle-suppressions.xml")
+        assertRemoteSameAsBuild(testAndroidConventionProject, testNoVariantsProject, "checkstyle.xml")
+        assertRemoteSameAsBuild(testAndroidConventionProject, testNoVariantsProject, "findbugs-exclude.xml")
+        assertRemoteSameAsBuild(testAndroidConventionProject, testNoVariantsProject, "pmd-rules.xml")
     }
 
     @Test
@@ -266,13 +268,13 @@ class ExecuteAndroidBuildsTest {
     void testBuildAndPrepareNonVariantedMailMessage() {
         runGradleNoVariants('cleanRelease', 'updateProject', 'buildAll')
         runGradleNoVariants('prepareImageMontage', 'prepareMailMessage')
-        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
-        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/icon.png").exists())
-        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/index.html").exists())
-        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/plain_file_index.html").exists())
-        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/qrcode-TestAndroidProject-1.0.1-SNAPSHOT_42.png").exists())
-        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
-        assertTrue(new File(testNovariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
+        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
+        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/icon.png").exists())
+        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/index.html").exists())
+        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/plain_file_index.html").exists())
+        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/qrcode-TestAndroidProject-1.0.1-SNAPSHOT_42.png").exists())
+        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
+        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
     }
 
     @Test
@@ -312,5 +314,60 @@ class ExecuteAndroidBuildsTest {
         files.each {
             assertTrue(it, new File(avdsDirectory, it).exists())
         }
+    }
+
+    @Test
+    void testDefaultApphanceDependency() {
+        AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
+        ProjectConfiguration projectConf = new ProjectConfiguration()
+        try {
+            Properties p = new Properties()
+            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
+            manifestHelper.readVersion(testAndroidNoApphanceApplication, projectConf)
+        } finally {
+            manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
+        }
+        def androidLib = new File("testProjects/tmp-android-no-apphance-application-Debug/libs/android.pre-production-1.8.1.jar")
+        assertTrue(androidLib.exists())
+        assertEquals('android.pre-production-1.8.1.jar', androidLib.name)
+    }
+
+    @Test
+    void testCorrectApphanceDependencyFromProperty() {
+        AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
+        ProjectConfiguration projectConf = new ProjectConfiguration()
+        try {
+            Properties p = new Properties()
+            p.put('apphance.lib', "com.apphance:android.production:1.8")
+            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
+            manifestHelper.readVersion(testAndroidNoApphanceApplication, projectConf)
+        } finally {
+            manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
+        }
+        def androidLib = new File("testProjects/tmp-android-no-apphance-application-Debug/libs/android.production-1.8.jar")
+        assertTrue(androidLib.exists())
+        assertEquals('android.production-1.8.jar', androidLib.name)
+    }
+
+    @Test
+    void testIncorrectApphanceDependencyFromProperty() {
+        AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
+        ProjectConfiguration projectConf = new ProjectConfiguration()
+        try {
+            Properties p = new Properties()
+            p.put('apphance.lib', "com.apphanc:android.production:1.8")
+            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
+            manifestHelper.readVersion(testAndroidNoApphanceApplication, projectConf)
+        } catch (Exception e) {
+
+            def c = e.cause.cause.cause
+            assertEquals("Error while resolving dependency: 'com.apphanc:android.production:1.8'", c.message)
+
+        } finally {
+            manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
+        }
+        def androidLibsDir = new File("testProjects/tmp-android-no-apphance-application-Debug/libs/")
+        assertTrue(androidLibsDir.exists())
+        assertTrue(androidLibsDir.list().length == 0)
     }
 }

@@ -14,10 +14,14 @@ import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
 import groovy.io.FileType
 import groovy.json.JsonSlurper
 import org.apache.http.HttpResponse
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+
+import static com.apphance.ameba.ProjectHelper.MAX_RECURSION_LEVEL
+import static groovy.io.FileType.FILES
 
 /**
  * Adds Apphance in automated way.
@@ -31,6 +35,9 @@ class AndroidApphancePlugin implements Plugin<Project> {
     ProjectConfiguration conf
     AndroidManifestHelper manifestHelper
     AndroidProjectConfiguration androidConf
+
+    static final JAR_PATTERN = ~/.*android\.(pre\-)?production\-(\d+\.)+\d+\.jar/
+
 
     public void apply(Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
@@ -392,30 +399,46 @@ class AndroidApphancePlugin implements Plugin<Project> {
     }
 
     private copyApphanceJar(File directory, Project project) {
-        // if user didn't overwrite the dependency add the newest
-        if (project.configurations.apphance.dependencies.isEmpty()) {
-            project.dependencies { apphance 'com.apphance:android.pre-production:1.8+' }
-        }
+
+        def apphanceLibDependency = prepareApphanceLibDependency(project)
 
         def libsDir = new File(directory, 'libs')
         libsDir.mkdirs()
 
-        libsDir.eachFileMatch(".*apphance.*\\.jar") {
+        libsDir.eachFileMatch(JAR_PATTERN) {
             logger.lifecycle("Removing old apphance jar: " + it.name)
             it.delete()
         }
-
         logger.lifecycle("Copying apphance jar: to ${libsDir}")
 
-        project.copy {
-            from { project.configurations.apphance }
-            into libsDir
+        try {
+            project.copy {
+                from { project.configurations.apphance }
+                into libsDir
+            }
+        } catch (e) {
+            def msg = "Error while resolving dependency: '$apphanceLibDependency'"
+            logger.error("""$msg.
+To solve the problem add correct dependency to gradle.properties file or add -Dapphance.lib=<apphance.lib> to invocation.
+Dependency should be added in gradle style to 'apphance.lib' entry""")
+            throw new GradleException(msg)
         }
+    }
+
+    def prepareApphanceLibDependency(Project p) {
+        def apphanceLibDependency
+        use(PropertyCategory) {
+            apphanceLibDependency = p.readPropertyOrEnvironmentVariable('apphance.lib', true)
+            apphanceLibDependency ?
+                p.dependencies { apphance apphanceLibDependency } :
+                p.dependencies { apphance 'com.apphance:android.pre-production:1.8+' }
+        }
+        apphanceLibDependency
     }
 
     public boolean checkIfApphancePresent(File directory) {
         boolean found = false
-        directory.traverse([type: FileType.FILES, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) { file ->
+        directory.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { file ->
             if (file.name.endsWith('.java')) {
                 file.eachLine {
                     if (it.contains("Apphance.startNewSession")) {
@@ -427,7 +450,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
         if (!found) {
             File libsDir = new File(directory, 'libs/')
             if (libsDir.exists()) {
-                libsDir.eachFileMatch(".*apphance.*\\.jar") { found = true }
+                libsDir.eachFileMatch(JAR_PATTERN) { found = true }
             }
         }
         if (!found) {

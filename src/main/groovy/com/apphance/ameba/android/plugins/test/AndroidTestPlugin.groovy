@@ -227,7 +227,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         task.description = "Runs android tests on the project"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
         task << {
-            // TODO: what to do when no test directory exists ?? should I automaticly make one ??
+            // TODO: what to do when no test directory exists ?? should I automatically make one ??
             if (!androidTestDirectory.exists()) {
                 println "Test directory not found. Please run gradle prepareRobotium in order to create simple Robotium project. Aborting"
                 return
