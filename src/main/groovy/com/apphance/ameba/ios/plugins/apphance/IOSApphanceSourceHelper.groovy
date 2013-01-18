@@ -20,7 +20,7 @@ class IOSApphanceSourceHelper {
         return appFilename
     }
 
-    void addApphanceInit(File projectRootDirectory, String appKey) {
+    void addApphanceInit(File projectRootDirectory, String appKey, String apphanceMode = "apphanceMode:kAPHApphanceModeQA") {
         def appFilename = findAppDelegateFile(projectRootDirectory)
 
         if (appFilename.size() == 0) {
@@ -33,7 +33,7 @@ class IOSApphanceSourceHelper {
             if (appDelegateFile.exists()) {
                 logger.lifecycle("Adding Apphance to ${it}")
                 newAppDelegateFile.delete()
-                addApphanceToFile(appDelegateFile, newAppDelegateFile, appKey)
+                addApphanceToFile(appDelegateFile, newAppDelegateFile, appKey, apphanceMode)
                 appDelegateFile.delete()
                 newAppDelegateFile.renameTo(appDelegateFile)
             } else {
@@ -42,10 +42,10 @@ class IOSApphanceSourceHelper {
         }
     }
 
-    String addApphanceToFile(File appDelegateFile, File newAppDelegateFile, String appKey) {
+    String addApphanceToFile(File appDelegateFile, File newAppDelegateFile, String appKey, String apphanceMode = "apphanceMode:kAPHApphanceModeQA") {
         boolean startNewSessionAdded = false
         boolean searchingForOpeningBrace = false
-        def initApphance = "[APHLogger startNewSessionWithApplicationKey:@\"" + "${appKey}" + "\" apphanceMode:kAPHApphanceModeQA];"
+        def initApphance = "[APHLogger startNewSessionWithApplicationKey:@\"" + "${appKey}" + "\" $apphanceMode];"
         def setExceptionHandler = "NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);"
         newAppDelegateFile.withWriter { out ->
             appDelegateFile.eachLine { line ->
@@ -65,12 +65,12 @@ class IOSApphanceSourceHelper {
         }
     }
 
-    void addApphanceToPch(File pchFile) {
+    void addApphanceToPch(File pchFile, String apphanceFramework) {
         logger.lifecycle("Adding apphance header to file " + pchFile)
         File newPch = new File("newPch.pch")
         newPch.delete()
         newPch.withWriter { out ->
-            out << pchFile.text.replace("#ifdef __OBJC__", "#ifdef __OBJC__\n#import <Apphance-Pre-Production/APHLogger.h>")
+            out << pchFile.text.replace("#ifdef __OBJC__", "#ifdef __OBJC__\n#import <$apphanceFramework/APHLogger.h>")
         }
         pchFile.delete()
         pchFile.withWriter { out ->

@@ -53,7 +53,7 @@ class ExecuteAndroidBuildsTest {
 
     protected void runGradleWithProperties(Properties p, ProjectConnection pc = gradleWithPropertiesConnection, String... tasks) {
         def buildLauncher = pc.newBuild()
-        def args = p.collect { property, value -> "-D${property}=${value}" }
+        def args = p.collect { property, value -> "-Dorg.gradle.project.${property}=${value}" }
         GRADLE_DAEMON_ARGS.each { args << it }
         buildLauncher.setJvmArguments(args as String[])
         buildLauncher.forTasks(tasks).run()

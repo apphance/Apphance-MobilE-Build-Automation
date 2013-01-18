@@ -19,7 +19,21 @@ class PbxProjectHelper {
     private int hash = 0
     boolean hasApphance = false
     def projectFile = null
+    String apphanceFramework
+    String apphanceMode
     IOSApphanceSourceHelper apphanceSourceHelper = new IOSApphanceSourceHelper()
+
+    PbxProjectHelper(String apphanceLib = null) {
+
+        if (!apphanceLib || apphanceLib.contains('pre')) {
+            apphanceFramework = 'Apphance-Pre-Production'
+            apphanceMode = 'apphanceMode:kAPHApphanceModeQA'
+        } else {
+            apphanceFramework = 'Apphance-Production'
+            apphanceMode = ''
+        }
+
+    }
 
     Object getProperty(Object object, String propertyName) {
         def returnObject = null
@@ -152,7 +166,7 @@ class PbxProjectHelper {
 
     void addApphanceToFramework(Object frameworks) {
         def frameworksToAdd = [
-                ["name": "Apphance-Pre-Production.framework", "path": "Apphance-Pre-Production.framework", "group": "<group>", "searchName": "apphance", "strong": "Required"],
+                ["name": "${apphanceFramework}.framework", "path": "${apphanceFramework}.framework", "group": "<group>", "searchName": "apphance", "strong": "Required"],
                 ["name": "CoreLocation.framework", "path": "System/Library/Frameworks/CoreLocation.framework", "group": "SDKROOT", "searchName": "corelocation.framework", "strong": "Required"],
                 ["name": "QuartzCore.framework", "path": "System/Library/Frameworks/QuartzCore.framework", "group": "SDKROOT", "searchName": "quartzcore.framework", "strong": "Required"],
                 ["name": "SystemConfiguration.framework", "path": "System/Library/Frameworks/SystemConfiguration.framework", "group": "SDKROOT", "searchName": "systemconfiguration.framework", "strong": "Weak"],
@@ -252,9 +266,9 @@ class PbxProjectHelper {
                     buildSettings.appendNode("key", "LIBRARY_SEARCH_PATHS")
                     def array = buildSettings.appendNode("array")
                     array.appendNode("string", "\$(inherited)")
-                    array.appendNode("string", "\$(SRCROOT)/Apphance-Pre-Production.framework")
+                    array.appendNode("string", "\$(SRCROOT)/${apphanceFramework}.framework")
                 } else {
-                    librarySearchPaths.appendNode("string", "\$(SRCROOT)/Apphance-Pre-Production.framework")
+                    librarySearchPaths.appendNode("string", "\$(SRCROOT)/${apphanceFramework}.framework")
                 }
 
             }
@@ -286,7 +300,7 @@ class PbxProjectHelper {
                     getProperty(getObject(buildConfigurationList.text()), "buildConfigurations").'*'.each { configuration ->
                         if (getProperty(getObject(configuration.text()), "name").text().equals(configurationName)) {
                             sourceHelper.addApphanceToPch(new File(projectRootDirectory, getProperty(getProperty(getObject(configuration.text()), "buildSettings"),
-                                    "GCC_PREFIX_HEADER").text()))
+                                    "GCC_PREFIX_HEADER").text()), apphanceFramework)
                         }
                     }
                 }
@@ -294,7 +308,7 @@ class PbxProjectHelper {
         }
         if (!hasApphance) {
             addFlagsAndPathsToProject(project, configurationName)
-            apphanceSourceHelper.addApphanceInit(projectRootDirectory, appKey)
+            apphanceSourceHelper.addApphanceInit(projectRootDirectory, appKey, apphanceMode)
         }
 
         File f = new File(projectRootDirectory, "newProject.pbxproj")

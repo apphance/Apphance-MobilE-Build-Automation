@@ -3,6 +3,8 @@ package com.apphance.ameba
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 /**
  * Helper property-related class. Can be used as Groovy category.
@@ -10,6 +12,8 @@ import org.gradle.api.Project
  */
 class PropertyCategory {
 
+
+    static Logger logger = Logging.getLogger(PropertyCategory.class)
 
     private static Map<String, String> getDefaultConventionValues(Project project) {
         if (project.convention.plugins.amebaPropertyDefaults != null) {

@@ -1,6 +1,5 @@
 package com.apphance.ameba.unit
 
-import org.junit.Assert
 import org.junit.Test
 
 import static org.junit.Assert.assertFalse
@@ -14,7 +13,7 @@ import static org.junit.Assert.assertTrue
 class RegexTest {
 
     @Test
-    public void testAndroidApphanceLibJarPattern() {
+    void testAndroidApphanceLibJarPattern() {
         def JAR_PATTERN = ".*android\\.(pre\\-)?production\\-(\\d+\\.)+\\d+\\.jar"
         assertTrue("android.production-1.8.jar".matches(JAR_PATTERN))
         assertTrue("android.pre-production-1.8.1.jar".matches(JAR_PATTERN))

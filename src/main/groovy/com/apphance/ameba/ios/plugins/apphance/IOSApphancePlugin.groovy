@@ -11,6 +11,7 @@ import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.PbxProjectHelper
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleVariantBuilder
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -20,6 +21,7 @@ import static com.apphance.ameba.ProjectHelper.MAX_RECURSION_LEVEL
 import static com.apphance.ameba.apphance.ApphanceProperty.APPLICATION_KEY
 import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
+import static java.io.File.separator
 
 /**
  * Plugin for all apphance-relate IOS tasks.
@@ -28,7 +30,7 @@ import static groovy.io.FileType.FILES
 class IOSApphancePlugin implements Plugin<Project> {
 
     static Logger logger = Logging.getLogger(IOSApphancePlugin.class)
-    static final String FRAMEWORK_PATTERN = ".*[aA]pphance.*\\.framework"
+    static final FRAMEWORK_PATTERN = ~/.*[aA]pphance.*\.framework/
 
     ProjectHelper projectHelper
     ProjectConfiguration conf
@@ -45,7 +47,7 @@ class IOSApphancePlugin implements Plugin<Project> {
             this.iosXcodeOutputParser = new IOSXCodeOutputParser()
             this.iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
             this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, project.ant)
-            this.pbxProjectHelper = new PbxProjectHelper()
+            this.pbxProjectHelper = new PbxProjectHelper(project.properties['apphance.lib'])
 
             def trimmedListOutput = projectHelper.executeCommand(project, ["xcodebuild", "-list"] as String[], false, null, null, 1, true)*.trim()
             iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmedListOutput)
@@ -106,17 +108,27 @@ class IOSApphancePlugin implements Plugin<Project> {
     }
 
     private copyApphanceFramework(Project project, File libsDir) {
-        project.dependencies { apphance 'com.apphance:ios.pre-production.armv7:1.8+' }
+
+        def apphanceLibDependency = prepareApphanceLibDependency(project)
+
         libsDir.mkdirs()
         clearLibsDir(libsDir)
         logger.lifecycle("Copying apphance framework directory " + libsDir)
 
-        project.copy {
-            from { project.configurations.apphance }
-            into libsDir
-            rename { String filename ->
-                'apphance.zip'
+        try {
+            project.copy {
+                from { project.configurations.apphance }
+                into libsDir
+                rename { String filename ->
+                    'apphance.zip'
+                }
             }
+        } catch (e) {
+            def msg = "Error while resolving dependency: '$apphanceLibDependency'"
+            logger.error("""$msg.
+To solve the problem add correct dependency to gradle.properties file or add -Dapphance.lib=<apphance.lib> to invocation.
+Dependency should be added in gradle style to 'apphance.lib' entry""")
+            throw new GradleException(msg)
         }
 
         def projectApphanceZip = new File(libsDir, "apphance.zip")
@@ -125,8 +137,30 @@ class IOSApphancePlugin implements Plugin<Project> {
         def command = ["unzip", "${projectApphanceZip}", "-d", "${libsDir}"]
         projectHelper.executeCommand(project, libsDir, command)
 
+        checkFrameworkFolders(apphanceLibDependency, libsDir)
+
         project.delete {
             projectApphanceZip
+        }
+    }
+
+    private String prepareApphanceLibDependency(Project p) {
+        def apphanceLibDependency
+
+        use(PropertyCategory) {
+            apphanceLibDependency = p.readPropertyOrEnvironmentVariable('apphance.lib', false)
+            apphanceLibDependency = apphanceLibDependency ? apphanceLibDependency : 'com.apphance:ios.pre-production.armv7:1.8+'
+            p.dependencies { apphance apphanceLibDependency }
+        }
+        apphanceLibDependency
+    }
+
+    private void checkFrameworkFolders(String apphanceLib, File libsDir) {
+        def libVariant = apphanceLib.split(':')[1].split('\\.')[1].replace('p', 'P')
+        def frameworkFolder = "Apphance-${libVariant}.framework"
+        def frameworkFolderFile = new File(libsDir.canonicalPath + separator + frameworkFolder)
+        if (!frameworkFolderFile.exists() || !frameworkFolderFile.isDirectory() || !(frameworkFolderFile.length() > 0l)) {
+            throw new GradleException("There is no framework folder (or may be empty): ${frameworkFolderFile.canonicalPath} associated with apphance version: '${apphanceLib}'")
         }
     }
 

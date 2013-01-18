@@ -1,13 +1,13 @@
 package com.apphance.ameba.runBuilds.ios
 
-import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.BuildException
-import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
+import static com.apphance.ameba.ProjectHelper.GRADLE_DAEMON_ARGS
+import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.*
 
 class ExecuteIosBuildsTest {
@@ -16,7 +16,6 @@ class ExecuteIosBuildsTest {
     static File testProjectOneVariant = new File("testProjects/ios/GradleXCode")
     static File testProjectNoVersion = new File("testProjects/ios/GradleXCodeNoVersion")
     static File testProjectNoVersionString = new File("testProjects/ios/GradleXCodeNoVersionString")
-    static File templateFile = new File("templates/ios")
     static ProjectConnection connection
     static ProjectConnection gradleWithPropertiesConnection
     static ProjectConnection gradleOneVariantConnection
@@ -25,11 +24,11 @@ class ExecuteIosBuildsTest {
 
     @BeforeClass
     static void beforeClass() {
-        connection = GradleConnector.newConnector().forProjectDirectory(testProjectMoreVariants).connect();
-        gradleWithPropertiesConnection = GradleConnector.newConnector().forProjectDirectory(testProjectMoreVariants).connect();
-        gradleOneVariantConnection = GradleConnector.newConnector().forProjectDirectory(testProjectOneVariant).connect();
-        gradleNoVersionConnection = GradleConnector.newConnector().forProjectDirectory(testProjectNoVersion).connect();
-        gradleNoVersionStringConnection = GradleConnector.newConnector().forProjectDirectory(testProjectNoVersionString).connect();
+        connection = newConnector().forProjectDirectory(testProjectMoreVariants).connect();
+        gradleWithPropertiesConnection = newConnector().forProjectDirectory(testProjectMoreVariants).connect();
+        gradleOneVariantConnection = newConnector().forProjectDirectory(testProjectOneVariant).connect();
+        gradleNoVersionConnection = newConnector().forProjectDirectory(testProjectNoVersion).connect();
+        gradleNoVersionStringConnection = newConnector().forProjectDirectory(testProjectNoVersionString).connect();
     }
 
     @AfterClass
@@ -43,33 +42,33 @@ class ExecuteIosBuildsTest {
 
     protected void runGradleMoreVariants(String... tasks) {
         def buildLauncher = connection.newBuild()
-        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run();
     }
 
-    protected void runGradleWithProperties(Properties p, String... tasks) {
-        def buildLauncher = gradleWithPropertiesConnection.newBuild()
-        def args = p.collect { property, value -> "-D${property}=${value}" }
-        ProjectHelper.GRADLE_DAEMON_ARGS.each { args << it }
+    protected void runGradleWithProperties(Properties p, ProjectConnection pc = gradleWithPropertiesConnection, String... tasks) {
+        def buildLauncher = pc.newBuild()
+        def args = p.collect { property, value -> "-Dorg.gradle.project.${property}=${value}" }
+        GRADLE_DAEMON_ARGS.each { args << it }
         buildLauncher.setJvmArguments(args as String[])
         buildLauncher.forTasks(tasks).run()
     }
 
     protected void runGradleOneVariant(String... tasks) {
         def buildLauncher = gradleOneVariantConnection.newBuild()
-        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run();
     }
 
     protected void runGradleNoVersion(String... tasks) {
         def buildLauncher = gradleNoVersionConnection.newBuild()
-        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run();
     }
 
     protected void runGradleNoVersionString(String... tasks) {
         def buildLauncher = gradleNoVersionStringConnection.newBuild()
-        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run();
     }
 
@@ -252,5 +251,37 @@ class ExecuteIosBuildsTest {
         File file = new File(testProjectMoreVariants, 'tmp/GradleXCodeMoreVariants-1.0-SNAPSHOT_32-src.zip')
         assertTrue(file.exists())
         assertTrue(file.size() > 30000)
+    }
+
+    @Test
+    void testDefaultApphanceDependency() {
+        Properties p = new Properties()
+        runGradleWithProperties(p, gradleOneVariantConnection, 'clean', 'unlockKeyChain', 'build-GradleXCode-BasicConfiguration')
+        def apphanceLib = new File("testProjects/ios/tmp-GradleXCode-GradleXCode-BasicConfiguration/Apphance-Pre-Production.framework")
+        assertTrue(apphanceLib.exists())
+        assertTrue(apphanceLib.list().length > 0)
+    }
+
+    @Test
+    void testInCorrectApphanceDependency() {
+        Properties p = new Properties()
+        p.put('apphance.lib', 'com.apphanc:ios.production.armv7:1.8')
+        try {
+            runGradleWithProperties(p, gradleOneVariantConnection, 'clean', 'unlockKeyChain', 'build-GradleXCode-BasicConfiguration')
+        } catch (e) {
+            def c = e.cause.cause.cause
+            assertEquals("Error while resolving dependency: 'com.apphanc:ios.production.armv7:1.8'", c.message)
+        }
+        def apphanceLib = new File("testProjects/ios/tmp-GradleXCode-GradleXCode-BasicConfiguration/Apphance-Production.framework")
+        assertFalse(apphanceLib.exists())
+    }
+
+    @Test
+    void testCorrectApphanceDependency() {
+        Properties p = new Properties()
+        p.put('apphance.lib', 'com.apphance:ios.production.armv7:1.8')
+        runGradleWithProperties(p, gradleOneVariantConnection, 'clean', 'unlockKeyChain', 'build-GradleXCode-BasicConfiguration')
+        def apphanceLib = new File("testProjects/ios/tmp-GradleXCode-GradleXCode-BasicConfiguration/Apphance-Production.framework")
+        assertTrue(apphanceLib.exists())
     }
 }
