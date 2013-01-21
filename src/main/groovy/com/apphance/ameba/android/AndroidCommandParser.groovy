@@ -9,29 +9,28 @@ import org.gradle.api.Project
  */
 class AndroidCommandParser {
 
+    private static String[] COMMAND_TARGETS = ['android',
+            'list',
+            'target']
+
     public static List getTargets(Project project) {
         ProjectHelper projectHelper = new ProjectHelper()
-        String[] commandTarget = [
-                'android',
-                'list',
-                'target'
-        ]
-        def targets = projectHelper.executeCommand(project, commandTarget)
-        return extractTargets(targets.join('\n'))
+        def targets = projectHelper.executeCommand(project, COMMAND_TARGETS)
+        extractTargets(targets.join('\n'))
     }
 
 
 
     public static List extractTargets(String text) {
-        List targets = []
+        def targets = []
+        def targetPattern = /id:.*"(.*)"/
+        def targetPrefix = 'id:'
         text.split('\n').each {
-            if (it.startsWith('id:')) {
-                def matcher = (it =~ /id:.*"(.*)"/)
-                if (matcher.matches()) {
-                    targets << matcher[0][1]
-                }
+            def targetMatcher = (it =~ targetPattern)
+            if (it.startsWith(targetPrefix) && targetMatcher.matches()) {
+                targets << targetMatcher[0][1]
             }
         }
-        return targets.sort()
+        targets.sort()
     }
 }

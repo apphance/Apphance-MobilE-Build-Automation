@@ -17,35 +17,25 @@ class AndroidEnvironment {
     ]
 
     AndroidEnvironment(Project project) {
-        def aP = new Properties()
+        this.androidProperties = loadAndroidProperties(project)
+    }
+
+    Properties loadAndroidProperties(project) {
+        def props = new Properties()
         PROPERTIES_FILES.each {
             File propFile = project.file("${it}.properties")
             if (propFile.exists()) {
-                aP.load(new FileInputStream(propFile))
+                props.load(new FileInputStream(propFile))
             }
         }
-        this.androidProperties = aP
+        props
     }
 
-
     String getAndroidProperty(String name) {
-        return androidProperties.get(name)
+        androidProperties.get(name)
     }
 
     boolean isLibrary() {
-        return (getAndroidProperty('android.library') == 'true')
-    }
-
-    private List extractTargets(String text) {
-        List targets = []
-        text.split('\n').each {
-            if (it.startsWith('id:')) {
-                def matcher = (it =~ /id:.*"(.*)"/)
-                if (matcher.matches()) {
-                    targets << matcher[0][1]
-                }
-            }
-        }
-        return targets
+        (getAndroidProperty('android.library') == 'true')
     }
 }

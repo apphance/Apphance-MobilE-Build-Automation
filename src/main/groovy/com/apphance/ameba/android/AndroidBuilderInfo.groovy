@@ -4,6 +4,7 @@ package com.apphance.ameba.android
  * by various artifacts generated along the way.
  */
 class AndroidBuilderInfo {
+
     String variant
     String debugRelease
     File buildDirectory
@@ -12,11 +13,11 @@ class AndroidBuilderInfo {
     String filePrefix
 
     String getId() {
-        return variant
+        variant
     }
 
     @Override
     public String toString() {
-        return this.getProperties()
+        getProperties()
     }
 }
