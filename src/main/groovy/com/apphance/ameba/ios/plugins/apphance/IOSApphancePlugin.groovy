@@ -150,7 +150,8 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
         use(PropertyCategory) {
             apphanceLibDependency = p.readPropertyOrEnvironmentVariable('apphance.lib', true)
             apphanceLibDependency = apphanceLibDependency ? apphanceLibDependency : 'com.apphance:ios.pre-production.armv7:1.8+'
-            p.dependencies { apphance apphanceLibDependency }
+            if (p.configurations.apphance.dependencies.isEmpty())
+                p.dependencies { apphance apphanceLibDependency }
         }
         apphanceLibDependency
     }
