@@ -52,8 +52,8 @@ class IOSApphancePlugin implements Plugin<Project> {
             def trimmedListOutput = projectHelper.executeCommand(project, ["xcodebuild", "-list"] as String[], false, null, null, 1, true)*.trim()
             iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmedListOutput)
             iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmedListOutput)
-            preprocessBuildsWithApphance(project)
             prepareApphanceFrameworkVersion(project)
+            preprocessBuildsWithApphance(project)
 
             project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
             project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
