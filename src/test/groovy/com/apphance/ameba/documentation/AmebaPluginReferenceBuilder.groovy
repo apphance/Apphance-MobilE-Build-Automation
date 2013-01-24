@@ -227,7 +227,6 @@ class AmebaPluginReferenceBuilder {
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-release')
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-test', AndroidTestProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-apphance', ApphanceProperty.class)
-        addAmebaDocumentation(IOS_TASKS, 'ameba-ios-cedar')
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-fonemonkey', FoneMonkeyProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-framework', IOSFrameworkProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-kif', KifProperty.class)
