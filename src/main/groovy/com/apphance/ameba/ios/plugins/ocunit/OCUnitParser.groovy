@@ -26,7 +26,6 @@ class OCUnitParser {
         lines.each { line -> doMatch(line) }
     }
 
-
     void doMatch(String line) {
         def testStartedMatcher = TEST_STARTED.matcher(line)
         OCUnitTestSuite currentSuite = suiteStack.empty ? null : suiteStack[-1]

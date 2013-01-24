@@ -25,6 +25,7 @@ class IOSUnitTestPlugin implements Plugin<Project> {
     ProjectHelper projectHelper
     IOSProjectConfiguration iosConf
 
+    @Override
     void apply(Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
         use(PropertyCategory) {
@@ -45,16 +46,20 @@ class IOSUnitTestPlugin implements Plugin<Project> {
             def configuration = project.iosUnitTests.configuration
             def target = project.iosUnitTests.target
             logger.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
-            def result = projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(target, configuration) + [
+            def testResults = new File(conf.tmpDirectory, "test-${target}-${configuration}.txt")
+            testResults.createNewFile()
+            projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(target, configuration) + [
                     "-target",
                     target,
                     "-configuration",
                     configuration,
                     "-sdk",
-                    iosConf.simulatorsdk
-            ], failOnError = false)
+                    iosConf.simulatorsdk,
+                    'RUN_UNIT_TEST_WITH_IOS_SIM=YES',
+                    "UNIT_TEST_OUTPUT_FILE=${testResults.canonicalPath}"
+            ], false)
             OCUnitParser parser = new OCUnitParser()
-            parser.parse(result)
+            parser.parse(testResults.text.split('\n') as List)
             File unitTestFile = new File(conf.tmpDirectory, "TEST-all.xml")
             conf.tmpDirectory.mkdirs()
             new XMLJunitExporter(unitTestFile, parser.testSuites).export()
