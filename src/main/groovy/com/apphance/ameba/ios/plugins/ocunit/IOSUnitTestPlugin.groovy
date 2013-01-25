@@ -46,7 +46,9 @@ class IOSUnitTestPlugin implements Plugin<Project> {
             def configuration = project.iosUnitTests.configuration
             def target = project.iosUnitTests.target
             logger.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
+            conf.tmpDirectory.mkdirs()
             def testResults = new File(conf.tmpDirectory, "test-${target}-${configuration}.txt")
+            logger.lifecycle("Trying to create file: ${testResults.canonicalPath}")
             testResults.createNewFile()
             projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(target, configuration) + [
                     "-target",
@@ -61,7 +63,6 @@ class IOSUnitTestPlugin implements Plugin<Project> {
             OCUnitParser parser = new OCUnitParser()
             parser.parse(testResults.text.split('\n') as List)
             File unitTestFile = new File(conf.tmpDirectory, "TEST-all.xml")
-            conf.tmpDirectory.mkdirs()
             new XMLJunitExporter(unitTestFile, parser.testSuites).export()
         }
         task.dependsOn(project.readProjectConfiguration)
