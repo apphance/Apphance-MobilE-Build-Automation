@@ -107,6 +107,10 @@ uploadArchives {
                         id 'wojtek.erbetowski'
                         name 'Wojtek Erbetowski'
                     }
+                    developer {
+                        id 'maciej.opala'
+                        name 'Maciej Opala'
+                    }
                 }
             }
 
