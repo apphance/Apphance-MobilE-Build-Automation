@@ -4,7 +4,6 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
 import com.apphance.ameba.ios.plugins.fonemonkey.FoneMonkeyProperty
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
-import com.apphance.ameba.ios.plugins.kif.KifProperty
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
@@ -27,7 +26,6 @@ class IOSPropertyTest {
             project[IOSProjectProperty.IOS_SDK.propertyName] = "iphoneos"
             project[IOSProjectProperty.IOS_SIMULATOR_SDK.propertyName] = "iphonesimulator"
             project[FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
-            project[KifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
             String s = project.listPropertiesAsString(IOSProjectProperty.class, false)
             assertEquals('''###########################################################
 # iOS properties
@@ -60,7 +58,6 @@ ios.simulator.sdk=iphonesimulator
             project[IOSProjectProperty.IOS_SDK.propertyName] = "iphoneos"
             project[IOSProjectProperty.IOS_SIMULATOR_SDK.propertyName] = "iphonesimulator"
             project[FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
-            project[KifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
             String s = project.listPropertiesAsString(IOSProjectProperty.class, true)
             assertEquals('''###########################################################
 # iOS properties
@@ -83,37 +80,6 @@ ios.mainConfiguration=MainConfiguration
 ios.sdk=iphoneos
 # SDK used to build simulator targets (-sdk option of xcodebuild) [optional] default: <iphonesimulator>
 ios.simulator.sdk=iphonesimulator
-''', s)
-        }
-    }
-
-    @Test
-    void testIOSKIFPropertyNoComments() {
-        use(PropertyCategory) {
-            ProjectBuilder projectBuilder = ProjectBuilder.builder()
-            Project project = projectBuilder.build()
-            project[KifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
-            String s = project.listPropertiesAsString(KifProperty.class, false)
-            assertEquals('''###########################################################
-# iOS KIF properties
-###########################################################
-ios.kif.configuration=Kif
-''', s)
-        }
-    }
-
-    @Test
-    void testIOSKIFPropertyComments() {
-        use(PropertyCategory) {
-            ProjectBuilder projectBuilder = ProjectBuilder.builder()
-            Project project = projectBuilder.build()
-            project[KifProperty.KIF_CONFIGURATION.propertyName] = "Kif"
-            String s = project.listPropertiesAsString(KifProperty.class, true)
-            assertEquals('''###########################################################
-# iOS KIF properties
-###########################################################
-# KIF build configuration [optional] default: <Debug>
-ios.kif.configuration=Kif
 ''', s)
         }
     }

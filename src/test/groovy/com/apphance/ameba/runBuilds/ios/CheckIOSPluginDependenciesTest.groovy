@@ -94,10 +94,4 @@ class CheckIOSPluginDependenciesTest {
         String res = runTests(new File(testProject, 'ios-fonemonkey.gradle'), 'IOSPlugin has not been loaded yet')
         println res
     }
-
-    @Test
-    public void testIosKifPluginDependencies() throws Exception {
-        String res = runTests(new File(testProject, 'ios-kif.gradle'), 'IOSPlugin has not been loaded yet')
-        println res
-    }
 }

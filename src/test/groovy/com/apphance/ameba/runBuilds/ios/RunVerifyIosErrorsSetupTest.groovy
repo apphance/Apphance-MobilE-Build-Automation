@@ -164,12 +164,6 @@ class RunVerifyIosErrorsSetupTest {
     }
 
     @Test
-    void testKIFConfiguration() {
-        runErrorScenario(/^(ios\.kif\.configuration.*)=(.*)$/, '$1=missingconfiguration', 'configuration')
-    }
-
-
-    @Test
     void testMailFrom() {
         runErrorScenario(/^(release\.mail\.from.*)=(.*)$/, '$1=wrongmail@test', 'The email in')
     }

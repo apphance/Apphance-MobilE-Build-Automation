@@ -9,7 +9,6 @@ import com.apphance.ameba.apphance.ApphanceProperty
 import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
 import com.apphance.ameba.ios.plugins.fonemonkey.FoneMonkeyProperty
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
-import com.apphance.ameba.ios.plugins.kif.KifProperty
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty
 import com.apphance.ameba.vcs.plugins.git.GitProperty
 import com.apphance.ameba.vcs.plugins.mercurial.MercurialProperty
@@ -229,7 +228,6 @@ class AmebaPluginReferenceBuilder {
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-apphance', ApphanceProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-fonemonkey', FoneMonkeyProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-framework', IOSFrameworkProperty.class)
-        addAmebaDocumentation(IOS_TASKS, 'ameba-ios-kif', KifProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-ocunit')
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-release')
         generateDocumentation()

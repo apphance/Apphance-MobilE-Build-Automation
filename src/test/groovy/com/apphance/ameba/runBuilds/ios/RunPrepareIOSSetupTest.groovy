@@ -100,10 +100,6 @@ release.mail.from=
 release.mail.to=
 release.mail.flags=qrCode,imageMontage
 ###########################################################
-# iOS KIF properties
-###########################################################
-ios.kif.configuration=Debug
-###########################################################
 # iOS FoneMonkey properties
 ###########################################################
 ios.fonemonkey.configuration=Debug
