@@ -13,5 +13,4 @@ class AmebaCommonBuildTaskGroups {
     static final String AMEBA_ANALYSIS = 'Ameba static code analysis'
     static final String AMEBA_APPHANCE_SERVICE = 'Ameba apphance service'
     static final String AMEBA_VERSION_CONTROL = 'Ameba version control'
-    static final String AMEBA_FONEMONKEY = 'Ameba Fonemonkey'
 }

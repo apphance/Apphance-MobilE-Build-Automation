@@ -100,10 +100,6 @@ release.mail.from=
 release.mail.to=
 release.mail.flags=qrCode,imageMontage
 ###########################################################
-# iOS FoneMonkey properties
-###########################################################
-ios.fonemonkey.configuration=Debug
-###########################################################
 # iOS Framework properties
 ###########################################################
 ios.framework.target=GradleXCode

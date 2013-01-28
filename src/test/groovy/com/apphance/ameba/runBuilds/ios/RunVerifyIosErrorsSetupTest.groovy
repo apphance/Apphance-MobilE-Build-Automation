@@ -139,11 +139,6 @@ class RunVerifyIosErrorsSetupTest {
     }
 
     @Test
-    void testFoneMonkeyConfiguration() {
-        runErrorScenario(/^(ios\.fonemonkey\.configuration.*)=(.*)$/, '$1=missingconfiguration', 'configuration')
-    }
-
-    @Test
     void testFrameworkConfiguration() {
         runErrorScenario(/^(ios\.framework\.configuration.*)=(.*)$/, '$1=missingconfiguration', 'configuration')
     }

@@ -17,5 +17,4 @@ apply plugin: 'ameba-ios-release'
 
 //apply plugin: 'ameba-ios-apphance'
 //apply plugin: 'ameba-ios-ocunit'
-//apply plugin: 'ameba-ios-fonemonkey'
 //apply plugin: 'ameba-ios-framework'

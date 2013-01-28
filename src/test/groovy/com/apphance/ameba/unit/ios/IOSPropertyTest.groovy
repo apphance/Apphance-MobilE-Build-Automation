@@ -2,7 +2,6 @@ package com.apphance.ameba.unit.ios
 
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
-import com.apphance.ameba.ios.plugins.fonemonkey.FoneMonkeyProperty
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -25,7 +24,6 @@ class IOSPropertyTest {
             project[IOSProjectProperty.MAIN_CONFIGURATION.propertyName] = "MainConfiguration"
             project[IOSProjectProperty.IOS_SDK.propertyName] = "iphoneos"
             project[IOSProjectProperty.IOS_SIMULATOR_SDK.propertyName] = "iphonesimulator"
-            project[FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
             String s = project.listPropertiesAsString(IOSProjectProperty.class, false)
             assertEquals('''###########################################################
 # iOS properties
@@ -57,7 +55,6 @@ ios.simulator.sdk=iphonesimulator
             project[IOSProjectProperty.MAIN_CONFIGURATION.propertyName] = "MainConfiguration"
             project[IOSProjectProperty.IOS_SDK.propertyName] = "iphoneos"
             project[IOSProjectProperty.IOS_SIMULATOR_SDK.propertyName] = "iphonesimulator"
-            project[FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
             String s = project.listPropertiesAsString(IOSProjectProperty.class, true)
             assertEquals('''###########################################################
 # iOS properties
@@ -80,38 +77,6 @@ ios.mainConfiguration=MainConfiguration
 ios.sdk=iphoneos
 # SDK used to build simulator targets (-sdk option of xcodebuild) [optional] default: <iphonesimulator>
 ios.simulator.sdk=iphonesimulator
-''', s)
-        }
-    }
-
-    @Test
-    void testFoneMonkeyPropertyNoComments() {
-        use(PropertyCategory) {
-            ProjectBuilder projectBuilder = ProjectBuilder.builder()
-            Project project = projectBuilder.build()
-            project[FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
-            String s = project.listPropertiesAsString(FoneMonkeyProperty.class, false)
-            assertEquals('''###########################################################
-# iOS FoneMonkey properties
-###########################################################
-ios.fonemonkey.configuration=FoneMonkey
-''', s)
-        }
-    }
-
-
-    @Test
-    void testFoneMonkeyPropertyComments() {
-        use(PropertyCategory) {
-            ProjectBuilder projectBuilder = ProjectBuilder.builder()
-            Project project = projectBuilder.build()
-            project[FoneMonkeyProperty.FONE_MONKEY_CONFIGURATION.propertyName] = "FoneMonkey"
-            String s = project.listPropertiesAsString(FoneMonkeyProperty.class, true)
-            assertEquals('''###########################################################
-# iOS FoneMonkey properties
-###########################################################
-# FoneMonkey build configuration [optional] default: <Debug>
-ios.fonemonkey.configuration=FoneMonkey
 ''', s)
         }
     }

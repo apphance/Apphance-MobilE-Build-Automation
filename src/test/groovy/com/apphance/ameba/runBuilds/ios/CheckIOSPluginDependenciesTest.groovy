@@ -88,10 +88,4 @@ class CheckIOSPluginDependenciesTest {
         String res = runTests(new File(testProject, 'ios-ocunit.gradle'), 'IOSPlugin has not been loaded yet')
         println res
     }
-
-    @Test
-    public void testIosFonemonkeyPluginDependencies() throws Exception {
-        String res = runTests(new File(testProject, 'ios-fonemonkey.gradle'), 'IOSPlugin has not been loaded yet')
-        println res
-    }
 }

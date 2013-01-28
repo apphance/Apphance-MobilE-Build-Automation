@@ -40,7 +40,6 @@ class RunShowVerifyIOSSetupTest {
     public void testShowSetup() {
         String res = runTests('showSetup')
         assertTrue(res.contains('# iOS properties'))
-        assertTrue(res.contains('# iOS FoneMonkey properties'))
         assertTrue(res.contains('# iOS Framework properties'))
         assertTrue(res.contains('# Mercurial properties'))
         assertTrue(res.contains('# Release properties'))
@@ -50,7 +49,6 @@ class RunShowVerifyIOSSetupTest {
     public void testVerifySetup() {
         String res = runTests('verifySetup')
         assertTrue(res.contains('GOOD!!! iOS properties'))
-        assertTrue(res.contains('GOOD!!! iOS FoneMonkey properties'))
         assertTrue(res.contains('GOOD!!! iOS Framework properties'))
         assertTrue(res.contains('GOOD!!! Mercurial properties'))
         assertTrue(res.contains('GOOD!!! Release properties'))

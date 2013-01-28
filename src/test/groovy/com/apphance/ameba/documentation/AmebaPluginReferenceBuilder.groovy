@@ -7,7 +7,6 @@ import com.apphance.ameba.android.plugins.jarlibrary.AndroidJarLibraryProperty
 import com.apphance.ameba.android.plugins.test.AndroidTestProperty
 import com.apphance.ameba.apphance.ApphanceProperty
 import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
-import com.apphance.ameba.ios.plugins.fonemonkey.FoneMonkeyProperty
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty
 import com.apphance.ameba.vcs.plugins.git.GitProperty
@@ -226,7 +225,6 @@ class AmebaPluginReferenceBuilder {
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-release')
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-test', AndroidTestProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-apphance', ApphanceProperty.class)
-        addAmebaDocumentation(IOS_TASKS, 'ameba-ios-fonemonkey', FoneMonkeyProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-framework', IOSFrameworkProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-ocunit')
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-release')
