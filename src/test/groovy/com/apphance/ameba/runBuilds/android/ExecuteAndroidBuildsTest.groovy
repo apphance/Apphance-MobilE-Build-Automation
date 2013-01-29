@@ -1,7 +1,6 @@
 package com.apphance.ameba.runBuilds.android
 
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.android.AndroidManifestHelper
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
@@ -19,7 +18,7 @@ class ExecuteAndroidBuildsTest {
     static File testAndroidConventionProject = new File("testProjects/android-convention")
     static File testAndroidWrongConventionProject = new File("testProjects/android-convention-wrong-specs")
     static File testAndroidNoApphanceApplication = new File("testProjects/android-no-apphance-application")
-    static ProjectConnection connection
+    static ProjectConnection testProjectConnection
     static ProjectConnection gradleWithPropertiesConnection
     static ProjectConnection gradleNoVariantsConnection
     static ProjectConnection testAndroidConventionConnection
@@ -28,7 +27,7 @@ class ExecuteAndroidBuildsTest {
 
     @BeforeClass
     static void beforeClass() {
-        connection = newConnector().forProjectDirectory(testProject).connect();
+        testProjectConnection = newConnector().forProjectDirectory(testProject).connect();
         gradleWithPropertiesConnection = newConnector().forProjectDirectory(testProject).connect();
         gradleNoVariantsConnection = newConnector().forProjectDirectory(testNoVariantsProject).connect();
         testAndroidConventionConnection = newConnector().forProjectDirectory(testAndroidConventionProject).connect()
@@ -38,17 +37,20 @@ class ExecuteAndroidBuildsTest {
 
     @AfterClass
     static public void afterClass() {
-        connection.close()
+        testProjectConnection.close()
         gradleWithPropertiesConnection.close()
         gradleNoVariantsConnection.close()
         testAndroidConventionConnection.close()
         testAndroidWrongConventionConnection.close()
     }
 
-    protected void runGradle(String... tasks) {
-        def buildLauncher = connection.newBuild()
+    protected void runGradle(OutputStream output = null, String... tasks) {
+        def buildLauncher = testProjectConnection.newBuild()
         buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
-        buildLauncher.forTasks(tasks).run();
+        if (output)
+            buildLauncher.standardOutput = output
+        buildLauncher.forTasks(tasks).run()
+
     }
 
     protected void runGradleWithProperties(Properties p, ProjectConnection pc = gradleWithPropertiesConnection, String... tasks) {
@@ -369,5 +371,39 @@ class ExecuteAndroidBuildsTest {
         def androidLibsDir = new File("testProjects/tmp-android-no-apphance-application-Debug/libs/")
         assertTrue(androidLibsDir.exists())
         assertTrue(androidLibsDir.list().length == 0)
+    }
+
+    @Test
+    void testGoogleAPITarget() {
+
+        def propsFile = new File(testProject, 'project.properties')
+        def propsOrigFile = new File(testProject.canonicalPath, 'project.properties.orig')
+        try {
+            substituteProperties(propsFile, propsOrigFile)
+            def baos = new ByteArrayOutputStream();
+            runGradle(baos, 'clean', 'buildDebug-test')
+            def res = baos.toString('UTF-8')
+            println res
+            assertTrue(res.contains("add-ons/addon-google_apis-google-8/libs/maps.jar"))
+
+        } finally {
+            propsFile.delete()
+            propsOrigFile.renameTo(propsFile)
+        }
+    }
+
+    private void substituteProperties(propsFile, propsOrigFile) {
+        if (propsOrigFile.exists())
+            propsOrigFile.delete()
+        propsOrigFile << propsFile.text
+        def propsOrig = new Properties()
+        propsFile.withInputStream {
+            propsOrig.load(it)
+        }
+        propsOrig['target'] = 'Google Inc.:Google APIs:8'
+        propsFile.write('')
+        propsOrig.each { k, v ->
+            propsFile.append("$k=$v\n")
+        }
     }
 }
