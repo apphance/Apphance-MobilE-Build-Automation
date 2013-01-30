@@ -297,7 +297,7 @@ class ExecuteAndroidBuildsTest {
     @Test
     void testRunCleanAVD() {
         runGradle('cleanAVD')
-        File avdsDirectory = new File('testProjects/android/avds')
+        File avdsDirectory = new File('testProjects/android/android-basic/avds')
         assertFalse(avdsDirectory.exists())
     }
 
