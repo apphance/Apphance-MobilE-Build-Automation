@@ -72,7 +72,6 @@ class ExecuteIosBuildsTest {
         buildLauncher.forTasks(tasks).run();
     }
 
-
     @Test
     void testCleanCheckTests() {
         runGradleMoreVariants('clean', 'checkTests')
@@ -129,7 +128,8 @@ class ExecuteIosBuildsTest {
     @Test
     void testUpdateVersion() {
         Properties p = new Properties()
-        p.setProperty("version.string", "NEWVERSION")
+        p.setProperty('version.string', 'NEWVERSION')
+        p.setProperty('version.code', '1234')
         File original = new File(testProjectMoreVariants, 'GradleXCodeMoreVariants/GradleXCodeMoreVariants-Info.plist')
         File tmp = new File(testProjectMoreVariants, 'GradleXCodeMoreVariants/GradleXCodeMoreVariants-Info.plist.orig')
         tmp.delete()
@@ -137,10 +137,9 @@ class ExecuteIosBuildsTest {
         try {
             runGradleWithProperties(p, 'updateVersion')
             def newText = new File(original.getAbsolutePath()).text
-            assertTrue(newText.contains('<string>33</string>'))
+            assertTrue(newText.contains('<string>1234</string>'))
             assertTrue(newText.contains('<string>NEWVERSION</string>'))
         } finally {
-            def text = original.text
             original.delete()
             original << tmp.text
         }

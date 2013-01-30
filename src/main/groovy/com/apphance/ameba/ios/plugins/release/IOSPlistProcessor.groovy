@@ -27,7 +27,6 @@ class IOSPlistProcessor {
                 '/plist/dict/key[text()="CFBundleShortVersionString"]').each {
             it.nextSibling.nextSibling.textContent = conf.versionString
         }
-        conf.versionCode += 1
         XPathAPI.selectNodeList(root,
                 '/plist/dict/key[text()="CFBundleVersion"]').each {
             it.nextSibling.nextSibling.textContent = conf.versionCode

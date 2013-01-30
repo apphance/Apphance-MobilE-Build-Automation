@@ -3,8 +3,6 @@ package com.apphance.ameba.plugins.release
 import com.apphance.ameba.*
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
-import com.apphance.ameba.vcs.plugins.git.GitPlugin
-import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
 import groovy.io.FileType
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -26,7 +24,6 @@ class ProjectReleasePlugin implements Plugin<Project> {
 
     void apply(Project project) {
         ProjectHelper.checkAnyPluginIsLoaded(project, this.class, AndroidPlugin.class, IOSPlugin.class)
-        ProjectHelper.checkAnyPluginIsLoaded(project, this.class, MercurialPlugin.class, GitPlugin.class)
         projectHelper = new ProjectHelper()
         conf = PropertyCategory.getProjectConfiguration(project)
         releaseConf = ProjectReleaseCategory.retrieveProjectReleaseData(project)

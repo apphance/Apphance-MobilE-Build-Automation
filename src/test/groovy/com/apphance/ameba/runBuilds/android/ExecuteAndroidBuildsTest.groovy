@@ -167,6 +167,7 @@ class ExecuteAndroidBuildsTest {
         try {
             Properties p = new Properties()
             p.put('version.string', 'TEST_UPDATE')
+            p.put('version.code', 43)
             runGradleWithProperties(p, 'updateProject', 'updateVersion')
             manifestHelper.readVersion(new File("testProjects/android/android-basic"), projectConf)
         } finally {

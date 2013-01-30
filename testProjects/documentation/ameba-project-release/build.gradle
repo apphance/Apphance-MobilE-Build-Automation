@@ -4,6 +4,5 @@ buildscript {
 }
 
 apply plugin: 'ameba-project-configuration'
-apply plugin: 'ameba-git'
 apply plugin: 'ameba-android-build'
 apply plugin: 'ameba-project-release'

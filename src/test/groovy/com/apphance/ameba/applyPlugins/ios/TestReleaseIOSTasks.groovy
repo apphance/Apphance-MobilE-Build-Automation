@@ -4,7 +4,6 @@ import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.ios.plugins.release.IOSReleasePlugin
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin
-import com.apphance.ameba.vcs.plugins.mercurial.MercurialPlugin
 import org.gradle.api.Project
 import org.junit.Test
 
@@ -14,7 +13,6 @@ class TestReleaseIOSTasks extends AbstractBaseIOSTaskTest {
 
     protected Project getProject() {
         Project project = super.getProject()
-        project.project.plugins.apply(MercurialPlugin.class)
         project.project.plugins.apply(IOSPlugin.class)
         project.project.plugins.apply(ProjectReleasePlugin.class)
         project.project.plugins.apply(IOSReleasePlugin.class)
@@ -46,17 +44,14 @@ class TestReleaseIOSTasks extends AbstractBaseIOSTaskTest {
                 'showConventions',
         ], AmebaCommonBuildTaskGroups.AMEBA_SETUP)
         assertEquals([
-                'PrepareMercurialSetupOperation',
                 'PrepareIOSSetupOperation',
                 'PrepareReleaseSetupOperation',
         ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName })
         assertEquals([
-                'VerifyMercurialSetupOperation',
                 'VerifyIOSSetupOperation',
                 'VerifyReleaseSetupOperation',
         ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName })
         assertEquals([
-                'ShowMercurialSetupOperation',
                 'ShowIOSSetupOperation',
                 'ShowReleaseSetupOperation',
         ], project.showSetup.showSetupOperations.collect { it.class.simpleName })

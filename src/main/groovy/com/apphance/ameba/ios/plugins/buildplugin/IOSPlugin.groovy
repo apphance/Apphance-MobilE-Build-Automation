@@ -80,9 +80,6 @@ class IOSPlugin implements Plugin<Project> {
             String distDirName = project.readProperty(IOSProjectProperty.DISTRIBUTION_DIR)
             iosConf.distributionDirectory = distDirName == null ? null : project.file(distDirName)
             iosConf.families = project.readProperty(IOSProjectProperty.IOS_FAMILIES).split(",")*.trim()
-            if (iosConf.plistFile != null) {
-                conf.commitFilesOnVCS << iosConf.plistFile.absolutePath
-            }
         }
     }
 

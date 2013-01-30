@@ -75,19 +75,17 @@ class AndroidManifestHelper {
         }
     }
 
-    void updateVersion(File projectDirectory, ProjectConfiguration conf) {
-        println("${projectDirectory}")
+    void updateVersion(File projectDirectory, Long newVersionCode, String newVersionString) {
         def file = new File(projectDirectory, "AndroidManifest.xml")
         saveOriginalFile(projectDirectory, file)
         def root = getParsedManifest(projectDirectory)
         XPathAPI.selectNodeList(root, '/manifest').each { manifest ->
             manifest.attributes.nodes.each { attribute ->
                 if (attribute.name == 'android:versionCode') {
-                    conf.versionCode += 1
-                    attribute.value = conf.versionCode
+                    attribute.value = newVersionCode
                 }
                 if (attribute.name == 'android:versionName') {
-                    attribute.value = conf.versionString
+                    attribute.value = newVersionString
                 }
             }
         }

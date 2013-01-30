@@ -216,15 +216,16 @@ class IOSReleasePlugin implements Plugin<Project> {
         logger.lifecycle("File index created: ${iosReleaseConf.fileIndexFile}")
     }
 
-    def void prepareUpdateVersionTask(Project project) {
+    void prepareUpdateVersionTask(Project project) {
         def task = project.task('updateVersion')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
         task.description = """Updates version stored in plist file of the project.
-           Numeric version is (incremented), String version is set from version.string property"""
+           Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
         task << {
             use(PropertyCategory) {
                 conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
-                iosPlistProcessor.incrementPlistVersion(project, iosConf, conf)
+                conf.versionCode = project.readPropertyOrEnvironmentVariable('version.code') as Long
+                iosPlistProcessor.incrementPlistVersion(iosConf, conf)
                 logger.lifecycle("New version code: ${conf.versionCode}")
                 logger.lifecycle("Updated version string to ${conf.versionString}")
             }

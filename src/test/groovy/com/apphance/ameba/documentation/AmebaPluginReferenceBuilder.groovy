@@ -9,8 +9,6 @@ import com.apphance.ameba.apphance.ApphanceProperty
 import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkProperty
 import com.apphance.ameba.plugins.release.ProjectReleaseProperty
-import com.apphance.ameba.vcs.plugins.git.GitProperty
-import com.apphance.ameba.vcs.plugins.mercurial.MercurialProperty
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -22,7 +20,6 @@ import org.gradle.tooling.model.GradleProject
 class AmebaPluginReferenceBuilder {
 
     String COMMON_TASKS = "Common tasks"
-    String VCS_TASKS = "VCS tasks"
     String IOS_TASKS = "iOS tasks"
     String ANDROID_TASKS = "Android tasks"
 
@@ -43,11 +40,6 @@ class AmebaPluginReferenceBuilder {
             ':build--',
     ]
 
-    def vcsPath = [
-            ':cleanVCS',
-            ':saveReleaseInfoInVCS'
-    ]
-
     private getProjectConnectionAndModel(File projectDir) {
         ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(projectDir).connect()
         return [connection, connection.getModel(GradleProject.class)]
@@ -61,9 +53,6 @@ class AmebaPluginReferenceBuilder {
 
 
     private boolean shouldTaskBeAdded(PluginGroupDocumentation group, String taskPath) {
-        if (taskPath in vcsPath && group.name == VCS_TASKS) {
-            return true
-        }
         if (taskPath in excludedPath) {
             return false
         }
@@ -214,8 +203,6 @@ class AmebaPluginReferenceBuilder {
 
     public void buildDocumentation() throws Exception {
         addAmebaDocumentation(COMMON_TASKS, 'ameba-project-configuration', null, 'amebaPropertyDefaults')
-        addAmebaDocumentation(VCS_TASKS, 'ameba-git', GitProperty.class)
-        addAmebaDocumentation(VCS_TASKS, 'ameba-mercurial', MercurialProperty.class)
         addAmebaDocumentation(ANDROID_TASKS, 'ameba-android-build', AndroidProjectProperty.class)
         addAmebaDocumentation(IOS_TASKS, 'ameba-ios-build', IOSProjectProperty.class)
         addAmebaDocumentation(COMMON_TASKS, 'ameba-project-release', ProjectReleaseProperty.class)

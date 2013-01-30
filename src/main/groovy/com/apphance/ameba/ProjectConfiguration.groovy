@@ -11,7 +11,6 @@ class ProjectConfiguration {
     Long versionCode = 0
 
     Collection<String> sourceExcludes = []
-    Collection<String> commitFilesOnVCS = []
 
     String getFullVersionString() {
         return "${versionString}_${versionCode}"

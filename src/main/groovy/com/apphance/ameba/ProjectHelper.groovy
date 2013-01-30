@@ -346,18 +346,6 @@ class ProjectHelper {
         }
     }
 
-    public static void checkExactlyOnePluginIsLoaded(Project project, def myPluginClass, def ... pluginClasses) {
-        int count = 0
-        pluginClasses.each {
-            if (project.plugins.collect { plugin -> plugin.class }.contains(it) || it == myPluginClass) {
-                count++
-            }
-        }
-        if (count > 1) {
-            throw new GradleException("There is more than one plugin loaded from the list: ${pluginClasses}, but there should be only one. Please make sure one of them remains")
-        }
-    }
-
     public static List getFilesOrDirectories(Project project, FileType type, Closure filter) {
         List paths = [
                 project.file('bin').absolutePath,
@@ -378,7 +366,6 @@ class ProjectHelper {
         }
         return plistFiles
     }
-
 
     public static List getFiles(Project project, Closure filter) {
         return getFilesOrDirectories(project, FileType.FILES, filter)

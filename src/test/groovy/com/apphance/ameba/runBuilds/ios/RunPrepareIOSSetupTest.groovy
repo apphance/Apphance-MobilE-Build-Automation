@@ -74,10 +74,6 @@ class RunPrepareIOSSetupTest {
 # Or you can re-run the prepareSetup command
 # for guided re-configuration
 ###########################################################
-# Mercurial properties
-###########################################################
-hg.commit.user=
-###########################################################
 # iOS properties
 ###########################################################
 ios.project.directory=GradleXCode.xcodeproj

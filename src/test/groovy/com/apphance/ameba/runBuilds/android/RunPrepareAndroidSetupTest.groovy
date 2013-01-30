@@ -75,10 +75,6 @@ class RunPrepareAndroidSetupTest {
 # Or you can re-run the prepareSetup command
 # for guided re-configuration
 ###########################################################
-# Mercurial properties
-###########################################################
-hg.commit.user=
-###########################################################
 # Android properties
 ###########################################################
 android.mainVariant=market

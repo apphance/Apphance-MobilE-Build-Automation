@@ -61,7 +61,6 @@ class AndroidPlugin implements Plugin<Project> {
         prepareBuildAllTask(project)
         prepareReplacePackageTask(project)
         addAndroidSourceExcludes()
-        addAndroidVCSCommits()
 
         project.prepareSetup.prepareSetupOperations << new PrepareAndroidSetupOperation()
         project.verifySetup.verifySetupOperations << new VerifyAndroidSetupOperation()
@@ -483,10 +482,6 @@ class AndroidPlugin implements Plugin<Project> {
         conf.sourceExcludes << '**/gen/**'
         conf.sourceExcludes << '**/build/*'
         conf.sourceExcludes << '**/local.properties'
-    }
-
-    private addAndroidVCSCommits() {
-        conf.commitFilesOnVCS << 'AndroidManifest.xml'
     }
 
     static public final String DESCRIPTION =

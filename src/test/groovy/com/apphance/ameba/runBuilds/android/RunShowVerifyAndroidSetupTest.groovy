@@ -43,7 +43,6 @@ class RunShowVerifyAndroidSetupTest {
         assertTrue(res.contains('# Android properties'))
         assertTrue(res.contains('# Android jar library properties'))
         assertTrue(res.contains('# Android test properties'))
-        assertTrue(res.contains('# Mercurial properties'))
         assertTrue(res.contains('# Release properties'))
     }
 
@@ -53,7 +52,6 @@ class RunShowVerifyAndroidSetupTest {
         assertTrue(res.contains('GOOD!!! Android properties'))
         assertTrue(res.contains('GOOD!!! Android jar library properties'))
         assertTrue(res.contains('GOOD!!! Android test properties'))
-        assertTrue(res.contains('GOOD!!! Mercurial properties'))
         assertTrue(res.contains('GOOD!!! Release properties'))
     }
 }

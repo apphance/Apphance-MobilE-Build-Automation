@@ -258,11 +258,12 @@ class AndroidReleasePlugin implements Plugin<Project> {
         def task = project.task('updateVersion')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
         task.description = """Updates version stored in manifest file of the project.
-           Numeric version is (incremented), String version is set from version.string property"""
+           Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
         task << {
             use(PropertyCategory) {
                 conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
-                manifestHelper.updateVersion(project.rootDir, conf)
+                conf.versionCode = project.readOptionalPropertyOrEnvironmentVariable('version.code') as Long
+                manifestHelper.updateVersion(project.rootDir, conf.versionCode, conf.versionString)
                 logger.lifecycle("New version code: ${conf.versionCode}")
                 logger.lifecycle("Updated version string to ${conf.versionString}")
                 logger.lifecycle("Configuration : ${conf}")
