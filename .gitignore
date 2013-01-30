@@ -2,7 +2,6 @@ log
 testProjects/android/android-*/build
 testProjects/android/android*/gen
 testProjects/android/android*/avds
-testProjects/android/android*/libs
 testProjects/android/android*/srcTmp
 testProjects/android/android*/subproject/gen
 testProjects/android/android*/subproject/subsubproject/gen
