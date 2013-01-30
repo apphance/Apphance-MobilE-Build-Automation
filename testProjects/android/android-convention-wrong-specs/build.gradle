@@ -1,0 +1,19 @@
+buildscript {
+    amebaProjectPath = file('../../..').absolutePath
+    apply from: "$amebaProjectPath/ameba_in_classpath.gradle"
+}
+
+apply plugin: 'ameba-project-configuration'
+apply plugin: 'ameba-mercurial'
+apply plugin: 'ameba-android-build'
+apply plugin: 'ameba-project-release'
+apply plugin: 'ameba-android-release'
+
+apply plugin: 'ameba-android-analysis'
+apply plugin: 'ameba-android-apphance'
+apply plugin: 'ameba-android-test'
+apply plugin: 'ameba-android-jarlibrary'
+
+androidAnalysis {
+    baseAnalysisConfigUrl = 'https://raw.github.com/apphance/Apphance-MobilE-Build-Automation/better_documentation/testProjects/android-novariants/config/MISSING/'
+}

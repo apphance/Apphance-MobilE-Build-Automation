@@ -1,0 +1,8 @@
+buildscript {
+    amebaProjectPath = file('../../..').absolutePath
+    apply from: "$amebaProjectPath/ameba_in_classpath.gradle"
+}
+
+apply plugin: 'ameba-project-configuration'
+apply plugin: 'ameba-android-build'
+apply plugin: 'ameba-android-test'

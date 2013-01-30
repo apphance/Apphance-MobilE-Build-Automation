@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="2.0.2" sequence="0" timestamp="1359542529219" analysisTimestamp="1359542529245" release="">
+  <Project projectName="">
+    <Jar>/Users/opal/polidea/projects/ameba/testProjects/android/android-convention/bin/classes</Jar>
+    <AuxClasspathEntry>/Users/opal/tools/adt-bundle-mac-x86_64/sdk/platforms/android-7/android.jar</AuxClasspathEntry>
+    <SrcDir>/Users/opal/polidea/projects/ameba/testProjects/android/android-convention/src</SrcDir>
+  </Project>
+  <Errors errors="0" missingClasses="1">
+    <MissingClass>java.rmi.Remote</MissingClass>
+  </Errors>
+  <FindBugsSummary timestamp="Wed, 30 Jan 2013 11:42:09 +0100" total_classes="9" referenced_classes="69" total_bugs="0" total_size="41" num_packages="1" vm_version="23.6-b04" cpu_seconds="6.66" clock_seconds="2.40" peak_mbytes="68.66" alloc_mbytes="1088.00" gc_seconds="0.03">
+    <PackageStats package="com.apphance.amebaTest.android" total_bugs="0" total_types="9" total_size="41">
+      <ClassStats class="com.apphance.amebaTest.android.AnotherActivity" sourceFile="AnotherActivity.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="com.apphance.amebaTest.android.BuildConfig" sourceFile="BuildConfig.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.apphance.amebaTest.android.R" sourceFile="R.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.apphance.amebaTest.android.R$attr" sourceFile="R.java" interface="false" size="3" bugs="0"/>
+      <ClassStats class="com.apphance.amebaTest.android.R$drawable" sourceFile="R.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.apphance.amebaTest.android.R$layout" sourceFile="R.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.apphance.amebaTest.android.R$raw" sourceFile="R.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.apphance.amebaTest.android.R$string" sourceFile="R.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="com.apphance.amebaTest.android.TestActivity" sourceFile="TestActivity.java" interface="false" size="7" bugs="0"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="352" invocations="314" avgMicrosecondsPerInvocation="1122" maxMicrosecondsPerInvocation="30434" standardDeviationMircosecondsPerInvocation="2899"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="151" invocations="69" avgMicrosecondsPerInvocation="2189" maxMicrosecondsPerInvocation="39195" standardDeviationMircosecondsPerInvocation="5493"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="101" invocations="69" avgMicrosecondsPerInvocation="1466" maxMicrosecondsPerInvocation="19390" standardDeviationMircosecondsPerInvocation="3333"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="99" invocations="11" avgMicrosecondsPerInvocation="9062" maxMicrosecondsPerInvocation="98039" standardDeviationMircosecondsPerInvocation="28137"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="92" invocations="326" avgMicrosecondsPerInvocation="283" maxMicrosecondsPerInvocation="1451" standardDeviationMircosecondsPerInvocation="142"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="64" invocations="86" avgMicrosecondsPerInvocation="746" maxMicrosecondsPerInvocation="21763" standardDeviationMircosecondsPerInvocation="2554"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="60" invocations="69" avgMicrosecondsPerInvocation="872" maxMicrosecondsPerInvocation="12028" standardDeviationMircosecondsPerInvocation="2132"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="57" invocations="69" avgMicrosecondsPerInvocation="832" maxMicrosecondsPerInvocation="14818" standardDeviationMircosecondsPerInvocation="2057"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="49" invocations="258" avgMicrosecondsPerInvocation="190" maxMicrosecondsPerInvocation="3245" standardDeviationMircosecondsPerInvocation="338"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="43" invocations="69" avgMicrosecondsPerInvocation="633" maxMicrosecondsPerInvocation="10234" standardDeviationMircosecondsPerInvocation="1534"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="42" invocations="69" avgMicrosecondsPerInvocation="617" maxMicrosecondsPerInvocation="11668" standardDeviationMircosecondsPerInvocation="1614"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="37" invocations="11" avgMicrosecondsPerInvocation="3449" maxMicrosecondsPerInvocation="32729" standardDeviationMircosecondsPerInvocation="9260"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="29" invocations="69" avgMicrosecondsPerInvocation="421" maxMicrosecondsPerInvocation="3638" standardDeviationMircosecondsPerInvocation="783"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>

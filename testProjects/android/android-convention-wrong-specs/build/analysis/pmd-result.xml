@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd version="4.2.6" timestamp="2013-01-30T11:40:08.422">
+<file name="/Users/opal/polidea/projects/ameba/testProjects/android/android-convention-wrong-specs/src/com/apphance/amebaTest/android/AnotherActivity.java">
+<violation beginline="1" endline="1" begincolumn="9" endcolumn="38" rule="PackageCase" ruleset="Naming Rules" package="com.apphance.amebaTest.android" externalInfoUrl="http://pmd.sourceforge.net/rules/naming.html#PackageCase" priority="3">
+Package name contains upper case characters
+</violation>
+<violation beginline="11" endline="11" begincolumn="26" endcolumn="50" rule="MethodArgumentCouldBeFinal" ruleset="Optimization Rules" package="com.apphance.amebaTest.android" class="AnotherActivity" method="onCreate" externalInfoUrl="http://pmd.sourceforge.net/rules/optimizations.html#MethodArgumentCouldBeFinal" priority="3">
+Parameter 'savedInstanceState' is not assigned and could be declared final
+</violation>
+</file>
+<file name="/Users/opal/polidea/projects/ameba/testProjects/android/android-convention-wrong-specs/src/com/apphance/amebaTest/android/TestActivity.java">
+<violation beginline="1" endline="1" begincolumn="9" endcolumn="38" rule="PackageCase" ruleset="Naming Rules" package="com.apphance.amebaTest.android" externalInfoUrl="http://pmd.sourceforge.net/rules/naming.html#PackageCase" priority="3">
+Package name contains upper case characters
+</violation>
+<violation beginline="14" endline="14" begincolumn="26" endcolumn="50" rule="MethodArgumentCouldBeFinal" ruleset="Optimization Rules" package="com.apphance.amebaTest.android" class="TestActivity" method="onCreate" externalInfoUrl="http://pmd.sourceforge.net/rules/optimizations.html#MethodArgumentCouldBeFinal" priority="3">
+Parameter 'savedInstanceState' is not assigned and could be declared final
+</violation>
+</file>
+</pmd>
