@@ -1,4 +1,5 @@
 log
+testProjects/android/android-*/build
 testProjects/android/android*/gen
 testProjects/android/android*/avds
 testProjects/android/android*/libs
