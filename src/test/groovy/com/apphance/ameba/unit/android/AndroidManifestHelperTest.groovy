@@ -19,7 +19,7 @@ class AndroidManifestHelperTest {
         this.tmpDir = new File("tmp")
         tmpDir.mkdir()
         def androidManifest = new File(tmpDir, "AndroidManifest.xml")
-        def originalAndroidManifest = new File("testProjects/android/AndroidManifest.xml")
+        def originalAndroidManifest = new File("testProjects/android/android-basic/AndroidManifest.xml")
         androidManifest.delete()
         androidManifest << originalAndroidManifest.text
     }

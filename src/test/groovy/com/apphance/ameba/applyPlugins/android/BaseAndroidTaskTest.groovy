@@ -10,9 +10,9 @@ abstract class BaseAndroidTaskTest extends BaseTaskTest {
     protected Project getProject(boolean variants = true) {
         ProjectBuilder projectBuilder = ProjectBuilder.builder()
         if (variants) {
-            projectBuilder.withProjectDir(new File("testProjects/android"))
+            projectBuilder.withProjectDir(new File("testProjects/android/android-basic"))
         } else {
-            projectBuilder.withProjectDir(new File("testProjects/android-novariants"))
+            projectBuilder.withProjectDir(new File("testProjects/android/android-novariants"))
         }
         Project project = projectBuilder.build()
         project.project.plugins.apply(ProjectConfigurationPlugin.class)

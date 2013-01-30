@@ -9,6 +9,8 @@ import org.gradle.api.Project
 import org.junit.Test
 
 class TestReleaseAndroidTasks extends BaseAndroidTaskTest {
+
+    @Override
     protected Project getProject() {
         Project project = super.getProject(false)
         project.project.plugins.apply(MercurialPlugin.class)

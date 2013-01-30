@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue
 
 class ApphanceOTFTest {
 
-    static File testNovariantsProject = new File("testProjects/android-novariants")
+    static File testNovariantsProject = new File("testProjects/android/android-novariants")
     static ProjectConnection connection
 
     @BeforeClass
@@ -44,5 +44,6 @@ class ApphanceOTFTest {
 
         mainActivityFile.delete()
         mainActivityFile << tmpCopy.getText()
+        tmpCopy.delete()
     }
 }

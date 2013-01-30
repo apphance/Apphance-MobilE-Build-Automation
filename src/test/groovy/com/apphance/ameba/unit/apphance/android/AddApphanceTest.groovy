@@ -8,7 +8,7 @@ import static org.junit.Assert.*
 
 class AddApphanceTest {
 
-    File noApphanceNoApplicationDirectory = new File('testProjects/android-no-apphance-no-application')
+    File noApphanceNoApplicationDirectory = new File('testProjects/android/android-no-apphance-no-application')
     File tmpDir = new File('tmp/testApphance')
 
     private def deleteRecursive(File f) {
@@ -48,6 +48,6 @@ class AddApphanceTest {
     @Test
     void checkApphanceInstrumentation() {
         AndroidManifestHelper helper = new AndroidManifestHelper()
-        assertTrue(helper.isApphanceInstrumentationPresent(new File('testProjects/android/')))
+        assertTrue(helper.isApphanceInstrumentationPresent(new File('testProjects/android/android-basic')))
     }
 }

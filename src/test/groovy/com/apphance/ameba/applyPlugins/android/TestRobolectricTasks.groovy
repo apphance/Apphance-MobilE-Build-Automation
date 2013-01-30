@@ -9,7 +9,8 @@ import org.junit.Before
 import org.junit.Test
 
 class TestRobolectricTasks {
-    private static File conventionsBase = new File('testProjects/android-robolectric-test');
+
+    private static File conventionsBase = new File('testProjects/android/android-robolectric-test');
     private static File roboPath = new File(conventionsBase.path + '/test/robolectric')
 
     private ProjectConnection getProjectConnection(File baseFolder, String dirName) {

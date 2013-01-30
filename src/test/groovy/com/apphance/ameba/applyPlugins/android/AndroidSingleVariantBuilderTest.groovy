@@ -35,8 +35,8 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
         AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "test", null)
         assertEquals('test', ai.variant)
         assertEquals('Debug', ai.debugRelease)
-        assertEquals(new File("testProjects/tmp-android-test/bin").absolutePath, ai.buildDirectory.absolutePath)
-        assertEquals(new File("testProjects/tmp-android-test/bin/TestAndroidProject-debug.apk").absolutePath, ai.originalFile.absolutePath)
+        assertEquals(new File("testProjects/android/tmp-android-basic-test/bin").absolutePath, ai.buildDirectory.absolutePath)
+        assertEquals(new File("testProjects/android/tmp-android-basic-test/bin/TestAndroidProject-debug.apk").absolutePath, ai.originalFile.absolutePath)
         assertEquals('TestAndroidProject-debug-test-1.0.1_42', ai.fullReleaseName)
         assertEquals('TestAndroidProject-debug-test-1.0.1_42', ai.filePrefix)
     }
@@ -47,8 +47,8 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
         AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "market", null)
         assertEquals('market', ai.variant)
         assertEquals('Release', ai.debugRelease)
-        assertEquals(new File("testProjects/tmp-android-market/bin").absolutePath, ai.buildDirectory.absolutePath)
-        assertEquals(new File("testProjects/tmp-android-market/bin/TestAndroidProject-release.apk").absolutePath, ai.originalFile.absolutePath)
+        assertEquals(new File("testProjects/android/tmp-android-basic-market/bin").absolutePath, ai.buildDirectory.absolutePath)
+        assertEquals(new File("testProjects/android/tmp-android-basic-market/bin/TestAndroidProject-release.apk").absolutePath, ai.originalFile.absolutePath)
         assertEquals('TestAndroidProject-release-market-1.0.1_42', ai.fullReleaseName)
         assertEquals('TestAndroidProject-release-market-1.0.1_42', ai.filePrefix)
     }
@@ -59,8 +59,8 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
         AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "Debug", "Debug")
         assertEquals('Debug', ai.variant)
         assertEquals('Debug', ai.debugRelease)
-        assertEquals(new File("testProjects/tmp-android-novariants-Debug/bin").absolutePath, ai.buildDirectory.absolutePath)
-        assertEquals(new File("testProjects/tmp-android-novariants-Debug/bin/TestAndroidProject-debug.apk").absolutePath, ai.originalFile.absolutePath)
+        assertEquals(new File("testProjects/android/tmp-android-novariants-Debug/bin").absolutePath, ai.buildDirectory.absolutePath)
+        assertEquals(new File("testProjects/android/tmp-android-novariants-Debug/bin/TestAndroidProject-debug.apk").absolutePath, ai.originalFile.absolutePath)
         assertEquals('TestAndroidProject-debug-Debug-1.0.1_42', ai.fullReleaseName)
         assertEquals('TestAndroidProject-debug-Debug-1.0.1_42', ai.filePrefix)
     }
@@ -71,8 +71,8 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
         AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "Release", "Release")
         assertEquals('Release', ai.variant)
         assertEquals('Release', ai.debugRelease)
-        assertEquals(new File("testProjects/tmp-android-novariants-Release/bin").absolutePath, ai.buildDirectory.absolutePath)
-        assertEquals(new File("testProjects/tmp-android-novariants-Release/bin/TestAndroidProject-release.apk").absolutePath, ai.originalFile.absolutePath)
+        assertEquals(new File("testProjects/android/tmp-android-novariants-Release/bin").absolutePath, ai.buildDirectory.absolutePath)
+        assertEquals(new File("testProjects/android/tmp-android-novariants-Release/bin/TestAndroidProject-release.apk").absolutePath, ai.originalFile.absolutePath)
         assertEquals('TestAndroidProject-release-Release-1.0.1_42', ai.fullReleaseName)
         assertEquals('TestAndroidProject-release-Release-1.0.1_42', ai.filePrefix)
     }

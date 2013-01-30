@@ -13,11 +13,11 @@ import static org.junit.Assert.*
 
 class ExecuteAndroidBuildsTest {
 
-    static File testProject = new File("testProjects/android")
-    static File testNoVariantsProject = new File("testProjects/android-novariants")
-    static File testAndroidConventionProject = new File("testProjects/android-convention")
-    static File testAndroidWrongConventionProject = new File("testProjects/android-convention-wrong-specs")
-    static File testAndroidNoApphanceApplication = new File("testProjects/android-no-apphance-application")
+    static File testProject = new File("testProjects/android/android-basic")
+    static File testNoVariantsProject = new File("testProjects/android/android-novariants")
+    static File testAndroidConventionProject = new File("testProjects/android/android-convention")
+    static File testAndroidWrongConventionProject = new File("testProjects/android/android-convention-wrong-specs")
+    static File testAndroidNoApphanceApplication = new File("testProjects/android/android-no-apphance-application")
     static ProjectConnection testProjectConnection
     static ProjectConnection gradleWithPropertiesConnection
     static ProjectConnection gradleNoVariantsConnection
@@ -168,9 +168,9 @@ class ExecuteAndroidBuildsTest {
             Properties p = new Properties()
             p.put('version.string', 'TEST_UPDATE')
             runGradleWithProperties(p, 'updateProject', 'updateVersion')
-            manifestHelper.readVersion(new File("testProjects/android"), projectConf)
+            manifestHelper.readVersion(new File("testProjects/android/android-basic"), projectConf)
         } finally {
-            manifestHelper.restoreOriginalManifest(new File("testProjects/android"))
+            manifestHelper.restoreOriginalManifest(new File("testProjects/android/android-basic"))
         }
         assertEquals(43, projectConf.versionCode)
         assertEquals('TEST_UPDATE', projectConf.versionString)
@@ -243,7 +243,6 @@ class ExecuteAndroidBuildsTest {
         assertConfigSameAsBuild(testAndroidWrongConventionProject, "pmd-rules.xml")
     }
 
-
     @Test
     void testAnalysisAfterClean() {
         runGradle('clean', 'updateProject', 'analysis')
@@ -282,7 +281,7 @@ class ExecuteAndroidBuildsTest {
     @Test
     void testBuildDocumentationZip() {
         runGradle('buildDocumentationZip')
-        File file = new File('testProjects/android/tmp/TestAndroidProject-1.0.1-SNAPSHOT_42-doc.zip')
+        File file = new File('testProjects/android/android-basic/tmp/TestAndroidProject-1.0.1-SNAPSHOT_42-doc.zip')
         assertTrue(file.exists())
         assertTrue(file.size() > 30000)
     }
@@ -290,7 +289,7 @@ class ExecuteAndroidBuildsTest {
     @Test
     void testBuildSourcesZip() {
         runGradle('buildSourcesZip')
-        File file = new File('testProjects/android/tmp/TestAndroidProject-1.0.1-SNAPSHOT_42-src.zip')
+        File file = new File('testProjects/android/android-basic/tmp/TestAndroidProject-1.0.1-SNAPSHOT_42-src.zip')
         assertTrue(file.exists())
         assertTrue(file.size() > 30000)
     }
@@ -311,7 +310,7 @@ class ExecuteAndroidBuildsTest {
                 'snapshots.img',
                 'userdata.img'
         ]
-        File avdsDirectory = new File('testProjects/android/avds')
+        File avdsDirectory = new File('testProjects/android/android-basic/avds')
         assertTrue(avdsDirectory.exists())
         files.each {
             assertTrue(it, new File(avdsDirectory, it).exists())
@@ -329,7 +328,7 @@ class ExecuteAndroidBuildsTest {
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
         }
-        def androidLib = new File("testProjects/tmp-android-no-apphance-application-Debug/libs/android.pre-production-1.8.1.jar")
+        def androidLib = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/android.pre-production-1.8.1.jar")
         assertTrue(androidLib.exists())
         assertEquals('android.pre-production-1.8.1.jar', androidLib.name)
     }
@@ -346,7 +345,7 @@ class ExecuteAndroidBuildsTest {
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
         }
-        def androidLib = new File("testProjects/tmp-android-no-apphance-application-Debug/libs/android.production-1.8.jar")
+        def androidLib = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/android.production-1.8.jar")
         assertTrue(androidLib.exists())
         assertEquals('android.production-1.8.jar', androidLib.name)
     }
@@ -368,7 +367,7 @@ class ExecuteAndroidBuildsTest {
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
         }
-        def androidLibsDir = new File("testProjects/tmp-android-no-apphance-application-Debug/libs/")
+        def androidLibsDir = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/")
         assertTrue(androidLibsDir.exists())
         assertTrue(androidLibsDir.list().length == 0)
     }

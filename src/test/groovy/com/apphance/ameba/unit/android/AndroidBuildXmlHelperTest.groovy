@@ -10,7 +10,7 @@ class AndroidBuildXmlHelperTest {
     @Test
     void testReadNameFromBuildXml() {
         AndroidBuildXmlHelper helper = new AndroidBuildXmlHelper()
-        assertEquals('TestAndroidProject', helper.readProjectName(new File('testProjects/android')))
+        assertEquals('TestAndroidProject', helper.readProjectName(new File('testProjects/android/android-basic')))
     }
 
     @Test
@@ -19,7 +19,7 @@ class AndroidBuildXmlHelperTest {
         File tmpDir = new File("tmp")
         buildXml.delete()
         tmpDir.mkdirs()
-        buildXml << new File("testProjects/android/build.xml").text
+        buildXml << new File("testProjects/android/android-basic/build.xml").text
         AndroidBuildXmlHelper helper = new AndroidBuildXmlHelper()
         assertEquals('TestAndroidProject', helper.readProjectName(new File('tmp')))
         helper.replaceProjectName(new File('tmp'), "NewName")

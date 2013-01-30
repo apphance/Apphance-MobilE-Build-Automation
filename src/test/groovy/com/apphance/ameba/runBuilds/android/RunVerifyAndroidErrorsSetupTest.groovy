@@ -11,7 +11,7 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class RunVerifyAndroidErrorsSetupTest {
-    static File testProject = new File("testProjects/android")
+    static File testProject = new File("testProjects/android/android-basic")
     static ProjectConnection connection
 
     File gradleProperties = new File(testProject, "gradle.properties")

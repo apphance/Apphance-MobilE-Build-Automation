@@ -12,11 +12,11 @@ import static org.junit.Assert.assertTrue
 
 class ExecuteApphanceBuildsTest {
 
-    static File tApplicationProject = new File("testProjects/android-no-apphance-application")
-    static File tNoApplicationProject = new File("testProjects/android-no-apphance-no-application")
-    static File tApplicationProjectNoOnCreate = new File("testProjects/android-no-apphance-application-nooncreate")
-    static File tNoApplicationProjectNoOnCreate = new File("testProjects/android-no-apphance-no-application-nooncreate")
-    static File tNoApplicationProjectDifferentFormatting = new File("testProjects/android-no-apphance-no-application-different-formatting")
+    static File tApplicationProject = new File("testProjects/android/android-no-apphance-application")
+    static File tNoApplicationProject = new File("testProjects/android/android-no-apphance-no-application")
+    static File tApplicationProjectNoOnCreate = new File("testProjects/android/android-no-apphance-application-nooncreate")
+    static File tNoApplicationProjectNoOnCreate = new File("testProjects/android/android-no-apphance-no-application-nooncreate")
+    static File tNoApplicationProjectDifferentFormatting = new File("testProjects/android/android-no-apphance-no-application-different-formatting")
     static ProjectConnection tApplication
     static ProjectConnection tNoApplication
     static ProjectConnection tNoApplicationDifferentFormatting

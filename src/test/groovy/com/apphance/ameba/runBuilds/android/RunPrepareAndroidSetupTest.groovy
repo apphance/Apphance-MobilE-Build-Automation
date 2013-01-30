@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue;
 
 class RunPrepareAndroidSetupTest {
-    static File testProject = new File("testProjects/android")
+    static File testProject = new File("testProjects/android/android-basic")
     static File gradleProperties = new File(testProject, "gradle.properties")
     static File gradlePropertiesOrig = new File(testProject, "gradle.properties.orig")
     static ProjectConnection connection

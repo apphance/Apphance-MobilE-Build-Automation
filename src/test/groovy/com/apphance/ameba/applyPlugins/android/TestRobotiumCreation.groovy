@@ -9,7 +9,8 @@ import org.junit.Before
 import org.junit.Test
 
 class TestRobotiumCreation {
-    private static File conventionsBase = new File("testProjects/android-robotium-create");
+
+    private static File conventionsBase = new File("testProjects/android/android-robotium-create");
     private static File roboPath = new File(conventionsBase.path + '/test/android')
 
     private ProjectConnection getProjectConnection(File baseFolder, String dirName) {

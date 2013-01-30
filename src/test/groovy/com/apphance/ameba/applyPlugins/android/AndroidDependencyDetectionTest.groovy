@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNotNull;
 
 class AndroidDependencyDetectionTest extends BaseAndroidTaskTest {
 
+    @Override
     protected Project getProject() {
         Project project = super.getProject()
         project.project.plugins.apply(AndroidPlugin.class)
@@ -25,7 +26,7 @@ class AndroidDependencyDetectionTest extends BaseAndroidTaskTest {
         AndroidProjectConfiguration androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         if (androidConf.linkedLibraryJars.empty) {
             ProjectHelper projectHelper = new ProjectHelper()
-            projectHelper.executeCommand(project, new File("testProjects/android"), ['ant', 'debug'])
+            projectHelper.executeCommand(project, new File("testProjects/android/android-basic"), ['ant', 'debug'])
             project = getProject()
             androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         }

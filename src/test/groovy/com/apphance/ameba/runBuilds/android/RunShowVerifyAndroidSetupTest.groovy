@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue
 
 
 class RunShowVerifyAndroidSetupTest {
-    static File testIosProject = new File("testProjects/android")
+    static File testIosProject = new File("testProjects/android/android-basic")
     static ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(testIosProject).connect();
 
     @BeforeClass

@@ -7,6 +7,8 @@ import org.gradle.api.Project
 import org.junit.Test
 
 class TestApphanceAndroidTasks extends BaseAndroidTaskTest {
+
+    @Override
     protected Project getProject() {
         Project project = super.getProject(false)
         project.project.plugins.apply(AndroidPlugin.class)

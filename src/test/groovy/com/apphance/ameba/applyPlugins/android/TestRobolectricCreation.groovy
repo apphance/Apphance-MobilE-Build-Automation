@@ -10,7 +10,7 @@ import org.junit.Test
 import static org.junit.Assert.assertEquals
 
 class TestRobolectricCreation {
-    private static File conventionsBase = new File("testProjects/android-robolectric-create");
+    private static File conventionsBase = new File("testProjects/android/android-robolectric-create");
     private static File roboPath = new File(conventionsBase.path + '/test/robolectric')
 
     private ProjectConnection getProjectConnection(File baseFolder, String dirName) {

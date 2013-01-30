@@ -8,6 +8,7 @@ import org.junit.Test
 
 class AndroidJarLibraryTest extends BaseAndroidTaskTest {
 
+    @Override
     protected Project getProject() {
         Project project = super.getProject()
         project.project.plugins.apply(AndroidPlugin.class)
