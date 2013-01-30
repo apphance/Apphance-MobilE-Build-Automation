@@ -4,8 +4,6 @@ import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidEnvironment
-import com.apphance.ameba.ios.IOSBuilderInfo
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser
@@ -23,6 +21,8 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import static com.apphance.ameba.util.FileDownloader.downloadFile
+
 /**
  * Plugin for releasing iOS build.
  *
@@ -38,6 +38,7 @@ class IOSReleasePlugin implements Plugin<Project> {
     IOSReleaseConfiguration iosReleaseConf
     IOSPlistProcessor iosPlistProcessor = new IOSPlistProcessor()
 
+    @Override
     def void apply(Project project) {
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class, ProjectReleasePlugin.class)
         this.projectHelper = new ProjectHelper();
@@ -52,11 +53,6 @@ class IOSReleasePlugin implements Plugin<Project> {
         IOSSingleVariantBuilder.buildListeners << new IOSReleaseListener(project, project.ant)
     }
 
-    String getFolderPrefix(IOSBuilderInfo bi) {
-        return "${releaseConf.projectDirectoryName}/${conf.fullVersionString}/${bi.target}/${bi.configuration}"
-    }
-
-
     def void prepareBuildDocumentationZipTask(Project project) {
         def task = project.task('buildDocumentationZip')
         task.description = "Builds documentation .zip file."
@@ -66,8 +62,6 @@ class IOSReleasePlugin implements Plugin<Project> {
             destZip.mkdirs()
             destZip.delete()
             throw new GradleException("Documentation not yet implemented!")
-            // !! prepare documentation using doxygen
-            // ant.zip(destfile: destZip ) { fileset(dir: documentationDir) }
         }
     }
 
@@ -75,7 +69,6 @@ class IOSReleasePlugin implements Plugin<Project> {
         def task = project.task('prepareAvailableArtifactsInfo')
         task.description = "Prepares information about available artifacts for mail message to include"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        AndroidEnvironment androidEnvironment = new AndroidEnvironment(project)
         task << {
             def targets = iosConf.targets
             def configurations = iosConf.configurations
@@ -102,9 +95,9 @@ class IOSReleasePlugin implements Plugin<Project> {
                 String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
                 prepareFileIndexArtifact(otaFolderPrefix)
                 preparePlainFileIndexArtifact(otaFolderPrefix)
-                prepareOtaIndexFile(project, targets, configurations, ant)
-                prepareFileIndexFile(project, targets, configurations, udids)
-                preparePlainFileIndexFile(project, targets, configurations)
+                prepareOtaIndexFile(targets, configurations, ant)
+                prepareFileIndexFile(targets, configurations, udids)
+                preparePlainFileIndexFile(targets, configurations)
             } else {
                 logger.lifecycle("Skipping building artifacts -> the build is not versioned")
             }
@@ -190,8 +183,7 @@ class IOSReleasePlugin implements Plugin<Project> {
         iosReleaseConf.plainFileIndexFile = plainFileIndexFile
     }
 
-    private void prepareFileIndexFile(Project project,
-                                      Collection<String> targets, Collection<String> configurations, def udids) {
+    private void prepareFileIndexFile(Collection<String> targets, Collection<String> configurations, def udids) {
         URL fileIndexTemplate = this.class.getResource("file_index.html")
         ResourceBundle rb = ResourceBundle.getBundle(\
                 this.class.package.name + ".file_index",
@@ -233,8 +225,7 @@ class IOSReleasePlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration)
     }
 
-    private void preparePlainFileIndexFile(Project project,
-                                           Collection<String> targets, Collection<String> configurations) {
+    private void preparePlainFileIndexFile(Collection<String> targets, Collection<String> configurations) {
         URL plainFileIndexTemplate = this.class.getResource("plain_file_index.html")
         ResourceBundle rb = ResourceBundle.getBundle(\
                 this.class.package.name + ".plain_file_index",
@@ -258,7 +249,7 @@ class IOSReleasePlugin implements Plugin<Project> {
         logger.lifecycle("Plain file index created: ${iosReleaseConf.plainFileIndexFile}")
     }
 
-    private void prepareOtaIndexFile(Project project, Collection<String> targets, Collection<String> configurations, AntBuilder ant) {
+    private void prepareOtaIndexFile(Collection<String> targets, Collection<String> configurations, AntBuilder ant) {
         String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
         AmebaArtifact otaIndexFile = new AmebaArtifact(
                 name: "The ota index file: ${conf.projectName}",
@@ -310,21 +301,13 @@ class IOSReleasePlugin implements Plugin<Project> {
         ant.copy(file: releaseConf.iconFile, tofile: new File(otaIndexFile.location.parentFile, releaseConf.iconFile.name))
         String urlEncoded = URLEncoder.encode(otaIndexFile.url.toString(), "utf-8")
         File outputFile = new File(releaseConf.targetDirectory, "qrcode-${conf.projectName}-${conf.fullVersionString}.png")
-        downloadFile(project, new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), outputFile)
+        downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), outputFile)
         AmebaArtifact qrCodeArtifact = new AmebaArtifact(
                 name: "QR Code",
                 url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName}-${conf.fullVersionString}.png"),
                 location: outputFile)
         releaseConf.qrCodeFile = qrCodeArtifact
         logger.lifecycle("QRCode created: ${qrCodeArtifact.location}")
-    }
-
-    void downloadFile(Project project, URL url, File file) {
-        logger.info("Downloading file from ${url} to ${file}")
-        def stream = new FileOutputStream(file)
-        def out = new BufferedOutputStream(stream)
-        out << url.openStream()
-        out.close()
     }
 
     static public final String DESCRIPTION =

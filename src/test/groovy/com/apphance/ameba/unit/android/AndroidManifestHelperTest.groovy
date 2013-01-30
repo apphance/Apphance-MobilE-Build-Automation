@@ -54,7 +54,6 @@ class AndroidManifestHelperTest {
 
     @Test
     void testRemoveApphanceOnlyAndRestore() {
-        ProjectConfiguration projectConfiguration = new ProjectConfiguration()
         manifestHelper.restoreOriginalManifest(tmpDir)
         def file = new File(tmpDir, "AndroidManifest.xml")
         String originalText = file.text

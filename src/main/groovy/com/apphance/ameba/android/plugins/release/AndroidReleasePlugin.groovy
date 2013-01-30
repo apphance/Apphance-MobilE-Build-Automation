@@ -16,6 +16,8 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import static com.apphance.ameba.util.FileDownloader.downloadFile
+
 /**
  * Plugin that provides release functionality for android.
  *
@@ -33,6 +35,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
     AndroidManifestHelper manifestHelper
     AndroidEnvironment androidEnvironment
 
+    @Override
     public void apply(Project project) {
         androidEnvironment = new AndroidEnvironment(project)
         ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class, ProjectReleasePlugin.class)
@@ -245,7 +248,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
                 releaseConf.iconFile.name))
         String urlEncoded = URLEncoder.encode(otaIndexFile.url.toString(), "utf-8")
         File outputFile = new File(releaseConf.targetDirectory, "qrcode-${conf.projectName}-${conf.fullVersionString}.png")
-        downloadFile(project, new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), outputFile)
+        downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), outputFile)
         AmebaArtifact qrCodeArtifact = new AmebaArtifact(
                 name: "QR Code",
                 url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName}-${conf.fullVersionString}.png"),
@@ -270,15 +273,6 @@ class AndroidReleasePlugin implements Plugin<Project> {
             }
         }
         task.dependsOn(project.readAndroidProjectConfiguration)
-    }
-
-
-    void downloadFile(Project project, URL url, File file) {
-        logger.info("Downloading file from ${url} to ${file}")
-        def stream = new FileOutputStream(file)
-        def out = new BufferedOutputStream(stream)
-        out << url.openStream()
-        out.close()
     }
 
     static public final String DESCRIPTION =

@@ -4,9 +4,9 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.XMLBomAwareFileReader
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.sun.org.apache.xpath.internal.XPathAPI
-import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.w3c.dom.Element
 
 /**
  * Manipulation of .plist file.
@@ -16,13 +16,13 @@ class IOSPlistProcessor {
 
     static Logger logger = Logging.getLogger(IOSReleasePlugin.class)
 
-    public org.w3c.dom.Element getParsedPlist(Project project, IOSProjectConfiguration iosConf) {
+    private Element getParsedPlist(IOSProjectConfiguration iosConf) {
         logger.debug("Reading file " + iosConf.plistFile)
         return new XMLBomAwareFileReader().readXMLFileIncludingBom(iosConf.plistFile)
     }
 
-    public void incrementPlistVersion(Project project, IOSProjectConfiguration iosConf, ProjectConfiguration conf) {
-        def root = getParsedPlist(project, iosConf)
+    public void incrementPlistVersion(IOSProjectConfiguration iosConf, ProjectConfiguration conf) {
+        def root = getParsedPlist(iosConf)
         XPathAPI.selectNodeList(root,
                 '/plist/dict/key[text()="CFBundleShortVersionString"]').each {
             it.nextSibling.nextSibling.textContent = conf.versionString
