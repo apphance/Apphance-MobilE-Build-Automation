@@ -7,6 +7,10 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import static com.apphance.ameba.ProjectHelper.MAX_RECURSION_LEVEL
+import static groovy.io.FileType.DIRECTORIES
+import static groovy.io.FileType.FILES
+
 /**
  * System output that also writes to file.
  */
@@ -135,7 +139,7 @@ class ProjectHelper {
 
     void findAllPackages(String currentPackage, File directory, currentPackageList) {
         boolean empty = true
-        directory.eachFile(FileType.FILES, { empty = false })
+        directory.eachFile(FILES, { empty = false })
         if (!empty) {
             currentPackageList << currentPackage
         }
@@ -232,11 +236,6 @@ class ProjectHelper {
         }
     }
 
-    Process executeCommandInBackground(Project project, File outErrFile, command, String[] envp = null, input = null) {
-        def runDirectory = new File("${project.rootDir}")
-        return executeCommandInBackground(project, runDirectory, outErrFile, command, envp, input)
-    }
-
     Process executeCommandInBackground(File runDirectory, File outErrFile, command, String[] envp = null, input = null) {
         def commandToDisplay = getCommandToDisplay(command)
         logger.lifecycle("Executing command:\n${commandToDisplay}\nin ${runDirectory} in background")
@@ -316,7 +315,7 @@ class ProjectHelper {
     }
 
     public void removeMissingSymlinks(File baseDirectory) {
-        baseDirectory.traverse([type: FileType.FILES, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) {
+        baseDirectory.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
             if (!it.isDirectory()) {
                 File canonicalFile = it.getCanonicalFile()
                 if (!canonicalFile.exists()) {
@@ -346,6 +345,14 @@ class ProjectHelper {
         }
     }
 
+    public static List getFiles(Project project, Closure filter) {
+        return getFilesOrDirectories(project, FILES, filter)
+    }
+
+    public static List getDirectories(Project project, Closure filter) {
+        return getFilesOrDirectories(project, DIRECTORIES, filter)
+    }
+
     public static List getFilesOrDirectories(Project project, FileType type, Closure filter) {
         List paths = [
                 project.file('bin').absolutePath,
@@ -356,7 +363,7 @@ class ProjectHelper {
                 project.file('.git').absolutePath,
         ]
         def plistFiles = []
-        project.rootDir.traverse([type: type, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) {
+        project.rootDir.traverse([type: type, maxDepth: MAX_RECURSION_LEVEL]) {
             def thePath = it.absolutePath
             if (filter(it)) {
                 if (!paths.any { path -> thePath.startsWith(path) }) {
@@ -366,15 +373,6 @@ class ProjectHelper {
         }
         return plistFiles
     }
-
-    public static List getFiles(Project project, Closure filter) {
-        return getFilesOrDirectories(project, FileType.FILES, filter)
-    }
-
-    public static List getDirectories(Project project, Closure filter) {
-        return getFilesOrDirectories(project, FileType.DIRECTORIES, filter)
-    }
-
 
     public static List getDirectoriesSortedAccordingToDepth(Project project, Closure filter) {
         def xCodeProjFiles = getDirectories(project, filter)

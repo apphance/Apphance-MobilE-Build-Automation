@@ -1,6 +1,5 @@
 package com.apphance.ameba.android.plugins.release
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
@@ -16,6 +15,7 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.FileDownloader.downloadFile
 
 /**
@@ -63,7 +63,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
     def void prepareBuildDocumentationZipTask(Project project) {
         def task = project.task('buildDocumentationZip')
         task.description = "Builds documentation .zip file."
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+        task.group = AMEBA_RELEASE
         task << {
             File destZip = releaseConf.documentationZip.location
             destZip.mkdirs()
@@ -78,7 +78,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
     private void prepareAvailableArtifactsInfoTask(Project project) {
         def task = project.task('prepareAvailableArtifactsInfo')
         task.description = "Prepares information about available artifacts for mail message to include"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+        task.group = AMEBA_RELEASE
         def listener
         def builder
         if (androidEnvironment.isLibrary()) {
@@ -101,9 +101,9 @@ class AndroidReleasePlugin implements Plugin<Project> {
                 String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
                 prepareFileIndexArtifact(otaFolderPrefix)
                 preparePlainFileIndexArtifact(otaFolderPrefix)
-                prepareOtaIndexFile(project, androidConf.variants)
-                prepareFileIndexFile(project, androidConf.variants)
-                preparePlainFileIndexFile(project, androidConf.variants)
+                prepareOtaIndexFile(project)
+                prepareFileIndexFile(androidConf.variants)
+                preparePlainFileIndexFile()
             } else {
                 logger.lifecycle("Skipping building artifacts -> the build is not versioned")
             }
@@ -114,7 +114,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
     private void prepareMailMessageTask(Project project) {
         def task = project.task('prepareMailMessage')
         task.description = "Prepares mail message which summarises the release"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+        task.group = AMEBA_RELEASE
         task << {
             releaseConf.mailMessageFile.location.parentFile.mkdirs()
             releaseConf.mailMessageFile.location.delete()
@@ -168,7 +168,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
         androidReleaseConf.plainFileIndexFile = plainFileIndexFile
     }
 
-    private void prepareFileIndexFile(Project project, Collection<String> variants) {
+    private void prepareFileIndexFile(Collection<String> variants) {
         URL fileIndexTemplate = this.class.getResource("file_index.html")
         ResourceBundle rb = ResourceBundle.getBundle(\
                     this.class.package.name + ".file_index",
@@ -192,7 +192,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
         logger.lifecycle("File index created: ${androidReleaseConf.fileIndexFile}")
     }
 
-    private void preparePlainFileIndexFile(Project project, Collection<String> variants) {
+    private void preparePlainFileIndexFile() {
         URL plainFileIndexTemplate = this.class.getResource("plain_file_index.html")
         ResourceBundle rb = ResourceBundle.getBundle(\
                     this.class.package.name + ".plain_file_index",
@@ -215,7 +215,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
         logger.lifecycle("Plain file index created: ${androidReleaseConf.plainFileIndexFile}")
     }
 
-    private void prepareOtaIndexFile(Project project, Collection<String> variants) {
+    private void prepareOtaIndexFile(Project project) {
         String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
         AmebaArtifact otaIndexFile = new AmebaArtifact(
                 name: "The ota index file: ${conf.projectName}",
@@ -259,7 +259,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
 
     void prepareUpdateVersionTask(Project project) {
         def task = project.task('updateVersion')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+        task.group = AMEBA_RELEASE
         task.description = """Updates version stored in manifest file of the project.
            Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
         task << {
