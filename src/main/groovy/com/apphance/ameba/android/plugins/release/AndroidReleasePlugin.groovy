@@ -17,7 +17,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-import static com.apphance.ameba.util.FileDownloader.downloadFile
+import static com.apphance.ameba.util.file.FileDownloader.downloadFile
 
 /**
  * Plugin that provides release functionality for android.

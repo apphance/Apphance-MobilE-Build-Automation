@@ -2,8 +2,8 @@ package com.apphance.ameba.plugins.release
 
 import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.util.file.FileManager
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
@@ -22,7 +22,7 @@ class PrepareReleaseSetupOperation extends AbstractPrepareSetupOperation {
 
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        def files = ProjectHelper.getFiles(project, { it.name.toLowerCase().equals('icon.png') })
+        def files = FileManager.getFiles(project, { it.name.toLowerCase().equals('icon.png') })
 
         BufferedReader br = getReader()
         use(PropertyCategory) {

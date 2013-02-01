@@ -1,10 +1,10 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
 import com.apphance.ameba.AbstractPrepareSetupOperation
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
+import com.apphance.ameba.util.file.FileManager
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
@@ -21,8 +21,8 @@ class PrepareIOSSetupOperation extends AbstractPrepareSetupOperation {
 
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
-        def plistFiles = ProjectHelper.getFiles(project, { it.name.endsWith(".plist") })
-        def xCodeProjFiles = ProjectHelper.getDirectoriesSortedAccordingToDepth(project, { it.name.endsWith(".xcodeproj") })
+        def plistFiles = FileManager.getFiles(project, { it.name.endsWith(".plist") })
+        def xCodeProjFiles = FileManager.getDirectoriesSortedAccordingToDepth(project, { it.name.endsWith(".xcodeproj") })
         if (!xCodeProjFiles.empty && !project.hasProperty(IOSProjectProperty.PROJECT_DIRECTORY.propertyName)) {
             project.ext[IOSProjectProperty.PROJECT_DIRECTORY.propertyName] = xCodeProjFiles[0]
         }

@@ -7,6 +7,7 @@ import com.apphance.ameba.ios.IOSBuilderInfo
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser
+import com.apphance.ameba.util.file.FileManager
 import com.sun.org.apache.xpath.internal.XPathAPI
 import groovy.io.FileType
 import org.gradle.api.GradleException
@@ -51,7 +52,7 @@ class IOSSingleVariantBuilder {
 
     Collection<File> findAllPlistFiles(File dir) {
         def result = []
-        dir.traverse([type: FileType.FILES, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) {
+        dir.traverse([type: FileType.FILES, maxDepth: FileManager.MAX_RECURSION_LEVEL]) {
             if (it.name.endsWith(".plist") && !it.path.contains("/External/") && !it.path.contains('/build/')) {
                 logger.lifecycle("Adding plist file ${it} to processing list")
                 result << it
@@ -62,7 +63,7 @@ class IOSSingleVariantBuilder {
 
     Collection<File> findAllSourceFiles(File dir) {
         def result = []
-        dir.traverse([type: FileType.FILES, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) {
+        dir.traverse([type: FileType.FILES, maxDepth: FileManager.MAX_RECURSION_LEVEL]) {
             if ((it.name.endsWith(".m") || it.name.endsWith(".h")) && !it.path.contains("/External/")) {
                 logger.lifecycle("Adding source file ${it} to processing list")
                 result << it

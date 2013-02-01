@@ -1,17 +1,13 @@
 package com.apphance.ameba
 
-import com.apphance.ameba.util.FileSystemOutput
-import groovy.io.FileType
+import com.apphance.ameba.util.file.FileSystemOutput
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
-
-
 
 /**
  * Useful helper for common project-related methods.
@@ -19,7 +15,6 @@ import static groovy.io.FileType.FILES
  */
 class ProjectHelper {
 
-    public static final int MAX_RECURSION_LEVEL = 7
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=512m', '-XX:+CMSClassUnloadingEnabled',
             '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
@@ -266,51 +261,5 @@ class ProjectHelper {
         } else {
             return String.format("%.2f", byteSize * 1.0 / 1024.0) + " kB"
         }
-    }
-
-    public void removeMissingSymlinks(File baseDirectory) {
-        baseDirectory.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
-            if (!it.isDirectory()) {
-                File canonicalFile = it.getCanonicalFile()
-                if (!canonicalFile.exists()) {
-                    it.delete()
-                }
-            }
-        }
-    }
-
-    public static List getFiles(Project project, Closure filter) {
-        return getFilesOrDirectories(project, FILES, filter)
-    }
-
-    public static List getDirectories(Project project, Closure filter) {
-        return getFilesOrDirectories(project, DIRECTORIES, filter)
-    }
-
-    public static List getFilesOrDirectories(Project project, FileType type, Closure filter) {
-        List paths = [
-                project.file('bin').absolutePath,
-                project.file('build').absolutePath,
-                project.file('ota').absolutePath,
-                project.file('tmp').absolutePath,
-                project.file('.hg').absolutePath,
-                project.file('.git').absolutePath,
-        ]
-        def plistFiles = []
-        project.rootDir.traverse([type: type, maxDepth: MAX_RECURSION_LEVEL]) {
-            def thePath = it.absolutePath
-            if (filter(it)) {
-                if (!paths.any { path -> thePath.startsWith(path) }) {
-                    plistFiles << thePath.substring(project.rootDir.path.length() + 1)
-                }
-            }
-        }
-        return plistFiles
-    }
-
-    public static List getDirectoriesSortedAccordingToDepth(Project project, Closure filter) {
-        def xCodeProjFiles = getDirectories(project, filter)
-        xCodeProjFiles = xCodeProjFiles.sort { sprintf("%08d", it.findAll('[/\\\\]').size()) }
-        return xCodeProjFiles
     }
 }

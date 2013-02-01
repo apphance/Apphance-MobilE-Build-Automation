@@ -20,7 +20,7 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-import static com.apphance.ameba.ProjectHelper.MAX_RECURSION_LEVEL
+import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
 
 /**

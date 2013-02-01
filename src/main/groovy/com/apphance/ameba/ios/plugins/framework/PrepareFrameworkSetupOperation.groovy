@@ -2,10 +2,10 @@ package com.apphance.ameba.ios.plugins.framework
 
 import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
+import com.apphance.ameba.util.file.FileManager
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
@@ -25,8 +25,8 @@ class PrepareFrameworkSetupOperation extends AbstractPrepareSetupOperation {
     void prepareSetup() {
         logger.lifecycle("Preparing ${propertyDescription}")
         BufferedReader br = getReader()
-        def headerFiles = ProjectHelper.getFiles(project, { it.name.endsWith('.h') })
-        def resourceFiles = ProjectHelper.getFiles(project, { it.name.endsWith('.png') })
+        def headerFiles = FileManager.getFiles(project, { it.name.endsWith('.h') })
+        def resourceFiles = FileManager.getFiles(project, { it.name.endsWith('.png') })
         use(PropertyCategory) {
             IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
             IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)

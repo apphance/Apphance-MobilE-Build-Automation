@@ -1,4 +1,4 @@
-package com.apphance.ameba.util
+package com.apphance.ameba.util.file
 
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging

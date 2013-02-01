@@ -22,7 +22,7 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-import static com.apphance.ameba.util.FileDownloader.downloadFile
+import static com.apphance.ameba.util.file.FileDownloader.downloadFile
 
 /**
  * Plugin for releasing iOS build.

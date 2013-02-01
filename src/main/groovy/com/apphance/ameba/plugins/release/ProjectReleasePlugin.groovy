@@ -3,6 +3,7 @@ package com.apphance.ameba.plugins.release
 import com.apphance.ameba.*
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
+import com.apphance.ameba.util.file.FileManager
 import groovy.io.FileType
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -126,7 +127,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
             Collection<String> command = new LinkedList<String>()
             command << "montage"
             ImageNameFilter imageFilter = new ImageNameFilter();
-            project.rootDir.traverse([type: FileType.FILES, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) { file ->
+            project.rootDir.traverse([type: FileType.FILES, maxDepth: FileManager.MAX_RECURSION_LEVEL]) { file ->
                 if (imageFilter.isValid(project.rootDir, file)) {
                     command << file
                 }
@@ -209,7 +210,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
         task << {
             File destZip = releaseConf.sourcesZip.location
             logger.lifecycle("Removing empty symlinks")
-            projectHelper.removeMissingSymlinks(project.rootDir)
+            FileManager.removeMissingSymlinks(project.rootDir)
             destZip.parentFile.mkdirs()
             destZip.delete()
             logger.lifecycle("Compressing sources")

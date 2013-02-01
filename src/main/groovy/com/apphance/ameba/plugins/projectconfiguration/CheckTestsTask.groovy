@@ -11,7 +11,7 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_TEST
-import static com.apphance.ameba.ProjectHelper.MAX_RECURSION_LEVEL
+import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
 
 /**

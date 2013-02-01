@@ -1,4 +1,4 @@
-package com.apphance.ameba.util
+package com.apphance.ameba.util.file
 
 /**
  * System output that also writes to file.

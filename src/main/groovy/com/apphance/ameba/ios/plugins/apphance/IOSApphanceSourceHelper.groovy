@@ -1,6 +1,6 @@
 package com.apphance.ameba.ios.plugins.apphance
 
-import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.util.file.FileManager
 import groovy.io.FileType
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
@@ -11,7 +11,7 @@ class IOSApphanceSourceHelper {
 
     def findAppDelegateFile(File projectRootDirectory) {
         def appFilename = []
-        projectRootDirectory.traverse([type: FileType.FILES, maxDepth: ProjectHelper.MAX_RECURSION_LEVEL]) {
+        projectRootDirectory.traverse([type: FileType.FILES, maxDepth: FileManager.MAX_RECURSION_LEVEL]) {
             if (it.name.endsWith(".h") && it.text.contains("UIApplicationDelegate")) {
                 appFilename << it.canonicalPath
                 logger.lifecycle("Application delegate found in file " + it)

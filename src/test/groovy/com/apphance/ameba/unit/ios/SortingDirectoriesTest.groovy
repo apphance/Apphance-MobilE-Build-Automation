@@ -1,6 +1,6 @@
 package com.apphance.ameba.unit.ios
 
-import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.util.file.FileManager
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
@@ -14,7 +14,7 @@ class SortingDirectoriesTest {
         ProjectBuilder projectBuilder = ProjectBuilder.builder()
         projectBuilder.withProjectDir(new File("testProjects/ios/GradleXCode"))
         Project project = projectBuilder.build()
-        List res = ProjectHelper.getDirectoriesSortedAccordingToDepth(project, { true })
+        List res = FileManager.getDirectoriesSortedAccordingToDepth(project, { true })
         List newRes = res.collect { sprintf("%08d", it.findAll('[/\\\\]').size()) }
         int last = 0
         newRes.each {
