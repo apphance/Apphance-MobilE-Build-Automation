@@ -1,6 +1,7 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
@@ -35,7 +36,7 @@ class IOSPlugin implements Plugin<Project> {
     public static final List<String> FAMILIES = ['iPad', 'iPhone']
 
     def void apply(Project project) {
-        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, ProjectConfigurationPlugin.class)
+        PluginHelper.checkAllPluginsAreLoaded(project, this.class, ProjectConfigurationPlugin.class)
         use(PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()

@@ -1,6 +1,7 @@
 package com.apphance.ameba.android.plugins.apphance
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
@@ -11,7 +12,6 @@ import com.apphance.ameba.apphance.ApphanceProperty
 import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
 import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
 import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
-import groovy.io.FileType
 import groovy.json.JsonSlurper
 import org.apache.http.HttpResponse
 import org.gradle.api.GradleException
@@ -40,7 +40,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
 
     public void apply(Project project) {
-        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
+        PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         use(PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()

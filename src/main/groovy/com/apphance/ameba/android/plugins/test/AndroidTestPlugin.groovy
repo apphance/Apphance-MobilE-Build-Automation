@@ -1,6 +1,7 @@
 package com.apphance.ameba.android.plugins.test
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidBuildXmlHelper
@@ -64,7 +65,7 @@ class AndroidTestPlugin implements Plugin<Project> {
 
     public void apply(Project project) {
         this.project = project
-        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
+        PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         this.projectHelper = new ProjectHelper()
         this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         this.androidManifestHelper = new AndroidManifestHelper()

@@ -1,5 +1,6 @@
 package com.apphance.ameba.ios.plugins.apphance
 
+import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
@@ -40,7 +41,7 @@ class IOSApphancePlugin implements Plugin<Project> {
     IOSSingleVariantBuilder iosSingleVariantBuilder
 
     public void apply(Project project) {
-        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
+        PluginHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
         use(PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()

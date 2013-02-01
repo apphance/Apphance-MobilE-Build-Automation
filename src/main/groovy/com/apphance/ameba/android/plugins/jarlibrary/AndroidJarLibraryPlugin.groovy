@@ -1,6 +1,7 @@
 package com.apphance.ameba.android.plugins.jarlibrary
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
@@ -28,7 +29,7 @@ class AndroidJarLibraryPlugin implements Plugin<Project> {
     String jarLibraryPrefix
 
     public void apply(Project project) {
-        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
+        PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         use(PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()

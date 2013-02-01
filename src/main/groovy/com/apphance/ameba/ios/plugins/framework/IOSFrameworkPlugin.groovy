@@ -1,6 +1,6 @@
 package com.apphance.ameba.ios.plugins.framework
 
-import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -15,7 +15,7 @@ class IOSFrameworkPlugin implements Plugin<Project> {
     static Logger logger = Logging.getLogger(IOSFrameworkPlugin.class)
 
     def void apply(Project project) {
-        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
+        PluginHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
         project.task('buildFramework', type: IOSBuildFrameworkTask)
         project.prepareSetup.prepareSetupOperations << new PrepareFrameworkSetupOperation()
         project.verifySetup.verifySetupOperations << new VerifyFrameworkSetupOperation()

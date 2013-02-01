@@ -23,7 +23,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
     ProjectReleaseConfiguration releaseConf
 
     void apply(Project project) {
-        ProjectHelper.checkAnyPluginIsLoaded(project, this.class, AndroidPlugin.class, IOSPlugin.class)
+        PluginHelper.checkAnyPluginIsLoaded(project, this.class, AndroidPlugin.class, IOSPlugin.class)
         projectHelper = new ProjectHelper()
         conf = PropertyCategory.getProjectConfiguration(project)
         releaseConf = ProjectReleaseCategory.retrieveProjectReleaseData(project)

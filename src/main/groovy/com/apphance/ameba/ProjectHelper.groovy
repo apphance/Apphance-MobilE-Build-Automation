@@ -279,26 +279,6 @@ class ProjectHelper {
         }
     }
 
-    public static void checkAllPluginsAreLoaded(Project project, def myPluginClass, def ... pluginClasses) {
-        pluginClasses.each {
-            if (!project.plugins.collect { it.class }.contains(it)) {
-                throw new GradleException("The plugin ${it} has not been loaded yet. Please make sure you put it before ${myPluginClass}")
-            }
-        }
-    }
-
-    public static void checkAnyPluginIsLoaded(Project project, def myPluginClass, def ... pluginClasses) {
-        boolean anyPluginLoaded = false
-        pluginClasses.each {
-            if (project.plugins.collect { it.class }.contains(it)) {
-                anyPluginLoaded = true
-            }
-        }
-        if (!anyPluginLoaded) {
-            throw new GradleException("None of the plugins ${pluginClasses} has been loaded yet. Please make sure one of them is put before ${myPluginClass}")
-        }
-    }
-
     public static List getFiles(Project project, Closure filter) {
         return getFilesOrDirectories(project, FILES, filter)
     }

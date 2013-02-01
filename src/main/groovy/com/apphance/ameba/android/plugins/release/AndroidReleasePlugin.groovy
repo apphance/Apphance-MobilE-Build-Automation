@@ -1,5 +1,6 @@
 package com.apphance.ameba.android.plugins.release
 
+import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
@@ -38,7 +39,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         androidEnvironment = new AndroidEnvironment(project)
-        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class, ProjectReleasePlugin.class)
+        PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class, ProjectReleasePlugin.class)
         use(PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper();

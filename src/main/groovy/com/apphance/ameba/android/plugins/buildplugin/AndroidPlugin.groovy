@@ -1,5 +1,6 @@
 package com.apphance.ameba.android.plugins.buildplugin
 
+import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
@@ -36,7 +37,7 @@ class AndroidPlugin implements Plugin<Project> {
     @Override
     def void apply(Project project) {
 
-        ProjectHelper.checkAllPluginsAreLoaded(project, this.class, ProjectConfigurationPlugin.class)
+        PluginHelper.checkAllPluginsAreLoaded(project, this.class, ProjectConfigurationPlugin.class)
 
         this.projectHelper = new ProjectHelper();
         this.conf = PropertyCategory.getProjectConfiguration(project)
