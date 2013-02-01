@@ -10,6 +10,7 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin
+import com.apphance.ameba.util.file.FileManager
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -136,7 +137,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
                     otaUrl: androidReleaseConf.otaIndexFile?.url,
                     fileIndexUrl: androidReleaseConf.fileIndexFile?.url,
                     releaseNotes: releaseConf.releaseNotes,
-                    fileSize: projectHelper.getHumanReadableSize(fileSize),
+                    fileSize: FileManager.getHumanReadableSize(fileSize),
                     releaseMailFlags: releaseConf.releaseMailFlags,
                     rb: rb
             ]

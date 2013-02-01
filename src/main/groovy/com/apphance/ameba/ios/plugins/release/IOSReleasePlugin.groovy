@@ -14,6 +14,7 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin
+import com.apphance.ameba.util.file.FileManager
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.AntBuilder
 import org.gradle.api.GradleException
@@ -141,7 +142,7 @@ class IOSReleasePlugin implements Plugin<Project> {
                     installable: iosReleaseConf.dmgImageFiles,
                     mainTarget: iosConf.mainTarget,
                     families: iosConf.families,
-                    fileSize: projectHelper.getHumanReadableSize(fileSize),
+                    fileSize: FileManager.getHumanReadableSize(fileSize),
                     releaseMailFlags: releaseConf.releaseMailFlags,
                     rb: rb
             ]

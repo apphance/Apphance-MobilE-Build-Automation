@@ -5,6 +5,7 @@ import org.gradle.api.Project
 
 import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
+import static java.lang.String.format
 
 /**
  * User: opal
@@ -13,6 +14,7 @@ import static groovy.io.FileType.FILES
  */
 class FileManager {
     public static final int MAX_RECURSION_LEVEL = 7
+    private static final long MEGABYTE = 1048576L
 
     public static List getFiles(Project project, Closure filter) {
         return getFilesOrDirectories(project, FILES, filter)
@@ -57,6 +59,22 @@ class FileManager {
                     it.delete()
                 }
             }
+        }
+    }
+
+    public static getHumanReadableSize(long byteSize) {
+        byteSize >= MEGABYTE ? format("%.2f", byteSize * 1.0 / 1024.0 / 1024.0) + " MB" : format("%.2f", byteSize * 1.0 / 1024.0) + " kB"
+    }
+
+    public static void findAllPackages(String currentPackage, File directory, currentPackageList) {
+        boolean empty = true
+        directory.eachFile(FILES, { empty = false })
+        if (!empty) {
+            currentPackageList << currentPackage
+        }
+        boolean rootDirectory = (currentPackage == '')
+        directory.eachDir {
+            findAllPackages(rootDirectory ? it.name : (currentPackage + '.' + it.name), it, currentPackageList)
         }
     }
 }
