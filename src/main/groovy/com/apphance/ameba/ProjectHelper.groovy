@@ -52,12 +52,6 @@ class ProjectHelper {
         return newList
     }
 
-    Collection<String> executeCommand(Project project, command, boolean failOnError = true, String[] envp = null,
-                                      input = null, int retryTimes = 1, boolean silentLogging = false) {
-        def runDirectory = new File("${project.rootDir}")
-        return executeCommand(project, runDirectory, command, failOnError, envp, input, retryTimes, silentLogging)
-    }
-
     String getJenkinsURL(Project project, Map env) {
         def jenkinsUrl = env['JENKINS_URL']
         if (jenkinsUrl == null) {
@@ -121,6 +115,12 @@ class ProjectHelper {
             logger.lifecycle("OUTPUT: ${resultUrl}")
         }
         return new FileSystemOutput(outFile)
+    }
+
+    Collection<String> executeCommand(Project project, command, boolean failOnError = true, String[] envp = null,
+                                      input = null, int retryTimes = 1, boolean silentLogging = false) {
+        def runDirectory = new File("${project.rootDir}")
+        return executeCommand(project, runDirectory, command, failOnError, envp, input, retryTimes, silentLogging)
     }
 
     Collection<String> executeCommand(Project project, File runDirectory, command, boolean failOnError = true, String[] envp = null,
