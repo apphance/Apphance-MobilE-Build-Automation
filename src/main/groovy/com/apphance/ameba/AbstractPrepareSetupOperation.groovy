@@ -11,6 +11,12 @@ import org.gradle.api.logging.Logging
  */
 abstract class AbstractPrepareSetupOperation {
 
+    public static final String GENERATED_GRADLE_PROPERTIES = 'generated.gradle.properties'
+
+    Logger logger = Logging.getLogger(AbstractPrepareSetupOperation.class)
+    String propertyDescription
+    Class<? extends Enum> clazz
+    Project project
     private static BufferedReader br = null
 
     public static BufferedReader getReader() {
@@ -19,13 +25,6 @@ abstract class AbstractPrepareSetupOperation {
         }
         return br
     }
-
-
-    public static final String GENERATED_GRADLE_PROPERTIES = 'generated.gradle.properties'
-    Logger logger = Logging.getLogger(AbstractPrepareSetupOperation.class)
-    String propertyDescription
-    Class<? extends Enum> clazz
-    Project project
 
     abstract void prepareSetup()
 

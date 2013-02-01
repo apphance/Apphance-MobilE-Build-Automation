@@ -1,10 +1,11 @@
 package com.apphance.ameba
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+
+import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY
 
 /**
  * Helper property-related class. Can be used as Groovy category.
@@ -147,8 +148,6 @@ class PropertyCategory {
         return readPropertyOrEnvironmentVariable(project, propertyName, false)
     }
 
-
-
     public static String readOptionalPropertyOrEnvironmentVariable(Project project, String propertyName) {
         return readPropertyOrEnvironmentVariable(project, propertyName, true)
     }
@@ -202,7 +201,7 @@ class PropertyCategory {
     public static ProjectConfiguration retrieveBasicProjectData(Project project) {
         use(PropertyCategory) {
             ProjectConfiguration conf = getProjectConfiguration(project)
-            conf.projectName = project.readProperty(ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY)
+            conf.projectName = project.readProperty(PROJECT_NAME_PROPERTY)
             conf.tmpDirectory = project.file('tmp')
             conf.logDirectory = project.file('log')
             conf.buildDirectory = project.file('build')

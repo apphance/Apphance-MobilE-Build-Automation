@@ -13,5 +13,4 @@ class AmebaCommonBuildTaskGroups {
     public static final String AMEBA_SETUP = 'Ameba setup'
     public static final String AMEBA_ANALYSIS = 'Ameba static code analysis'
     public static final String AMEBA_APPHANCE_SERVICE = 'Ameba apphance service'
-    public static final String AMEBA_VERSION_CONTROL = 'Ameba version control'
 }

@@ -1,5 +1,6 @@
 package com.apphance.ameba
 
+import com.apphance.ameba.util.FileSystemOutput
 import groovy.io.FileType
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.api.GradleException
@@ -7,57 +8,10 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-import static com.apphance.ameba.ProjectHelper.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
 
-/**
- * System output that also writes to file.
- */
-class FileSystemOutput implements Appendable {
 
-    File file
-    StringBuilder sb = new StringBuilder()
-    Appendable linkedAppendable
-
-    FileSystemOutput(File file, Appendable linkedAppendable = null) {
-        this.file = file
-        this.linkedAppendable = linkedAppendable
-    }
-
-    Appendable append(char arg0) throws IOException {
-        if (file != null) {
-            file << arg0
-        }
-        sb.append(arg0)
-        if (linkedAppendable != null) {
-            linkedAppendable.append(arg0)
-        }
-        return this
-    }
-
-    Appendable append(CharSequence arg0) throws IOException {
-        if (file != null) {
-            file << arg0
-        }
-        sb.append(arg0)
-        if (linkedAppendable != null) {
-            linkedAppendable.append(arg0)
-        }
-        return this
-    }
-
-    Appendable append(CharSequence arg0, int arg1, int arg2) throws IOException {
-        if (file != null) {
-            file << arg0?.subSequence(arg1, arg1)
-        }
-        sb.append(arg0, arg1, arg2)
-        if (linkedAppendable != null) {
-            linkedAppendable.append(arg0, arg1, arg2)
-        }
-        return this
-    }
-}
 
 /**
  * Useful helper for common project-related methods.
@@ -149,14 +103,14 @@ class ProjectHelper {
         }
     }
 
-    String getFileNameFromCommand(Project project, File logDir, String command, String postFix) {
+    String getFileNameFromCommand(File logDir, String command, String postFix) {
         String fileAbleCommandName = command.replaceAll(' |\\p{Punct}', "_")
         fileAbleCommandName = fileAbleCommandName.substring(0, Math.min(80, fileAbleCommandName.length()))
         return getCurrentFileNumber(logDir) + '-' + fileAbleCommandName + postFix
     }
 
-    FileSystemOutput getSystemOutput(Project project, File logDir, String commandToDisplay, postfix, String jenkinsURL) {
-        String outFileName = getFileNameFromCommand(project, logDir, commandToDisplay, postfix)
+    FileSystemOutput getSystemOutput(File logDir, String commandToDisplay, postfix, String jenkinsURL) {
+        String outFileName = getFileNameFromCommand(logDir, commandToDisplay, postfix)
         File outFile = new File(logDir, outFileName)
         outFile.delete()
         outFile << ''
@@ -190,7 +144,7 @@ class ProjectHelper {
                 standardOut = new FileSystemOutput(null)
                 standardErr = new FileSystemOutput(null)
             } else {
-                standardOut = getSystemOutput(project, logDir, commandToDisplay, '-output.txt', jenkinsURL)
+                standardOut = getSystemOutput(logDir, commandToDisplay, '-output.txt', jenkinsURL)
                 standardErr = new FileSystemOutput(standardOut.file, System.err)
             }
             Process proc = null
@@ -266,8 +220,8 @@ class ProjectHelper {
             }
         }
         addWriter(proc, input)
-        Thread errorThread = ProcessGroovyMethods.consumeProcessErrorStream(proc, standardErr)
-        Thread outputThread = ProcessGroovyMethods.consumeProcessOutputStream(proc, standardOut)
+        ProcessGroovyMethods.consumeProcessErrorStream(proc, standardErr)
+        ProcessGroovyMethods.consumeProcessOutputStream(proc, standardOut)
         return proc
     }
 
@@ -379,6 +333,4 @@ class ProjectHelper {
         xCodeProjFiles = xCodeProjFiles.sort { sprintf("%08d", it.findAll('[/\\\\]').size()) }
         return xCodeProjFiles
     }
-
-
 }
