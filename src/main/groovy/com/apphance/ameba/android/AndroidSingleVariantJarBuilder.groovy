@@ -12,7 +12,7 @@ class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder
         super(project, androidProjectConfiguration)
     }
 
-    AndroidBuilderInfo buildJarArtifactBuilderInfo(Project project, String variant, String debugRelease) {
+    AndroidBuilderInfo buildJarArtifactBuilderInfo(String variant, String debugRelease) {
         if (variant != null && debugRelease == null) {
             debugRelease = androidConf.debugRelease[variant]
         }
@@ -26,13 +26,12 @@ class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder
                 originalFile: new File(binDir, "classes.jar"),
                 fullReleaseName: "${conf.projectName}-${variablePart}-${conf.fullVersionString}",
                 filePrefix: "${conf.projectName}-${variablePart}-${conf.fullVersionString}")
-        return bi
+        bi
     }
 
-
-
+    @Override
     void buildSingle(AndroidBuilderInfo bi) {
-        projectHelper.executeCommand(project, , androidConf.tmpDirs[bi.variant], ['ant', 'clean'])
+        projectHelper.executeCommand(project, androidConf.tmpDirs[bi.variant], ['ant', 'clean'])
         if (bi.variant != null) {
             project.ant {
                 copy(todir: new File(androidConf.tmpDirs[bi.variant], 'res/raw'), failonerror: false, overwrite: 'true', verbose: 'true') {

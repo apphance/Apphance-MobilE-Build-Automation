@@ -39,7 +39,7 @@ class ImageNameFilter {
     ]
 
 
-    def boolean isValid(File rootDirectory, File file) {
+    def static boolean isValid(File rootDirectory, File file) {
         def lowerCaseName = file.name.toLowerCase()
         if ((validExtensions.findAll { lowerCaseName.endsWith(it) }).size == 0) {
             return false

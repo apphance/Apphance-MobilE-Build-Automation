@@ -32,7 +32,7 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
     public void testArtifactBuilderInfoVariantedDebug() throws Exception {
         Project project = getProject()
         AndroidSingleVariantApkBuilder builder = prepareEnvironment(project)
-        AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "test", null)
+        AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo("test", null)
         assertEquals('test', ai.variant)
         assertEquals('Debug', ai.debugRelease)
         assertEquals(new File("testProjects/android/tmp-android-basic-test/bin").absolutePath, ai.buildDirectory.absolutePath)
@@ -44,7 +44,7 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
     public void testArtifactBuilderInfoVariantedRelease() throws Exception {
         Project project = getProject()
         AndroidSingleVariantApkBuilder builder = prepareEnvironment(project)
-        AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "market", null)
+        AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo("market", null)
         assertEquals('market', ai.variant)
         assertEquals('Release', ai.debugRelease)
         assertEquals(new File("testProjects/android/tmp-android-basic-market/bin").absolutePath, ai.buildDirectory.absolutePath)
@@ -56,7 +56,7 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
     public void testArtifactBuilderInfoNotVariantedDebug() throws Exception {
         Project project = getProject(false)
         AndroidSingleVariantApkBuilder builder = prepareEnvironment(project)
-        AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "Debug", "Debug")
+        AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo("Debug", "Debug")
         assertEquals('Debug', ai.variant)
         assertEquals('Debug', ai.debugRelease)
         assertEquals(new File("testProjects/android/tmp-android-novariants-Debug/bin").absolutePath, ai.buildDirectory.absolutePath)
@@ -68,7 +68,7 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
     public void testArtifactBuilderInfoNotVariantedRelease() throws Exception {
         Project project = getProject(false)
         AndroidSingleVariantApkBuilder builder = prepareEnvironment(project)
-        AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo(project, "Release", "Release")
+        AndroidBuilderInfo ai = builder.buildApkArtifactBuilderInfo("Release", "Release")
         assertEquals('Release', ai.variant)
         assertEquals('Release', ai.debugRelease)
         assertEquals(new File("testProjects/android/tmp-android-novariants-Release/bin").absolutePath, ai.buildDirectory.absolutePath)

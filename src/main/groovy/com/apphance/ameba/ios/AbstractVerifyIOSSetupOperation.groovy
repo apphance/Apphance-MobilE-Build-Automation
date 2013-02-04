@@ -53,8 +53,8 @@ abstract class AbstractVerifyIOSSetupOperation extends AbstractVerifySetupOperat
     void checkTarget(property) {
         use(PropertyCategory) {
             String target = project.readProperty(property)
-            if (!iosConf.alltargets.contains(target)) {
-                throw new GradleException("""The target in ${property.propertyName}: ${target} can only be one of ${iosConf.alltargets}""")
+            if (!iosConf.allTargets.contains(target)) {
+                throw new GradleException("""The target in ${property.propertyName}: ${target} can only be one of ${iosConf.allTargets}""")
             }
         }
     }
@@ -62,8 +62,8 @@ abstract class AbstractVerifyIOSSetupOperation extends AbstractVerifySetupOperat
     void checkConfiguration(property) {
         use(PropertyCategory) {
             String configuration = project.readProperty(property)
-            if (!iosConf.allconfigurations.contains(configuration)) {
-                throw new GradleException("""The configuration in ${property.propertyName}: ${configuration} can only be one of ${iosConf.allconfigurations}""")
+            if (!iosConf.allConfigurations.contains(configuration)) {
+                throw new GradleException("""The configuration in ${property.propertyName}: ${configuration} can only be one of ${iosConf.allConfigurations}""")
             }
         }
     }

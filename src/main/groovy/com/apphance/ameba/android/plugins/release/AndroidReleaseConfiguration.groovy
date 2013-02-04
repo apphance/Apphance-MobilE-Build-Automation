@@ -7,6 +7,7 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
  *
  */
 class AndroidReleaseConfiguration {
+
     Map<String, AmebaArtifact> apkFiles = [:]
     Map<String, AmebaArtifact> jarFiles = [:]
     AmebaArtifact otaIndexFile
@@ -15,7 +16,7 @@ class AndroidReleaseConfiguration {
 
     @Override
     public String toString() {
-        return this.getProperties()
+        this.properties
     }
 
 }

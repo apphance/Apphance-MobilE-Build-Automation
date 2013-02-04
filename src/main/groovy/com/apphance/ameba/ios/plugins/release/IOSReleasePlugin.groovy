@@ -52,7 +52,7 @@ class IOSReleasePlugin implements Plugin<Project> {
         prepareBuildDocumentationZipTask(project)
         prepareAvailableArtifactsInfoTask(project)
         prepareMailMessageTask(project)
-        IOSSingleVariantBuilder.buildListeners << new IOSReleaseListener(project, project.ant)
+        IOSSingleVariantBuilder.buildListeners << new IOSReleaseListener(project)
     }
 
     def void prepareBuildDocumentationZipTask(Project project) {
@@ -75,7 +75,7 @@ class IOSReleasePlugin implements Plugin<Project> {
             def targets = iosConf.targets
             def configurations = iosConf.configurations
             def udids = [:]
-            def iosReleaseListener = new IOSReleaseListener(project, project.ant)
+            def iosReleaseListener = new IOSReleaseListener(project)
             targets.each { target ->
                 configurations.each { configuration ->
                     def id = "${target}-${configuration}".toString()

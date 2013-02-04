@@ -12,7 +12,7 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
         super(project, androidProjectConfiguration)
     }
 
-    AndroidBuilderInfo buildApkArtifactBuilderInfo(Project project, String variant, String debugRelease) {
+    AndroidBuilderInfo buildApkArtifactBuilderInfo(String variant, String debugRelease) {
         if (variant != null && debugRelease == null) {
             debugRelease = androidConf.debugRelease[variant]
         }
@@ -26,9 +26,10 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
                 originalFile: new File(binDir, "${conf.projectName}-${debugReleaseLowercase}.apk"),
                 fullReleaseName: "${conf.projectName}-${variablePart}-${conf.fullVersionString}",
                 filePrefix: "${conf.projectName}-${variablePart}-${conf.fullVersionString}")
-        return bi
+        bi
     }
 
+    @Override
     void buildSingle(AndroidBuilderInfo bi) {
         projectHelper.executeCommand(project, androidConf.tmpDirs[bi.variant], ['ant', 'clean'])
         def variantPropertiesDir = new File(variantsDir, bi.variant)
@@ -40,7 +41,7 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
                 }
             }
         }
-        projectHelper.executeCommand(project, , androidConf.tmpDirs[bi.variant], [
+        projectHelper.executeCommand(project, androidConf.tmpDirs[bi.variant], [
                 'ant',
                 bi.debugRelease.toLowerCase()
         ])
@@ -49,5 +50,4 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
             it.buildDone(project, bi)
         }
     }
-
 }

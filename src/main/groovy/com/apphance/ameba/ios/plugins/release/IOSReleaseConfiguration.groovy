@@ -7,6 +7,7 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
  *
  */
 class IOSReleaseConfiguration {
+
     Map<String, AmebaArtifact> distributionZipFiles = [:]
     Map<String, AmebaArtifact> dSYMZipFiles = [:]
     Map<String, AmebaArtifact> ipaFiles = [:]
@@ -21,6 +22,6 @@ class IOSReleaseConfiguration {
 
     @Override
     public String toString() {
-        return this.getProperties()
+        this.properties
     }
 }

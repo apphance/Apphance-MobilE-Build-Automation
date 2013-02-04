@@ -40,6 +40,7 @@ class IOSApphancePlugin implements Plugin<Project> {
     PbxProjectHelper pbxProjectHelper
     IOSSingleVariantBuilder iosSingleVariantBuilder
 
+    @Override
     public void apply(Project project) {
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
         use(PropertyCategory) {
@@ -54,7 +55,7 @@ class IOSApphancePlugin implements Plugin<Project> {
             iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmedListOutput)
             iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmedListOutput)
             prepareApphanceFrameworkVersion(project)
-            preprocessBuildsWithApphance(project)
+            preProcessBuildsWithApphance(project)
 
             project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
             project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
@@ -79,7 +80,7 @@ class IOSApphancePlugin implements Plugin<Project> {
         }
     }
 
-    private void preprocessBuildsWithApphance(Project project) {
+    private void preProcessBuildsWithApphance(Project project) {
         iosConf.configurations.each { configuration ->
             iosConf.targets.each { target ->
                 def variant = "${target}-${configuration}".toString()
@@ -106,6 +107,22 @@ class IOSApphancePlugin implements Plugin<Project> {
                 copyApphanceFramework(project, builder.tmpDir(target, configuration))
             }
         }
+    }
+
+    boolean isApphancePresent(File projectDir) {
+        def apphancePresent = false
+
+        projectDir.traverse([type: DIRECTORIES, maxDepth: MAX_RECURSION_LEVEL]) { framework ->
+            if (framework =~ FRAMEWORK_PATTERN) {
+                apphancePresent = true
+            }
+        }
+
+        apphancePresent ?
+            logger.lifecycle("Apphance already in project") :
+            logger.lifecycle("Apphance not in project")
+
+        apphancePresent
     }
 
     private copyApphanceFramework(Project project, File libsDir) {
@@ -157,6 +174,15 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
         apphanceLibDependency
     }
 
+    private clearLibsDir(File libsDir) {
+        libsDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { framework ->
+            if (framework.name =~ FRAMEWORK_PATTERN) {
+                logger.lifecycle("Removing old apphance framework: " + framework.name)
+                delClos(new File(framework.canonicalPath))
+            }
+        }
+    }
+
     private void checkFrameworkFolders(String apphanceLib, File libsDir) {
         def libVariant = apphanceLib.split(':')[1].split('\\.')[1].replace('p', 'P')
         def frameworkFolder = "Apphance-${libVariant}.framework"
@@ -166,41 +192,14 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
         }
     }
 
-    private clearLibsDir(File libsDir) {
-        libsDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { framework ->
-            if (framework.name =~ FRAMEWORK_PATTERN) {
-                logger.lifecycle("Removing old apphance framework: " + framework.name)
-                def delClos = {
-                    it.eachDir(delClos);
-                    it.eachFile {
-                        it.delete()
-                    }
-                }
-
-                // Apply closure
-                delClos(new File(framework.canonicalPath))
-            }
+    def delClos = {
+        it.eachDir(delClos);
+        it.eachFile {
+            it.delete()
         }
-    }
-
-    boolean isApphancePresent(File projectDir) {
-        def apphancePresent = false
-
-        projectDir.traverse([type: DIRECTORIES, maxDepth: MAX_RECURSION_LEVEL]) { framework ->
-            if (framework =~ FRAMEWORK_PATTERN) {
-                apphancePresent = true
-            }
-        }
-
-        apphancePresent ?
-            logger.lifecycle("Apphance already in project") :
-            logger.lifecycle("Apphance not in project")
-
-        apphancePresent
     }
 
     static public final String DESCRIPTION =
         """This plugins provides automated adding of Apphance libraries to the project.
 """
-
 }

@@ -36,16 +36,15 @@ class ProjectReleaseConfiguration {
     Locale locale
 
     File getTargetDirectory() {
-        return new File(new File(otaDirectory, projectDirectoryName),
-                projectConfiguration.fullVersionString)
+        new File(new File(otaDirectory, projectDirectoryName), projectConfiguration.fullVersionString)
     }
 
     URL getVersionedApplicationUrl() {
-        return new URL(baseUrl, "${projectDirectoryName}/${projectConfiguration.fullVersionString}/")
+        new URL(baseUrl, "${projectDirectoryName}/${projectConfiguration.fullVersionString}/")
     }
 
     @Override
     public String toString() {
-        return this.getProperties()
+        this.properties
     }
 }

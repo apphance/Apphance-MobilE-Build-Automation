@@ -16,6 +16,8 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+
 /**
  * Plugin for various X-Code related tasks.
  *
@@ -25,7 +27,7 @@ class IOSPlugin implements Plugin<Project> {
     static final String IOS_CONFIGURATION_LOCAL_PROPERTY = 'ios.configuration'
     static final String IOS_TARGET_LOCAL_PROPERTY = 'ios.target'
 
-    static Logger logger = Logging.getLogger(IOSPlugin.class)
+    static Logger l = Logging.getLogger(IOSPlugin.class)
 
     String pListFileName
     ProjectHelper projectHelper
@@ -35,13 +37,14 @@ class IOSPlugin implements Plugin<Project> {
 
     public static final List<String> FAMILIES = ['iPad', 'iPhone']
 
+    @Override
     def void apply(Project project) {
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, ProjectConfigurationPlugin.class)
         use(PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
             this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
-            this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, project.ant)
+            this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project)
             prepareCopySourcesTask(project)
             prepareCopyDebugSourcesTask(project)
             prepareReadIosProjectConfigurationTask(project)
@@ -76,7 +79,7 @@ class IOSPlugin implements Plugin<Project> {
         use(PropertyCategory) {
             readBasicIosProjectProperties(project)
             iosConf.sdk = project.readProperty(IOSProjectProperty.IOS_SDK)
-            iosConf.simulatorsdk = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK)
+            iosConf.simulatorSDK = project.readProperty(IOSProjectProperty.IOS_SIMULATOR_SDK)
             iosConf.plistFile = pListFileName == null ? null : project.file(pListFileName)
             String distDirName = project.readProperty(IOSProjectProperty.DISTRIBUTION_DIR)
             iosConf.distributionDirectory = distDirName == null ? null : project.file(distDirName)
@@ -106,15 +109,15 @@ class IOSPlugin implements Plugin<Project> {
         use(PropertyCategory) {
             if (project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY) != null) {
                 readBasicIosProjectProperties(project)
-                iosConf.alltargets.each { target ->
-                    iosConf.allconfigurations.each { configuration ->
+                iosConf.allTargets.each { target ->
+                    iosConf.allConfigurations.each { configuration ->
                         String variant = iosConf.getVariant(target, configuration)
                         iosConf.xCodeProjectDirectories[variant] = new File(iosSingleVariantBuilder.tmpDir(target, configuration),
                                 project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
 
                     }
                 }
-                logger.info("Adding project directory: ${this.iosConf.mainTarget}-Debug")
+                l.info("Adding project directory: ${this.iosConf.mainTarget}-Debug")
                 iosConf.xCodeProjectDirectories["${this.iosConf.mainTarget}-Debug".toString()] =
                     new File(iosSingleVariantBuilder.tmpDir(this.iosConf.mainTarget, 'Debug'),
                             project.readProperty(IOSProjectProperty.PROJECT_DIRECTORY))
@@ -129,11 +132,11 @@ class IOSPlugin implements Plugin<Project> {
         task << {
             project.file("bin").mkdirs()
             if (iosConf.targets == ['']) {
-                logger.lifecycle("Please specify at least one target")
+                l.lifecycle("Please specify at least one target")
                 iosConf.targets = []
             }
             if (iosConf.configurations == ['']) {
-                logger.lifecycle("Please specify at least one configuration")
+                l.lifecycle("Please specify at least one configuration")
                 iosConf.configurations = []
             }
             if (iosConf.mainTarget == null) {
@@ -142,12 +145,12 @@ class IOSPlugin implements Plugin<Project> {
             if (iosConf.mainConfiguration == null) {
                 iosConf.mainConfiguration = iosConf.configurations.empty ? null : iosConf.configurations[0]
             }
-            logger.lifecycle("Standard buildable targets: " + iosConf.targets)
-            logger.lifecycle("Standard buildable configurations : " + iosConf.configurations)
-            logger.lifecycle("Main target: " + iosConf.mainTarget)
-            logger.lifecycle("Main configuration : " + iosConf.mainConfiguration)
-            logger.lifecycle("All targets: " + iosConf.alltargets)
-            logger.lifecycle("All configurations : " + iosConf.allconfigurations)
+            l.lifecycle("Standard buildable targets: " + iosConf.targets)
+            l.lifecycle("Standard buildable configurations : " + iosConf.configurations)
+            l.lifecycle("Main target: " + iosConf.mainTarget)
+            l.lifecycle("Main configuration : " + iosConf.mainConfiguration)
+            l.lifecycle("All targets: " + iosConf.allTargets)
+            l.lifecycle("All configurations : " + iosConf.allConfigurations)
         }
         project.readProjectConfiguration.dependsOn(task)
     }
@@ -163,8 +166,8 @@ class IOSPlugin implements Plugin<Project> {
             project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = IOSXCodeOutputParser.readProjectName(trimmedListOutput)
             iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmedListOutput)
             iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedListOutput)
-            iosConf.alltargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })
-            iosConf.allconfigurations = IOSXCodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
+            iosConf.allTargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })
+            iosConf.allConfigurations = IOSXCodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
             def trimmedSdkOutput = projectHelper.executeCommand(project, (iosConf.getXCodeBuildExecutionPath() + ["-showsdks"]) as String[], false, null, null, 1, true)*.trim()
             iosConf.allIphoneSDKs = IOSXCodeOutputParser.readIphoneSdks(trimmedSdkOutput)
             iosConf.allIphoneSimulatorSDKs = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
@@ -192,15 +195,15 @@ class IOSPlugin implements Plugin<Project> {
                         try {
                             conf.versionCode = versionCodeString.toLong()
                         } catch (NumberFormatException e) {
-                            logger.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
+                            l.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
                             conf.versionCode = 0
                         }
                     }
                     if (!project.isPropertyOrEnvironmentVariableDefined('version.string')) {
-                        logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
+                        l.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
                         conf.versionString = conf.versionString + "-SNAPSHOT"
                     } else {
-                        logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
+                        l.lifecycle("Version string is not updated to SNAPSHOT because it is release build")
                     }
                 }
             }
@@ -210,44 +213,35 @@ class IOSPlugin implements Plugin<Project> {
 
     void prepareBuildAllTask(Project project) {
         def task = project.task('buildAll')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        task.group = AMEBA_BUILD
         task.description = 'Builds all target/configuration combinations and produces all artifacts (zip, ipa, messages, etc)'
+
         readProjectConfigurationFromXCode(project)
         readBasicIosProjectProperties(project)
-        def targets = iosConf.targets
-        def configurations = iosConf.configurations
-        println("Preparing all build tasks")
-        targets.each { target ->
-            configurations.each { configuration ->
-                def id = "${target}-${configuration}".toString()
-                if (!iosConf.isBuildExcluded(id)) {
-                    def noSpaceId = id.replaceAll(' ', '_')
-                    def singleTask = project.task("build-${noSpaceId}")
-                    singleTask.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-                    singleTask.description = "Builds target:${target} configuration:${configuration}"
-                    singleTask << {
-                        def singleVariantBuilder = new IOSSingleVariantBuilder(project, project.ant)
-                        singleVariantBuilder.buildNormalVariant(project, target, configuration)
-                    }
-                    task.dependsOn(singleTask)
-                    singleTask.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.verifySetup, project.copySources)
-                } else {
-                    println("Skipping build ${id} - it is excluded in configuration (${iosConf.excludedBuilds})")
-                }
+
+        l.lifecycle('Preparing all build tasks')
+        iosConf.allBuildableVariants.each { v ->
+            def singleTask = project.task("build-${v.noSpaceId}")
+            singleTask.group = AMEBA_BUILD
+            singleTask.description = "Builds target: ${v.target}, configuration ${v.configuration}"
+            singleTask << {
+                def builder = new IOSSingleVariantBuilder(project)
+                builder.buildNormalVariant(project, v.target, v.configuration)
             }
+            task.dependsOn(singleTask)
+            singleTask.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.verifySetup, project.copySources)
         }
+
         task.dependsOn(project.readProjectConfiguration)
     }
 
-
-
     def void prepareBuildSingleVariantTask(Project project) {
         def task = project.task('buildSingleVariant')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        task.group = AMEBA_BUILD
         task.description = "Builds single variant for iOS. Requires ios.target and ios.configuration properties"
         task << {
             use(PropertyCategory) {
-                def singleVariantBuilder = new IOSSingleVariantBuilder(project, this.ant)
+                def singleVariantBuilder = new IOSSingleVariantBuilder(project)
                 String target = project.readExpectedProperty(IOS_TARGET_LOCAL_PROPERTY)
                 String configuration = project.readExpectedProperty(IOS_CONFIGURATION_LOCAL_PROPERTY)
                 singleVariantBuilder.buildNormalVariant(project, target, configuration)
@@ -260,7 +254,7 @@ class IOSPlugin implements Plugin<Project> {
     def void prepareCleanTask(Project project) {
         def task = project.task('clean')
         task.description = "Cleans the project"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        task.group = AMEBA_BUILD
         task << {
             projectHelper.executeCommand(project, ["dot_clean", "./"] as String[])
             ant.delete(dir: project.file("build"), verbose: true)
@@ -275,7 +269,7 @@ class IOSPlugin implements Plugin<Project> {
         task.description = """Unlocks key chain used during project building.
               Requires osx.keychain.password and osx.keychain.location properties
               or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION environment variable"""
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        task.group = AMEBA_BUILD
         task << {
             use(PropertyCategory) {
                 def keychainPassword = project.readOptionalPropertyOrEnvironmentVariable("osx.keychain.password")
@@ -289,7 +283,7 @@ class IOSPlugin implements Plugin<Project> {
                             keychainLocation
                     ])
                 } else {
-                    logger.warn("Seems that no keychain parameters are provided. Skipping unlocking the keychain.")
+                    l.warn("Seems that no keychain parameters are provided. Skipping unlocking the keychain.")
                 }
             }
         }
@@ -299,7 +293,7 @@ class IOSPlugin implements Plugin<Project> {
     def void prepareCopyMobileProvisionTask(Project project) {
         def task = project.task('copyMobileProvision')
         task.description = "Copies mobile provision file to the user library"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        task.group = AMEBA_BUILD
         task << {
             def userHome = System.getProperty("user.home")
             def mobileProvisionDirectory = userHome + "/Library/MobileDevice/Provisioning Profiles/"
@@ -314,10 +308,10 @@ class IOSPlugin implements Plugin<Project> {
     void prepareCopySourcesTask(Project project) {
         def task = project.task('copySources')
         task.description = "Copies all sources to tmp directories for build"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        task.group = AMEBA_BUILD
         task << {
-            iosConf.alltargets.each { target ->
-                iosConf.allconfigurations.each { configuration ->
+            iosConf.allTargets.each { target ->
+                iosConf.allConfigurations.each { configuration ->
                     if (!iosConf.isBuildExcluded(target + "-" + configuration)) {
                         project.ant.sync(toDir: iosSingleVariantBuilder.tmpDir(target, configuration),
                                 failonerror: false, overwrite: true, verbose: false) {
@@ -335,10 +329,10 @@ class IOSPlugin implements Plugin<Project> {
     void prepareCopyDebugSourcesTask(Project project) {
         def task = project.task('copyDebugSources')
         task.description = "Copies all debug sources to tmp directories for build"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
+        task.group = AMEBA_BUILD
         def debugConfiguration = 'Debug'
         task << {
-            iosConf.alltargets.each { target ->
+            iosConf.allTargets.each { target ->
                 project.ant.sync(toDir: iosSingleVariantBuilder.tmpDir(target, debugConfiguration),
                         failonerror: false, overwrite: true, verbose: false) {
                     fileset(dir: "${project.rootDir}/") {
@@ -349,7 +343,6 @@ class IOSPlugin implements Plugin<Project> {
             }
         }
     }
-
 
     static public final String DESCRIPTION =
         """This is the main iOS build plugin.
