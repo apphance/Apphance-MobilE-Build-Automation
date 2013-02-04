@@ -3,11 +3,6 @@ package com.apphance.ameba
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
-/**
- * User: opal
- * Date: 01.02.2013
- * Time: 15:17
- */
 class PluginHelper {
 
     public static void checkAnyPluginIsLoaded(Project project, def currentPlugin, def ... pluginClasses) {

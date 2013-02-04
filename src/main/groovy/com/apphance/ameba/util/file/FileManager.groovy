@@ -7,11 +7,6 @@ import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
 import static java.lang.String.format
 
-/**
- * User: opal
- * Date: 01.02.2013
- * Time: 15:43
- */
 class FileManager {
     public static final int MAX_RECURSION_LEVEL = 7
     private static final long MEGABYTE = 1048576L
