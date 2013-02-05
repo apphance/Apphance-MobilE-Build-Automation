@@ -210,7 +210,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
     public void preProcessBuildsWithApphance(Project project) {
         use(PropertyCategory) {
-            def tasksToAdd = [:]
+            def uploadTasksToAdd = [:]
             androidConf.buildableVariants.each { variant ->
                 File dir = getVariantDir(project, variant)
                 String apphanceMode = apphanceMode(project)
@@ -223,9 +223,8 @@ class AndroidApphancePlugin implements Plugin<Project> {
                                 apphanceMode,
                                 project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true"),
                                 project)
-                        tasksToAdd.put(task.name, variant)
-                        logger.lifecycle("Adding upload task for variant " + variant)
                     }
+                    uploadTasksToAdd.put(task.name, variant)
                 } else {
                     def task = project["buildRelease-${variant}"]
                     task.doFirst {
@@ -234,7 +233,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
                     }
                 }
             }
-            tasksToAdd.each { key, value ->
+            uploadTasksToAdd.each { key, value ->
                 prepareSingleBuildUpload(project, value, project."${key}")
             }
         }
@@ -450,9 +449,10 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
         return found
     }
 
-    void prepareSingleBuildUpload(Project project, String variantName, def buildTask) {
+    void prepareSingleBuildUpload(Project project, String variantName, buildTask) {
 
-        def uploadTask = project.task("upload${variantName}")
+        def uploadTask = project.task("upload${variantName.toLowerCase().capitalize()}")
+
         uploadTask.description = "Uploads .apk to Apphance server"
         uploadTask.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 
@@ -469,10 +469,11 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
 
             String key = project[ApphanceProperty.APPLICATION_KEY.propertyName]
             ApphanceNetworkHelper networkHelper = null
+
             try {
                 networkHelper = new ApphanceNetworkHelper(user, pass)
 
-                def response = networkHelper.sendUpdateVersion(key, conf.versionString, conf.versionCode, false, ['apk'])
+                def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false, ['apk'])
                 l.lifecycle("Upload version query response: ${response.statusLine}")
 
                 throwIfCondition(!response.entity, "Error while uploading version query, empty response received")
@@ -491,7 +492,7 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
                 l.error(msg)
                 throw new GradleException(msg)
             } finally {
-                networkHelper.closeConnection()
+                networkHelper?.closeConnection()
             }
         }
         uploadTask.dependsOn(buildTask)
