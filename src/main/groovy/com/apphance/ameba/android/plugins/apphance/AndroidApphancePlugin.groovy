@@ -12,6 +12,7 @@ import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
 import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
 import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
+import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.apphance.ameba.util.Preconditions
 import groovy.json.JsonSlurper
 import org.apache.http.util.EntityUtils
@@ -34,6 +35,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     static Logger l = Logging.getLogger(AndroidApphancePlugin.class)
 
     ProjectHelper projectHelper
+    ProjectReleaseConfiguration releaseConfiguration
     ProjectConfiguration conf
     AndroidManifestHelper manifestHelper
     AndroidProjectConfiguration androidConf
@@ -45,8 +47,9 @@ class AndroidApphancePlugin implements Plugin<Project> {
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         use(PropertyCategory) {
             this.projectHelper = new ProjectHelper()
+            this.releaseConfiguration = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
             this.conf = project.getProjectConfiguration()
-            manifestHelper = new AndroidManifestHelper()
+            this.manifestHelper = new AndroidManifestHelper()
             this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
 
             prepareApphanceJarVersion(project)
@@ -453,7 +456,7 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
 
         def uploadTask = project.task("upload${variantName.toLowerCase().capitalize()}")
 
-        uploadTask.description = "Uploads .apk to Apphance server"
+        uploadTask.description = "Uploads apk & image_montage to Apphance server"
         uploadTask.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 
         uploadTask << {
@@ -473,13 +476,14 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
             try {
                 networkHelper = new ApphanceNetworkHelper(user, pass)
 
-                def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false, ['apk'])
+                def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false, ['apk', 'image_montage'])
                 l.lifecycle("Upload version query response: ${response.statusLine}")
 
                 throwIfCondition(!response.entity, "Error while uploading version query, empty response received")
 
                 def resp = new JsonSlurper().parseText(response.entity.content.text)
-                response = networkHelper.uploadResource(builderInfo.originalFile, resp.update_urls.apk)
+
+                response = networkHelper.uploadResource(builderInfo.originalFile, resp.update_urls.apk, 'apk')
                 l.lifecycle("Upload apk response: ${response.statusLine}")
                 EntityUtils.consume(response.entity)
 
@@ -496,6 +500,7 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
             }
         }
         uploadTask.dependsOn(buildTask)
+        uploadTask.dependsOn('prepareImageMontage')
     }
 
     static public final String DESCRIPTION =

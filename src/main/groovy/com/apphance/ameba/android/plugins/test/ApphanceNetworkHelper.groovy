@@ -76,13 +76,13 @@ class ApphanceNetworkHelper {
         jsonBuilder.toString()
     }
 
-    HttpResponse uploadResource(File resource, String url) {
+    HttpResponse uploadResource(File resource, String url, String formBodyPart) {
         HttpPost uploadReq = new HttpPost(url.replace("https://apphance-app.appspot.com", ""))
 
         def boundary = "----------------------------90505c6cdd54"
 
         MultipartEntity reqEntity = new MultipartEntity(STRICT, boundary, Charset.forName("UTF-8"));
-        reqEntity.addPart(new FormBodyPart("apk", new FileBody(resource, "application/octet-stream")))
+        reqEntity.addPart(new FormBodyPart(formBodyPart, new FileBody(resource, "application/octet-stream")))
         uploadReq.setEntity(reqEntity)
 
         uploadReq.setHeader("Content-type", "multipart/form-data; boundary=" + boundary)

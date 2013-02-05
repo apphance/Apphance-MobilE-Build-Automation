@@ -4,6 +4,7 @@ import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Ignore
+import org.junit.Test
 
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.assertTrue
