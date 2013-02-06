@@ -262,7 +262,7 @@ class ExecuteIosBuildsTest {
     }
 
     @Test
-    void testInCorrectApphanceDependency() {
+    void testIncorrectApphanceDependency() {
         Properties p = new Properties()
         p.put('apphance.lib', 'com.apphanc:ios.production.armv7:1.8')
         try {
@@ -278,9 +278,9 @@ class ExecuteIosBuildsTest {
     @Test
     void testCorrectApphanceDependency() {
         Properties p = new Properties()
-        p.put('apphance.lib', 'com.apphance:ios.production.armv7:1.8')
+        p.put('apphance.lib', 'com.apphance:ios.pre-production.armv7:1.8.2')
         runGradleWithProperties(p, gradleOneVariantConnection, 'clean', 'unlockKeyChain', 'build-GradleXCode-BasicConfiguration')
-        def apphanceLib = new File("testProjects/ios/tmp-GradleXCode-GradleXCode-BasicConfiguration/Apphance-Production.framework")
+        def apphanceLib = new File("testProjects/ios/tmp-GradleXCode-GradleXCode-BasicConfiguration/Apphance-Pre-Production.framework")
         assertTrue(apphanceLib.exists())
     }
 }

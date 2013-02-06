@@ -329,9 +329,9 @@ class ExecuteAndroidBuildsTest {
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
         }
-        def androidLib = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/android.pre-production-1.8.1.jar")
+        def androidLib = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/android.pre-production-1.8.2.jar")
         assertTrue(androidLib.exists())
-        assertEquals('android.pre-production-1.8.1.jar', androidLib.name)
+        assertEquals('android.pre-production-1.8.2.jar', androidLib.name)
     }
 
     @Test
@@ -340,15 +340,15 @@ class ExecuteAndroidBuildsTest {
         ProjectConfiguration projectConf = new ProjectConfiguration()
         try {
             Properties p = new Properties()
-            p.put('apphance.lib', "com.apphance:android.production:1.8")
+            p.put('apphance.lib', "com.apphance:android.production:1.8.2")
             runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
             manifestHelper.readVersion(testAndroidNoApphanceApplication, projectConf)
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
         }
-        def androidLib = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/android.production-1.8.jar")
+        def androidLib = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/android.production-1.8.2.jar")
         assertTrue(androidLib.exists())
-        assertEquals('android.production-1.8.jar', androidLib.name)
+        assertEquals('android.production-1.8.2.jar', androidLib.name)
     }
 
     @Test
