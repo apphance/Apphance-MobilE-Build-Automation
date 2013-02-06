@@ -3,6 +3,11 @@ buildscript {
     apply from: "$amebaProjectPath/ameba_in_classpath.gradle"
 }
 
+ext {
+	apphanceUserName = "maciej.opala@polidea.pl"
+	apphancePassword = "apphancetest"
+}
+
 apply plugin: 'ameba-project-configuration'
 apply plugin: 'ameba-ios-build'
 apply plugin: 'ameba-project-release'
