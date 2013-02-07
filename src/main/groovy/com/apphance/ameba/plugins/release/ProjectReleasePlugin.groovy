@@ -126,9 +126,8 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
         task << {
             Collection<String> command = new LinkedList<String>()
             command << "montage"
-            ImageNameFilter imageFilter = new ImageNameFilter();
             project.rootDir.traverse([type: FileType.FILES, maxDepth: FileManager.MAX_RECURSION_LEVEL]) { file ->
-                if (imageFilter.isValid(project.rootDir, file)) {
+                if (ImageNameFilter.isValid(project.rootDir, file)) {
                     command << file
                 }
             }

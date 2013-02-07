@@ -419,10 +419,10 @@ class AndroidPlugin implements Plugin<Project> {
         task.group = AMEBA_BUILD
         task << {
             if (androidEnvironment.isLibrary()) {
-                AndroidBuilderInfo bi = androidJarBuilder.buildJarArtifactBuilderInfo(project, variant, debugRelease)
+                AndroidBuilderInfo bi = androidJarBuilder.buildJarArtifactBuilderInfo(variant, debugRelease)
                 androidJarBuilder.buildSingle(bi)
             } else {
-                AndroidBuilderInfo bi = androidApkBuilder.buildApkArtifactBuilderInfo(project, variant, debugRelease)
+                AndroidBuilderInfo bi = androidApkBuilder.buildApkArtifactBuilderInfo(variant, debugRelease)
                 androidApkBuilder.buildSingle(bi)
             }
         }

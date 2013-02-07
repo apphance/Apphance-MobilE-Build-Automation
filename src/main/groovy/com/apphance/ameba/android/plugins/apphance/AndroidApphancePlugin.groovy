@@ -1,19 +1,21 @@
 package com.apphance.ameba.android.plugins.apphance
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.PluginHelper
-import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.*
+import com.apphance.ameba.*
+import com.apphance.ameba.android.AndroidManifestHelper
+import com.apphance.ameba.android.AndroidProjectConfiguration
+import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
+import com.apphance.ameba.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.android.plugins.test.ApphanceNetworkHelper
 import com.apphance.ameba.apphance.ApphanceProperty
 import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
 import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
 import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
+import com.apphance.ameba.plugins.release.ProjectReleaseCategory
+import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
+import com.apphance.ameba.util.Preconditions
 import groovy.json.JsonSlurper
-import org.apache.http.HttpResponse
+import org.apache.http.util.EntityUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -27,31 +29,34 @@ import static groovy.io.FileType.FILES
  * Adds Apphance in automated way.
  *
  */
+@Mixin(Preconditions)
 class AndroidApphancePlugin implements Plugin<Project> {
 
-    static Logger logger = Logging.getLogger(AndroidApphancePlugin.class)
+    static Logger l = Logging.getLogger(AndroidApphancePlugin.class)
 
     ProjectHelper projectHelper
+    ProjectReleaseConfiguration releaseConfiguration
     ProjectConfiguration conf
     AndroidManifestHelper manifestHelper
     AndroidProjectConfiguration androidConf
 
     static final JAR_PATTERN = ~/.*android\.(pre\-)?production\-(\d+\.)+\d+\.jar/
 
-
+    @Override
     public void apply(Project project) {
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         use(PropertyCategory) {
             this.projectHelper = new ProjectHelper()
+            this.releaseConfiguration = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
             this.conf = project.getProjectConfiguration()
-            manifestHelper = new AndroidManifestHelper()
+            this.manifestHelper = new AndroidManifestHelper()
             this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
 
             prepareApphanceJarVersion(project)
-            preprocessBuildsWithApphance(project)
+            preProcessBuildsWithApphance(project)
             prepareConvertLogsToApphance(project)
             prepareConvertLogsToAndroid(project)
-            prepareRemoveApphaceFromManifest(project)
+            prepareRemoveApphanceFromManifest(project)
             project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
             project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
             project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
@@ -60,24 +65,17 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
     private void prepareApphanceJarVersion(Project project) {
         project.configurations {
-
-            // for user use (to override Apphance version)
-            // if no version is
             apphance
         }
 
         project.configurations.apphance {
-            // causes fast reloading of Apphance when new version occurs
-            // we pay with frequent version checks
             resolutionStrategy.cacheDynamicVersionsFor 0, 'minutes'
         }
 
-        // Apphance is being kept in Polidea repository
         project.repositories {
             maven { url 'https://dev.polidea.pl/artifactory/libs-releases-local/' }
             maven { url 'https://dev.polidea.pl/artifactory/libs-snapshots-local/' }
         }
-
     }
 
     void prepareConvertLogsToApphance(project) {
@@ -94,7 +92,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
         task << { replaceLogsWithAndroid(project.rootDir, project.ant) }
     }
 
-    void prepareRemoveApphaceFromManifest(project) {
+    void prepareRemoveApphanceFromManifest(project) {
         def task = project.task('removeApphanceFromManifest')
         task.description = "Remove apphance-only entries from manifest"
         task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
@@ -111,7 +109,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     private static String EVENT_LOG_ACTIVITY_PACKAGE = "com.apphance.android.eventlog.activity"
 
     private void replaceViewsWithApphance(File directory, AntBuilder ant) {
-        logger.lifecycle("Replacing android views with apphance loggable versions for ${directory}")
+        l.lifecycle("Replacing android views with apphance loggable versions for ${directory}")
         replaceViewWithApphance(directory, "Button", ant)
         replaceViewWithApphance(directory, "CheckBox", ant)
         replaceViewWithApphance(directory, "EditText", ant)
@@ -138,7 +136,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
     private void replaceActivityExtendsWithApphance(File directory, String activityName, AntBuilder ant) {
         String newClassName = EVENT_LOG_ACTIVITY_PACKAGE + "." + activityName
-        logger.info("Replacing extends with Apphance for ${activityName} to ${newClassName}")
+        l.info("Replacing extends with Apphance for ${activityName} to ${newClassName}")
         ant.replace(casesensitive: 'true', token: "extends ${activityName} ",
                 value: "extends ${newClassName} ", summary: true) {
             fileset(dir: new File(directory, 'src')) { include(name: '**/*.java') }
@@ -148,7 +146,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
     private void replaceViewExtendsWithApphance(File directory, String viewName, AntBuilder ant) {
         String newClassName = EVENT_LOG_WIDGET_PACKAGE + "." + viewName
-        logger.info("Replacing extends with Apphance for ${viewName} to ${newClassName}")
+        l.info("Replacing extends with Apphance for ${viewName} to ${newClassName}")
         ant.replace(casesensitive: 'true', token: "extends ${viewName} ",
                 value: "extends ${newClassName} ", summary: true) {
             fileset(dir: new File(directory, 'src')) { include(name: '**/*.java') }
@@ -156,7 +154,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     }
 
     private void replaceTagResourcesOpeningTag(File directory, String tagName, String replacement, AntBuilder ant) {
-        logger.info("Replacing tag resources with Apphance for ${tagName} to ${replacement}")
+        l.info("Replacing tag resources with Apphance for ${tagName} to ${replacement}")
         ant.replace(casesensitive: 'true', token: "<${tagName} ",
                 value: "<${replacement} ", summary: true) {
             fileset(dir: new File(directory, 'res/layout')) { include(name: '**/*.xml') }
@@ -173,7 +171,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     }
 
     private void replaceTagResourcesClosingTag(File directory, String tagName, String replacement, AntBuilder ant) {
-        logger.info("Replacing tag resources with Apphance for ${tagName} to ${replacement}")
+        l.info("Replacing tag resources with Apphance for ${tagName} to ${replacement}")
         ant.replace(casesensitive: 'true', token: "</${tagName} ",
                 value: "</${replacement} ", summary: true) {
             fileset(dir: new File(directory, 'res/layout')) { include(name: '**/*.xml') }
@@ -213,13 +211,12 @@ class AndroidApphancePlugin implements Plugin<Project> {
         }
     }
 
-    public void preprocessBuildsWithApphance(Project project) {
+    public void preProcessBuildsWithApphance(Project project) {
         use(PropertyCategory) {
-            def tasksToAdd = [:]
-            def buildableVariants = androidConf.buildableVariants
-            buildableVariants.each { variant ->
+            def uploadTasksToAdd = [:]
+            androidConf.buildableVariants.each { variant ->
                 File dir = getVariantDir(project, variant)
-                String apphanceMode = getApphanceMode(project)
+                String apphanceMode = apphanceMode(project)
                 if (androidConf.debugRelease.get(variant) == 'Debug') {
                     def task = project["buildDebug-${variant}"]
                     task.doFirst {
@@ -229,9 +226,8 @@ class AndroidApphancePlugin implements Plugin<Project> {
                                 apphanceMode,
                                 project[ApphanceProperty.APPHANCE_LOG_EVENTS.propertyName].equals("true"),
                                 project)
-                        tasksToAdd.put(task.name, variant)
-                        logger.lifecycle("Adding upload task for variant " + variant)
                     }
+                    uploadTasksToAdd.put(task.name, variant)
                 } else {
                     def task = project["buildRelease-${variant}"]
                     task.doFirst {
@@ -240,18 +236,14 @@ class AndroidApphancePlugin implements Plugin<Project> {
                     }
                 }
             }
-            tasksToAdd.each { key, value ->
+            uploadTasksToAdd.each { key, value ->
                 prepareSingleBuildUpload(project, value, project."${key}")
             }
         }
     }
 
     private File getVariantDir(Project project, String variant) {
-        File dir = project.rootDir
-        if (variant != null) {
-            dir = androidConf.tmpDirs[variant]
-        }
-        return dir
+        variant != null ? androidConf.tmpDirs[variant] : project.rootDir
     }
 
     private addApphanceToProject(File directory,
@@ -261,7 +253,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
                                  boolean logEvents,
                                  Project project) {
         if (!checkIfApphancePresent(directory)) {
-            logger.lifecycle("Apphance not found in project: ${directory}")
+            l.lifecycle("Apphance not found in project: ${directory}")
             File mainFile
             boolean isActivity
             (mainFile, isActivity) = getMainApplicationFile(directory)
@@ -275,12 +267,12 @@ class AndroidApphancePlugin implements Plugin<Project> {
                 addApphanceToManifest(directory)
             }
         } else {
-            logger.lifecycle("Apphance found in project: ${directory}")
+            l.lifecycle("Apphance found in project: ${directory}")
         }
     }
 
     private replaceLogsWithAndroid(File directory, AntBuilder ant) {
-        logger.lifecycle("Replacing apphance logs with android in ${directory}")
+        l.lifecycle("Replacing apphance logs with android in ${directory}")
         ant.replace(casesensitive: 'true', token: 'import com.apphance.android.Log;',
                 value: 'import android.util.Log;', summary: true) {
             fileset(dir: new File(directory, 'src')) { include(name: '**/*.java') }
@@ -288,7 +280,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     }
 
     private replaceLogsWithApphance(File directory, AntBuilder ant) {
-        logger.lifecycle("Replacing Android logs with Apphance in ${directory}")
+        l.lifecycle("Replacing Android logs with Apphance in ${directory}")
         ant.replace(casesensitive: 'true', token: 'import android.util.Log;',
                 value: 'import com.apphance.android.Log;', summary: true) {
             fileset(dir: new File(directory, 'src')) { include(name: '**/*.java') }
@@ -296,19 +288,19 @@ class AndroidApphancePlugin implements Plugin<Project> {
     }
 
     private removeApphanceFromManifest(File directory) {
-        logger.lifecycle("Remove apphance from manifest")
+        l.lifecycle("Remove apphance from manifest")
         manifestHelper.removeApphance(directory)
         File apphanceRemovedManifest = new File(conf.logDirectory, "AndroidManifest-with-apphance-removed.xml")
-        logger.lifecycle("Manifest used for this build is stored in ${apphanceRemovedManifest}")
+        l.lifecycle("Manifest used for this build is stored in ${apphanceRemovedManifest}")
         if (apphanceRemovedManifest.exists()) {
-            logger.lifecycle('removed manifest exists')
+            l.lifecycle('removed manifest exists')
             apphanceRemovedManifest.delete()
         }
         apphanceRemovedManifest << new File(directory, "AndroidManifest.xml").text
     }
 
     private addApphanceToManifest(File directory) {
-        logger.lifecycle("Adding apphance to manifest")
+        l.lifecycle("Adding apphance to manifest")
         manifestHelper.addApphanceToManifest(directory)
     }
 
@@ -349,7 +341,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
             }
         }
         if (!onCreateAdded) {
-            logger.warn("Could not find onCreate(). Apphance not added.")
+            l.warn("Could not find onCreate(). Apphance not added.")
         }
     }
 
@@ -363,18 +355,16 @@ class AndroidApphancePlugin implements Plugin<Project> {
         return present
     }
 
-    String getApphanceMode(Project project) {
-        if (project.hasProperty(ApphanceProperty.APPHANCE_MODE.propertyName) && project[ApphanceProperty.APPHANCE_MODE.propertyName].equals("QA")) {
-            return "Apphance.Mode.QA"
-        } else {
-            return "Apphance.Mode.Silent"
-        }
+    String apphanceMode(Project project) {
+        ((project.hasProperty(ApphanceProperty.APPHANCE_MODE.propertyName) && project[ApphanceProperty.APPHANCE_MODE.propertyName].equals("QA"))) ?
+            "Apphance.Mode.QA"
+        : "Apphance.Mode.Silent"
     }
 
 
     private def addApphanceInit(File directory, File mainFile, String appKey,
                                 String apphanceMode, boolean logEvents, boolean isActivity) {
-        logger.lifecycle("Adding apphance init to file " + mainFile)
+        l.lifecycle("Adding apphance init to file " + mainFile)
         File newMainClassFile = new File(directory, "newMainClassFile.java")
         String startSession = "Apphance.startNewSession(this, \"${appKey}\", ${apphanceMode});"
         if (logEvents) {
@@ -406,10 +396,10 @@ class AndroidApphancePlugin implements Plugin<Project> {
         libsDir.mkdirs()
 
         libsDir.eachFileMatch(JAR_PATTERN) {
-            logger.lifecycle("Removing old apphance jar: " + it.name)
+            l.lifecycle("Removing old apphance jar: " + it.name)
             it.delete()
         }
-        logger.lifecycle("Copying apphance jar: to ${libsDir}")
+        l.lifecycle("Copying apphance jar: to ${libsDir}")
 
         try {
             project.copy {
@@ -418,7 +408,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
             }
         } catch (e) {
             def msg = "Error while resolving dependency: '$apphanceLibDependency'"
-            logger.error("""$msg.
+            l.error("""$msg.
 To solve the problem add correct dependency to gradle.properties file or add -Dapphance.lib=<apphance.lib> to invocation.
 Dependency should be added in gradle style to 'apphance.lib' entry""")
             throw new GradleException(msg)
@@ -462,37 +452,55 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
         return found
     }
 
-    void prepareSingleBuildUpload(Project project, String variantName, def buildTask) {
+    void prepareSingleBuildUpload(Project project, String variantName, buildTask) {
 
-        def uploadTask = project.task("upload${variantName}")
-        uploadTask.description = "Uploads .apk to Apphance server"
+        def uploadTask = project.task("upload${variantName.toLowerCase().capitalize()}")
+
+        uploadTask.description = "Uploads apk & image_montage to Apphance server"
         uploadTask.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 
         uploadTask << {
-            AndroidSingleVariantApkBuilder androidBuilder = new AndroidSingleVariantApkBuilder(project, androidConf)
-            AndroidBuilderInfo bi = androidBuilder.buildApkArtifactBuilderInfo(project, variantName, "Debug")
-            String username = project["apphanceUserName"]
-            String pass = project["apphancePassword"]
-            String apphanceKey = project[ApphanceProperty.APPLICATION_KEY.propertyName]
-            ApphanceNetworkHelper networkHelper = null
-            try {
-                networkHelper = new ApphanceNetworkHelper(username, pass)
 
-                HttpResponse response = networkHelper.sendUpdateVersion(apphanceKey, conf.versionString, conf.versionCode, false, ["apk"])
-                logger.lifecycle("Response status " + response.getStatusLine())
-                if (response.getEntity() != null) {
-                    JsonSlurper slurper = new JsonSlurper()
-                    def resp = slurper.parseText(response.getEntity().getContent().getText())
-                    HttpResponse uploadResponse = networkHelper.uploadResource(bi.originalFile, resp.update_urls.apk)
-                    logger.lifecycle("Upload response " + uploadResponse.getStatusLine())
-                } else {
-                    logger.lifecycle("Query failed")
-                }
+            def builder = new AndroidSingleVariantApkBuilder(project, androidConf)
+            def builderInfo = builder.buildApkArtifactBuilderInfo(variantName, 'Debug')
+            def releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
+
+            //TODO gradle.properties + validation
+            String user = project['apphanceUserName']
+            String pass = project['apphancePassword']
+            //TODO gradle.properties + validation
+
+            String key = project[ApphanceProperty.APPLICATION_KEY.propertyName]
+            ApphanceNetworkHelper networkHelper = null
+
+            try {
+                networkHelper = new ApphanceNetworkHelper(user, pass)
+
+                def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false, ['apk', 'image_montage'])
+                l.lifecycle("Upload version query response: ${response.statusLine}")
+
+                throwIfCondition(!response.entity, "Error while uploading version query, empty response received")
+
+                def resp = new JsonSlurper().parseText(response.entity.content.text)
+
+                response = networkHelper.uploadResource(builderInfo.originalFile, resp.update_urls.apk, 'apk')
+                l.lifecycle("Upload apk response: ${response.statusLine}")
+                EntityUtils.consume(response.entity)
+
+                response = networkHelper.uploadResource(releaseConf.imageMontageFile.location, resp.update_urls.image_montage, 'image_montage')
+                l.lifecycle("Upload image_montage response: ${response.statusLine}")
+                EntityUtils.consume(response.entity)
+
+            } catch (e) {
+                def msg = "Error while uploading artifact to apphance: ${e.message}"
+                l.error(msg)
+                throw new GradleException(msg)
             } finally {
-                networkHelper.closeConnection()
+                networkHelper?.closeConnection()
             }
         }
         uploadTask.dependsOn(buildTask)
+        uploadTask.dependsOn('prepareImageMontage')
     }
 
     static public final String DESCRIPTION =

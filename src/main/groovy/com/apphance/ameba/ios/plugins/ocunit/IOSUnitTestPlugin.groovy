@@ -57,7 +57,7 @@ class IOSUnitTestPlugin implements Plugin<Project> {
                     "-configuration",
                     configuration,
                     "-sdk",
-                    iosConf.simulatorsdk,
+                    iosConf.simulatorSDK,
                     'RUN_UNIT_TEST_WITH_IOS_SIM=YES',
                     "UNIT_TEST_OUTPUT_FILE=${testResults.canonicalPath}"
             ], false)

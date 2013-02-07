@@ -31,17 +31,16 @@ class IOSReleaseListener implements IOSBuildListener {
     IOSReleaseConfiguration iosReleaseConf
     AntBuilder ant
 
-    static Logger logger = Logging.getLogger(IOSReleaseListener.class)
+    static Logger l = Logging.getLogger(IOSReleaseListener.class)
 
-
-    IOSReleaseListener(Project project, AntBuilder ant) {
+    IOSReleaseListener(Project project) {
         use(PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
             this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
             this.iosReleaseConf = IOSReleaseConfigurationRetriever.getIosReleaseConfiguration(project)
-            this.ant = ant
+            this.ant = project.ant
         }
     }
 
@@ -66,14 +65,14 @@ class IOSReleaseListener implements IOSBuildListener {
                 prepareDSYMZipFile(project, bi)
                 prepareIpaFile(project, bi)
                 prepareManifestFile(project, bi)
-                prepareMobileProvisionFile(project, bi)
+                prepareMobileProvisionFile(bi)
             } else {
                 iosConf.families.each { family ->
                     prepareSimulatorBundleFile(project, bi, family)
                 }
             }
         } else {
-            logger.lifecycle("Skipping building artifacts -> the build is not versioned")
+            l.lifecycle("Skipping building artifacts -> the build is not versioned")
         }
     }
 
@@ -86,7 +85,7 @@ class IOSReleaseListener implements IOSBuildListener {
                     includes: IOSXCodeOutputParser.findMobileProvisionFile(project, bi.target, bi.configuration).name)
             zipfileset(dir: bi.buildDirectory, includes: "${bi.target}.app/**")
         }
-        logger.lifecycle("Distribution zip file created: ${distributionZipArtifact}")
+        l.lifecycle("Distribution zip file created: ${distributionZipArtifact}")
     }
 
     private void prepareDSYMZipFile(Project project, IOSBuilderInfo bi) {
@@ -96,7 +95,7 @@ class IOSReleaseListener implements IOSBuildListener {
         ant.zip(destfile: dSYMZipArtifact.location) {
             zipfileset(dir: bi.buildDirectory, includes: "${bi.target}.app.dSYM/**")
         }
-        logger.lifecycle("dSYM zip file created: ${dSYMZipArtifact}")
+        l.lifecycle("dSYM zip file created: ${dSYMZipArtifact}")
     }
 
 
@@ -115,10 +114,10 @@ class IOSReleaseListener implements IOSBuildListener {
                 "-o",
                 ipaArtifact.location,
                 "--embed",
-                bi.mobileprovisionFile
+                bi.mobileProvisionFile
         ]
         projectHelper.executeCommand(project, command)
-        logger.lifecycle("ipa file created: ${ipaArtifact}")
+        l.lifecycle("ipa file created: ${ipaArtifact}")
     }
 
 
@@ -135,18 +134,18 @@ class IOSReleaseListener implements IOSBuildListener {
                 title: bi.target,
                 bundleId: bundleId
         ]
-        logger.lifecycle("Building manifest from ${bi.plistFile}, bundleId: ${bundleId}")
+        l.lifecycle("Building manifest from ${bi.plistFile}, bundleId: ${bundleId}")
         def result = engine.createTemplate(manifestTemplate).make(binding)
         manifestArtifact.location << (result.toString())
-        logger.lifecycle("Manifest file created: ${manifestArtifact}")
+        l.lifecycle("Manifest file created: ${manifestArtifact}")
     }
 
-    private void prepareMobileProvisionFile(Project project, IOSBuilderInfo bi) {
+    private void prepareMobileProvisionFile(IOSBuilderInfo bi) {
         AmebaArtifact mobileProvisionArtifact = prepareMobileProvisionArtifact(bi)
         mobileProvisionArtifact.location.parentFile.mkdirs()
         mobileProvisionArtifact.location.delete()
-        mobileProvisionArtifact.location << bi.mobileprovisionFile.text
-        logger.lifecycle("Mobile provision file created: ${mobileProvisionArtifact}")
+        mobileProvisionArtifact.location << bi.mobileProvisionFile.text
+        l.lifecycle("Mobile provision file created: ${mobileProvisionArtifact}")
     }
 
 
@@ -158,7 +157,7 @@ class IOSReleaseListener implements IOSBuildListener {
         if (!checkIfExists || distributionZipArtifact.location.exists()) {
             iosReleaseConf.distributionZipFiles.put(bi.id, distributionZipArtifact)
         } else {
-            logger.lifecycle("Skipping preparing distribution zip for ${bi} -> missing")
+            l.lifecycle("Skipping preparing distribution zip for ${bi} -> missing")
         }
         return distributionZipArtifact
     }
@@ -172,7 +171,7 @@ class IOSReleaseListener implements IOSBuildListener {
         if (!checkIfExists || dSYMZipArtifact.location.exists()) {
             iosReleaseConf.dSYMZipFiles.put(bi.id, dSYMZipArtifact)
         } else {
-            logger.lifecycle("Skipping preparing dSYM artifact for ${bi.id} : ${dSYMZipArtifact.location} -> missing")
+            l.lifecycle("Skipping preparing dSYM artifact for ${bi.id} : ${dSYMZipArtifact.location} -> missing")
         }
         return dSYMZipArtifact
     }
@@ -186,7 +185,7 @@ class IOSReleaseListener implements IOSBuildListener {
         if (!checkIfExists || ipaArtifact.location.exists()) {
             iosReleaseConf.ipaFiles.put(bi.id, ipaArtifact)
         } else {
-            logger.lifecycle("Skipping preparing ipa artifact for ${bi.id} : ${ipaArtifact.location} -> missing")
+            l.lifecycle("Skipping preparing ipa artifact for ${bi.id} : ${ipaArtifact.location} -> missing")
         }
         return ipaArtifact
     }
@@ -199,7 +198,7 @@ class IOSReleaseListener implements IOSBuildListener {
         if (!checkIfExists || manifestArtifact.location.exists()) {
             iosReleaseConf.manifestFiles.put(bi.id, manifestArtifact)
         } else {
-            logger.lifecycle("Skipping preparing manifest artifact for ${bi.id} : ${manifestArtifact.location} -> missing")
+            l.lifecycle("Skipping preparing manifest artifact for ${bi.id} : ${manifestArtifact.location} -> missing")
         }
         return manifestArtifact
     }
@@ -212,22 +211,22 @@ class IOSReleaseListener implements IOSBuildListener {
         if (!checkIfExists || mobileProvisionArtifact.location.exists()) {
             iosReleaseConf.mobileProvisionFiles.put(bi.id, mobileProvisionArtifact)
         } else {
-            logger.lifecycle("Skipping preparing mobileProvision artifact for ${bi.id} : ${mobileProvisionArtifact.location} -> missing")
+            l.lifecycle("Skipping preparing mobileProvision artifact for ${bi.id} : ${mobileProvisionArtifact.location} -> missing")
         }
         return mobileProvisionArtifact
     }
 
     void buildArtifactsOnly(Project project, String target, String configuration) {
         if (conf.versionString != null) {
-            IOSSingleVariantBuilder builder = new IOSSingleVariantBuilder(project, project.ant)
-            IOSBuilderInfo bi = builder.buidSingleBuilderInfo(target, configuration, 'iphoneos', project)
+            IOSSingleVariantBuilder builder = new IOSSingleVariantBuilder(project)
+            IOSBuilderInfo bi = builder.buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
             prepareDistributionZipArtifact(bi, true)
             prepareDSYMZipArtifact(bi, true)
             prepareIpaArtifact(bi, true)
             prepareManifestArtifact(bi, true)
             prepareMobileProvisionArtifact(bi, true)
         } else {
-            logger.lifecycle("Skipping building artifacts -> the build is not versioned")
+            l.lifecycle("Skipping building artifacts -> the build is not versioned")
         }
     }
 
@@ -263,7 +262,7 @@ class IOSReleaseListener implements IOSBuildListener {
         ]
         projectHelper.executeCommand(project, prepareDmgCommand)
         iosReleaseConf.dmgImageFiles.put("${family}-${iosConf.mainTarget}" as String, file)
-        logger.lifecycle("Simulator zip file created: ${file} for ${family}-${iosConf.mainTarget}")
+        l.lifecycle("Simulator zip file created: ${file} for ${family}-${iosConf.mainTarget}")
     }
 
     private rsyncTemplatePreservingExecutableFlag(Project project, File destDir) {
@@ -317,7 +316,7 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
     private updateBundleId(Project project, IOSBuilderInfo bi, File tmpDir) {
-        def bundleId = MPParser.readBundleIdFromProvisionFile(bi.mobileprovisionFile.toURI().toURL())
+        def bundleId = MPParser.readBundleIdFromProvisionFile(bi.mobileProvisionFile.toURI().toURL())
         File contentsPlist = new File(tmpDir, "Contents/Info.plist")
         runPlistBuddy(project, "Set :CFBundleIdentifier ${bundleId}.launchsim", contentsPlist)
     }

@@ -7,7 +7,7 @@ import java.util.regex.Pattern
  */
 class IOSProjectConfiguration {
     String sdk
-    String simulatorsdk
+    String simulatorSDK
     String mainTarget
     String mainConfiguration
     File distributionDirectory
@@ -16,8 +16,8 @@ class IOSProjectConfiguration {
     def xCodeProjectDirectories = [:]
     List<String> targets = []
     List<String> configurations = []
-    List<String> alltargets = []
-    List<String> allconfigurations = []
+    List<String> allTargets = []
+    List<String> allConfigurations = []
     List<String> allIphoneSDKs = []
     List<String> allIphoneSimulatorSDKs = []
     List<String> families = []
@@ -25,11 +25,6 @@ class IOSProjectConfiguration {
     def monkeyTests = [:]
     def monkeyTestResults = [:]
     List<String> excludedBuilds = []
-
-    @Override
-    public String toString() {
-        return this.getProperties()
-    }
 
     boolean isBuildExcluded(String id) {
         boolean excluded = false
@@ -39,27 +34,40 @@ class IOSProjectConfiguration {
                 excluded = true
             }
         }
-        return excluded
+        excluded
+    }
+
+    Collection<Expando> getAllBuildableVariants() {
+        Collection<Expando> result = []
+        targets.each { t ->
+            configurations.each { c ->
+                def id = "$t-$c".toString()
+                if (!isBuildExcluded(id)) {
+                    result << new Expando(target: t, configuration: c, id: id, noSpaceId: id.replaceAll(' ', '_'))
+                }
+            }
+        }
+        result
     }
 
     def String getVariant(String target, String configuration) {
-        return "${target}-${configuration}"
+        "${target}-${configuration}"
     }
 
     def getXCodeBuildExecutionPath(String target, String configuration) {
-        if (xCodeProjectDirectory == null || xCodeProjectDirectory == '') {
-            return ['xcodebuild']
-        } else {
-            return ['xcodebuild', '-project', xCodeProjectDirectories[getVariant(target, configuration)]]
-        }
+        (xCodeProjectDirectory == null || xCodeProjectDirectory == '') ?
+            ['xcodebuild'] :
+            ['xcodebuild', '-project', xCodeProjectDirectories[getVariant(target, configuration)]]
     }
 
     def getXCodeBuildExecutionPath() {
-        if (xCodeProjectDirectory == null || xCodeProjectDirectory == '') {
-            return ['xcodebuild']
-        } else {
-            return ['xcodebuild', '-project', xCodeProjectDirectory]
-        }
+        (xCodeProjectDirectory == null || xCodeProjectDirectory == '') ?
+            ['xcodebuild'] :
+            ['xcodebuild', '-project', xCodeProjectDirectory]
     }
 
+    @Override
+    public String toString() {
+        return this.getProperties()
+    }
 }

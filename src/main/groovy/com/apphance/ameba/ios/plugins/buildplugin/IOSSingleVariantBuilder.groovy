@@ -30,13 +30,13 @@ class IOSSingleVariantBuilder {
     AntBuilder ant
     Project project
 
-    IOSSingleVariantBuilder(Project project, AntBuilder ant) {
+    IOSSingleVariantBuilder(Project project) {
         use(PropertyCategory) {
             this.project = project
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
-            this.ant = ant
+            this.ant = project.ant
         }
     }
 
@@ -58,7 +58,7 @@ class IOSSingleVariantBuilder {
                 result << it
             }
         }
-        return result
+        result
     }
 
     Collection<File> findAllSourceFiles(File dir) {
@@ -69,7 +69,7 @@ class IOSSingleVariantBuilder {
                 result << it
             }
         }
-        return result
+        result
     }
 
 
@@ -141,7 +141,7 @@ class IOSSingleVariantBuilder {
                     "-sdk",
                     iosConf.sdk
             ])
-            IOSBuilderInfo bi = buidSingleBuilderInfo(target, configuration, 'iphoneos', project)
+            IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
             buildListeners.each {
                 it.buildDone(project, bi)
             }
@@ -152,7 +152,7 @@ class IOSSingleVariantBuilder {
                     "-configuration",
                     configuration,
                     "-sdk",
-                    iosConf.simulatorsdk,
+                    iosConf.simulatorSDK,
                     "-arch",
                     "i386"
             ])
@@ -171,9 +171,9 @@ class IOSSingleVariantBuilder {
                             "-configuration",
                             configuration,
                             "-sdk",
-                            iosConf.simulatorsdk
+                            iosConf.simulatorSDK
                     ])
-            IOSBuilderInfo bi = buidSingleBuilderInfo(target, configuration, 'iphonesimulator', project)
+            IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphonesimulator', project)
             buildListeners.each {
                 it.buildDone(project, bi)
             }
@@ -183,7 +183,7 @@ class IOSSingleVariantBuilder {
     }
 
 
-    IOSBuilderInfo buidSingleBuilderInfo(String target, String configuration, String outputDirPostfix, Project project) {
+    IOSBuilderInfo buildSingleBuilderInfo(String target, String configuration, String outputDirPostfix, Project project) {
         IOSBuilderInfo bi = new IOSBuilderInfo(
                 id: "${target}-${configuration}",
                 target: target,
@@ -191,12 +191,12 @@ class IOSSingleVariantBuilder {
                 buildDirectory: new File(tmpDir(target, configuration), "/build/${configuration}-${outputDirPostfix}"),
                 fullReleaseName: "${target}-${configuration}-${conf.fullVersionString}",
                 filePrefix: "${target}-${configuration}-${conf.fullVersionString}",
-                mobileprovisionFile: IOSXCodeOutputParser.findMobileProvisionFile(project, target, configuration, true),
+                mobileProvisionFile: IOSXCodeOutputParser.findMobileProvisionFile(project, target, configuration, true),
                 plistFile: new File(tmpDir(target, configuration), PropertyCategory.readProperty(project, IOSProjectProperty.PLIST_FILE)))
-        return bi
+        bi
     }
 
     public File tmpDir(String target, String configuration) {
-        return project.file("../tmp-${project.rootDir.name}-${target}-${configuration}")
+        project.file("../tmp-${project.rootDir.name}-${target}-${configuration}")
     }
 }

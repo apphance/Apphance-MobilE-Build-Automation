@@ -1,28 +1,31 @@
-package com.apphance.ameba.applyPlugins.android
+package com.apphance.ameba.applyPlugins.ios
 
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Ignore
-import org.junit.Test
 
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.assertTrue
 import static org.junit.Assert.fail
 
-class AndroidNoVariantsApphanceUploadTest {
-
-    static File testAndroidConventionProject = new File("testProjects/android/android-convention")
-    static ProjectConnection testAndroidConventionConnection
+/**
+ * User: opal
+ * Date: 06.02.2013
+ * Time: 10:09
+ */
+class IOSApphancePluginUploadTest {
+    static File project = new File('testProjects/ios/GradleXCodeWithApphance')
+    static ProjectConnection projectConnection
 
     @BeforeClass
     static void beforeClass() {
-        testAndroidConventionConnection = newConnector().forProjectDirectory(testAndroidConventionProject).connect();
+        projectConnection = newConnector().forProjectDirectory(project).connect();
     }
 
     @AfterClass
     static public void afterClass() {
-        testAndroidConventionConnection.close()
+        projectConnection.close()
     }
 
     @Ignore
@@ -30,10 +33,9 @@ class AndroidNoVariantsApphanceUploadTest {
     This test is ignored as the testing scenario is very weak.
     For now apphance REST API isn't defined well.
     However, the test is left 'as is' because there was no apphance upload testing.
-     */
-    public void testUpload() {
+     */ public void testUpload() {
         try {
-            testAndroidConventionConnection.newBuild().forTasks('uploadTest').run();
+            projectConnection.newBuild().forTasks('clean', 'upload-GradleXCodeWithApphance-BasicConfiguration').run();
             assertTrue(true)
         } catch (e) {
             println "Test failed with msg: ${e.cause.cause.cause.message}"

@@ -180,7 +180,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
                 "-configuration",
                 frameworkConfiguration,
                 "-sdk",
-                iosConf.simulatorsdk,
+                iosConf.simulatorSDK,
                 "-arch",
                 "i386",
                 "clean",

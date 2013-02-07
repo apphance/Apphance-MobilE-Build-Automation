@@ -22,6 +22,7 @@ class TestApphanceAndroidTasks extends BaseAndroidTaskTest {
                 'convertLogsToAndroid',
                 'convertLogsToApphance',
                 'removeApphanceFromManifest',
+                'uploadDebug'
         ], AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE)
     }
 }

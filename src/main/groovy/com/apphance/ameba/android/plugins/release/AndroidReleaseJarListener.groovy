@@ -67,7 +67,7 @@ class AndroidReleaseJarListener implements AndroidBuildListener {
         }
         if (conf.versionString != null) {
             AndroidSingleVariantJarBuilder builder = new AndroidSingleVariantJarBuilder(project, androidConf)
-            AndroidBuilderInfo bi = builder.buildJarArtifactBuilderInfo(project, variant, debugRelease)
+            AndroidBuilderInfo bi = builder.buildJarArtifactBuilderInfo(variant, debugRelease)
             logger.lifecycle("Adding variant JAR artifact ${bi.id}")
             androidReleaseConf.jarFiles.put(bi.id, prepareJarArtifact(bi))
         } else {

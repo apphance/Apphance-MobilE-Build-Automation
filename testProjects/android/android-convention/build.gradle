@@ -13,6 +13,10 @@ apply plugin: 'ameba-android-apphance'
 apply plugin: 'ameba-android-test'
 apply plugin: 'ameba-android-jarlibrary'
 
+ext {
+	apphanceUserName = "maciej.opala@polidea.pl"
+	apphancePassword = "apphancetest"
+}
 amebaPropertyDefaults {
     defaults = "['project.url.base':'http://www.example.com']"
 }

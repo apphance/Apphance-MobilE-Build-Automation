@@ -33,10 +33,10 @@ class PrepareFrameworkSetupOperation extends AbstractPrepareSetupOperation {
             IOSFrameworkProperty.each {
                 switch (it) {
                     case IOSFrameworkProperty.FRAMEWORK_CONFIGURATION:
-                        project.getProjectPropertyFromUser(it, iosConf.allconfigurations, br)
+                        project.getProjectPropertyFromUser(it, iosConf.allConfigurations, br)
                         break
                     case IOSFrameworkProperty.FRAMEWORK_TARGET:
-                        project.getProjectPropertyFromUser(it, iosConf.alltargets, br)
+                        project.getProjectPropertyFromUser(it, iosConf.allTargets, br)
                         break
                     case IOSFrameworkProperty.FRAMEWORK_HEADERS:
                         project.getProjectPropertyFromUser(it, headerFiles, br)

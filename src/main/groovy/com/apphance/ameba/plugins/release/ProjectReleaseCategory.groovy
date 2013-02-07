@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat
  *  Category used to get release-specific methods.
  *
  */
-class ProjectReleaseCategory {
+public class ProjectReleaseCategory {
 
     public static final String PROJECT_RELEASE_CONFIGURATION_KEY = 'project.release.configuration'
 

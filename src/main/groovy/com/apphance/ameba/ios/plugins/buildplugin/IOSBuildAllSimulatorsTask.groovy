@@ -35,7 +35,7 @@ class IOSBuildAllSimulatorsTask extends DefaultTask {
         this.projectHelper = new ProjectHelper();
         this.conf = PropertyCategory.getProjectConfiguration(project)
         this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
-        this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, project.ant)
+        this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project)
         this.dependsOn(project.readProjectConfiguration, project.copyMobileProvision, project.copyDebugSources)
     }
 
