@@ -30,7 +30,7 @@ import static java.io.File.separator
  */
 class IOSApphancePlugin implements Plugin<Project> {
 
-    static Logger logger = Logging.getLogger(IOSApphancePlugin.class)
+    static Logger l = Logging.getLogger(IOSApphancePlugin.class)
     static final FRAMEWORK_PATTERN = ~/.*[aA]pphance.*\.framework/
 
     ProjectHelper projectHelper
@@ -96,11 +96,12 @@ class IOSApphancePlugin implements Plugin<Project> {
     }
 
     private addApphanceToTask(Project project, singleTask, String variant, String target, String configuration, IOSProjectConfiguration projConf) {
+
         singleTask.doFirst {
             def builder = new IOSSingleVariantBuilder(project, new AntBuilder())
             if (!isApphancePresent(builder.tmpDir(target, configuration))) {
-                logger.info("Adding Apphance to ${variant} (${target}, ${configuration}): " +
-                        "${builder.tmpDir(target, configuration)}. Project file = ${projConf.xCodeProjectDirectories[variant]}")
+                l.lifecycle("Adding Apphance to variant: ${variant}, target: ${target}, configuration: ${configuration}, " +
+                        "tmpDir: ${builder.tmpDir(target, configuration)}, project = ${projConf.xCodeProjectDirectories[variant]}")
                 pbxProjectHelper.addApphanceToProject(builder.tmpDir(target, configuration),
                         projConf.xCodeProjectDirectories[variant], target, configuration, project[APPLICATION_KEY.propertyName])
                 copyApphanceFramework(project, builder.tmpDir(target, configuration))
@@ -114,7 +115,7 @@ class IOSApphancePlugin implements Plugin<Project> {
 
         libsDir.mkdirs()
         clearLibsDir(libsDir)
-        logger.lifecycle("Copying apphance framework directory " + libsDir)
+        l.lifecycle("Copying apphance framework directory to libs: $libsDir")
 
         try {
             project.copy {
@@ -126,15 +127,15 @@ class IOSApphancePlugin implements Plugin<Project> {
             }
         } catch (e) {
             def msg = "Error while resolving dependency: '$apphanceLibDependency'"
-            logger.error("""$msg.
+            l.error("""$msg.
 To solve the problem add correct dependency to gradle.properties file or add -Dapphance.lib=<apphance.lib> to invocation.
 Dependency should be added in gradle style to 'apphance.lib' entry""")
             throw new GradleException(msg)
         }
 
         def projectApphanceZip = new File(libsDir, "apphance.zip")
-        logger.lifecycle("Unpacking file " + projectApphanceZip)
-        logger.lifecycle("Exists " + projectApphanceZip.exists())
+        l.lifecycle("Unpacking file " + projectApphanceZip)
+        l.lifecycle("Exists " + projectApphanceZip.exists())
         def command = ["unzip", "${projectApphanceZip}", "-d", "${libsDir}"]
         projectHelper.executeCommand(project, libsDir, command)
 
@@ -169,7 +170,7 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
     private clearLibsDir(File libsDir) {
         libsDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { framework ->
             if (framework.name =~ FRAMEWORK_PATTERN) {
-                logger.lifecycle("Removing old apphance framework: " + framework.name)
+                l.lifecycle("Removing old apphance framework: " + framework.name)
                 def delClos = {
                     it.eachDir(delClos);
                     it.eachFile {
@@ -184,17 +185,18 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
     }
 
     boolean isApphancePresent(File projectDir) {
+        l.lifecycle("Looking for apphance in: ${projectDir.absolutePath}")
         def apphancePresent = false
 
-        projectDir.traverse([type: DIRECTORIES, maxDepth: MAX_RECURSION_LEVEL]) { framework ->
-            if (framework =~ FRAMEWORK_PATTERN) {
+        projectDir.traverse([type: DIRECTORIES, maxDepth: MAX_RECURSION_LEVEL]) { file ->
+            if (file.name =~ FRAMEWORK_PATTERN) {
                 apphancePresent = true
             }
         }
 
         apphancePresent ?
-            logger.lifecycle("Apphance already in project") :
-            logger.lifecycle("Apphance not in project")
+            l.lifecycle("Apphance already in project") :
+            l.lifecycle("Apphance not in project")
 
         apphancePresent
     }

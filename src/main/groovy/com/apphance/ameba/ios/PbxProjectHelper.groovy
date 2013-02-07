@@ -277,7 +277,6 @@ class PbxProjectHelper {
 
 
     String addApphanceToProject(File projectRootDirectory, File xcodeProject, String targetName, String configurationName, String appKey) {
-        logger.lifecycle("Adding Apphance to target " + targetName + " configuration " + configurationName)
         rootObject = getParsedProject(new File(xcodeProject, PROJECT_PBXPROJ), targetName)
         def project = getObject(getProperty(rootObject.dict, "rootObject").text())
         IOSApphanceSourceHelper sourceHelper = this.apphanceSourceHelper
