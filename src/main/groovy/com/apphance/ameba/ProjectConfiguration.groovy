@@ -3,6 +3,7 @@ package com.apphance.ameba
  * Keeps basic configuration of the project.
  */
 class ProjectConfiguration {
+
     String projectName
     File tmpDirectory
     File logDirectory
@@ -13,15 +14,15 @@ class ProjectConfiguration {
     Collection<String> sourceExcludes = []
 
     String getFullVersionString() {
-        return "${versionString}_${versionCode}"
+        "${versionString}_${versionCode}"
     }
 
     String getProjectVersionedName() {
-        return "${projectName}-${fullVersionString}"
+        "${projectName}-${fullVersionString}"
     }
 
     @Override
     public String toString() {
-        return this.getProperties()
+        this.properties
     }
 }

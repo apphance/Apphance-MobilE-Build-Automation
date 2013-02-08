@@ -1,8 +1,6 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -10,32 +8,62 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+
 /**
  * Plugin for basic project configuration.
  *
  */
 class ProjectConfigurationPlugin implements Plugin<Project> {
 
-    static Logger logger = Logging.getLogger(ProjectConfigurationPlugin.class)
+    static Logger l = Logging.getLogger(ProjectConfigurationPlugin.class)
 
     public static final String PROJECT_NAME_PROPERTY = 'project.name'
 
-    ProjectHelper projectHelper
-    ProjectConfiguration conf
-
+    @Override
     void apply(Project project) {
-        projectHelper = new ProjectHelper()
-        conf = PropertyCategory.getProjectConfiguration(project)
         project.convention.plugins.put('amebaPropertyDefaults', new ProjectConfigurationConvention())
-        prepareRepositories(project)
+        addMavenRepository(project)
         readProjectConfigurationTask(project)
+        cleanConfigurationTask(project)
+        prepareShowConventionRule(project)
         project.task('prepareSetup', type: PrepareSetupTask.class)
         project.task('verifySetup', type: VerifySetupTask.class)
         project.task('showSetup', type: ShowSetupTask.class)
         project.task('checkTests', type: CheckTestsTask.class)
         project.task('showConventions', type: ShowConventionsTask.class)
-        prepareShowConventionRule(project)
-        prepareCleanConfigurationTask(project)
+    }
+
+    void addMavenRepository(Project project) {
+        project.repositories.mavenCentral()
+    }
+
+    def void readProjectConfigurationTask(Project project) {
+        def task = project.task('readProjectConfiguration')
+        task.description = "Reads project's configuration and sets it up in projectConfiguration property of project"
+        task.group = AMEBA_CONFIGURATION
+        task << {
+            // NOTE! conf.versionString and conf.versionCode need to
+            // be read before project configuration task -> task reading the version
+            // should be injected here
+            PropertyCategory.retrieveBasicProjectData(project)
+        }
+    }
+
+    def void cleanConfigurationTask(Project project) {
+        def task = project.task('cleanConfiguration')
+        task.description = "Cleans configuration before each build"
+        task.group = AMEBA_CONFIGURATION
+        task << {
+            ProjectConfiguration conf = PropertyCategory.getProjectConfiguration(project)
+            conf.buildDirectory.deleteDir()
+            conf.tmpDirectory.deleteDir()
+            conf.logDirectory.deleteDir()
+            conf.buildDirectory.mkdirs()
+            conf.logDirectory.mkdirs()
+            conf.tmpDirectory.mkdirs()
+        }
+        task.dependsOn(project.readProjectConfiguration)
     }
 
     private void prepareShowConventionRule(Project project) {
@@ -49,46 +77,15 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
                     }
                     StringBuilder sb = new StringBuilder()
                     new ShowConventionHelper().getConventionObject(sb, pluginName, pluginConventionObject)
-                    println sb
+                    l.lifecycle(sb.toString())
                 }
             }
         }
     }
 
-    void prepareRepositories(Project project) {
-        project.repositories.mavenCentral()
-    }
-
-    def void readProjectConfigurationTask(Project project) {
-        def task = project.task('readProjectConfiguration')
-        task.description = "Reads project's configuration and sets it up in projectConfiguration property of project"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
-        task << {
-            // NOTE! conf.versionString and conf.versionCode need to
-            // be read before project configuration task -> task reading the version
-            // should be injected here
-            this.conf = PropertyCategory.retrieveBasicProjectData(project)
-        }
-    }
-
-    def void prepareCleanConfigurationTask(Project project) {
-        def task = project.task('cleanConfiguration')
-        task.description = "Cleans configuration before each build"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
-        task << {
-            conf.buildDirectory.deleteDir()
-            conf.tmpDirectory.deleteDir()
-            conf.logDirectory.deleteDir()
-            conf.buildDirectory.mkdirs()
-            conf.logDirectory.mkdirs()
-            conf.tmpDirectory.mkdirs()
-        }
-        task.dependsOn(project.readProjectConfiguration)
-    }
-
 
     static public final String DESCRIPTION =
-        """This is the base plugin which should be applied by any project.
+        """This is the base plugin which should be applied in any project.
 
 The plugin should be applied before any other Ameba plugin. It reads basic project configuration and loads shared
 configuration for all other plugins.

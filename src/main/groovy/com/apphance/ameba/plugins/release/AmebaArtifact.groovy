@@ -30,7 +30,7 @@ class AmebaArtifact {
         url.toString()
     }
 
-    public static String getParentPath(String path) {
+    private String getParentPath(String path) {
         if (!path || path.equals('/')) {
             return ''
         }

@@ -1,10 +1,6 @@
 package com.apphance.ameba.ios.plugins.release
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.PluginHelper
-import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.*
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser
@@ -23,6 +19,7 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileDownloader.downloadFile
 
 /**
@@ -31,14 +28,13 @@ import static com.apphance.ameba.util.file.FileDownloader.downloadFile
  */
 class IOSReleasePlugin implements Plugin<Project> {
 
-    static Logger logger = Logging.getLogger(IOSReleasePlugin.class)
+    static Logger l = Logging.getLogger(IOSReleasePlugin.class)
 
     ProjectHelper projectHelper
     ProjectConfiguration conf
     ProjectReleaseConfiguration releaseConf
     IOSProjectConfiguration iosConf
     IOSReleaseConfiguration iosReleaseConf
-    IOSPlistProcessor iosPlistProcessor = new IOSPlistProcessor()
 
     @Override
     def void apply(Project project) {
@@ -55,114 +51,66 @@ class IOSReleasePlugin implements Plugin<Project> {
         IOSSingleVariantBuilder.buildListeners << new IOSReleaseListener(project)
     }
 
+    void prepareUpdateVersionTask(Project project) {
+        def task = project.task('updateVersion')
+        task.group = AMEBA_RELEASE
+        task.description = """Updates version stored in plist file of the project.
+           Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
+        def iosPlistProcessor = new IOSPlistProcessor()
+        task << {
+            use(PropertyCategory) {
+                conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
+                conf.versionCode = project.readPropertyOrEnvironmentVariable('version.code') as Long
+                iosPlistProcessor.incrementPlistVersion(iosConf, conf)
+                l.lifecycle("New version code: ${conf.versionCode}")
+                l.lifecycle("Updated version string to ${conf.versionString}")
+            }
+        }
+        task.dependsOn(project.readProjectConfiguration)
+    }
+
     def void prepareBuildDocumentationZipTask(Project project) {
         def task = project.task('buildDocumentationZip')
-        task.description = "Builds documentation .zip file."
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+        task.description = 'Builds documentation .zip file.'
+        task.group = AMEBA_RELEASE
         task << {
             File destZip = releaseConf.documentationZip.location
             destZip.mkdirs()
             destZip.delete()
-            throw new GradleException("Documentation not yet implemented!")
+            throw new GradleException('Documentation not yet implemented!')
         }
     }
 
     private void prepareAvailableArtifactsInfoTask(Project project) {
         def task = project.task('prepareAvailableArtifactsInfo')
-        task.description = "Prepares information about available artifacts for mail message to include"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+        task.description = 'Prepares information about available artifacts for mail message to include'
+        task.group = AMEBA_RELEASE
         task << {
-            def targets = iosConf.targets
-            def configurations = iosConf.configurations
             def udids = [:]
             def iosReleaseListener = new IOSReleaseListener(project)
-            targets.each { target ->
-                configurations.each { configuration ->
-                    def id = "${target}-${configuration}".toString()
-                    if (!iosConf.isBuildExcluded(id)) {
-                        logger.lifecycle("Preparing artifact for ${id}")
-                        iosReleaseListener.buildArtifactsOnly(project, target, configuration)
-                    } else {
-                        logger.lifecycle("Skipping preparing artifact for ${id} -> excluded by ${iosConf.excludedBuilds}")
-                    }
-                }
-                File mobileprovisionFile = IOSXCodeOutputParser.findMobileProvisionFile(project, target, configurations[0], true)
+            iosConf.allBuildableVariants.each { v ->
+                l.lifecycle("Preparing artifact for ${v.id}")
+                iosReleaseListener.buildArtifactsOnly(project, v.target, v.configuration)
+                File mobileProvisionFile = IOSXCodeOutputParser.findMobileProvisionFile(project, v.target, iosConf.configurations[0], true)
                 if (conf.versionString != null) {
-                    udids.put(target, MPParser.readUdids(mobileprovisionFile.toURI().toURL()))
+                    udids.put(v.target, MPParser.readUdids(mobileProvisionFile.toURI().toURL()))
                 } else {
-                    logger.lifecycle("Skipping retrieving udids -> the build is not versioned")
+                    l.lifecycle("Skipping retrieving udids -> the build is not versioned")
                 }
             }
             if (conf.versionString != null) {
                 String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
                 prepareFileIndexArtifact(otaFolderPrefix)
                 preparePlainFileIndexArtifact(otaFolderPrefix)
-                prepareOtaIndexFile(targets, configurations, ant)
-                prepareFileIndexFile(targets, configurations, udids)
-                preparePlainFileIndexFile(targets, configurations)
+                prepareOtaIndexFile(iosConf.targets, iosConf.configurations, project.ant)
+                prepareFileIndexFile(udids)
+                preparePlainFileIndexFile()
             } else {
-                logger.lifecycle("Skipping building artifacts -> the build is not versioned")
+                l.lifecycle("Skipping building artifacts -> the build is not versioned")
             }
         }
         task.dependsOn(project.readProjectConfiguration)
         task.dependsOn(project.readIOSProjectVersions)
-    }
-
-
-    private void prepareMailMessageTask(Project project) {
-        def task = project.task('prepareMailMessage')
-        task.description = "Prepares mail message which summarises the release"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task << {
-            releaseConf.mailMessageFile.location.parentFile.mkdirs()
-            releaseConf.mailMessageFile.location.delete()
-            logger.lifecycle("Targets: ${iosConf.targets}")
-            logger.lifecycle("Configurations: ${iosConf.configurations}")
-            URL mailTemplate = this.class.getResource("mail_message.html")
-            def fileSize = 0
-            def existingBuild = iosReleaseConf.distributionZipFiles.find {
-                it.value.location != null
-            }
-            if (existingBuild) {
-                logger.lifecycle("Main build used for size calculation: ${existingBuild.key}")
-                fileSize = existingBuild.value.location.size()
-            }
-            ResourceBundle rb = ResourceBundle.getBundle(\
-                this.class.package.name + ".mail_message",
-                    releaseConf.locale, this.class.classLoader)
-            ProjectReleaseCategory.fillMailSubject(project, rb)
-            SimpleTemplateEngine engine = new SimpleTemplateEngine()
-            def binding = [
-                    title: conf.projectName,
-                    version: conf.fullVersionString,
-                    currentDate: releaseConf.buildDate,
-                    otaUrl: iosReleaseConf.otaIndexFile?.url,
-                    fileIndexUrl: iosReleaseConf.fileIndexFile?.url,
-                    releaseNotes: releaseConf.releaseNotes,
-                    installable: iosReleaseConf.dmgImageFiles,
-                    mainTarget: iosConf.mainTarget,
-                    families: iosConf.families,
-                    fileSize: FileManager.getHumanReadableSize(fileSize),
-                    releaseMailFlags: releaseConf.releaseMailFlags,
-                    rb: rb
-            ]
-            logger.lifecycle("Runnning template with ${binding}")
-            if (iosReleaseConf.dmgImageFiles.size() > 0) {
-                iosConf.families.each { family ->
-                    if (iosReleaseConf.dmgImageFiles["${family}-${iosConf.mainTarget}"] == null) {
-                        throw new GradleException("Wrongly configured family or target: ${family}-${iosConf.mainTarget} missing")
-                    }
-                }
-            }
-            def result = engine.createTemplate(mailTemplate).make(binding)
-            releaseConf.mailMessageFile.location.write(result.toString(), "utf-8")
-            logger.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")
-        }
-        task.dependsOn(project.readProjectConfiguration)
-        task.dependsOn(project.prepareAvailableArtifactsInfo)
-        def sendMailTask = project.sendMailMessage
-        sendMailTask.dependsOn(task)
-        sendMailTask.description += ",installableSimulator"
     }
 
     private prepareFileIndexArtifact(String otaFolderPrefix) {
@@ -185,72 +133,6 @@ class IOSReleasePlugin implements Plugin<Project> {
         iosReleaseConf.plainFileIndexFile = plainFileIndexFile
     }
 
-    private void prepareFileIndexFile(Collection<String> targets, Collection<String> configurations, def udids) {
-        URL fileIndexTemplate = this.class.getResource("file_index.html")
-        ResourceBundle rb = ResourceBundle.getBundle(\
-                this.class.package.name + ".file_index",
-                releaseConf.locale, this.class.classLoader)
-        SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        engine.verbose = logger.debugEnabled
-        def binding = [
-                baseUrl: iosReleaseConf.fileIndexFile.url,
-                title: conf.projectName,
-                targets: targets,
-                configurations: configurations,
-                version: conf.fullVersionString,
-                currentDate: releaseConf.buildDate,
-                iosConf: iosConf,
-                releaseConf: releaseConf,
-                iosReleaseConf: iosReleaseConf,
-                udids: udids,
-                rb: rb
-        ]
-        def result = engine.createTemplate(fileIndexTemplate).make(binding)
-        iosReleaseConf.fileIndexFile.location.write(result.toString(), "utf-8")
-        logger.lifecycle("File index created: ${iosReleaseConf.fileIndexFile}")
-    }
-
-    void prepareUpdateVersionTask(Project project) {
-        def task = project.task('updateVersion')
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-        task.description = """Updates version stored in plist file of the project.
-           Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
-        task << {
-            use(PropertyCategory) {
-                conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
-                conf.versionCode = project.readPropertyOrEnvironmentVariable('version.code') as Long
-                iosPlistProcessor.incrementPlistVersion(iosConf, conf)
-                logger.lifecycle("New version code: ${conf.versionCode}")
-                logger.lifecycle("Updated version string to ${conf.versionString}")
-            }
-        }
-        task.dependsOn(project.readProjectConfiguration)
-    }
-
-    private void preparePlainFileIndexFile(Collection<String> targets, Collection<String> configurations) {
-        URL plainFileIndexTemplate = this.class.getResource("plain_file_index.html")
-        ResourceBundle rb = ResourceBundle.getBundle(\
-                this.class.package.name + ".plain_file_index",
-                releaseConf.locale, this.class.classLoader)
-        SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        engine.verbose = logger.debugEnabled
-        def binding = [
-                baseUrl: iosReleaseConf.plainFileIndexFile.url,
-                title: conf.projectName,
-                targets: targets,
-                configurations: configurations,
-                version: conf.fullVersionString,
-                currentDate: releaseConf.buildDate,
-                iosConf: iosConf,
-                releaseConf: releaseConf,
-                iosReleaseConf: iosReleaseConf,
-                rb: rb
-        ]
-        def result = engine.createTemplate(plainFileIndexTemplate).make(binding)
-        iosReleaseConf.plainFileIndexFile.location.write(result.toString(), "utf-8")
-        logger.lifecycle("Plain file index created: ${iosReleaseConf.plainFileIndexFile}")
-    }
-
     private void prepareOtaIndexFile(Collection<String> targets, Collection<String> configurations, AntBuilder ant) {
         String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
         AmebaArtifact otaIndexFile = new AmebaArtifact(
@@ -259,30 +141,23 @@ class IOSReleasePlugin implements Plugin<Project> {
                 location: new File(releaseConf.otaDirectory, "${otaFolderPrefix}/index.html"))
         otaIndexFile.location.mkdirs()
         otaIndexFile.location.delete()
-        URL otaIndexTemplate = this.class.getResource("index.html")
         def urlMap = [:]
-        targets.each { target ->
-            configurations.each { configuration ->
-                def id = "${target}-${configuration}".toString()
-                if (!iosConf.isBuildExcluded(id)) {
-                    if (iosReleaseConf.manifestFiles[id] != null) {
-                        logger.lifecycle("Preparing OTA configuration for ${id}")
-                        def encodedUrl = URLEncoder.encode(iosReleaseConf.manifestFiles[id].url.toString(), "utf-8")
-                        urlMap.put(id, "itms-services://?action=download-manifest&url=${encodedUrl}")
-                    } else {
-                        logger.warn("Skipping preparing OTA configuration for ${id} -> missing manifest")
-                    }
-                } else {
-                    logger.lifecycle("Skipping preparing OTA configuration for ${id} -> excluded by ${iosConf.excludedBuilds}")
-                }
+        l.lifecycle("Skipping preparing OTA configuration for excluded builds: ${iosConf.excludedBuilds}")
+        iosConf.allBuildableVariants.each { v ->
+            if (iosReleaseConf.manifestFiles[v.id]) {
+                l.lifecycle("Preparing OTA configuration for ${v.id}")
+                def encodedUrl = URLEncoder.encode(iosReleaseConf.manifestFiles[v.id].url.toString(), "utf-8")
+                urlMap.put(v.id, "itms-services://?action=download-manifest&url=${encodedUrl}")
+            } else {
+                l.warn("Skipping preparing OTA configuration for ${v.id} -> missing manifest")
             }
         }
-        logger.lifecycle("OTA urls: ${urlMap}")
+        l.lifecycle("OTA urls: $urlMap")
         ResourceBundle rb = ResourceBundle.getBundle(\
                 this.class.package.name + ".index",
                 releaseConf.locale, this.class.classLoader)
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        engine.verbose = logger.debugEnabled
+        engine.verbose = l.debugEnabled
         def binding = [
                 baseUrl: otaIndexFile.url,
                 title: conf.projectName,
@@ -296,10 +171,11 @@ class IOSReleasePlugin implements Plugin<Project> {
                 iosConf: iosConf,
                 rb: rb
         ]
+        URL otaIndexTemplate = this.class.getResource("index.html")
         def result = engine.createTemplate(otaIndexTemplate).make(binding)
         otaIndexFile.location.write(result.toString(), "utf-8")
         iosReleaseConf.otaIndexFile = otaIndexFile
-        logger.lifecycle("Ota index created: ${otaIndexFile}")
+        l.lifecycle("Ota index created: ${otaIndexFile}")
         ant.copy(file: releaseConf.iconFile, tofile: new File(otaIndexFile.location.parentFile, releaseConf.iconFile.name))
         String urlEncoded = URLEncoder.encode(otaIndexFile.url.toString(), "utf-8")
         File outputFile = new File(releaseConf.targetDirectory, "qrcode-${conf.projectName}-${conf.fullVersionString}.png")
@@ -309,7 +185,112 @@ class IOSReleasePlugin implements Plugin<Project> {
                 url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName}-${conf.fullVersionString}.png"),
                 location: outputFile)
         releaseConf.qrCodeFile = qrCodeArtifact
-        logger.lifecycle("QRCode created: ${qrCodeArtifact.location}")
+        l.lifecycle("QRCode created: ${qrCodeArtifact.location}")
+    }
+
+    private void prepareFileIndexFile(def udids) {
+        URL fileIndexTemplate = this.class.getResource("file_index.html")
+        ResourceBundle rb = ResourceBundle.getBundle(\
+                this.class.package.name + ".file_index",
+                releaseConf.locale, this.class.classLoader)
+        SimpleTemplateEngine engine = new SimpleTemplateEngine()
+        engine.verbose = l.debugEnabled
+        def binding = [
+                baseUrl: iosReleaseConf.fileIndexFile.url,
+                title: conf.projectName,
+                targets: iosConf.targets,
+                configurations: iosConf.configurations,
+                version: conf.fullVersionString,
+                currentDate: releaseConf.buildDate,
+                iosConf: iosConf,
+                releaseConf: releaseConf,
+                iosReleaseConf: iosReleaseConf,
+                udids: udids,
+                rb: rb
+        ]
+        def result = engine.createTemplate(fileIndexTemplate).make(binding)
+        iosReleaseConf.fileIndexFile.location.write(result.toString(), "utf-8")
+        l.lifecycle("File index created: ${iosReleaseConf.fileIndexFile}")
+    }
+
+    private void preparePlainFileIndexFile() {
+        URL plainFileIndexTemplate = this.class.getResource("plain_file_index.html")
+        ResourceBundle rb = ResourceBundle.getBundle(\
+                this.class.package.name + ".plain_file_index",
+                releaseConf.locale, this.class.classLoader)
+        SimpleTemplateEngine engine = new SimpleTemplateEngine()
+        engine.verbose = l.debugEnabled
+        def binding = [
+                baseUrl: iosReleaseConf.plainFileIndexFile.url,
+                title: conf.projectName,
+                targets: iosConf.targets,
+                configurations: iosConf.configurations,
+                version: conf.fullVersionString,
+                currentDate: releaseConf.buildDate,
+                iosConf: iosConf,
+                releaseConf: releaseConf,
+                iosReleaseConf: iosReleaseConf,
+                rb: rb
+        ]
+        def result = engine.createTemplate(plainFileIndexTemplate).make(binding)
+        iosReleaseConf.plainFileIndexFile.location.write(result.toString(), "utf-8")
+        l.lifecycle("Plain file index created: ${iosReleaseConf.plainFileIndexFile}")
+    }
+
+    private void prepareMailMessageTask(Project project) {
+        def task = project.task('prepareMailMessage')
+        task.description = 'Prepares mail message which summarises the release'
+        task.group = AMEBA_RELEASE
+        task << {
+            releaseConf.mailMessageFile.location.parentFile.mkdirs()
+            releaseConf.mailMessageFile.location.delete()
+            l.lifecycle("Targets: ${iosConf.targets}")
+            l.lifecycle("Configurations: ${iosConf.configurations}")
+            URL mailTemplate = this.class.getResource('mail_message.html')
+            def fileSize = 0
+            def existingBuild = iosReleaseConf.distributionZipFiles.find {
+                it.value.location != null
+            }
+            if (existingBuild) {
+                l.lifecycle("Main build used for size calculation: ${existingBuild.key}")
+                fileSize = existingBuild.value.location.size()
+            }
+            ResourceBundle rb = ResourceBundle.getBundle(\
+                this.class.package.name + ".mail_message",
+                    releaseConf.locale, this.class.classLoader)
+            ProjectReleaseCategory.fillMailSubject(project, rb)
+            SimpleTemplateEngine engine = new SimpleTemplateEngine()
+            def binding = [
+                    title: conf.projectName,
+                    version: conf.fullVersionString,
+                    currentDate: releaseConf.buildDate,
+                    otaUrl: iosReleaseConf.otaIndexFile?.url,
+                    fileIndexUrl: iosReleaseConf.fileIndexFile?.url,
+                    releaseNotes: releaseConf.releaseNotes,
+                    installable: iosReleaseConf.dmgImageFiles,
+                    mainTarget: iosConf.mainTarget,
+                    families: iosConf.families,
+                    fileSize: FileManager.getHumanReadableSize(fileSize),
+                    releaseMailFlags: releaseConf.releaseMailFlags,
+                    rb: rb
+            ]
+            l.lifecycle("Runnning template with $binding")
+            if (iosReleaseConf.dmgImageFiles.size() > 0) {
+                iosConf.families.each { family ->
+                    if (iosReleaseConf.dmgImageFiles["${family}-${iosConf.mainTarget}"] == null) {
+                        throw new GradleException("Wrongly configured family or target: ${family}-${iosConf.mainTarget} missing")
+                    }
+                }
+            }
+            def result = engine.createTemplate(mailTemplate).make(binding)
+            releaseConf.mailMessageFile.location.write(result.toString(), "utf-8")
+            l.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")
+        }
+        task.dependsOn(project.readProjectConfiguration)
+        task.dependsOn(project.prepareAvailableArtifactsInfo)
+        def sendMailTask = project.sendMailMessage
+        sendMailTask.dependsOn(task)
+        sendMailTask.description += ',installableSimulator'
     }
 
     static public final String DESCRIPTION =

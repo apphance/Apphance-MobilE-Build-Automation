@@ -1,6 +1,5 @@
-package com.apphance.ameba.ios
+package com.apphance.ameba.ios.plugins.apphance
 
-import com.apphance.ameba.ios.plugins.apphance.IOSApphanceSourceHelper
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 

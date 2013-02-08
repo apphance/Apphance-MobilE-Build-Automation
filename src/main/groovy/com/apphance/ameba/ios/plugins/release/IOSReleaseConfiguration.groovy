@@ -16,9 +16,7 @@ class IOSReleaseConfiguration {
     AmebaArtifact otaIndexFile
     AmebaArtifact fileIndexFile
     AmebaArtifact plainFileIndexFile
-    Map<String, AmebaArtifact> foneMonkeyTestResultFiles = [:]
     Map<String, AmebaArtifact> dmgImageFiles = [:]
-    Map<String, HashMap<String, Collection<AmebaArtifact>>> monkeyTestImages = [:]
 
     @Override
     public String toString() {

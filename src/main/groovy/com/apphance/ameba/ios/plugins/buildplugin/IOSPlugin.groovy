@@ -224,7 +224,7 @@ class IOSPlugin implements Plugin<Project> {
         iosConf.allBuildableVariants.each { v ->
             def singleTask = project.task("build-${v.noSpaceId}")
             singleTask.group = AMEBA_BUILD
-            singleTask.description = "Builds target: ${v.target}, configuration ${v.configuration}"
+            singleTask.description = "Builds target: ${v.target}, configuration: ${v.configuration}"
             singleTask << {
                 def builder = new IOSSingleVariantBuilder(project)
                 builder.buildNormalVariant(project, v.target, v.configuration)

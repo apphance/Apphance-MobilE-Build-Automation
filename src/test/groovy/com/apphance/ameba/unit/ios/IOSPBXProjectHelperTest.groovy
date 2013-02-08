@@ -1,6 +1,6 @@
 package com.apphance.ameba.unit.ios
 
-import com.apphance.ameba.ios.PbxProjectHelper
+import com.apphance.ameba.ios.plugins.apphance.PbxProjectHelper
 import org.junit.Test
 
 import static org.junit.Assert.assertEquals

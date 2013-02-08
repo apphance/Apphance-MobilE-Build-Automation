@@ -14,18 +14,15 @@ import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurati
 class PropertyCategory {
 
 
+    public static final String PROJECT_CONFIGURATION_KEY = 'project.configuration'
+
     static Logger logger = Logging.getLogger(PropertyCategory.class)
 
-    private static Map<String, String> getDefaultConventionValues(Project project) {
-        if (project.convention.plugins.amebaPropertyDefaults != null) {
-            def defaultConventionValues = Eval.me(project.convention.plugins.amebaPropertyDefaults.defaults)
-            return defaultConventionValues
-        } else {
-            return [:]
-        }
+    public static String listPropertiesAsString(Project project, Class<Enum> properties, boolean useComments) {
+        StringBuffer sb = new StringBuffer()
+        listProperties(project, properties, useComments).each { sb << it + '\n' }
+        return sb.toString()
     }
-
-    public static final String PROJECT_CONFIGURATION_KEY = 'project.configuration'
 
     public static List<String> listProperties(Project project, Class<Enum> properties, boolean useComments, Properties extraProperties = null) {
         String description = properties.getField('DESCRIPTION').get(null)
@@ -47,7 +44,7 @@ class PropertyCategory {
                 String propertyValue = extraProperties.get(it.propertyName)
                 propString = propString + propertyValue
             }
-            if (useComments == true) {
+            if (useComments) {
                 s << comment
             }
             s << propString
@@ -55,32 +52,23 @@ class PropertyCategory {
         return s
     }
 
-    private static String getDefaultForProperty(Project project, property) {
-        def defaultMap = getDefaultConventionValues(project)
-        def defaultValue = property.defaultValue
-        if (defaultMap[property.propertyName] != null) {
-            defaultValue = defaultMap[property.propertyName]
+    private static Map<String, String> getDefaultConventionValues(Project project) {
+        if (project.convention.plugins.amebaPropertyDefaults != null) {
+            def defaultConventionValues = Eval.me(project.convention.plugins.amebaPropertyDefaults.defaults)
+            return defaultConventionValues
         }
-        return defaultValue
+        return [:]
     }
 
-
-    public static String listPropertiesAsString(Project project, Class<Enum> properties, boolean useComments) {
-        StringBuffer sb = new StringBuffer()
-        listProperties(project, properties, useComments).each { sb << it + '\n' }
-        return sb.toString()
+    public static Object readProperty(Project project, Enum property) {
+        return readProperty(project, property.propertyName, getDefaultForProperty(project, property))
     }
 
     public static Object readProperty(Project project, String propertyName, Object defaultValue = null) {
         if (project.hasProperty(propertyName)) {
             return project[propertyName]
-        } else {
-            return defaultValue
         }
-    }
-
-    public static Object readProperty(Project project, Enum property) {
-        return readProperty(project, property.propertyName, getDefaultForProperty(project, property))
+        return defaultValue
     }
 
     public static String getProjectPropertyFromUser(Project project, Enum property,
@@ -118,12 +106,29 @@ class PropertyCategory {
         }
     }
 
+    private static String getDefaultForProperty(Project project, property) {
+        def defaultMap = getDefaultConventionValues(project)
+        def defaultValue = property.defaultValue
+        if (defaultMap[property.propertyName] != null) {
+            defaultValue = defaultMap[property.propertyName]
+        }
+        return defaultValue
+    }
+
     public static String readPropertyOrEnvironmentVariable(Project project, Enum property) {
         return readPropertyOrEnvironmentVariable(project, property.propertyName)
     }
 
     public static String readOptionalPropertyOrEnvironmentVariable(Project project, Enum property) {
         return readOptionalPropertyOrEnvironmentVariable(project, property.propertyName)
+    }
+
+    public static String readPropertyOrEnvironmentVariable(Project project, String propertyName) {
+        return readPropertyOrEnvironmentVariable(project, propertyName, false)
+    }
+
+    public static String readOptionalPropertyOrEnvironmentVariable(Project project, String propertyName) {
+        return readPropertyOrEnvironmentVariable(project, propertyName, true)
     }
 
     public static String readPropertyOrEnvironmentVariable(Project project, String propertyName, boolean optional) {
@@ -142,14 +147,6 @@ class PropertyCategory {
             }
             return val
         }
-    }
-
-    public static String readPropertyOrEnvironmentVariable(Project project, String propertyName) {
-        return readPropertyOrEnvironmentVariable(project, propertyName, false)
-    }
-
-    public static String readOptionalPropertyOrEnvironmentVariable(Project project, String propertyName) {
-        return readPropertyOrEnvironmentVariable(project, propertyName, true)
     }
 
     public static String isPropertyOrEnvironmentVariableDefined(Project project, Enum property) {
