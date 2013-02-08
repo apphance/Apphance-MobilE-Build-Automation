@@ -96,6 +96,15 @@ iOS Simulator SDKs:
                 ]))
     }
 
+    @Test
+    public void testSchemes() {
+        assertThat(IOSXCodeOutputParser.readSchemes(trimmedXCodeList), new IsEqual([
+                'Some',
+                'SomeWithMonkey',
+                'SomeSpecs',
+                'OtherSomeSpecs',
+                'RunMonkeyTests']))
+    }
 
     @Test
     public void testXCodeInstallationPath() {

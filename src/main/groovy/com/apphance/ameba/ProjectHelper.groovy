@@ -177,7 +177,6 @@ class ProjectHelper {
         return getCurrentFileNumber(logDir) + '-' + fileAbleCommandName + postFix
     }
 
-
     String getCurrentFileNumber(File logDir) {
         File f = new File(logDir, "file_number.txt")
         f.parentFile.mkdirs()

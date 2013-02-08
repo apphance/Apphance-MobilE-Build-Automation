@@ -44,6 +44,13 @@ class IOSXCodeOutputParser {
         return onlyTargets.findAll(filter)
     }
 
+    static Collection readSchemes(List trimmed) {
+        def startSchemes = trimmed.indexOf('Schemes:')
+        def schemes = trimmed[startSchemes + 1..-1]
+        schemes.indexOf('') != -1 ? schemes[0..schemes.indexOf('') - 1] : schemes
+    }
+
+
     static Collection readIphoneSdks(List trimmed) {
         def startConfigurations = trimmed.indexOf('iOS SDKs:')
         def configurations = trimmed[startConfigurations + 1..-1]
@@ -121,4 +128,5 @@ class IOSXCodeOutputParser {
         logger.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
         return f
     }
+
 }

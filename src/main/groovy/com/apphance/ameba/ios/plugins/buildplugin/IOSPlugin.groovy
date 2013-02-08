@@ -168,6 +168,7 @@ class IOSPlugin implements Plugin<Project> {
             iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedListOutput)
             iosConf.allTargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })
             iosConf.allConfigurations = IOSXCodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
+            iosConf.schemes = IOSXCodeOutputParser.readSchemes(trimmedListOutput)
             def trimmedSdkOutput = projectHelper.executeCommand(project, (iosConf.getXCodeBuildExecutionPath() + ["-showsdks"]) as String[], false, null, null, 1, true)*.trim()
             iosConf.allIphoneSDKs = IOSXCodeOutputParser.readIphoneSdks(trimmedSdkOutput)
             iosConf.allIphoneSimulatorSDKs = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)

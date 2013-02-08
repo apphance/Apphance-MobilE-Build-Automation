@@ -6,6 +6,7 @@ import java.util.regex.Pattern
  * Keeps IOS-specific configuration for the project.
  */
 class IOSProjectConfiguration {
+
     String sdk
     String simulatorSDK
     String mainTarget
@@ -21,6 +22,7 @@ class IOSProjectConfiguration {
     List<String> allIphoneSDKs = []
     List<String> allIphoneSimulatorSDKs = []
     List<String> families = []
+    List<String> schemes = []
     File plistFile
     def monkeyTests = [:]
     def monkeyTestResults = [:]
@@ -68,6 +70,6 @@ class IOSProjectConfiguration {
 
     @Override
     public String toString() {
-        return this.getProperties()
+        this.properties
     }
 }
