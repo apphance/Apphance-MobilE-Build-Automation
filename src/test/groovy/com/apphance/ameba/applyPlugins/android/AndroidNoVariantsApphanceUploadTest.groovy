@@ -25,12 +25,9 @@ class AndroidNoVariantsApphanceUploadTest {
         testAndroidConventionConnection.close()
     }
 
-    @Ignore
-    /*
-    This test is ignored as the testing scenario is very weak.
-    For now apphance REST API isn't defined well.
-    However, the test is left 'as is' because there was no apphance upload testing.
-     */
+    @Ignore("""This test is ignored as the testing scenario is very weak.
+            For now apphance REST API isn't defined well.
+            However, the test is left 'as is' because there was no apphance upload testing.""")
     public void testUpload() {
         try {
             testAndroidConventionConnection.newBuild().forTasks('uploadTest').run();

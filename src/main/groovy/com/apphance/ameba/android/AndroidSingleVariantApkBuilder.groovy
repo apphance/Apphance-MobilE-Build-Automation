@@ -19,14 +19,16 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
         String debugReleaseLowercase = debugRelease?.toLowerCase()
         String variablePart = debugReleaseLowercase + "-${variant}"
         File binDir = new File(androidConf.tmpDirs[variant], 'bin')
-        AndroidBuilderInfo bi = new AndroidBuilderInfo(
+        AndroidBuilderInfo bi = new AndroidBuilderInfo
+        (
                 variant: variant,
                 debugRelease: debugRelease,
                 buildDirectory: binDir,
                 originalFile: new File(binDir, "${conf.projectName}-${debugReleaseLowercase}.apk"),
                 fullReleaseName: "${conf.projectName}-${variablePart}-${conf.fullVersionString}",
-                filePrefix: "${conf.projectName}-${variablePart}-${conf.fullVersionString}")
-        bi
+                filePrefix: "${conf.projectName}-${variablePart}-${conf.fullVersionString}"
+        )
+        return bi
     }
 
     @Override
