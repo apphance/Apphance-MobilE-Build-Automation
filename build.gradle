@@ -22,8 +22,6 @@ apply {
     plugin 'codenarc'
 }
 
-//apply from:'file:release.gradle'
-
 group = 'com.apphance.ameba'
 ext.artifactId = 'Ameba'
 
@@ -126,10 +124,6 @@ uploadArchives {
 configure(install.repositories.mavenInstaller) {
     pom.project { artifactId artifactId }
 }
-
-//compileGroovy.options.optimize = false
-//compileGroovy.options.debug = true
-//compileGroovy.options.debugOptions.debugLevel = 'lines,source,vars'
 
 configurations { mail }
 
