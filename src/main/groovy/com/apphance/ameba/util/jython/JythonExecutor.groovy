@@ -14,7 +14,7 @@ class JythonExecutor {
         addArgumentsToSystem(systemState, commandArguments)
 
         def interpreter = new PythonInterpreter(null, systemState)
-        interpreter.out = output
+        interpreter.setOut(output)
         interpreter.execfile(script)
         interpreter.cleanup()
     }
