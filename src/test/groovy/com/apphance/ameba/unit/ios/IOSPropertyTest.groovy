@@ -69,9 +69,9 @@ ios.excluded.builds=.*
 ios.families=iPhone,iPad
 # Path to distribution resources directory. In this directory mobile provision file should be placed.
 ios.distribution.resources.dir=release/distribution_resources
-# Main target for releaseable build
+# Main target for releasable build
 ios.mainTarget=MainTarget
-# Main configuration for releaseable build
+# Main configuration for releasable build
 ios.mainConfiguration=MainConfiguration
 # SDK used to build iOS targets (-sdk option of xcodebuild) [optional] default: <iphoneos>
 ios.sdk=iphoneos

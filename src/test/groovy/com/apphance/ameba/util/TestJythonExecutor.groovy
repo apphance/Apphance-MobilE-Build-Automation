@@ -6,7 +6,6 @@ import org.junit.Test
 
 class TestJythonExecutor {
 
-
     @Test
     public void testRunScript() {
         def executor = new JythonExecutor()
@@ -14,6 +13,6 @@ class TestJythonExecutor {
         def baos = new ByteArrayOutputStream()
         executor.executeScript('test_script.py', input, baos)
         def output = baos.toString().trim()
-        Assert.assertEquals("['', 'a', 'b', 'c']",output)
+        Assert.assertEquals("['', 'a', 'b', 'c']", output)
     }
 }

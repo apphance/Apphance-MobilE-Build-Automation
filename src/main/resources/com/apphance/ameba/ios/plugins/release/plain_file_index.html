@@ -62,18 +62,6 @@ ${rb.getString('Released')} ${currentDate}
     </li>
     <% } %>
 </ul>
-<% if (!iosConf.monkeyTests.empty) { %>
-<h2>${rb.getString('Fone_Monkey_tests')}</h2>
-<ul>
-    <% iosConf.families.each { family -> %>
-    <% if (iosReleaseConf.foneMonkeyTestResultFiles[family] != null) { %>
-    <li>${java.text.MessageFormat.format(rb.getString('family_monkey_tests'),family)}
-        <a href="${iosReleaseConf.foneMonkeyTestResultFiles[family].getRelativeUrl(baseUrl)}"
-           rel="external">${iosReleaseConf.foneMonkeyTestResultFiles[family].url}</a></li>
-    <% } %>
-    <% } %>
-</ul>
-<% } %>
 <h2>${rb.getString('Other')}</h2>
 <ul>
     <% if (releaseConf.mailMessageFile != null) { %>

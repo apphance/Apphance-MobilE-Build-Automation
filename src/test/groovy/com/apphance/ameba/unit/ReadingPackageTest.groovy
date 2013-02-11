@@ -9,7 +9,6 @@ import static org.junit.Assert.assertArrayEquals
 class ReadingPackageTest {
     @Test
     public void testReadPackages() {
-        ProjectHelper ph = new ProjectHelper()
         File f = new File("src/test/groovy")
         def currentPackage = []
         FileManager.findAllPackages("", f, currentPackage)
@@ -27,6 +26,7 @@ class ReadingPackageTest {
                 'com.apphance.ameba.unit.ios',
                 'com.apphance.ameba.unit.android',
                 'com.apphance.ameba.unit.apphance.android',
+                'com.apphance.ameba.util'
         ].sort()
         assertArrayEquals(currentPackage.toString(), packagesList, (String[]) currentPackage)
     }

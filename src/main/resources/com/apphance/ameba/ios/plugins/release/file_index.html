@@ -38,27 +38,6 @@
                 </ul>
             </section>
         </div>
-        <% if (!iosConf.monkeyTests.empty) { %>
-        <div>
-            <section id="foneMonkey">
-                <header style="text-align:center;">
-                    <h3>
-                        <div>${rb.getString('Fone_Monkey_tests')}</div>
-                    </h3>
-                </header>
-                <p>
-                <ul data-role="listview" data-inset="true" data-theme="a">
-                    <% iosConf.families.each { family -> %>
-                    <% if (iosReleaseConf.foneMonkeyTestResultFiles[family] != null) { %>
-                    <li><a href="${iosReleaseConf.foneMonkeyTestResultFiles[family].getRelativeUrl(baseUrl)}"
-                           rel="external">
-                        <h3>${rb.getString('Fone_Monkey')} ${family}</h3></a></li>
-                    <% } %>
-                    <% } %>
-                </ul>
-            </section>
-        </div>
-        <% } %>
         <div>
             <section id="other">
                 <header style="text-align:center;">
