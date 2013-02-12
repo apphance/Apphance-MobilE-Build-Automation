@@ -211,11 +211,12 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
                 l.lifecycle("Upload image_montage response: ${response.statusLine}")
                 EntityUtils.consume(response.entity)
 
-                iOSReleaseConf.ahSYMDirs[e.id].location.list([accept: { d, n -> def f = new File(d, n); n.endsWith("ahsym") && f.isFile() && f.exists() }] as FilenameFilter).each { ahSYM ->
-                    response = networkHelper.uploadResource(new File(iOSReleaseConf.ahSYMDirs[e.id].location, ahSYM), responseJSON.update_urls.dsym, 'dsym')
-                    l.lifecycle("Upload ahsym ($ahSYM) response: ${response.statusLine}")
-                    EntityUtils.consume(response.entity)
-                }
+                //TODO turn on after DI is implemented
+//                iOSReleaseConf.ahSYMDirs[e.id].location.list([accept: { d, n -> def f = new File(d, n); n.endsWith("ahsym") && f.isFile() && f.exists() }] as FilenameFilter).each { ahSYM ->
+//                    response = networkHelper.uploadResource(new File(iOSReleaseConf.ahSYMDirs[e.id].location, ahSYM), responseJSON.update_urls.dsym, 'dsym')
+//                    l.lifecycle("Upload ahsym ($ahSYM) response: ${response.statusLine}")
+//                    EntityUtils.consume(response.entity)
+//                }
 
             } catch (err) {
                 def msg = "Error while uploading artifact to apphance: ${err.message}"

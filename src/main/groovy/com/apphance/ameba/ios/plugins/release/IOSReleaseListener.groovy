@@ -51,7 +51,7 @@ class IOSReleaseListener implements IOSBuildListener {
             if (bi.configuration != 'Debug') {
                 prepareDistributionZipFile(project, bi)
                 prepareDSYMZipFile(bi)
-                prepareAhSYMFiles(bi)
+//                prepareAhSYMFiles(bi) //TODO turn on after DI is implemented
                 prepareIpaFile(project, bi)
                 prepareManifestFile(bi)
                 prepareMobileProvisionFile(bi)
@@ -234,7 +234,7 @@ class IOSReleaseListener implements IOSBuildListener {
             IOSBuilderInfo bi = builder.buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
             prepareDistributionZipArtifact(bi, true)
             prepareDSYMZipArtifact(bi, true)
-            prepareAhSYMFiles(bi, true)
+//            prepareAhSYMFiles(bi, true)//TODO turn on after DI is implemented
             prepareIpaArtifact(bi, true)
             prepareManifestArtifact(bi, true)
             prepareMobileProvisionArtifact(bi, true)
