@@ -12,6 +12,7 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
+import com.apphance.ameba.util.jython.JythonExecutor
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.AntBuilder
 import org.gradle.api.Project
@@ -50,6 +51,7 @@ class IOSReleaseListener implements IOSBuildListener {
             if (bi.configuration != 'Debug') {
                 prepareDistributionZipFile(project, bi)
                 prepareDSYMZipFile(bi)
+                prepareAhSYMFiles(bi)
                 prepareIpaFile(project, bi)
                 prepareManifestFile(bi)
                 prepareMobileProvisionFile(bi)
@@ -59,7 +61,7 @@ class IOSReleaseListener implements IOSBuildListener {
                 }
             }
         } else {
-            l.lifecycle("Skipping building artifacts -> the build is not versioned")
+            l.lifecycle('Skipping building artifacts -> the build is not versioned')
         }
     }
 
@@ -112,6 +114,29 @@ class IOSReleaseListener implements IOSBuildListener {
         return dSYMZipArtifact
     }
 
+    private void prepareAhSYMFiles(IOSBuilderInfo bi, boolean checkIfExists = false) {
+        AmebaArtifact ahSYM = prepareAhSymArtifacts(bi, checkIfExists)
+        ahSYM.location.delete()
+        ahSYM.location.mkdirs()
+        def je = new JythonExecutor()
+        def args = ['-p', iosConf.plistFile.canonicalPath, '-d', new File(bi.buildDirectory, "${bi.target}.app.dSYM").canonicalPath, '-o', new File(ahSYM.location.canonicalPath, bi.target).canonicalPath]
+        je.executeScript('jython/dump_reduce3_ameba.py', args)
+        l.lifecycle("ahSYM files created: ${ahSYM.location.list()}")
+    }
+
+    private AmebaArtifact prepareAhSymArtifacts(IOSBuilderInfo bi, boolean checkIfExists = false) {
+        AmebaArtifact aa = new AmebaArtifact(
+                name: "ahSYM dir",
+                url: new URL(releaseConf.baseUrl, "${getFolderPrefix(bi)}/${bi.filePrefix}_ahSYM"),
+                location: new File(releaseConf.otaDirectory, "${getFolderPrefix(bi)}/${bi.filePrefix}_ahSYM")
+        )
+        if (!checkIfExists || aa.location.exists()) {
+            iosReleaseConf.ahSYMDirs.put(bi.id, aa)
+        } else {
+            l.lifecycle("Skipping preparing dSYM artifact for ${bi.id} : ${aa.location} -> missing")
+        }
+        aa
+    }
 
     private void prepareIpaFile(Project project, IOSBuilderInfo bi) {
         AmebaArtifact ipaArtifact = prepareIpaArtifact(bi)
@@ -209,6 +234,7 @@ class IOSReleaseListener implements IOSBuildListener {
             IOSBuilderInfo bi = builder.buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
             prepareDistributionZipArtifact(bi, true)
             prepareDSYMZipArtifact(bi, true)
+            prepareAhSYMFiles(bi, true)
             prepareIpaArtifact(bi, true)
             prepareManifestArtifact(bi, true)
             prepareMobileProvisionArtifact(bi, true)
@@ -313,8 +339,8 @@ class IOSReleaseListener implements IOSBuildListener {
 
     private runPlistBuddy(Project project, String command, File targetPlistFile, boolean failOnError = true) {
         String[] executedCommand = [
-                "/usr/libexec/PlistBuddy",
-                "-c",
+                '/usr/libexec/PlistBuddy',
+                '-c',
                 command,
                 targetPlistFile
         ]

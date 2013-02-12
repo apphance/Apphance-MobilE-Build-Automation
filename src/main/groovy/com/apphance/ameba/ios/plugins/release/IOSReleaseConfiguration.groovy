@@ -13,6 +13,7 @@ class IOSReleaseConfiguration {
     Map<String, AmebaArtifact> ipaFiles = [:]
     Map<String, AmebaArtifact> manifestFiles = [:]
     Map<String, AmebaArtifact> mobileProvisionFiles = [:]
+    Map<String, AmebaArtifact> ahSYMDirs = [:]
     AmebaArtifact otaIndexFile
     AmebaArtifact fileIndexFile
     AmebaArtifact plainFileIndexFile
