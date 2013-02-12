@@ -89,7 +89,7 @@ class PbxProjectHelper {
         return null
     }
 
-    def getParsedProject(File projectFile, String targetName) {
+    def getParsedProject(File projectFile) {
         def command = ["plutil", "-convert", "xml1", "-o", "-", projectFile.absolutePath]
         logger.info("Executing ${command}")
         Process proc = Runtime.getRuntime().exec((String[]) command.toArray())
@@ -276,7 +276,7 @@ class PbxProjectHelper {
 
 
     String addApphanceToProject(File projectRootDirectory, File xcodeProject, String targetName, String configurationName, String appKey) {
-        rootObject = getParsedProject(new File(xcodeProject, PROJECT_PBXPROJ), targetName)
+        rootObject = getParsedProject(new File(xcodeProject, PROJECT_PBXPROJ))
         def project = getObject(getProperty(rootObject.dict, "rootObject").text())
         IOSApphanceSourceHelper sourceHelper = this.apphanceSourceHelper
         getProperty(project, "targets").'*'.each { target ->
@@ -331,7 +331,6 @@ class PbxProjectHelper {
         if (getProperty(group, "path") != null) {
             path = path + getProperty(group, "path").text() + "/"
         }
-        boolean found = false
         getProperty(group, "children").each {
             def child = getObject(it.text())
             if (getProperty(child, "isa").text().equals("PBXFileReference")) {
