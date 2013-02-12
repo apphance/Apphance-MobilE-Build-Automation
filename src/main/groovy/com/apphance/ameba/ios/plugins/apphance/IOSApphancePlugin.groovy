@@ -5,10 +5,7 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.test.ApphanceNetworkHelper
-import com.apphance.ameba.apphance.ApphanceProperty
-import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
-import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
-import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
+import com.apphance.ameba.apphance.*
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
@@ -37,6 +34,7 @@ import static java.io.File.separator
  *
  */
 @Mixin(Preconditions)
+@Mixin(ApphancePluginUtil)
 class IOSApphancePlugin implements Plugin<Project> {
 
     static Logger l = Logging.getLogger(IOSApphancePlugin.class)
@@ -61,29 +59,12 @@ class IOSApphancePlugin implements Plugin<Project> {
             def trimmedListOutput = projectHelper.executeCommand(project, ["xcodebuild", "-list"] as String[], false, null, null, 1, true)*.trim()
             iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmedListOutput)
             iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmedListOutput)
-            prepareApphanceFrameworkVersion(project)
+            addApphanceConfiguration(project)
             preProcessBuildsWithApphance(project)
 
             project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
             project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
             project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
-        }
-    }
-
-    private void prepareApphanceFrameworkVersion(Project project) {
-        project.configurations {
-            apphance
-        }
-
-        project.configurations.apphance {
-            resolutionStrategy.cacheDynamicVersionsFor 0, 'minutes'
-        }
-
-        project.repositories {
-            project.repositories {
-                maven { url 'https://dev.polidea.pl/artifactory/libs-releases-local/' }
-                maven { url 'https://dev.polidea.pl/artifactory/libs-snapshots-local/' }
-            }
         }
     }
 
@@ -130,7 +111,7 @@ class IOSApphancePlugin implements Plugin<Project> {
 
     private copyApphanceFramework(Project project, File libsDir) {
 
-        def apphanceLibDependency = prepareApphanceLibDependency(project)
+        def apphanceLibDependency = prepareApphanceLibDependency(project, 'com.apphance:ios.pre-production.armv7:1.8+')
 
         libsDir.mkdirs()
         clearLibsDir(libsDir)
@@ -165,18 +146,6 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
         }
     }
 
-    private String prepareApphanceLibDependency(Project p) {
-        def apphanceLibDependency
-
-        use(PropertyCategory) {
-            apphanceLibDependency = p.readPropertyOrEnvironmentVariable('apphance.lib', true)
-            apphanceLibDependency = apphanceLibDependency ? apphanceLibDependency : 'com.apphance:ios.pre-production.armv7:1.8+'
-            if (p.configurations.apphance.dependencies.isEmpty())
-                p.dependencies { apphance apphanceLibDependency }
-        }
-        apphanceLibDependency
-    }
-
     private clearLibsDir(File libsDir) {
         libsDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { framework ->
             if (framework.name =~ FRAMEWORK_PATTERN) {
@@ -186,19 +155,19 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
         }
     }
 
+    def delClos = {
+        it.eachDir(delClos);
+        it.eachFile {
+            it.delete()
+        }
+    }
+
     private void checkFrameworkFolders(String apphanceLib, File libsDir) {
         def libVariant = apphanceLib.split(':')[1].split('\\.')[1].replace('p', 'P')
         def frameworkFolder = "Apphance-${libVariant}.framework"
         def frameworkFolderFile = new File(libsDir.canonicalPath + separator + frameworkFolder)
         if (!frameworkFolderFile.exists() || !frameworkFolderFile.isDirectory() || !(frameworkFolderFile.length() > 0l)) {
             throw new GradleException("There is no framework folder (or may be empty): ${frameworkFolderFile.canonicalPath} associated with apphance version: '${apphanceLib}'")
-        }
-    }
-
-    def delClos = {
-        it.eachDir(delClos);
-        it.eachFile {
-            it.delete()
         }
     }
 

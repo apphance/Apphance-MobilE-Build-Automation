@@ -54,7 +54,8 @@ def getPLIST(plist_file, verbose = False):
                plist.get('CFBundleShortVersionString'),
                plist.get('CFBundleVersion'))
 
-    print '\tDONE'
+    if verbose:
+        print '\tDONE'
     return plist
 
 def getUUID_ARCHS(sym_file, verbose = False):

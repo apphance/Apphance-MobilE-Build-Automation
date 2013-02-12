@@ -13,7 +13,7 @@ import org.gradle.api.logging.Logging
  */
 class ProjectHelper {
 
-    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=512m', '-XX:+CMSClassUnloadingEnabled',
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
             '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
     static Logger logger = Logging.getLogger(ProjectHelper.class)

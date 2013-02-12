@@ -7,6 +7,7 @@ import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.android.plugins.test.ApphanceNetworkHelper
+import com.apphance.ameba.apphance.ApphancePluginUtil
 import com.apphance.ameba.apphance.ApphanceProperty
 import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
 import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
@@ -22,6 +23,7 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
 
@@ -30,7 +32,13 @@ import static groovy.io.FileType.FILES
  *
  */
 @Mixin(Preconditions)
+@Mixin(ApphancePluginUtil)
 class AndroidApphancePlugin implements Plugin<Project> {
+
+    private static final JAR_PATTERN = ~/.*android\.(pre\-)?production\-(\d+\.)+\d+\.jar/
+
+    private static String EVENT_LOG_WIDGET_PACKAGE = "com.apphance.android.eventlog.widget"
+    private static String EVENT_LOG_ACTIVITY_PACKAGE = "com.apphance.android.eventlog.activity"
 
     static Logger l = Logging.getLogger(AndroidApphancePlugin.class)
 
@@ -38,9 +46,8 @@ class AndroidApphancePlugin implements Plugin<Project> {
     ProjectReleaseConfiguration releaseConfiguration
     ProjectConfiguration conf
     AndroidManifestHelper manifestHelper
-    AndroidProjectConfiguration androidConf
 
-    static final JAR_PATTERN = ~/.*android\.(pre\-)?production\-(\d+\.)+\d+\.jar/
+    AndroidProjectConfiguration androidConf
 
     @Override
     public void apply(Project project) {
@@ -52,7 +59,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
             this.manifestHelper = new AndroidManifestHelper()
             this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
 
-            prepareApphanceJarVersion(project)
+            addApphanceConfiguration(project)
             preProcessBuildsWithApphance(project)
             prepareConvertLogsToApphance(project)
             prepareConvertLogsToAndroid(project)
@@ -63,39 +70,24 @@ class AndroidApphancePlugin implements Plugin<Project> {
         }
     }
 
-    private void prepareApphanceJarVersion(Project project) {
-        project.configurations {
-            apphance
-        }
-
-        project.configurations.apphance {
-            resolutionStrategy.cacheDynamicVersionsFor 0, 'minutes'
-        }
-
-        project.repositories {
-            maven { url 'https://dev.polidea.pl/artifactory/libs-releases-local/' }
-            maven { url 'https://dev.polidea.pl/artifactory/libs-snapshots-local/' }
-        }
-    }
-
     void prepareConvertLogsToApphance(project) {
         def task = project.task('convertLogsToApphance')
         task.description = "Converts all logs to apphance from android logs for the source project"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+        task.group = AMEBA_APPHANCE_SERVICE
         task << { replaceLogsWithApphance(project.rootDir, project.ant) }
     }
 
     void prepareConvertLogsToAndroid(project) {
         def task = project.task('convertLogsToAndroid')
         task.description = "Converts all logs to android from apphance logs for the source project"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+        task.group = AMEBA_APPHANCE_SERVICE
         task << { replaceLogsWithAndroid(project.rootDir, project.ant) }
     }
 
     void prepareRemoveApphanceFromManifest(project) {
         def task = project.task('removeApphanceFromManifest')
         task.description = "Remove apphance-only entries from manifest"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+        task.group = AMEBA_APPHANCE_SERVICE
         task << {
             androidConf.variants.each { variant ->
                 if (androidConf.debugRelease[variant] == 'Release') {
@@ -104,9 +96,6 @@ class AndroidApphancePlugin implements Plugin<Project> {
             }
         }
     }
-
-    private static String EVENT_LOG_WIDGET_PACKAGE = "com.apphance.android.eventlog.widget"
-    private static String EVENT_LOG_ACTIVITY_PACKAGE = "com.apphance.android.eventlog.activity"
 
     private void replaceViewsWithApphance(File directory, AntBuilder ant) {
         l.lifecycle("Replacing android views with apphance loggable versions for ${directory}")
@@ -390,7 +379,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
     private copyApphanceJar(File directory, Project project) {
 
-        def apphanceLibDependency = prepareApphanceLibDependency(project)
+        def apphanceLibDependency = prepareApphanceLibDependency(project, 'com.apphance:android.pre-production:1.8+')
 
         def libsDir = new File(directory, 'libs')
         libsDir.mkdirs()
@@ -413,17 +402,6 @@ To solve the problem add correct dependency to gradle.properties file or add -Da
 Dependency should be added in gradle style to 'apphance.lib' entry""")
             throw new GradleException(msg)
         }
-    }
-
-    def prepareApphanceLibDependency(Project p) {
-        def apphanceLibDependency
-        use(PropertyCategory) {
-            apphanceLibDependency = p.readPropertyOrEnvironmentVariable('apphance.lib', true)
-            apphanceLibDependency ?
-                p.dependencies { apphance apphanceLibDependency } :
-                p.dependencies { apphance 'com.apphance:android.pre-production:1.8+' }
-        }
-        apphanceLibDependency
     }
 
     public boolean checkIfApphancePresent(File directory) {
@@ -457,7 +435,7 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
         def uploadTask = project.task("upload${variantName.toLowerCase().capitalize()}")
 
         uploadTask.description = "Uploads apk & image_montage to Apphance server"
-        uploadTask.group = AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+        uploadTask.group = AMEBA_APPHANCE_SERVICE
 
         uploadTask << {
 

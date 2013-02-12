@@ -51,6 +51,7 @@ class ExecuteIosBuildsTest {
         def args = p.collect { property, value -> "-Dorg.gradle.project.${property}=${value}" }
         GRADLE_DAEMON_ARGS.each { args << it }
         buildLauncher.setJvmArguments(args as String[])
+
         buildLauncher.forTasks(tasks).run()
     }
 
