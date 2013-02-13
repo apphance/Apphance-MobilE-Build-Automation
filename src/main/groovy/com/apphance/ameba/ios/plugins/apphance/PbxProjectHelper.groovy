@@ -42,20 +42,6 @@ class PbxProjectHelper {
             this.apphanceFramework = 'Apphance-Production'
             this.apphanceMode = ''
         }
-
-    }
-
-    Object getProperty(Object object, String propertyName) {
-        def returnObject = null
-        def property = object.key.each {
-            if (it.text().equals(propertyName)) {
-                returnObject = it
-            }
-        }
-        if (returnObject != null) {
-            returnObject = getNextNode(returnObject)
-        }
-        return returnObject
     }
 
     void setRootObject(Object rootObject) {
@@ -63,41 +49,24 @@ class PbxProjectHelper {
     }
 
     Object getObjectsList() {
-        def objects = null
-        rootObject.dict.key.each {
-            if (it.text().equals("objects")) {
-                objects = it
-                return
-            }
-        }
-        objects = getNextNode(objects)
-        return objects
+        def objects = rootObject.dict.key.find { it.text().equals('objects') }
+        return getNextNode(objects)
+    }
+
+    Object getProperty(Object object, String propertyName) {
+        def returnObject = object.key.find { it.text().equals(propertyName) }
+        return returnObject ? getNextNode(returnObject) : null
     }
 
     Object getObject(String objectName) {
-        def returnObject = null
-        def objects = getObjectsList()
-        objects.key.each {
-            if (it.text().equals(objectName)) {
-                returnObject = it
-                return
-            }
-        }
-
-        returnObject = getNextNode(returnObject)
-        return returnObject
+        def returnObject = getObjectsList().find { it.text().equals(objectName) }
+        return getNextNode(returnObject)
     }
 
-    def getNextNode(Object object) {
-        List list = object.parent().children()
-        Iterator iter = list.iterator()
-        while (iter.hasNext()) {
-            def obj = iter.next()
-            if (object == obj) {
-                return iter.next()
-            }
-        }
-        return null
+    def getNextNode(object) {
+        def list = object.parent().children()
+        def found = list.find { object == it }
+        return found ? list[list.indexOf(found) + 1] : null
     }
 
     def getParsedProject(File projectFile) {
