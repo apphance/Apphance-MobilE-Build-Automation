@@ -6,6 +6,7 @@ import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.w3c.dom.Element
 
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -15,9 +16,9 @@ import javax.xml.parsers.DocumentBuilderFactory
  */
 class AndroidManifestHelper {
 
-    static Logger logger = Logging.getLogger(AndroidManifestHelper.class)
+    static Logger l = Logging.getLogger(AndroidManifestHelper.class)
 
-    org.w3c.dom.Element getParsedManifest(File projectDirectory) {
+    Element getParsedManifest(File projectDirectory) {
         def builderFactory = DocumentBuilderFactory.newInstance()
         builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
         builderFactory.setFeature("http://xml.org/sax/features/validation", false)
@@ -25,35 +26,6 @@ class AndroidManifestHelper {
         def inputStream = new FileInputStream(new File(projectDirectory, "AndroidManifest.xml"))
         return builder.parse(inputStream).documentElement
     }
-
-
-    String readPackage(File projectDirectory) {
-        def root = getParsedManifest(projectDirectory)
-        def appPackage = null
-        XPathAPI.selectNodeList(root, '/manifest').each { apppackage ->
-            apppackage.attributes.nodes.each { attribute ->
-                if (attribute.name == 'package') {
-                    appPackage = attribute.value
-                }
-            }
-        }
-        return appPackage
-    }
-
-
-    String readMinSdkVersion(File projectDirectory) {
-        def root = getParsedManifest(projectDirectory)
-        def minSdkVersion = null
-        XPathAPI.selectNodeList(root, '/manifest/uses-sdk').each { usessdk ->
-            usessdk.attributes.nodes.each { attribute ->
-                if (attribute.name == 'android:minSdkVersion') {
-                    minSdkVersion = attribute.value
-                }
-            }
-        }
-        return minSdkVersion
-    }
-
 
     void readVersion(File projectDirectory, ProjectConfiguration conf) {
         def root = getParsedManifest(projectDirectory)
@@ -64,7 +36,7 @@ class AndroidManifestHelper {
                     try {
                         conf.versionCode = versionCodeString.toLong()
                     } catch (NumberFormatException e) {
-                        logger.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
+                        l.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
                         conf.versionCode = 0
                     }
                 }
@@ -93,7 +65,7 @@ class AndroidManifestHelper {
         file.write(root as String)
     }
 
-    void replacePackage(File projectDirectory, ProjectConfiguration conf, String oldPackage, String newPackage, String newLabel) {
+    void replacePackage(File projectDirectory, String oldPackage, String newPackage, String newLabel) {
         def file = new File(projectDirectory, "AndroidManifest.xml")
         saveOriginalFile(projectDirectory, file)
         def root = getParsedManifest(projectDirectory)
@@ -102,9 +74,9 @@ class AndroidManifestHelper {
                 if (attribute.name == 'package') {
                     if (attribute.value == oldPackage) {
                         attribute.value = newPackage
-                        logger.lifecycle("Replacing old package ${oldPackage} with new package ${newPackage} ")
+                        l.lifecycle("Replacing old package ${oldPackage} with new package ${newPackage} ")
                     } else if (attribute.value == newPackage) {
-                        logger.lifecycle("NOT Replacing old package ${oldPackage} with new package ${newPackage} as it is already ${newPackage}")
+                        l.lifecycle("NOT Replacing old package ${oldPackage} with new package ${newPackage} as it is already ${newPackage}")
                     } else {
                         throw new GradleException("Package to replace in manifest is ${attribute.value} and not expected ${oldPackage} (neither target ${newPackage}. This must be wrong.")
                     }
@@ -131,7 +103,6 @@ class AndroidManifestHelper {
         }
     }
 
-
     void removeApphance(File projectDirectory) {
         def file = new File(projectDirectory, "AndroidManifest.xml")
         def root = getParsedManifest(projectDirectory)
@@ -140,7 +111,7 @@ class AndroidManifestHelper {
         if (manifestNode.attributes.getNamedItem('xmlns:apphance') != null) {
             manifestNode.attributes.removeNamedItem('xmlns:apphance')
         } else {
-            logger.lifecycle("There is no xmlns:apphance namespace defined in manifest. Skipping apphance removal.")
+            l.lifecycle("There is no xmlns:apphance namespace defined in manifest. Skipping apphance removal.")
             return
         }
         XPathAPI.selectNodeList(root, '/manifest/application/activity').each { activity ->
@@ -190,19 +161,17 @@ class AndroidManifestHelper {
         XmlSlurper slurper = new XmlSlurper(false, true)
         GPathResult manifest = slurper.parse(file)
         String androidName = "android:name"
-        String packageName = manifest.@package
-
         // Add permissions
         def permissions = manifest."uses-permission"
-        logger.lifecycle(permissions.text())
+        l.lifecycle(permissions.text())
         permissionsToAdd.each { currentPermission ->
-            logger.lifecycle("Finding permission " + currentPermission)
+            l.lifecycle("Finding permission " + currentPermission)
             def foundPermission = permissions.find { it.@"${androidName}".text().equals(currentPermission) }
             if (foundPermission == null || foundPermission.isEmpty()) {
-                logger.lifecycle("Permission " + currentPermission + " not found")
+                l.lifecycle("Permission " + currentPermission + " not found")
                 manifest.appendNode({ 'uses-permission'("${androidName}": currentPermission) })
             } else {
-                logger.lifecycle("Permission " + foundPermission.@"${androidName}".text() + " found")
+                l.lifecycle("Permission " + foundPermission.@"${androidName}".text() + " found")
             }
         }
         file.delete()
@@ -235,16 +204,16 @@ class AndroidManifestHelper {
 
         // Add permissions
         def permissions = manifest."uses-permission"
-        logger.lifecycle(permissions.text())
+        l.lifecycle(permissions.text())
         def apphancePermissions = ["android.permission.INTERNET", "android.permission.READ_PHONE_STATE", "android.permission.GET_TASKS"]
         apphancePermissions.each { apphancePermission ->
-            logger.lifecycle("Finding permission " + apphancePermission)
+            l.lifecycle("Finding permission " + apphancePermission)
             def permission = permissions.find { it.@"${androidName}".text().equals(apphancePermission) }
             if (permission == null || permission.isEmpty()) {
-                logger.lifecycle("Permission " + apphancePermission + " not found")
+                l.lifecycle("Permission " + apphancePermission + " not found")
                 manifest.appendNode({ 'uses-permission'("${androidName}": apphancePermission) })
             } else {
-                logger.lifecycle("Permission " + permission.@"${androidName}".text() + " found")
+                l.lifecycle("Permission " + permission.@"${androidName}".text() + " found")
             }
         }
 
@@ -271,7 +240,7 @@ class AndroidManifestHelper {
         String mainActivity = getMainActivityName(projectDirectory)
         def packages = mainActivity.split('\\.')
         mainActivity = packages.last()
-        logger.lifecycle("Main activity name = " + mainActivity)
+        l.lifecycle("Main activity name = " + mainActivity)
         manifest.application.activity.each {
             if (it.@"${androidName}".text().contains(mainActivity)) {
                 it."intent-filter".each { filter ->
@@ -298,7 +267,6 @@ class AndroidManifestHelper {
             writer << result.replace(">", ">\n").replace("xmlns:tag0=\"\"", "").replace("tag0:", "")
         }
     }
-
 
     public String getMainActivityName(File projectDirectory) {
         def file = new File(projectDirectory, "AndroidManifest.xml")
@@ -346,7 +314,6 @@ class AndroidManifestHelper {
         } else {
             throw new GradleException("Main activity file could not be found")
         }
-
         return className
     }
 
@@ -365,7 +332,7 @@ class AndroidManifestHelper {
             className = ""
         }
         className = className + applicationName
-        logger.lifecycle("Searching for application class file " + className)
+        l.lifecycle("Searching for application class file " + className)
         return className
     }
 
@@ -381,7 +348,6 @@ class AndroidManifestHelper {
                 activityFound = true
             }
         }
-
         return activityFound
     }
 
@@ -396,7 +362,6 @@ class AndroidManifestHelper {
                 instrumentationFound = true
             }
         }
-
         return instrumentationFound
     }
 
@@ -408,8 +373,7 @@ class AndroidManifestHelper {
             file << originalFile.text
             originalFile.delete()
         } else {
-            logger.warn("Could not restore original file. It's missing!")
+            l.warn("Could not restore original file. It's missing!")
         }
     }
-
 }

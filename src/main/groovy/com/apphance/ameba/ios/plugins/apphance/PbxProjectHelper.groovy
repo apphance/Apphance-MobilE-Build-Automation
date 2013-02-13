@@ -136,7 +136,6 @@ class PbxProjectHelper {
                     if (name.equals("apphance")) {
                         hasApphance = true
                     }
-                    return
                 }
             }
         }

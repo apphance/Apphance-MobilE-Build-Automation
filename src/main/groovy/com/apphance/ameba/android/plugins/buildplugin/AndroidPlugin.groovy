@@ -452,7 +452,7 @@ class AndroidPlugin implements Plugin<Project> {
                 logger.lifecycle("New label ${newLabel}")
                 def newName = project.readProperty("newLabel")
                 logger.lifecycle("New name ${newName}")
-                manifestHelper.replacePackage(project.getRootDir(), conf, oldPackage, newPackage, newLabel)
+                manifestHelper.replacePackage(project.getRootDir(), oldPackage, newPackage, newLabel)
                 logger.lifecycle("Replaced the package from ${oldPackage} to ${newPackage}")
                 if (newLabel != null) {
                     logger.lifecycle("Also replaced label with ${newLabel}")

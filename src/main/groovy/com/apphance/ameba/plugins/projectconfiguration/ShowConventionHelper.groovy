@@ -25,7 +25,6 @@ class ShowConventionHelper {
     void getObjectRepr(StringBuilder sb, Object obj, int indent) {
         if (obj == null || obj.class == null || obj.class == java.lang.Package.class) {
             sb << null
-            return
         } else if (obj.class == String.class || obj.class == GString.class || obj.class == File.class) {
             sb << "\"${obj}\""
         } else if (obj.class == DynamicObjectHelper.class) {

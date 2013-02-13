@@ -17,27 +17,27 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
             'qrCode',
             'imageMontage'
     ]
+
     IOSProjectConfiguration iosConf
 
     VerifyReleaseSetupOperation() {
         super(ProjectReleaseProperty.class)
     }
 
-
+    @Override
     void verifySetup() {
         def projectProperties = readProperties()
         iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
 
-        ProjectReleaseProperty.each {
-            if (it.defaultValue == null && it != ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE) {
-                checkProperty(projectProperties, it)
-            }
+        ProjectReleaseProperty.findAll { it.defaultValue == null && it != ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE }.each {
+            checkProperty(projectProperties, it)
         }
+
         checkReleaseMailFlags()
-        checkIconFile(projectProperties)
-        checkUrl(projectProperties)
-        checkLanguage(projectProperties)
-        checkCountry(projectProperties)
+        checkIconFile()
+        checkUrl()
+        checkLanguage()
+        checkCountry()
         checkEmail(ProjectReleaseProperty.RELEASE_MAIL_FROM)
         checkEmail(ProjectReleaseProperty.RELEASE_MAIL_TO)
         allPropertiesOK()
@@ -65,7 +65,7 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
         }
     }
 
-    void checkIconFile(Properties projectProperties) {
+    void checkIconFile() {
         use(PropertyCategory) {
             String iconPath = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE)
             if (iconPath != null && !iconPath.empty) {
@@ -78,18 +78,18 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
         }
     }
 
-    private checkUrl(Properties projectProperties) {
+    private checkUrl() {
         use(PropertyCategory) {
             String urlString = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_URL)
             try {
-                URL url = new URL(urlString)
+                new URL(urlString)
             } catch (MalformedURLException e) {
                 throw new GradleException("The ${ProjectReleaseProperty.RELEASE_PROJECT_URL.propertyName}:${urlString} property is not a valid URL: ${e}")
             }
         }
     }
 
-    private checkLanguage(Properties projectProperties) {
+    private checkLanguage() {
         use(PropertyCategory) {
             String language = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_LANGUAGE)
             if (language.length() != 2 || language.toLowerCase() != language) {
@@ -98,7 +98,7 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
         }
     }
 
-    private checkCountry(Properties projectProperties) {
+    private checkCountry() {
         use(PropertyCategory) {
             String country = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_COUNTRY)
             if (country.length() != 2 || country.toUpperCase() != country) {
@@ -106,5 +106,4 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
             }
         }
     }
-
 }

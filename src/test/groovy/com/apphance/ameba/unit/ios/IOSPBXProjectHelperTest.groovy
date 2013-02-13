@@ -19,7 +19,7 @@ class IOSPBXProjectHelperTest {
         assertEquals("D382B70814703FE500E9CC9B", helper.getProperty(o.dict, "rootObject").text())
         def object = helper.getObject(helper.getProperty(o.dict, "rootObject").text())
         assertNotNull(object)
-        String s = helper.writePlistToString();
+        helper.writePlistToString();
         assertNotNull(o)
     }
 }

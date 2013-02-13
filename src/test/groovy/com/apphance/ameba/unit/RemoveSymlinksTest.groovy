@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 class RemoveSymlinksTest {
     @Test
     public void removeSymlinks() throws Exception {
-        ProjectHelper ph = new ProjectHelper()
         File currentDir = new File("testProjects/android")
         [
                 'ln',

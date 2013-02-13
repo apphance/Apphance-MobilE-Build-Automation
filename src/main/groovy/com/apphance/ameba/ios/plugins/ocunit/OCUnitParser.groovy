@@ -94,7 +94,6 @@ class OCUnitParser {
             te.line = Integer.parseInt(testCaseErrorMatcher[0][2])
             te.errorMessage = testCaseErrorMatcher[0][4]
             currentSuite.testCases[-1].errors << te
-            return
         }
     }
 

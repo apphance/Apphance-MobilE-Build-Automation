@@ -105,11 +105,10 @@ class AndroidManifestHelperTest {
 
     @Test
     void testReplacePackageOnly() {
-        ProjectConfiguration projectConfiguration = new ProjectConfiguration()
         manifestHelper.restoreOriginalManifest(tmpDir)
         def file = new File(tmpDir, "AndroidManifest.xml")
         String originalText = file.text
-        manifestHelper.replacePackage(tmpDir, projectConfiguration, 'com.apphance.amebaTest.android',
+        manifestHelper.replacePackage(tmpDir, 'com.apphance.amebaTest.android',
                 'com.apphance.amebaTest.android.new', null)
         def origFile = new File(tmpDir, "AndroidManifest.xml.orig")
         try {
@@ -128,7 +127,6 @@ class AndroidManifestHelperTest {
 
     @Test
     void testAddPermissions() {
-        ProjectConfiguration projectConfiguration = new ProjectConfiguration()
         manifestHelper.restoreOriginalManifest(tmpDir)
         def file = new File(tmpDir, "AndroidManifest.xml")
         String originalText = file.text
@@ -149,11 +147,10 @@ class AndroidManifestHelperTest {
 
     @Test
     void testReplacePackageAndLabel() {
-        ProjectConfiguration projectConfiguration = new ProjectConfiguration()
         manifestHelper.restoreOriginalManifest(tmpDir)
         def file = new File(tmpDir, "AndroidManifest.xml")
         String originalText = file.text
-        manifestHelper.replacePackage(tmpDir, projectConfiguration, 'com.apphance.amebaTest.android',
+        manifestHelper.replacePackage(tmpDir, 'com.apphance.amebaTest.android',
                 'com.apphance.amebaTest.android.new', 'newLabel')
         def origFile = new File(tmpDir, "AndroidManifest.xml.orig")
         try {
@@ -172,7 +169,6 @@ class AndroidManifestHelperTest {
 
     @Test
     void testReadMainActivityFromManifest() {
-        ProjectConfiguration projectConfiguration = new ProjectConfiguration()
         def file = new File("testProjects/apphance-updates/")
         String mainActivity = manifestHelper.getMainActivityName(file)
         assertTrue(mainActivity.contains('HomeActivity'))

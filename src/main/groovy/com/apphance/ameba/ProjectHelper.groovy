@@ -48,7 +48,7 @@ class ProjectHelper {
                 standardOut = getSystemOutput(logDir, commandToDisplay, '-output.txt', jenkinsURL)
                 standardErr = new FileSystemOutput(standardOut.file, System.err)
             }
-            Process proc = null
+            Process proc
             try {
                 proc = command.execute(envp, runDirectory)
             } catch (IOException e) {
@@ -82,8 +82,6 @@ class ProjectHelper {
                         throw new GradleException("""Error when executing ${commandToDisplay}:\n   working directory: ${runDirectory},
         \n   exit value: ${exitValue},\n\n   errorOutput:\n
         ${errorOutput.join('\n')},\n""")
-                    } else {
-                        continue // try again
                     }
                 }
             }

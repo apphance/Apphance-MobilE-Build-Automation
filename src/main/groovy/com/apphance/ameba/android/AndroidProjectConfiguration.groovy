@@ -52,6 +52,6 @@ class AndroidProjectConfiguration {
 
     @Override
     public String toString() {
-        return this.getProperties()
+        this.getProperties()
     }
 }
