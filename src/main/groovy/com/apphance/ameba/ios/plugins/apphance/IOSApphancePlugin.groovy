@@ -54,7 +54,7 @@ class IOSApphancePlugin implements Plugin<Project> {
             this.conf = project.getProjectConfiguration()
             this.iosXcodeOutputParser = new IOSXCodeOutputParser()
             this.iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
-            this.pbxProjectHelper = new PbxProjectHelper(project.properties['apphance.lib'])
+            this.pbxProjectHelper = new PbxProjectHelper(project.properties['apphance.lib'], project.properties['apphance.mode'])
 
             def trimmedListOutput = projectHelper.executeCommand(project, ["xcodebuild", "-list"] as String[], false, null, null, 1, true)*.trim()
             iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmedListOutput)

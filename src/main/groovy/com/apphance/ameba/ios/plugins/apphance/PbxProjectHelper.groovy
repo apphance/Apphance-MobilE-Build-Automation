@@ -22,14 +22,25 @@ class PbxProjectHelper {
     String apphanceMode
     IOSApphanceSourceHelper apphanceSourceHelper = new IOSApphanceSourceHelper()
 
-    PbxProjectHelper(String apphanceLib = null) {
+    PbxProjectHelper(String apphanceLib = null, String apphanceMode = null) {
+        assignApphanceFrameworkAndMode(apphanceLib, apphanceMode)
+    }
 
+    def assignApphanceFrameworkAndMode(apphanceLib, apphanceMode) {
         if (!apphanceLib || apphanceLib.contains('pre')) {
-            apphanceFramework = 'Apphance-Pre-Production'
-            apphanceMode = 'apphanceMode:kAPHApphanceModeQA'
+            this.apphanceFramework = 'Apphance-Pre-Production'
+            switch (apphanceMode) {
+                case 'Silent':
+                    this.apphanceMode = 'apphanceMode:kAPHApphanceModeSilent'
+                    break
+                case 'QA':
+                default:
+                    this.apphanceMode = 'apphanceMode:kAPHApphanceModeQA'
+                    break
+            }
         } else {
-            apphanceFramework = 'Apphance-Production'
-            apphanceMode = ''
+            this.apphanceFramework = 'Apphance-Production'
+            this.apphanceMode = ''
         }
 
     }
