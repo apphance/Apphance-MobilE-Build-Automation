@@ -74,7 +74,7 @@ class AndroidManifestHelper {
                 if (attribute.name == 'package') {
                     if (attribute.value == oldPackage) {
                         attribute.value = newPackage
-                        l.lifecycle("Replacing old package ${oldPackage} with new package ${newPackage} ")
+                        l.lifecycle("Replacing old package ${oldPackage} with new package ${newPackage}")
                     } else if (attribute.value == newPackage) {
                         l.lifecycle("NOT Replacing old package ${oldPackage} with new package ${newPackage} as it is already ${newPackage}")
                     } else {
@@ -269,20 +269,19 @@ class AndroidManifestHelper {
     }
 
     public String getMainActivityName(File projectDirectory) {
-        def file = new File(projectDirectory, "AndroidManifest.xml")
+        def file = new File(projectDirectory, 'AndroidManifest.xml')
 
         def manifest = new XmlSlurper(false, true).parse(file)
 
         String className = manifest.@package
-        String intentFilter = "intent-filter"
-        String androidName = "android:name"
+        String androidName = 'android:name'
 
         def mainActivity = manifest.application.activity.findAll {
             def intentFilters = []
             def mainIntentFound = false
             def launcherIntentFound = false
             // collect all filter nodes
-            it."${intentFilter}".each {
+            it.'intent-filter'.each {
                 intentFilters << it
             }
             // iterate through each intent filter node and find proper action and category
@@ -318,56 +317,37 @@ class AndroidManifestHelper {
     }
 
     public String getApplicationName(File projectDirectory) {
-        def file = new File(projectDirectory, "AndroidManifest.xml")
-
+        def file = new File(projectDirectory, 'AndroidManifest.xml')
         def manifest = new XmlSlurper().parse(file)
-        String className = manifest.@package
 
-        String androidName = "android:name"
-        String applicationName = manifest.application.@"${androidName}".text()
-        if (!applicationName.startsWith(".")) {
-            className = className + "."
-        }
-        if (applicationName.contains(manifest.@package.text())) {
-            className = ""
-        }
-        className = className + applicationName
-        l.lifecycle("Searching for application class file " + className)
-        return className
+        String packageName = manifest.@package
+        String applicationName = manifest.application.@'android:name'.text()
+
+        packageName = applicationName.startsWith('.') ? packageName : packageName + '.'
+        packageName = applicationName.contains(packageName) ? '' : packageName
+
+        return packageName + applicationName
     }
 
     public boolean isApphanceActivityPresent(File projectDirectory) {
-        def activityFound = false
-
-        def file = new File(projectDirectory, "AndroidManifest.xml")
+        def file = new File(projectDirectory, 'AndroidManifest.xml')
         def manifest = new XmlSlurper().parse(file)
 
-        manifest.activity.each {
-            def activityName = it.@"android:name".text().toLowerCase()
-            if (activityName.equals("com.apphance.android.ui.loginactivity") || activityName.equals("com.apphance.android.ui.ProblemActivity")) {
-                activityFound = true
-            }
-        }
-        return activityFound
+        return manifest.activity.find {
+            def activityName = it.@'android:name'.text().toLowerCase()
+            activityName.equals('com.apphance.android.ui.loginactivity') || activityName.equals('com.apphance.android.ui.problemactivity')
+        }.size() != 0
     }
 
     public boolean isApphanceInstrumentationPresent(File projectDirectory) {
-        def instrumentationFound = false
-
-        def file = new File(projectDirectory, "AndroidManifest.xml")
+        def file = new File(projectDirectory, 'AndroidManifest.xml')
         def manifest = new XmlSlurper().parse(file)
-
-        manifest.instrumentation.each {
-            if (it.@"android:name".text().toLowerCase().equals("com.apphance.android.apphanceinstrumentation")) {
-                instrumentationFound = true
-            }
-        }
-        return instrumentationFound
+        return manifest.instrumentation.find { it.@'android:name'.text().toLowerCase().equals('com.apphance.android.apphanceinstrumentation') }.size() != 0
     }
 
     void restoreOriginalManifest(File projectDirectory) {
-        def file = new File(projectDirectory, "AndroidManifest.xml")
-        def originalFile = new File(projectDirectory, file.name + ".orig")
+        def file = new File(projectDirectory, 'AndroidManifest.xml')
+        def originalFile = new File(projectDirectory, file.name + '.orig')
         if (originalFile.exists()) {
             file.delete()
             file << originalFile.text
