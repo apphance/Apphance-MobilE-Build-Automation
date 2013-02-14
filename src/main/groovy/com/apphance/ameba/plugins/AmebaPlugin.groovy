@@ -1,6 +1,5 @@
 package com.apphance.ameba.plugins
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import org.gradle.api.Plugin
@@ -21,10 +20,6 @@ class AmebaPlugin implements Plugin<Project> {
                 bind(Project).toInstance(project)
             }
         })
-
-        injector
-                .getInstance(ProjectConfigurationPlugin)
-                .apply(project)
 
         injector.getInstance(PluginMaster).enhanceProject(project)
 
