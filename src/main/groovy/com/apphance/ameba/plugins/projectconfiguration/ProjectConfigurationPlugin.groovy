@@ -5,7 +5,6 @@ import com.apphance.ameba.PropertyCategory
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
@@ -16,7 +15,7 @@ import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
  */
 class ProjectConfigurationPlugin implements Plugin<Project> {
 
-    static Logger l = Logging.getLogger(ProjectConfigurationPlugin.class)
+    def l = Logging.getLogger(getClass())
 
     public static final String PROJECT_NAME_PROPERTY = 'project.name'
 
