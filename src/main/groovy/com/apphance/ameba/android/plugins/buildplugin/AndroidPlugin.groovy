@@ -304,7 +304,7 @@ class AndroidPlugin implements Plugin<Project> {
         task.group = AMEBA_CONFIGURATION
         task.description = 'Reads Android version data from android manifest'
         task << {
-            manifestHelper.readVersion(project.rootDir, conf)
+            conf.updateVersionDetails(manifestHelper.readVersion(project.rootDir))
             use(PropertyCategory) {
                 if (!project.isPropertyOrEnvironmentVariableDefined('version.string')) {
                     logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")

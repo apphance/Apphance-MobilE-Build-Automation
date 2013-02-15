@@ -268,7 +268,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
             use(PropertyCategory) {
                 conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
                 conf.versionCode = project.readOptionalPropertyOrEnvironmentVariable('version.code') as Long
-                manifestHelper.updateVersion(project.rootDir, conf.versionCode, conf.versionString)
+                manifestHelper.updateVersion(project.rootDir, new Expando(versionCode: conf.versionCode, versionString: conf.versionString))
                 logger.lifecycle("New version code: ${conf.versionCode}")
                 logger.lifecycle("Updated version string to ${conf.versionString}")
                 logger.lifecycle("Configuration : ${conf}")

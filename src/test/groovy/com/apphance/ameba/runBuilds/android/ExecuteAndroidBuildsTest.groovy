@@ -169,12 +169,12 @@ class ExecuteAndroidBuildsTest {
             p.put('version.string', 'TEST_UPDATE')
             p.put('version.code', 43)
             runGradleWithProperties(p, 'updateProject', 'updateVersion')
-            manifestHelper.readVersion(new File("testProjects/android/android-basic"), projectConf)
+            projectConf.updateVersionDetails(manifestHelper.readVersion(new File("testProjects/android/android-basic")))
+            assertEquals(43, projectConf.versionCode)
+            assertEquals('TEST_UPDATE', projectConf.versionString)
         } finally {
             manifestHelper.restoreOriginalManifest(new File("testProjects/android/android-basic"))
         }
-        assertEquals(43, projectConf.versionCode)
-        assertEquals('TEST_UPDATE', projectConf.versionString)
     }
 
 
@@ -325,7 +325,7 @@ class ExecuteAndroidBuildsTest {
         try {
             Properties p = new Properties()
             runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
-            manifestHelper.readVersion(testAndroidNoApphanceApplication, projectConf)
+            projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
         }
@@ -342,7 +342,7 @@ class ExecuteAndroidBuildsTest {
             Properties p = new Properties()
             p.put('apphance.lib', "com.apphance:android.production:1.8.2")
             runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
-            manifestHelper.readVersion(testAndroidNoApphanceApplication, projectConf)
+            projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
         }
@@ -359,7 +359,7 @@ class ExecuteAndroidBuildsTest {
             Properties p = new Properties()
             p.put('apphance.lib', "com.apphanc:android.production:1.8")
             runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
-            manifestHelper.readVersion(testAndroidNoApphanceApplication, projectConf)
+            projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
         } catch (Exception e) {
 
             def c = e.cause.cause.cause

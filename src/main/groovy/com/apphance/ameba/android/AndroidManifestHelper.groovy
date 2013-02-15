@@ -1,10 +1,9 @@
 package com.apphance.ameba.android
 
-import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.util.Preconditions
 import com.sun.org.apache.xpath.internal.XPathAPI
 import groovy.util.slurpersupport.GPathResult
-import org.gradle.api.GradleException
-import org.gradle.api.logging.Logger
+import groovy.xml.XmlUtil
 import org.gradle.api.logging.Logging
 import org.w3c.dom.Element
 
@@ -14,97 +13,76 @@ import javax.xml.parsers.DocumentBuilderFactory
  * Helps to parse and process android manifest.
  *
  */
+@Mixin(Preconditions)
 class AndroidManifestHelper {
 
-    static Logger l = Logging.getLogger(AndroidManifestHelper.class)
+    def l = Logging.getLogger(AndroidManifestHelper.class)
+
+    private final String ANDROID_MANIFEST = 'AndroidManifest.xml'
+
+    private final String ATTR_ANDROID_NAME = 'android:name'
+
 
     Element getParsedManifest(File projectDirectory) {
         def builderFactory = DocumentBuilderFactory.newInstance()
         builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
         builderFactory.setFeature("http://xml.org/sax/features/validation", false)
         def builder = builderFactory.newDocumentBuilder()
-        def inputStream = new FileInputStream(new File(projectDirectory, "AndroidManifest.xml"))
+        def inputStream = new FileInputStream(new File(projectDirectory, ANDROID_MANIFEST))
         return builder.parse(inputStream).documentElement
     }
 
-    void readVersion(File projectDirectory, ProjectConfiguration conf) {
-        def root = getParsedManifest(projectDirectory)
-        XPathAPI.selectNodeList(root, '/manifest').each { manifest ->
-            manifest.attributes.nodes.each { attribute ->
-                if (attribute.name == 'android:versionCode') {
-                    def versionCodeString = attribute.value
-                    try {
-                        conf.versionCode = versionCodeString.toLong()
-                    } catch (NumberFormatException e) {
-                        l.lifecycle("Format of the ${versionCodeString} is not numeric. Starting from 1.")
-                        conf.versionCode = 0
-                    }
-                }
-                if (attribute.name == 'android:versionName') {
-                    conf.versionString = attribute.value
-                }
-            }
-        }
+    Expando readVersion(File projectDirectory) {
+        def manifest = new XmlSlurper(false, true).parse(new File(projectDirectory, ANDROID_MANIFEST))
+        def versionCode = manifest.@'android:versionCode'.text().toLong()
+        def versionString = manifest.@'andoid:versionName'.text()
+        new Expando(versionCode: versionCode, versionString: versionString)
     }
 
-    void updateVersion(File projectDirectory, Long newVersionCode, String newVersionString) {
-        def file = new File(projectDirectory, "AndroidManifest.xml")
-        saveOriginalFile(projectDirectory, file)
-        def root = getParsedManifest(projectDirectory)
-        XPathAPI.selectNodeList(root, '/manifest').each { manifest ->
-            manifest.attributes.nodes.each { attribute ->
-                if (attribute.name == 'android:versionCode') {
-                    attribute.value = newVersionCode
-                }
-                if (attribute.name == 'android:versionName') {
-                    attribute.value = newVersionString
-                }
-            }
-        }
+    void updateVersion(File projecDirectory, Expando versionDetails) {
+        def file = new File(projecDirectory, ANDROID_MANIFEST)
+        saveOriginalFile(projecDirectory, file)
+        def manifest = new XmlSlurper(false, false).parse(file)
+        manifest.@'android:versionName' = versionDetails.versionString.toString()
+        manifest.@'android:versionCode' = versionDetails.versionCode.toString()
         file.delete()
-        file.write(root as String)
+        file << XmlUtil.serialize(manifest)
     }
 
-    void replacePackage(File projectDirectory, String oldPackage, String newPackage, String newLabel) {
-        def file = new File(projectDirectory, "AndroidManifest.xml")
-        saveOriginalFile(projectDirectory, file)
-        def root = getParsedManifest(projectDirectory)
-        XPathAPI.selectNodeList(root, '/manifest').each { manifest ->
-            manifest.attributes.nodes.each { attribute ->
-                if (attribute.name == 'package') {
-                    if (attribute.value == oldPackage) {
-                        attribute.value = newPackage
-                        l.lifecycle("Replacing old package ${oldPackage} with new package ${newPackage}")
-                    } else if (attribute.value == newPackage) {
-                        l.lifecycle("NOT Replacing old package ${oldPackage} with new package ${newPackage} as it is already ${newPackage}")
-                    } else {
-                        throw new GradleException("Package to replace in manifest is ${attribute.value} and not expected ${oldPackage} (neither target ${newPackage}. This must be wrong.")
-                    }
-                }
-            }
+    void replacePackage(File projectDir, String oldPkg, String newPkg, String newLbl) {
+        def file = new File(projectDir, ANDROID_MANIFEST)
+        saveOriginalFile(projectDir, file)
+
+        def manifest = new XmlSlurper(false, false).parse(file)
+        def packageName = manifest.@package
+
+        throwIf((packageName != oldPkg && packageName != newPkg), "Package to replace in manifest is: '$packageName' and not expected: '$oldPkg' (neither target: '$newPkg'). This must be wrong.")
+
+        l.lifecycle("Replacing package: '$packageName' with new package: '$newPkg'")
+        manifest.@package = newPkg
+
+        if (newLbl) {
+            replaceAndroidLabel(manifest, newLbl)
         }
-        if (newLabel != null) {
-            XPathAPI.selectNodeList(root, '/manifest/application').each { application ->
-                application.attributes.nodes.each { attribute ->
-                    if (attribute.name == 'android:label') {
-                        attribute.value = newLabel
-                    }
-                }
-            }
-        }
+
         file.delete()
-        file.write(root as String)
+        file << XmlUtil.serialize(manifest)
     }
 
-    private saveOriginalFile(File projectDirectory, File file) {
+    private void saveOriginalFile(File projectDirectory, File file) {
         def originalFile = new File(projectDirectory, file.name + ".orig")
-        if (!originalFile.exists()) {
-            originalFile << file.text
+        originalFile.delete()
+        originalFile << file.text
+    }
+
+    private void replaceAndroidLabel(GPathResult manifest, String newLbl) {
+        manifest.application.each {
+            it.@'android:label' = newLbl
         }
     }
 
     void removeApphance(File projectDirectory) {
-        def file = new File(projectDirectory, "AndroidManifest.xml")
+        def file = new File(projectDirectory, ANDROID_MANIFEST)
         def root = getParsedManifest(projectDirectory)
         saveOriginalFile(projectDirectory, file)
         def manifestNode = XPathAPI.selectSingleNode(root, '/manifest')
@@ -136,42 +114,41 @@ class AndroidManifestHelper {
         }
         XPathAPI.selectNodeList(root, '/manifest/application/activity/intent-filter/action[@name=\'com.apphance.android.LAUNCH\']').each { action ->
             action.attributes.nodes.each {
-                if (it.name == 'android:name') {
+                if (it.name == ATTR_ANDROID_NAME) {
                     it.value = 'android.intent.action.MAIN'
                 }
             }
             action.parentNode.childNodes.each {
                 if (it.nodeName == 'category') {
                     it.attributes.nodes.each { attribute ->
-                        if (attribute.name == 'android:name') {
+                        if (attribute.name == ATTR_ANDROID_NAME) {
                             attribute.value = 'android.intent.category.LAUNCHER'
                         }
                     }
                 }
             }
         }
-        def fileAgain = new File(projectDirectory, "AndroidManifest.xml")
+        def fileAgain = new File(projectDirectory, ANDROID_MANIFEST)
         fileAgain.delete()
         fileAgain.write(root as String)
     }
 
     public void addPermissionsToManifest(File projectDirectory, def permissionsToAdd) {
-        def file = new File(projectDirectory, "AndroidManifest.xml")
+        def file = new File(projectDirectory, ANDROID_MANIFEST)
         saveOriginalFile(projectDirectory, file)
         XmlSlurper slurper = new XmlSlurper(false, true)
         GPathResult manifest = slurper.parse(file)
-        String androidName = "android:name"
         // Add permissions
         def permissions = manifest."uses-permission"
         l.lifecycle(permissions.text())
         permissionsToAdd.each { currentPermission ->
             l.lifecycle("Finding permission " + currentPermission)
-            def foundPermission = permissions.find { it.@"${androidName}".text().equals(currentPermission) }
+            def foundPermission = permissions.find { it.@"$ATTR_ANDROID_NAME".text().equals(currentPermission) }
             if (foundPermission == null || foundPermission.isEmpty()) {
                 l.lifecycle("Permission " + currentPermission + " not found")
-                manifest.appendNode({ 'uses-permission'("${androidName}": currentPermission) })
+                manifest.appendNode({ 'uses-permission'("$ATTR_ANDROID_NAME": currentPermission) })
             } else {
-                l.lifecycle("Permission " + foundPermission.@"${androidName}".text() + " found")
+                l.lifecycle("Permission " + foundPermission.@"$ATTR_ANDROID_NAME".text() + " found")
             }
         }
         file.delete()
@@ -189,16 +166,15 @@ class AndroidManifestHelper {
     }
 
     public void addApphanceToManifest(File projectDirectory) {
-        def file = new File(projectDirectory, "AndroidManifest.xml")
+        def file = new File(projectDirectory, ANDROID_MANIFEST)
         saveOriginalFile(projectDirectory, file)
         XmlSlurper slurper = new XmlSlurper(false, true)
         GPathResult manifest = slurper.parse(file)
-        String androidName = "android:name"
         String packageName = manifest.@package
 
         // Add instrumentation
         manifest.appendNode({
-            instrumentation("${androidName}": "com.apphance.android.ApphanceInstrumentation",
+            instrumentation("${ATTR_ANDROID_NAME}": "com.apphance.android.ApphanceInstrumentation",
                     'android:targetPackage': packageName)
         })
 
@@ -208,20 +184,20 @@ class AndroidManifestHelper {
         def apphancePermissions = ["android.permission.INTERNET", "android.permission.READ_PHONE_STATE", "android.permission.GET_TASKS"]
         apphancePermissions.each { apphancePermission ->
             l.lifecycle("Finding permission " + apphancePermission)
-            def permission = permissions.find { it.@"${androidName}".text().equals(apphancePermission) }
+            def permission = permissions.find { it.@"${ATTR_ANDROID_NAME}".text().equals(apphancePermission) }
             if (permission == null || permission.isEmpty()) {
                 l.lifecycle("Permission " + apphancePermission + " not found")
-                manifest.appendNode({ 'uses-permission'("${androidName}": apphancePermission) })
+                manifest.appendNode({ 'uses-permission'("${ATTR_ANDROID_NAME}": apphancePermission) })
             } else {
-                l.lifecycle("Permission " + permission.@"${androidName}".text() + " found")
+                l.lifecycle("Permission " + permission.@"${ATTR_ANDROID_NAME}".text() + " found")
             }
         }
 
         // Add apphance activities
 
-        def apphanceActivities = [{ activity("${androidName}": "com.apphance.android.ui.LoginActivity") },
-                { activity("${androidName}": "com.apphance.android.ui.ProblemActivity", "configChanges": "orientation", "launchMode": "singleInstance") },
-                { activity("${androidName}": "com.apphance.android.LauncherActivity", "theme": "@android:style/Theme.Translucent.NoTitleBar") }]
+        def apphanceActivities = [{ activity("${ATTR_ANDROID_NAME}": "com.apphance.android.ui.LoginActivity") },
+                { activity("${ATTR_ANDROID_NAME}": "com.apphance.android.ui.ProblemActivity", "configChanges": "orientation", "launchMode": "singleInstance") },
+                { activity("${ATTR_ANDROID_NAME}": "com.apphance.android.LauncherActivity", "theme": "@android:style/Theme.Translucent.NoTitleBar") }]
         apphanceActivities.each {
             manifest.application.appendNode(it)
         }
@@ -242,13 +218,13 @@ class AndroidManifestHelper {
         mainActivity = packages.last()
         l.lifecycle("Main activity name = " + mainActivity)
         manifest.application.activity.each {
-            if (it.@"${androidName}".text().contains(mainActivity)) {
+            if (it.@"${ATTR_ANDROID_NAME}".text().contains(mainActivity)) {
                 it."intent-filter".each { filter ->
-                    if (filter.action.size() > 0 && filter.action.@"${androidName}".text().equals('android.intent.action.MAIN')) {
-                        filter.action.replaceNode({ action("${androidName}": "com.apphance.android.LAUNCH") })
+                    if (filter.action.size() > 0 && filter.action.@"${ATTR_ANDROID_NAME}".text().equals('android.intent.action.MAIN')) {
+                        filter.action.replaceNode({ action("${ATTR_ANDROID_NAME}": "com.apphance.android.LAUNCH") })
                     }
-                    if (filter.category.size() > 0 && filter.category.@"${androidName}".text().equals('android.intent.category.LAUNCHER')) {
-                        filter.category.replaceNode({ category("${androidName}": "android.intent.category.DEFAULT") })
+                    if (filter.category.size() > 0 && filter.category.@"${ATTR_ANDROID_NAME}".text().equals('android.intent.category.LAUNCHER')) {
+                        filter.category.replaceNode({ category("${ATTR_ANDROID_NAME}": "android.intent.category.DEFAULT") })
                     }
                 }
             }
@@ -269,59 +245,33 @@ class AndroidManifestHelper {
     }
 
     public String getMainActivityName(File projectDirectory) {
-        def file = new File(projectDirectory, 'AndroidManifest.xml')
-
+        def file = new File(projectDirectory, ANDROID_MANIFEST)
         def manifest = new XmlSlurper(false, true).parse(file)
 
-        String className = manifest.@package
-        String androidName = 'android:name'
+        def activities = manifest.application.activity
 
-        def mainActivity = manifest.application.activity.findAll {
-            def intentFilters = []
-            def mainIntentFound = false
-            def launcherIntentFound = false
-            // collect all filter nodes
-            it.'intent-filter'.each {
-                intentFilters << it
-            }
-            // iterate through each intent filter node and find proper action and category
-            intentFilters.each { intentFilterNode ->
-                intentFilterNode.action.each {
-                    if (it.@"${androidName}".text().equals('android.intent.action.MAIN')) {
-                        mainIntentFound = true
-                        return
-                    }
-                }
-                intentFilterNode.category.each {
-                    if (it.@"${androidName}".text().equals('android.intent.category.LAUNCHER')) {
-                        launcherIntentFound = true
-                        return
-                    }
-                }
-            }
-            // return value
-            mainIntentFound && launcherIntentFound
+        def mainActivity = activities.find {
+            'android.intent.action.MAIN' in it.'intent-filter'.action.@"$ATTR_ANDROID_NAME"*.text() &&
+                    'android.intent.category.LAUNCHER' in it.'intent-filter'.category.@"$ATTR_ANDROID_NAME"*.text()
         }
-        if (mainActivity.size() > 0) {
-            if (!mainActivity[0].@"${androidName}".text().startsWith(".")) {
-                className = className + "."
-            }
-            if (mainActivity[0].@"${androidName}".text().startsWith(manifest.@package.text())) {
-                className = ""
-            }
-            className = className + mainActivity[0].@"${androidName}".text()
-        } else {
-            throw new GradleException("Main activity file could not be found")
-        }
-        return className
+
+        throwIf(mainActivity.isEmpty(), 'Main activity could not be found!')
+
+        def packageName = manifest.@package.text()
+        def className = mainActivity.@"$ATTR_ANDROID_NAME".text()
+
+        packageName = className.startsWith('.') ? packageName : packageName + '.'
+        packageName = className.startsWith(packageName) ? '' : packageName
+
+        packageName + className
     }
 
     public String getApplicationName(File projectDirectory) {
-        def file = new File(projectDirectory, 'AndroidManifest.xml')
+        def file = new File(projectDirectory, ANDROID_MANIFEST)
         def manifest = new XmlSlurper().parse(file)
 
         String packageName = manifest.@package
-        String applicationName = manifest.application.@'android:name'.text()
+        String applicationName = manifest.application.@"$ATTR_ANDROID_NAME".text()
 
         packageName = applicationName.startsWith('.') ? packageName : packageName + '.'
         packageName = applicationName.contains(packageName) ? '' : packageName
@@ -330,23 +280,23 @@ class AndroidManifestHelper {
     }
 
     public boolean isApphanceActivityPresent(File projectDirectory) {
-        def file = new File(projectDirectory, 'AndroidManifest.xml')
+        def file = new File(projectDirectory, ANDROID_MANIFEST)
         def manifest = new XmlSlurper().parse(file)
 
         return manifest.activity.find {
-            def activityName = it.@'android:name'.text().toLowerCase()
+            def activityName = it.@"$ATTR_ANDROID_NAME".text().toLowerCase()
             activityName.equals('com.apphance.android.ui.loginactivity') || activityName.equals('com.apphance.android.ui.problemactivity')
         }.size() != 0
     }
 
     public boolean isApphanceInstrumentationPresent(File projectDirectory) {
-        def file = new File(projectDirectory, 'AndroidManifest.xml')
+        def file = new File(projectDirectory, ANDROID_MANIFEST)
         def manifest = new XmlSlurper().parse(file)
-        return manifest.instrumentation.find { it.@'android:name'.text().toLowerCase().equals('com.apphance.android.apphanceinstrumentation') }.size() != 0
+        return manifest.instrumentation.find { it.@"$ATTR_ANDROID_NAME".text().toLowerCase().equals('com.apphance.android.apphanceinstrumentation') }.size() != 0
     }
 
     void restoreOriginalManifest(File projectDirectory) {
-        def file = new File(projectDirectory, 'AndroidManifest.xml')
+        def file = new File(projectDirectory, ANDROID_MANIFEST)
         def originalFile = new File(projectDirectory, file.name + '.orig')
         if (originalFile.exists()) {
             file.delete()

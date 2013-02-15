@@ -8,7 +8,7 @@ class ProjectConfiguration {
     File tmpDirectory
     File logDirectory
     File buildDirectory
-    String versionString = "NOVERSION"
+    String versionString = 'NOVERSION'
     Long versionCode = 0
 
     Collection<String> sourceExcludes = []
@@ -18,7 +18,12 @@ class ProjectConfiguration {
     }
 
     String getProjectVersionedName() {
-        "${projectName}-${fullVersionString}"
+        "$projectName-$fullVersionString"
+    }
+
+    void updateVersionDetails(Expando e) {
+        versionString = e.versionString
+        versionCode = e.versionCode
     }
 
     @Override

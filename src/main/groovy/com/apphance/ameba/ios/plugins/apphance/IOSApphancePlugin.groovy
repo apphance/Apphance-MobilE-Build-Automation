@@ -199,7 +199,7 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
                 def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false, ['ipa', 'dsym', 'image_montage'])
                 l.lifecycle("Upload version query response: ${response.statusLine}")
 
-                throwIfCondition(!response.entity, "Error while uploading version query, empty response received")
+                throwIf(!response.entity, "Error while uploading version query, empty response received")
 
                 def responseJSON = new JsonSlurper().parseText(response.entity.content.text)
 

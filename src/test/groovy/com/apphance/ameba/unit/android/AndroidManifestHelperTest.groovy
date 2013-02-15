@@ -27,7 +27,7 @@ class AndroidManifestHelperTest {
     @Test
     void testReadingVersion() {
         ProjectConfiguration projectConfiguration = new ProjectConfiguration()
-        manifestHelper.readVersion(tmpDir, projectConfiguration)
+        projectConfiguration.updateVersionDetails(manifestHelper.readVersion(tmpDir))
         assertEquals(42, projectConfiguration.versionCode)
         assertEquals('1.0.1', projectConfiguration.versionString)
     }
@@ -39,12 +39,12 @@ class AndroidManifestHelperTest {
 
         ProjectConfiguration projectConfiguration = new ProjectConfiguration()
         manifestHelper.restoreOriginalManifest(tmpDir)
-        manifestHelper.readVersion(tmpDir, projectConfiguration)
+        projectConfiguration.updateVersionDetails(manifestHelper.readVersion(tmpDir))
         projectConfiguration.setVersionString('2.0.3')
-        manifestHelper.updateVersion(tmpDir, newVersionCode, newVersionString)
+        manifestHelper.updateVersion(tmpDir, new Expando(versionCode: newVersionCode, versionString: newVersionString))
         try {
             ProjectConfiguration projectConfiguration2 = new ProjectConfiguration()
-            manifestHelper.readVersion(tmpDir, projectConfiguration2)
+            projectConfiguration2.updateVersionDetails(manifestHelper.readVersion(tmpDir))
             assertEquals(newVersionCode, projectConfiguration2.versionCode)
             assertEquals(newVersionString, projectConfiguration2.versionString)
         } finally {
@@ -171,6 +171,6 @@ class AndroidManifestHelperTest {
     void testReadMainActivityFromManifest() {
         def file = new File("testProjects/apphance-updates/")
         String mainActivity = manifestHelper.getMainActivityName(file)
-        assertTrue(mainActivity.contains('HomeActivity'))
+        assertEquals(mainActivity, 'pl.morizon.client.ui.HomeActivity')
     }
 }

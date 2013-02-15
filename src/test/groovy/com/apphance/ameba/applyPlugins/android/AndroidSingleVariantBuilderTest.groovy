@@ -12,7 +12,7 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
     private AndroidSingleVariantApkBuilder prepareEnvironment(Project project) {
         use(PropertyCategory) {
             AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
-            manifestHelper.readVersion(project.rootDir, project.getProjectConfiguration())
+            project.getProjectConfiguration().updateVersionDetails(manifestHelper.readVersion(project.rootDir))
             AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
             Properties props = new Properties()
             props.load(new FileInputStream(project.file("gradle.properties")))
