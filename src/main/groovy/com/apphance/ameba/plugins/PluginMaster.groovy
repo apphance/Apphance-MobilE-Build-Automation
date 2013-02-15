@@ -17,34 +17,36 @@ import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.apphance.ameba.util.ProjectType
 import com.google.inject.Injector
 import org.gradle.api.Project
+import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
 import static com.apphance.ameba.util.ProjectType.ANDROID
-import static com.apphance.ameba.util.ProjectType.iOS
+import static com.apphance.ameba.util.ProjectType.IOS
 
 class PluginMaster {
+
+    def log = Logging.getLogger(getClass())
 
     @Inject ProjectTypeDetector projectTypeDetector
 
     @Inject Injector injector
 
     static plugins = [
-            commons: [
+            (IOS): [
                     ProjectConfigurationPlugin,
-                    ProjectReleasePlugin,
-            ],
-
-            (iOS) : [
                     IOSPlugin,
+                    ProjectReleasePlugin,
                     IOSFrameworkPlugin,
                     IOSReleasePlugin,
                     IOSApphancePlugin,
                     IOSUnitTestPlugin,
             ],
 
-            (ANDROID) : [
+            (ANDROID): [
+                    ProjectConfigurationPlugin,
                     AndroidPlugin,
+                    ProjectReleasePlugin,
                     AndroidAnalysisPlugin,
                     AndroidApphancePlugin,
                     AndroidJarLibraryPlugin,
@@ -56,9 +58,15 @@ class PluginMaster {
     void enhanceProject(Project project) {
         ProjectType projectType = projectTypeDetector.detectProjectType(project.rootDir)
 
-        def installPlugin = {injector.getInstance(it).apply(project)}
+        def installPlugin = {
+            log.info("Applying plugin $it")
 
-        plugins.commons.each installPlugin
+            def plugin = injector.getInstance(it)
+
+            plugin.apply(project)
+            project.plugins.add(plugin)
+        }
+
         plugins[projectType].each installPlugin
     }
 }

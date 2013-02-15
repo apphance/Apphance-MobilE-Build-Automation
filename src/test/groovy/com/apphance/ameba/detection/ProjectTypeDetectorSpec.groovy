@@ -6,7 +6,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import static com.apphance.ameba.util.ProjectType.ANDROID
-import static com.apphance.ameba.util.ProjectType.iOS
+import static com.apphance.ameba.util.ProjectType.IOS
 
 class ProjectTypeDetectorSpec extends Specification {
 
@@ -21,7 +21,7 @@ class ProjectTypeDetectorSpec extends Specification {
         where:
         expectedType | path
         ANDROID      | ExecuteAndroidBuildsTest.testProject
-        iOS          | ExecuteIosBuildsTest.testProjectOneVariant
+        IOS          | ExecuteIosBuildsTest.testProjectOneVariant
     }
 
     def 'should yield on bi-detection'() {

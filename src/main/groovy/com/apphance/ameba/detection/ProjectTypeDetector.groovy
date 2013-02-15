@@ -3,7 +3,7 @@ package com.apphance.ameba.detection
 import com.apphance.ameba.util.ProjectType
 
 import static com.apphance.ameba.util.ProjectType.ANDROID
-import static com.apphance.ameba.util.ProjectType.iOS
+import static com.apphance.ameba.util.ProjectType.IOS
 
 class ProjectTypeDetector {
 
@@ -13,7 +13,7 @@ class ProjectTypeDetector {
     ProjectType detectProjectType(File projectRoot) {
         def matchingTypes = [
                 (ANDROID): isAndroidProject(projectRoot),
-                (iOS): isiOSProject(projectRoot)
+                (IOS): isiOSProject(projectRoot)
         ].findAll { it.value }.keySet() as List
 
         switch (matchingTypes.size()) {
@@ -31,6 +31,6 @@ class ProjectTypeDetector {
     }
 
     private ProjectType isiOSProject(File projectRoot) {
-        projectRoot.list().find { it.endsWith(IOS_PROJECT_FILE_SUFFIX) } ? iOS : null
+        projectRoot.list().find { it.endsWith(IOS_PROJECT_FILE_SUFFIX) } ? IOS : null
     }
 }

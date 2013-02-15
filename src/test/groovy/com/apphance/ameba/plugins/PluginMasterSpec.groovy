@@ -17,44 +17,24 @@ import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import org.gradle.api.Project
+import org.gradle.api.plugins.PluginContainer
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import static com.apphance.ameba.util.ProjectType.ANDROID
-import static com.apphance.ameba.util.ProjectType.iOS
+import static com.apphance.ameba.util.ProjectType.IOS
 
 class PluginMasterSpec extends Specification {
-
-    final projectTypeDetectorMock = Mock(ProjectTypeDetector)
-
-    def mockToMap = {
-        [
-                type: it,
-                instance: Mock(it)
-        ]
-    }
-    final commonPlugins = [ProjectConfigurationPlugin, ProjectReleasePlugin].collect(mockToMap)
-
-    def createInjectorForPluginsMocks(mocks) {
-        return Guice.createInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(ProjectTypeDetector).toInstance(projectTypeDetectorMock)
-                mocks.each {
-                    bind(it.type).toInstance(it.instance)
-                }
-            }
-        })
-    }
 
     @Unroll
     def 'test if all #type plugins are applied'() {
         given:
-        def mocks = plugins.collect(mockToMap) + commonPlugins
+        def mocks = (plugins + commonPlugins).collect(mockToMap).sum()
         def master = createInjectorForPluginsMocks(mocks).getInstance(PluginMaster)
 
         and:
         def project = Mock(Project)
+        project.plugins >> Mock(PluginContainer)
 
         and: 'tell that project is Android'
         projectTypeDetectorMock.detectProjectType(_) >> type
@@ -64,15 +44,105 @@ class PluginMasterSpec extends Specification {
 
         then:
         interaction {
-            mocks.each {
-                1 * it.instance.apply(project)
+            mocks.each { type, instance ->
+                1 * instance.apply(project)
             }
         }
 
         where:
         type    | plugins
-        ANDROID | [AndroidPlugin, AndroidAnalysisPlugin, AndroidApphancePlugin,
-                AndroidJarLibraryPlugin, AndroidReleasePlugin, AndroidTestPlugin]
-        iOS     | [IOSPlugin, IOSFrameworkPlugin, IOSReleasePlugin, IOSApphancePlugin, IOSUnitTestPlugin]
+        ANDROID | androidPlugins
+        IOS     | iosPlugins
+    }
+
+    def 'test Android plugins order'() {
+        given:
+        def mocks = (commonPlugins + androidPlugins).collect(mockToMap).sum()
+        def master = createInjectorForPluginsMocks(mocks).getInstance(PluginMaster)
+
+        and:
+        def project = Mock(Project)
+        project.plugins >> Mock(PluginContainer)
+
+        and: 'tell that project is Android'
+        projectTypeDetectorMock.detectProjectType(_) >> ANDROID
+
+        when:
+        master.enhanceProject(project)
+
+        then:
+        1 * mocks[before].apply(project)
+
+        then:
+        1 * mocks[after].apply(project)
+
+        where:
+        before                     | after
+        ProjectConfigurationPlugin | AndroidPlugin
+        AndroidPlugin              | ProjectReleasePlugin
+        ProjectReleasePlugin       | AndroidReleasePlugin
+    }
+
+    def 'test iOS plugins order'() {
+        given:
+        def mocks = (commonPlugins + iosPlugins).collect(mockToMap).sum()
+        def master = createInjectorForPluginsMocks(mocks).getInstance(PluginMaster)
+
+        and:
+        def project = Mock(Project)
+        project.plugins >> Mock(PluginContainer)
+
+        and: 'tell that project is iOS'
+        projectTypeDetectorMock.detectProjectType(_) >> IOS
+
+        when:
+        master.enhanceProject(project)
+
+        then:
+        1 * mocks[before].apply(project)
+
+        then:
+        1 * mocks[after].apply(project)
+
+        where:
+        before                     | after
+        ProjectConfigurationPlugin | IOSPlugin
+        IOSPlugin                  | ProjectReleasePlugin
+        ProjectReleasePlugin       | IOSReleasePlugin
+    }
+
+    final projectTypeDetectorMock = Mock(ProjectTypeDetector)
+
+    def mockToMap = { [(it): Mock(it)] }
+
+    static commonPlugins = [ProjectConfigurationPlugin, ProjectReleasePlugin]
+
+    static androidPlugins = [
+            AndroidPlugin,
+            AndroidAnalysisPlugin,
+            AndroidApphancePlugin,
+            AndroidJarLibraryPlugin,
+            AndroidReleasePlugin,
+            AndroidTestPlugin
+    ]
+
+    static iosPlugins = [
+            IOSPlugin,
+            IOSFrameworkPlugin,
+            IOSReleasePlugin,
+            IOSApphancePlugin,
+            IOSUnitTestPlugin
+    ]
+
+    def createInjectorForPluginsMocks(mocks) {
+        return Guice.createInjector(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(ProjectTypeDetector).toInstance(projectTypeDetectorMock)
+                mocks.each { type, instance ->
+                    bind(type).toInstance(instance)
+                }
+            }
+        })
     }
 }
