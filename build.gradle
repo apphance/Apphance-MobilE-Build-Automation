@@ -145,19 +145,6 @@ dependencies {
 
 file('tmp').mkdirs()
 
-ext.generatedFile = file('tmp/plugins_reference.html')
-
-task(buildPluginReference, group: 'Ameba\'s documentation', dependsOn: ['testClasses', 'processTestResources'], type: JavaExec, description: 'Builds plugin description HTML file') {
-    def outputFile = file('tmp/buildDocumentation.out')
-    main = 'com.apphance.ameba.documentation.AmebaPluginReferenceBuilder'
-    classpath = sourceSets.test.runtimeClasspath
-    standardOutput = outputFile.newOutputStream()
-    jvmArgs "-XX:MaxPermSize=512m"
-    inputs.files(sourceSets.main.allSource, sourceSets.test.allSource)
-    outputs.upToDateSpec = new org.gradle.api.specs.AndSpec()
-    outputs.file generatedFile
-}
-
 task cleanTmp << {
     project.ant.delete(dir: "tmp")
 }
