@@ -140,7 +140,7 @@ dependencies {
     testCompile 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
     testCompile "org.spockframework:spock-core:0.6-groovy-1.8"
 
-    testRuntime 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2'
+    testRuntime 'junit:junit:4.+', 'org.apache.ant:ant:1.8.2', 'cglib:cglib-nodep:2.2.2'
 }
 
 file('tmp').mkdirs()

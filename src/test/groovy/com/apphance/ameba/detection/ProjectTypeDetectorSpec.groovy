@@ -31,7 +31,7 @@ class ProjectTypeDetectorSpec extends Specification {
         then:
         def exception = thrown(RuntimeException)
         exception.message =~ 'ANDROID'
-        exception.message =~ 'iOS'
+        exception.message =~ 'IOS'
     }
 
     def 'should yield on empty project detection'() {
