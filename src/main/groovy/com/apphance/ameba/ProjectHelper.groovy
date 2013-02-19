@@ -89,6 +89,7 @@ class ProjectHelper {
         }
     }
 
+    //DONE
     private String getCommandToDisplay(command) {
         if (command instanceof String || command instanceof GString) {
             return command.toString()
@@ -109,6 +110,7 @@ class ProjectHelper {
         }
     }
 
+    //DONE
     def replacePasswordsWithStars(originalArray) {
         def newList = []
         def nextPassword = false
@@ -189,6 +191,7 @@ class ProjectHelper {
         return String.format('%04d', number)
     }
 
+    //DONE
     private waitForProcess(Process proc, Thread errorThread, Thread outputThread) {
         def exitValue = proc.waitFor()
         errorThread.join()
@@ -196,6 +199,7 @@ class ProjectHelper {
         return exitValue
     }
 
+    //DONE
     Process executeCommandInBackground(File runDirectory, File outErrFile, command, String[] envp = null, input = null) {
         def commandToDisplay = getCommandToDisplay(command)
         logger.lifecycle("Executing command:\n${commandToDisplay}\nin ${runDirectory} in background")
@@ -231,6 +235,7 @@ class ProjectHelper {
         return proc
     }
 
+    //DONE
     private addWriter(Process proc, input) {
         if (input != null) {
             proc.withWriter { writer ->
