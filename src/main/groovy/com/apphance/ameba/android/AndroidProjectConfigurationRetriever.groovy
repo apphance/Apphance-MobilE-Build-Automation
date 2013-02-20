@@ -31,8 +31,7 @@ public class AndroidProjectConfigurationRetriever {
             if (androidConf.mainVariant == null || androidConf.mainVariant.empty) {
                 androidConf.mainVariant = androidConf.variants[0]
             }
-            def mainProjectManifest = androidManifestHelper.getParsedManifest(project.rootDir)
-            androidConf.mainProjectPackage = XPathAPI.selectSingleNode(mainProjectManifest, "/manifest/@package").nodeValue
+            androidConf.mainProjectPackage = androidManifestHelper.androidPackage(project.rootDir)
             androidConf.mainProjectName = buildXmlHelper.readProjectName(project.rootDir)
         }
     }

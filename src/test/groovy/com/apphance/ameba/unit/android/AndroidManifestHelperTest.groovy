@@ -5,6 +5,9 @@ import com.apphance.ameba.android.AndroidManifestHelper
 import com.sun.org.apache.xpath.internal.XPathAPI
 import org.junit.Before
 import org.junit.Test
+import org.w3c.dom.Element
+
+import javax.xml.parsers.DocumentBuilderFactory
 
 import static org.junit.Assert.*
 
@@ -72,7 +75,7 @@ class AndroidManifestHelperTest {
     }
 
     private verifyApphanceIsPresent() {
-        def rootOrig = manifestHelper.getParsedManifest(tmpDir)
+        def rootOrig = getParsedManifest(tmpDir)
         assertEquals(1, XPathAPI.selectNodeList(rootOrig, '/manifest/application/activity[@name="TestActivity"]').length)
         assertEquals(1, XPathAPI.selectNodeList(rootOrig, '/manifest/uses-permission[@name="android.permission.INTERNET"]').length)
         assertEquals(1, XPathAPI.selectNodeList(rootOrig, '/manifest/application/activity[@name="AnotherActivity"]').length)
@@ -87,7 +90,7 @@ class AndroidManifestHelperTest {
     }
 
     private verifyApphanceIsRemoved() {
-        def root = manifestHelper.getParsedManifest(tmpDir)
+        def root = getParsedManifest(tmpDir)
         assertEquals(1, XPathAPI.selectNodeList(root, '/manifest/application/activity[@name="TestActivity"]').length)
         assertEquals(1, XPathAPI.selectNodeList(root, '/manifest/uses-permission[@name="android.permission.INTERNET"]').length)
         assertEquals(0, XPathAPI.selectNodeList(root, '/manifest/application/activity[@name="AnotherActivity"]').length)
@@ -112,7 +115,7 @@ class AndroidManifestHelperTest {
                 'com.apphance.amebaTest.android.new', null)
         def origFile = new File(tmpDir, "AndroidManifest.xml.orig")
         try {
-            def root = manifestHelper.getParsedManifest(tmpDir)
+            def root = getParsedManifest(tmpDir)
             assertEquals(1, XPathAPI.selectNodeList(root, '/manifest[@package="com.apphance.amebaTest.android.new"]').length)
             assertEquals(0, XPathAPI.selectNodeList(root, '/manifest/application[@label="newLabel"]').length)
             assertEquals(1, XPathAPI.selectNodeList(root, '/manifest/application[@label="@string/app_name"]').length)
@@ -130,10 +133,10 @@ class AndroidManifestHelperTest {
         manifestHelper.restoreOriginalManifest(tmpDir)
         def file = new File(tmpDir, "AndroidManifest.xml")
         String originalText = file.text
-        manifestHelper.addPermissionsToManifest(tmpDir, ['android.permission.ACCESS_MOCK_LOCATION'])
+        manifestHelper.addPermissionsToManifest(tmpDir, 'android.permission.ACCESS_MOCK_LOCATION')
         def origFile = new File(tmpDir, "AndroidManifest.xml.orig")
         try {
-            def root = manifestHelper.getParsedManifest(tmpDir)
+            def root = getParsedManifest(tmpDir)
             assertEquals(1, XPathAPI.selectNodeList(root, '/manifest/uses-permission[@name="android.permission.ACCESS_MOCK_LOCATION"]').length)
             assertTrue(origFile.exists())
         } finally {
@@ -154,7 +157,7 @@ class AndroidManifestHelperTest {
                 'com.apphance.amebaTest.android.new', 'newLabel')
         def origFile = new File(tmpDir, "AndroidManifest.xml.orig")
         try {
-            def root = manifestHelper.getParsedManifest(tmpDir)
+            def root = getParsedManifest(tmpDir)
             assertEquals(1, XPathAPI.selectNodeList(root, '/manifest[@package="com.apphance.amebaTest.android.new"]').length)
             assertEquals(1, XPathAPI.selectNodeList(root, '/manifest/application[@label="newLabel"]').length)
             assertTrue(origFile.exists())
@@ -172,5 +175,21 @@ class AndroidManifestHelperTest {
         def file = new File("testProjects/apphance-updates/")
         String mainActivity = manifestHelper.getMainActivityName(file)
         assertEquals(mainActivity, 'pl.morizon.client.ui.HomeActivity')
+    }
+
+    @Test
+    void testPackage() {
+        manifestHelper.restoreOriginalManifest(tmpDir)
+        String pkg = manifestHelper.androidPackage(tmpDir)
+        assertEquals('com.apphance.amebaTest.android', pkg)
+    }
+
+    private Element getParsedManifest(File projectDir) {
+        def builderFactory = DocumentBuilderFactory.newInstance()
+        builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        builderFactory.setFeature("http://xml.org/sax/features/validation", false)
+        def builder = builderFactory.newDocumentBuilder()
+        def inputStream = new FileInputStream(new File(projectDir, 'AndroidManifest.xml'))
+        return builder.parse(inputStream).documentElement
     }
 }

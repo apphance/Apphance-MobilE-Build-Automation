@@ -10,7 +10,6 @@ import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.util.file.FileManager
-import com.sun.org.apache.xpath.internal.XPathAPI
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -45,7 +44,6 @@ class AndroidTestPlugin implements Plugin<Project> {
     File avdDir
     AndroidBuildXmlHelper buildXmlHelper
 
-    def testProjectManifest
     def testProjectPackage
     def testProjectName
 
@@ -99,8 +97,7 @@ class AndroidTestPlugin implements Plugin<Project> {
             }
             androidTestDirectory = project.file(project.readProperty(AndroidTestProperty.TEST_DIRECTORY))
             if (androidTestDirectory.exists()) {
-                testProjectManifest = androidManifestHelper.getParsedManifest(androidTestDirectory)
-                testProjectPackage = XPathAPI.selectSingleNode(testProjectManifest, "/manifest/@package").nodeValue
+                testProjectPackage = androidManifestHelper.androidPackage(androidTestDirectory)
                 testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
             }
             emulatorSkin = project.readProperty(AndroidTestProperty.EMULATOR_SKIN)
@@ -318,9 +315,9 @@ class AndroidTestPlugin implements Plugin<Project> {
         String[] commandAnt = ["ant", "clean"]
         boolean useMockLocation = PropertyCategory.readProperty(project, AndroidTestProperty.MOCK_LOCATION)
         if (useMockLocation) {
-            androidManifestHelper.addPermissionsToManifest(project.rootDir, [
+            androidManifestHelper.addPermissionsToManifest(project.rootDir,
                     'android.permission.ACCESS_MOCK_LOCATION'
-            ])
+            )
         }
         try {
             projectHelper.executeCommand(project, androidTestDirectory, commandAnt)
