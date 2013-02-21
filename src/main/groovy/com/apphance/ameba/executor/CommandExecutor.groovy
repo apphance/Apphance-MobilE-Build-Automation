@@ -12,8 +12,6 @@ class CommandExecutor {
 
     def l = Logging.getLogger(getClass())
 
-
-
     Process startCommand(Command c) {
         l.warn("Following 'Command' properties are not handled in background mode: 'failOnError', 'retry', 'silent'")
         l.lifecycle("Executing command: [${displayableCmd(c)}], in dir: ${c.runDir} in background")

@@ -31,7 +31,7 @@ class FileAppendableSpec extends Specification {
         def file = new File('/no/such/path/file.log')
 
         when:
-        def fileAppendable = new FileAppendable(file)
+        new FileAppendable(file)
 
         then:
         def exception = thrown(IllegalArgumentException)
@@ -46,7 +46,7 @@ class FileAppendableSpec extends Specification {
         file.canWrite() >> false
 
         when:
-        def fileAppendable = new FileAppendable(file)
+        new FileAppendable(file)
 
         then:
         def exception = thrown(IllegalArgumentException)
