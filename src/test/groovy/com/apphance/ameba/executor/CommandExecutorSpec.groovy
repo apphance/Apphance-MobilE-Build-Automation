@@ -27,16 +27,17 @@ class CommandExecutorSpec extends Specification {
         given:
         def project = Mock(Project)
 
-        and:
+        def command = new Command(cmd: ['ASDAFSFAG'], runDir: new File('src/test'), project: project)
+
         project.file(_) >> new File('/tmp')
 
         when:
-        executor.executeCommand(new Command(cmd: ['ASDAFSFAG'], runDir: new File('src/test'), project: project))
+        executor.executeCommand(command)
 
         then:
-        def e = thrown(Exception)
-        e.message == "Cannot run program \"ASDAFSFAG.bat\" (in directory \"src/test\"): error=2, No such file or directory"
-
+        def e = thrown(CommandFailedException)
+        e.message == 'Cannot run program "ASDAFSFAG" (in directory "src/test"): error=2, No such file or directory'
+        e.command == command
     }
 
     def 'test displayable command'() {

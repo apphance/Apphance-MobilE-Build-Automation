@@ -16,7 +16,6 @@ class Command {
     String escapePrefix = '##'
 
     boolean failOnError = true
-    int retry = 1
     boolean silent = false
 
     @Override
