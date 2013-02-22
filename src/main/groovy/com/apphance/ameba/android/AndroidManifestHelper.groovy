@@ -13,13 +13,14 @@ import org.gradle.api.logging.Logging
 @Mixin(Preconditions)
 class AndroidManifestHelper {
 
-    def l = Logging.getLogger(AndroidManifestHelper.class)
+    def l = Logging.getLogger(getClass())
 
     public static final String ANDROID_MANIFEST = 'AndroidManifest.xml'
 
     private final String APPHANCE_ALIAS =
         '''
-<activity-alias android:name=".ApphanceLauncherActivity" android:targetActivity="com.apphance.android.LauncherActivity">
+<activity-alias android:name=".ApphanceLauncherActivity" android:targetActivity="com.apphance.android.LauncherActivity"
+apphance:only="true">
     <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
@@ -34,7 +35,7 @@ class AndroidManifestHelper {
     }
 
     Expando readVersion(File projectDir) {
-        def manifest = new XmlSlurper(false, true).parse(new File(projectDir, ANDROID_MANIFEST))
+        def manifest = new XmlSlurper().parse(new File(projectDir, ANDROID_MANIFEST))
         def versionCode = manifest.@'android:versionCode'.text().toLong()
         def versionString = manifest.@'andoid:versionName'.text()
         new Expando(versionCode: versionCode, versionString: versionString)
@@ -110,11 +111,11 @@ class AndroidManifestHelper {
         file.write(replaceTag0(result))
     }
 
-    void addPermissionsToManifest(File projectDir, def permissions) {
+    void addPermissions(File projectDir, def permissions) {
         def file = new File(projectDir, ANDROID_MANIFEST)
         saveOriginalFile(projectDir, file)
 
-        def manifest = new XmlSlurper(false, true).parse(file)
+        def manifest = new XmlSlurper().parse(file)
         addPermissions(manifest, permissions)
 
         String result = xmlToString(manifest)
@@ -122,11 +123,11 @@ class AndroidManifestHelper {
         file.write(replaceTag0(result))
     }
 
-    void addApphanceToManifest(File projectDir) {
+    void addApphance(File projectDir) {
         def f = new File(projectDir, ANDROID_MANIFEST)
         saveOriginalFile(projectDir, f)
 
-        def manifest = new XmlSlurper(false, true).parse(f)
+        def manifest = new XmlSlurper().parse(f)
 
         addIntrumentation(manifest)
         addPermissions(manifest,
@@ -138,13 +139,13 @@ class AndroidManifestHelper {
         replaceAction(mainActivityActions)
         replaceCategory(mainActivityActions)
 
-        String result = xmlToString(manifest)
+        String result = xmlToString(manifest, [apphance: 'http://apphance.com/android'])
         f.delete()
         f.write(replaceTag0(result))
     }
 
     private void saveOriginalFile(File projectDir, File file) {
-        def originalFile = new File(projectDir, file.name + ".orig")
+        def originalFile = new File(projectDir, "${file.name}.orig")
         originalFile.delete()
         originalFile << file.text
     }
@@ -153,30 +154,31 @@ class AndroidManifestHelper {
         manifest.appendNode({
             instrumentation(
                     'android:name': 'com.apphance.android.ApphanceInstrumentation',
-                    'android:targetPackage': manifest.@package)
+                    'android:targetPackage': manifest.@package,
+                    'apphance:only': 'true')
         })
     }
 
     private void addPermissions(GPathResult manifest, String... permissions) {
         permissions.each { p ->
-            def permission = manifest.'uses-permission'.find { it.@"${'android:name'}".text().equals(p) }
+            def permission = manifest.'uses-permission'.find { it.@'android:name'.text().equals(p) }
 
             if (permission == null || permission.isEmpty()) {
-                manifest.appendNode({ 'uses-permission'("${'android:name'}": p) })
+                manifest.appendNode({ 'uses-permission'('android:name': p) })
             }
         }
     }
 
     private void addActivities(GPathResult manifest) {
         [
-                { activity('android:name': 'com.apphance.android.ui.LoginActivity') },
+                { activity('android:name': 'com.apphance.android.ui.LoginActivity', 'apphance:only': 'true') },
                 {
                     activity('android:name': 'com.apphance.android.ui.ProblemActivity',
-                            'configChanges': 'orientation', 'launchMode': 'singleInstance')
+                            'configChanges': 'orientation', 'launchMode': 'singleInstance', 'apphance:only': 'true')
                 },
                 {
                     activity('android:name': 'com.apphance.android.LauncherActivity',
-                            'theme': '@android:style/Theme.Translucent.NoTitleBar')
+                            'theme': '@android:style/Theme.Translucent.NoTitleBar', 'apphance:only': 'true')
                 }
         ].each {
             manifest.application.appendNode(it)
@@ -192,13 +194,13 @@ class AndroidManifestHelper {
         String mainActivity = getMainActivityName(projectDir)
         String mainActivityClass = mainActivity.split('\\.').last()
         manifest.application.activity.findAll {
-            it.@"${'android:name'}".text().contains(mainActivityClass)
+            it.@'android:name'.text().contains(mainActivityClass)
         }
     }
 
     String getMainActivityName(File projectDir) {
         def file = new File(projectDir, ANDROID_MANIFEST)
-        def manifest = new XmlSlurper(false, true).parse(file)
+        def manifest = new XmlSlurper().parse(file)
 
         def activities = manifest.application.activity
 
@@ -236,13 +238,16 @@ class AndroidManifestHelper {
         }
     }
 
-    private String xmlToString(GPathResult manifest) {
+    private String xmlToString(GPathResult manifest, Map namespaces = null) {
         def smb = new StreamingMarkupBuilder()
         smb.encoding = 'UTF-8'
         smb.useDoubleQuotes = true
 
         String result = smb.bind {
             mkp.xmlDeclaration()
+            if (namespaces) {
+                namespaces.each { n -> mkp.declareNamespace("${n.key}": "${n.value}") }
+            }
             mkp.yield manifest
         }
         result

@@ -98,7 +98,7 @@ class AndroidTestPlugin implements Plugin<Project> {
             androidTestDirectory = project.file(project.readProperty(AndroidTestProperty.TEST_DIRECTORY))
             if (androidTestDirectory.exists()) {
                 testProjectPackage = androidManifestHelper.androidPackage(androidTestDirectory)
-                testProjectName = buildXmlHelper.readProjectName(androidTestDirectory)
+                testProjectName = buildXmlHelper.projectName(androidTestDirectory)
             }
             emulatorSkin = project.readProperty(AndroidTestProperty.EMULATOR_SKIN)
             emulatorCardSize = project.readProperty(AndroidTestProperty.EMULATOR_CARDSIZE)
@@ -315,7 +315,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         String[] commandAnt = ["ant", "clean"]
         boolean useMockLocation = PropertyCategory.readProperty(project, AndroidTestProperty.MOCK_LOCATION)
         if (useMockLocation) {
-            androidManifestHelper.addPermissionsToManifest(project.rootDir,
+            androidManifestHelper.addPermissions(project.rootDir,
                     'android.permission.ACCESS_MOCK_LOCATION'
             )
         }

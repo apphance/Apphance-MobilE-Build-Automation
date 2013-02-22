@@ -19,7 +19,7 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
             props.keys().each { key ->
                 project[key] = props.getProperty(key)
             }
-            project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.readProjectName(project.rootDir)
+            project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.projectName(project.rootDir)
             project.retrieveBasicProjectData()
             AndroidSingleVariantApkBuilder builder = new AndroidSingleVariantApkBuilder(project,
                     AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project))

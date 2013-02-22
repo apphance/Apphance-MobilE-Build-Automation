@@ -35,14 +35,14 @@ class AndroidReleaseApkListener implements AndroidBuildListener {
         return "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
     }
 
-    AndroidReleaseApkListener(Project project, AntBuilder ant) {
+    AndroidReleaseApkListener(Project project) {
         use(PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
             this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
             this.androidReleaseConf = AndroidReleaseConfigurationRetriever.getAndroidReleaseConfiguration(project)
-            this.ant = ant
+            this.ant = project.ant
         }
     }
 

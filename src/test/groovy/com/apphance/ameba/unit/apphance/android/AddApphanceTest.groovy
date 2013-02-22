@@ -30,7 +30,7 @@ class AddApphanceTest {
         AndroidManifestHelper helper = new AndroidManifestHelper()
         assertFalse(helper.isApphanceInstrumentationPresent(noApphanceNoApplicationDirectory))
         File androidManifest = new File(tmpDir, 'AndroidManifest.xml')
-        helper.addApphanceToManifest(tmpDir)
+        helper.addApphance(tmpDir)
         XmlSlurper slurper = new XmlSlurper()
         GPathResult manifest = slurper.parse(androidManifest)
         def getTasks = manifest."uses-permission".findAll {

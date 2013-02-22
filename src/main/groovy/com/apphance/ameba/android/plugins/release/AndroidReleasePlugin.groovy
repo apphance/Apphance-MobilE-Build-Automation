@@ -14,11 +14,11 @@ import com.apphance.ameba.util.file.FileManager
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileDownloader.downloadFile
+import static java.util.ResourceBundle.getBundle
 
 /**
  * Plugin that provides release functionality for android.
@@ -26,7 +26,7 @@ import static com.apphance.ameba.util.file.FileDownloader.downloadFile
  */
 class AndroidReleasePlugin implements Plugin<Project> {
 
-    static Logger logger = Logging.getLogger(AndroidReleasePlugin.class)
+    def l = Logging.getLogger(AndroidReleasePlugin.class)
 
     Project project
     ProjectHelper projectHelper
@@ -56,40 +56,35 @@ class AndroidReleasePlugin implements Plugin<Project> {
         prepareBuildDocumentationZipTask(project)
         prepareAvailableArtifactsInfoTask(project)
         prepareMailMessageTask(project)
-        def listener
-        def builder
-        AndroidSingleVariantApkBuilder.buildListeners << new AndroidReleaseApkListener(project, project.ant)
-        AndroidSingleVariantJarBuilder.buildListeners << new AndroidReleaseJarListener(project, project.ant)
+        AndroidSingleVariantApkBuilder.buildListeners << new AndroidReleaseApkListener(project)
+        AndroidSingleVariantJarBuilder.buildListeners << new AndroidReleaseJarListener(project)
     }
 
     def void prepareBuildDocumentationZipTask(Project project) {
         def task = project.task('buildDocumentationZip')
-        task.description = "Builds documentation .zip file."
+        task.description = 'Builds documentation .zip file'
         task.group = AMEBA_RELEASE
         task << {
             File destZip = releaseConf.documentationZip.location
             destZip.mkdirs()
             destZip.delete()
-            File javadocDir = project.file("build/docs/javadoc")
+            File javadocDir = project.file('build/docs/javadoc')
             project.ant.zip(destfile: destZip, basedir: javadocDir)
-            logger.lifecycle("Zipped documentation to ${destZip}")
+            l.lifecycle("Zipped documentation written to: ${destZip}")
         }
         task.dependsOn(project.javadoc, project.readProjectConfiguration, project.prepareForRelease)
     }
 
     private void prepareAvailableArtifactsInfoTask(Project project) {
         def task = project.task('prepareAvailableArtifactsInfo')
-        task.description = "Prepares information about available artifacts for mail message to include"
+        task.description = 'Prepares information about available artifacts for mail message to include'
         task.group = AMEBA_RELEASE
-        def listener
-        def builder
-        if (androidEnvironment.isLibrary()) {
-            builder = new AndroidSingleVariantJarBuilder(project, androidConf)
-            listener = new AndroidReleaseJarListener(project, project.ant)
-        } else {
-            builder = new AndroidSingleVariantApkBuilder(project, androidConf)
-            listener = new AndroidReleaseApkListener(project, project.ant)
-        }
+
+        def listener = androidEnvironment.isLibrary() ?
+            new AndroidReleaseJarListener(project) : new AndroidReleaseApkListener(project)
+        def builder = androidEnvironment.isLibrary() ?
+            new AndroidSingleVariantJarBuilder(project, androidConf) : new AndroidSingleVariantApkBuilder(project, androidConf)
+
         task << {
             if (builder.hasVariants()) {
                 androidConf.variants.each { variant ->
@@ -99,7 +94,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
                 listener.buildArtifactsOnly(project, 'Debug', 'Debug')
                 listener.buildArtifactsOnly(project, 'Release', 'Release')
             }
-            if (conf.versionString != null) {
+            if (conf.versionString) {
                 String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
                 prepareFileIndexArtifact(otaFolderPrefix)
                 preparePlainFileIndexArtifact(otaFolderPrefix)
@@ -107,7 +102,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
                 prepareFileIndexFile(androidConf.variants)
                 preparePlainFileIndexFile()
             } else {
-                logger.lifecycle("Skipping building artifacts -> the build is not versioned")
+                l.lifecycle('Skipping building artifacts, the build is not versioned')
             }
         }
         task.dependsOn(project.readAndroidProjectConfiguration)
@@ -115,18 +110,17 @@ class AndroidReleasePlugin implements Plugin<Project> {
 
     private void prepareMailMessageTask(Project project) {
         def task = project.task('prepareMailMessage')
-        task.description = "Prepares mail message which summarises the release"
+        task.description = 'Prepares mail message which summarises the release'
         task.group = AMEBA_RELEASE
         task << {
             releaseConf.mailMessageFile.location.parentFile.mkdirs()
             releaseConf.mailMessageFile.location.delete()
-            logger.lifecycle("Variants: ${androidConf.variants}")
-            URL mailTemplate = this.class.getResource("mail_message.html")
+            l.lifecycle("Variants: ${androidConf.variants}")
+            URL mailTemplate = this.class.getResource('mail_message.html')
             def mainBuild = "${androidConf.mainVariant}"
-            logger.lifecycle("Main build used for size calculation: ${mainBuild}")
+            l.lifecycle("Main build used for size calculation: ${mainBuild}")
             def fileSize = androidReleaseConf.apkFiles[mainBuild].location.size()
-            ResourceBundle rb = ResourceBundle.getBundle(\
-                this.class.package.name + ".mail_message",
+            ResourceBundle rb = getBundle("${this.class.package.name}.mail_message",
                     releaseConf.locale, this.class.classLoader)
             ProjectReleaseCategory.fillMailSubject(project, rb)
             SimpleTemplateEngine engine = new SimpleTemplateEngine()
@@ -143,7 +137,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
             ]
             def result = engine.createTemplate(mailTemplate).make(binding)
             releaseConf.mailMessageFile.location.write(result.toString(), "utf-8")
-            logger.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")
+            l.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")
         }
         task.dependsOn(project.readProjectConfiguration, project.prepareAvailableArtifactsInfo,
                 project.prepareForRelease)
@@ -171,12 +165,11 @@ class AndroidReleasePlugin implements Plugin<Project> {
     }
 
     private void prepareFileIndexFile(Collection<String> variants) {
-        URL fileIndexTemplate = this.class.getResource("file_index.html")
-        ResourceBundle rb = ResourceBundle.getBundle(\
-                    this.class.package.name + ".file_index",
+        URL fileIndexTemplate = this.class.getResource('file_index.html')
+        ResourceBundle rb = getBundle("${this.class.package.name}.file_index",
                 releaseConf.locale, this.class.classLoader)
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        engine.verbose = logger.debugEnabled
+        engine.verbose = l.debugEnabled
         def binding = [
                 baseUrl: androidReleaseConf.fileIndexFile.url,
                 title: conf.projectName,
@@ -191,16 +184,15 @@ class AndroidReleasePlugin implements Plugin<Project> {
         ]
         def result = engine.createTemplate(fileIndexTemplate).make(binding)
         androidReleaseConf.fileIndexFile.location.write(result.toString(), "utf-8")
-        logger.lifecycle("File index created: ${androidReleaseConf.fileIndexFile}")
+        l.lifecycle("File index created: ${androidReleaseConf.fileIndexFile}")
     }
 
     private void preparePlainFileIndexFile() {
-        URL plainFileIndexTemplate = this.class.getResource("plain_file_index.html")
-        ResourceBundle rb = ResourceBundle.getBundle(\
-                    this.class.package.name + ".plain_file_index",
+        URL plainFileIndexTemplate = this.class.getResource('plain_file_index.html')
+        ResourceBundle rb = getBundle("${this.class.package.name}.plain_file_index",
                 releaseConf.locale, this.class.classLoader)
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        engine.verbose = logger.debugEnabled
+        engine.verbose = l.debugEnabled
         def binding = [
                 baseUrl: androidReleaseConf.plainFileIndexFile.url,
                 title: conf.projectName,
@@ -213,8 +205,8 @@ class AndroidReleasePlugin implements Plugin<Project> {
                 rb: rb
         ]
         def result = engine.createTemplate(plainFileIndexTemplate).make(binding)
-        androidReleaseConf.plainFileIndexFile.location.write(result.toString(), "utf-8")
-        logger.lifecycle("Plain file index created: ${androidReleaseConf.plainFileIndexFile}")
+        androidReleaseConf.plainFileIndexFile.location.write(result.toString(), 'utf-8')
+        l.lifecycle("Plain file index created: ${androidReleaseConf.plainFileIndexFile}")
     }
 
     private void prepareOtaIndexFile(Project project) {
@@ -225,12 +217,10 @@ class AndroidReleasePlugin implements Plugin<Project> {
                 location: new File(releaseConf.otaDirectory, "${otaFolderPrefix}/index.html"))
         otaIndexFile.location.mkdirs()
         otaIndexFile.location.delete()
-        URL otaIndexTemplate = this.class.getResource("index.html")
-        ResourceBundle rb = ResourceBundle.getBundle(\
-                this.class.package.name + ".index",
-                releaseConf.locale, this.class.classLoader)
+        URL otaIndexTemplate = this.class.getResource('index.html')
+        ResourceBundle rb = getBundle("${this.class.package.name}.index", releaseConf.locale, this.class.classLoader)
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        engine.verbose = logger.debugEnabled
+        engine.verbose = l.debugEnabled
         def binding = [
                 baseUrl: otaIndexFile.url,
                 title: conf.projectName,
@@ -243,20 +233,20 @@ class AndroidReleasePlugin implements Plugin<Project> {
                 rb: rb
         ]
         def result = engine.createTemplate(otaIndexTemplate).make(binding)
-        otaIndexFile.location.write(result.toString(), "utf-8")
+        otaIndexFile.location.write(result.toString(), 'utf-8')
         androidReleaseConf.otaIndexFile = otaIndexFile
-        logger.lifecycle("Ota index created: ${otaIndexFile}")
+        l.lifecycle("Ota index created: ${otaIndexFile}")
         project.ant.copy(file: releaseConf.iconFile, tofile: new File(otaIndexFile.location.parentFile,
                 releaseConf.iconFile.name))
-        String urlEncoded = URLEncoder.encode(otaIndexFile.url.toString(), "utf-8")
+        String urlEncoded = URLEncoder.encode(otaIndexFile.url.toString(), 'utf-8')
         File outputFile = new File(releaseConf.targetDirectory, "qrcode-${conf.projectName}-${conf.fullVersionString}.png")
         downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), outputFile)
         AmebaArtifact qrCodeArtifact = new AmebaArtifact(
-                name: "QR Code",
+                name: 'QR Code',
                 url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName}-${conf.fullVersionString}.png"),
                 location: outputFile)
         releaseConf.qrCodeFile = qrCodeArtifact
-        logger.lifecycle("QRCode created: ${qrCodeArtifact.location}")
+        l.lifecycle("QRCode created: ${qrCodeArtifact.location}")
     }
 
     void prepareUpdateVersionTask(Project project) {
@@ -269,9 +259,9 @@ class AndroidReleasePlugin implements Plugin<Project> {
                 conf.versionString = project.readPropertyOrEnvironmentVariable('version.string')
                 conf.versionCode = project.readOptionalPropertyOrEnvironmentVariable('version.code') as Long
                 manifestHelper.updateVersion(project.rootDir, new Expando(versionCode: conf.versionCode, versionString: conf.versionString))
-                logger.lifecycle("New version code: ${conf.versionCode}")
-                logger.lifecycle("Updated version string to ${conf.versionString}")
-                logger.lifecycle("Configuration : ${conf}")
+                l.lifecycle("New version code: ${conf.versionCode}")
+                l.lifecycle("Updated version string to ${conf.versionString}")
+                l.lifecycle("Configuration : ${conf}")
             }
         }
         task.dependsOn(project.readAndroidProjectConfiguration)

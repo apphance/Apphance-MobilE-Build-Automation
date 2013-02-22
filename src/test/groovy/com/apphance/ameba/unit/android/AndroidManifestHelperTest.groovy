@@ -133,7 +133,7 @@ class AndroidManifestHelperTest {
         manifestHelper.restoreOriginalManifest(tmpDir)
         def file = new File(tmpDir, "AndroidManifest.xml")
         String originalText = file.text
-        manifestHelper.addPermissionsToManifest(tmpDir, 'android.permission.ACCESS_MOCK_LOCATION')
+        manifestHelper.addPermissions(tmpDir, 'android.permission.ACCESS_MOCK_LOCATION')
         def origFile = new File(tmpDir, "AndroidManifest.xml.orig")
         try {
             def root = getParsedManifest(tmpDir)

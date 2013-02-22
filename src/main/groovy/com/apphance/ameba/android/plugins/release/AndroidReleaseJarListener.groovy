@@ -31,14 +31,14 @@ class AndroidReleaseJarListener implements AndroidBuildListener {
 
     static Logger logger = Logging.getLogger(AndroidReleaseApkListener.class)
 
-    AndroidReleaseJarListener(Project project, AntBuilder ant) {
+    AndroidReleaseJarListener(Project project) {
         use(PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
             this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
             this.androidReleaseConf = AndroidReleaseConfigurationRetriever.getAndroidReleaseConfiguration(project)
-            this.ant = ant
+            this.ant = project.ant
         }
     }
 

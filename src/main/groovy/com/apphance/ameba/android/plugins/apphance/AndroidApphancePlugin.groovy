@@ -329,7 +329,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
     private addApphanceToManifest(File directory) {
         l.lifecycle('Adding apphance to manifest')
-        manifestHelper.addApphanceToManifest(directory)
+        manifestHelper.addApphance(directory)
     }
 
     private copyApphanceJar(File directory, Project project) {
