@@ -12,7 +12,6 @@ class FileAppendable implements StringAppendable {
 
         try {outputFile.createNewFile()} catch (e){}
 
-        // validate file
         validate(outputFile.canWrite()) {
                 throw new IllegalArgumentException("Can not write to file: ${outputFile.absolutePath}")
         }
