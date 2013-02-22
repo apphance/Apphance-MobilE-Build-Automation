@@ -78,6 +78,8 @@ apphance:only="true">
         }
     }
 
+    //TODO to remove this method, there's no need to remove apphance
+    //TODO to remove apphance namespace, use comments instead
     void removeApphance(File projectDir) {
         def file = new File(projectDir, ANDROID_MANIFEST)
         saveOriginalFile(projectDir, file)
