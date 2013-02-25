@@ -1,9 +1,9 @@
 package com.apphance.ameba.executor.stream
 
 class AppendableAdapter implements Appendable {
-    private Collection<StringAppendable> delegates = []
+    private Collection<File> delegates = []
 
-    AppendableAdapter(StringAppendable... delegates) {
+    AppendableAdapter(File... delegates) {
         this.delegates = delegates
     }
 

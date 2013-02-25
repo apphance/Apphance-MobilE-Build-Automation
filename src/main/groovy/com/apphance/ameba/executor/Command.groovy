@@ -11,8 +11,6 @@ class Command {
     Collection<String> envp = null
     Collection<String> input
 
-    File output
-
     String escapePrefix = '##'
 
     boolean failOnError = true

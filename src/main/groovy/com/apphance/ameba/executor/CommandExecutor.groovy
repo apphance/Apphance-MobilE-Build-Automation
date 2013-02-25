@@ -1,66 +1,60 @@
 package com.apphance.ameba.executor
 
+import com.apphance.ameba.executor.linker.FileLinker
+import com.apphance.ameba.executor.stream.AppendableAdapter
 import com.apphance.ameba.util.Preconditions
-import com.apphance.ameba.util.file.FileSystemOutput
 import org.gradle.api.logging.Logging
 
+import javax.inject.Inject
+
 import static com.apphance.ameba.util.file.FileManager.mkdir
-import static java.lang.System.err
 
 @Mixin(Preconditions)
 class CommandExecutor {
 
     def l = Logging.getLogger(getClass())
 
-    Process startCommand(Command c) {
-        l.warn("Following 'Command' properties are not handled in background mode: 'failOnError', 'retry', 'silent'")
-        l.lifecycle("Executing command: [${displayableCmd(c)}], in dir: ${c.runDir} in background")
+    @Inject
+    private FileLinker fileLinker
 
-        def stdOut = new FileSystemOutput(c.output)
-        def stdErr = new FileSystemOutput(c.output, err)
+    Process startCommand(Command c) {
+        mkdir(c.project.file('log'))
+
+        def commandOutputFile = new File('log', 'logfile.txt')//TODO nazwa
+
+        l.lifecycle("Executing command: [${displayableCmd(c)}], in dir: ${c.runDir} in background")
+        l.lifecycle("Command output: ${fileLinker.fileLink()}")
+
+        def appendableAdapter = new AppendableAdapter(commandOutputFile)
 
         Process process = runCommand(c)
 
-        process.consumeProcessErrorStream(stdErr)
-        process.consumeProcessOutputStream(stdOut)
+        process.consumeProcessErrorStream(appendableAdapter)
+        process.consumeProcessOutputStream(appendableAdapter)
 
         process
     }
 
     Collection<String> executeCommand(Command c) {
 
-        l.warn("Following 'Command' properties are not handled in background mode: 'output'")
-
         mkdir(c.project.file('log'))
 
-        FileSystemOutput stdOut = standardOutput()
-        FileSystemOutput errOut = standradError()
-
+        def commandOutputFile = new File('log', 'logfile.txt')//TODO nazwa
+        def fileAppendable = new AppendableAdapter(commandOutputFile)
 
         l.lifecycle("Executing command: [${displayableCmd(c)}], in dir: '${c.runDir}'")
+        l.lifecycle("Command output: ${fileLinker.fileLink()}")
 
         Process process = runCommand(c)
 
-        Thread stdOutThread = process.consumeProcessOutputStream(stdOut)
-        Thread stdErrThread = process.consumeProcessErrorStream(errOut)
+        Thread stdOutThread = process.consumeProcessOutputStream(fileAppendable)
+        Thread stdErrThread = process.consumeProcessErrorStream(fileAppendable)
 
         int exitValue = waitForProcess(process, stdOutThread, stdErrThread)
 
-        handleExitValue(exitValue, c, errOut)
+        handleExitValue(exitValue, c)
 
-        stdOut.sb.toString().split('\n')
-    }
-
-
-
-    //TODO
-    private FileSystemOutput standardOutput() {
-        new FileSystemOutput(null)
-    }
-
-    //TODO
-    private FileSystemOutput standradError() {
-        new FileSystemOutput(null)
+        commandOutputFile.readLines()
     }
 
     private Process runCommand(Command c) {
@@ -91,11 +85,11 @@ class CommandExecutor {
         process.withWriter { w -> input.each { w << it } }
     }
 
-    private void handleExitValue(int exitValue, Command c, FileSystemOutput errorOutput) {
+    private void handleExitValue(int exitValue, Command c) {
         throwIfCondition(
                 (exitValue != 0 && c.failOnError),
                 "Error while executing: '${displayableCmd(c)}', in dir: '${c.runDir}', " +
-                        "exit value: '${exitValue}', error output ${errorOutput.sb.toString()}."
+                        "exit value: '${exitValue}'"
         )
     }
 

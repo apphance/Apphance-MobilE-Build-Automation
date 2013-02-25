@@ -8,19 +8,19 @@ class AppendableAdapterSpec extends Specification {
     @Unroll
     def 'passes string to closure when called #method for #args'() {
         given:
-        def c = Mock(StringAppendable)
+        def file = Mock(File)
 
         and:
-        Appendable appendableAdapter = new AppendableAdapter(c)
+        Appendable appendableAdapter = new AppendableAdapter(file)
 
         when:
         def returnedAppendable = appendableAdapter."$method"(args)
 
         then:
-        1 * c.append(string)
+        1 * file.append(string)
 
         then:
-        0 * c.append(_)
+        0 * file.append(_)
 
         and: 'returns self'
         returnedAppendable == appendableAdapter
