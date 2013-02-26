@@ -1,7 +1,6 @@
 package com.apphance.ameba.executor
 
 import com.apphance.ameba.executor.linker.FileLinker
-import com.apphance.ameba.executor.stream.AppendableAdapter
 import com.apphance.ameba.util.Preconditions
 import org.gradle.api.logging.Logging
 
@@ -25,12 +24,8 @@ class CommandExecutor {
         l.lifecycle("Executing command: [${displayableCmd(c)}], in dir: ${c.runDir} in background")
         l.lifecycle("Command output: ${fileLinker.fileLink()}")
 
-        def appendableAdapter = new AppendableAdapter(commandOutputFile)
 
         Process process = runCommand(c)
-
-        process.consumeProcessErrorStream(appendableAdapter)
-        process.consumeProcessOutputStream(appendableAdapter)
 
         process
     }
@@ -40,17 +35,13 @@ class CommandExecutor {
         mkdir(c.project.file('log'))
 
         def commandOutputFile = new File('log', 'logfile.txt')//TODO nazwa
-        def fileAppendable = new AppendableAdapter(commandOutputFile)
 
         l.lifecycle("Executing command: [${displayableCmd(c)}], in dir: '${c.runDir}'")
         l.lifecycle("Command output: ${fileLinker.fileLink()}")
 
         Process process = runCommand(c)
 
-        Thread stdOutThread = process.consumeProcessOutputStream(fileAppendable)
-        Thread stdErrThread = process.consumeProcessErrorStream(fileAppendable)
-
-        int exitValue = waitForProcess(process, stdOutThread, stdErrThread)
+        int exitValue = process.waitFor()
 
         handleExitValue(exitValue, c)
 
