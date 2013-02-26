@@ -1,12 +1,13 @@
 package com.apphance.ameba.executor
 
 import com.apphance.ameba.executor.linker.FileLinker
+import com.apphance.ameba.executor.log.CommandLogFileGenerator
 import com.apphance.ameba.util.Preconditions
 import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.util.file.FileManager.mkdir
+import static java.lang.System.getProperties
 
 @Mixin(Preconditions)
 class CommandExecutor {
@@ -15,84 +16,75 @@ class CommandExecutor {
 
     @Inject
     private FileLinker fileLinker
+    @Inject
+    private CommandLogFileGenerator logFileGenerator
 
     Process startCommand(Command c) {
-        mkdir(c.project.file('log'))
 
-        def commandOutputFile = new File('log', 'logfile.txt')//TODO nazwa
+        def commandLog = logFileGenerator.commandLogFile()
 
-        l.lifecycle("Executing command: [${displayableCmd(c)}], in dir: ${c.runDir} in background")
-        l.lifecycle("Command output: ${fileLinker.fileLink()}")
+        l.lifecycle("Starting command: '${c.commandForPublic}', in dir: '${c.runDir}' in background")
+        l.lifecycle("Command output: ${fileLinker.fileLink(commandLog)}")
 
-
-        Process process = runCommand(c)
+        Process process = runCommand(c, commandLog)
 
         process
     }
 
     Collection<String> executeCommand(Command c) {
 
-        mkdir(c.project.file('log'))
+        def commandLog = logFileGenerator.commandLogFile()
 
-        def commandOutputFile = new File('log', 'logfile.txt')//TODO nazwa
+        l.lifecycle("Executing command: '${c.commandForPublic}', in dir: '${c.runDir}'")
+        l.lifecycle("Command output: ${fileLinker.fileLink(commandLog)}")
 
-        l.lifecycle("Executing command: [${displayableCmd(c)}], in dir: '${c.runDir}'")
-        l.lifecycle("Command output: ${fileLinker.fileLink()}")
+        Process process = runCommand(c, commandLog)
 
-        Process process = runCommand(c)
-
-        int exitValue = process.waitFor()
+        Integer exitValue = process?.waitFor()
 
         handleExitValue(exitValue, c)
 
-        commandOutputFile.readLines()
+        commandLog.readLines()
     }
 
-    private Process runCommand(Command c) {
-        Process process
+    private Process runCommand(Command c, File commandLog) {
+        Process process = null
 
         try {
-            process = escapeCommand(c).execute(c.envp, c.runDir)
+            def processBuilder = new ProcessBuilder(c.commandForExecution)
+            processBuilder.
+                    directory(c.runDir).
+                    redirectInput(prepareInputFile(c.input)).
+                    redirectOutput(commandLog).
+                    redirectErrorStream(true).
+                    redirectError(commandLog).
+                    environment().putAll(c.environment)
+
+            process = processBuilder.start()
+
         } catch (Exception e) {
-            throw new CommandFailedException(e.message, c)
+            if (c.failOnError)
+                throw new CommandFailedException(e.message, c)
         }
 
-        handleProcessInput(process, c.input)
         process
     }
 
-    private String[] escapeCommand(Command c) {
-        c.cmd.collect { it.startsWith(c.escapePrefix) ? it.replaceFirst(c.escapePrefix, '') : it }
+    private File prepareInputFile(Collection<String> input) {
+        def inputFile = new File(properties['java.io.tmpdir'].toString(), 'cmd-input')
+        inputFile.delete()
+        inputFile.createNewFile()//empty file is returned if no input passed
+        if (!input) {
+            input.each { inputFile << "$it\n" }
+        }
+        inputFile
     }
 
-    private int waitForProcess(Process process, Thread... toJoin) {
-        def exitVal = process.waitFor()
-        toJoin.each { it.join() }
-        exitVal
-    }
-
-    private void handleProcessInput(Process process, Collection<String> input) {
-        if (!input) return
-        process.withWriter { w -> input.each { w << it } }
-    }
-
-    private void handleExitValue(int exitValue, Command c) {
+    private void handleExitValue(Integer exitValue, Command c) {
         throwIfCondition(
                 (exitValue != 0 && c.failOnError),
-                "Error while executing: '${displayableCmd(c)}', in dir: '${c.runDir}', " +
+                "Error while executing: '${c.commandForPublic}', in dir: '${c.runDir}', " +
                         "exit value: '${exitValue}'"
         )
-    }
-
-    private String displayableCmd(Command c) {
-        def sb = new StringBuilder()
-        c.cmd.each {
-            def s = it.startsWith(c.escapePrefix) ?
-                '*' * it.replaceFirst(c.escapePrefix, '').length()
-            :
-                it
-            sb.append(s).append(' ')
-        }
-        sb.toString().trim()
     }
 }

@@ -1,35 +1,47 @@
 package com.apphance.ameba.executor
 
-import org.gradle.api.Project
+import com.apphance.ameba.executor.linker.FileLinker
+import com.apphance.ameba.executor.log.CommandLogFileGenerator
 import spock.lang.Specification
 
 class CommandExecutorSpec extends Specification {
 
-    def executor = new CommandExecutor()
+    //TODO mocki prywatnych metod ???
+    //TODO przetestować input
+    //TODO przetestować environment variables
 
-    def 'test executor with `ls` command'() {
+    def "excutor invokes 'ls' command"() {
+
         given:
-        def project = Mock(Project)
+        def executor = new CommandExecutor()
+        executor.fileLinker = Mock(FileLinker)
+        executor.logFileGenerator = Mock(CommandLogFileGenerator)
 
         and:
-        project.file(_) >> new File('/tmp')
+        executor.fileLinker.fileLink(_) >> ''
+        executor.logFileGenerator.commandLogFile() >> File.createTempFile('tmp', 'file')
 
         expect:
-        expectedOutput == executor.executeCommand(new Command(cmd: cmd, runDir: new File(runDir), project: project))
+        expectedOutput == executor.executeCommand(new Command(cmd: cmd, runDir: runDir))
 
         where:
-        expectedOutput          | runDir     | cmd
-        ['groovy', 'resources'] | 'src/test' | ['ls']
+        expectedOutput          | runDir                  | cmd
+        ['groovy', 'resources'] | new File('src', 'test') | ['ls']
     }
 
-    def 'test executor with invalid command'() {
+    def 'executor fails with invalid command'() {
 
         given:
-        def project = Mock(Project)
+        def executor = new CommandExecutor()
 
-        def command = new Command(cmd: ['ASDAFSFAG'], runDir: new File('src/test'), project: project)
+        and:
+        executor.fileLinker = Mock(FileLinker)
+        executor.logFileGenerator = Mock(CommandLogFileGenerator)
+        executor.fileLinker.fileLink(_) >> ''
+        executor.logFileGenerator.commandLogFile() >> File.createTempFile('tmp', 'file')
 
-        project.file(_) >> new File('/tmp')
+        and:
+        def command = new Command(cmd: ['ASDAFSFAG'], runDir: new File('src', 'test'))
 
         when:
         executor.executeCommand(command)
@@ -40,31 +52,44 @@ class CommandExecutorSpec extends Specification {
         e.command == command
     }
 
-    def 'test displayable command'() {
-        expect:
-        displayableCmd == executor.displayableCmd(new Command(cmd: input))
+    def 'executor not fails on invalid command'() {
+        given:
+        def executor = new CommandExecutor()
 
-        where:
-        displayableCmd                      | input
-        "ls"                                | ['ls']
-        "ls -al"                            | ['ls', '-al']
-        "ls -al 'bolo bolo'"                | ['ls', '-al', '\'bolo bolo\'']
-        "ls -al bolo-bolo"                  | ['ls', '-al', 'bolo-bolo']
-        "upload arch.jar -u user -p ****"   | ['upload', 'arch.jar', '-u', 'user', '-p', '##pass']
-        "upload arch.jar -u user -p pass##" | ['upload', 'arch.jar', '-u', 'user', '-p', 'pass##']
+        and:
+        executor.fileLinker = Mock(FileLinker)
+        executor.logFileGenerator = Mock(CommandLogFileGenerator)
+        executor.fileLinker.fileLink(_) >> ''
+        executor.logFileGenerator.commandLogFile() >> File.createTempFile('tmp', 'file')
+
+        and:
+        def command = new Command(cmd: ['ASDAFSFAG'], runDir: new File('src', 'test'), failOnError: false)
+
+        when:
+        def output = executor.executeCommand(command)
+
+        then:
+        output == []
     }
 
-    def 'test escape command'() {
+    def "executor invokes 'ls' command with dir passed through env variable"() {
+        given:
+        def executor = new CommandExecutor()
+        executor.fileLinker = Mock(FileLinker)
+        executor.logFileGenerator = Mock(CommandLogFileGenerator)
+
+        and:
+        executor.fileLinker.fileLink(_) >> ''
+        executor.logFileGenerator.commandLogFile() >> File.createTempFile('tmp', 'file')
+
         expect:
-        displayableCmd == executor.escapeCommand(new Command(cmd: input))
+        def command = new Command(cmd: cmd, runDir: runDir, environment: env, failOnError: false)
+        println command
+        expectedOutput == executor.executeCommand(command)
 
         where:
-        displayableCmd                                       | input
-        ['ls']                                               | ['ls']
-        ['ls', '-al']                                        | ['ls', '-al']
-        ['ls', '-al', '\'bolo bolo\'']                       | ['ls', '-al', '\'bolo bolo\'']
-        ['ls', '-al', 'bolo-bolo']                           | ['ls', '-al', 'bolo-bolo']
-        ['upload', 'arch.jar', '-u', 'user', '-p', 'pass']   | ['upload', 'arch.jar', '-u', 'user', '-p', '##pass']
-        ['upload', 'arch.jar', '-u', 'user', '-p', 'pass##'] | ['upload', 'arch.jar', '-u', 'user', '-p', 'pass##']
+        expectedOutput          | runDir                  | cmd                  | env
+        ['groovy', 'resources'] | new File('src', 'test') | ['ls', '$DIR_TO_LS'] | [DIR_TO_LS: new File('src', 'test').parentFile.canonicalPath]
     }
 }
+

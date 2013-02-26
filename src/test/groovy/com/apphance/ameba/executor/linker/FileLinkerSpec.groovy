@@ -1,4 +1,4 @@
-package com.apphance.ameba.executor
+package com.apphance.ameba.executor.linker
 
 import com.apphance.ameba.executor.linker.JenkinsFileLinker
 import com.apphance.ameba.executor.linker.SimpleFileLinker
