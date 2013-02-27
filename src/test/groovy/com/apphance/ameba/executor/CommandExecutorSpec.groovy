@@ -6,21 +6,21 @@ import spock.lang.Specification
 
 class CommandExecutorSpec extends Specification {
 
-    //TODO przetestować environment variables
-
-    //TODO przetestować input
+    // TODO test command input
 
     def fileLinker = Mock(FileLinker)
     def logFileGenerator = Mock(CommandLogFileGenerator)
 
     def executor = new CommandExecutor(fileLinker, logFileGenerator)
 
+    def logFile = File.createTempFile('tmp', 'file')
+
     def setup() {
         fileLinker.fileLink(_) >> ''
-        logFileGenerator.commandLogFile() >> File.createTempFile('tmp', 'file')
+        logFileGenerator.commandLogFile() >> logFile
     }
 
-    def "excutor invokes 'ls' command"() {
+    def "executor invokes 'ls' command"() {
 
         given:
         def command = new Command(cmd: cmd, runDir: runDir)
@@ -56,6 +56,23 @@ class CommandExecutorSpec extends Specification {
 
         then:
         output == []
+    }
+
+    def 'executor starts command in background'() {
+        given:
+        def command = new Command(cmd: ['pwd'], runDir: '.' as File)
+
+        when:
+        def process = executor.startCommand(command)
+        def exitValue = process.waitFor()
+
+        then:
+        process instanceof Process
+        exitValue == 0
+
+        then:
+        logFile.exists()
+        logFile.text
     }
 
     //TODO executing commands with env variables passed, not working right now!!!
