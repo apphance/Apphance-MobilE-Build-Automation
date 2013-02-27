@@ -33,10 +33,10 @@ class CommandSpec extends Specification {
         commandForExecution == new Command(cmd: cmd, params: params, secretParams: secretParams, environment: env).commandForExecution
 
         where:
-        commandForExecution                                                        | cmd                                                                  | params                 | secretParams   | env
-        ['ls', '-al', '$SAMPLE_ENV']                                               | ['ls', '-al', '$SAMPLE_ENV']                                         | [:]                    | [:]            | [SAMPLE_ENV: '/tmp']
-        ['ls', '-al', '/tmp', '$ANOTHER_ENV']                                      | ['ls', '-al', '$dir', '$ANOTHER_ENV']                                | [dir: '/tmp']          | [:]            | [ANOTHER_ENV: 'sample_dir']
-        ['upload', '-u', 'user', '-p', 'pass', '/tmp/app.apk', '$YET_ANOTHER_ENV'] | ['upload', '-u', 'user', '-p', '$pass', '$file', '$YET_ANOTHER_ENV'] | [file: '/tmp/app.apk'] | [pass: 'pass'] | [YET_ANOTHER_ENV: 'sample_key']
+        commandForExecution                                                          | cmd                                                                    | params                 | secretParams   | env
+        ['ls', '-al', '$SAMPLE_ENV']                                                 | ['ls', '-al', '\\$SAMPLE_ENV']                                         | [:]                    | [:]            | [SAMPLE_ENV: '/tmp']
+        ['ls', '-al', '/tmp', '$ANOTHER_ENV']                                        | ['ls', '-al', '$dir', '\\$ANOTHER_ENV']                                | [dir: '/tmp']          | [:]            | [ANOTHER_ENV: 'sample_dir']
+        ['upload', '-u', 'user', '-p', 'pass', '/tmp/app.apk', '$YET_ANOTHER_ENV'] | ['upload', '-u', 'user', '-p', '$pass', '$file', '\\$YET_ANOTHER_ENV'] | [file: '/tmp/app.apk'] | [pass: 'pass'] | [YET_ANOTHER_ENV: 'sample_key']
     }
 
     def 'building command for public failes for incorrect params'() {
@@ -48,6 +48,7 @@ class CommandSpec extends Specification {
         exception.message == '''Failed to construct command from parameters.
 Command: [ls, -al, $dir]
 Params: [dri:/tmp]
+Environment: [:]
 Secret params names: []'''
     }
 
@@ -60,6 +61,7 @@ Secret params names: []'''
         exception.message == '''Failed to construct command from parameters.
 Command: [ls, -al, $pass]
 Params: [:]
+Environment: [:]
 Secret params names: [pasa]'''
     }
 }

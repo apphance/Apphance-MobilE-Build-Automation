@@ -2,12 +2,15 @@ package com.apphance.ameba.executor.log
 
 import com.apphance.ameba.util.Preconditions
 
+import javax.inject.Inject
+
 @Mixin(Preconditions)
 class CommandLogFileGenerator {
 
     private int fileCounter = 0
     private String logDir
 
+    @Inject
     CommandLogFileGenerator(String logDir) {
         this.logDir = logDir
     }

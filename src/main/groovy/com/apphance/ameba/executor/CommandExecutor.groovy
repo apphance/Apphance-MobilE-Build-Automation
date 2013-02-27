@@ -14,10 +14,14 @@ class CommandExecutor {
 
     def l = Logging.getLogger(getClass())
 
-    @Inject
     private FileLinker fileLinker
-    @Inject
     private CommandLogFileGenerator logFileGenerator
+
+    @Inject
+    CommandExecutor(FileLinker fileLinker, CommandLogFileGenerator logFileGenerator) {
+        this.fileLinker = fileLinker
+        this.logFileGenerator = logFileGenerator
+    }
 
     Process startCommand(Command c) {
 
@@ -57,7 +61,6 @@ class CommandExecutor {
                     redirectInput(prepareInputFile(c.input)).
                     redirectOutput(commandLog).
                     redirectErrorStream(true).
-                    redirectError(commandLog).
                     environment().putAll(c.environment)
 
             process = processBuilder.start()

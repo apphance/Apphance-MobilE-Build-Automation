@@ -24,7 +24,7 @@ class Command {
 
     private getFilledCommand(Map args) {
         try {
-            return cmd.collect { lookupElementInEnv(it) ? it : new SimpleTemplateEngine().createTemplate(it).make(args).toString() }
+            return cmd.collect { new SimpleTemplateEngine().createTemplate(it).make(args).toString() }
 
         } catch (e) {
             throw new IllegalStateException(
@@ -36,24 +36,8 @@ Secret params names: ${secretParams.keySet()}""", e)
         }
     }
 
-    private String lookupElementInEnv(String element) {
-        environment[element.replace('$', '')]
-    }
-
     @Override
     public String toString() {
         this.properties
-    }
-
-    static void main(args) {
-        def pb = new ProcessBuilder('ls', '$LOL')
-        pb.environment().put(' LOL', '/Users/opal')
-        pb.directory(new File('/Users/opal'))
-        println pb.environment()
-        def p = pb.start()
-
-        println p.waitFor()
-        println p.err.readLines()
-        println p.in.readLines()
     }
 }
