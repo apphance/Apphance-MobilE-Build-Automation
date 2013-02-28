@@ -1,13 +1,20 @@
 package com.apphance.ameba.plugins.release
 
-import com.apphance.ameba.*
+import com.apphance.ameba.ImageNameFilter
+import com.apphance.ameba.PluginHelper
+import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import com.apphance.ameba.executor.Command
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.util.file.FileManager
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logging
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
@@ -22,13 +29,14 @@ class ProjectReleasePlugin implements Plugin<Project> {
 
     def l = Logging.getLogger(getClass())
 
-    ProjectHelper projectHelper
+    @Inject
+    CommandExecutor executor
+
     ProjectConfiguration conf
     ProjectReleaseConfiguration releaseConf
 
     void apply(Project project) {
         PluginHelper.checkAnyPluginIsLoaded(project, getClass(), AndroidPlugin.class, IOSPlugin.class)
-        projectHelper = new ProjectHelper()
         conf = PropertyCategory.getProjectConfiguration(project)
         releaseConf = ProjectReleaseCategory.retrieveProjectReleaseData(project)
         prepareMailConfiguration(project)
@@ -149,7 +157,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
             }
             def tempFile = File.createTempFile("image_montage_${conf.projectName}", '.png')
             command << tempFile.toString()
-            projectHelper.executeCommand(project, command as String[])
+            executor.executeCommand(new Command(cmd: command, runDir: project.rootDir))
             def imageMontageFile = new File(releaseConf.targetDirectory, "${conf.projectName}-${conf.fullVersionString}-image-montage.png")
             imageMontageFile.parentFile.mkdirs()
             imageMontageFile.delete()
@@ -165,7 +173,7 @@ Either as -Prelease.notes='NOTES' gradle property or by setting RELEASE_NOTES en
                     imageMontageFile
             ]
             try {
-                projectHelper.executeCommand(project, convertCommand)
+                executor.executeCommand(new Command(cmd: convertCommand, runDir: project.rootDir))
                 def imageMontageFileArtifact = new AmebaArtifact(
                         name: "Image Montage",
                         url: new URL(releaseConf.versionedApplicationUrl, "${imageMontageFile.name}"),
