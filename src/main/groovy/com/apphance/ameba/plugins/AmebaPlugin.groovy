@@ -1,5 +1,7 @@
 package com.apphance.ameba.plugins
 
+import com.apphance.ameba.di.CommandExecutorModule
+import com.apphance.ameba.di.EnvironmentModule
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import org.gradle.api.Plugin
@@ -14,12 +16,15 @@ class AmebaPlugin implements Plugin<Project> {
     void apply(Project project) {
         l.lifecycle(AMEBA_ASCII_ART)
 
-        def injector = Guice.createInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(Project).toInstance(project)
-            }
-        })
+        def injector = Guice.createInjector(
+                new EnvironmentModule(),
+                new CommandExecutorModule(project),
+                new AbstractModule() {
+                    @Override
+                    protected void configure() {
+                        bind(Project).toInstance(project)
+                    }
+                })
 
         injector.getInstance(PluginMaster).enhanceProject(project)
     }

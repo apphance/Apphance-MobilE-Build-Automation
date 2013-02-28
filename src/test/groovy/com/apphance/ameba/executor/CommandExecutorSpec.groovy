@@ -1,23 +1,27 @@
 package com.apphance.ameba.executor
 
 import com.apphance.ameba.executor.linker.FileLinker
-import com.apphance.ameba.executor.log.CommandLogFileGenerator
+import com.apphance.ameba.executor.log.CommandLogFilesGenerator
 import spock.lang.Specification
+
+import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.ERR
+import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.STD
+import static java.io.File.createTempFile
 
 class CommandExecutorSpec extends Specification {
 
     // TODO test command input
 
     def fileLinker = Mock(FileLinker)
-    def logFileGenerator = Mock(CommandLogFileGenerator)
+    def logFileGenerator = Mock(CommandLogFilesGenerator)
 
     def executor = new CommandExecutor(fileLinker, logFileGenerator)
 
-    def logFile = File.createTempFile('tmp', 'file')
+    def logFiles = [(STD): createTempFile('tmp', 'file-out'), (ERR): createTempFile('tmp', 'file-err')]
 
     def setup() {
         fileLinker.fileLink(_) >> ''
-        logFileGenerator.commandLogFile() >> logFile
+        logFileGenerator.commandLogFiles() >> logFiles
     }
 
     def "executor invokes 'ls' command"() {
@@ -71,8 +75,9 @@ class CommandExecutorSpec extends Specification {
         exitValue == 0
 
         then:
-        logFile.exists()
-        logFile.text
+        logFiles[STD].exists()
+        logFiles[STD].text
+        new File(logFiles[STD].text.trim()).exists()
     }
 
     //TODO executing commands with env variables passed, not working right now!!!

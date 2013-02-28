@@ -5,8 +5,8 @@ import groovy.text.SimpleTemplateEngine
 class Command {
 
     File runDir
-    Collection<String> cmd
-    Collection<String> input
+    List<String> cmd
+    List<String> input
 
     Map<String, Object> params = [:]
     Map<String, Object> secretParams = [:]
@@ -24,7 +24,8 @@ class Command {
 
     private getFilledCommand(Map args) {
         try {
-            return cmd.collect { new SimpleTemplateEngine().createTemplate(it).make(args).toString() }
+            //there's a need to explicitly cast 'it' to String in case of not String object passed by 'cmd' list
+            return cmd.collect { new SimpleTemplateEngine().createTemplate(it as String).make(args).toString() }
 
         } catch (e) {
             throw new IllegalStateException(
