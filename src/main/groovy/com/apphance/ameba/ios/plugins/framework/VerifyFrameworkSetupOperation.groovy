@@ -3,7 +3,7 @@ package com.apphance.ameba.ios.plugins.framework
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.AbstractVerifyIOSSetupOperation
 import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.IOSXCodeOutputParser
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.GradleException
 
 /**
@@ -21,7 +21,7 @@ class VerifyFrameworkSetupOperation extends AbstractVerifyIOSSetupOperation {
     void verifySetup() {
         super.verifySetup()
         def projectProperties = readProperties()
-        iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+        iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
 
         IOSFrameworkProperty.each {
             if (!it.defaultValue != null) {

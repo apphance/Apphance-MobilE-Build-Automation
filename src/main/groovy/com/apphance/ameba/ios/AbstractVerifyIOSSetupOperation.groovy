@@ -2,6 +2,7 @@ package com.apphance.ameba.ios
 
 import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -20,7 +21,7 @@ abstract class AbstractVerifyIOSSetupOperation extends AbstractVerifySetupOperat
     }
 
     void verifySetup() {
-        iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+        iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
     }
 
     void checkPlistFile(property) {

@@ -5,7 +5,6 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -33,7 +32,7 @@ class IOSUnitTestPlugin implements Plugin<Project> {
             this.project = project
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
-            this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+            this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
             project.extensions.iosUnitTests = new IOSUnitTestConvention()
             prepareRunUnitTestsTask()
         }

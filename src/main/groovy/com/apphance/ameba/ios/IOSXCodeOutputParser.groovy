@@ -1,6 +1,6 @@
 package com.apphance.ameba.ios
 
-import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -11,16 +11,8 @@ import org.gradle.api.logging.Logging
  *
  */
 class IOSXCodeOutputParser {
+
     static Logger logger = Logging.getLogger(IOSXCodeOutputParser.class)
-
-    static public final String IOS_PROJECT_CONFIGURATION_KEY = 'ios.project.configuration'
-
-    static IOSProjectConfiguration getIosProjectConfiguration(Project project) {
-        if (!project.ext.has(IOS_PROJECT_CONFIGURATION_KEY)) {
-            project.ext.set(IOS_PROJECT_CONFIGURATION_KEY, new IOSProjectConfiguration())
-        }
-        return project.ext.get(IOS_PROJECT_CONFIGURATION_KEY)
-    }
 
     static Collection readBuildableConfigurations(List trimmedOutput) {
         return readBaseConfigurations(trimmedOutput, { it != "Debug" && it != "Release" })
@@ -83,15 +75,9 @@ class IOSXCodeOutputParser {
         return matcher[0][1]
     }
 
-    static String getXcodeInstallationPath(Project project) {
-        ProjectHelper ph = new ProjectHelper()
-        def result = ph.executeCommand(project, ['xcode-select', '-print-path'])
-        return result[0]
-    }
-
     static File findMobileProvisionFile(Project project, String target, String configuration,
                                         boolean checkForNewBundleId = true) {
-        IOSProjectConfiguration iosConf = getIosProjectConfiguration(project)
+        IOSProjectConfiguration iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
 
         File distributionDirectory = iosConf.distributionDirectory
         if (checkForNewBundleId && iosConf.distributionDirectories[configuration] != null) {

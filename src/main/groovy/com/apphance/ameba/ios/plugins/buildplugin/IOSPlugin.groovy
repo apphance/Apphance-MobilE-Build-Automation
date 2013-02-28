@@ -1,13 +1,10 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.PluginHelper
-import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
-import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.*
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser
+import com.apphance.ameba.ios.plugins.release.IOSReleaseListener
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import com.sun.org.apache.xpath.internal.XPathAPI
 import org.gradle.api.GradleException
@@ -24,6 +21,7 @@ import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_BUILD
  */
 class IOSPlugin implements Plugin<Project> {
 
+    static final String IOS_PROJECT_CONFIGURATION = 'ios.project.configuration'
     static final String IOS_CONFIGURATION_LOCAL_PROPERTY = 'ios.configuration'
     static final String IOS_TARGET_LOCAL_PROPERTY = 'ios.target'
 
@@ -43,7 +41,7 @@ class IOSPlugin implements Plugin<Project> {
         use(PropertyCategory) {
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
-            this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+            this.iosConf = getIosProjectConfiguration(project)
             this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project)
             prepareCopySourcesTask(project)
             prepareCopyDebugSourcesTask(project)
@@ -61,6 +59,13 @@ class IOSPlugin implements Plugin<Project> {
             project.verifySetup.verifySetupOperations << new VerifyIOSSetupOperation()
             project.showSetup.showSetupOperations << new ShowIOSSetupOperation()
         }
+    }
+
+    IOSProjectConfiguration getIosProjectConfiguration(Project project) {
+        if (!project.ext.has(IOS_PROJECT_CONFIGURATION)) {
+            project.ext.set(IOS_PROJECT_CONFIGURATION, new IOSProjectConfiguration())
+        }
+        return project.ext.get(IOS_PROJECT_CONFIGURATION)
     }
 
     private addIosSourceExcludes() {
@@ -162,7 +167,7 @@ class IOSPlugin implements Plugin<Project> {
         if (trimmedListOutput.empty || trimmedListOutput[0] == '') {
             throw new GradleException("Error while running ${cmd}:")
         } else {
-            IOSProjectConfiguration iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+            IOSProjectConfiguration iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
             project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = IOSXCodeOutputParser.readProjectName(trimmedListOutput)
             iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmedListOutput)
             iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedListOutput)
@@ -226,7 +231,7 @@ class IOSPlugin implements Plugin<Project> {
             singleTask.group = AMEBA_BUILD
             singleTask.description = "Builds target: ${v.target}, configuration: ${v.configuration}"
             singleTask << {
-                def builder = new IOSSingleVariantBuilder(project)
+                def builder = new IOSSingleVariantBuilder(project, new IOSReleaseListener(project))
                 builder.buildNormalVariant(project, v.target, v.configuration)
             }
             task.dependsOn(singleTask)

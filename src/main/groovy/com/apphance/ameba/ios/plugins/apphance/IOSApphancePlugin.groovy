@@ -7,7 +7,6 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.test.ApphanceNetworkHelper
 import com.apphance.ameba.apphance.*
 import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.ios.plugins.release.IOSReleaseConfigurationRetriever
@@ -43,7 +42,6 @@ class IOSApphancePlugin implements Plugin<Project> {
     ProjectHelper projectHelper
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
-    IOSXCodeOutputParser iosXcodeOutputParser
     PbxProjectHelper pbxProjectHelper
 
     @Override
@@ -52,13 +50,9 @@ class IOSApphancePlugin implements Plugin<Project> {
         use(PropertyCategory) {
             this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
-            this.iosXcodeOutputParser = new IOSXCodeOutputParser()
-            this.iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
+            this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
             this.pbxProjectHelper = new PbxProjectHelper(project.properties['apphance.lib'], project.properties['apphance.mode'])
 
-            def trimmedListOutput = projectHelper.executeCommand(project, ["xcodebuild", "-list"] as String[], false, null, null, 1, true)*.trim()
-            iosConf.configurations = iosXcodeOutputParser.readBuildableConfigurations(trimmedListOutput)
-            iosConf.targets = iosXcodeOutputParser.readBuildableTargets(trimmedListOutput)
             addApphanceConfiguration(project)
             preProcessBuildsWithApphance(project)
 

@@ -24,8 +24,6 @@ class IOSProjectConfiguration {
     List<String> families = []
     List<String> schemes = []
     File plistFile
-    def monkeyTests = [:]
-    def monkeyTestResults = [:]
     List<String> excludedBuilds = []
 
     boolean isBuildExcluded(String id) {

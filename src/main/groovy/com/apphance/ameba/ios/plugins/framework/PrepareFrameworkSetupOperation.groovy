@@ -4,7 +4,7 @@ import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.IOSXCodeOutputParser
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.util.file.FileManager
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -28,8 +28,7 @@ class PrepareFrameworkSetupOperation extends AbstractPrepareSetupOperation {
         def headerFiles = FileManager.getFiles(project, { it.name.endsWith('.h') })
         def resourceFiles = FileManager.getFiles(project, { it.name.endsWith('.png') })
         use(PropertyCategory) {
-            IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
-            IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
+            IOSProjectConfiguration iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
             IOSFrameworkProperty.each {
                 switch (it) {
                     case IOSFrameworkProperty.FRAMEWORK_CONFIGURATION:

@@ -5,7 +5,7 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.IOSXCodeOutputParser
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.DefaultTask
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -53,7 +53,7 @@ class IOSBuildFrameworkTask extends DefaultTask {
     @TaskAction
     void buildIOSFramework() {
         use(PropertyCategory) {
-            iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+            iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
             frameworkTarget = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
             frameworkConfiguration = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_CONFIGURATION)
             frameworkVersion = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_VERSION)

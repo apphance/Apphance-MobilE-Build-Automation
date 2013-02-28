@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.release
 import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.IOSXCodeOutputParser
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.GradleException
 
 /**
@@ -27,7 +27,7 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
     @Override
     void verifySetup() {
         def projectProperties = readProperties()
-        iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+        iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
 
         ProjectReleaseProperty.findAll { it.defaultValue == null && it != ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE }.each {
             checkProperty(projectProperties, it)

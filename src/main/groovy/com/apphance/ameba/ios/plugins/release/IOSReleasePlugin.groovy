@@ -1,11 +1,13 @@
 package com.apphance.ameba.ios.plugins.release
 
-import com.apphance.ameba.*
+import com.apphance.ameba.PluginHelper
+import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.ProjectHelper
+import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
-import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
@@ -42,13 +44,12 @@ class IOSReleasePlugin implements Plugin<Project> {
         this.projectHelper = new ProjectHelper();
         this.conf = PropertyCategory.getProjectConfiguration(project)
         this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
-        this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+        this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
         this.iosReleaseConf = IOSReleaseConfigurationRetriever.getIosReleaseConfiguration(project)
         prepareUpdateVersionTask(project)
         prepareBuildDocumentationZipTask(project)
         prepareAvailableArtifactsInfoTask(project)
         prepareMailMessageTask(project)
-        IOSSingleVariantBuilder.buildListeners << new IOSReleaseListener(project)
     }
 
     void prepareUpdateVersionTask(Project project) {
