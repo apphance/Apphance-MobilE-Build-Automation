@@ -1,6 +1,5 @@
 package com.apphance.ameba.applyPlugins.android
 
-import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
@@ -10,6 +9,10 @@ import org.junit.Test
 import static org.junit.Assert.assertEquals
 
 class TestRobolectricCreation {
+
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
+            '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
+
     private static File conventionsBase = new File("testProjects/android/android-robolectric-create");
     private static File roboPath = new File(conventionsBase.path + '/test/robolectric')
 
@@ -31,7 +34,7 @@ class TestRobolectricCreation {
             BuildLauncher bl = connection.newBuild().forTasks('prepareRobolectric');
             ByteArrayOutputStream baos = new ByteArrayOutputStream()
             bl.setStandardOutput(baos)
-            bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+            bl.setJvmArguments(GRADLE_DAEMON_ARGS)
             bl.run()
             String output = baos.toString('utf-8')
             println output
@@ -50,7 +53,7 @@ class TestRobolectricCreation {
             def f = new File(roboPath.path + '/build.gradle');
             assert !f.exists()
             BuildLauncher bl = connection.newBuild().forTasks('prepareRobolectric');
-            bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+            bl.setJvmArguments(GRADLE_DAEMON_ARGS)
             bl.run()
 
             String text = f.getText()
@@ -60,7 +63,7 @@ class TestRobolectricCreation {
             f.write(replace)
 
             bl = connection.newBuild().forTasks('prepareRobolectric');
-            bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+            bl.setJvmArguments(GRADLE_DAEMON_ARGS)
             bl.run()
 
             def newText = f.getText()

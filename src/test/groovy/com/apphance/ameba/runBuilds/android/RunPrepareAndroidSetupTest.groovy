@@ -1,6 +1,5 @@
 package com.apphance.ameba.runBuilds.android
 
-import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
@@ -10,6 +9,9 @@ import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
 class RunPrepareAndroidSetupTest {
+
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
+            '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
     static File testProject = new File('testProjects/android/android-basic')
     static File gradleProperties = new File(testProject, 'gradle.properties')
@@ -44,7 +46,7 @@ class RunPrepareAndroidSetupTest {
         BuildLauncher bl = connection.newBuild().forTasks(tasks);
         bl.setStandardInput(new ByteArrayInputStream(input.bytes))
         bl.setStandardOutput(os)
-        bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        bl.setJvmArguments(GRADLE_DAEMON_ARGS)
         bl.run();
         def res = os.toString('UTF-8')
         assertTrue(res.contains('BUILD SUCCESSFUL'))

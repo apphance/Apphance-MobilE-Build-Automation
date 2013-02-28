@@ -1,6 +1,5 @@
 package com.apphance.ameba.unit.ios
 
-import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.Test
@@ -9,13 +8,16 @@ import static org.junit.Assert.assertTrue
 
 class IOSApphancePluginTest {
 
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
+            '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
+
     File projectDir
 
     protected void runGradle(String... tasks) {
         ProjectConnection connection = GradleConnector.newConnector().forProjectDirectory(projectDir).connect();
         try {
             def buildLauncher = connection.newBuild()
-            buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+            buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
             buildLauncher.forTasks(tasks).run();
         } finally {
             connection.close();

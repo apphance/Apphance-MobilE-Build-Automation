@@ -4,7 +4,6 @@ import com.apphance.ameba.util.file.FileSystemOutput
 import org.codehaus.groovy.runtime.ProcessGroovyMethods
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 /**
@@ -16,7 +15,7 @@ class ProjectHelper {
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
             '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
-    static Logger logger = Logging.getLogger(ProjectHelper.class)
+    def l = Logging.getLogger(getClass())
 
     Collection<String> executeCommand(Project project, command, boolean failOnError = true, String[] envp = null, input = null, int retryTimes = 1, boolean silentLogging = false) {
         def runDirectory = new File("${project.rootDir}")
@@ -37,7 +36,7 @@ class ProjectHelper {
             if (retryTimes > 1) {
                 extraText = " for the ${retryTimes - timesLeft}. time (maximum number of retries: ${retryTimes})"
             }
-            logger.lifecycle("Executing command:\n${commandToDisplay}\nin ${runDirectory} ${extraText}")
+            l.lifecycle("Executing command:\n${commandToDisplay}\nin ${runDirectory} ${extraText}")
             String jenkinsURL = getJenkinsURL(project, System.getenv())
             def standardOut
             def standardErr
@@ -65,7 +64,7 @@ class ProjectHelper {
                         command[0] = command[0] + '.bat'
                     }
                     commandToDisplay = getCommandToDisplay(command)
-                    logger.lifecycle("Command failed. Trying to execute .bat version: ${commandToDisplay}")
+                    l.lifecycle("Command failed. Trying to execute .bat version: ${commandToDisplay}")
                     proc = command.execute(envp, runDirectory)
                 } else {
                     throw e
@@ -163,10 +162,10 @@ class ProjectHelper {
         outFile.delete()
         outFile << ''
         if (jenkinsURL == null) {
-            logger.lifecycle("OUTPUT: ${outFile}")
+            l.lifecycle("OUTPUT: ${outFile}")
         } else {
             String resultUrl = jenkinsURL + '/' + logDir.getName() + '/' + outFileName
-            logger.lifecycle("OUTPUT: ${resultUrl}")
+            l.lifecycle("OUTPUT: ${resultUrl}")
         }
         return new FileSystemOutput(outFile)
     }
@@ -202,8 +201,8 @@ class ProjectHelper {
     //DONE
     Process executeCommandInBackground(File runDirectory, File outErrFile, command, String[] envp = null, input = null) {
         def commandToDisplay = getCommandToDisplay(command)
-        logger.lifecycle("Executing command:\n${commandToDisplay}\nin ${runDirectory} in background")
-        logger.lifecycle("Standard output/error is stored in ${outErrFile}")
+        l.lifecycle("Executing command:\n${commandToDisplay}\nin ${runDirectory} in background")
+        l.lifecycle("Standard output/error is stored in ${outErrFile}")
         def standardOut = new FileSystemOutput(outErrFile)
         def standardErr = new FileSystemOutput(outErrFile, System.err)
         Process proc = null
@@ -223,7 +222,7 @@ class ProjectHelper {
                     command[0] = command[0] + '.bat'
                 }
                 commandToDisplay = getCommandToDisplay(command)
-                logger.lifecycle("Command failed. Trying to execute .bat version: ${commandToDisplay}")
+                l.lifecycle("Command failed. Trying to execute .bat version: ${commandToDisplay}")
                 proc = command.execute(envp, runDirectory)
             } else {
                 throw e

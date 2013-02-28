@@ -1,6 +1,5 @@
 package com.apphance.ameba.runBuilds.ios
 
-import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
@@ -11,6 +10,10 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class RunShowVerifyIOSSetupTest {
+
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
+            '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
+
     static File testIosProject = new File("testProjects/ios/GradleXCode")
     static ProjectConnection connection
 
@@ -28,7 +31,7 @@ class RunShowVerifyIOSSetupTest {
         ByteArrayOutputStream os = new ByteArrayOutputStream()
         BuildLauncher bl = connection.newBuild().forTasks(tasks);
         bl.setStandardOutput(os)
-        bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        bl.setJvmArguments(GRADLE_DAEMON_ARGS)
         bl.run()
         def res = os.toString("UTF-8")
         println res
