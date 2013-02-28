@@ -2,10 +2,11 @@ package com.apphance.ameba.ios.plugins.apphance
 
 import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.test.ApphanceNetworkHelper
 import com.apphance.ameba.apphance.*
+import com.apphance.ameba.executor.Command
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleVariantBuilder
@@ -18,8 +19,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 import static com.apphance.ameba.apphance.ApphanceProperty.APPLICATION_KEY
@@ -27,6 +28,7 @@ import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
 import static java.io.File.separator
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Plugin for all apphance-relate IOS tasks.
@@ -36,10 +38,12 @@ import static java.io.File.separator
 @Mixin(ApphancePluginUtil)
 class IOSApphancePlugin implements Plugin<Project> {
 
-    static Logger l = Logging.getLogger(IOSApphancePlugin.class)
+    def l = getLogger(getClass())
     static final FRAMEWORK_PATTERN = ~/.*[aA]pphance.*\.framework/
 
-    ProjectHelper projectHelper
+    @Inject
+    CommandExecutor executor
+
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
     PbxProjectHelper pbxProjectHelper
@@ -48,7 +52,6 @@ class IOSApphancePlugin implements Plugin<Project> {
     public void apply(Project project) {
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
         use(PropertyCategory) {
-            this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
             this.pbxProjectHelper = new PbxProjectHelper(project.properties['apphance.lib'], project.properties['apphance.mode'])
@@ -130,8 +133,8 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
         def projectApphanceZip = new File(libsDir, "apphance.zip")
         l.lifecycle("Unpacking file " + projectApphanceZip)
         l.lifecycle("Exists " + projectApphanceZip.exists())
-        def command = ["unzip", "${projectApphanceZip}", "-d", "${libsDir}"]
-        projectHelper.executeCommand(project, libsDir, command)
+        executor.executeCommand(new Command(runDir: project.rootDir,
+                cmd: ['unzip', projectApphanceZip.canonicalPath, '-d', libsDir.canonicalPath]))
 
         checkFrameworkFolders(apphanceLibDependency, libsDir)
 

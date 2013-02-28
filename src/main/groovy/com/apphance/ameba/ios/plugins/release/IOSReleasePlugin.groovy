@@ -2,7 +2,6 @@ package com.apphance.ameba.ios.plugins.release
 
 import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
@@ -18,11 +17,10 @@ import org.gradle.api.AntBuilder
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileDownloader.downloadFile
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Plugin for releasing iOS build.
@@ -30,9 +28,8 @@ import static com.apphance.ameba.util.file.FileDownloader.downloadFile
  */
 class IOSReleasePlugin implements Plugin<Project> {
 
-    static Logger l = Logging.getLogger(IOSReleasePlugin.class)
+    def l = getLogger(getClass())
 
-    ProjectHelper projectHelper
     ProjectConfiguration conf
     ProjectReleaseConfiguration releaseConf
     IOSProjectConfiguration iosConf
@@ -41,7 +38,6 @@ class IOSReleasePlugin implements Plugin<Project> {
     @Override
     def void apply(Project project) {
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class, ProjectReleasePlugin.class)
-        this.projectHelper = new ProjectHelper();
         this.conf = PropertyCategory.getProjectConfiguration(project)
         this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
         this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)

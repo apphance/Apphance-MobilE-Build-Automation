@@ -1,6 +1,11 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
-import com.apphance.ameba.*
+import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.PluginHelper
+import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.executor.Command
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser
@@ -10,10 +15,11 @@ import com.sun.org.apache.xpath.internal.XPathAPI
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Plugin for various X-Code related tasks.
@@ -25,10 +31,12 @@ class IOSPlugin implements Plugin<Project> {
     static final String IOS_CONFIGURATION_LOCAL_PROPERTY = 'ios.configuration'
     static final String IOS_TARGET_LOCAL_PROPERTY = 'ios.target'
 
-    static Logger l = Logging.getLogger(IOSPlugin.class)
+    def l = getLogger(getClass())
+
+    @Inject
+    CommandExecutor executor
 
     String pListFileName
-    ProjectHelper projectHelper
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
     IOSSingleVariantBuilder iosSingleVariantBuilder
@@ -39,7 +47,6 @@ class IOSPlugin implements Plugin<Project> {
     def void apply(Project project) {
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, ProjectConfigurationPlugin.class)
         use(PropertyCategory) {
-            this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
             this.iosConf = getIosProjectConfiguration(project)
             this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project)
@@ -162,9 +169,9 @@ class IOSPlugin implements Plugin<Project> {
 
     private readProjectConfigurationFromXCode(Project project) {
         readProjectDirectory(project)
-        def cmd = (iosConf.getXCodeBuildExecutionPath() + ["-list"]) as String[]
-        def trimmedListOutput = projectHelper.executeCommand(project, cmd, false, null, null, 1, false)*.trim()
-        if (trimmedListOutput.empty || trimmedListOutput[0] == '') {
+        def cmd = (iosConf.getXCodeBuildExecutionPath() + ['-list'])
+        def trimmedListOutput = executor.executeCommand(new Command(runDir: project.rootDir, cmd: cmd))*.trim()
+        if (trimmedListOutput.empty || trimmedListOutput[0] == '') {//TODO possible?
             throw new GradleException("Error while running ${cmd}:")
         } else {
             IOSProjectConfiguration iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
@@ -174,7 +181,7 @@ class IOSPlugin implements Plugin<Project> {
             iosConf.allTargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })
             iosConf.allConfigurations = IOSXCodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
             iosConf.schemes = IOSXCodeOutputParser.readSchemes(trimmedListOutput)
-            def trimmedSdkOutput = projectHelper.executeCommand(project, (iosConf.getXCodeBuildExecutionPath() + ["-showsdks"]) as String[], false, null, null, 1, true)*.trim()
+            def trimmedSdkOutput = executor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.getXCodeBuildExecutionPath() + ['-showsdks']))*.trim()
             iosConf.allIphoneSDKs = IOSXCodeOutputParser.readIphoneSdks(trimmedSdkOutput)
             iosConf.allIphoneSimulatorSDKs = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
             readVariantedProjectDirectories(project)
@@ -262,7 +269,7 @@ class IOSPlugin implements Plugin<Project> {
         task.description = "Cleans the project"
         task.group = AMEBA_BUILD
         task << {
-            projectHelper.executeCommand(project, ["dot_clean", "./"] as String[])
+            executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['dot_clean', './']))
             ant.delete(dir: project.file("build"), verbose: true)
             ant.delete(dir: project.file("bin"), verbose: true)
             ant.delete(dir: project.file("tmp"), verbose: true)
@@ -281,13 +288,13 @@ class IOSPlugin implements Plugin<Project> {
                 def keychainPassword = project.readOptionalPropertyOrEnvironmentVariable("osx.keychain.password")
                 def keychainLocation = project.readOptionalPropertyOrEnvironmentVariable("osx.keychain.location")
                 if (keychainLocation != null && keychainPassword != null) {
-                    projectHelper.executeCommand(project, [
-                            "security",
-                            "unlock-keychain",
-                            "-p",
+                    executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
+                            'security',
+                            'unlock-keychain',
+                            '-p',
                             keychainPassword,
-                            keychainLocation
-                    ])
+                            keychainLocation]
+                    ))
                 } else {
                     l.warn("Seems that no keychain parameters are provided. Skipping unlocking the keychain.")
                 }
