@@ -78,7 +78,7 @@ class IOSApphancePlugin implements Plugin<Project> {
 
     private addApphanceToTask(Project project, Task buildTask, String variant, String target, String configuration, IOSProjectConfiguration projConf) {
         buildTask.doFirst {
-            def builder = new IOSSingleVariantBuilder(project)
+            def builder = new IOSSingleVariantBuilder(project, executor)
             if (!isApphancePresent(builder.tmpDir(target, configuration))) {
                 l.info("Adding Apphance to ${variant} (${target}, ${configuration}): ${builder.tmpDir(target, configuration)}. Project file = ${projConf.xCodeProjectDirectories[variant]}")
                 pbxProjectHelper.addApphanceToProject(builder.tmpDir(target, configuration),
@@ -177,7 +177,7 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
 
         uploadTask << {
 
-            def builder = new IOSSingleVariantBuilder(project)
+            def builder = new IOSSingleVariantBuilder(project, executor)
             builder.buildSingleBuilderInfo(e.target, e.configuration, 'iphoneos', project)
             def iOSReleaseConf = IOSReleaseConfigurationRetriever.getIosReleaseConfiguration(project)
             def releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)

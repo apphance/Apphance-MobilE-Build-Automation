@@ -49,7 +49,7 @@ class IOSPlugin implements Plugin<Project> {
         use(PropertyCategory) {
             this.conf = project.getProjectConfiguration()
             this.iosConf = getIosProjectConfiguration(project)
-            this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project)
+            this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, executor)
             prepareCopySourcesTask(project)
             prepareCopyDebugSourcesTask(project)
             prepareReadIosProjectConfigurationTask(project)
@@ -59,7 +59,7 @@ class IOSPlugin implements Plugin<Project> {
             prepareUnlockKeyChainTask(project)
             prepareCopyMobileProvisionTask(project)
             prepareBuildSingleVariantTask(project)
-            project.task('buildAllSimulators', type: IOSBuildAllSimulatorsTask)
+            prepareBuildAllSimulatorsTask(project)
             prepareBuildAllTask(project)
             addIosSourceExcludes()
             project.prepareSetup.prepareSetupOperations << new PrepareIOSSetupOperation()
@@ -188,7 +188,6 @@ class IOSPlugin implements Plugin<Project> {
         }
     }
 
-
     void prepareReadIosProjectVersionsTask(Project project) {
         def task = project.task('readIOSProjectVersions')
         task.group = AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
@@ -224,6 +223,7 @@ class IOSPlugin implements Plugin<Project> {
         project.readProjectConfiguration.dependsOn(task)
     }
 
+
     void prepareBuildAllTask(Project project) {
         def task = project.task('buildAll')
         task.group = AMEBA_BUILD
@@ -238,7 +238,7 @@ class IOSPlugin implements Plugin<Project> {
             singleTask.group = AMEBA_BUILD
             singleTask.description = "Builds target: ${v.target}, configuration: ${v.configuration}"
             singleTask << {
-                def builder = new IOSSingleVariantBuilder(project, new IOSReleaseListener(project))
+                def builder = new IOSSingleVariantBuilder(project, executor, new IOSReleaseListener(project, executor))
                 builder.buildNormalVariant(project, v.target, v.configuration)
             }
             task.dependsOn(singleTask)
@@ -254,7 +254,7 @@ class IOSPlugin implements Plugin<Project> {
         task.description = "Builds single variant for iOS. Requires ios.target and ios.configuration properties"
         task << {
             use(PropertyCategory) {
-                def singleVariantBuilder = new IOSSingleVariantBuilder(project)
+                def singleVariantBuilder = new IOSSingleVariantBuilder(project, executor)
                 String target = project.readExpectedProperty(IOS_TARGET_LOCAL_PROPERTY)
                 String configuration = project.readExpectedProperty(IOS_CONFIGURATION_LOCAL_PROPERTY)
                 singleVariantBuilder.buildNormalVariant(project, target, configuration)
@@ -263,6 +263,13 @@ class IOSPlugin implements Plugin<Project> {
         task.dependsOn(project.readProjectConfiguration, project.verifySetup, project.copySources)
     }
 
+    private void prepareBuildAllSimulatorsTask(Project project) {
+        def task = project.task('buildAllSimulators', group: AMEBA_BUILD,
+                description: 'Builds all simulators for the project',
+                dependsOn: [project.readProjectConfiguration, project.copyMobileProvision, project.copyDebugSources])
+        task.doLast { new IOSAllSimulatorsBuilder(project, executor).buildAllSimulators() }
+
+    }
 
     def void prepareCleanTask(Project project) {
         def task = project.task('clean')

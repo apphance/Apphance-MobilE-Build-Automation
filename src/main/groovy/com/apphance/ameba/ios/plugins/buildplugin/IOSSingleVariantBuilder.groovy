@@ -1,8 +1,9 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.executor.Command
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.ios.IOSBuilderInfo
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
@@ -24,17 +25,17 @@ class IOSSingleVariantBuilder {
 
     def l = getLogger(getClass())
 
-    ProjectHelper projectHelper
+    CommandExecutor executor
     Collection<IOSBuildListener> buildListeners = []
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
     AntBuilder ant
     Project project
 
-    IOSSingleVariantBuilder(Project project, IOSBuildListener... buildListeners) {
+    IOSSingleVariantBuilder(Project project, CommandExecutor executor, IOSBuildListener... buildListeners) {
         use(PropertyCategory) {
             this.project = project
-            this.projectHelper = new ProjectHelper()
+            this.executor = executor
             this.conf = project.getProjectConfiguration()
             this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
             this.ant = project.ant
@@ -135,29 +136,31 @@ class IOSSingleVariantBuilder {
         }
         l.lifecycle("\n\n\n=== Building target ${target}, configuration ${configuration}  ===")
         if (target != "Frankified") {
-            projectHelper.executeCommand(project, tmpDir(target, configuration), iosConf.getXCodeBuildExecutionPath(target, configuration) + [
-                    "-target",
-                    target,
-                    "-configuration",
-                    configuration,
-                    "-sdk",
-                    iosConf.sdk
-            ])
+            executor.executeCommand(new Command(runDir: tmpDir(target, configuration), cmd:
+                    iosConf.xCodeBuildExecutionPath(target, configuration) + [
+                            '-target',
+                            target,
+                            '-configuration',
+                            configuration,
+                            '-sdk',
+                            iosConf.sdk
+                    ]))
             IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
             buildListeners.each {
                 it.buildDone(project, bi)
             }
         } else {
-            projectHelper.executeCommand(project, tmpDir(target, configuration), iosConf.getXCodeBuildExecutionPath(target, configuration) + [
-                    "-target",
-                    target,
-                    "-configuration",
-                    configuration,
-                    "-sdk",
-                    iosConf.simulatorSDK,
-                    "-arch",
-                    "i386"
-            ])
+            executor.executeCommand(new Command(runDir: tmpDir(target, configuration), cmd:
+                    iosConf.xCodeBuildExecutionPath(target, configuration) + [
+                            '-target',
+                            target,
+                            '-configuration',
+                            configuration,
+                            '-sdk',
+                            iosConf.simulatorSDK,
+                            '-arch',
+                            'i386'
+                    ]))
         }
     }
 
@@ -166,15 +169,15 @@ class IOSSingleVariantBuilder {
         def configuration = "Debug"
         l.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
         if (conf.versionString != null) {
-            projectHelper.executeCommand(project, tmpDir(target, configuration),
-                    iosConf.getXCodeBuildExecutionPath(target, configuration) + [
+            executor.executeCommand(new Command(runDir: tmpDir(target, configuration),
+                    cmd: iosConf.xCodeBuildExecutionPath(target, configuration) + [
                             "-target",
                             target,
                             "-configuration",
                             configuration,
                             "-sdk",
                             iosConf.simulatorSDK
-                    ])
+                    ]))
             IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphonesimulator', project)
             buildListeners.each {
                 it.buildDone(project, bi)
@@ -183,7 +186,6 @@ class IOSSingleVariantBuilder {
             l.lifecycle("Skipping building debug artifacts -> the build is not versioned")
         }
     }
-
 
     IOSBuilderInfo buildSingleBuilderInfo(String target, String configuration, String outputDirPostfix, Project project) {
         IOSBuilderInfo bi = new IOSBuilderInfo(

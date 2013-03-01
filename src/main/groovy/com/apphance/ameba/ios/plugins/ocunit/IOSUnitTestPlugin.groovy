@@ -55,7 +55,7 @@ class IOSUnitTestPlugin implements Plugin<Project> {
             def testResults = new File(conf.tmpDirectory, "test-${target}-${configuration}.txt")
             l.lifecycle("Trying to create file: ${testResults.canonicalPath}")
             testResults.createNewFile()
-            executor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.getXCodeBuildExecutionPath(target, configuration) + [
+            executor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.xCodeBuildExecutionPath(target, configuration) + [
                     '-target',
                     target,
                     '-configuration',

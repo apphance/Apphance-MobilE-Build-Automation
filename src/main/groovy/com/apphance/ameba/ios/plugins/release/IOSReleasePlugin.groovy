@@ -3,6 +3,7 @@ package com.apphance.ameba.ios.plugins.release
 import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser
@@ -18,6 +19,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+import javax.inject.Inject
+
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileDownloader.downloadFile
 import static org.gradle.api.logging.Logging.getLogger
@@ -29,6 +32,9 @@ import static org.gradle.api.logging.Logging.getLogger
 class IOSReleasePlugin implements Plugin<Project> {
 
     def l = getLogger(getClass())
+
+    @Inject
+    CommandExecutor executor
 
     ProjectConfiguration conf
     ProjectReleaseConfiguration releaseConf
@@ -84,7 +90,7 @@ class IOSReleasePlugin implements Plugin<Project> {
         task.group = AMEBA_RELEASE
         task << {
             def udids = [:]
-            def iosReleaseListener = new IOSReleaseListener(project)
+            def iosReleaseListener = new IOSReleaseListener(project, executor)
             iosConf.allBuildableVariants.each { v ->
                 l.lifecycle("Preparing artifact for ${v.id}")
                 iosReleaseListener.buildArtifactsOnly(project, v.target, v.configuration)
