@@ -1,5 +1,6 @@
 package com.apphance.ameba.ios.plugins.framework
 
+import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.Plugin
@@ -16,7 +17,14 @@ class IOSFrameworkPlugin implements Plugin<Project> {
 
     def void apply(Project project) {
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
-        project.task('buildFramework', type: IOSBuildFrameworkTask)
+
+        def task = project.task('buildFramework',
+                group: AmebaCommonBuildTaskGroups.AMEBA_BUILD,
+                description: 'Builds iOS framework project',
+                dependsOn: [project.readProjectConfiguration, project.copyMobileProvision]
+        )
+        task.doLast { new IOSBuildFrameworkTask(project).buildIOSFramework() }
+
         project.prepareSetup.prepareSetupOperations << new PrepareFrameworkSetupOperation()
         project.verifySetup.verifySetupOperations << new VerifyFrameworkSetupOperation()
         project.showSetup.showSetupOperations << new ShowFrameworkSetupOperation()

@@ -1,20 +1,18 @@
 package com.apphance.ameba.ios.plugins.framework
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
-import org.gradle.api.DefaultTask
+import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-import org.gradle.api.tasks.TaskAction
 
 /**
  * Builds iOS framework.
  */
-class IOSBuildFrameworkTask extends DefaultTask {
+class IOSBuildFrameworkTask {
 
     static final String FRAMEWORK_BUILD_PATH = 'Development-Framework'
 
@@ -38,19 +36,17 @@ class IOSBuildFrameworkTask extends DefaultTask {
     File iphoneosLibrary
     File iphonesimulatorLibrary
     File destinationZipFile
+    private Project project
 
-    IOSBuildFrameworkTask() {
+    //TODO CommandExecutor
+    IOSBuildFrameworkTask(Project project) {
+        this.project = project
         use(PropertyCategory) {
-            this.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-            this.description = 'Builds iOS framework project'
             this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
-            this.dependsOn(project.readProjectConfiguration)
-            this.dependsOn(project.copyMobileProvision)
         }
     }
 
-    @TaskAction
     void buildIOSFramework() {
         use(PropertyCategory) {
             iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)

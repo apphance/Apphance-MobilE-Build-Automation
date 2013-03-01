@@ -5,15 +5,10 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.Project
 import org.junit.Test
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertTrue;
 
 class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
-
-    protected Project getProject() {
-        Project project = super.getProject()
-        project.project.plugins.apply(IOSPlugin.class)
-        return project
-    }
 
     @Test
     public void testBuildTasksAvailable() {
@@ -42,11 +37,6 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
     }
 
     @Test
-    public void testReleaseTasksAvailable() {
-        verifyTasksInGroup(getProject(), [], AmebaCommonBuildTaskGroups.AMEBA_RELEASE)
-    }
-
-    @Test
     public void testSetupTasksAvailable() {
         verifyTasksInGroup(getProject(), [
                 'prepareSetup',
@@ -54,14 +44,11 @@ class TestBasicIOSTasks extends AbstractBaseIOSTaskTest {
                 'showSetup',
                 'showConventions'
         ], AmebaCommonBuildTaskGroups.AMEBA_SETUP)
-        assertEquals([
-                'PrepareIOSSetupOperation'
-        ], project.prepareSetup.prepareSetupOperations.collect { it.class.simpleName })
-        assertEquals([
-                'VerifyIOSSetupOperation'
-        ], project.verifySetup.verifySetupOperations.collect { it.class.simpleName })
-        assertEquals([
-                'ShowIOSSetupOperation'
-        ], project.showSetup.showSetupOperations.collect { it.class.simpleName })
+        assertTrue('Prepare setup for iOS contains all expected operations',
+                'PrepareIOSSetupOperation' in project.prepareSetup.prepareSetupOperations*.class.simpleName)
+        assertTrue('Verify setup for iOS contains all expected operations',
+                'VerifyIOSSetupOperation' in project.verifySetup.verifySetupOperations*.class.simpleName)
+        assertTrue('Show setup for iOS contains all expected operations',
+                'ShowIOSSetupOperation' in project.showSetup.showSetupOperations*.class.simpleName)
     }
 }

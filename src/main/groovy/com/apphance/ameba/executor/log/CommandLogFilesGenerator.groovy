@@ -3,11 +3,13 @@ package com.apphance.ameba.executor.log
 import com.apphance.ameba.util.Preconditions
 
 import javax.inject.Inject
+import java.util.concurrent.atomic.AtomicInteger
 
 import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.STD
 
 @Mixin(Preconditions)
+//TODO singleton
 class CommandLogFilesGenerator {
 
     private int fileCounter = 0
@@ -21,7 +23,7 @@ class CommandLogFilesGenerator {
     private Map<LogFile, String> nextFilenames() {
         [
                 (STD): "command-${fileCounter}-out.log",
-                (ERR): "command-${fileCounter++}-err.log"
+                (ERR): "command-${fileCounter++}-err.log"//TODO
         ]
     }
 
