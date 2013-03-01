@@ -27,9 +27,9 @@ import static org.gradle.api.logging.Logging.getLogger
  */
 class IOSPlugin implements Plugin<Project> {
 
-    static final String IOS_PROJECT_CONFIGURATION = 'ios.project.configuration'
-    static final String IOS_CONFIGURATION_LOCAL_PROPERTY = 'ios.configuration'
-    static final String IOS_TARGET_LOCAL_PROPERTY = 'ios.target'
+    public static final String IOS_PROJECT_CONFIGURATION = 'ios.project.configuration'
+    public static final String IOS_CONFIGURATION_LOCAL_PROPERTY = 'ios.configuration'
+    public static final String IOS_TARGET_LOCAL_PROPERTY = 'ios.target'
 
     def l = getLogger(getClass())
 

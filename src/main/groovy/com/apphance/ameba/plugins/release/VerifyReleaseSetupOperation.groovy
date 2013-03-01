@@ -18,8 +18,6 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
             'imageMontage'
     ]
 
-    IOSProjectConfiguration iosConf
-
     VerifyReleaseSetupOperation() {
         super(ProjectReleaseProperty.class)
     }
@@ -27,7 +25,6 @@ class VerifyReleaseSetupOperation extends AbstractVerifySetupOperation {
     @Override
     void verifySetup() {
         def projectProperties = readProperties()
-        iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
 
         ProjectReleaseProperty.findAll { it.defaultValue == null && it != ProjectReleaseProperty.RELEASE_PROJECT_ICON_FILE }.each {
             checkProperty(projectProperties, it)

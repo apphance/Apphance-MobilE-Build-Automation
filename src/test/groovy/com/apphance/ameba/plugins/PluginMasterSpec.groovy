@@ -7,6 +7,8 @@ import com.apphance.ameba.android.plugins.jarlibrary.AndroidJarLibraryPlugin
 import com.apphance.ameba.android.plugins.release.AndroidReleasePlugin
 import com.apphance.ameba.android.plugins.test.AndroidTestPlugin
 import com.apphance.ameba.detection.ProjectTypeDetector
+import com.apphance.ameba.di.CommandExecutorModule
+import com.apphance.ameba.di.EnvironmentModule
 import com.apphance.ameba.ios.plugins.apphance.IOSApphancePlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.ios.plugins.framework.IOSFrameworkPlugin
@@ -135,14 +137,20 @@ class PluginMasterSpec extends Specification {
     ]
 
     def createInjectorForPluginsMocks(mocks) {
-        return Guice.createInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(ProjectTypeDetector).toInstance(projectTypeDetectorMock)
-                mocks.each { type, instance ->
-                    bind(type).toInstance(instance)
-                }
-            }
-        })
+        def project = Mock(Project)
+        project.file('log') >> new File(System.properties['java.io.tmpdir'])
+        return Guice.createInjector(
+                new EnvironmentModule(),
+                new CommandExecutorModule(project),
+                new AbstractModule() {
+
+                    @Override
+                    protected void configure() {
+                        bind(ProjectTypeDetector).toInstance(projectTypeDetectorMock)
+                        mocks.each { type, instance ->
+                            bind(type).toInstance(instance)
+                        }
+                    }
+                })
     }
 }
