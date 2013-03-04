@@ -92,4 +92,15 @@ class CommandExecutorSpec extends Specification {
 //        expectedOutput   | runDir                  | cmd                               | env
 //        ['main', 'test'] | new File('src', 'test') | ['bash', '-c', 'ls \\$DIR_TO_LS'] | [DIR_TO_LS: new File('src', 'test').parentFile.canonicalPath]
 //    }
+
+    def 'executor handles input correctly'() {
+        given:
+        def command = new Command(cmd: ['/bin/bash', '-c', 'read V; echo $V'], runDir: '.' as File, input: ['10'], params: [V: '$V'])
+
+        when:
+        def output = executor.executeCommand(command)
+
+        then:
+        output == ['10']
+    }
 }

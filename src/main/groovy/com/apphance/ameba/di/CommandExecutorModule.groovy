@@ -17,6 +17,7 @@ class CommandExecutorModule extends AbstractModule {
     protected void configure() {}
 
     @Provides
+    @javax.inject.Singleton
     CommandLogFilesGenerator commandLogFileGenerator() {
         return new CommandLogFilesGenerator(createLogDir())
     }

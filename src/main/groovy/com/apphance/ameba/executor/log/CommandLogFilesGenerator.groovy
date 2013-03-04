@@ -9,10 +9,9 @@ import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.E
 import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.STD
 
 @Mixin(Preconditions)
-//TODO singleton
 class CommandLogFilesGenerator {
 
-    private int fileCounter = 0
+    private AtomicInteger fileCounter = new AtomicInteger()
     private File logDir
 
     @Inject
@@ -21,10 +20,12 @@ class CommandLogFilesGenerator {
     }
 
     private Map<LogFile, String> nextFilenames() {
-        [
-                (STD): "command-${fileCounter}-out.log",
-                (ERR): "command-${fileCounter++}-err.log"//TODO
+        def files = [
+                (STD): "command-${fileCounter.get()}-out.log",
+                (ERR): "command-${fileCounter.get()}-err.log"
         ]
+        fileCounter.incrementAndGet()
+        files
     }
 
     public Map<LogFile, File> commandLogFiles() {

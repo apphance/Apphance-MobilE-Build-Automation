@@ -19,8 +19,8 @@ class CommandLogFileGeneratorSpec extends Specification {
         def files = logFileGenerator.commandLogFiles()
 
         then:
-        files[STD].absolutePath == "${logDir.absolutePath}${properties['file.separator']}command-0-out.log"
-        files[ERR].absolutePath == "${logDir.absolutePath}${properties['file.separator']}command-0-err.log"
+        files[STD].absolutePath =~ "command-\\d+-out.log"
+        files[ERR].absolutePath =~ "command-\\d+-err.log"
     }
 
     def 'command log file raises exception when can not write to file'() {
@@ -35,7 +35,7 @@ class CommandLogFileGeneratorSpec extends Specification {
 
         then:
         def exception = thrown(IllegalArgumentException)
-        exception.message == "Can not write to files: [STD=/not/existing/dir/command-0-out.log," +
-                " ERR=/not/existing/dir/command-0-err.log]"
+        exception.message =~ "Can not write to files: [STD=/not/existing/dir/command-d+-out.log," +
+                " ERR=/not/existing/dir/command-d+-err.log]"
     }
 }

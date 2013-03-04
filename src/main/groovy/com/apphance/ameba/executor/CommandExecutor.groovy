@@ -53,8 +53,8 @@ class CommandExecutor {
         handleExitValue(exitValue, c)
 
         if (commandLogs[ERR].text) {
-            l.warn("Command err: ${fileLinker.fileLink(commandLogs[ERR])}, contains some text. It may info about" +
-                    "potential problems")
+            l.warn("Command err: ${fileLinker.fileLink(commandLogs[ERR])}, contains some text. It may be info about" +
+                    " potential problems")
         }
 
         commandLogs[STD].readLines()
@@ -89,8 +89,8 @@ class CommandExecutor {
         def inputFile = new File(properties['java.io.tmpdir'].toString(), 'cmd-input')
         inputFile.delete()
         inputFile.createNewFile()//empty file is returned if no input passed
-        if (!input) {
-            input.each { inputFile << "$it\n" }
+        if (input) {
+            input.each { inputFile << "${it.trim()}\n" }
         }
         inputFile
     }
