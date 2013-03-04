@@ -2,7 +2,7 @@ package com.apphance.ameba.android.plugins.test
 
 import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidCommandParser
+import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
@@ -31,7 +31,8 @@ class PrepareAndroidTestSetupOperation extends AbstractPrepareSetupOperation {
                         project.getProjectPropertyFromUser(it, BOOLEANS, br)
                         break;
                     case AndroidTestProperty.EMULATOR_TARGET:
-                        List targets = AndroidCommandParser.getTargets(project)
+                        def androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
+                        List targets = androidConf.availableTargets
                         project.getProjectPropertyFromUser(it, targets, br)
                         break;
                     default:

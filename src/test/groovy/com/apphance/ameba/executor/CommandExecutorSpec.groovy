@@ -10,8 +10,6 @@ import static java.io.File.createTempFile
 
 class CommandExecutorSpec extends Specification {
 
-    // TODO test command input
-
     def fileLinker = Mock(FileLinker)
     def logFileGenerator = Mock(CommandLogFilesGenerator)
 

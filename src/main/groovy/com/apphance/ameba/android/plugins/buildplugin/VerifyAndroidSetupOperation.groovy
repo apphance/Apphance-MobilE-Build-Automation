@@ -2,7 +2,6 @@ package com.apphance.ameba.android.plugins.buildplugin
 
 import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidCommandParser
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import org.gradle.api.GradleException
@@ -45,7 +44,7 @@ class VerifyAndroidSetupOperation extends AbstractVerifySetupOperation {
     void checkMinSdkTarget(Properties properties) {
         use(PropertyCategory) {
             String target = project.readProperty(AndroidProjectProperty.MIN_SDK_TARGET)
-            List targets = AndroidCommandParser.getTargets(project)
+            List targets = androidConf.availableTargets
             if (target != null && !target.empty && !targets.contains(target)) {
                 throw new GradleException("""The min sdk target ${AndroidProjectProperty.MIN_SDK_TARGET.propertyName}: ${target} can only be one of ${targets}""")
             }

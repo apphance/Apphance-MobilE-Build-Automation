@@ -1,13 +1,13 @@
 package com.apphance.ameba.android.plugins.release
 
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidBuilderInfo
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.android.plugins.buildplugin.AndroidBuildListener
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
@@ -22,12 +22,12 @@ import org.gradle.api.logging.Logging
  */
 class AndroidReleaseApkListener implements AndroidBuildListener {
 
-    ProjectHelper projectHelper
     ProjectConfiguration conf
     ProjectReleaseConfiguration releaseConf
     AndroidProjectConfiguration androidConf
     AndroidReleaseConfiguration androidReleaseConf
     AntBuilder ant
+    CommandExecutor executor
 
     static Logger logger = Logging.getLogger(AndroidReleaseApkListener.class)
 
@@ -35,14 +35,14 @@ class AndroidReleaseApkListener implements AndroidBuildListener {
         return "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
     }
 
-    AndroidReleaseApkListener(Project project, AntBuilder ant) {
+    AndroidReleaseApkListener(Project project, AntBuilder ant, CommandExecutor executor) {
         use(PropertyCategory) {
-            this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
             this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
             this.androidReleaseConf = AndroidReleaseConfigurationRetriever.getAndroidReleaseConfiguration(project)
             this.ant = ant
+            this.executor = executor
         }
     }
 
@@ -66,7 +66,7 @@ class AndroidReleaseApkListener implements AndroidBuildListener {
             debugRelease = androidConf.debugRelease[variant]
         }
         if (conf.versionString != null) {
-            AndroidSingleVariantApkBuilder builder = new AndroidSingleVariantApkBuilder(project, androidConf)
+            AndroidSingleVariantApkBuilder builder = new AndroidSingleVariantApkBuilder(project, androidConf, executor)
             AndroidBuilderInfo bi = builder.buildApkArtifactBuilderInfo(variant, debugRelease)
             logger.lifecycle("Adding variant APK artifact ${bi.id}")
             androidReleaseConf.apkFiles.put(bi.id, prepareApkArtifact(bi))

@@ -1,36 +1,44 @@
 package com.apphance.ameba.android.plugins.test
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.PluginHelper
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidBuildXmlHelper
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import com.apphance.ameba.executor.Command
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.util.file.FileManager
 import com.sun.org.apache.xpath.internal.XPathAPI
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
+
+import javax.inject.Inject
+
+import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_TEST
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Performs android testing.
  */
 class AndroidTestPlugin implements Plugin<Project> {
-    static Logger logger = Logging.getLogger(AndroidTestPlugin.class)
+
+    def l = getLogger(getClass())
 
     private static final String TEST_RUNNER = "pl.polidea.instrumentation.PolideaInstrumentationTestRunner"
     private static final String AVD_PATH = 'avds'
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
+            '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
-    ProjectHelper projectHelper
+    @Inject
+    CommandExecutor executor
+
     AndroidProjectConfiguration androidConf
     File androidTestDirectory
     AndroidManifestHelper androidManifestHelper
@@ -65,9 +73,8 @@ class AndroidTestPlugin implements Plugin<Project> {
     Project project
 
     public void apply(Project project) {
-        this.project = project
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
-        this.projectHelper = new ProjectHelper()
+        this.project = project
         this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         this.androidManifestHelper = new AndroidManifestHelper()
         this.buildXmlHelper = new AndroidBuildXmlHelper()
@@ -117,7 +124,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         int startPort = convention.startPort
         int endPort = convention.endPort
         for (int port = startPort; port <= endPort; port += 2) {
-            logger.lifecycle("Android emulator probing. trying ports: ${port} ${port + 1}")
+            l.lifecycle("Android emulator probing. trying ports: ${port} ${port + 1}")
             try {
                 ServerSocket ss1 = new ServerSocket(port, 0, Inet4Address.getByAddress([127, 0, 0, 1] as byte[]))
                 try {
@@ -125,7 +132,7 @@ class AndroidTestPlugin implements Plugin<Project> {
                     ServerSocket ss2 = new ServerSocket(port + 1, 0, Inet4Address.getByAddress([127, 0, 0, 1] as byte[]))
                     try {
                         ss2.setReuseAddress(true)
-                        logger.lifecycle("Success! ${port} ${port + 1} are free")
+                        l.lifecycle("Success! ${port} ${port + 1} are free")
                         return port
                     } finally {
                         ss2.close()
@@ -134,7 +141,7 @@ class AndroidTestPlugin implements Plugin<Project> {
                     ss1.close()
                 }
             } catch (IOException e) {
-                logger.lifecycle("Could not obtain ports ${port} ${port + 1}")
+                l.lifecycle("Could not obtain ports ${port} ${port + 1}")
             }
         }
         throw new GradleException("Could not find free emulator port (tried all from ${START_PORT} to ${END_PORT}!... ")
@@ -161,7 +168,7 @@ class AndroidTestPlugin implements Plugin<Project> {
     private void prepareCleanAvdTask(Project project) {
         def task = project.task('cleanAVD')
         task.description = "Cleans AVDs for emulators"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
+        task.group = AMEBA_TEST
         task << {
             project.ant.delete(dir: avdDir)
         }
@@ -170,30 +177,29 @@ class AndroidTestPlugin implements Plugin<Project> {
     private void prepareStopAllEmulatorsTask(Project project) {
         def task = project.task('stopAllEmulators')
         task.description = "Stops all emulators and accompanying logcat (includes stopping adb)"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
+        task.group = AMEBA_TEST
         task << {
-            projectHelper.executeCommand(project, project.rootDir, ['killall', 'emulator-arm'], false)
-            projectHelper.executeCommand(project, project.rootDir, ['killall', 'adb'], false)
+            executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['killall', 'emulator-arm'], failOnError: false))
+            executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['killall', 'adb'], failOnError: false))
         }
     }
 
     void prepareCreateAvdTask(Project project) {
         def task = project.task('createAVD')
         task.description = "prepares AVDs for emulator"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
+        task.group = AMEBA_TEST
         task << {
             use(PropertyCategory) {
-                boolean emulatorExists = projectHelper.executeCommand(
-                        project,
-                        project.rootDir, [
-                        'android',
-                        'list',
-                        'avd',
-                        '-c'
-                ]).any { it == emulatorName }
+                boolean emulatorExists = executor.executeCommand(new Command(runDir: project.rootDir, cmd:
+                        [
+                                'android',
+                                'list',
+                                'avd',
+                                '-c'
+                        ])).any { it == emulatorName }
                 if (!avdDir.exists() || !emulatorExists) {
                     avdDir.mkdirs()
-                    logger.lifecycle("Creating emulator avd: ${emulatorName}")
+                    l.lifecycle("Creating emulator avd: ${emulatorName}")
                     def avdCreateCommand = [
                             'android',
                             '-v',
@@ -214,10 +220,10 @@ class AndroidTestPlugin implements Plugin<Project> {
                     if (emulatorSnapshotsEnabled) {
                         avdCreateCommand << '-a'
                     }
-                    projectHelper.executeCommand(project, project.rootDir, avdCreateCommand as String[], false, null, ['no'])
-                    logger.lifecycle("Created emulator avd: ${emulatorName}")
+                    executor.executeCommand(new Command(runDir: project.rootDir, cmd: avdCreateCommand, failOnError: false, input: ['no']))
+                    l.lifecycle("Created emulator avd: ${emulatorName}")
                 } else {
-                    logger.lifecycle("Skipping creating emulator: ${emulatorName}. It already exists.")
+                    l.lifecycle("Skipping creating emulator: ${emulatorName}. It already exists.")
                 }
             }
         }
@@ -227,7 +233,7 @@ class AndroidTestPlugin implements Plugin<Project> {
     private void prepareAndroidTestingTask(Project project) {
         def task = project.task('testAndroid')
         task.description = "Runs android tests on the project"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
+        task.group = AMEBA_TEST
         task << {
             // TODO: what to do when no test directory exists ?? should I automatically make one ??
             if (!androidTestDirectory.exists()) {
@@ -255,7 +261,7 @@ class AndroidTestPlugin implements Plugin<Project> {
     private void prepareAndroidRobolectricTask(Project project) {
         def task = project.task('testRobolectric')
         task.description = "Runs Robolectric test on the project"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
+        task.group = AMEBA_TEST
         task << {
 
             AndroidTestConvention convention = project.convention.plugins.androidTest
@@ -271,7 +277,7 @@ class AndroidTestPlugin implements Plugin<Project> {
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream()
                 bl.setStandardOutput(baos)
-                bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+                bl.setJvmArguments(GRADLE_DAEMON_ARGS)
                 bl.run()
                 String output = baos.toString('utf-8')
                 println output
@@ -305,17 +311,17 @@ class AndroidTestPlugin implements Plugin<Project> {
             deleteNonEmptyDirectory(rawDir)
         }
         rawDir.mkdir()
-        String[] commandAndroid = [
-                "android",
-                "update",
-                "test-project",
-                "-p",
-                ".",
-                "-m",
-                "../../"
+        def commandAndroid = [
+                'android',
+                'update',
+                'test-project',
+                '-p',
+                '.',
+                '-m',
+                '../../'
         ]
-        projectHelper.executeCommand(project, androidTestDirectory, commandAndroid)
-        String[] commandAnt = ["ant", "clean"]
+        executor.executeCommand(new Command(runDir: androidTestDirectory, cmd: commandAndroid))
+        def commandAnt = ["ant", "clean"]
         boolean useMockLocation = PropertyCategory.readProperty(project, AndroidTestProperty.MOCK_LOCATION)
         if (useMockLocation) {
             androidManifestHelper.addPermissionsToManifest(project.rootDir, [
@@ -323,8 +329,7 @@ class AndroidTestPlugin implements Plugin<Project> {
             ])
         }
         try {
-            projectHelper.executeCommand(project, androidTestDirectory, commandAnt)
-            projectHelper.executeCommand(project, project.rootDir, commandAnt)
+            executor.executeCommand(new Command(runDir: androidTestDirectory, cmd: commandAnt))
             String[] commandAntTest = [
                     "ant",
                     //"emma",
@@ -332,13 +337,13 @@ class AndroidTestPlugin implements Plugin<Project> {
                     "instrument",
                     "-Dtest.runner=${TEST_RUNNER}"
             ]
-            projectHelper.executeCommand(project, androidTestDirectory, commandAntTest)
+            executor.executeCommand(new Command(runDir: androidTestDirectory, cmd: commandAntTest))
             File localEmFile = new File(androidTestDirectory, 'coverage.em')
             if (localEmFile.exists()) {
                 boolean res = localEmFile.renameTo(coverageEmFile)
-                logger.lifecycle("Renamed ${localEmFile} to ${coverageEmFile} with result: ${res}")
+                l.lifecycle("Renamed ${localEmFile} to ${coverageEmFile} with result: ${res}")
             } else {
-                logger.lifecycle("No ${localEmFile}. Not renaming to ${coverageEmFile}")
+                l.lifecycle("No ${localEmFile}. Not renaming to ${coverageEmFile}")
             }
         } finally {
             if (useMockLocation) {
@@ -348,38 +353,38 @@ class AndroidTestPlugin implements Plugin<Project> {
     }
 
     private void installTestBuilds(Project project) {
-        projectHelper.executeCommand(project, androidTestDirectory, [
+        executor.executeCommand(new Command(runDir: androidTestDirectory, cmd: [
                 adbBinary,
                 '-s',
                 "emulator-${emulatorPort}",
                 'uninstall',
                 androidConf.mainProjectPackage
-        ], false)
-        projectHelper.executeCommand(project, androidTestDirectory, [
+        ], failOnError: false))
+        executor.executeCommand(new Command(runDir: androidTestDirectory, cmd: [
                 adbBinary,
                 '-s',
                 "emulator-${emulatorPort}",
                 'uninstall',
                 testProjectPackage
-        ], false)
-        projectHelper.executeCommand(project, project.rootDir, [
+        ], failOnError: false))
+        executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
                 adbBinary,
                 '-s',
                 "emulator-${emulatorPort}",
                 'install',
                 "bin/${androidConf.mainProjectName}-debug.apk"
-        ])
-        projectHelper.executeCommand(project, androidTestDirectory, [
+        ]))
+        executor.executeCommand(new Command(runDir: androidTestDirectory, cmd: [
                 adbBinary,
                 '-s',
                 "emulator-${emulatorPort}",
                 'install',
                 "bin/${testProjectName}-instrumented.apk"
-        ])
+        ]))
     }
 
     void runLogCat(Project project) {
-        logger.lifecycle("Starting logcat monitor on ${emulatorName}")
+        l.lifecycle("Starting logcat monitor on ${emulatorName}")
         String[] commandRunLogcat = [
                 adbBinary,
                 '-s',
@@ -388,12 +393,11 @@ class AndroidTestPlugin implements Plugin<Project> {
                 '-v',
                 'time'
         ]
-        def outFile = project.file("tmp/logcat.txt")
-        logcatProcess = projectHelper.executeCommandInBackground(project.rootDir, outFile, commandRunLogcat)
+        logcatProcess = executor.startCommand(new Command(runDir: project.rootDir, cmd: commandRunLogcat))
     }
 
     void waitUntilEmulatorReady(Project project) {
-        logger.lifecycle("Waiting until emulator is ready ${emulatorName}")
+        l.lifecycle("Waiting until emulator is ready ${emulatorName}")
         AndroidTestConvention convention = project.convention.plugins.androidTest
         String[] commandRunShell = [
                 adbBinary,
@@ -405,9 +409,9 @@ class AndroidTestPlugin implements Plugin<Project> {
         ]
         def startTime = System.currentTimeMillis()
         while (true) {
-            def res = projectHelper.executeCommand(project, project.rootDir, commandRunShell, false)
+            def res = executor.executeCommand(new Command(runDir: project.rootDir, cmd: commandRunShell, failOnError: false))
             if (res != null && res[0] == "1") {
-                logger.lifecycle("Emulator is ready ${emulatorName}!")
+                l.lifecycle("Emulator is ready ${emulatorName}!")
                 break
             }
             if (System.currentTimeMillis() - startTime > convention.maxEmulatorStartupTime) {
@@ -420,20 +424,20 @@ class AndroidTestPlugin implements Plugin<Project> {
 
 
     void runAndroidTests(Project project) {
-        logger.lifecycle("Running tests on ${emulatorName}")
+        l.lifecycle("Running tests on ${emulatorName}")
         if (testPerPackage) {
             def allPackages = []
             FileManager.findAllPackages("", new File(androidTestDirectory, "src"), allPackages)
-            logger.lifecycle("Running tests on packages ${allPackages}")
+            l.lifecycle("Running tests on packages ${allPackages}")
             allPackages.each {
-                logger.lifecycle("Running tests for package ${it}")
+                l.lifecycle("Running tests for package ${it}")
                 def commandRunTests = prepareTestCommandLine(it)
-                logger.lifecycle("Running  ${commandRunTests}")
-                projectHelper.executeCommand(project, androidTestDirectory, commandRunTests)
+                l.lifecycle("Running  ${commandRunTests}")
+                executor.executeCommand(new Command(runDir: androidTestDirectory, cmd: commandRunTests))
             }
         } else {
             def commandRunTests = prepareTestCommandLine(null)
-            projectHelper.executeCommand(project, androidTestDirectory, commandRunTests)
+            executor.executeCommand(new Command(runDir: androidTestDirectory, cmd: commandRunTests))
         }
         if (useEmma) {
             extractEmmaCoverage(project)
@@ -474,7 +478,7 @@ class AndroidTestPlugin implements Plugin<Project> {
     }
 
     void extractEmmaCoverage(Project project) {
-        logger.lifecycle("Extracting coverage report from ${emulatorName}")
+        l.lifecycle("Extracting coverage report from ${emulatorName}")
         String[] commandDownloadCoverageFile = [
                 adbBinary,
                 '-s',
@@ -483,12 +487,12 @@ class AndroidTestPlugin implements Plugin<Project> {
                 emmaDumpFile,
                 coverageEcFile
         ]
-        projectHelper.executeCommand(project, androidTestDirectory, commandDownloadCoverageFile)
-        logger.lifecycle("Pulled coverage report from ${emulatorName} to ${coverageDir}...")
+        executor.executeCommand(new Command(runDir: androidTestDirectory, cmd: commandDownloadCoverageFile))
+        l.lifecycle("Pulled coverage report from ${emulatorName} to ${coverageDir}...")
     }
 
     void extractXMLJUnitFiles(Project project) {
-        logger.lifecycle("Extracting coverage report from ${emulatorName}")
+        l.lifecycle("Extracting coverage report from ${emulatorName}")
         String[] commandDownloadXmlFile = [
                 adbBinary,
                 '-s',
@@ -496,7 +500,7 @@ class AndroidTestPlugin implements Plugin<Project> {
                 'pull',
                 xmlJUnitDir
         ]
-        projectHelper.executeCommand(project, coverageDir, commandDownloadXmlFile)
+        executor.executeCommand(new Command(rawDir: coverageDir, cmd: commandDownloadXmlFile))
     }
 
     void prepareCoverageReport(Project project) {
@@ -513,11 +517,11 @@ class AndroidTestPlugin implements Plugin<Project> {
                 html(outfile: "${coverageDir}/android_coverage.html")
             }
         }
-        logger.lifecycle("Prepared coverage report from ${emulatorName} to ${coverageDir}...")
+        l.lifecycle("Prepared coverage report from ${emulatorName} to ${coverageDir}...")
     }
 
     void startEmulator(Project project, boolean noWindow) {
-        logger.lifecycle("Starting emulator ${emulatorName}")
+        l.lifecycle("Starting emulator ${emulatorName}")
         AndroidTestConvention convention = project.convention.plugins.androidTest
         emulatorPort = findFreeEmulatorPort()
         def emulatorCommand = [
@@ -531,33 +535,32 @@ class AndroidTestPlugin implements Plugin<Project> {
         if (noWindow) {
             emulatorCommand << '-no-window'
         }
-        def outFile = project.file("tmp/emulator.txt")
-        emulatorProcess = projectHelper.executeCommandInBackground(project.rootDir, outFile, emulatorCommand)
+        emulatorProcess = executor.startCommand(new Command(runDir: project.rootDir, cmd: emulatorCommand))
         Thread.sleep(convention.retryTime) // sleep for some time.
         runLogCat(project)
         waitUntilEmulatorReady(project)
-        logger.lifecycle("Started emulator ${emulatorName}")
+        l.lifecycle("Started emulator ${emulatorName}")
     }
 
     void stopEmulator(Project project) {
-        logger.lifecycle("Stopping emulator ${emulatorName} and logcat")
+        l.lifecycle("Stopping emulator ${emulatorName} and logcat")
         emulatorProcess?.destroy()
         logcatProcess?.destroy()
-        logger.lifecycle("Stopped emulator ${emulatorName} and logcat")
+        l.lifecycle("Stopped emulator ${emulatorName} and logcat")
     }
 
     private void prepareStartEmulatorTask(Project project) {
         def task = project.task('startEmulator')
         task.description = "Starts emulator for manual inspection"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
-        task << { startEmulator(project, true, false) }
+        task.group = AMEBA_TEST
+        task << { startEmulator(project, true) }
         task.dependsOn(project.readAndroidProjectConfiguration)
     }
 
     private void prepareAndroidRobotiumStructure(Project project) {
         def task = project.task('prepareRobotium')
         task.description = "Prepares file structure for Robotium test framework"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
+        task.group = AMEBA_TEST
         project.configurations.add('robotium')
         project.dependencies.add('robotium', 'com.jayway.android.robotium:robotium-solo:3.1')
         // TODO:
@@ -606,7 +609,7 @@ class AndroidTestPlugin implements Plugin<Project> {
                     'test'
             ]
         }
-        projectHelper.executeCommand(project, path, command)
+        executor.executeCommand(new Command(runDir: path, cmd: command))
     }
 
     private void replaceInstrumentationLibrary(Project project, File path) {
@@ -659,7 +662,7 @@ class AndroidTestPlugin implements Plugin<Project> {
     private void prepareAndroidRobolectricStructure(Project project) {
         def task = project.task('prepareRobolectric')
         task.description = "Prepares file structure for Robolectric test framework"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_TEST
+        task.group = AMEBA_TEST
         project.configurations.add('robolectric')
         project.dependencies.add('robolectric', 'com.pivotallabs:robolectric:1.1')
         project.dependencies.add('robolectric', 'junit:junit:4.10')
@@ -687,7 +690,7 @@ class AndroidTestPlugin implements Plugin<Project> {
     }
 
     void downloadFile(Project project, URL url, File file) {
-        logger.info("Downloading file from ${url} to ${file}")
+        l.info("Downloading file from ${url} to ${file}")
         def stream = new FileOutputStream(file)
         def out = new BufferedOutputStream(stream)
         out << url.openStream()

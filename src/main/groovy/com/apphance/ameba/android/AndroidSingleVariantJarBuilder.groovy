@@ -1,5 +1,7 @@
 package com.apphance.ameba.android
 
+import com.apphance.ameba.executor.Command
+import com.apphance.ameba.executor.CommandExecutor
 import org.gradle.api.Project
 
 /**
@@ -8,8 +10,8 @@ import org.gradle.api.Project
  */
 class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder {
 
-    AndroidSingleVariantJarBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration) {
-        super(project, androidProjectConfiguration)
+    AndroidSingleVariantJarBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration, CommandExecutor executor) {
+        super(project, androidProjectConfiguration, executor)
     }
 
     AndroidBuilderInfo buildJarArtifactBuilderInfo(String variant, String debugRelease) {
@@ -31,7 +33,7 @@ class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder
 
     @Override
     void buildSingle(AndroidBuilderInfo bi) {
-        projectHelper.executeCommand(project, androidConf.tmpDirs[bi.variant], ['ant', 'clean'])
+        executor.executeCommand(new Command(runDir: androidConf.tmpDirs[bi.variant], cmd: ['ant', 'clean']))
         if (bi.variant != null) {
             project.ant {
                 copy(todir: new File(androidConf.tmpDirs[bi.variant], 'res/raw'), failonerror: false, overwrite: 'true', verbose: 'true') {
@@ -40,10 +42,7 @@ class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder
                 }
             }
         }
-        projectHelper.executeCommand(project, androidConf.tmpDirs[bi.variant], [
-                'ant',
-                bi.debugRelease.toLowerCase()
-        ])
+        executor.executeCommand(new Command(runDir: androidConf.tmpDirs[bi.variant], cmd: ['ant', bi.debugRelease.toLowerCase()]))
         logger.lifecycle("Jar file created: ${bi.originalFile}")
         buildListeners.each {
             it.buildDone(project, bi)
