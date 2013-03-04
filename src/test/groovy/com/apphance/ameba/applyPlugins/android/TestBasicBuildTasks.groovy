@@ -1,16 +1,9 @@
 package com.apphance.ameba.applyPlugins.android
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import org.junit.Test
 
 class TestBasicBuildTasks extends BaseAndroidTaskTest {
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp()
-        project.project.plugins.apply(AndroidPlugin.class)
-    }
 
     @Test
     public void testTestTasksAvailable() {

@@ -7,13 +7,6 @@ import org.junit.Test
 
 class TestBasicAndroidTasks extends BaseAndroidTaskTest {
 
-    @Override
-    protected Project getProject() {
-        Project project = super.getProject()
-        project.project.plugins.apply(AndroidPlugin.class)
-        return project
-    }
-
     @Test
     public void testBuildTasksAvailable() {
         verifyTasksInGroup(getProject(), [

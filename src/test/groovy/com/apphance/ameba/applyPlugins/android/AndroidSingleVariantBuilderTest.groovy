@@ -2,12 +2,19 @@ package com.apphance.ameba.applyPlugins.android
 
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.*
+import com.apphance.ameba.executor.CommandExecutor
+import com.apphance.ameba.executor.linker.SimpleFileLinker
+import com.apphance.ameba.executor.log.CommandLogFilesGenerator
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.Project
 
 import static org.junit.Assert.assertEquals
 
 class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
+
+    def static executor = new CommandExecutor(
+            new SimpleFileLinker(),
+            new CommandLogFilesGenerator(new File(System.properties['java.io.tmpdir'].toString(), "log${System.currentTimeMillis()}")))
 
     private AndroidSingleVariantApkBuilder prepareEnvironment(Project project) {
         use(PropertyCategory) {
@@ -22,7 +29,7 @@ class AndroidSingleVariantBuilderTest extends BaseAndroidTaskTest {
             project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.readProjectName(project.rootDir)
             project.retrieveBasicProjectData()
             AndroidSingleVariantApkBuilder builder = new AndroidSingleVariantApkBuilder(project,
-                    AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project))
+                    AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project),executor)
             builder.updateAndroidConfigurationWithVariants()
             AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration(project)
             return builder
