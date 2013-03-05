@@ -2,10 +2,10 @@ package com.apphance.ameba.android.plugins.release
 
 import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.*
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
@@ -15,6 +15,8 @@ import groovy.text.SimpleTemplateEngine
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logging
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileDownloader.downloadFile
@@ -28,8 +30,10 @@ class AndroidReleasePlugin implements Plugin<Project> {
 
     def l = Logging.getLogger(AndroidReleasePlugin.class)
 
+    @Inject
+    CommandExecutor executor
+
     Project project
-    ProjectHelper projectHelper
     ProjectConfiguration conf
     ProjectReleaseConfiguration releaseConf
     AndroidProjectConfiguration androidConf
@@ -43,7 +47,6 @@ class AndroidReleasePlugin implements Plugin<Project> {
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class, ProjectReleasePlugin.class)
         use(PropertyCategory) {
             this.project = project
-            this.projectHelper = new ProjectHelper();
             this.conf = project.getProjectConfiguration()
             this.androidReleaseConf = AndroidReleaseConfigurationRetriever.getAndroidReleaseConfiguration(project)
         }
@@ -56,8 +59,10 @@ class AndroidReleasePlugin implements Plugin<Project> {
         prepareBuildDocumentationZipTask(project)
         prepareAvailableArtifactsInfoTask(project)
         prepareMailMessageTask(project)
-        AndroidSingleVariantApkBuilder.buildListeners << new AndroidReleaseApkListener(project)
-        AndroidSingleVariantJarBuilder.buildListeners << new AndroidReleaseJarListener(project)
+        def listener
+        def builder
+        AndroidSingleVariantApkBuilder.buildListeners << new AndroidReleaseApkListener(project, project.ant, executor)
+        AndroidSingleVariantJarBuilder.buildListeners << new AndroidReleaseJarListener(project, project.ant, executor)
     }
 
     def void prepareBuildDocumentationZipTask(Project project) {
@@ -79,12 +84,15 @@ class AndroidReleasePlugin implements Plugin<Project> {
         def task = project.task('prepareAvailableArtifactsInfo')
         task.description = 'Prepares information about available artifacts for mail message to include'
         task.group = AMEBA_RELEASE
-
-        def listener = androidEnvironment.isLibrary() ?
-            new AndroidReleaseJarListener(project) : new AndroidReleaseApkListener(project)
-        def builder = androidEnvironment.isLibrary() ?
-            new AndroidSingleVariantJarBuilder(project, androidConf) : new AndroidSingleVariantApkBuilder(project, androidConf)
-
+        def listener
+        def builder
+        if (androidEnvironment.isLibrary()) {
+            builder = new AndroidSingleVariantJarBuilder(project, androidConf, executor)
+            listener = new AndroidReleaseJarListener(project, project.ant, executor)
+        } else {
+            builder = new AndroidSingleVariantApkBuilder(project, androidConf, executor)
+            listener = new AndroidReleaseApkListener(project, project.ant, executor)
+        }
         task << {
             if (builder.hasVariants()) {
                 androidConf.variants.each { variant ->
@@ -205,7 +213,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
                 rb: rb
         ]
         def result = engine.createTemplate(plainFileIndexTemplate).make(binding)
-        androidReleaseConf.plainFileIndexFile.location.write(result.toString(), 'utf-8')
+        androidReleaseConf.plainFileIndexFile.location.write(result.toString(), "utf-8")
         l.lifecycle("Plain file index created: ${androidReleaseConf.plainFileIndexFile}")
     }
 

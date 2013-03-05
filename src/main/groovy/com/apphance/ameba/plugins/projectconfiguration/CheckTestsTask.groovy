@@ -1,13 +1,8 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
-import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSProjectConfiguration
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_TEST
@@ -20,17 +15,10 @@ import static groovy.io.FileType.FILES
  */
 class CheckTestsTask extends DefaultTask {
 
-    Logger logger = Logging.getLogger(CheckTestsTask.class)
-    ProjectHelper projectHelper
-    ProjectConfiguration conf
-    IOSProjectConfiguration iosConf
-
     CheckTestsTask() {
         use(PropertyCategory) {
             this.group = AMEBA_TEST
             this.description = 'Checks if there are any failed junit test results in the project and fails if therea are'
-            this.projectHelper = new ProjectHelper()
-            this.conf = project.getProjectConfiguration()
             this.dependsOn(project.readProjectConfiguration)
         }
     }

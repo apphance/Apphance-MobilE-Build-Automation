@@ -3,6 +3,4 @@ buildscript {
     apply from: "$amebaProjectPath/ameba_in_classpath.gradle"
 }
 
-apply plugin: 'ameba-project-configuration'
-apply plugin: 'ameba-ios-build'
-apply plugin: 'ameba-ios-ocunit'
+apply plugin: 'ameba'

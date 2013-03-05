@@ -6,11 +6,13 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
-import static com.apphance.ameba.ProjectHelper.GRADLE_DAEMON_ARGS
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.*
 
 class ExecuteIosBuildsTest {
+
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
+            '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
     static File testProjectMoreVariants = new File("testProjects/ios-morevariants/GradleXCodeMoreVariants")
     static File testProjectOneVariant = new File("testProjects/ios/GradleXCode")

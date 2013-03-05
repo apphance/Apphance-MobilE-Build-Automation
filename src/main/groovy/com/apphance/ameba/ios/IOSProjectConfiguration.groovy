@@ -24,8 +24,6 @@ class IOSProjectConfiguration {
     List<String> families = []
     List<String> schemes = []
     File plistFile
-    def monkeyTests = [:]
-    def monkeyTestResults = [:]
     List<String> excludedBuilds = []
 
     boolean isBuildExcluded(String id) {
@@ -56,7 +54,7 @@ class IOSProjectConfiguration {
         "${target}-${configuration}"
     }
 
-    def getXCodeBuildExecutionPath(String target, String configuration) {
+    def xCodeBuildExecutionPath(String target, String configuration) {
         (xCodeProjectDirectory == null || xCodeProjectDirectory == '') ?
             ['xcodebuild'] :
             ['xcodebuild', '-project', xCodeProjectDirectories[getVariant(target, configuration)]]

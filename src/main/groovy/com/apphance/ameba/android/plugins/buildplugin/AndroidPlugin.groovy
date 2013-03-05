@@ -2,15 +2,18 @@ package com.apphance.ameba.android.plugins.buildplugin
 
 import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.*
+import com.apphance.ameba.executor.Command
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
@@ -26,7 +29,9 @@ class AndroidPlugin implements Plugin<Project> {
 
     static final String PROJECT_PROPERTIES_KEY = 'project.properties'
 
-    ProjectHelper projectHelper
+    @Inject
+    CommandExecutor executor
+
     ProjectConfiguration conf
     AndroidProjectConfiguration androidConf
     AndroidManifestHelper manifestHelper
@@ -39,12 +44,11 @@ class AndroidPlugin implements Plugin<Project> {
 
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, ProjectConfigurationPlugin.class)
 
-        this.projectHelper = new ProjectHelper();
         this.conf = PropertyCategory.getProjectConfiguration(project)
         this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         this.manifestHelper = new AndroidManifestHelper()
-        this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, this.androidConf)
-        this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, this.androidConf)
+        this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, this.androidConf, executor)
+        this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, this.androidConf, executor)
 
         prepareCopySourcesTask(project)
         prepareAndroidEnvironment(project)
@@ -120,9 +124,27 @@ class AndroidPlugin implements Plugin<Project> {
                 androidConf.minSdkTargetName = androidConf.targetName
             }
             logger.lifecycle("Min SDK target name = " + androidConf.minSdkTargetName)
+
             updateSdkJars()
             updateLibraryProjects(project.rootDir)
+            extractAvailableTargets(project)
         }
+    }
+
+    private void extractAvailableTargets(Project project) {
+        List result = executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['android',
+                'list',
+                'target']))
+        def targets = []
+        def targetPattern = /id:.*"(.*)"/
+        def targetPrefix = 'id:'
+        result.each {
+            def targetMatcher = (it =~ targetPattern)
+            if (it.startsWith(targetPrefix) && targetMatcher.matches()) {
+                targets << targetMatcher[0][1]
+            }
+        }
+        androidConf.availableTargets = targets.sort()
     }
 
     private void updateSdkJars() {
@@ -215,10 +237,7 @@ class AndroidPlugin implements Plugin<Project> {
             File gen = project.file('gen')
             if (!gen.exists() || gen.list().length == 0) {
                 logger.lifecycle("Regenerating gen directory by running debug project")
-                projectHelper.executeCommand(project, project.rootDir, [
-                        'ant',
-                        'debug'
-                ])
+                executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['ant', 'debug']))
             } else {
                 logger.lifecycle("Not regenerating gen directory! You might need to run clean in order to get latest data (you can also run any of the android builds)")
             }
@@ -258,14 +277,15 @@ class AndroidPlugin implements Plugin<Project> {
                 throw new GradleException("The directory ${directory} to execute the command, does not exist! Your configuration is wrong.")
             }
             try {
-                projectHelper.executeCommand(project, directory, [
+                executor.executeCommand(new Command(runDir: directory, cmd: [
                         'android',
                         'update',
                         'project',
                         '-p',
                         '.',
                         '-s'
-                ], false, null, null, 1, silentLogging)
+                ], failOnError: false
+                ))
             } catch (IOException e) {
                 throw new GradleException("""The android utility is probably not in your PATH. Please add it!
     BEWARE! For eclipse junit build it's best to add symbolic link
@@ -279,10 +299,7 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = "cleans the application"
         task.group = AMEBA_BUILD
         task << {
-            projectHelper.executeCommand(project, [
-                    'ant',
-                    'clean'
-            ])
+            executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['ant', 'clean']))
             File tmpDir = project.file("tmp")
             project.ant.delete(dir: tmpDir)
         }
@@ -348,11 +365,11 @@ class AndroidPlugin implements Plugin<Project> {
         testTask << {
             def firstLetterLowerCase = debugRelease[0].toLowerCase()
             File apkFile = new File(conf.targetDirectory, "${conf.projectName}-${debugRelease}-${variant}-${conf.fullVersionString}.apk")
-            projectHelper.executeCommand(project, [
+            executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
                     'ant',
                     "install${firstLetterLowerCase}",
                     "-Pout.final.file=${apkFile}"
-            ])
+            ]))
         }
         testTask.dependsOn(project.readAndroidProjectConfiguration)
     }
@@ -364,11 +381,11 @@ class AndroidPlugin implements Plugin<Project> {
         def firstLetterLowerCase = debugRelease[0].toLowerCase()
         testTask << {
             File apkFile = new File(conf.targetDirectory, "${conf.projectName}-${debugRelease}-${conf.fullVersionString}.apk")
-            projectHelper.executeCommand(project, [
+            executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
                     'ant',
                     "install${firstLetterLowerCase}",
                     "-Pout.final.file=${apkFile}"
-            ])
+            ]))
         }
         testTask.dependsOn(project.readAndroidProjectConfiguration)
     }

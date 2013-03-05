@@ -1,22 +1,13 @@
 package com.apphance.ameba.applyPlugins.android
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
-import org.gradle.api.Project
 import org.junit.Test
 
 class TestAndroidTasksNoVariant extends BaseAndroidTaskTest {
 
-    @Override
-    protected Project getProject() {
-        Project project = super.getProject(false)
-        project.project.plugins.apply(AndroidPlugin.class)
-        return project
-    }
-
     @Test
     public void testBuildTasksAvailable() {
-        verifyTasksInGroup(getProject(), [
+        verifyTasksInGroup(getProject(false), [
                 'cleanAndroid',
                 'cleanClasses',
                 'compileAndroid',

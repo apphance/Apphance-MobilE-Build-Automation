@@ -3,7 +3,7 @@ buildscript {
     apply from: "$amebaProjectPath/ameba_in_classpath.gradle"
 }
 
-apply plugin: 'ameba-project-configuration'
+apply plugin: 'ameba'
 
 amebaPropertyDefaults {
     defaults = "['release.project.url' : 'http://mycompany.com/ext/directory']"

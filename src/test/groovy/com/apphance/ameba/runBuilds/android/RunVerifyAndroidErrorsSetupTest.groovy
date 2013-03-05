@@ -1,6 +1,5 @@
 package com.apphance.ameba.runBuilds.android
 
-import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.BuildException
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
@@ -11,6 +10,10 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class RunVerifyAndroidErrorsSetupTest {
+
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
+            '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
+
     static File testProject = new File("testProjects/android/android-basic")
     static ProjectConnection connection
 
@@ -44,7 +47,7 @@ class RunVerifyAndroidErrorsSetupTest {
         ByteArrayOutputStream os = new ByteArrayOutputStream()
         BuildLauncher bl = connection.newBuild().forTasks(tasks);
         bl.setStandardOutput(os)
-        bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        bl.setJvmArguments(GRADLE_DAEMON_ARGS)
         bl.run();
         def res = os.toString("UTF-8")
         println res

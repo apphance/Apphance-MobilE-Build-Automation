@@ -2,7 +2,6 @@ package com.apphance.ameba.android.plugins.buildplugin
 
 import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidCommandParser
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -35,8 +34,7 @@ class PrepareAndroidSetupOperation extends AbstractPrepareSetupOperation {
                         if (!project.hasProperty(it.propertyName)) {
                             project[it.propertyName] = androidConf.minSdkTargetName
                         }
-                        List targets = AndroidCommandParser.getTargets(project)
-                        project.getProjectPropertyFromUser(it, targets, br)
+                        project.getProjectPropertyFromUser(it, androidConf.availableTargets, br)
                         break;
                     default:
                         project.getProjectPropertyFromUser(it, null, br)

@@ -2,15 +2,17 @@ package com.apphance.ameba.ios.plugins.ocunit
 
 import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.executor.Command
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+
+import javax.inject.Inject
+
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Unit test plugin - all unit tests are run here.
@@ -20,10 +22,13 @@ class IOSUnitTestPlugin implements Plugin<Project> {
 
     static final String AMEBA_IOS_UNIT = 'Ameba iOS OCUnit tests'
 
-    Logger logger = Logging.getLogger(IOSUnitTestPlugin.class)
+    def l = getLogger(getClass())
+
+    @Inject
+    CommandExecutor executor
+
     Project project
     ProjectConfiguration conf
-    ProjectHelper projectHelper
     IOSProjectConfiguration iosConf
 
     @Override
@@ -31,9 +36,8 @@ class IOSUnitTestPlugin implements Plugin<Project> {
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
         use(PropertyCategory) {
             this.project = project
-            this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
-            this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+            this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
             project.extensions.iosUnitTests = new IOSUnitTestConvention()
             prepareRunUnitTestsTask()
         }
@@ -46,21 +50,22 @@ class IOSUnitTestPlugin implements Plugin<Project> {
         task << {
             def configuration = project.iosUnitTests.configuration
             def target = project.iosUnitTests.target
-            logger.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
+            l.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
             conf.tmpDirectory.mkdirs()
             def testResults = new File(conf.tmpDirectory, "test-${target}-${configuration}.txt")
-            logger.lifecycle("Trying to create file: ${testResults.canonicalPath}")
+            l.lifecycle("Trying to create file: ${testResults.canonicalPath}")
             testResults.createNewFile()
-            projectHelper.executeCommand(project, iosConf.getXCodeBuildExecutionPath(target, configuration) + [
-                    "-target",
+            executor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.xCodeBuildExecutionPath(target, configuration) + [
+                    '-target',
                     target,
-                    "-configuration",
+                    '-configuration',
                     configuration,
-                    "-sdk",
-                    iosConf.simulatorSDK,
-                    'RUN_UNIT_TEST_WITH_IOS_SIM=YES',
-                    "UNIT_TEST_OUTPUT_FILE=${testResults.canonicalPath}"
-            ], false)
+                    '-sdk',
+                    iosConf.simulatorSDK
+            ], environment:
+                    [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: "${testResults.canonicalPath}"],
+                    failOnError: false
+            ))
             OCUnitParser parser = new OCUnitParser()
             parser.parse(testResults.text.split('\n') as List)
             File unitTestFile = new File(conf.tmpDirectory, "TEST-all.xml")

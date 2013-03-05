@@ -1,11 +1,16 @@
 package com.apphance.ameba.ios.plugins.framework
 
 import com.apphance.ameba.PluginHelper
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+
+import javax.inject.Inject
+
+import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
 /**
  * Plugin for preparing reports after successful IOS build.
@@ -14,9 +19,19 @@ import org.gradle.api.logging.Logging
 class IOSFrameworkPlugin implements Plugin<Project> {
     static Logger logger = Logging.getLogger(IOSFrameworkPlugin.class)
 
+    @Inject
+    CommandExecutor executor
+
     def void apply(Project project) {
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
-        project.task('buildFramework', type: IOSBuildFrameworkTask)
+
+        def task = project.task('buildFramework',
+                group: AMEBA_BUILD,
+                description: 'Builds iOS framework project',
+                dependsOn: [project.readProjectConfiguration, project.copyMobileProvision]
+        )
+        task.doLast { new IOSFrameworkBuilder(project, executor).buildIOSFramework() }
+
         project.prepareSetup.prepareSetupOperations << new PrepareFrameworkSetupOperation()
         project.verifySetup.verifySetupOperations << new VerifyFrameworkSetupOperation()
         project.showSetup.showSetupOperations << new ShowFrameworkSetupOperation()

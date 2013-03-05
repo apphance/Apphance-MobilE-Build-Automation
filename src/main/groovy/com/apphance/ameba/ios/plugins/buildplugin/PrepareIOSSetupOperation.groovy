@@ -3,7 +3,6 @@ package com.apphance.ameba.ios.plugins.buildplugin
 import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.util.file.FileManager
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -27,8 +26,7 @@ class PrepareIOSSetupOperation extends AbstractPrepareSetupOperation {
             project.ext[IOSProjectProperty.PROJECT_DIRECTORY.propertyName] = xCodeProjFiles[0]
         }
         use(PropertyCategory) {
-            IOSXCodeOutputParser iosXcodeOutputParser = new IOSXCodeOutputParser()
-            IOSProjectConfiguration iosConf = iosXcodeOutputParser.getIosProjectConfiguration(project)
+            IOSProjectConfiguration iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
             BufferedReader br = getReader()
             IOSProjectProperty.each {
                 switch (it) {

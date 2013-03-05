@@ -1,8 +1,9 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.executor.Command
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.ios.IOSBuilderInfo
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
@@ -12,9 +13,9 @@ import com.sun.org.apache.xpath.internal.XPathAPI
 import groovy.io.FileType
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 import org.xml.sax.SAXParseException
+
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Builds single variant for iOS projects.
@@ -22,26 +23,28 @@ import org.xml.sax.SAXParseException
  */
 class IOSSingleVariantBuilder {
 
-    static Logger logger = Logging.getLogger(IOSSingleVariantBuilder.class)
-    ProjectHelper projectHelper
-    static Collection<IOSBuildListener> buildListeners = []
+    def l = getLogger(getClass())
+
+    CommandExecutor executor
+    Collection<IOSBuildListener> buildListeners = []
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
     AntBuilder ant
     Project project
 
-    IOSSingleVariantBuilder(Project project) {
+    IOSSingleVariantBuilder(Project project, CommandExecutor executor, IOSBuildListener... buildListeners) {
         use(PropertyCategory) {
             this.project = project
-            this.projectHelper = new ProjectHelper()
+            this.executor = executor
             this.conf = project.getProjectConfiguration()
-            this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+            this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
             this.ant = project.ant
+            this.buildListeners.addAll(buildListeners)
         }
     }
 
     private checkVersions() {
-        logger.info("Application version: ${conf.versionCode} string: ${conf.versionString}")
+        l.info("Application version: ${conf.versionCode} string: ${conf.versionString}")
         if (conf.versionCode == 0) {
             throw new GradleException("The CFBundleVersion key is missing from ${iosConf.plistFile} or its value is 0. Please add it or increase the value. Integers are only valid values")
         }
@@ -54,7 +57,7 @@ class IOSSingleVariantBuilder {
         def result = []
         dir.traverse([type: FileType.FILES, maxDepth: FileManager.MAX_RECURSION_LEVEL]) {
             if (it.name.endsWith(".plist") && !it.path.contains("/External/") && !it.path.contains('/build/')) {
-                logger.lifecycle("Adding plist file ${it} to processing list")
+                l.lifecycle("Adding plist file ${it} to processing list")
                 result << it
             }
         }
@@ -65,7 +68,7 @@ class IOSSingleVariantBuilder {
         def result = []
         dir.traverse([type: FileType.FILES, maxDepth: FileManager.MAX_RECURSION_LEVEL]) {
             if ((it.name.endsWith(".m") || it.name.endsWith(".h")) && !it.path.contains("/External/")) {
-                logger.lifecycle("Adding source file ${it} to processing list")
+                l.lifecycle("Adding source file ${it} to processing list")
                 result << it
             }
         }
@@ -74,10 +77,10 @@ class IOSSingleVariantBuilder {
 
 
     private void replaceBundleInAllPlists(File dir, String newBundleIdPrefix, String oldBundleIdPrefix) {
-        logger.lifecycle("Finding all plists and replacing ${oldBundleIdPrefix} with ${newBundleIdPrefix}")
+        l.lifecycle("Finding all plists and replacing ${oldBundleIdPrefix} with ${newBundleIdPrefix}")
         def plistFiles = findAllPlistFiles(dir)
         plistFiles.each { file ->
-            logger.lifecycle("Parsing ${file}")
+            l.lifecycle("Parsing ${file}")
             try {
                 def root = MPParser.getParsedPlist(file)
                 XPathAPI.selectNodeList(root, '/plist/dict/key[text()="CFBundleIdentifier"]').each {
@@ -86,22 +89,22 @@ class IOSSingleVariantBuilder {
                         String newResult = newBundleIdPrefix + bundleToReplace.substring(oldBundleIdPrefix.length())
                         it.nextSibling.nextSibling.textContent = newResult
                         file.write(root as String)
-                        logger.lifecycle("Replaced the bundleId to ${newResult} from ${bundleToReplace} in ${file}")
+                        l.lifecycle("Replaced the bundleId to ${newResult} from ${bundleToReplace} in ${file}")
                     } else if (bundleToReplace.startsWith(newBundleIdPrefix)) {
-                        logger.lifecycle("Already replaced the bundleId to ${bundleToReplace} in ${file}")
+                        l.lifecycle("Already replaced the bundleId to ${bundleToReplace} in ${file}")
                     } else {
-                        logger.warn("The bundle to replace ${bundleToReplace} does not start with expected ${oldBundleIdPrefix} in ${file}. Not replacing !!!!!!!.")
+                        l.warn("The bundle to replace ${bundleToReplace} does not start with expected ${oldBundleIdPrefix} in ${file}. Not replacing !!!!!!!.")
                     }
                 }
             } catch (SAXParseException e) {
-                logger.warn("Error when parsing ${file}: ${e}. Skipping.")
+                l.warn("Error when parsing ${file}: ${e}. Skipping.")
             }
         }
-        logger.lifecycle("Finished processing all plists")
+        l.lifecycle("Finished processing all plists")
     }
 
     private void replaceBundleInAllSourceFiles(File dir, String newBundleIdPrefix, String oldBundleIdPrefix) {
-        logger.lifecycle("Finding all source files")
+        l.lifecycle("Finding all source files")
         def sourceFiles = findAllSourceFiles(dir)
         String valueToFind = 'bundleWithIdentifier:@"' + oldBundleIdPrefix
         String valueToReplace = 'bundleWithIdentifier:@"' + newBundleIdPrefix
@@ -109,18 +112,18 @@ class IOSSingleVariantBuilder {
             String t = file.text
             if (t.contains(valueToFind)) {
                 file.write(t.replace(valueToFind, valueToReplace))
-                logger.lifecycle("Replaced the ${valueToFind} with ${valueToReplace} in ${file}")
+                l.lifecycle("Replaced the ${valueToFind} with ${valueToReplace} in ${file}")
             }
         }
-        logger.lifecycle("Finished processing all source files")
+        l.lifecycle("Finished processing all source files")
     }
 
     void replaceBundleId(File dir, String oldBundleId, String newBundleId, String configuration) {
         replaceBundleInAllPlists(dir, newBundleId, oldBundleId)
         replaceBundleInAllSourceFiles(dir, newBundleId, oldBundleId)
         iosConf.distributionDirectories[configuration] = new File(iosConf.distributionDirectory, newBundleId)
-        logger.lifecycle("New distribution directory: ${iosConf.distributionDirectories[configuration]}")
-        logger.lifecycle("Replaced the bundleIdprefix everywhere")
+        l.lifecycle("New distribution directory: ${iosConf.distributionDirectories[configuration]}")
+        l.lifecycle("Replaced the bundleIdprefix everywhere")
     }
 
     void buildNormalVariant(Project project, String target, String configuration) {
@@ -131,57 +134,58 @@ class IOSSingleVariantBuilder {
                     IOSXCodeOutputParser.findMobileProvisionFile(project, target, configuration, false).toURI().toURL());
             replaceBundleId(tmpDir(target, configuration), oldBundleId, newBundleId, configuration)
         }
-        logger.lifecycle("\n\n\n=== Building target ${target}, configuration ${configuration}  ===")
+        l.lifecycle("\n\n\n=== Building target ${target}, configuration ${configuration}  ===")
         if (target != "Frankified") {
-            projectHelper.executeCommand(project, tmpDir(target, configuration), iosConf.getXCodeBuildExecutionPath(target, configuration) + [
-                    "-target",
-                    target,
-                    "-configuration",
-                    configuration,
-                    "-sdk",
-                    iosConf.sdk
-            ])
+            executor.executeCommand(new Command(runDir: tmpDir(target, configuration), cmd:
+                    iosConf.xCodeBuildExecutionPath(target, configuration) + [
+                            '-target',
+                            target,
+                            '-configuration',
+                            configuration,
+                            '-sdk',
+                            iosConf.sdk
+                    ]))
             IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
             buildListeners.each {
                 it.buildDone(project, bi)
             }
         } else {
-            projectHelper.executeCommand(project, tmpDir(target, configuration), iosConf.getXCodeBuildExecutionPath(target, configuration) + [
-                    "-target",
-                    target,
-                    "-configuration",
-                    configuration,
-                    "-sdk",
-                    iosConf.simulatorSDK,
-                    "-arch",
-                    "i386"
-            ])
+            executor.executeCommand(new Command(runDir: tmpDir(target, configuration), cmd:
+                    iosConf.xCodeBuildExecutionPath(target, configuration) + [
+                            '-target',
+                            target,
+                            '-configuration',
+                            configuration,
+                            '-sdk',
+                            iosConf.simulatorSDK,
+                            '-arch',
+                            'i386'
+                    ]))
         }
     }
 
     void buildDebugVariant(Project project, String target) {
         checkVersions()
         def configuration = "Debug"
-        logger.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
+        l.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
         if (conf.versionString != null) {
-            projectHelper.executeCommand(project, tmpDir(target, configuration),
-                    iosConf.getXCodeBuildExecutionPath(target, configuration) + [
+            executor.executeCommand(new Command(runDir: tmpDir(target, configuration),
+                    cmd: iosConf.xCodeBuildExecutionPath(target, configuration) + [
                             "-target",
                             target,
                             "-configuration",
                             configuration,
                             "-sdk",
                             iosConf.simulatorSDK
-                    ])
+                    ]))
             IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphonesimulator', project)
             buildListeners.each {
                 it.buildDone(project, bi)
             }
         } else {
-            logger.lifecycle("Skipping building debug artifacts -> the build is not versioned")
+            l.lifecycle("Skipping building debug artifacts -> the build is not versioned")
         }
     }
-
 
     IOSBuilderInfo buildSingleBuilderInfo(String target, String configuration, String outputDirPostfix, Project project) {
         IOSBuilderInfo bi = new IOSBuilderInfo(

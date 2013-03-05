@@ -72,4 +72,9 @@ class FileManager {
             findAllPackages(rootDirectory ? it.name : (currentPackage + '.' + it.name), it, currentPackageList)
         }
     }
+
+    public static void mkdir(File dir) {
+        if (!(dir.exists() && dir.isDirectory()))
+            dir.mkdirs()
+    }
 }

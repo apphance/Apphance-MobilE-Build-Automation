@@ -17,11 +17,11 @@ class FileSystemOutput implements Appendable {
 
     @Override
     Appendable append(char c) throws IOException {
-        if (file != null) {
+        if (file) {
             file << c
         }
         sb.append(c)
-        if (linkedAppendable != null) {
+        if (linkedAppendable) {
             linkedAppendable.append(c)
         }
         this
@@ -29,11 +29,11 @@ class FileSystemOutput implements Appendable {
 
     @Override
     Appendable append(CharSequence c) throws IOException {
-        if (file != null) {
+        if (file) {
             file << c
         }
         sb.append(c)
-        if (linkedAppendable != null) {
+        if (linkedAppendable) {
             linkedAppendable.append(c)
         }
         this
@@ -41,11 +41,11 @@ class FileSystemOutput implements Appendable {
 
     @Override
     Appendable append(CharSequence cs, int start, int end) throws IOException {
-        if (file != null) {
+        if (file) {
             file << cs?.subSequence(start, start)
         }
         sb.append(cs, start, end)
-        if (linkedAppendable != null) {
+        if (linkedAppendable) {
             linkedAppendable.append(cs, start, end)
         }
         this

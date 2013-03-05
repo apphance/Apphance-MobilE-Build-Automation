@@ -1,6 +1,5 @@
 package com.apphance.ameba.applyPlugins.android
 
-import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
@@ -9,6 +8,9 @@ import org.junit.Before
 import org.junit.Test
 
 class TestRobotiumCreation {
+
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
+            '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
     private static File conventionsBase = new File("testProjects/android/android-robotium-create");
     private static File roboPath = new File(conventionsBase.path + '/test/android')
@@ -26,7 +28,7 @@ class TestRobotiumCreation {
             BuildLauncher bl = connection.newBuild().forTasks('prepareRobotium');
             ByteArrayOutputStream baos = new ByteArrayOutputStream()
             bl.setStandardOutput(baos)
-            bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+            bl.setJvmArguments(GRADLE_DAEMON_ARGS)
             bl.run()
             String output = baos.toString('utf-8')
             println output

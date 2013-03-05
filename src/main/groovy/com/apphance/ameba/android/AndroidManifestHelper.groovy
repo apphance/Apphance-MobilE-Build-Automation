@@ -58,7 +58,7 @@ apphance:only="true">
         def manifest = new XmlSlurper(false, false).parse(file)
         def packageName = manifest.@package
 
-        throwIf((packageName != oldPkg && packageName != newPkg), "Package to replace in manifest is: " +
+        throwIfCondition((packageName != oldPkg && packageName != newPkg), "Package to replace in manifest is: " +
                 "'$packageName' and not expected: '$oldPkg' (neither target: '$newPkg'). This must be wrong.")
 
         l.lifecycle("Replacing package: '$packageName' with new package: '$newPkg'")
@@ -113,12 +113,12 @@ apphance:only="true">
         file.write(replaceTag0(result))
     }
 
-    void addPermissions(File projectDir, def permissions) {
+    void addPermissions(File projectDir, String... permissions) {
         def file = new File(projectDir, ANDROID_MANIFEST)
         saveOriginalFile(projectDir, file)
 
         def manifest = new XmlSlurper().parse(file)
-        addPermissions(manifest, permissions)
+        addPermissionsToManifest(manifest, permissions)
 
         String result = xmlToString(manifest)
         file.delete()
@@ -131,8 +131,8 @@ apphance:only="true">
 
         def manifest = new XmlSlurper().parse(f)
 
-        addIntrumentation(manifest)
-        addPermissions(manifest,
+        addInstrumentation(manifest)
+        addPermissionsToManifest(manifest,
                 'android.permission.INTERNET', 'android.permission.READ_PHONE_STATE', 'android.permission.GET_TASKS')
         addActivities(manifest)
         addAlias(manifest)
@@ -152,7 +152,7 @@ apphance:only="true">
         originalFile << file.text
     }
 
-    private void addIntrumentation(GPathResult manifest) {
+    private void addInstrumentation(GPathResult manifest) {
         manifest.appendNode({
             instrumentation(
                     'android:name': 'com.apphance.android.ApphanceInstrumentation',
@@ -161,7 +161,7 @@ apphance:only="true">
         })
     }
 
-    private void addPermissions(GPathResult manifest, String... permissions) {
+    private void addPermissionsToManifest(GPathResult manifest, String... permissions) {
         permissions.each { p ->
             def permission = manifest.'uses-permission'.find { it.@'android:name'.text().equals(p) }
 
@@ -211,7 +211,7 @@ apphance:only="true">
                     'android.intent.category.LAUNCHER' in it.'intent-filter'.category.@'android:name'*.text()
         }
 
-        throwIf(mainActivity.isEmpty(), 'Main activity could not be found!')
+        throwIfCondition(mainActivity.isEmpty(), 'Main activity could not be found!')
 
         def packageName = manifest.@package.text()
         def className = mainActivity.@'android:name'.text()

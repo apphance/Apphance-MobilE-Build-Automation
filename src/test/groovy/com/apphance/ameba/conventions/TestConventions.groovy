@@ -1,6 +1,5 @@
 package com.apphance.ameba.conventions
 
-import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
@@ -9,6 +8,10 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class TestConventions {
+
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
+            '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
+
     private static File conventionsBase = new File("testProjects/conventions")
 
     private ProjectConnection getProjectConnection(File baseFolder, String dirName) {
@@ -23,7 +26,7 @@ class TestConventions {
             BuildLauncher bl = connection.newBuild().forTasks('showConventionAndroidAnalysis');
             ByteArrayOutputStream baos = new ByteArrayOutputStream()
             bl.setStandardOutput(baos)
-            bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+            bl.setJvmArguments(GRADLE_DAEMON_ARGS)
             bl.run()
             String output = baos.toString('utf-8')
             println output
@@ -40,7 +43,7 @@ class TestConventions {
             BuildLauncher bl = connection.newBuild().forTasks('showConventionAndroidTest');
             ByteArrayOutputStream baos = new ByteArrayOutputStream()
             bl.setStandardOutput(baos)
-            bl.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+            bl.setJvmArguments(GRADLE_DAEMON_ARGS)
             bl.run()
             String output = baos.toString('utf-8')
             println output

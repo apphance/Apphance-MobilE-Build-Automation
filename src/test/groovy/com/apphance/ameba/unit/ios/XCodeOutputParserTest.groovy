@@ -1,13 +1,10 @@
 package com.apphance.ameba.unit.ios
 
 import com.apphance.ameba.ios.IOSXCodeOutputParser
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import org.hamcrest.core.IsEqual
 import org.junit.Before
 import org.junit.Test
 
-import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertThat
 
 class XCodeOutputParserTest {
@@ -104,16 +101,5 @@ iOS Simulator SDKs:
                 'SomeSpecs',
                 'OtherSomeSpecs',
                 'RunMonkeyTests']))
-    }
-
-    @Test
-    public void testXCodeInstallationPath() {
-        ProjectBuilder projectBuilder = ProjectBuilder.builder()
-        projectBuilder.withProjectDir(new File("testProjects/ios"))
-        Project project = projectBuilder.build()
-        assertEquals(
-                new File('/Applications/XCode.app/Contents/Developer').absolute,
-                new File(IOSXCodeOutputParser.getXcodeInstallationPath(project)).absolute // case insensitive check
-        )
     }
 }

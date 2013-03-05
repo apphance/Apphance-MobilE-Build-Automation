@@ -1,8 +1,0 @@
-buildscript {
-    amebaProjectPath = file('../..').absolutePath
-    apply from: "$amebaProjectPath/ameba_in_classpath.gradle"
-}
-
-apply plugin: 'ameba-project-configuration'
-apply plugin: 'ameba-ios-framework'
-apply plugin: 'ameba-ios-build'

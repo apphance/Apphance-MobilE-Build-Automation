@@ -22,6 +22,7 @@ class AndroidProjectConfiguration {
     String mainProjectPackage
     String mainProjectName
     List<String> excludedBuilds = []
+    List<String> availableTargets //all targets available in Android SDK
 
     public Set<File> getAllJars() {
         Set<File> set = [] as Set

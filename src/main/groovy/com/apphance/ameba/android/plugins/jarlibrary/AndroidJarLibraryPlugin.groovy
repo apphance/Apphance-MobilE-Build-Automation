@@ -3,7 +3,6 @@ package com.apphance.ameba.android.plugins.jarlibrary
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
@@ -22,7 +21,6 @@ class AndroidJarLibraryPlugin implements Plugin<Project> {
 
     static Logger logger = Logging.getLogger(AndroidJarLibraryPlugin.class)
 
-    ProjectHelper projectHelper
     ProjectConfiguration conf
     AndroidManifestHelper manifestHelper
     AndroidProjectConfiguration androidConf
@@ -31,7 +29,6 @@ class AndroidJarLibraryPlugin implements Plugin<Project> {
     public void apply(Project project) {
         PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         use(PropertyCategory) {
-            this.projectHelper = new ProjectHelper()
             this.conf = project.getProjectConfiguration()
             this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
             manifestHelper = new AndroidManifestHelper()

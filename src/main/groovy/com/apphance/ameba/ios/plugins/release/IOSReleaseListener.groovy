@@ -1,13 +1,15 @@
 package com.apphance.ameba.ios.plugins.release
 
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.executor.Command
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.ios.IOSBuilderInfo
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser
 import com.apphance.ameba.ios.plugins.buildplugin.IOSBuildListener
+import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.ios.plugins.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
@@ -16,8 +18,8 @@ import com.apphance.ameba.util.jython.JythonExecutor
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.AntBuilder
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Build listener for releases.
@@ -25,21 +27,21 @@ import org.gradle.api.logging.Logging
  */
 class IOSReleaseListener implements IOSBuildListener {
 
-    static Logger l = Logging.getLogger(IOSReleaseListener.class)
+    def l = getLogger(getClass())
 
-    ProjectHelper projectHelper
+    CommandExecutor executor
     ProjectConfiguration conf
     ProjectReleaseConfiguration releaseConf
     IOSProjectConfiguration iosConf
     IOSReleaseConfiguration iosReleaseConf
     AntBuilder ant
 
-    IOSReleaseListener(Project project) {
+    IOSReleaseListener(Project project, CommandExecutor executor) {
         use(PropertyCategory) {
-            this.projectHelper = new ProjectHelper()
+            this.executor = executor
             this.conf = project.getProjectConfiguration()
             this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
-            this.iosConf = IOSXCodeOutputParser.getIosProjectConfiguration(project)
+            this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
             this.iosReleaseConf = IOSReleaseConfigurationRetriever.getIosReleaseConfiguration(project)
             this.ant = project.ant
         }
@@ -143,19 +145,19 @@ class IOSReleaseListener implements IOSBuildListener {
         ipaArtifact.location.parentFile.mkdirs()
         ipaArtifact.location.delete()
         def appList = bi.buildDirectory.list([accept: { d, f -> f ==~ /.*\.app/ }] as FilenameFilter)
-        String[] command = [
-                "/usr/bin/xcrun",
-                "-sdk",
+        def cmd = [
+                '/usr/bin/xcrun',
+                '-sdk',
                 iosConf.sdk,
-                "PackageApplication",
-                "-v",
-                new File(bi.buildDirectory, appList[0]),
-                "-o",
-                ipaArtifact.location,
-                "--embed",
-                bi.mobileProvisionFile
+                'PackageApplication',
+                '-v',
+                new File(bi.buildDirectory, appList[0]).canonicalPath,
+                '-o',
+                ipaArtifact.location.canonicalPath,
+                '--embed',
+                bi.mobileProvisionFile.canonicalPath
         ]
-        projectHelper.executeCommand(project, command)
+        executor.executeCommand(new Command(runDir: project.rootDir, cmd: cmd))
         l.lifecycle("ipa file created: ${ipaArtifact}")
     }
 
@@ -230,7 +232,7 @@ class IOSReleaseListener implements IOSBuildListener {
 
     void buildArtifactsOnly(Project project, String target, String configuration) {
         if (conf.versionString != null) {
-            IOSSingleVariantBuilder builder = new IOSSingleVariantBuilder(project)
+            IOSSingleVariantBuilder builder = new IOSSingleVariantBuilder(project, executor)
             IOSBuilderInfo bi = builder.buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
             prepareDistributionZipArtifact(bi, true)
             prepareDSYMZipArtifact(bi, true)
@@ -264,16 +266,16 @@ class IOSReleaseListener implements IOSBuildListener {
         resampleIcon(project, destDir)
         updateDeviceFamily(project, family, embedDir, bi)
         updateVersions(project, embedDir, bi, conf)
-        String[] prepareDmgCommand = [
-                "hdiutil",
-                "create",
-                file.location,
-                "-srcfolder",
+        String[] cmd = [
+                'hdiutil',
+                'create',
+                file.location.canonicalPath,
+                '-srcfolder',
                 destDir,
-                "-volname",
+                '-volname',
                 "${conf.projectName}-${bi.target}-${family}"
         ]
-        projectHelper.executeCommand(project, prepareDmgCommand)
+        executor.executeCommand(new Command(runDir: project.rootDir, cmd: cmd))
         iosReleaseConf.dmgImageFiles.put("${family}-${iosConf.mainTarget}" as String, file)
         l.lifecycle("Simulator zip file created: ${file} for ${family}-${iosConf.mainTarget}")
     }
@@ -283,25 +285,25 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
     private rsyncTemplatePreservingExecutableFlag(Project project, File destDir) {
-        String[] rsyncCommand = [
-                "rsync",
-                "-aE",
-                "--exclude",
-                "Contents/Resources/EmbeddedApp",
-                "/Applications/Simulator Bundler.app/Contents/Resources/Launcher.app/",
+        def cmd = [
+                'rsync',
+                '-aE',
+                '--exclude',
+                'Contents/Resources/EmbeddedApp',
+                '/Applications/Simulator Bundler.app/Contents/Resources/Launcher.app/',
                 destDir
         ]
-        projectHelper.executeCommand(project, rsyncCommand)
+        executor.executeCommand(new Command(runDir: project.rootDir, cmd: cmd))
     }
 
     private rsyncEmbeddedAppPreservingExecutableFlag(Project project, File sourceAppDir, File embedDir) {
-        String[] rsyncCommand = [
-                "rsync",
-                "-aE",
+        def cmd = [
+                'rsync',
+                '-aE',
                 sourceAppDir,
                 embedDir
         ]
-        projectHelper.executeCommand(project, rsyncCommand)
+        executor.executeCommand(new Command(runDir: project.rootDir, cmd: cmd))
     }
 
     private updateBundleId(Project project, IOSBuilderInfo bi, File tmpDir) {
@@ -311,14 +313,14 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
     private resampleIcon(Project project, File tmpDir) {
-        String[] iconResampleCommand = [
-                "/opt/local/bin/convert",
-                releaseConf.iconFile,
-                "-resample",
-                "128x128",
-                new File(tmpDir, "Contents/Resources/Launcher.icns")
+        String[] cmd = [
+                '/opt/local/bin/convert',
+                releaseConf.iconFile.canonicalPath,
+                '-resample',
+                '128x128',
+                new File(tmpDir, "Contents/Resources/Launcher.icns").canonicalPath
         ]
-        projectHelper.executeCommand(project, iconResampleCommand)
+        executor.executeCommand(new Command(runDir: project.rootDir, cmd: cmd))
     }
 
     private updateDeviceFamily(Project project, String device, File embedDir, IOSBuilderInfo bi) {
@@ -338,12 +340,12 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
     private runPlistBuddy(Project project, String command, File targetPlistFile, boolean failOnError = true) {
-        String[] executedCommand = [
+        String[] cmd = [
                 '/usr/libexec/PlistBuddy',
                 '-c',
                 command,
                 targetPlistFile
         ]
-        projectHelper.executeCommand(project, executedCommand, failOnError)
+        executor.executeCommand(new Command(runDir: project.rootDir, cmd: cmd, failOnError: failOnError))
     }
 }

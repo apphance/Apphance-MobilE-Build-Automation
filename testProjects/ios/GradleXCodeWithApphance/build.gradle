@@ -8,13 +8,7 @@ ext {
 	apphancePassword = "apphancetest"
 }
 
-apply plugin: 'ameba-project-configuration'
-apply plugin: 'ameba-ios-build'
-apply plugin: 'ameba-project-release'
-apply plugin: 'ameba-ios-release'
-apply plugin: 'ameba-ios-ocunit'
-apply plugin: 'ameba-ios-framework'
-apply plugin: 'ameba-ios-apphance'
+apply plugin: 'ameba'
 iosUnitTests {
     configuration = 'Debug'
 }

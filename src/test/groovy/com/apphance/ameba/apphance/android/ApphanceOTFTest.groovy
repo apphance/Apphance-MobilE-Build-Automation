@@ -1,6 +1,5 @@
 package com.apphance.ameba.apphance.android
 
-import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
@@ -10,6 +9,9 @@ import org.junit.Test
 import static org.junit.Assert.assertTrue
 
 class ApphanceOTFTest {
+
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
+            '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
     static File testNovariantsProject = new File("testProjects/android/android-novariants")
     static ProjectConnection connection
@@ -27,7 +29,7 @@ class ApphanceOTFTest {
 
     protected void runGradleNoVariants(String... tasks) {
         def launcher = connection.newBuild().forTasks(tasks)
-        launcher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        launcher.setJvmArguments(GRADLE_DAEMON_ARGS)
         launcher.run()
     }
 

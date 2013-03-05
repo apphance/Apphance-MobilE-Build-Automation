@@ -2,7 +2,6 @@ package com.apphance.ameba.android.plugins.apphance
 
 import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.ProjectHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
@@ -14,6 +13,7 @@ import com.apphance.ameba.apphance.ApphancePluginUtil
 import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
 import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
 import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
+import com.apphance.ameba.executor.CommandExecutor
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.apphance.ameba.util.Preconditions
@@ -24,6 +24,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 import static com.apphance.ameba.apphance.ApphanceProperty.*
@@ -45,7 +47,9 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
     static Logger l = Logging.getLogger(AndroidApphancePlugin.class)
 
-    ProjectHelper projectHelper
+    @Inject
+    CommandExecutor executor
+
     ProjectReleaseConfiguration releaseConfiguration
     ProjectConfiguration conf
     AndroidManifestHelper manifestHelper
@@ -56,7 +60,6 @@ class AndroidApphancePlugin implements Plugin<Project> {
     public void apply(Project project) {
         PluginHelper.checkAllPluginsAreLoaded(project, getClass(), AndroidPlugin.class)
         use(PropertyCategory) {
-            this.projectHelper = new ProjectHelper()
             this.releaseConfiguration = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
             this.conf = project.getProjectConfiguration()
             this.manifestHelper = new AndroidManifestHelper()
@@ -433,7 +436,7 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
 
         uploadTask << {
 
-            def builder = new AndroidSingleVariantApkBuilder(project, androidConf)
+            def builder = new AndroidSingleVariantApkBuilder(project, androidConf, executor)
             def builderInfo = builder.buildApkArtifactBuilderInfo(variantName, 'Debug')
             def releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
 
@@ -451,7 +454,7 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
                 def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false, ['apk', 'image_montage'])
                 l.lifecycle("Upload version query response: ${response.statusLine}")
 
-                throwIf(!response.entity, "Error while uploading version query, empty response received")
+                throwIfCondition(!response.entity, "Error while uploading version query, empty response received")
 
                 def resp = new JsonSlurper().parseText(response.entity.content.text)
 

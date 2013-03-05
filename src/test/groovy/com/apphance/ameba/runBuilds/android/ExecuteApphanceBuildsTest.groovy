@@ -1,6 +1,5 @@
 package com.apphance.ameba.runBuilds.android
 
-import com.apphance.ameba.ProjectHelper
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
@@ -11,6 +10,9 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 class ExecuteApphanceBuildsTest {
+
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
+            '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
     static File tApplicationProject = new File("testProjects/android/android-no-apphance-application")
     static File tNoApplicationProject = new File("testProjects/android/android-no-apphance-no-application")
@@ -53,7 +55,7 @@ class ExecuteApphanceBuildsTest {
 
     protected void run(ProjectConnection projectConnection, String... tasks) {
         def buildLauncher = projectConnection.newBuild()
-        buildLauncher.setJvmArguments(ProjectHelper.GRADLE_DAEMON_ARGS)
+        buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
         buildLauncher.forTasks(tasks).run()
     }
 

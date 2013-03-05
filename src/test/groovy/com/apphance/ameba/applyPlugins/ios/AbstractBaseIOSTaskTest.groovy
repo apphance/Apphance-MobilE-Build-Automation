@@ -2,6 +2,7 @@ package com.apphance.ameba.applyPlugins.ios
 
 import com.apphance.ameba.BaseTaskTest
 import com.apphance.ameba.ios.plugins.buildplugin.IOSProjectProperty
+import com.apphance.ameba.plugins.AmebaPlugin
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -13,7 +14,7 @@ abstract class AbstractBaseIOSTaskTest extends BaseTaskTest {
         Project project = projectBuilder.build()
         project.ext[IOSProjectProperty.PLIST_FILE.propertyName] = 'Test.plist'
         project.ext[IOSProjectProperty.DISTRIBUTION_DIR.propertyName] = 'release/distribution_resources'
-        project.project.plugins.apply(ProjectConfigurationPlugin.class)
+        project.project.plugins.apply(AmebaPlugin.class)
         return project
     }
 }
