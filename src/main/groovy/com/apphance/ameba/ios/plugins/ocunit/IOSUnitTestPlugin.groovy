@@ -63,7 +63,7 @@ class IOSUnitTestPlugin implements Plugin<Project> {
                     '-sdk',
                     iosConf.simulatorSDK
             ], environment:
-                    [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: "${testResults.canonicalPath}"],
+                    [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: "${testResults.canonicalPath}".toString()],
                     failOnError: false
             ))
             OCUnitParser parser = new OCUnitParser()

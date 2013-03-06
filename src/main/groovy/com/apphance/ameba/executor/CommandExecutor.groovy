@@ -20,7 +20,8 @@ class CommandExecutor {
     private FileLinker fileLinker
     private CommandLogFilesGenerator logFileGenerator
 
-    @Inject CommandExecutor(FileLinker fileLinker, CommandLogFilesGenerator logFileGenerator) {
+    @Inject
+    CommandExecutor(FileLinker fileLinker, CommandLogFilesGenerator logFileGenerator) {
         this.fileLinker = fileLinker
         this.logFileGenerator = logFileGenerator
     }
@@ -101,5 +102,9 @@ class CommandExecutor {
                 "Error while executing: '${c.commandForPublic}', in dir: '${c.runDir}', " +
                         "exit value: '${exitValue}'"
         )
+        if (exitValue != 0 && !c.failOnError) {
+            l.warn("Executor is set not to fail on error, but command exited with value not equal to '0': '$exitValue'." +
+                    " Might be potential problem, investigate error logs")
+        }
     }
 }
