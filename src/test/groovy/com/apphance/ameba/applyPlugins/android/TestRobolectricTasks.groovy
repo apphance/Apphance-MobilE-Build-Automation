@@ -22,11 +22,7 @@ class TestRobolectricTasks {
 
     @Before
     void cleanDirectories() {
-        //roboPath.deleteDir()
-        def f = new File(roboPath.path + '/build')
-        def bool = f.deleteDir()
-        println "Did I have deleted the build dir? ${bool} " + f.toString()
-
+        new File(roboPath.path + '/build').deleteDir()
     }
 
     @Test
@@ -46,7 +42,6 @@ class TestRobolectricTasks {
             String output = baos.toString('utf-8')
             assert output.contains("Running test: test myFirstRobolectricTest(com.apphance.amebaTest.android.MyFirstTest)")
             assert output.contains('BUILD SUCCESSFUL')
-            println output
         } finally {
             connection.close()
         }

@@ -31,8 +31,10 @@ class AndroidDependencyDetectionSpec extends Specification {
         given:
         def projectBuilder = ProjectBuilder.builder()
         projectBuilder.withProjectDir(new File('testProjects/android/android-basic'))
+
+        and:
         def project = projectBuilder.build()
-        project.project.plugins.apply(AmebaPlugin.class)
+        project.project.plugins.apply(AmebaPlugin)
 
         when:
         executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['ant', 'debug']))

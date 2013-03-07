@@ -1,11 +1,10 @@
 package com.apphance.ameba.applyPlugins.android
 
-import com.apphance.ameba.BaseTaskTest
 import com.apphance.ameba.plugins.AmebaPlugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 
-abstract class BaseAndroidTaskTest extends BaseTaskTest {
+abstract class BaseAndroidTaskTest {
 
     protected Project getProject(boolean variants = true) {
         ProjectBuilder projectBuilder = ProjectBuilder.builder()
