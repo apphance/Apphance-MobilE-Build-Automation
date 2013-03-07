@@ -1,4 +1,4 @@
-package com.apphance.ameba.runBuilds.android
+package com.apphance.ameba.integration.android
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.android.AndroidManifestHelper

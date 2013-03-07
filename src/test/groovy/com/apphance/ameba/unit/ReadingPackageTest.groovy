@@ -14,7 +14,6 @@ class ReadingPackageTest {
         currentPackage.sort()
         String[] packagesList = (String[]) [
                 'com.apphance.ameba',
-                'com.apphance.ameba.apphance.android',
                 'com.apphance.ameba.applyPlugins.android',
                 'com.apphance.ameba.applyPlugins.ios',
                 'com.apphance.ameba.conventions',
@@ -22,9 +21,10 @@ class ReadingPackageTest {
                 'com.apphance.ameba.executor',
                 'com.apphance.ameba.executor.linker',
                 'com.apphance.ameba.executor.log',
+                'com.apphance.ameba.integration.android',
+                'com.apphance.ameba.integration.apphance.android',
+                'com.apphance.ameba.integration.ios',
                 'com.apphance.ameba.plugins',
-                'com.apphance.ameba.runBuilds.android',
-                'com.apphance.ameba.runBuilds.ios',
                 'com.apphance.ameba.unit',
                 'com.apphance.ameba.unit.android',
                 'com.apphance.ameba.unit.apphance.android',

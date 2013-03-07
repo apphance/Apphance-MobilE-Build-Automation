@@ -1,4 +1,4 @@
-package com.apphance.ameba.runBuilds.ios
+package com.apphance.ameba.integration.ios
 
 import org.gradle.tooling.BuildException
 import org.gradle.tooling.ProjectConnection

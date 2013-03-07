@@ -1,4 +1,4 @@
-package com.apphance.ameba.applyPlugins.android
+package com.apphance.ameba.integration.android.robolectric
 
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector

@@ -1,4 +1,4 @@
-package com.apphance.ameba.runBuilds.android
+package com.apphance.ameba.integration.android.apphance
 
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection

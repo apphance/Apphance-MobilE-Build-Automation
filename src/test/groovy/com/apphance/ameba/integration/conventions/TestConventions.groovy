@@ -1,4 +1,4 @@
-package com.apphance.ameba.conventions
+package com.apphance.ameba.integration.conventions
 
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector

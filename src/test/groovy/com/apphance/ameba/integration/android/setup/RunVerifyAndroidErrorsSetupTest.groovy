@@ -1,4 +1,4 @@
-package com.apphance.ameba.runBuilds.android
+package com.apphance.ameba.integration.android.setup
 
 import org.gradle.tooling.BuildException
 import org.gradle.tooling.BuildLauncher

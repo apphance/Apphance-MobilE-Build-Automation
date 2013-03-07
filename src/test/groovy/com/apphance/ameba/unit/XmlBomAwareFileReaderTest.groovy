@@ -8,8 +8,9 @@ import static org.junit.Assert.assertNotNull
 class XmlBomAwareFileReaderTest {
     @Test
     public void readXMLWithBom() throws Exception {
-        File f = new File("testProjects/ios/testBom.plist")
-        def element = new XMLBomAwareFileReader().readXMLFileIncludingBom(f)
+        def fileUrl = getClass().getResource('testBom.plist')
+        def file = new File(fileUrl.file)
+        def element = new XMLBomAwareFileReader().readXMLFileIncludingBom(file)
         assertNotNull(element)
     }
 }
