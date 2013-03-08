@@ -1,7 +1,7 @@
 package com.apphance.ameba.detection
 
-import com.apphance.ameba.runBuilds.android.ExecuteAndroidBuildsTest
-import com.apphance.ameba.runBuilds.ios.ExecuteIosBuildsTest
+import com.apphance.ameba.integration.android.ExecuteAndroidBuildsTest
+import com.apphance.ameba.integration.ios.ExecuteIosBuildsTest
 import spock.lang.Specification
 import spock.lang.Unroll
 

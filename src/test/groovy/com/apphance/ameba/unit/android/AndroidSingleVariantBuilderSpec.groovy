@@ -1,4 +1,4 @@
-package com.apphance.ameba.applyPlugins.android
+package com.apphance.ameba.unit.android
 
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidBuildXmlHelper

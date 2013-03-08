@@ -1,4 +1,4 @@
-package com.apphance.ameba.unit.apphance.android
+package com.apphance.ameba.unit.android
 
 import com.apphance.ameba.android.AndroidManifestHelper
 import groovy.util.slurpersupport.GPathResult
