@@ -18,13 +18,13 @@ class PropertyCategory {
 
     static Logger logger = Logging.getLogger(PropertyCategory.class)
 
-    public static String listPropertiesAsString(Project project, Class<Enum> properties, boolean useComments) {
+    public static String listPropertiesAsString(Project project, Class<? extends Enum> properties, boolean useComments) {
         StringBuffer sb = new StringBuffer()
         listProperties(project, properties, useComments).each { sb << it + '\n' }
         return sb.toString()
     }
 
-    public static List<String> listProperties(Project project, Class<Enum> properties, boolean useComments, Properties extraProperties = null) {
+    public static List<String> listProperties(Project project, Class<? extends Enum> properties, boolean useComments, Properties extraProperties = null) {
         String description = properties.getField('DESCRIPTION').get(null)
         List<String> s = []
         s << "###########################################################"

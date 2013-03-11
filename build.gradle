@@ -126,6 +126,21 @@ configure(install.repositories.mavenInstaller) {
     pom.project { artifactId artifactId }
 }
 
+sourceSets {
+    testUnit {
+        groovy.srcDirs = [file('src/test/groovy/unit')]
+        resources.srcDirs = [file('src/test/resources')]
+    }
+    testIntegration {
+        groovy.srcDirs = [file('src/test/groovy/integration')]
+        resources.srcDirs = [file('src/test/resources')]
+    }
+    testFunctional {
+        groovy.srcDirs = [file('src/test/groovy/functional')]
+        resources.srcDirs = [file('src/test/resources')]
+    }
+}
+
 configurations { mail }
 
 dependencies {
@@ -153,6 +168,21 @@ dependencies {
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
     testRuntime 'cglib:cglib-nodep:2.2.2'
+
+    testUnitCompile sourceSets.main.output
+    testUnitCompile configurations.testCompile
+    testUnitCompile sourceSets.test.output
+    testUnitRuntime configurations.testRuntime
+
+    testIntegrationCompile sourceSets.main.output
+    testIntegrationCompile configurations.testCompile
+    testIntegrationCompile sourceSets.test.output
+    testIntegrationRuntime configurations.testRuntime
+
+    testFunctionalCompile sourceSets.main.output
+    testFunctionalCompile configurations.testCompile
+    testFunctionalCompile sourceSets.test.output
+    testFunctionalRuntime configurations.testRuntime
 }
 
 file('tmp').mkdirs()
@@ -161,24 +191,32 @@ task cleanTmp(type: Delete, description: 'Cleans tmp directory') {
     delete 'tmp'
 }
 
-gradle.addListener(new TestListener() {
+def beforeTestClosure = { descriptor ->
+    logger.lifecycle("Test -> class: ${descriptor.className}, name: '${descriptor.name}'")
+}
 
-    def l = Logging.getLogger(getClass())
+task testUnit(type: Test) {
+    testClassesDir = sourceSets.testUnit.output.classesDir
+    classpath = sourceSets.testUnit.runtimeClasspath
+    beforeTest(beforeTestClosure)
+}
 
-    @Override
-    void beforeSuite(TestDescriptor testDescriptor) {}
+task testIntegration(type: Test) {
+    testClassesDir = sourceSets.testIntegration.output.classesDir
+    classpath = sourceSets.testIntegration.runtimeClasspath
+    beforeTest(beforeTestClosure)
+}
 
-    @Override
-    void afterSuite(TestDescriptor testDescriptor, TestResult testResult) {}
+task testFunctional(type: Test) {
+    testClassesDir = sourceSets.testFunctional.output.classesDir
+    classpath = sourceSets.testFunctional.runtimeClasspath
+    beforeTest(beforeTestClosure)
+}
 
-    @Override
-    void beforeTest(TestDescriptor testDescriptor) {
-        l.lifecycle("Test -> class: ${testDescriptor.className}, name: '${testDescriptor.name}'")
-    }
+test {
+    beforeTest(beforeTestClosure)
+}
 
-    @Override
-    void afterTest(TestDescriptor testDescriptor, TestResult testResult) {}
-})
 
 idea {
     module {

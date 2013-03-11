@@ -39,7 +39,7 @@ class CommandSpec extends Specification {
         ['upload', '-u', 'user', '-p', 'pass', '/tmp/app.apk', '$YET_ANOTHER_ENV'] | ['upload', '-u', 'user', '-p', '$pass', '$file', '\\$YET_ANOTHER_ENV'] | [file: '/tmp/app.apk'] | [pass: 'pass'] | [YET_ANOTHER_ENV: 'sample_key']
     }
 
-    def 'building command for public failes for incorrect params'() {
+    def 'building command for public fails for incorrect params'() {
         when:
         new Command(cmd: ['ls', '-al', '$dir'], params: [dri: '/tmp']).commandForPublic
 

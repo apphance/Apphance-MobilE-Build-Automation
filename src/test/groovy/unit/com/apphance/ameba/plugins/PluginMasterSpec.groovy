@@ -38,7 +38,7 @@ class PluginMasterSpec extends Specification {
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
 
-        and: 'tell that project is Android'
+        and:
         projectTypeDetectorMock.detectProjectType(_) >> type
 
         when:
