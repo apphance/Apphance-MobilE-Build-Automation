@@ -1,6 +1,6 @@
 package com.apphance.ameba.di
 
-import com.apphance.ameba.executor.log.CommandLogFilesGenerator
+import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.google.inject.AbstractModule
 import com.google.inject.Provides
 import org.gradle.api.Project

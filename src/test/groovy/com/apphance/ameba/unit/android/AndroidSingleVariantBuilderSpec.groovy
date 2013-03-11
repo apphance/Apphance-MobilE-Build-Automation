@@ -5,9 +5,9 @@ import com.apphance.ameba.android.AndroidBuildXmlHelper
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.AndroidSingleVariantApkBuilder
-import com.apphance.ameba.executor.CommandExecutor
+import com.apphance.ameba.executor.command.CommandExecutor
+import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.SimpleFileLinker
-import com.apphance.ameba.executor.log.CommandLogFilesGenerator
 import com.apphance.ameba.plugins.AmebaPlugin
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.Project

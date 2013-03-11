@@ -1,7 +1,7 @@
 package com.apphance.ameba.ios.plugins.framework
 
 import com.apphance.ameba.PluginHelper
-import com.apphance.ameba.executor.CommandExecutor
+import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project

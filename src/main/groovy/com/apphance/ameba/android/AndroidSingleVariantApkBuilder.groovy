@@ -1,7 +1,7 @@
 package com.apphance.ameba.android
 
-import com.apphance.ameba.executor.Command
-import com.apphance.ameba.executor.CommandExecutor
+import com.apphance.ameba.executor.command.Command
+import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.Project
 
 /**

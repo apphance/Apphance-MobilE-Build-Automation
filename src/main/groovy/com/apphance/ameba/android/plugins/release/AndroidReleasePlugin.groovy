@@ -5,7 +5,7 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.*
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
-import com.apphance.ameba.executor.CommandExecutor
+import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration

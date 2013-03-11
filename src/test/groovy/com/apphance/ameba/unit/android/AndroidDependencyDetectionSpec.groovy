@@ -1,16 +1,16 @@
 package com.apphance.ameba.unit.android
 
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.executor.Command
-import com.apphance.ameba.executor.CommandExecutor
+import com.apphance.ameba.executor.command.Command
+import com.apphance.ameba.executor.command.CommandExecutor
+import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
-import com.apphance.ameba.executor.log.CommandLogFilesGenerator
 import com.apphance.ameba.plugins.AmebaPlugin
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.ERR
-import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.STD
+import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
+import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
 
 class AndroidDependencyDetectionSpec extends Specification {

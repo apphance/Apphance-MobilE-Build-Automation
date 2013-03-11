@@ -2,8 +2,8 @@ package com.apphance.ameba.ios.plugins.buildplugin
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.executor.Command
-import com.apphance.ameba.executor.CommandExecutor
+import com.apphance.ameba.executor.command.Command
+import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.ios.IOSBuilderInfo
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser

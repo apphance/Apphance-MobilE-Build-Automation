@@ -1,6 +1,6 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
-import com.apphance.ameba.executor.CommandExecutor
+import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.plugins.release.IOSReleaseListener
 import org.gradle.api.Project

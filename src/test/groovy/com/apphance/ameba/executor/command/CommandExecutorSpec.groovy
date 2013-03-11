@@ -1,11 +1,10 @@
-package com.apphance.ameba.executor
+package com.apphance.ameba.executor.command
 
 import com.apphance.ameba.executor.linker.FileLinker
-import com.apphance.ameba.executor.log.CommandLogFilesGenerator
 import spock.lang.Specification
 
-import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.ERR
-import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.STD
+import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
+import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
 
 class CommandExecutorSpec extends Specification {

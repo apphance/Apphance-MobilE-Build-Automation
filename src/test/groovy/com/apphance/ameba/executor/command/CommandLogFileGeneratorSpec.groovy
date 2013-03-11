@@ -1,9 +1,9 @@
-package com.apphance.ameba.executor.log
+package com.apphance.ameba.executor.command
 
 import spock.lang.Specification
 
-import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.ERR
-import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.STD
+import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
+import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.lang.System.getProperties
 
 class CommandLogFileGeneratorSpec extends Specification {

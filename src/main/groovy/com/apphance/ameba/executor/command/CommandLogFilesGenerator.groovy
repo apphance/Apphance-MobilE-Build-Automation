@@ -1,12 +1,13 @@
-package com.apphance.ameba.executor.log
+package com.apphance.ameba.executor.command
 
 import com.apphance.ameba.util.Preconditions
 
 import javax.inject.Inject
 import java.util.concurrent.atomic.AtomicInteger
 
-import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.ERR
-import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.STD
+import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
+import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
+
 
 @Mixin(Preconditions)
 class CommandLogFilesGenerator {
@@ -14,8 +15,7 @@ class CommandLogFilesGenerator {
     private AtomicInteger fileCounter = new AtomicInteger()
     private File logDir
 
-    @Inject
-    CommandLogFilesGenerator(File logDir) {
+    @Inject CommandLogFilesGenerator(File logDir) {
         this.logDir = logDir
     }
 

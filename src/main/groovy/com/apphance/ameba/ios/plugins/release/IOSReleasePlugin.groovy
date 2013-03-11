@@ -3,7 +3,7 @@ package com.apphance.ameba.ios.plugins.release
 import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.executor.CommandExecutor
+import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser

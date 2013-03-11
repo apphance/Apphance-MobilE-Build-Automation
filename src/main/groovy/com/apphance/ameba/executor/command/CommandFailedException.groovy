@@ -1,4 +1,4 @@
-package com.apphance.ameba.executor
+package com.apphance.ameba.executor.command
 
 class CommandFailedException extends RuntimeException {
 

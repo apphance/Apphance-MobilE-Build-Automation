@@ -1,15 +1,13 @@
-package com.apphance.ameba.executor
+package com.apphance.ameba.executor.command
 
 import com.apphance.ameba.executor.linker.FileLinker
-import com.apphance.ameba.executor.log.CommandLogFilesGenerator
 import com.apphance.ameba.util.Preconditions
 import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile
-import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.ERR
-import static com.apphance.ameba.executor.log.CommandLogFilesGenerator.LogFile.STD
+import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
+import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.lang.System.getProperties
 
 @Mixin(Preconditions)
@@ -20,8 +18,7 @@ class CommandExecutor {
     private FileLinker fileLinker
     private CommandLogFilesGenerator logFileGenerator
 
-    @Inject
-    CommandExecutor(FileLinker fileLinker, CommandLogFilesGenerator logFileGenerator) {
+    @Inject CommandExecutor(FileLinker fileLinker, CommandLogFilesGenerator logFileGenerator) {
         this.fileLinker = fileLinker
         this.logFileGenerator = logFileGenerator
     }
@@ -61,7 +58,7 @@ class CommandExecutor {
         commandLogs[STD].readLines()
     }
 
-    private Process runCommand(Command c, Map<LogFile, File> commandLog) {
+    private Process runCommand(Command c, Map<CommandLogFilesGenerator.LogFile, File> commandLog) {
         Process process = null
 
         try {

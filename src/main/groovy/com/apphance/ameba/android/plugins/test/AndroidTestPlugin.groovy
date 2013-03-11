@@ -7,8 +7,8 @@ import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
-import com.apphance.ameba.executor.Command
-import com.apphance.ameba.executor.CommandExecutor
+import com.apphance.ameba.executor.command.Command
+import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.util.file.FileManager
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.GradleException

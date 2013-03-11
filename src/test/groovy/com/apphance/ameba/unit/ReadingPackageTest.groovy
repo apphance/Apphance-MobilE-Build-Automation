@@ -14,9 +14,9 @@ class ReadingPackageTest {
         println currentPackage
         String[] packagesList = [
                 'com.apphance.ameba.detection',
-                'com.apphance.ameba.executor',
+                'com.apphance.ameba.executor.command',
+                'com.apphance.ameba.executor.jython',
                 'com.apphance.ameba.executor.linker',
-                'com.apphance.ameba.executor.log',
                 'com.apphance.ameba.integration.android',
                 'com.apphance.ameba.integration.android.apphance',
                 'com.apphance.ameba.integration.android.robolectric',
@@ -30,7 +30,7 @@ class ReadingPackageTest {
                 'com.apphance.ameba.unit',
                 'com.apphance.ameba.unit.android',
                 'com.apphance.ameba.unit.ios',
-                'com.apphance.ameba.util'].sort() as String[]
+        ].sort() as String[]
         currentPackage.sort()
         assertArrayEquals(currentPackage.toString(), packagesList, (String[]) currentPackage)
     }
