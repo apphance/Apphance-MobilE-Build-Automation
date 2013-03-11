@@ -111,6 +111,10 @@ uploadArchives {
                         id 'maciej.opala'
                         name 'Maciej Opala'
                     }
+                    developer {
+                        id 'arkadiusz.konior'
+                        name 'Arkadiusz Konior'
+                    }
                 }
             }
 
