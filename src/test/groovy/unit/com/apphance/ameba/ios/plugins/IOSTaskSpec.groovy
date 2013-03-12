@@ -1,4 +1,4 @@
-package com.apphance.ameba.unit.ios
+package com.apphance.ameba.ios.plugins
 
 import com.apphance.ameba.plugins.AmebaPlugin
 import org.gradle.testfixtures.ProjectBuilder

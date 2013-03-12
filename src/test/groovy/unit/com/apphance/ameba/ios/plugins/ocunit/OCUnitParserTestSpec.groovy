@@ -1,13 +1,12 @@
-package com.apphance.ameba.unit.ios
+package com.apphance.ameba.ios.plugins.ocunit
 
-import com.apphance.ameba.ios.plugins.ocunit.OCUnitParser
-import org.junit.Test
+import spock.lang.Shared
+import spock.lang.Specification
 
-import static org.junit.Assert.assertEquals
+class OCUnitParserTestSpec extends Specification {
 
-class OCUnitParserTest {
-
-    String TEST_RESULT = '''
+    @Shared
+    def TEST_RESULT = '''
 MapTiles/MapTiles.128.LoDPI.sqlitedb:  tile data will not be cached
 Run test suite /Users/potiuk/Documents/workspace/SomeApp/build/Debug-iphonesimulator/UnitTests.octest(Tests)
 Test Suite '/Users/potiuk/Documents/workspace/SomeApp/build/Debug-iphonesimulator/UnitTests.octest(Tests)' started at 2011-10-03 00:24:38 +0000
@@ -91,15 +90,14 @@ Touch build/Debug-iphonesimulator/UnitTests.octest
     /usr/bin/touch -c /Users/potiuk/Documents/workspace/SomeApp/build/Debug-iphonesimulator/UnitTests.octest
 '''
 
-    @Test
-    void testParsingOutput() {
-        OCUnitParser parser = new OCUnitParser()
+    def 'reads test suites'() {
+        given:
+        def parser = new OCUnitParser()
+
+        when:
         parser.parse(TEST_RESULT.split('\n') as List)
-        assertEquals([
-                'SMSomeTest',
-                'SMCoreDataHandlerTest',
-                'SMModelSharedTest',
-                'UnitTests'
-        ], parser.testSuites.collect { it.name })
+
+        then:
+        ['SMSomeTest', 'SMCoreDataHandlerTest', 'SMModelSharedTest', 'UnitTests'] == parser.testSuites.collect { it.name }
     }
 }

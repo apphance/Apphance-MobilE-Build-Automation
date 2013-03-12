@@ -1,53 +1,59 @@
-package com.apphance.ameba.unit.ios
+package com.apphance.ameba.ios
 
-import com.apphance.ameba.ios.MPParser
 import groovy.xml.DOMBuilder
-import org.hamcrest.core.IsEqual
-import org.junit.Before
-import org.junit.Test
+import spock.lang.Shared
+import spock.lang.Specification
 
 import javax.xml.parsers.DocumentBuilderFactory
 
-import static org.junit.Assert.assertNotNull
-import static org.junit.Assert.assertThat
+class MPParserSpec extends Specification {
 
-class MPParserTest {
-
+    @Shared
     URL provisioningFile
+    @Shared
     URL plistFile
 
-    @Before
-    void setUp() {
+    def setupSpec() {
         provisioningFile = this.getClass().getResource("Test.mobileprovision")
         plistFile = this.getClass().getResource("Test.plist")
     }
 
-    @Test
-    public void testXMLExtraction() throws Exception {
-        String xml = MPParser.extractXML(provisioningFile)
+    def 'extracts xml'() {
+        given:
+        def xml = MPParser.extractXML(provisioningFile)
+
+        and:
         def builderFactory = DocumentBuilderFactory.newInstance()
         builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
         builderFactory.setFeature("http://xml.org/sax/features/validation", false)
         def root = new DOMBuilder(builderFactory.newDocumentBuilder()).parseText(xml)
-        assertNotNull(root)
+
+        expect:
+        root
     }
 
-    @Test
-    public void testBundleIdReading() throws Exception {
-        String bundleId = MPParser.readBundleIdFromProvisionFile(provisioningFile)
-        assertThat(bundleId, new IsEqual("com.apphance.Some"))
+    def 'reads bundle id from provisioning profile'() {
+        given:
+        def bundleId = MPParser.readBundleIdFromProvisionFile(provisioningFile)
+
+        expect:
+        'com.apphance.Some' == bundleId
     }
 
-    @Test
-    public void testBundleIdReadingFromPlistFile() throws Exception {
-        String bundleId = MPParser.readBundleIdFromPlist(plistFile)
-        assertThat(bundleId, new IsEqual("com.apphance.Some"))
+    def 'reads bundle id from plist file'() {
+        given:
+        def bundleId = MPParser.readBundleIdFromPlist(plistFile)
+
+        expect:
+        'com.apphance.Some' == bundleId
     }
 
-    @Test
-    public void testUdidReading() throws Exception {
-        def udids = MPParser.readUdids(provisioningFile)
-        assertThat(udids, new IsEqual([
+    def 'reads udid'() {
+        given:
+        def udid = MPParser.readUdids(provisioningFile)
+
+        expect:
+        [
                 "2b4af846e1519701a8cf0ef3602e7178ce5c6266",
                 "3a47a18141e37f24319d686a672c66eafa242919",
                 "defbf303c7a284a2746f39a3a30eb9baf9c37949",
@@ -83,6 +89,6 @@ class MPParserTest {
                 "6baca380803e1498470b309863d0990bfc6c5fd5",
                 "d236d087781bf2d33426e227ceb1bbf84d60f862",
                 "57a2821a2ff87efc075a15e48182ee8321494780"
-        ]))
+        ] == udid
     }
 }

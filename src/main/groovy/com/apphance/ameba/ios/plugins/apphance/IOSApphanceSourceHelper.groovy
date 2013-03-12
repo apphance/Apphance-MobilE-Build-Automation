@@ -9,17 +9,6 @@ import org.gradle.api.logging.Logging
 class IOSApphanceSourceHelper {
     static Logger logger = Logging.getLogger(IOSApphanceSourceHelper.class)
 
-    def findAppDelegateFile(File projectRootDirectory) {
-        def appFilename = []
-        projectRootDirectory.traverse([type: FileType.FILES, maxDepth: FileManager.MAX_RECURSION_LEVEL]) {
-            if (it.name.endsWith(".h") && it.text.contains("UIApplicationDelegate")) {
-                appFilename << it.canonicalPath
-                logger.lifecycle("Application delegate found in file " + it)
-            }
-        }
-        return appFilename
-    }
-
     void addApphanceInit(File projectRootDirectory, String appKey, String apphanceMode = "apphanceMode:kAPHApphanceModeQA") {
         def appFilename = findAppDelegateFile(projectRootDirectory)
 
@@ -40,6 +29,17 @@ class IOSApphanceSourceHelper {
                 logger.warn("Could not find ${it} app delegate class. NOT ADDING Apphance initialisation!")
             }
         }
+    }
+
+    def findAppDelegateFile(File projectRootDirectory) {
+        def appFilename = []
+        projectRootDirectory.traverse([type: FileType.FILES, maxDepth: FileManager.MAX_RECURSION_LEVEL]) {
+            if (it.name.endsWith(".h") && it.text.contains("UIApplicationDelegate")) {
+                appFilename << it.canonicalPath
+                logger.lifecycle("Application delegate found in file " + it)
+            }
+        }
+        return appFilename
     }
 
     String addApphanceToFile(File appDelegateFile, File newAppDelegateFile, String appKey, String apphanceMode = "apphanceMode:kAPHApphanceModeQA") {

@@ -57,8 +57,9 @@ Copyright (C) 2011 Apple Inc. All Rights Reserved.
 @synthesize window;
 @synthesize tabBarController;
 
-- (void)applicationDidFinishLaunching:(UIApplication *)application 
-{	
+- (void)applicationDidFinishLaunching:(UIApplication *)application
+{
+
     /* Override point for customization after app. launch. */
 
     /* Add the tab bar controller's current view as a subview of the window. */

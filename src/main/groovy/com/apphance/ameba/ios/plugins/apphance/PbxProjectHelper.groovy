@@ -76,7 +76,6 @@ class PbxProjectHelper {
         StringBuffer outBuff = new StringBuffer()
         proc.waitForProcessOutput(outBuff, null)
         XmlParser parser = new XmlParser(false, false)
-        logger.debug("Received: ${outBuff}")
         def root = parser.parseText(outBuff.toString())
         return root
     }

@@ -163,7 +163,7 @@ dependencies {
 
     runtime 'org.apache.ant:ant-javamail:1.8.4', 'javax.activation:activation:1.1.1'
 
-    testCompile('org.spockframework:spock-core:0.6-groovy-1.8') {
+    testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
