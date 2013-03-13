@@ -1,53 +1,41 @@
 package com.apphance.ameba.android
 
-import com.apphance.ameba.android.AndroidManifestHelper
-import groovy.util.slurpersupport.GPathResult
-import org.junit.Test
+import org.apache.commons.io.FileUtils
+import spock.lang.Specification
 
-import static org.junit.Assert.*
-
-class AddApphanceTest {
+class AddApphanceTest extends Specification{
 
     File noApphanceNoApplicationDirectory = new File('testProjects/android/android-no-apphance-no-application')
     File tmpDir = new File('tmp/testApphance')
-
-    private def deleteRecursive(File f) {
-        if (f.exists()) {
-            f.eachDir({ deleteRecursive(it) })
-            f.eachFile { it.delete() }
-        }
-    }
+    def helper = new AndroidManifestHelper()
 
     private void copySources(File source, File destination) {
-        deleteRecursive(destination)
+        FileUtils.deleteDirectory(destination)
         destination.mkdirs()
         new AntBuilder().copy(todir: destination) { fileset(dir: source) }
     }
 
-    @Test
-    void addManifestTest() {
+    def "add manifest test"() {
+        given:
         copySources(noApphanceNoApplicationDirectory, tmpDir)
-        AndroidManifestHelper helper = new AndroidManifestHelper()
-        assertFalse(helper.isApphanceInstrumentationPresent(noApphanceNoApplicationDirectory))
-        File androidManifest = new File(tmpDir, 'AndroidManifest.xml')
-        helper.addApphance(tmpDir)
-        XmlSlurper slurper = new XmlSlurper()
-        GPathResult manifest = slurper.parse(androidManifest)
-        def getTasks = manifest."uses-permission".findAll {
-            it.@'android:name'.equals("android.permission.GET_TASKS")
-        }
-        assertEquals(1, getTasks.size())
 
-        def readPhone = manifest."uses-permission".findAll {
-            it.@'android:name'.equals("android.permission.READ_PHONE_STATE")
-        }
-        assertEquals(1, readPhone.size())
-        assertTrue(helper.isApphanceInstrumentationPresent(tmpDir))
+        expect:
+        !helper.isApphanceInstrumentationPresent(noApphanceNoApplicationDirectory)
+
+        when:
+        helper.addApphance(tmpDir)
+        def manifest = new XmlSlurper().parse(new File(tmpDir, 'AndroidManifest.xml'))
+        def getTasks = manifest."uses-permission".findAll { it.@'android:name'.equals("android.permission.GET_TASKS") }
+        def readPhone = manifest."uses-permission".findAll { it.@'android:name'.equals("android.permission.READ_PHONE_STATE") }
+
+        then:
+        helper.isApphanceInstrumentationPresent(tmpDir)
+        1 == getTasks.size()
+        1 == readPhone.size()
     }
 
-    @Test
-    void checkApphanceInstrumentation() {
-        AndroidManifestHelper helper = new AndroidManifestHelper()
-        assertTrue(helper.isApphanceInstrumentationPresent(new File('testProjects/android/android-basic')))
+    def "check Apphance instrumentation"() {
+        expect:
+        AndroidManifestHelper.isApphanceInstrumentationPresent(new File('testProjects/android/android-basic'))
     }
 }

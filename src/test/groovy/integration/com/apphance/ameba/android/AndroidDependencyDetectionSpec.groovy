@@ -1,6 +1,5 @@
 package com.apphance.ameba.android
 
-import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
@@ -42,8 +41,7 @@ class AndroidDependencyDetectionSpec extends Specification {
 
         then:
         androidConf.sdkDirectory
-        ['FlurryAgent.jar', 'development-apphance.jar'] == androidConf.libraryJars.collect { it.name }
-        ['subproject', 'subsubproject'] == androidConf.linkedLibraryJars.collect { it.parentFile.parentFile.name }
-
+        ['FlurryAgent.jar', 'development-apphance.jar'] == androidConf.libraryJars*.name
+        ['subproject', 'subsubproject'] == androidConf.linkedLibraryJars*.parentFile.parentFile.name
     }
 }

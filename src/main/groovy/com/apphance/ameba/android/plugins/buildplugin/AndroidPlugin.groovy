@@ -132,19 +132,23 @@ class AndroidPlugin implements Plugin<Project> {
     }
 
     private void extractAvailableTargets(Project project) {
-        List result = executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['android',
-                'list',
-                'target']))
+        List<String> result = executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['android', 'list', 'target']))
+
+        androidConf.availableTargets = extractAvailableTargets(result.join('\n'))
+    }
+
+    public static List<String> extractAvailableTargets(String output) {
         def targets = []
         def targetPattern = /id:.*"(.*)"/
         def targetPrefix = 'id:'
-        result.each {
+        output.eachLine {
             def targetMatcher = (it =~ targetPattern)
             if (it.startsWith(targetPrefix) && targetMatcher.matches()) {
                 targets << targetMatcher[0][1]
             }
         }
-        androidConf.availableTargets = targets.sort()
+
+        targets.sort()
     }
 
     private void updateSdkJars() {
