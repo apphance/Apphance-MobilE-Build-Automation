@@ -1,14 +1,13 @@
 package com.apphance.ameba.android.plugins.apphance
 
-import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.android.AndroidSingleVariantApkBuilder
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
-import com.apphance.ameba.android.plugins.test.ApphanceNetworkHelper
+import com.apphance.ameba.android.plugins.apphance.tasks.AndroidLogsConverter
+import com.apphance.ameba.android.plugins.apphance.tasks.ApphanceArtifactUploader
+import com.apphance.ameba.android.plugins.apphance.tasks.ApphanceLogsConverter
 import com.apphance.ameba.apphance.ApphancePluginUtil
 import com.apphance.ameba.apphance.PrepareApphanceSetupOperation
 import com.apphance.ameba.apphance.ShowApphancePropertiesOperation
@@ -17,13 +16,9 @@ import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.apphance.ameba.util.Preconditions
-import groovy.json.JsonSlurper
-import org.apache.http.util.EntityUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
@@ -31,6 +26,7 @@ import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVI
 import static com.apphance.ameba.apphance.ApphanceProperty.*
 import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Adds Apphance in automated way.
@@ -45,7 +41,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     private static String EVENT_LOG_WIDGET_PACKAGE = 'com.apphance.android.eventlog.widget'
     private static String EVENT_LOG_ACTIVITY_PACKAGE = 'com.apphance.android.eventlog.activity'
 
-    static Logger l = Logging.getLogger(AndroidApphancePlugin.class)
+    def l = getLogger(getClass())
 
     @Inject
     CommandExecutor executor
@@ -58,22 +54,20 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        PluginHelper.checkAllPluginsAreLoaded(project, getClass(), AndroidPlugin.class)
-        use(PropertyCategory) {
-            this.releaseConfiguration = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
-            this.conf = project.getProjectConfiguration()
-            this.manifestHelper = new AndroidManifestHelper()
-            this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
+//        PluginHelper.checkAllPluginsAreLoaded(project, getClass(), AndroidPlugin.class)
+        this.releaseConfiguration = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
+        this.conf = PropertyCategory.getProjectConfiguration(project)
+        this.manifestHelper = new AndroidManifestHelper()
+        this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
 
-            addApphanceConfiguration(project)
-            preProcessBuildsWithApphance(project)
-            prepareConvertLogsToApphance(project)
-            prepareConvertLogsToAndroid(project)
-            prepareRemoveApphanceFromManifest(project)
-            project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
-            project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
-            project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
-        }
+        addApphanceConfiguration(project)
+        preProcessBuildsWithApphance(project)
+        prepareConvertLogsToApphanceTask(project)
+        prepareConvertLogsToAndroidTask(project)
+        prepareRemoveApphanceFromManifest(project)
+        project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
+        project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
+        project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
     }
 
     private void preProcessBuildsWithApphance(Project project) {
@@ -95,12 +89,12 @@ class AndroidApphancePlugin implements Plugin<Project> {
                     def task = project["buildRelease-$variant"]
                     task.doFirst {
                         removeApphanceFromManifest(dir)
-                        replaceLogsWithAndroid(dir, project.ant)
+                        new AndroidLogsConverter(project.ant).convertLogsToAndroid(dir)
                     }
                 }
             }
             uploadTasksToAdd.each { key, value ->
-                prepareSingleBuildUpload(project, value, project."${key}")
+                prepareSingleBuildUploadTask(project, value, project."${key}")
             }
         }
     }
@@ -116,7 +110,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
             boolean isActivity
             (mainFile, isActivity) = getMainApplicationFile(directory)
             if (mainFile != null) {
-                replaceLogsWithApphance(directory, project.ant)
+                new ApphanceLogsConverter(project.ant).convertLogsToApphance(directory)
                 if (logEvents) {
                     replaceViewsWithApphance(directory, project.ant)
                 }
@@ -372,34 +366,18 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
         : 'Apphance.Mode.Silent'
     }
 
-    void prepareConvertLogsToApphance(project) {
+    void prepareConvertLogsToApphanceTask(Project project) {
         def task = project.task('convertLogsToApphance')
         task.description = 'Converts all logs to apphance from android logs for the source project'
         task.group = AMEBA_APPHANCE_SERVICE
-        task << { replaceLogsWithApphance(project.rootDir, project.ant) }
+        task.doLast { new ApphanceLogsConverter(project.ant).convertLogsToApphance(project.rootDir) }
     }
 
-    private replaceLogsWithApphance(File directory, AntBuilder ant) {
-        l.lifecycle("Replacing Android logs with Apphance in: $directory")
-        ant.replace(casesensitive: 'true', token: 'import android.util.Log;',
-                value: 'import com.apphance.android.Log;', summary: true) {
-            fileset(dir: new File(directory, 'src')) { include(name: '**/*.java') }
-        }
-    }
-
-    void prepareConvertLogsToAndroid(project) {
+    void prepareConvertLogsToAndroidTask(Project project) {
         def task = project.task('convertLogsToAndroid')
         task.description = 'Converts all logs to android from apphance logs for the source project'
         task.group = AMEBA_APPHANCE_SERVICE
-        task << { replaceLogsWithAndroid(project.rootDir, project.ant) }
-    }
-
-    private replaceLogsWithAndroid(File directory, AntBuilder ant) {
-        l.lifecycle("Replacing apphance logs with android in: $directory")
-        ant.replace(casesensitive: 'true', token: 'import com.apphance.android.Log;',
-                value: 'import android.util.Log;', summary: true) {
-            fileset(dir: new File(directory, 'src')) { include(name: '**/*.java') }
-        }
+        task.doLast { new AndroidLogsConverter(project.ant).convertLogsToAndroid(project.rootDir) }
     }
 
     private prepareRemoveApphanceFromManifest(project) {
@@ -427,55 +405,15 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
         apphanceRemovedManifest << new File(directory, 'AndroidManifest.xml').text
     }
 
-    void prepareSingleBuildUpload(Project project, String variantName, buildTask) {
-
-        def uploadTask = project.task("upload${variantName.toLowerCase().capitalize()}")
-
-        uploadTask.description = 'Uploads apk & image_montage to Apphance server'
-        uploadTask.group = AMEBA_APPHANCE_SERVICE
-
-        uploadTask << {
-
-            def builder = new AndroidSingleVariantApkBuilder(project, androidConf, executor)
-            def builderInfo = builder.buildApkArtifactBuilderInfo(variantName, 'Debug')
-            def releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
-
-            //TODO gradle.properties + validation
-            String user = project['apphanceUserName']
-            String pass = project['apphancePassword']
-            //TODO gradle.properties + validation
-
-            String key = project[APPLICATION_KEY.propertyName]
-            ApphanceNetworkHelper networkHelper = null
-
-            try {
-                networkHelper = new ApphanceNetworkHelper(user, pass)
-
-                def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false, ['apk', 'image_montage'])
-                l.lifecycle("Upload version query response: ${response.statusLine}")
-
-                throwIfCondition(!response.entity, "Error while uploading version query, empty response received")
-
-                def resp = new JsonSlurper().parseText(response.entity.content.text)
-
-                response = networkHelper.uploadResource(builderInfo.originalFile, resp.update_urls.apk, 'apk')
-                l.lifecycle("Upload apk response: ${response.statusLine}")
-                EntityUtils.consume(response.entity)
-
-                response = networkHelper.uploadResource(releaseConf.imageMontageFile.location, resp.update_urls.image_montage, 'image_montage')
-                l.lifecycle("Upload image_montage response: ${response.statusLine}")
-                EntityUtils.consume(response.entity)
-
-            } catch (e) {
-                def msg = "Error while uploading artifact to apphance: ${e.message}"
-                l.error(msg)
-                throw new GradleException(msg)
-            } finally {
-                networkHelper?.closeConnection()
-            }
+    void prepareSingleBuildUploadTask(Project project, String variantName, buildTask) {
+        def task = project.task("upload${variantName.toLowerCase().capitalize()}")
+        task.description = 'Uploads apk & image_montage to Apphance server'
+        task.group = AMEBA_APPHANCE_SERVICE
+        task.doLast {
+            new ApphanceArtifactUploader(project, executor).uploadArtifact(variantName)
         }
-        uploadTask.dependsOn(buildTask)
-        uploadTask.dependsOn('prepareImageMontage')
+        task.dependsOn(buildTask)
+        task.dependsOn('prepareImageMontage')
     }
 
     static public final String DESCRIPTION =
