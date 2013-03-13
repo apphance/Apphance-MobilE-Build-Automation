@@ -1,4 +1,4 @@
-package com.apphance.ameba.unit.android
+package com.apphance.ameba.android
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
