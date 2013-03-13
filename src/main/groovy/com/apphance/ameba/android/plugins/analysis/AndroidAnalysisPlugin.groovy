@@ -1,10 +1,8 @@
 package com.apphance.ameba.android.plugins.analysis
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -26,7 +24,6 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
     AndroidProjectConfiguration androidConf
 
     public void apply(Project project) {
-        PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         def androidAnalysisConvention = new AndroidAnalysisConvention()
         project.convention.plugins.put('androidAnalysis', androidAnalysisConvention)
         this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)

@@ -1,6 +1,5 @@
 package com.apphance.ameba.ios.plugins.release
 
-import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.executor.command.CommandExecutor
@@ -11,7 +10,6 @@ import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
-import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.apphance.ameba.util.file.FileManager
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.AntBuilder
@@ -43,7 +41,6 @@ class IOSReleasePlugin implements Plugin<Project> {
 
     @Override
     def void apply(Project project) {
-        PluginHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class, ProjectReleasePlugin.class)
         this.conf = PropertyCategory.getProjectConfiguration(project)
         this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
         this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)

@@ -1,7 +1,6 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.executor.command.Command
@@ -45,7 +44,6 @@ class IOSPlugin implements Plugin<Project> {
 
     @Override
     def void apply(Project project) {
-        PluginHelper.checkAllPluginsAreLoaded(project, this.class, ProjectConfigurationPlugin.class)
         use(PropertyCategory) {
             this.conf = project.getProjectConfiguration()
             this.iosConf = getIosProjectConfiguration(project)

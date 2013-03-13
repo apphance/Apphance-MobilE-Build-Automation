@@ -1,6 +1,5 @@
 package com.apphance.ameba.ios.plugins.ocunit
 
-import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.executor.command.Command
@@ -33,7 +32,6 @@ class IOSUnitTestPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        PluginHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
         use(PropertyCategory) {
             this.project = project
             this.conf = project.getProjectConfiguration()

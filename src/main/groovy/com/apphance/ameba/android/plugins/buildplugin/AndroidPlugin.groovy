@@ -1,12 +1,10 @@
 package com.apphance.ameba.android.plugins.buildplugin
 
-import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.*
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -41,8 +39,6 @@ class AndroidPlugin implements Plugin<Project> {
 
     @Override
     def void apply(Project project) {
-
-        PluginHelper.checkAllPluginsAreLoaded(project, this.class, ProjectConfigurationPlugin.class)
 
         this.conf = PropertyCategory.getProjectConfiguration(project)
         this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)

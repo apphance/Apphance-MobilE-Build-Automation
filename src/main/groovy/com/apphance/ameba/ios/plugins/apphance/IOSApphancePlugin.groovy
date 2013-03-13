@@ -1,6 +1,5 @@
 package com.apphance.ameba.ios.plugins.apphance
 
-import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.plugins.test.ApphanceNetworkHelper
@@ -50,7 +49,6 @@ class IOSApphancePlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        PluginHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
         use(PropertyCategory) {
             this.conf = project.getProjectConfiguration()
             this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)

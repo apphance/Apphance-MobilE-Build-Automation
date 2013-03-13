@@ -1,15 +1,12 @@
 package com.apphance.ameba.android.plugins.release
 
-import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.*
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
-import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.apphance.ameba.util.file.FileManager
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.Plugin
@@ -44,7 +41,6 @@ class AndroidReleasePlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         androidEnvironment = new AndroidEnvironment(project)
-        PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class, ProjectReleasePlugin.class)
         use(PropertyCategory) {
             this.project = project
             this.conf = project.getProjectConfiguration()

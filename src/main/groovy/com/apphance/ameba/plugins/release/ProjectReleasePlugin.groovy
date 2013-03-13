@@ -1,13 +1,10 @@
 package com.apphance.ameba.plugins.release
 
 import com.apphance.ameba.ImageNameFilter
-import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import com.apphance.ameba.util.file.FileManager
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -36,7 +33,6 @@ class ProjectReleasePlugin implements Plugin<Project> {
     ProjectReleaseConfiguration releaseConf
 
     void apply(Project project) {
-        PluginHelper.checkAnyPluginIsLoaded(project, getClass(), AndroidPlugin.class, IOSPlugin.class)
         conf = PropertyCategory.getProjectConfiguration(project)
         releaseConf = ProjectReleaseCategory.retrieveProjectReleaseData(project)
         prepareMailConfiguration(project)

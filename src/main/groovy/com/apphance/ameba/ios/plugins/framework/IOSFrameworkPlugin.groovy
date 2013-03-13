@@ -1,8 +1,6 @@
 package com.apphance.ameba.ios.plugins.framework
 
-import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -23,7 +21,6 @@ class IOSFrameworkPlugin implements Plugin<Project> {
     CommandExecutor executor
 
     def void apply(Project project) {
-        PluginHelper.checkAllPluginsAreLoaded(project, this.class, IOSPlugin.class)
 
         def task = project.task('buildFramework',
                 group: AMEBA_BUILD,

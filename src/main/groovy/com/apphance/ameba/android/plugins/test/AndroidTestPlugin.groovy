@@ -1,12 +1,10 @@
 package com.apphance.ameba.android.plugins.test
 
-import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidBuildXmlHelper
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.util.file.FileManager
@@ -71,7 +69,6 @@ class AndroidTestPlugin implements Plugin<Project> {
     Project project
 
     public void apply(Project project) {
-        PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         this.project = project
         this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         this.androidManifestHelper = new AndroidManifestHelper()

@@ -1,13 +1,11 @@
 package com.apphance.ameba.android.plugins.jarlibrary
 
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.PluginHelper
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -27,7 +25,6 @@ class AndroidJarLibraryPlugin implements Plugin<Project> {
     String jarLibraryPrefix
 
     public void apply(Project project) {
-        PluginHelper.checkAllPluginsAreLoaded(project, this.class, AndroidPlugin.class)
         use(PropertyCategory) {
             this.conf = project.getProjectConfiguration()
             this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
