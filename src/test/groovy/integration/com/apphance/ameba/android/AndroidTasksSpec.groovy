@@ -56,14 +56,7 @@ class AndroidTasksSpec extends Specification {
             'updateProject',
             'copySources',
     ]
-
-    @Shared
-    def apphanceTasks = [
-            'convertLogsToAndroid',
-            'convertLogsToApphance',
-            'uploadDebug',
-    ]
-
+   
     @Shared
     def buildTasks = [
             'cleanAndroid',
@@ -150,7 +143,6 @@ class AndroidTasksSpec extends Specification {
         projectSimple          | analysisTasks   | [AMEBA_ANALYSIS] * analysisTasks.size()
         projectSimple          | jarLibraryTasks | [AMEBA_BUILD] * jarLibraryTasks.size()
         projectWithoutVariants | noVariantTasks  | [AMEBA_BUILD] * noVariantTasks.size()
-        projectWithoutVariants | apphanceTasks   | [AMEBA_APPHANCE_SERVICE] * apphanceTasks.size()
         projectSimple          | buildTasks      | [AMEBA_BUILD] * buildTasks.size()
         projectSimple          | confTasks       | [AMEBA_CONFIGURATION] * confTasks.size()
         projectSimple          | setupTasks      | [AMEBA_SETUP] * setupTasks.size()
