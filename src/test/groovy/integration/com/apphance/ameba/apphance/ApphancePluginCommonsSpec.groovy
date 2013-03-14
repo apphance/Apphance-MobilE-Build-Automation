@@ -5,10 +5,10 @@ import spock.lang.Specification
 
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
-class ApphancePluginUtilSpec extends Specification {
+class ApphancePluginCommonsSpec extends Specification {
 
     @Shared
-    def pluginUtil = new ApphancePluginUtil()
+    def pluginUtil = new ApphancePluginCommons()
 
     def 'adds apphance configuration and repositories to project'() {
         given:

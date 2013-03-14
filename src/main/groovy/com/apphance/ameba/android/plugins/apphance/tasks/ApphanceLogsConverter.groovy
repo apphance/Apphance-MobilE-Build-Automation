@@ -2,13 +2,14 @@ package com.apphance.ameba.android.plugins.apphance.tasks
 
 import static org.gradle.api.logging.Logging.getLogger
 
+//TODO to be tested
 class ApphanceLogsConverter {
 
     private AntBuilder ant
     private l = getLogger(getClass())
 
-    ApphanceLogsConverter(AntBuilder) {
-        this.ant = AntBuilder
+    ApphanceLogsConverter(AntBuilder ant) {
+        this.ant = ant
     }
 
     public void convertLogsToApphance(File inDir) {

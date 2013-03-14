@@ -61,7 +61,6 @@ class AndroidTasksSpec extends Specification {
     def apphanceTasks = [
             'convertLogsToAndroid',
             'convertLogsToApphance',
-            'removeApphanceFromManifest',
             'uploadDebug',
     ]
 

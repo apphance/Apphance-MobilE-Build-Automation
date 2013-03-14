@@ -10,7 +10,7 @@ import static com.apphance.ameba.android.plugins.buildplugin.AndroidProjectPrope
  *
  */
 public class AndroidProjectConfigurationRetriever {
-    private static final String ANDROID_PROJECT_CONFIGURATION_KEY = 'android.project.configuration'
+    public static final String ANDROID_PROJECT_CONFIGURATION_KEY = 'android.project.configuration'
 
     def static manifestHelper = new AndroidManifestHelper()
     def static buildXmlHelper = new AndroidBuildXmlHelper()

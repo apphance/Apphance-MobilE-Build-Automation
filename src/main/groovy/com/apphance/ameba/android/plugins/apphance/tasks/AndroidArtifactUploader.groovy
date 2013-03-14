@@ -17,7 +17,8 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logging
 
 @Mixin(Preconditions)
-class ApphanceArtifactUploader {
+//TODO to be tested and refactored
+class AndroidArtifactUploader {
 
 
     def l = Logging.getLogger(getClass())
@@ -27,7 +28,7 @@ class ApphanceArtifactUploader {
     private ProjectConfiguration conf
     private AndroidProjectConfiguration androidConf
 
-    ApphanceArtifactUploader(Project project, CommandExecutor executor) {
+    AndroidArtifactUploader(Project project, CommandExecutor executor) {
         this.project = project
         this.executor = executor
         this.conf = PropertyCategory.getProjectConfiguration(project)

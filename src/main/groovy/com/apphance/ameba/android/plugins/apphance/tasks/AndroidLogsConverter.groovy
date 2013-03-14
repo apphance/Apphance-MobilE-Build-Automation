@@ -2,10 +2,11 @@ package com.apphance.ameba.android.plugins.apphance.tasks
 
 import static org.gradle.api.logging.Logging.getLogger
 
+//TODO to be tested
 class AndroidLogsConverter {
 
     private AntBuilder ant
-    def l = getLogger(getClass())
+    private l = getLogger(getClass())
 
     AndroidLogsConverter(AntBuilder ant) {
         this.ant = ant

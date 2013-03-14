@@ -3,7 +3,7 @@ package com.apphance.ameba.apphance
 import com.apphance.ameba.PropertyCategory
 import org.gradle.api.Project
 
-class ApphancePluginUtil {
+class ApphancePluginCommons {
 
     def prepareApphanceLibDependency(Project p, String defaultDependency) {
         boolean apphanceDependencyNotPresent = p.configurations.apphance.dependencies.isEmpty()

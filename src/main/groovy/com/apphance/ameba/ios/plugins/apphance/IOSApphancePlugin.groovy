@@ -34,7 +34,7 @@ import static org.gradle.api.logging.Logging.getLogger
  *
  */
 @Mixin(Preconditions)
-@Mixin(ApphancePluginUtil)
+@Mixin(ApphancePluginCommons)
 class IOSApphancePlugin implements Plugin<Project> {
 
     def l = getLogger(getClass())
