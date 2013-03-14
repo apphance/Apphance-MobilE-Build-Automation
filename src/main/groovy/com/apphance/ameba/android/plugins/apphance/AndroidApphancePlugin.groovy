@@ -18,7 +18,6 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 import static com.apphance.ameba.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
-import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Adds Apphance in automated way.
@@ -26,8 +25,6 @@ import static org.gradle.api.logging.Logging.getLogger
  */
 @Mixin(ApphancePluginCommons)
 class AndroidApphancePlugin implements Plugin<Project> {
-
-    def l = getLogger(getClass())
 
     @Inject
     private CommandExecutor executor

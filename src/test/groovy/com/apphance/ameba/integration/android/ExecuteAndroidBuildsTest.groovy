@@ -179,7 +179,6 @@ class ExecuteAndroidBuildsTest {
         }
     }
 
-
     @Test
     void testAnalysis() {
         File baseDir = new File(testProject, "build/analysis/")
