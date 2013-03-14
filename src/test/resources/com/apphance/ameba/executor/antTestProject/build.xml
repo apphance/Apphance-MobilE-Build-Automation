@@ -1,0 +1,9 @@
+<project>
+    <target name="testTarget">
+        <checksum file="build.xml"/>
+    </target>
+
+    <target name="testTargetUsingProperties">
+        <checksum file="build.xml" property="${firstPart}${secondPart}"/>
+    </target>
+</project>
