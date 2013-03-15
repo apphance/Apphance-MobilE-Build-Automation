@@ -6,17 +6,17 @@ import org.gradle.api.Project
 import static com.apphance.ameba.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
 
 @Mixin(AndroidAnalysisMixin)
-class CheckstyleTask {
+class CheckStyleTask {
 
     private Project project
     private AndroidProjectConfiguration androidConf
 
-    CheckstyleTask(Project project) {
+    CheckStyleTask(Project project) {
         this.project = project
         this.androidConf = getAndroidProjectConfiguration(project)
     }
 
-    public void runCheckstyle() {
+    public void runCheckStyle() {
 
         URL checkstyleXml = getResourceUrl(project, 'checkstyle.xml')
         File analysisDir = project.file('build/analysis')

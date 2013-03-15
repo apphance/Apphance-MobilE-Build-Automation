@@ -4,7 +4,7 @@ import spock.lang.Specification
 
 import static com.google.common.io.Files.createTempDir
 
-class AndroidBuildXmlHelperTest extends Specification {
+class AndroidBuildXmlHelperSpec extends Specification {
 
     def PROJECT_DIR = new File('testProjects/android/android-basic')
     def tmpDir = createTempDir()

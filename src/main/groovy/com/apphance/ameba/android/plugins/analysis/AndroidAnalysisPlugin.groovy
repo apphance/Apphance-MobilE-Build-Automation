@@ -1,8 +1,8 @@
 package com.apphance.ameba.android.plugins.analysis
 
 import com.apphance.ameba.android.plugins.analysis.tasks.CPDTask
-import com.apphance.ameba.android.plugins.analysis.tasks.CheckstyleTask
-import com.apphance.ameba.android.plugins.analysis.tasks.FindbugsTask
+import com.apphance.ameba.android.plugins.analysis.tasks.CheckStyleTask
+import com.apphance.ameba.android.plugins.analysis.tasks.FindBugsTask
 import com.apphance.ameba.android.plugins.analysis.tasks.PMDTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -56,7 +56,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         project.configurations.add('findbugsConf')
         project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs:2.0.0')
         project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs-ant:2.0.0')
-        task.doLast { new FindbugsTask(project).runFindbugs() }
+        task.doLast { new FindBugsTask(project).runFindbugs() }
         task.dependsOn('classes')
     }
 
@@ -66,7 +66,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         task.group = AMEBA_ANALYSIS
         project.configurations.add('checkstyleConf')
         project.dependencies.add('checkstyleConf', 'checkstyle:checkstyle:5.0')
-        task.doLast { new CheckstyleTask(project).runCheckstyle() }
+        task.doLast { new CheckStyleTask(project).runCheckStyle() }
         task.dependsOn('classes')
     }
 
@@ -80,6 +80,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         task.dependsOn('checkstyle')
     }
 
+    //TODO what's that?
     static class AndroidAnalysisConvention {
         static public final String DESCRIPTION =
             """The convention provides base URL where analysis configuration files are placed.

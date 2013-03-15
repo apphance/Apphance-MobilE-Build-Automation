@@ -1,7 +1,6 @@
 package com.apphance.ameba.android
 
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.android.AndroidManifestHelper
 import com.sun.org.apache.xpath.internal.XPathAPI
 import org.junit.Before
 import org.junit.Test
@@ -11,6 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 import static org.junit.Assert.*
 
+//TODO rewrite to spock!
 class AndroidManifestHelperTest {
 
     AndroidManifestHelper manifestHelper

@@ -11,12 +11,12 @@ import static com.apphance.ameba.android.plugins.analysis.AndroidAnalysisPlugin.
 
 @Mixin(AndroidAnalysisMixin)
 @Mixin(Preconditions)
-class FindbugsTask {
+class FindBugsTask {
 
     private Project project
     private AndroidProjectConfiguration androidConf
 
-    FindbugsTask(Project project) {
+    FindBugsTask(Project project) {
         this.project = project
         this.androidConf = getAndroidProjectConfiguration(project)
     }

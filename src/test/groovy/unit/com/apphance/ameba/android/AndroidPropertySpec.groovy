@@ -9,7 +9,7 @@ import spock.lang.Specification
 import static com.apphance.ameba.android.plugins.buildplugin.AndroidProjectProperty.*
 import static com.apphance.ameba.android.plugins.buildplugin.AndroidProjectProperty.MAIN_VARIANT
 
-class AndroidPropertyTest extends Specification {
+class AndroidPropertySpec extends Specification {
 
     Project project = ProjectBuilder.builder().build()
 

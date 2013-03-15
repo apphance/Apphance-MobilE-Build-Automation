@@ -15,15 +15,6 @@ class AndroidTasksSpec extends Specification {
     def projectWithoutVariants
 
     @Shared
-    def analysisTasks = [
-            'analysis',
-            'checkstyle',
-            'cpd',
-            'findbugs',
-            'pmd',
-    ]
-
-    @Shared
     def jarLibraryTasks = [
             'buildAll',
             'buildAllDebug',
@@ -56,7 +47,7 @@ class AndroidTasksSpec extends Specification {
             'updateProject',
             'copySources',
     ]
-   
+
     @Shared
     def buildTasks = [
             'cleanAndroid',
@@ -140,7 +131,6 @@ class AndroidTasksSpec extends Specification {
 
         where:
         project                | tasks           | tasksGroups
-        projectSimple          | analysisTasks   | [AMEBA_ANALYSIS] * analysisTasks.size()
         projectSimple          | jarLibraryTasks | [AMEBA_BUILD] * jarLibraryTasks.size()
         projectWithoutVariants | noVariantTasks  | [AMEBA_BUILD] * noVariantTasks.size()
         projectSimple          | buildTasks      | [AMEBA_BUILD] * buildTasks.size()

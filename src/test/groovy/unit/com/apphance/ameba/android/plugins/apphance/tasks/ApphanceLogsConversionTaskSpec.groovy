@@ -4,17 +4,17 @@ import spock.lang.Specification
 
 import static java.lang.System.getProperties
 
-class AndroidLogsConverterSpec extends Specification {
+class ApphanceLogsConversionTaskSpec extends Specification {
 
-    def 'converts apphance logs to android'() {
+    def 'converts android logs to apphance'() {
 
         given:
         def ant = new AntBuilder()
-        def logConverter = new AndroidLogsConverter(ant)
+        def logConverter = new ApphanceLogsConversionTask(ant)
 
         and:
-        def filenameWithLogs = 'ApphanceToAndroidWithLogs.java'
-        def filenameWithoutLogs = 'ApphanceToAndroidWithoutLogs.java'
+        def filenameWithLogs = 'AndroidToApphanceWithLogs.java'
+        def filenameWithoutLogs = 'AndroidToApphanceWithoutLogs.java'
 
         and:
         def tmpDir = new File(properties['java.io.tmpdir'].toString(), 'src')
@@ -35,12 +35,12 @@ class AndroidLogsConverterSpec extends Specification {
                 toFile: new File(tmpDir.canonicalPath, filenameWithoutLogs))
 
         when:
-        logConverter.convertLogsToAndroid(tmpDir.parentFile)
+        logConverter.convertLogsToApphance(tmpDir.parentFile)
 
         then:
-        !(new File(tmpDir, filenameWithLogs).text).contains('com.apphance.android.Log')
-        (new File(tmpDir, filenameWithLogs).text).contains('android.util.Log')
-        !(new File(tmpDir, filenameWithoutLogs).text).contains('com.apphance.android.Log')
+        !(new File(tmpDir, filenameWithLogs).text).contains('android.util.Log')
+        (new File(tmpDir, filenameWithLogs).text).contains('com.apphance.android.Log')
+        !(new File(tmpDir, filenameWithoutLogs).text).contains('android.util.Log')
         tmpDir.deleteDir()
         !tmpDir.exists()
     }

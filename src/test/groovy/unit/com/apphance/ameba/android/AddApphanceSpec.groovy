@@ -3,7 +3,7 @@ package com.apphance.ameba.android
 import org.apache.commons.io.FileUtils
 import spock.lang.Specification
 
-class AddApphanceTest extends Specification{
+class AddApphanceSpec extends Specification{
 
     File noApphanceNoApplicationDirectory = new File('testProjects/android/android-no-apphance-no-application')
     File tmpDir = new File('tmp/testApphance')

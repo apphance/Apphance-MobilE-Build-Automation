@@ -18,7 +18,7 @@ import org.gradle.api.logging.Logging
 
 @Mixin(Preconditions)
 //TODO to be tested and refactored
-class AndroidArtifactUploader {
+class UploadAndroidArtifactTask {
 
 
     def l = Logging.getLogger(getClass())
@@ -28,14 +28,14 @@ class AndroidArtifactUploader {
     private ProjectConfiguration conf
     private AndroidProjectConfiguration androidConf
 
-    AndroidArtifactUploader(Project project, CommandExecutor executor) {
+    UploadAndroidArtifactTask(Project project, CommandExecutor executor) {
         this.project = project
         this.executor = executor
         this.conf = PropertyCategory.getProjectConfiguration(project)
         this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
     }
 
-    void uploadArtifact(String variant) {
+    public void uploadArtifact(String variant) {
         def builder = new AndroidSingleVariantApkBuilder(project, androidConf, executor)
         def builderInfo = builder.buildApkArtifactBuilderInfo(variant, 'Debug')
         def releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)

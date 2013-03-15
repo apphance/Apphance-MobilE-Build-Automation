@@ -16,7 +16,7 @@ import static org.gradle.api.logging.Logging.getLogger
 
 //TODO to be tested
 //TODO to be refactored when apphance artifact uploading is back in progress
-class AndroidApphanceApplier {
+class AddAndroidApphanceTask {
 
     def l = getLogger(getClass())
 
@@ -29,13 +29,13 @@ class AndroidApphanceApplier {
     private AndroidProjectConfiguration androidConf
     private AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
 
-    AndroidApphanceApplier(Project project) {
+    AddAndroidApphanceTask(Project project) {
         this.project = project
         this.ant = project.ant
         this.androidConf = getAndroidProjectConfiguration(project)
     }
 
-    public void applyApphance(String variant) {
+    public void addApphance(String variant) {
         File variantDir = getVariantDir(project, variant)
         if (!checkIfApphancePresent(variantDir)) {
             l.debug("Apphance not found in project: $variantDir.absolutePath")
@@ -43,7 +43,7 @@ class AndroidApphanceApplier {
             boolean isActivity
             (mainFile, isActivity) = getMainApplicationFile(variantDir)
             if (mainFile) {
-                new ApphanceLogsConverter(ant).convertLogsToApphance(variantDir)
+                new ApphanceLogsConversionTask(ant).convertLogsToApphance(variantDir)
                 if (logEvents()) {
                     replaceViewsWithApphance(variantDir)
                 }
