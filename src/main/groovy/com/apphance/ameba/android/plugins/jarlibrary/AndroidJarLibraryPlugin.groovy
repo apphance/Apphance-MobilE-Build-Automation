@@ -1,15 +1,12 @@
 package com.apphance.ameba.android.plugins.jarlibrary
 
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
-import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidManifestHelper
-import com.apphance.ameba.android.AndroidProjectConfiguration
-import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
+import com.apphance.ameba.android.plugins.jarlibrary.tasks.DeployJarLibraryTask
+import com.apphance.ameba.android.plugins.jarlibrary.tasks.JarLibraryTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+import org.gradle.api.Task
+
+import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
 /**
  * Helps building the library with resources embedded. It is useful in case we want to generate libraries like
@@ -17,104 +14,38 @@ import org.gradle.api.logging.Logging
  */
 class AndroidJarLibraryPlugin implements Plugin<Project> {
 
-    static Logger logger = Logging.getLogger(AndroidJarLibraryPlugin.class)
+    public static final String DEPLOY_JAR_LIBRARY_TASK_NAME = 'deployJarLibrary'
+    public static final String JAR_LIBRARY_TASK_NAME = 'jarLibrary'
 
-    ProjectConfiguration conf
-    AndroidManifestHelper manifestHelper
-    AndroidProjectConfiguration androidConf
-    String jarLibraryPrefix
+    private Project project
 
+    @Override
     public void apply(Project project) {
-        use(PropertyCategory) {
-            this.conf = project.getProjectConfiguration()
-            this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
-            manifestHelper = new AndroidManifestHelper()
-            jarLibraryPrefix = project.readProperty(AndroidJarLibraryProperty.RES_PREFIX)
-            if (jarLibraryPrefix == null) {
-                jarLibraryPrefix = this.androidConf.mainProjectName
-            }
-            prepareJarLibraryTask(project)
-            prepareJarLibraryUploadTask(project)
-            project.prepareSetup.prepareSetupOperations << new PrepareAndroidJarLibrarySetupOperation()
-            project.verifySetup.verifySetupOperations << new VerifyAndroidJarLibrarySetupOperation()
-            project.showSetup.showSetupOperations << new ShowAndroidJarLibrarySetupOperation()
-        }
+        this.project = project
+
+        prepareJarLibraryTask()
+        prepareJarLibraryDeployTask()
+
+        project.prepareSetup.prepareSetupOperations << new PrepareAndroidJarLibrarySetupOperation()
+        project.verifySetup.verifySetupOperations << new VerifyAndroidJarLibrarySetupOperation()
+        project.showSetup.showSetupOperations << new ShowAndroidJarLibrarySetupOperation()
     }
 
-    public void prepareJarLibraryTask(Project project) {
-        def task = project.task('jarLibrary')
-        task.description = "Prepares jar library with embedded resources"
-        task.group = AmebaCommonBuildTaskGroups.AMEBA_BUILD
-        task << {
-            conf.tmpDirectory.mkdirs()
-            def manifestFile = new File(conf.tmpDirectory, 'MANIFEST.MF')
-            project.ant.manifest(file: manifestFile) {
-                attribute(name: 'Specification-Title', value: androidConf.mainProjectName)
-                attribute(name: 'Specification-Vendor', value: androidConf.mainProjectName)
-                attribute(name: 'Implementation-Title', value: conf.versionString)
-                attribute(name: 'Implementation-Version', value: conf.versionCode)
-                attribute(name: 'Implementation-Vendor', value: androidConf.mainProjectName)
-                attribute(name: 'Implementation-Vendor-Id', value: androidConf.mainProjectName)
-            }
-            def manifestPropertiesFile = new File(conf.tmpDirectory, 'manifest.properties')
-            def properties = new Properties()
-            properties.setProperty("implementation.title", conf.versionString)
-            properties.setProperty("implementation.version", Long.toString(conf.versionCode))
-            properties.store(manifestPropertiesFile.newOutputStream(), "Automatically generated with Ameba")
-            File resDir = new File(conf.tmpDirectory, "${jarLibraryPrefix}-res")
-            project.ant.delete(dir: resDir)
-            resDir.mkdirs()
-            project.ant.copy(todir: resDir) {
-                fileset(dir: project.file('res'))
-            }
-            File destFile = project.file(getJarLibraryFilePath())
-            File classesDir = project.file("bin/classes")
-            destFile.delete()
-            project.ant.jar(destfile: destFile, manifest: manifestFile, manifestencoding: 'utf-8') {
-                fileset(dir: classesDir) {
-                    include(name: '**/*.class')
-                    exclude(name: '**/test/*.class')
-                    exclude(name: 'R*.class')
-                }
-                fileset(dir: conf.tmpDirectory) {
-                    include(name: 'manifest.properties')
-                    include(name: "${resDir.name}/**")
-                    exclude(name: '**/test*.*')
-                    exclude(name: "${resDir.name}/raw/config.properties")
-                }
-            }
-        }
-        task.dependsOn(project.readAndroidProjectConfiguration)
+    private void prepareJarLibraryTask() {
+        Task task = project.task(JAR_LIBRARY_TASK_NAME)
+        task.description = 'Prepares jar library with embedded resources'
+        task.group = AMEBA_BUILD
+        task.doLast { new JarLibraryTask(project).jarLibrary() }
+        task.dependsOn('readAndroidProjectConfiguration')
     }
 
-    private GString getJarLibraryFilePath() {
-        "bin/${androidConf.mainProjectName}_${conf.versionString}.jar"
-    }
-
-    public void prepareJarLibraryUploadTask(Project project) {
-        project.configurations {
-            // this makes uploadJarLibraryConfiguration task visible
-            // we need to specify archives for this configuration
-            jarLibraryConfiguration
-        }
-
-        project.uploadJarLibraryConfiguration.doFirst {
-
-            project.uploadJarLibraryConfiguration {
-
-                repositories {
-                    mavenDeployer {
-                        pom.version = pom.version == '0' ? conf.versionString : pom.version
-                    }
-                }
-            }
-
-            project.artifacts {
-                jarLibraryConfiguration file: project.file(getJarLibraryFilePath()), name: androidConf.mainProjectName
-            }
-        }
-
-        project.uploadJarLibraryConfiguration.dependsOn project.jarLibrary
+    private void prepareJarLibraryDeployTask() {
+        Task task = project.task(DEPLOY_JAR_LIBRARY_TASK_NAME)
+        task.description = 'Deploys jar library to maven repository'
+        task.group = AMEBA_BUILD
+        project.configurations.add('jarLibraryConfiguration')
+        task.doFirst(new DeployJarLibraryTask(project).deployJarLibrary)
+        task.dependsOn(JAR_LIBRARY_TASK_NAME)
     }
 
     static public final String DESCRIPTION =

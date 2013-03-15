@@ -15,23 +15,6 @@ class AndroidTasksSpec extends Specification {
     def projectWithoutVariants
 
     @Shared
-    def jarLibraryTasks = [
-            'buildAll',
-            'buildAllDebug',
-            'buildDebug-test',
-            'buildAllRelease',
-            'buildRelease-market',
-            'cleanAndroid',
-            'cleanClasses',
-            'compileAndroid',
-            'installDebug-test',
-            'installRelease-market',
-            'jarLibrary',
-            'replacePackage',
-            'updateProject',
-            'copySources',
-    ]
-    @Shared
     def noVariantTasks = [
             'cleanAndroid',
             'cleanClasses',
@@ -116,14 +99,13 @@ class AndroidTasksSpec extends Specification {
         tasksGroups == groups
 
         where:
-        project                | tasks           | tasksGroups
-        projectSimple          | jarLibraryTasks | [AMEBA_BUILD] * jarLibraryTasks.size()
-        projectWithoutVariants | noVariantTasks  | [AMEBA_BUILD] * noVariantTasks.size()
-        projectSimple          | buildTasks      | [AMEBA_BUILD] * buildTasks.size()
-        projectSimple          | confTasks       | [AMEBA_CONFIGURATION] * confTasks.size()
-        projectSimple          | setupTasks      | [AMEBA_SETUP] * setupTasks.size()
-        projectSimple          | []              | [AMEBA_RELEASE] * 0
-        projectSimple          | testTasks       | [AMEBA_TEST] * testTasks.size()
+        project                | tasks          | tasksGroups
+        projectWithoutVariants | noVariantTasks | [AMEBA_BUILD] * noVariantTasks.size()
+        projectSimple          | buildTasks     | [AMEBA_BUILD] * buildTasks.size()
+        projectSimple          | confTasks      | [AMEBA_CONFIGURATION] * confTasks.size()
+        projectSimple          | setupTasks     | [AMEBA_SETUP] * setupTasks.size()
+        projectSimple          | []             | [AMEBA_RELEASE] * 0
+        projectSimple          | testTasks      | [AMEBA_TEST] * testTasks.size()
 
     }
 }
