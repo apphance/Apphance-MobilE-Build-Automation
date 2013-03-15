@@ -82,9 +82,8 @@ public class ProjectReleaseCategory {
         }
     }
 
-    public static void fillMailSubject(Project project, ResourceBundle resourceBundle) {
-        ProjectConfiguration conf = PropertyCategory.getProjectConfiguration(project)
-        ProjectReleaseConfiguration releaseConf = getProjectReleaseConfiguration(project)
+    public static void fillMailSubject(ProjectConfiguration conf, ProjectReleaseConfiguration releaseConf,
+                                       ResourceBundle resourceBundle) {
         String subject = resourceBundle.getString('Subject')
         releaseConf.releaseMailSubject = Eval.me("conf", conf, /"$subject"/)
     }

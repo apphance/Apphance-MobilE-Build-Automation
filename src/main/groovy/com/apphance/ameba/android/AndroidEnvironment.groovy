@@ -7,8 +7,6 @@ import org.gradle.api.Project
  */
 class AndroidEnvironment {
 
-    Properties androidProperties
-
     private static final PROPERTIES_FILES = [
             'local',
             'build',
@@ -16,11 +14,13 @@ class AndroidEnvironment {
             'project'
     ]
 
+    private Properties androidProperties
+
     AndroidEnvironment(Project project) {
         this.androidProperties = loadAndroidProperties(project)
     }
 
-    Properties loadAndroidProperties(project) {
+    private Properties loadAndroidProperties(project) {
         def props = new Properties()
         PROPERTIES_FILES.each {
             File propFile = project.file("${it}.properties")
@@ -31,11 +31,11 @@ class AndroidEnvironment {
         props
     }
 
-    String getAndroidProperty(String name) {
-        androidProperties.get(name)
+    boolean isLibrary() {
+        getAndroidProperty('android.library') == 'true'
     }
 
-    boolean isLibrary() {
-        (getAndroidProperty('android.library') == 'true')
+    String getAndroidProperty(String name) {
+        androidProperties.get(name)
     }
 }

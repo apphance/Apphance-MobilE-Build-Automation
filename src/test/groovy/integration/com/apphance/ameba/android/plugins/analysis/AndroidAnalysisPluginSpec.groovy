@@ -4,6 +4,8 @@ import org.gradle.api.plugins.JavaPlugin
 import spock.lang.Specification
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
+import static com.apphance.ameba.android.plugins.analysis.AndroidAnalysisPlugin.*
+import static org.gradle.api.plugins.JavaPlugin.CLASSES_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidAnalysisPluginSpec extends Specification {
@@ -17,11 +19,11 @@ class AndroidAnalysisPluginSpec extends Specification {
         project.plugins.apply(AndroidAnalysisPlugin)
 
         then: 'every single task is in correct group'
-        project.tasks['pmd'].group == AMEBA_ANALYSIS
-        project.tasks['cpd'].group == AMEBA_ANALYSIS
-        project.tasks['findbugs'].group == AMEBA_ANALYSIS
-        project.tasks['checkstyle'].group == AMEBA_ANALYSIS
-        project.tasks['analysis'].group == AMEBA_ANALYSIS
+        project.tasks[PMD_TASK_NAME].group == AMEBA_ANALYSIS
+        project.tasks[CPD_TASK_NAME].group == AMEBA_ANALYSIS
+        project.tasks[FINDBUGS_TASK_NAME].group == AMEBA_ANALYSIS
+        project.tasks[CHECKSTYLE_TASK_NAME].group == AMEBA_ANALYSIS
+        project.tasks[ANALYSIS_TASK_NAME].group == AMEBA_ANALYSIS
 
         then: 'configurations for tasks were added properly'
         project.configurations.pmdConf
@@ -48,8 +50,11 @@ class AndroidAnalysisPluginSpec extends Specification {
         }
 
         and: 'task dependencies configured correctly'
-        project.tasks['analysis'].dependsOn.containsAll('findbugs', 'cpd', 'pmd', 'checkstyle')
-        project.tasks['findbugs'].dependsOn.containsAll('classes')
-        project.tasks['checkstyle'].dependsOn.containsAll('classes')
+        project.tasks[ANALYSIS_TASK_NAME].dependsOn.containsAll(FINDBUGS_TASK_NAME,
+                CPD_TASK_NAME,
+                PMD_TASK_NAME,
+                CHECKSTYLE_TASK_NAME)
+        project.tasks[FINDBUGS_TASK_NAME].dependsOn.contains(CLASSES_TASK_NAME)
+        project.tasks[CHECKSTYLE_TASK_NAME].dependsOn.contains(CLASSES_TASK_NAME)
     }
 }

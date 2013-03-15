@@ -32,6 +32,9 @@ class AndroidApphancePlugin implements Plugin<Project> {
     private Project project
     private AndroidProjectConfiguration androidConf
 
+    public static final String CONVERT_LOGS_TO_APPHANCE = 'convertLogsToApphance'
+    public static final String CONVERT_LOGS_TO_ANDROID = 'convertLogsToAndroid'
+
     @Override
     public void apply(Project project) {
         this.project = project
@@ -63,14 +66,14 @@ class AndroidApphancePlugin implements Plugin<Project> {
     }
 
     void prepareConvertLogsToApphanceTask() {
-        Task task = project.task('convertLogsToApphance')
+        Task task = project.task(CONVERT_LOGS_TO_APPHANCE)
         task.description = 'Converts all logs to apphance from android logs for the source project'
         task.group = AMEBA_APPHANCE_SERVICE
         task.doLast { new ApphanceLogsConversionTask(project.ant).convertLogsToApphance(project.rootDir) }
     }
 
     void prepareConvertLogsToAndroidTask() {
-        Task task = project.task('convertLogsToAndroid')
+        Task task = project.task(CONVERT_LOGS_TO_ANDROID)
         task.description = 'Converts all logs to android from apphance logs for the source project'
         task.group = AMEBA_APPHANCE_SERVICE
         task.doLast { new AndroidLogsConversionTask(project.ant).convertLogsToAndroid(project.rootDir) }

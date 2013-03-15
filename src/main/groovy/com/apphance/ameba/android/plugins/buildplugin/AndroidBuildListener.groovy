@@ -9,4 +9,6 @@ import org.gradle.api.Project
  */
 interface AndroidBuildListener {
     void buildDone(Project project, AndroidBuilderInfo bi)
+
+    void buildArtifactsOnly(Project project, String variant, String debugRelease)
 }

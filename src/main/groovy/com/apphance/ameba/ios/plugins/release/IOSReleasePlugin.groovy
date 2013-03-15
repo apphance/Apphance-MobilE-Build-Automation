@@ -258,7 +258,7 @@ class IOSReleasePlugin implements Plugin<Project> {
             ResourceBundle rb = ResourceBundle.getBundle(\
                 this.class.package.name + ".mail_message",
                     releaseConf.locale, this.class.classLoader)
-            ProjectReleaseCategory.fillMailSubject(project, rb)
+            ProjectReleaseCategory.fillMailSubject(conf, releaseConf, rb)
             SimpleTemplateEngine engine = new SimpleTemplateEngine()
             def binding = [
                     title: conf.projectName,

@@ -82,20 +82,6 @@ class AndroidTasksSpec extends Specification {
     ]
 
     @Shared
-    def releaseTasks = [
-            'cleanRelease',
-            'updateVersion',
-            'buildDocumentationZip',
-            'buildSourcesZip',
-            'prepareAvailableArtifactsInfo',
-            'prepareForRelease',
-            'prepareImageMontage',
-            'prepareMailMessage',
-            'sendMailMessage',
-            'verifyReleaseNotes',
-    ]
-
-    @Shared
     def testTasks = [
             'checkTests',
             'testAndroid',
@@ -137,7 +123,6 @@ class AndroidTasksSpec extends Specification {
         projectSimple          | confTasks       | [AMEBA_CONFIGURATION] * confTasks.size()
         projectSimple          | setupTasks      | [AMEBA_SETUP] * setupTasks.size()
         projectSimple          | []              | [AMEBA_RELEASE] * 0
-        projectWithoutVariants | releaseTasks    | [AMEBA_RELEASE] * releaseTasks.size()
         projectSimple          | testTasks       | [AMEBA_TEST] * testTasks.size()
 
     }

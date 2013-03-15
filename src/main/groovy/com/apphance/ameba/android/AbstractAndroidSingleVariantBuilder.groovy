@@ -64,7 +64,7 @@ abstract class AbstractAndroidSingleVariantBuilder {
         }
     }
 
-    protected boolean hasVariants() {
+    boolean hasVariants() {
         return variantsDir.exists() && variantsDir.isDirectory()
     }
 

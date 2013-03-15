@@ -9,6 +9,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
+import static org.gradle.api.plugins.JavaPlugin.CLASSES_TASK_NAME
 
 /**
  * Provides static code analysis.
@@ -20,6 +21,12 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
     public static final String FINDBUGS_DEFAULT_HOME = '/var/lib/analysis/findbugs'
 
     private Project project
+
+    public static final String PMD_TASK_NAME = 'pmd'
+    public static final String CPD_TASK_NAME = 'cpd'
+    public static final String FINDBUGS_TASK_NAME = 'findbugs'
+    public static final String CHECKSTYLE_TASK_NAME = 'checkstyle'
+    public static final String ANALYSIS_TASK_NAME = 'analysis'
 
     @Override
     public void apply(Project project) {
@@ -34,7 +41,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
     }
 
     private void preparePmdTask() {
-        Task task = project.task('pmd')
+        Task task = project.task(PMD_TASK_NAME)
         task.description = 'Runs PMD analysis on project'
         task.group = AMEBA_ANALYSIS
         project.configurations.add('pmdConf')
@@ -43,41 +50,41 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
     }
 
     private void prepareCpdTask() {
-        Task task = project.task('cpd')
+        Task task = project.task(CPD_TASK_NAME)
         task.description = 'Runs CPD (duplicated code) analysis on project'
         task.group = AMEBA_ANALYSIS
         task.doLast { new CPDTask(project).runCPD() }
     }
 
     private void prepareFindbugsTask() {
-        def task = project.task('findbugs')
+        def task = project.task(FINDBUGS_TASK_NAME)
         task.description = "Runs Findbugs analysis on project"
         task.group = AMEBA_ANALYSIS
         project.configurations.add('findbugsConf')
         project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs:2.0.0')
         project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs-ant:2.0.0')
         task.doLast { new FindBugsTask(project).runFindbugs() }
-        task.dependsOn('classes')
+        task.dependsOn(CLASSES_TASK_NAME)
     }
 
     private void prepareCheckstyleTask() {
-        Task task = project.task('checkstyle')
+        Task task = project.task(CHECKSTYLE_TASK_NAME)
         task.description = 'Runs Checkstyle analysis on project'
         task.group = AMEBA_ANALYSIS
         project.configurations.add('checkstyleConf')
         project.dependencies.add('checkstyleConf', 'checkstyle:checkstyle:5.0')
         task.doLast { new CheckStyleTask(project).runCheckStyle() }
-        task.dependsOn('classes')
+        task.dependsOn(CLASSES_TASK_NAME)
     }
 
     private void prepareAnalysisTask() {
-        Task task = project.task('analysis')
+        Task task = project.task(ANALYSIS_TASK_NAME)
         task.description = 'Runs all analysis on project'
         task.group = AMEBA_ANALYSIS
-        task.dependsOn('findbugs')
-        task.dependsOn('pmd')
-        task.dependsOn('cpd')
-        task.dependsOn('checkstyle')
+        task.dependsOn(FINDBUGS_TASK_NAME)
+        task.dependsOn(PMD_TASK_NAME)
+        task.dependsOn(CPD_TASK_NAME)
+        task.dependsOn(CHECKSTYLE_TASK_NAME)
     }
 
     //TODO what's that?
