@@ -1,13 +1,17 @@
-package com.apphance.ameba.plugins.projectconfiguration
+package com.apphance.ameba.plugins.projectconfiguration.tasks
 
 import com.apphance.ameba.AbstractPrepareSetupOperation
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutput.Style
 import org.gradle.logging.StyledTextOutputFactory
+
+import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_SETUP
+import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 
 /**
  * Prepares properties for the standard setup.
@@ -15,9 +19,9 @@ import org.gradle.logging.StyledTextOutputFactory
  */
 class PrepareSetupTask extends DefaultTask {
     PrepareSetupTask() {
-        this.group = AmebaCommonBuildTaskGroups.AMEBA_SETUP
+        this.group = AMEBA_SETUP
         this.description = "Walk-through wizard for preparing project's configuration"
-        this.dependsOn(project.readProjectConfiguration)
+        this.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME)
     }
 
     List<AbstractPrepareSetupOperation> prepareSetupOperations = []
