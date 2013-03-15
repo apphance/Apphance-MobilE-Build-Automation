@@ -1,4 +1,4 @@
-package com.apphance.ameba.android.plugins.test
+package com.apphance.ameba.apphance
 
 import groovy.json.JsonBuilder
 import org.apache.http.HttpHost

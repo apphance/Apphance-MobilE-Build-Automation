@@ -2,7 +2,6 @@ package com.apphance.ameba.ios.plugins.apphance
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.plugins.test.ApphanceNetworkHelper
 import com.apphance.ameba.apphance.*
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor

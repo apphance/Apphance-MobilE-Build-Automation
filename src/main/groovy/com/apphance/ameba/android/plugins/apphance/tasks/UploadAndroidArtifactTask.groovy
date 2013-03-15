@@ -5,7 +5,7 @@ import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.android.AndroidSingleVariantApkBuilder
-import com.apphance.ameba.android.plugins.test.ApphanceNetworkHelper
+import com.apphance.ameba.apphance.ApphanceNetworkHelper
 import com.apphance.ameba.apphance.ApphanceProperty
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
