@@ -191,7 +191,7 @@ class ExecuteAndroidBuildsTest {
 
     private assertConfigSameAsBuild(File projectDirectory, String fileName) {
         File baseDir = new File(projectDirectory, "build/analysis/")
-        File resourceDir = new File("src/main/resources/com/apphance/ameba/android/plugins/analysis/")
+        File resourceDir = new File("src/main/resources/com/apphance/ameba/android/plugins/analysis/tasks")
         File configBaseDir = new File(projectDirectory, "config/analysis/")
         assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
         assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
@@ -213,7 +213,7 @@ class ExecuteAndroidBuildsTest {
 
     private assertRemoteSameAsBuild(File projectDirectory, File configDirectory, String fileName) {
         File baseDir = new File(projectDirectory, "build/analysis/")
-        File resourceDir = new File("src/main/resources/com/apphance/ameba/android/plugins/analysis/")
+        File resourceDir = new File("src/main/resources/com/apphance/ameba/android/plugins/analysis/tasks")
         File configBaseDir = new File(configDirectory, "config/analysis/")
         assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
         assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
