@@ -7,9 +7,6 @@ import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFi
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
 
-//This class represents rather integration specification (according to duration time),
-//but it's placed under unit category because this is core ameba class and there's a need
-//to know if something goes wrong as soon as possible
 class CommandExecutorSpec extends Specification {
 
     def fileLinker = Mock(FileLinker)
