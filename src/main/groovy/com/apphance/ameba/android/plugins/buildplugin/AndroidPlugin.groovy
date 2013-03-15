@@ -3,6 +3,7 @@ package com.apphance.ameba.android.plugins.buildplugin
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.android.*
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.GradleException
@@ -15,6 +16,7 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+import static com.apphance.ameba.executor.AntExecutor.*
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY
 
 /**
@@ -30,12 +32,15 @@ class AndroidPlugin implements Plugin<Project> {
     @Inject
     CommandExecutor executor
 
+    @Lazy AntExecutor antExecutor = { new AntExecutor(project.rootDir) }()
+
     ProjectConfiguration conf
     AndroidProjectConfiguration androidConf
     AndroidManifestHelper manifestHelper
     AndroidSingleVariantApkBuilder androidApkBuilder
     AndroidSingleVariantJarBuilder androidJarBuilder
     AndroidEnvironment androidEnvironment
+    Project project
 
     @Override
     def void apply(Project project) {
@@ -45,6 +50,7 @@ class AndroidPlugin implements Plugin<Project> {
         this.manifestHelper = new AndroidManifestHelper()
         this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, this.androidConf, executor)
         this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, this.androidConf, executor)
+        this.project = project
 
         prepareCopySourcesTask(project)
         prepareAndroidEnvironment(project)
@@ -237,7 +243,7 @@ class AndroidPlugin implements Plugin<Project> {
             File gen = project.file('gen')
             if (!gen.exists() || gen.list().length == 0) {
                 logger.lifecycle("Regenerating gen directory by running debug project")
-                executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['ant', 'debug']))
+                antExecutor.executeTarget DEBUG
             } else {
                 logger.lifecycle("Not regenerating gen directory! You might need to run clean in order to get latest data (you can also run any of the android builds)")
             }
@@ -299,7 +305,7 @@ class AndroidPlugin implements Plugin<Project> {
         task.description = "cleans the application"
         task.group = AMEBA_BUILD
         task << {
-            executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['ant', 'clean']))
+            antExecutor.executeTarget CLEAN
             File tmpDir = project.file("tmp")
             project.ant.delete(dir: tmpDir)
         }
@@ -365,11 +371,7 @@ class AndroidPlugin implements Plugin<Project> {
         testTask << {
             def firstLetterLowerCase = debugRelease[0].toLowerCase()
             File apkFile = new File(conf.targetDirectory, "${conf.projectName}-${debugRelease}-${variant}-${conf.fullVersionString}.apk")
-            executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
-                    'ant',
-                    "install${firstLetterLowerCase}",
-                    "-Pout.final.file=${apkFile}"
-            ]))
+            antExecutor.executeTarget "install${firstLetterLowerCase}", ['out.final.file':apkFile]
         }
         testTask.dependsOn(project.readAndroidProjectConfiguration)
     }
@@ -381,11 +383,7 @@ class AndroidPlugin implements Plugin<Project> {
         def firstLetterLowerCase = debugRelease[0].toLowerCase()
         testTask << {
             File apkFile = new File(conf.targetDirectory, "${conf.projectName}-${debugRelease}-${conf.fullVersionString}.apk")
-            executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
-                    'ant',
-                    "install${firstLetterLowerCase}",
-                    "-Pout.final.file=${apkFile}"
-            ]))
+            antExecutor.executeTarget "install${firstLetterLowerCase}", ['out.final.file':apkFile]
         }
         testTask.dependsOn(project.readAndroidProjectConfiguration)
     }

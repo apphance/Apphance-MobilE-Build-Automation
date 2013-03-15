@@ -11,60 +11,48 @@ class AntExecutorSpec extends Specification {
 
     @Shared File rootDir = new File('src/test/resources/com/apphance/ameba/executor/antTestProject')
 
+    def antExecutor = new AntExecutor(rootDir)
+
     @Unroll
     def "exception when no build file. Dir #dir, file: #buildFileName"(){
-        when:
-        new AntExecutor(dir, buildFileName)
+        when: new AntExecutor(dir, buildFileName)
 
         then:
-        def e = thrown(IllegalArgumentException)
-        e.message == "No $buildFileName in ${dir.path}"
+            def e = thrown(IllegalArgumentException)
+            e.message == "No $buildFileName in ${dir.path}"
 
         where:
-        dir                | buildFileName
-        rootDir            | 'missingFile.xml'
-        rootDir.parentFile | 'build.xml'
+            dir                | buildFileName
+            rootDir            | 'missingFile.xml'
+            rootDir.parentFile | 'build.xml'
     }
 
     def "exception when bad target name"() {
-        given:
-        def antExecutor = new AntExecutor(rootDir)
-
-        when:
-        antExecutor.executeTarget(AntExecutor.CLEAN)
+        when: antExecutor.executeTarget(AntExecutor.CLEAN)
 
         then:
-        def e = thrown(BuildException)
-        e.message == 'Target "clean" does not exist in the project "Ant project from src/test/resources/com/apphance/ameba/executor/antTestProject". '
+            def e = thrown(BuildException)
+            e.message == 'Target "clean" does not exist in the project "Ant project from src/test/resources/com/apphance/ameba/executor/antTestProject". '
     }
 
     def "successfully execute target"() {
         given:
-        def md5File = new File(rootDir.absolutePath + '/' + 'build.xml.MD5')
-        Files.deleteIfExists(md5File.toPath())
-        AntExecutor antExecutor = new AntExecutor(rootDir)
+            def md5File = new File(rootDir.absolutePath + '/' + 'build.xml.MD5')
+            Files.deleteIfExists(md5File.toPath())
 
-        expect:
-        !md5File.exists()
-
-        when:
-        antExecutor.executeTarget("testTarget")
-
-        then:
-        md5File.exists()
-
-        cleanup:
-        Files.deleteIfExists(md5File.toPath())
+        expect: !md5File.exists()
+        when: antExecutor.executeTarget("testTarget")
+        then: md5File.exists()
+        cleanup: Files.deleteIfExists(md5File.toPath())
     }
 
     def "successfully execute target with properties"() {
-        given:
-        def antExecutor = new AntExecutor(rootDir)
+        when: antExecutor.executeTarget("testTargetUsingProperties", [firstPart: 'part1', secondPart: 'part2'])
+        then: antExecutor.antProject.properties.part1part2.length() == 32
+    }
 
-        when:
-        antExecutor.executeTarget("testTargetUsingProperties", [firstPart: 'part1', secondPart: 'part2'])
-
-        then:
-        antExecutor.antProject.properties.part1part2.length() == 32
+    def "build-in properties are correctly set"() {
+        when: antExecutor.executeTarget("testBuildInProperties")
+        then: antExecutor.antProject.properties.antVersion.contains('Apache Ant(TM) version')
     }
 }

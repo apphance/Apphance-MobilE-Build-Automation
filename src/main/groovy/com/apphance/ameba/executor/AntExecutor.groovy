@@ -3,6 +3,9 @@ package com.apphance.ameba.executor
 import org.apache.tools.ant.Project
 import org.apache.tools.ant.ProjectHelper
 
+/**
+ * Executor of ant targets.
+ */
 class AntExecutor {
 
     static String DEBUG = "debug"
@@ -13,6 +16,7 @@ class AntExecutor {
     AntExecutor(File rootDir, String buildFileName = 'build.xml') {
         antProject = new Project()
         antProject.setName("Ant project from $rootDir")
+        antProject.initProperties()
 
         String buildFilePath = rootDir.absolutePath + '/' + buildFileName
         File buildFile = new File(buildFilePath)
