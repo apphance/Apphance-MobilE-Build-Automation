@@ -16,6 +16,8 @@ import javax.inject.Inject
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.getREAD_PROJECT_CONFIGURATION_TASK_NAME
+import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_FOR_RELEASE_TASK_NAME
+import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.SEND_MAIL_MESSAGE_TASK_NAME
 import static org.gradle.api.logging.Logging.getLogger
 import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
 
@@ -58,7 +60,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
         task.doLast { new BuildDocZipTask(project).buildDocZip() }
         task.dependsOn(JAVADOC_TASK_NAME,
                 READ_PROJECT_CONFIGURATION_TASK_NAME,
-                'prepareForRelease')
+                PREPARE_FOR_RELEASE_TASK_NAME)
     }
 
     private void prepareAvailableArtifactsInfoTask() {
@@ -76,8 +78,8 @@ class AndroidReleasePlugin implements Plugin<Project> {
         task.doLast { new MailMessageTask(project).mailMessage() }
         task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME,
                 PREPARE_AVAILABLE_ARTIFACTS_INFO_TASK_NAME,
-                'prepareForRelease')
-        project.tasks.getByName('sendMailMessage').dependsOn(PREPARE_MAIL_MESSAGE_TASK_NAME)
+                PREPARE_FOR_RELEASE_TASK_NAME)
+        project.tasks.getByName(SEND_MAIL_MESSAGE_TASK_NAME).dependsOn(PREPARE_MAIL_MESSAGE_TASK_NAME)
     }
 
     private void prepareUpdateVersionTask() {

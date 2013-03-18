@@ -1,15 +1,11 @@
-package com.apphance.ameba
-
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
-
+package com.apphance.ameba.plugins.release.tasks
 /**
  * Filter for image names.
  *
  */
 class ImageNameFilter {
-    static Logger logger = Logging.getLogger(ImageNameFilter.class)
-    private static String[] validExtensions = [
+
+    private String[] validExtensions = [
             ".jpg",
             ".jpeg",
             ".exif",
@@ -23,7 +19,7 @@ class ImageNameFilter {
             ".webp"
     ]
 
-    private static String[] invalidPrefixes = [
+    private String[] invalidPrefixes = [
             "build/",
             "bin/",
             "doc/",
@@ -34,14 +30,14 @@ class ImageNameFilter {
             "External/"
     ]
 
-    private static String[] invalidDirectories = [
+    private String[] invalidDirectories = [
             "/Shared/External/"
     ]
 
 
-    def static boolean isValid(File rootDirectory, File file) {
+    boolean isValid(File rootDirectory, File file) {
         def lowerCaseName = file.name.toLowerCase()
-        if ((validExtensions.findAll { lowerCaseName.endsWith(it) }).size == 0) {
+        if ((validExtensions.findAll { lowerCaseName.endsWith(it) }).size() == 0) {
             return false
         }
         if (invalidPrefixes.findAll { file.toString().startsWith(new File(rootDirectory, it).toString()) }.size() > 0) {

@@ -18,6 +18,7 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 import static com.apphance.ameba.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
+import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_IMAGE_MONTAGE_TASK_NAME
 
 /**
  * Adds Apphance in automated way.
@@ -32,8 +33,8 @@ class AndroidApphancePlugin implements Plugin<Project> {
     private Project project
     private AndroidProjectConfiguration androidConf
 
-    public static final String CONVERT_LOGS_TO_APPHANCE = 'convertLogsToApphance'
-    public static final String CONVERT_LOGS_TO_ANDROID = 'convertLogsToAndroid'
+    public static final String CONVERT_LOGS_TO_APPHANCE_TASK_NAME = 'convertLogsToApphance'
+    public static final String CONVERT_LOGS_TO_ANDROID_TASK_NAME = 'convertLogsToAndroid'
 
     @Override
     public void apply(Project project) {
@@ -66,14 +67,14 @@ class AndroidApphancePlugin implements Plugin<Project> {
     }
 
     void prepareConvertLogsToApphanceTask() {
-        Task task = project.task(CONVERT_LOGS_TO_APPHANCE)
+        Task task = project.task(CONVERT_LOGS_TO_APPHANCE_TASK_NAME)
         task.description = 'Converts all logs to apphance from android logs for the source project'
         task.group = AMEBA_APPHANCE_SERVICE
         task.doLast { new ApphanceLogsConversionTask(project.ant).convertLogsToApphance(project.rootDir) }
     }
 
     void prepareConvertLogsToAndroidTask() {
-        Task task = project.task(CONVERT_LOGS_TO_ANDROID)
+        Task task = project.task(CONVERT_LOGS_TO_ANDROID_TASK_NAME)
         task.description = 'Converts all logs to android from apphance logs for the source project'
         task.group = AMEBA_APPHANCE_SERVICE
         task.doLast { new AndroidLogsConversionTask(project.ant).convertLogsToAndroid(project.rootDir) }
@@ -87,7 +88,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
             new UploadAndroidArtifactTask(project, executor).uploadArtifact(variantName)
         }
         task.dependsOn(buildTaskName)
-        task.dependsOn('prepareImageMontage')
+        task.dependsOn(PREPARE_IMAGE_MONTAGE_TASK_NAME)
     }
 
     static public final String DESCRIPTION =

@@ -8,7 +8,7 @@ import com.apphance.ameba.AbstractShowSetupOperation;
  */
 class ShowReleaseSetupOperation extends AbstractShowSetupOperation {
     ShowReleaseSetupOperation() {
-        super(ProjectReleaseProperty.class)
+        super(ProjectReleaseProperty)
     }
 }
 

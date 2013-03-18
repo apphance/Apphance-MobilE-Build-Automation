@@ -141,8 +141,6 @@ sourceSets {
     }
 }
 
-configurations { mail }
-
 dependencies {
 
     compile gradleApi()
@@ -156,12 +154,6 @@ dependencies {
         exclude group: 'org.apache.httpcomponents', module: 'httpcore'
     }
     compile 'org.python:jython-standalone:2.7-b1'
-
-    mail 'org.apache.ant:ant-javamail:1.8.4', 'javax.mail:mail:1.4', 'javax.activation:activation:1.1.1'
-
-    compile 'javax.mail:mail:1.4'
-
-    runtime 'org.apache.ant:ant-javamail:1.8.4', 'javax.activation:activation:1.1.1'
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
