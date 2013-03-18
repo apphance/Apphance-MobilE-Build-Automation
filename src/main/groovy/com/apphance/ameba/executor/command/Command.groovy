@@ -30,10 +30,10 @@ class Command {
         } catch (e) {
             throw new IllegalStateException(
                     """Failed to construct command from parameters.
-Command: $cmd
-Params: $params
-Environment: $environment
-Secret params names: ${secretParams.keySet()}""", e)
+                    |Command: $cmd
+                    |Params: $params
+                    |Environment: $environment
+                    |Secret params names: ${secretParams.keySet()}""".stripMargin(), e)
         }
     }
 

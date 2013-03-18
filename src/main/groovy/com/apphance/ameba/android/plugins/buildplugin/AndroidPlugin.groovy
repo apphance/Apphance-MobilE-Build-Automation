@@ -32,8 +32,6 @@ class AndroidPlugin implements Plugin<Project> {
     @Inject
     CommandExecutor executor
 
-    @Lazy AntExecutor antExecutor = { new AntExecutor(project.rootDir) }()
-
     ProjectConfiguration conf
     AndroidProjectConfiguration androidConf
     AndroidManifestHelper manifestHelper
@@ -78,6 +76,10 @@ class AndroidPlugin implements Plugin<Project> {
         project.showSetup.dependsOn(project.readAndroidProjectConfiguration)
     }
 
+    private def getAntExecutor() {
+        new AntExecutor(project.rootDir)
+    }
+
     void prepareCopySourcesTask(Project project) {
         def task = project.task('copySources')
         task.description = "Copies all sources to tmp directory for build"
@@ -112,8 +114,7 @@ class AndroidPlugin implements Plugin<Project> {
                 }
             }
             if (androidConf.sdkDirectory == null) {
-                throw new GradleException('Unable to find location of Android SDK, either\
- set it in local.properties or in ANDROID_HOME environment variable')
+                throw new GradleException('Unable to find location of Android SDK, either set it in local.properties or in ANDROID_HOME environment variable')
             }
             androidConf.excludedBuilds = project.readProperty(AndroidProjectProperty.EXCLUDED_BUILDS).split(',')*.trim()
             def target = androidEnvironment.getAndroidProperty('target')
