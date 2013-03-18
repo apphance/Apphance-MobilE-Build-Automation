@@ -1,10 +1,6 @@
 package com.apphance.ameba.android
 
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.AndroidBuildXmlHelper
-import com.apphance.ameba.android.AndroidManifestHelper
-import com.apphance.ameba.android.AndroidProjectConfigurationRetriever
-import com.apphance.ameba.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.SimpleFileLinker
@@ -64,7 +60,6 @@ class AndroidSingleVariantBuilderSpec extends Specification {
             project.retrieveBasicProjectData()
             def builder = new AndroidSingleVariantApkBuilder(project,
                     AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project), executor)
-            builder.updateAndroidConfigurationWithVariants()
             AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration(project)
             return builder
         }

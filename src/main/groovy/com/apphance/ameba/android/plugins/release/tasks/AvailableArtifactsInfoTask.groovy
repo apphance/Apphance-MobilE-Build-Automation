@@ -55,7 +55,7 @@ class AvailableArtifactsInfoTask {
             builder = new AndroidSingleVariantApkBuilder(project, androidConf, executor)
             listener = new AndroidReleaseApkListener(project, executor)
         }
-        if (builder.hasVariants()) {
+        if (androidConf.hasVariants()) {
             androidConf.variants.each { variant ->
                 listener.buildArtifactsOnly(project, variant, null)
             }

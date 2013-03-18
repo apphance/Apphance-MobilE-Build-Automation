@@ -8,8 +8,8 @@ import org.apache.tools.ant.ProjectHelper
  */
 class AntExecutor {
 
-    static String DEBUG = "debug"
-    static String CLEAN = "clean"
+    public static String DEBUG = "debug"
+    public static String CLEAN = "clean"
 
     Project antProject
 

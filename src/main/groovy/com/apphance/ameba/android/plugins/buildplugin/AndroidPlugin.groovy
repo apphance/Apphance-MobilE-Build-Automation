@@ -1,23 +1,31 @@
 package com.apphance.ameba.android.plugins.buildplugin
 
 import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.android.*
+import com.apphance.ameba.android.AndroidEnvironment
+import com.apphance.ameba.android.AndroidProjectConfiguration
+import com.apphance.ameba.android.plugins.buildplugin.tasks.*
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
-import static com.apphance.ameba.executor.AntExecutor.*
-import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY
+import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
+import static com.apphance.ameba.PropertyCategory.readProperty
+import static com.apphance.ameba.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
+import static com.apphance.ameba.android.AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration
+import static com.apphance.ameba.android.plugins.buildplugin.AndroidProjectProperty.EXCLUDED_BUILDS
+import static com.apphance.ameba.android.plugins.buildplugin.AndroidProjectProperty.MIN_SDK_TARGET
+import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.*
+import static org.gradle.api.logging.Logging.getLogger
+import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
+import static org.gradle.api.plugins.JavaPlugin.COMPILE_JAVA_TASK_NAME
+import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
 
 /**
  * Plugin for various Android related tasks.
@@ -25,133 +33,122 @@ import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurati
  */
 class AndroidPlugin implements Plugin<Project> {
 
-    static Logger logger = Logging.getLogger(AndroidPlugin.class)
+    private l = getLogger(getClass())
 
-    static final String PROJECT_PROPERTIES_KEY = 'project.properties'
+    public static final String PROJECT_PROPERTIES_KEY = 'project.properties'
+
+    public static final String REPLACE_PACKAGE_TASK_NAME = 'replacePackage'
+    public static final String BUILD_ALL_TASK_NAME = 'buildAll'
+    public static final String BUILD_ALL_RELEASE_TASK_NAME = 'buildAllRelease'
+    public static final String BUILD_ALL_DEBUG_TASK_NAME = 'buildAllDebug'
+    public static final String COPY_SOURCES_TASK_NAME = 'copySources'
+    public static final String COMPILE_ANDROID_TASK_NAME = 'compileAndroid'
+    public static final String CLEAN_ANDROID_TASK_NAME = 'cleanAndroid'
+    public static final String CLEAN_CLASSES_TASK_NAME = 'cleanClasses'
+    public static final String READ_ANDROID_VERSION_AND_PROJECT_NAME_TASK_NAME = 'readAndroidVersionAndProjectName'
+    public static final String READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME = 'readAndroidProjectConfiguration'
+    public static final String UPDATE_PROJECT_TASK_NAME = 'updateProject'
 
     @Inject
-    CommandExecutor executor
+    private CommandExecutor executor
+    @Lazy
+    private AntExecutor antExecutor = { new AntExecutor(project.rootDir) }()
 
-    ProjectConfiguration conf
-    AndroidProjectConfiguration androidConf
-    AndroidManifestHelper manifestHelper
-    AndroidSingleVariantApkBuilder androidApkBuilder
-    AndroidSingleVariantJarBuilder androidJarBuilder
-    AndroidEnvironment androidEnvironment
-    Project project
+    private Project project
+
+    private ProjectConfiguration conf
+    private AndroidProjectConfiguration androidConf
+    private AndroidEnvironment androidEnvironment
 
     @Override
     def void apply(Project project) {
-
-        this.conf = PropertyCategory.getProjectConfiguration(project)
-        this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
-        this.manifestHelper = new AndroidManifestHelper()
-        this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, this.androidConf, executor)
-        this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, this.androidConf, executor)
         this.project = project
 
-        prepareCopySourcesTask(project)
-        prepareAndroidEnvironment(project)
-        prepareJavaEnvironment(project)
-        prepareCompileAndroidTask(project)
-        prepareUpdateProjectTask(project)
-        prepareCleanTask(project)
-        prepareCleanClassesTask(project)
-        prepareReadAndroidVersionAndProjectNameTask(project)
-        prepareReadAndroidProjectConfigurationTask(project)
-        prepareAllInstallTasks(project)
-        prepareBuildDebugOnlyTask(project)
-        prepareBuildReleaseOnlyTask(project)
-        prepareAllVariants(project)
-        prepareBuildAllTask(project)
-        prepareReplacePackageTask(project)
+        this.conf = getProjectConfiguration(project)
+        this.androidConf = getAndroidProjectConfiguration(project)
+        this.androidEnvironment = new AndroidEnvironment(project)
+
+        //TODO
+        prepareJavaEnvironment()
+        prepareAndroidEnvironment()
         addAndroidSourceExcludes()
+        //TODO these three methods to auto detection
+
+        prepareReadAndroidVersionAndProjectNameTask()
+        prepareReadAndroidProjectConfigurationTask()
+        prepareCleanClassesTask()
+        prepareCleanTask()
+        prepareCompileAndroidTask()
+        prepareCopySourcesTask()
+        prepareBuildAllTask()
+        prepareBuildDebugOnlyTask()
+        prepareBuildReleaseOnlyTask()
+        prepareReplacePackageTask()
+        prepareUpdateProjectTask()
+        prepareAllVariants()
+        prepareAllInstallTasks()
 
         project.prepareSetup.prepareSetupOperations << new PrepareAndroidSetupOperation()
         project.verifySetup.verifySetupOperations << new VerifyAndroidSetupOperation()
         project.showSetup.showSetupOperations << new ShowAndroidSetupOperation()
 
-        project.prepareSetup.dependsOn(project.readAndroidProjectConfiguration)
-        project.verifySetup.dependsOn(project.readAndroidProjectConfiguration)
-        project.showSetup.dependsOn(project.readAndroidProjectConfiguration)
+        project.prepareSetup.dependsOn(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
+        project.verifySetup.dependsOn(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
+        project.showSetup.dependsOn(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
     }
 
-    private def getAntExecutor() {
-        new AntExecutor(project.rootDir)
-    }
-
-    void prepareCopySourcesTask(Project project) {
-        def task = project.task('copySources')
-        task.description = "Copies all sources to tmp directory for build"
-        task.group = AMEBA_BUILD
-        task << {
-            androidConf.variants.each { variant ->
-                project.ant.sync(toDir: androidConf.tmpDirs[variant], overwrite: true, failonerror: false, verbose: false) {
-                    fileset(dir: "${project.rootDir}/") {
-                        exclude(name: androidConf.tmpDirs[variant].absolutePath + '/**/*')
-                        conf.sourceExcludes.each {
-                            if (!it.equals('**/local.properties') && !it.equals('**/gen/**')) {
-                                exclude(name: it)
-                            }
-                        }
-                    }
-                }
+    private void prepareJavaEnvironment() {
+        project.plugins.apply('java')
+        def javaConventions = project.convention.plugins.java
+        javaConventions.sourceSets {
+            main {
+                output.classesDir = project.file('bin')
+                output.resourcesDir = project.file('bin')
+                java { srcDir project.file('src') }
+                java { srcDir project.file('gen') }
             }
         }
+        project.compileJava.options.encoding = 'UTF-8'
+        project.javadoc.options.encoding = 'UTF-8'
+        project.compileTestJava.options.encoding = 'UTF-8'
+        project.dependencies.add('compile', project.files('ext-classes'))
+        project.dependencies.add('compile', project.files(androidConf.sdkJars))
+        project.dependencies.add('compile', project.files(androidConf.libraryJars))
+        project.dependencies.add('compile', project.files(androidConf.linkedLibraryJars))
     }
 
-    private void prepareAndroidEnvironment(Project project) {
-        use(PropertyCategory) {
-            logger.lifecycle("Running android update")
-            runUpdateRecursively(project, project.rootDir, false, true)
-            androidEnvironment = new AndroidEnvironment(project)
-            def sdkDir = androidEnvironment.getAndroidProperty('sdk.dir')
-            androidConf.sdkDirectory = sdkDir == null ? null : new File(sdkDir)
-            if (androidConf.sdkDirectory == null) {
-                def androidHome = System.getenv("ANDROID_HOME")
-                if (androidHome != null) {
-                    androidConf.sdkDirectory = new File(androidHome)
-                }
-            }
-            if (androidConf.sdkDirectory == null) {
-                throw new GradleException('Unable to find location of Android SDK, either set it in local.properties or in ANDROID_HOME environment variable')
-            }
-            androidConf.excludedBuilds = project.readProperty(AndroidProjectProperty.EXCLUDED_BUILDS).split(',')*.trim()
-            def target = androidEnvironment.getAndroidProperty('target')
-            if (target == null) {
-                throw new GradleException("target is not defined. Please run 'android update project' or 'android create project' as appropriate")
-            }
-            androidConf.targetName = target
-            androidConf.minSdkTargetName = project.readProperty(AndroidProjectProperty.MIN_SDK_TARGET)
-            if (androidConf.minSdkTargetName.empty) {
-                androidConf.minSdkTargetName = androidConf.targetName
-            }
-            logger.lifecycle("Min SDK target name = " + androidConf.minSdkTargetName)
-
-            updateSdkJars()
-            updateLibraryProjects(project.rootDir)
-            extractAvailableTargets(project)
-        }
-    }
-
-    private void extractAvailableTargets(Project project) {
-        List<String> result = executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['android', 'list', 'target']))
-
-        androidConf.availableTargets = extractAvailableTargets(result.join('\n'))
-    }
-
-    public static List<String> extractAvailableTargets(String output) {
-        def targets = []
-        def targetPattern = /id:.*"(.*)"/
-        def targetPrefix = 'id:'
-        output.eachLine {
-            def targetMatcher = (it =~ targetPattern)
-            if (it.startsWith(targetPrefix) && targetMatcher.matches()) {
-                targets << targetMatcher[0][1]
+    private void prepareAndroidEnvironment() {
+        l.lifecycle("Running android update")
+        new RunUpdateProjectTask(executor).runUpdateRecursively(project.rootDir, false)
+        def sdkDir = androidEnvironment.getAndroidProperty('sdk.dir')
+        androidConf.sdkDirectory = sdkDir == null ? null : new File(sdkDir)
+        androidConf.rootDir = project.rootDir
+        androidConf.variantsDir = project.file('variants')
+        if (androidConf.sdkDirectory == null) {
+            def androidHome = System.getenv('ANDROID_HOME')
+            if (androidHome != null) {
+                androidConf.sdkDirectory = new File(androidHome)
             }
         }
+        if (androidConf.sdkDirectory == null) {
+            throw new GradleException('Unable to find location of Android SDK, either\
+ set it in local.properties or in ANDROID_HOME environment variable')
+        }
+        androidConf.excludedBuilds = readProperty(project, EXCLUDED_BUILDS).split(',')*.trim()
+        def target = androidEnvironment.getAndroidProperty('target')
+        if (target == null) {
+            throw new GradleException("target is not defined. Please run 'android update project' or 'android create project' as appropriate")
+        }
+        androidConf.targetName = target
+        androidConf.minSdkTargetName = readProperty(project, MIN_SDK_TARGET)
+        if (androidConf.minSdkTargetName.empty) {
+            androidConf.minSdkTargetName = androidConf.targetName
+        }
+        l.lifecycle("Min SDK target name: ${androidConf.minSdkTargetName}")
 
-        targets.sort()
+        updateSdkJars()
+        updateLibraryProjects(project.rootDir)
+        extractAvailableTargets()
     }
 
     private void updateSdkJars() {
@@ -185,7 +182,7 @@ class AndroidPlugin implements Plugin<Project> {
                 }
             }
         }
-        logger.lifecycle("Android SDK jars = " + androidConf.sdkJars)
+        l.lifecycle("Android SDK jars = " + androidConf.sdkJars)
     }
 
     private void updateLibraryProjects(File projectDir) {
@@ -215,217 +212,129 @@ class AndroidPlugin implements Plugin<Project> {
         }
     }
 
-    private void prepareJavaEnvironment(Project project) {
-        project.apply plugin: 'java'
-        def javaConventions = project.convention.plugins.java
-        javaConventions.sourceSets {
-            main {
-                output.classesDir = project.file('bin')
-                output.resourcesDir = project.file('bin')
-                java { srcDir project.file('src') }
-                java { srcDir project.file('gen') }
+    private void extractAvailableTargets() {
+        List<String> result = executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['android', 'list', 'target']))
+        androidConf.availableTargets = parseTargets(result.join('\n'))
+    }
+
+    private List<String> parseTargets(String output) {
+        def targets = []
+        def targetPattern = /id:.*"(.*)"/
+        def targetPrefix = 'id:'
+        output.eachLine {
+            def targetMatcher = (it =~ targetPattern)
+            if (it.startsWith(targetPrefix) && targetMatcher.matches()) {
+                targets << targetMatcher[0][1]
             }
         }
-        project.compileJava.options.encoding = 'UTF-8'
-        project.javadoc.options.encoding = 'UTF-8'
-        project.compileTestJava.options.encoding = 'UTF-8'
-        project.dependencies.add('compile', project.files('ext-classes'))
-        project.dependencies.add('compile', project.files(androidConf.sdkJars))
-        project.dependencies.add('compile', project.files(androidConf.libraryJars))
-        project.dependencies.add('compile', project.files(androidConf.linkedLibraryJars))
+        targets.sort()
     }
 
-    private prepareCompileAndroidTask(Project project) {
-        def task = project.task('compileAndroid')
-        task.description = "Performs code generation/compile tasks for android (if needed)"
-        task.group = AMEBA_BUILD
-        task << {
-            logger.lifecycle("Prepares to compile Java for static code analysis")
-            File gen = project.file('gen')
-            if (!gen.exists() || gen.list().length == 0) {
-                logger.lifecycle("Regenerating gen directory by running debug project")
-                antExecutor.executeTarget DEBUG
-            } else {
-                logger.lifecycle("Not regenerating gen directory! You might need to run clean in order to get latest data (you can also run any of the android builds)")
-            }
-        }
-        project.javadoc.dependsOn(task)
-        project.compileJava.dependsOn(task)
+    private void addAndroidSourceExcludes() {
+        conf.sourceExcludes << '**/*.class'
+        conf.sourceExcludes << '**/bin/**'
+        conf.sourceExcludes << '**/gen/**'
+        conf.sourceExcludes << '**/build/*'
+        conf.sourceExcludes << '**/local.properties'
     }
 
-    private void prepareUpdateProjectTask(Project project) {
-        def task = project.task('updateProject')
-        task.description = "updates project using android command line"
-        task.group = AMEBA_BUILD
-        task << {
-            runUpdateRecursively(project, project.rootDir, true)
-            logger.lifecycle("Performed android update")
-        }
-    }
-
-    private void runUpdateRecursively(Project project, File currentDir, boolean reRun, boolean silentLogging = false) {
-        runUpdateProject(project, currentDir, reRun)
-        Properties prop = new Properties()
-        File propFile = new File(currentDir, PROJECT_PROPERTIES_KEY)
-        if (propFile.exists()) {
-            prop.load(new FileInputStream(propFile))
-            prop.each { key, value ->
-                if (key.startsWith('android.library.reference.')) {
-                    File libraryProject = new File(currentDir, value)
-                    runUpdateRecursively(project, libraryProject, reRun, silentLogging)
-                }
-            }
-        }
-    }
-
-    private runUpdateProject(Project project, File directory, boolean reRun, boolean silentLogging = false) {
-        if (!new File(directory, 'local.properties').exists() || reRun) {
-            if (!directory.exists()) {
-                throw new GradleException("The directory ${directory} to execute the command, does not exist! Your configuration is wrong.")
-            }
-            try {
-                executor.executeCommand(new Command(runDir: directory, cmd: [
-                        'android',
-                        'update',
-                        'project',
-                        '-p',
-                        '.',
-                        '-s'
-                ], failOnError: false
-                ))
-            } catch (IOException e) {
-                throw new GradleException("""The android utility is probably not in your PATH. Please add it!
-    BEWARE! For eclipse junit build it's best to add symbolic link
-    to your \$ANDROID_HOME/tools/android in /usr/bin""", e)
-            }
-        }
-    }
-
-    private void prepareCleanTask(Project project) {
-        def task = project.task('cleanAndroid')
-        task.description = "cleans the application"
-        task.group = AMEBA_BUILD
-        task << {
-            antExecutor.executeTarget CLEAN
-            File tmpDir = project.file("tmp")
-            project.ant.delete(dir: tmpDir)
-        }
-        project.clean.dependsOn(task)
-        task.dependsOn(project.cleanConfiguration)
-    }
-
-    private void prepareCleanClassesTask(Project project) {
-        def task = project.task('cleanClasses')
-        task.description = "Cleans only the compiled classes"
-        task.group = AMEBA_BUILD
-        task << {
-            project.ant.delete(dir: project.file("build"))
-        }
-    }
-
-    void prepareReadAndroidVersionAndProjectNameTask(Project project) {
-        def task = project.task('readAndroidVersionAndProjectName')
+    private prepareReadAndroidVersionAndProjectNameTask() {
+        def task = project.task(READ_ANDROID_VERSION_AND_PROJECT_NAME_TASK_NAME)
         task.group = AMEBA_CONFIGURATION
         task.description = 'Reads Android version data from android manifest'
-        task << {
-            conf.updateVersionDetails(manifestHelper.readVersion(project.rootDir))
-            use(PropertyCategory) {
-                if (!project.isPropertyOrEnvironmentVariableDefined('version.string')) {
-                    logger.lifecycle("Version string is updated to SNAPSHOT because it is not release build")
-                    conf.versionString = conf.versionString + "-SNAPSHOT"
-                } else {
-                    conf.versionString = project.getPropertyOrEnvironmentVariableDefined('version.string')
-                    logger.lifecycle("Version string is not updated to SNAPSHOT because it is release build. Given version is ${conf.versionString}")
-                }
-            }
-            AndroidBuildXmlHelper buildXmlHelper = new AndroidBuildXmlHelper()
-            project.ext[PROJECT_NAME_PROPERTY] = buildXmlHelper.projectName(project.rootDir)
-        }
-        project.readProjectConfiguration.dependsOn(task)
+        task << { new ReadAndroidVersionAndProjectTask(project).readAndroidVersionAndProjectTask() }
+        project.tasks[READ_PROJECT_CONFIGURATION_TASK_NAME].dependsOn(task)
     }
 
-    void prepareReadAndroidProjectConfigurationTask(Project project) {
-        def task = project.task('readAndroidProjectConfiguration')
+    private void prepareReadAndroidProjectConfigurationTask() {
+        def task = project.task(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
         task.group = AMEBA_CONFIGURATION
         task.description = 'Reads Android project configuration from properties'
-        task << { AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration(project) }
-        androidApkBuilder.updateAndroidConfigurationWithVariants()
-        task.dependsOn(project.readProjectConfiguration)
+        task << { readAndroidProjectConfiguration(project) }
+        task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME)
     }
 
-    private void prepareAllInstallTasks(Project project) {
-        if (androidApkBuilder.hasVariants()) {
-            loopAllVariants({ directory ->
-                prepareInstallTask(project, directory.name)
-            }, false)
-        } else {
-            prepareInstallTaskNoVariant(project, 'Debug')
-            prepareInstallTaskNoVariant(project, 'Release')
-        }
+    private void prepareCleanClassesTask() {
+        def task = project.task(CLEAN_CLASSES_TASK_NAME)
+        task.description = 'Cleans only the compiled classes'
+        task.group = AMEBA_BUILD
+        task << { new CleanClassesTask(project).cleanClasses() }
     }
 
-    private prepareInstallTask(Project project, String variant) {
-        String debugRelease = androidConf.debugRelease[variant]
-        def testTask = project.task("install${debugRelease}-${variant}")
-        testTask.description = "Installs " + variant
-        testTask.group = AMEBA_BUILD
-        testTask << {
-            def firstLetterLowerCase = debugRelease[0].toLowerCase()
-            File apkFile = new File(conf.targetDirectory, "${conf.projectName}-${debugRelease}-${variant}-${conf.fullVersionString}.apk")
-            antExecutor.executeTarget "install${firstLetterLowerCase}", ['out.final.file':apkFile]
-        }
-        testTask.dependsOn(project.readAndroidProjectConfiguration)
+    private void prepareCleanTask() {
+        def task = project.task(CLEAN_ANDROID_TASK_NAME)
+        task.description = 'Cleans the application'
+        task.group = AMEBA_BUILD
+        task << { new CleanAndroidTask(project, antExecutor).cleanAndroid() }
+        project.tasks[CLEAN_TASK_NAME].dependsOn(CLEAN_ANDROID_TASK_NAME)
+        task.dependsOn(CLEAN_CONFIGURATION_TASK_NAME)
     }
 
-    private prepareInstallTaskNoVariant(Project project, String debugRelease) {
-        def testTask = project.task("install${debugRelease}")
-        testTask.description = "Installs " + debugRelease
-        testTask.group = AMEBA_BUILD
-        def firstLetterLowerCase = debugRelease[0].toLowerCase()
-        testTask << {
-            File apkFile = new File(conf.targetDirectory, "${conf.projectName}-${debugRelease}-${conf.fullVersionString}.apk")
-            antExecutor.executeTarget "install${firstLetterLowerCase}", ['out.final.file':apkFile]
-        }
-        testTask.dependsOn(project.readAndroidProjectConfiguration)
+    private void prepareCompileAndroidTask() {
+        def task = project.task(COMPILE_ANDROID_TASK_NAME)
+        task.description = 'Performs code generation/compile tasks for android (if needed)'
+        task.group = AMEBA_BUILD
+        task << { new CompileAndroidTask(project, antExecutor).compileAndroid() }
+        project.tasks[JAVADOC_TASK_NAME].dependsOn(COMPILE_ANDROID_TASK_NAME)
+        project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn(COMPILE_ANDROID_TASK_NAME)
     }
 
-    void prepareBuildDebugOnlyTask(Project project) {
-        def task = project.task('buildAllDebug')
+    private void prepareCopySourcesTask() {
+        def task = project.task(COPY_SOURCES_TASK_NAME)
+        task.description = 'Copies all sources to tmp directory for build'
+        task.group = AMEBA_BUILD
+        task << { new CopySourcesTask(project).copySources() }
+    }
+
+    private void prepareBuildAllTask() {
+        def task = project.task(BUILD_ALL_TASK_NAME)
+        task.description = 'Builds all variants'
+        task.group = AMEBA_BUILD
+        task.dependsOn(BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME)
+    }
+
+    private void prepareBuildDebugOnlyTask() {
+        def task = project.task(BUILD_ALL_DEBUG_TASK_NAME)
         task.description = "Builds only debug variants"
         task.group = AMEBA_BUILD
     }
 
-    void prepareBuildReleaseOnlyTask(Project project) {
-        def task = project.task('buildAllRelease')
+    private void prepareBuildReleaseOnlyTask() {
+        def task = project.task(BUILD_ALL_RELEASE_TASK_NAME)
         task.description = "Builds only release variants"
         task.group = AMEBA_BUILD
     }
 
-    void prepareAllVariants(Project project) {
-        if (androidApkBuilder.hasVariants()) {
-            loopAllVariants({ directory ->
-                prepareSingleVariant(project, directory.name, null)
-            }, true)
-        } else {
-            ['Debug', 'Release'].each {
-                prepareSingleVariant(project, it, it)
-            }
-        }
+    private void prepareReplacePackageTask() {
+        def task = project.task(REPLACE_PACKAGE_TASK_NAME)
+        task.description = """Replaces manifest's package with a new one. Requires oldPackage and newPackage
+           parameters. Optionally it takes newLabel or newName parameters if application's label/name is to be replaced"""
+        task.group = AMEBA_BUILD
+        task << { new ReplacePackageTask(project).replacePackage() }
     }
 
-    private void loopAllVariants(Closure closure, boolean printToOutput) {
-        androidApkBuilder.variantsDir.eachDir { directory ->
-            if (!androidConf.isBuildExcluded(directory.name)) {
-                closure(directory)
-            } else {
-                if (printToOutput) {
-                    println "Excluding variant ${directory.name} : excluded by configuration ${androidConf.excludedBuilds}"
+    private void prepareUpdateProjectTask() {
+        def task = project.task(UPDATE_PROJECT_TASK_NAME)
+        task.description = 'Updates project using android command line tool'
+        task.group = AMEBA_BUILD
+        task << { new RunUpdateProjectTask(executor).runUpdateRecursively(project.rootDir, true) }
+    }
+
+    private void prepareAllVariants() {
+        if (androidConf.hasVariants()) {
+            androidConf.variantsDir.eachDir { dir ->
+                if (!androidConf.isBuildExcluded(dir.name)) {
+                    prepareSingleVariant(dir.name, null)
                 }
             }
+        } else {
+            ['Debug', 'Release'].each {
+                prepareSingleVariant(it, it)
+            }
         }
     }
 
-    void prepareSingleVariant(Project project, String variant, String debugRelease) {
+    private void prepareSingleVariant(String variant, String debugRelease) {
         if (variant != null && debugRelease == null) {
             debugRelease = androidConf.debugRelease[variant]
         }
@@ -433,72 +342,39 @@ class AndroidPlugin implements Plugin<Project> {
         def task = project.task("build${debugRelease}${noSpaceVariantName}")
         task.description = "Builds ${debugRelease}${noSpaceVariantName}"
         task.group = AMEBA_BUILD
-        task << {
-            if (androidEnvironment.isLibrary()) {
-                AndroidBuilderInfo bi = androidJarBuilder.buildJarArtifactBuilderInfo(variant, debugRelease)
-                androidJarBuilder.buildSingle(bi)
-            } else {
-                AndroidBuilderInfo bi = androidApkBuilder.buildApkArtifactBuilderInfo(variant, debugRelease)
-                androidApkBuilder.buildSingle(bi)
-            }
-        }
-        task.dependsOn(project.readAndroidProjectConfiguration, project.verifySetup, project.copySources)
-        project.tasks["buildAll${debugRelease}"].dependsOn(task)
+        task << { new SingleVariantTask(project, executor, androidEnvironment).singleVariant(variant, debugRelease) }
+        task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME, VERIFY_SETUP_TASK_NAME, COPY_SOURCES_TASK_NAME)
+        project.tasks["buildAll$debugRelease"].dependsOn(task)
     }
 
-    void prepareBuildAllTask(Project project) {
-        def task = project.task('buildAll')
-        task.description = "Builds all variants"
-        task.group = AMEBA_BUILD
-        task.dependsOn(project.tasks['buildAllDebug'], project.tasks['buildAllRelease'])
-    }
-
-    private void prepareReplacePackageTask(Project project) {
-        def task = project.task('replacePackage')
-        task.description = """Replaces manifest's package with a new one. Requires oldPackage and newPackage
-           parameters. Optionally it takes newLabel or newName parameters if application's label/name is to be replaced"""
-        task.group = AMEBA_BUILD
-        task << {
-            use(PropertyCategory) {
-                def oldPackage = project.readExpectedProperty("oldPackage")
-                logger.lifecycle("Old package ${oldPackage}")
-                def newPackage = project.readExpectedProperty("newPackage")
-                logger.lifecycle("New package ${newPackage}")
-                def newLabel = project.readProperty("newLabel")
-                logger.lifecycle("New label ${newLabel}")
-                def newName = project.readProperty("newLabel")
-                logger.lifecycle("New name ${newName}")
-                manifestHelper.replacePackage(project.getRootDir(), oldPackage, newPackage, newLabel)
-                logger.lifecycle("Replaced the package from ${oldPackage} to ${newPackage}")
-                if (newLabel != null) {
-                    logger.lifecycle("Also replaced label with ${newLabel}")
-                }
-                if (newName != null) {
-                    logger.lifecycle("Replacing name with ${newName}")
-                    AndroidBuildXmlHelper buildXMLHelper = new AndroidBuildXmlHelper()
-                    buildXMLHelper.replaceProjectName(project.rootDir, newName)
-                }
-                File sourceFolder = project.file("src/" + oldPackage.replaceAll('\\.', '/'))
-                File targetFolder = project.file("src/" + newPackage.replaceAll('\\.', '/'))
-                logger.lifecycle("Moving ${sourceFolder} to ${targetFolder}")
-                project.ant.move(file: sourceFolder, tofile: targetFolder, failonerror: false)
-                logger.lifecycle("Replacing remaining references in AndroidManifest ")
-                project.ant.replace(casesensitive: 'true', token: "${oldPackage}",
-                        value: "${newPackage}", summary: true) {
-                    fileset(dir: 'src') { include(name: '**/*.java') }
-                    fileset(dir: 'res') { include(name: '**/*.xml') }
-                    fileset(dir: '.') { include(name: 'AndroidManifest.xml') }
+    private void prepareAllInstallTasks() {
+        if (androidConf.hasVariants()) {
+            androidConf.variantsDir.eachDir { dir ->
+                if (!androidConf.isBuildExcluded(dir.name)) {
+                    prepareInstallTask(dir.name)
                 }
             }
+        } else {
+            prepareInstallTaskNoVariant('Debug')
+            prepareInstallTaskNoVariant('Release')
         }
     }
 
-    private addAndroidSourceExcludes() {
-        conf.sourceExcludes << '**/*.class'
-        conf.sourceExcludes << '**/bin/**'
-        conf.sourceExcludes << '**/gen/**'
-        conf.sourceExcludes << '**/build/*'
-        conf.sourceExcludes << '**/local.properties'
+    private void prepareInstallTask(String variant) {
+        String debugRelease = androidConf.debugRelease[variant]
+        def task = project.task("install${debugRelease}-${variant}")
+        task.description = "Installs $variant"
+        task.group = AMEBA_BUILD
+        task << { new InstallTask(project, antExecutor).install(variant, debugRelease) }
+        task.dependsOn(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
+    }
+
+    private void prepareInstallTaskNoVariant(String debugRelease) {
+        def task = project.task("install${debugRelease}")
+        task.description = "Installs $debugRelease"
+        task.group = AMEBA_BUILD
+        task << { new InstallTaskNoVariant(project, antExecutor).install(debugRelease) }
+        task.dependsOn(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
     }
 
     static public final String DESCRIPTION =
