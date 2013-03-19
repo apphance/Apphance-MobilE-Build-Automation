@@ -1,8 +1,11 @@
 package com.apphance.ameba.android
 
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.Project
+
+import static com.apphance.ameba.executor.AntExecutor.getCLEAN
 
 /**
  * Builds APK from the project - one per variant.
@@ -35,7 +38,8 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
 
     @Override
     void buildSingle(AndroidBuilderInfo bi) {
-        executor.executeCommand(new Command(runDir: androidConf.tmpDirs[bi.variant], cmd: ['ant', 'clean']))
+        def antExecutor = new AntExecutor(androidConf.tmpDirs[bi.variant])
+        antExecutor.executeTarget CLEAN
         def variantPropertiesDir = new File(variantsDir, bi.variant)
         if (bi.variant != null && variantPropertiesDir.exists()) {
             project.ant {
@@ -45,9 +49,7 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
                 }
             }
         }
-        executor.executeCommand(new Command(runDir: androidConf.tmpDirs[bi.variant], cmd: [
-                'ant', bi.debugRelease.toLowerCase()
-        ]))
+        antExecutor.executeTarget bi.debugRelease.toLowerCase()
         logger.lifecycle("Apk file created: ${bi.originalFile}")
         buildListeners.each {
             it.buildDone(project, bi)
