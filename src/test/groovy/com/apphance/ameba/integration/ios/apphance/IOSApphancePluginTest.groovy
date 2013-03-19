@@ -1,4 +1,4 @@
-package com.apphance.ameba.unit.ios
+package com.apphance.ameba.integration.ios.apphance
 
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection

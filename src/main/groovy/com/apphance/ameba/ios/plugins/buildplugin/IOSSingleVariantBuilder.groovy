@@ -140,7 +140,7 @@ class IOSSingleVariantBuilder {
         }
         l.lifecycle("\n\n\n=== Building target ${target}, configuration ${configuration}  ===")
         if (target != "Frankified") {
-            iosExecutorbuildTarget(tmpDir(target, configuration), target, configuration)
+            iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration)
             IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
             buildListeners.each {
                 it.buildDone(project, bi)

@@ -31,6 +31,7 @@ import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
  * Plugin for various Android related tasks.
  *
  */
+//TODO plugin test after refactor
 class AndroidPlugin implements Plugin<Project> {
 
     private l = getLogger(getClass())
@@ -66,7 +67,6 @@ class AndroidPlugin implements Plugin<Project> {
 
         this.conf = getProjectConfiguration(project)
         this.androidConf = getAndroidProjectConfiguration(project)
-        this.androidEnvironment = new AndroidEnvironment(project)
 
         //TODO
         prepareJavaEnvironment()
@@ -120,6 +120,7 @@ class AndroidPlugin implements Plugin<Project> {
     private void prepareAndroidEnvironment() {
         l.lifecycle("Running android update")
         new RunUpdateProjectTask(executor).runUpdateRecursively(project.rootDir, false)
+        this.androidEnvironment = new AndroidEnvironment(project)
         def sdkDir = androidEnvironment.getAndroidProperty('sdk.dir')
         androidConf.sdkDirectory = sdkDir == null ? null : new File(sdkDir)
         androidConf.rootDir = project.rootDir

@@ -146,6 +146,7 @@ class PluginMasterSpec extends Specification {
 
                     @Override
                     protected void configure() {
+                        bind(Project).toInstance(project)
                         bind(ProjectTypeDetector).toInstance(projectTypeDetectorMock)
                         mocks.each { type, instance ->
                             bind(type).toInstance(instance)

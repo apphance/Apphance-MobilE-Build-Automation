@@ -5,6 +5,7 @@ import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.Project
 
+import static com.apphance.ameba.executor.AntExecutor.CLEAN
 import static com.apphance.ameba.executor.AntExecutor.getCLEAN
 
 /**
