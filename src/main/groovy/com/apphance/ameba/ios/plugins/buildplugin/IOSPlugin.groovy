@@ -173,7 +173,7 @@ class IOSPlugin implements Plugin<Project> {
         readProjectDirectory(project)
         def trimmedListOutput = iosExecutor.list()*.trim()
         if (trimmedListOutput.empty || trimmedListOutput[0] == '') {//TODO possible?
-            throw new GradleException("Error while running ${cmd}:")
+            throw new GradleException("Error while running iosExecutor.list")
         }
 
         project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = readProjectName(trimmedListOutput)

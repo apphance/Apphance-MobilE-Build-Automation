@@ -42,6 +42,6 @@ class IOSExecutor {
     }
 
     List<String> run(String command) {
-        commandExecutor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.getXCodeBuildExecutionPath() + command.split()))
+        commandExecutor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.getXCodeBuildExecutionPath() + command.split().flatten()))
     }
 }

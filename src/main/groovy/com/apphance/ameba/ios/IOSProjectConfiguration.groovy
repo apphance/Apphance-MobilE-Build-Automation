@@ -60,7 +60,7 @@ class IOSProjectConfiguration {
             ['xcodebuild', '-project', xCodeProjectDirectories[getVariant(target, configuration)]]
     }
 
-    def getXCodeBuildExecutionPath() {
+    List<String> getXCodeBuildExecutionPath() {
         (xCodeProjectDirectory == null || xCodeProjectDirectory == '') ?
             ['xcodebuild'] :
             ['xcodebuild', '-project', xCodeProjectDirectory]

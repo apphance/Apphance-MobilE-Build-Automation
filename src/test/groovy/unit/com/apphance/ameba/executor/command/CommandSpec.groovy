@@ -45,11 +45,11 @@ class CommandSpec extends Specification {
 
         then:
         def exception = thrown(IllegalStateException)
-        exception.message == '''Failed to construct command from parameters.
-Command: [ls, -al, $dir]
-Params: [dri:/tmp]
-Environment: [:]
-Secret params names: []'''
+        exception.message == '''|Failed to construct command from parameters.
+                                |Command: [ls, -al, $dir]
+                                |Params: [dri:/tmp]
+                                |Environment: [:]
+                                |Secret params names: []'''.stripMargin()
     }
 
     def 'building command for execution fails for incorrect params'() {
@@ -58,10 +58,10 @@ Secret params names: []'''
 
         then:
         def exception = thrown(IllegalStateException)
-        exception.message == '''Failed to construct command from parameters.
-Command: [ls, -al, $pass]
-Params: [:]
-Environment: [:]
-Secret params names: [pasa]'''
+        exception.message == '''|Failed to construct command from parameters.
+                                |Command: [ls, -al, $pass]
+                                |Params: [:]
+                                |Environment: [:]
+                                |Secret params names: [pasa]'''.stripMargin()
     }
 }
