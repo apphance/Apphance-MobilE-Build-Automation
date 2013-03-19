@@ -3,6 +3,7 @@ package com.apphance.ameba.android.plugins.release
 import spock.lang.Specification
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin.READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME
 import static com.apphance.ameba.android.plugins.release.AndroidReleasePlugin.*
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_FOR_RELEASE_TASK_NAME
@@ -20,7 +21,6 @@ class AndroidReleasePluginSpec extends Specification {
         project.task(SEND_MAIL_MESSAGE_TASK_NAME)
 
         when:
-
         project.plugins.apply(AndroidReleasePlugin)
 
         then: 'every single task is in correct group'
@@ -30,13 +30,13 @@ class AndroidReleasePluginSpec extends Specification {
         project.tasks[PREPARE_MAIL_MESSAGE_TASK_NAME].group == AMEBA_RELEASE
 
         then: 'every task has correct dependencies'
-        project.tasks[UPDATE_VERSION_TASK_NAME].dependsOn.contains('readAndroidProjectConfiguration')
+        project.tasks[UPDATE_VERSION_TASK_NAME].dependsOn.contains(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
 
         project.tasks[BUILD_DOCUMENTATION_ZIP_TASK_NAME].dependsOn.containsAll(JAVADOC_TASK_NAME,
                 READ_PROJECT_CONFIGURATION_TASK_NAME,
                 PREPARE_FOR_RELEASE_TASK_NAME)
 
-        project.tasks[PREPARE_AVAILABLE_ARTIFACTS_INFO_TASK_NAME].dependsOn.contains('readAndroidProjectConfiguration')
+        project.tasks[PREPARE_AVAILABLE_ARTIFACTS_INFO_TASK_NAME].dependsOn.contains(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
 
         project.tasks[PREPARE_MAIL_MESSAGE_TASK_NAME].dependsOn.containsAll(READ_PROJECT_CONFIGURATION_TASK_NAME,
                 PREPARE_AVAILABLE_ARTIFACTS_INFO_TASK_NAME,

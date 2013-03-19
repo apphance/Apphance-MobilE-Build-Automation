@@ -61,7 +61,7 @@ class AndroidPlugin implements Plugin<Project> {
     private AndroidEnvironment androidEnvironment
 
     @Override
-    def void apply(Project project) {
+    void apply(Project project) {
         this.project = project
 
         this.conf = getProjectConfiguration(project)

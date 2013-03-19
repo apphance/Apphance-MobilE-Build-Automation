@@ -6,7 +6,6 @@ import com.apphance.ameba.android.plugins.analysis.tasks.FindBugsTask
 import com.apphance.ameba.android.plugins.analysis.tasks.PMDTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
 import static org.gradle.api.plugins.JavaPlugin.CLASSES_TASK_NAME
@@ -29,10 +28,9 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
     public static final String ANALYSIS_TASK_NAME = 'analysis'
 
     @Override
-    public void apply(Project project) {
+    void apply(Project project) {
         this.project = project
-        def androidAnalysisConvention = new AndroidAnalysisConvention()
-        project.convention.plugins.put('androidAnalysis', androidAnalysisConvention)
+        addAndroidAnalysisConvention()
         preparePmdTask()
         prepareCpdTask()
         prepareFindbugsTask()
@@ -40,20 +38,24 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         prepareAnalysisTask()
     }
 
+    private void addAndroidAnalysisConvention() {
+        project.convention.plugins.put('androidAnalysis', new AndroidAnalysisConvention())
+    }
+
     private void preparePmdTask() {
-        Task task = project.task(PMD_TASK_NAME)
+        def task = project.task(PMD_TASK_NAME)
         task.description = 'Runs PMD analysis on project'
         task.group = AMEBA_ANALYSIS
         project.configurations.add('pmdConf')
         project.dependencies.add('pmdConf', 'pmd:pmd:4.2.6')
-        task.doLast { new PMDTask(project).runPMD() }
+        task << { new PMDTask(project).runPMD() }
     }
 
     private void prepareCpdTask() {
-        Task task = project.task(CPD_TASK_NAME)
+        def task = project.task(CPD_TASK_NAME)
         task.description = 'Runs CPD (duplicated code) analysis on project'
         task.group = AMEBA_ANALYSIS
-        task.doLast { new CPDTask(project).runCPD() }
+        task << { new CPDTask(project).runCPD() }
     }
 
     private void prepareFindbugsTask() {
@@ -63,22 +65,22 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         project.configurations.add('findbugsConf')
         project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs:2.0.0')
         project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs-ant:2.0.0')
-        task.doLast { new FindBugsTask(project).runFindbugs() }
+        task << { new FindBugsTask(project).runFindbugs() }
         task.dependsOn(CLASSES_TASK_NAME)
     }
 
     private void prepareCheckstyleTask() {
-        Task task = project.task(CHECKSTYLE_TASK_NAME)
+        def task = project.task(CHECKSTYLE_TASK_NAME)
         task.description = 'Runs Checkstyle analysis on project'
         task.group = AMEBA_ANALYSIS
         project.configurations.add('checkstyleConf')
         project.dependencies.add('checkstyleConf', 'checkstyle:checkstyle:5.0')
-        task.doLast { new CheckStyleTask(project).runCheckStyle() }
+        task << { new CheckStyleTask(project).runCheckStyle() }
         task.dependsOn(CLASSES_TASK_NAME)
     }
 
     private void prepareAnalysisTask() {
-        Task task = project.task(ANALYSIS_TASK_NAME)
+        def task = project.task(ANALYSIS_TASK_NAME)
         task.description = 'Runs all analysis on project'
         task.group = AMEBA_ANALYSIS
         task.dependsOn(FINDBUGS_TASK_NAME)

@@ -12,7 +12,6 @@ import com.apphance.ameba.apphance.VerifyApphanceSetupOperation
 import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 
 import javax.inject.Inject
 
@@ -37,7 +36,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     public static final String CONVERT_LOGS_TO_ANDROID_TASK_NAME = 'convertLogsToAndroid'
 
     @Override
-    public void apply(Project project) {
+    void apply(Project project) {
         this.project = project
         this.androidConf = getAndroidProjectConfiguration(project)
 
@@ -57,7 +56,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     private void preProcessBuildsWithApphance() {
         androidConf.buildableVariants.each { variant ->
             if (androidConf.debugRelease.get(variant) == 'Debug') {
-                Task task = project.tasks["buildDebug-$variant"]
+                def task = project.tasks["buildDebug-$variant"]
                 task.doFirst {
                     new AddAndroidApphanceTask(project).addApphance(variant)
                 }
@@ -66,25 +65,25 @@ class AndroidApphancePlugin implements Plugin<Project> {
         }
     }
 
-    void prepareConvertLogsToApphanceTask() {
-        Task task = project.task(CONVERT_LOGS_TO_APPHANCE_TASK_NAME)
+    private void prepareConvertLogsToApphanceTask() {
+        def task = project.task(CONVERT_LOGS_TO_APPHANCE_TASK_NAME)
         task.description = 'Converts all logs to apphance from android logs for the source project'
         task.group = AMEBA_APPHANCE_SERVICE
-        task.doLast { new ApphanceLogsConversionTask(project.ant).convertLogsToApphance(project.rootDir) }
+        task << { new ApphanceLogsConversionTask(project.ant).convertLogsToApphance(project.rootDir) }
     }
 
-    void prepareConvertLogsToAndroidTask() {
-        Task task = project.task(CONVERT_LOGS_TO_ANDROID_TASK_NAME)
+    private void prepareConvertLogsToAndroidTask() {
+        def task = project.task(CONVERT_LOGS_TO_ANDROID_TASK_NAME)
         task.description = 'Converts all logs to android from apphance logs for the source project'
         task.group = AMEBA_APPHANCE_SERVICE
-        task.doLast { new AndroidLogsConversionTask(project.ant).convertLogsToAndroid(project.rootDir) }
+        task << { new AndroidLogsConversionTask(project.ant).convertLogsToAndroid(project.rootDir) }
     }
 
-    void prepareSingleBuildUploadTask(String variantName, String buildTaskName) {
-        Task task = project.task("upload${variantName.toLowerCase().capitalize()}")
+    private void prepareSingleBuildUploadTask(String variantName, String buildTaskName) {
+        def task = project.task("upload${variantName.toLowerCase().capitalize()}")
         task.description = 'Uploads apk & image_montage to Apphance server'
         task.group = AMEBA_APPHANCE_SERVICE
-        task.doLast {
+        task << {
             new UploadAndroidArtifactTask(project, executor).uploadArtifact(variantName)
         }
         task.dependsOn(buildTaskName)

@@ -4,9 +4,9 @@ import com.apphance.ameba.android.plugins.jarlibrary.tasks.DeployJarLibraryTask
 import com.apphance.ameba.android.plugins.jarlibrary.tasks.JarLibraryTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin.READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME
 
 /**
  * Helps building the library with resources embedded. It is useful in case we want to generate libraries like
@@ -20,7 +20,7 @@ class AndroidJarLibraryPlugin implements Plugin<Project> {
     private Project project
 
     @Override
-    public void apply(Project project) {
+    void apply(Project project) {
         this.project = project
 
         prepareJarLibraryTask()
@@ -32,15 +32,15 @@ class AndroidJarLibraryPlugin implements Plugin<Project> {
     }
 
     private void prepareJarLibraryTask() {
-        Task task = project.task(JAR_LIBRARY_TASK_NAME)
+        def task = project.task(JAR_LIBRARY_TASK_NAME)
         task.description = 'Prepares jar library with embedded resources'
         task.group = AMEBA_BUILD
-        task.doLast { new JarLibraryTask(project).jarLibrary() }
-        task.dependsOn('readAndroidProjectConfiguration')
+        task << { new JarLibraryTask(project).jarLibrary() }
+        task.dependsOn(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
     }
 
     private void prepareJarLibraryDeployTask() {
-        Task task = project.task(DEPLOY_JAR_LIBRARY_TASK_NAME)
+        def task = project.task(DEPLOY_JAR_LIBRARY_TASK_NAME)
         task.description = 'Deploys jar library to maven repository'
         task.group = AMEBA_BUILD
         project.configurations.add('jarLibraryConfiguration')

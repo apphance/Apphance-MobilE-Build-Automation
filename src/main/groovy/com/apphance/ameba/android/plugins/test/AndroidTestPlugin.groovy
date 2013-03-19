@@ -68,7 +68,8 @@ class AndroidTestPlugin implements Plugin<Project> {
     Process logcatProcess
     Project project
 
-    public void apply(Project project) {
+    @Override
+    void apply(Project project) {
         this.project = project
         this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
         this.androidManifestHelper = new AndroidManifestHelper()
@@ -85,13 +86,13 @@ class AndroidTestPlugin implements Plugin<Project> {
         prepareAndroidRobotiumStructure(project)
         prepareAndroidRobolectricStructure(project)
         prepareAndroidRobolectricTask(project)
+
         project.prepareSetup.prepareSetupOperations << new PrepareAndroidTestSetupOperation()
         project.verifySetup.verifySetupOperations << new VerifyAndroidTestSetupOperation()
         project.showSetup.showSetupOperations << new ShowAndroidTestSetupOperation()
     }
 
     private void readConfiguration(Project project) {
-        AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration(project)
         use(PropertyCategory) {
             rawDir = project.file('res/raw')
             emulatorName = project.rootDir.getAbsolutePath().replaceAll('[\\\\ /]', '_')

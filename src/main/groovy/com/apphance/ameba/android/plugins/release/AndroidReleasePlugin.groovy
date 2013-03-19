@@ -9,11 +9,11 @@ import com.apphance.ameba.android.plugins.release.tasks.UpdateVersionTask
 import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 
 import javax.inject.Inject
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin.READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.getREAD_PROJECT_CONFIGURATION_TASK_NAME
 import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_FOR_RELEASE_TASK_NAME
@@ -40,7 +40,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
     private Project project
 
     @Override
-    public void apply(Project project) {
+    void apply(Project project) {
         this.project = project
 
         prepareUpdateVersionTask()
@@ -54,28 +54,28 @@ class AndroidReleasePlugin implements Plugin<Project> {
     }
 
     private void prepareBuildDocumentationZipTask() {
-        Task task = project.task(BUILD_DOCUMENTATION_ZIP_TASK_NAME)
+        def task = project.task(BUILD_DOCUMENTATION_ZIP_TASK_NAME)
         task.description = 'Builds documentation .zip file'
         task.group = AMEBA_RELEASE
-        task.doLast { new BuildDocZipTask(project).buildDocZip() }
+        task << { new BuildDocZipTask(project).buildDocZip() }
         task.dependsOn(JAVADOC_TASK_NAME,
                 READ_PROJECT_CONFIGURATION_TASK_NAME,
                 PREPARE_FOR_RELEASE_TASK_NAME)
     }
 
     private void prepareAvailableArtifactsInfoTask() {
-        Task task = project.task(PREPARE_AVAILABLE_ARTIFACTS_INFO_TASK_NAME)
+        def task = project.task(PREPARE_AVAILABLE_ARTIFACTS_INFO_TASK_NAME)
         task.description = 'Prepares information about available artifacts for mail message to include'
         task.group = AMEBA_RELEASE
-        task.doLast { new AvailableArtifactsInfoTask(project, executor).availableArtifactsInfo() }
-        task.dependsOn('readAndroidProjectConfiguration')
+        task << { new AvailableArtifactsInfoTask(project, executor).availableArtifactsInfo() }
+        task.dependsOn(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
     }
 
     private void prepareMailMessageTask() {
         def task = project.task(PREPARE_MAIL_MESSAGE_TASK_NAME)
         task.description = 'Prepares mail message which summarises the release'
         task.group = AMEBA_RELEASE
-        task.doLast { new MailMessageTask(project).mailMessage() }
+        task << { new MailMessageTask(project).mailMessage() }
         task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME,
                 PREPARE_AVAILABLE_ARTIFACTS_INFO_TASK_NAME,
                 PREPARE_FOR_RELEASE_TASK_NAME)
@@ -83,12 +83,12 @@ class AndroidReleasePlugin implements Plugin<Project> {
     }
 
     private void prepareUpdateVersionTask() {
-        Task task = project.task(UPDATE_VERSION_TASK_NAME)
+        def task = project.task(UPDATE_VERSION_TASK_NAME)
         task.group = AMEBA_RELEASE
         task.description = """Updates version stored in manifest file of the project.
            Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
-        task.doLast { new UpdateVersionTask(project).updateVersion() }
-        task.dependsOn('readAndroidProjectConfiguration')
+        task << { new UpdateVersionTask(project).updateVersion() }
+        task.dependsOn(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
     }
 
     static public final String DESCRIPTION =
