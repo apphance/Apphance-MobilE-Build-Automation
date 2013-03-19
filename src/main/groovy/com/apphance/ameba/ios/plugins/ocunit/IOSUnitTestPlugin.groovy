@@ -2,7 +2,7 @@ package com.apphance.ameba.ios.plugins.ocunit
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.executor.command.Command
+import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
@@ -25,6 +25,9 @@ class IOSUnitTestPlugin implements Plugin<Project> {
 
     @Inject
     CommandExecutor executor
+
+    @Inject
+    IOSExecutor iosExecutor
 
     Project project
     ProjectConfiguration conf
@@ -53,17 +56,7 @@ class IOSUnitTestPlugin implements Plugin<Project> {
             def testResults = new File(conf.tmpDirectory, "test-${target}-${configuration}.txt")
             l.lifecycle("Trying to create file: ${testResults.canonicalPath}")
             testResults.createNewFile()
-            executor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.xCodeBuildExecutionPath(target, configuration) + [
-                    '-target',
-                    target,
-                    '-configuration',
-                    configuration,
-                    '-sdk',
-                    iosConf.simulatorSDK
-            ], environment:
-                    [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: "${testResults.canonicalPath}".toString()],
-                    failOnError: false
-            ))
+            iosExecutor.buildTestTarget(project.rootDir, target, configuration, "${testResults.canonicalPath}".toString())
             OCUnitParser parser = new OCUnitParser()
             parser.parse(testResults.text.split('\n') as List)
             File unitTestFile = new File(conf.tmpDirectory, "TEST-all.xml")
@@ -83,11 +76,10 @@ class IOSUnitTestPlugin implements Plugin<Project> {
     }
 
     static public final String DESCRIPTION =
-        """This plugins provides functionality of standard ocunit testing for iOS.
-
-It executes all tests which are build using ocunit test framework.
-
-More description needed ....
-
-"""
+        """|This plugins provides functionality of standard ocunit testing for iOS.
+           |
+           |It executes all tests which are build using ocunit test framework.
+           |
+           |More description needed ....
+           |""".stripMargin()
 }

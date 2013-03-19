@@ -3,10 +3,10 @@ package com.apphance.ameba.ios.plugins.buildplugin
 import com.apphance.ameba.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser
 import com.apphance.ameba.ios.plugins.release.IOSReleaseListener
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
@@ -18,6 +18,7 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.ios.IOSXCodeOutputParser.*
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -34,6 +35,9 @@ class IOSPlugin implements Plugin<Project> {
 
     @Inject
     CommandExecutor executor
+
+    @Inject
+    IOSExecutor iosExecutor
 
     String pListFileName
     ProjectConfiguration conf
@@ -167,23 +171,22 @@ class IOSPlugin implements Plugin<Project> {
 
     private readProjectConfigurationFromXCode(Project project) {
         readProjectDirectory(project)
-        def cmd = (iosConf.getXCodeBuildExecutionPath() + ['-list'])
-        def trimmedListOutput = executor.executeCommand(new Command(runDir: project.rootDir, cmd: cmd))*.trim()
+        def trimmedListOutput = iosExecutor.list()*.trim()
         if (trimmedListOutput.empty || trimmedListOutput[0] == '') {//TODO possible?
             throw new GradleException("Error while running ${cmd}:")
-        } else {
-            IOSProjectConfiguration iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
-            project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = IOSXCodeOutputParser.readProjectName(trimmedListOutput)
-            iosConf.targets = IOSXCodeOutputParser.readBuildableTargets(trimmedListOutput)
-            iosConf.configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedListOutput)
-            iosConf.allTargets = IOSXCodeOutputParser.readBaseTargets(trimmedListOutput, { true })
-            iosConf.allConfigurations = IOSXCodeOutputParser.readBaseConfigurations(trimmedListOutput, { true })
-            iosConf.schemes = IOSXCodeOutputParser.readSchemes(trimmedListOutput)
-            def trimmedSdkOutput = executor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.getXCodeBuildExecutionPath() + ['-showsdks']))*.trim()
-            iosConf.allIphoneSDKs = IOSXCodeOutputParser.readIphoneSdks(trimmedSdkOutput)
-            iosConf.allIphoneSimulatorSDKs = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedSdkOutput)
-            readVariantedProjectDirectories(project)
         }
+
+        project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = readProjectName(trimmedListOutput)
+        iosConf.targets = readBuildableTargets(trimmedListOutput)
+        iosConf.configurations = readBuildableConfigurations(trimmedListOutput)
+        iosConf.allTargets = readBaseTargets(trimmedListOutput, { true })
+        iosConf.allConfigurations = readBaseConfigurations(trimmedListOutput, { true })
+        iosConf.schemes = readSchemes(trimmedListOutput)
+
+        def trimmedSdkOutput = iosExecutor.showSdks()*.trim()
+        iosConf.allIphoneSDKs = readIphoneSdks(trimmedSdkOutput)
+        iosConf.allIphoneSimulatorSDKs = readIphoneSimulatorSdks(trimmedSdkOutput)
+        readVariantedProjectDirectories(project)
     }
 
     void prepareReadIosProjectVersionsTask(Project project) {

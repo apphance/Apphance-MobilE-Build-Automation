@@ -2,13 +2,14 @@ package com.apphance.ameba.ios.plugins.buildplugin
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.executor.command.Command
+import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.ios.IOSBuilderInfo
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
 import com.apphance.ameba.ios.MPParser
 import com.apphance.ameba.util.file.FileManager
+import com.google.inject.Inject
 import com.sun.org.apache.xpath.internal.XPathAPI
 import groovy.io.FileType
 import org.gradle.api.GradleException
@@ -31,6 +32,9 @@ class IOSSingleVariantBuilder {
     IOSProjectConfiguration iosConf
     AntBuilder ant
     Project project
+
+    @Inject
+    IOSExecutor iosExecutor
 
     IOSSingleVariantBuilder(Project project, CommandExecutor executor, IOSBuildListener... buildListeners) {
         use(PropertyCategory) {
@@ -136,31 +140,13 @@ class IOSSingleVariantBuilder {
         }
         l.lifecycle("\n\n\n=== Building target ${target}, configuration ${configuration}  ===")
         if (target != "Frankified") {
-            executor.executeCommand(new Command(runDir: tmpDir(target, configuration), cmd:
-                    iosConf.xCodeBuildExecutionPath(target, configuration) + [
-                            '-target',
-                            target,
-                            '-configuration',
-                            configuration,
-                            '-sdk',
-                            iosConf.sdk
-                    ]))
+            iosExecutorbuildTarget(tmpDir(target, configuration), target, configuration)
             IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
             buildListeners.each {
                 it.buildDone(project, bi)
             }
         } else {
-            executor.executeCommand(new Command(runDir: tmpDir(target, configuration), cmd:
-                    iosConf.xCodeBuildExecutionPath(target, configuration) + [
-                            '-target',
-                            target,
-                            '-configuration',
-                            configuration,
-                            '-sdk',
-                            iosConf.simulatorSDK,
-                            '-arch',
-                            'i386'
-                    ]))
+            iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration, iosConf.simulatorSDK, "-arch i386")
         }
     }
 
@@ -169,15 +155,7 @@ class IOSSingleVariantBuilder {
         def configuration = "Debug"
         l.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
         if (conf.versionString != null) {
-            executor.executeCommand(new Command(runDir: tmpDir(target, configuration),
-                    cmd: iosConf.xCodeBuildExecutionPath(target, configuration) + [
-                            "-target",
-                            target,
-                            "-configuration",
-                            configuration,
-                            "-sdk",
-                            iosConf.simulatorSDK
-                    ]))
+            iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration, iosConf.simulatorSDK)
             IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphonesimulator', project)
             buildListeners.each {
                 it.buildDone(project, bi)
