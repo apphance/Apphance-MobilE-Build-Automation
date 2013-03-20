@@ -26,7 +26,7 @@ class CreateAVDTask {
     }
 
     void createAVD() {
-        boolean emulatorExists = androidExecutor.listAvd(project.rootDir).any { it == emulatorName }
+        boolean emulatorExists = androidExecutor.listAvd(project.rootDir).any { it == androidTestConf.emulatorName }
         if (!androidTestConf.avdDir.exists() || !emulatorExists) {
             androidTestConf.avdDir.mkdirs()
             l.lifecycle("Creating emulator avd: ${androidTestConf.emulatorName}")
