@@ -1,5 +1,6 @@
 package com.apphance.ameba.ios.plugins.buildplugin
 
+import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.plugins.release.IOSReleaseListener
@@ -14,10 +15,10 @@ class IOSAllSimulatorsBuilder {
     private IOSProjectConfiguration iosConf
     private IOSSingleVariantBuilder iosSingleVariantBuilder
 
-    IOSAllSimulatorsBuilder(Project project, CommandExecutor executor) {
+    IOSAllSimulatorsBuilder(Project project, CommandExecutor executor, IOSExecutor iosExecutor) {
         this.project = project
-        this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, executor,
-                new IOSReleaseListener(project, executor))
+        this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, iosExecutor,
+                new IOSReleaseListener(project, executor, iosExecutor))
         this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
     }
 

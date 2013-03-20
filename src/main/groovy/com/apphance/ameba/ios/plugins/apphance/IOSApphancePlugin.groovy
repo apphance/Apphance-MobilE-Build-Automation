@@ -3,6 +3,7 @@ package com.apphance.ameba.ios.plugins.apphance
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.apphance.*
+import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.ios.IOSProjectConfiguration
@@ -41,6 +42,8 @@ class IOSApphancePlugin implements Plugin<Project> {
 
     @Inject
     CommandExecutor executor
+    @Inject
+    IOSExecutor iosExecutor
 
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
@@ -75,7 +78,7 @@ class IOSApphancePlugin implements Plugin<Project> {
 
     private addApphanceToTask(Project project, Task buildTask, String variant, String target, String configuration, IOSProjectConfiguration projConf) {
         buildTask.doFirst {
-            def builder = new IOSSingleVariantBuilder(project, executor)
+            def builder = new IOSSingleVariantBuilder(project, iosExecutor)
             if (!isApphancePresent(builder.tmpDir(target, configuration))) {
                 l.info("Adding Apphance to ${variant} (${target}, ${configuration}): ${builder.tmpDir(target, configuration)}. Project file = ${projConf.xCodeProjectDirectories[variant]}")
                 pbxProjectHelper.addApphanceToProject(builder.tmpDir(target, configuration),
@@ -174,7 +177,7 @@ Dependency should be added in gradle style to 'apphance.lib' entry""")
 
         uploadTask << {
 
-            def builder = new IOSSingleVariantBuilder(project, executor)
+            def builder = new IOSSingleVariantBuilder(project, iosExecutor)
             builder.buildSingleBuilderInfo(e.target, e.configuration, 'iphoneos', project)
             def iOSReleaseConf = IOSReleaseConfigurationRetriever.getIosReleaseConfiguration(project)
             def releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)

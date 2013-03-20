@@ -51,7 +51,7 @@ class IOSPlugin implements Plugin<Project> {
         use(PropertyCategory) {
             this.conf = project.getProjectConfiguration()
             this.iosConf = getIosProjectConfiguration(project)
-            this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, executor)
+            this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, iosExecutor)
             prepareCopySourcesTask(project)
             prepareCopyDebugSourcesTask(project)
             prepareReadIosProjectConfigurationTask(project)
@@ -239,7 +239,7 @@ class IOSPlugin implements Plugin<Project> {
             singleTask.group = AMEBA_BUILD
             singleTask.description = "Builds target: ${v.target}, configuration: ${v.configuration}"
             singleTask << {
-                def builder = new IOSSingleVariantBuilder(project, executor, new IOSReleaseListener(project, executor))
+                def builder = new IOSSingleVariantBuilder(project, iosExecutor, new IOSReleaseListener(project, executor, iosExecutor))
                 builder.buildNormalVariant(project, v.target, v.configuration)
             }
             task.dependsOn(singleTask)
@@ -255,7 +255,7 @@ class IOSPlugin implements Plugin<Project> {
         task.description = "Builds single variant for iOS. Requires ios.target and ios.configuration properties"
         task << {
             use(PropertyCategory) {
-                def singleVariantBuilder = new IOSSingleVariantBuilder(project, executor)
+                def singleVariantBuilder = new IOSSingleVariantBuilder(project, iosExecutor)
                 String target = project.readExpectedProperty(IOS_TARGET_LOCAL_PROPERTY)
                 String configuration = project.readExpectedProperty(IOS_CONFIGURATION_LOCAL_PROPERTY)
                 singleVariantBuilder.buildNormalVariant(project, target, configuration)
@@ -268,7 +268,7 @@ class IOSPlugin implements Plugin<Project> {
         def task = project.task('buildAllSimulators', group: AMEBA_BUILD,
                 description: 'Builds all simulators for the project',
                 dependsOn: [project.readProjectConfiguration, project.copyMobileProvision, project.copyDebugSources])
-        task.doLast { new IOSAllSimulatorsBuilder(project, executor).buildAllSimulators() }
+        task.doLast { new IOSAllSimulatorsBuilder(project, executor, iosExecutor).buildAllSimulators() }
 
     }
 

@@ -2,6 +2,7 @@ package com.apphance.ameba.ios.plugins.release
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.ios.IOSProjectConfiguration
 import com.apphance.ameba.ios.IOSXCodeOutputParser
@@ -33,7 +34,8 @@ class IOSReleasePlugin implements Plugin<Project> {
 
     @Inject
     CommandExecutor executor
-
+    @Inject
+    IOSExecutor iosExecutor
     ProjectConfiguration conf
     ProjectReleaseConfiguration releaseConf
     IOSProjectConfiguration iosConf
@@ -87,7 +89,7 @@ class IOSReleasePlugin implements Plugin<Project> {
         task.group = AMEBA_RELEASE
         task << {
             def udids = [:]
-            def iosReleaseListener = new IOSReleaseListener(project, executor)
+            def iosReleaseListener = new IOSReleaseListener(project, executor, iosExecutor)
             iosConf.allBuildableVariants.each { v ->
                 l.lifecycle("Preparing artifact for ${v.id}")
                 iosReleaseListener.buildArtifactsOnly(project, v.target, v.configuration)

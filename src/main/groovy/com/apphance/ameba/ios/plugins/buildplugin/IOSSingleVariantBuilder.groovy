@@ -26,23 +26,20 @@ class IOSSingleVariantBuilder {
 
     def l = getLogger(getClass())
 
-    CommandExecutor executor
     Collection<IOSBuildListener> buildListeners = []
     ProjectConfiguration conf
     IOSProjectConfiguration iosConf
     AntBuilder ant
     Project project
-
-    @Inject
     IOSExecutor iosExecutor
 
-    IOSSingleVariantBuilder(Project project, CommandExecutor executor, IOSBuildListener... buildListeners) {
+    IOSSingleVariantBuilder(Project project, IOSExecutor iosExecutor, IOSBuildListener... buildListeners) {
         use(PropertyCategory) {
             this.project = project
-            this.executor = executor
             this.conf = project.getProjectConfiguration()
             this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
             this.ant = project.ant
+            this.iosExecutor = iosExecutor
             this.buildListeners.addAll(buildListeners)
         }
     }

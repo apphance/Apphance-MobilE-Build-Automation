@@ -2,6 +2,7 @@ package com.apphance.ameba.ios.plugins.release
 
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.jython.JythonExecutor
@@ -30,15 +31,17 @@ class IOSReleaseListener implements IOSBuildListener {
     def l = getLogger(getClass())
 
     CommandExecutor executor
+    IOSExecutor iosExecutor
     ProjectConfiguration conf
     ProjectReleaseConfiguration releaseConf
     IOSProjectConfiguration iosConf
     IOSReleaseConfiguration iosReleaseConf
     AntBuilder ant
 
-    IOSReleaseListener(Project project, CommandExecutor executor) {
+    IOSReleaseListener(Project project, CommandExecutor executor, IOSExecutor iosExecutor) {
         use(PropertyCategory) {
             this.executor = executor
+            this.iosExecutor = iosExecutor
             this.conf = project.getProjectConfiguration()
             this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
             this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
