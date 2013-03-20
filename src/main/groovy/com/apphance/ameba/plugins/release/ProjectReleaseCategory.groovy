@@ -44,7 +44,7 @@ public class ProjectReleaseCategory {
             ProjectReleaseConfiguration releaseConf = getProjectReleaseConfiguration(project)
             releaseConf.projectConfiguration = project.getProjectConfiguration()
             String urlString = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_URL)
-            if (urlString != null) {
+            if (urlString != null && !urlString.empty) {
                 def baseUrl, directory
                 (baseUrl, directory) = splitUrl(urlString)
                 releaseConf.baseUrl = baseUrl

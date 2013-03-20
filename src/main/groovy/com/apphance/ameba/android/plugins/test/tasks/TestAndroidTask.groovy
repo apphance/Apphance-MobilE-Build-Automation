@@ -3,6 +3,7 @@ package com.apphance.ameba.android.plugins.test.tasks
 import com.apphance.ameba.android.AndroidManifestHelper
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.plugins.test.AndroidTestConfiguration
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.util.file.FileManager
@@ -13,6 +14,8 @@ import static com.apphance.ameba.PropertyCategory.readProperty
 import static com.apphance.ameba.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
 import static com.apphance.ameba.android.plugins.test.AndroidTestConfigurationRetriever.getAndroidTestConfiguration
 import static com.apphance.ameba.android.plugins.test.AndroidTestProperty.MOCK_LOCATION
+import static com.apphance.ameba.executor.AntExecutor.CLEAN
+import static com.apphance.ameba.executor.AntExecutor.INSTRUMENT
 import static org.gradle.api.logging.Logging.getLogger
 
 class TestAndroidTask {
@@ -74,19 +77,12 @@ class TestAndroidTask {
         def commandAnt = ["ant", "clean"]
         boolean useMockLocation = readProperty(project, MOCK_LOCATION).toString().toBoolean()
         if (useMockLocation) {
-            androidManifestHelper.addPermissions(project.rootDir,
-                    'android.permission.ACCESS_MOCK_LOCATION'
-            )
+            androidManifestHelper.addPermissions(project.rootDir, 'android.permission.ACCESS_MOCK_LOCATION')
         }
         try {
-            executor.executeCommand(new Command(runDir: androidTestConf.androidTestDirectory, cmd: commandAnt))
-            String[] commandAntTest = [
-                    "ant",
-                    "clean",
-                    "instrument",
-                    "-Dtest.runner=${TEST_RUNNER}"
-            ]
-            executor.executeCommand(new Command(runDir: androidTestConf.androidTestDirectory, cmd: commandAntTest))
+            def antExecutor = new AntExecutor(androidTestConf.androidTestDirectory)
+            antExecutor.executeTarget(CLEAN, ['test.runner':${TEST_RUNNER}])
+            antExecutor.executeTarget(INSTRUMENT, ['test.runner':${TEST_RUNNER}])
             File localEmFile = new File(androidTestConf.androidTestDirectory, 'coverage.em')
             if (localEmFile.exists()) {
                 boolean res = localEmFile.renameTo(androidTestConf.coverageEmFile)

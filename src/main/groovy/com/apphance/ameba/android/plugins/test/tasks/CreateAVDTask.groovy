@@ -2,8 +2,6 @@ package com.apphance.ameba.android.plugins.test.tasks
 
 import com.apphance.ameba.android.plugins.test.AndroidTestConfiguration
 import com.apphance.ameba.executor.AndroidExecutor
-import com.apphance.ameba.executor.command.Command
-import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.Project
 
 import static com.apphance.ameba.android.plugins.test.AndroidTestConfigurationRetriever.getAndroidTestConfiguration
@@ -15,13 +13,11 @@ class CreateAVDTask {
 
     private Project project
     private AndroidTestConfiguration androidTestConf
-    private CommandExecutor executor
     private AndroidExecutor androidExecutor
 
-    CreateAVDTask(Project project, CommandExecutor executor, AndroidExecutor androidExecutor) {
+    CreateAVDTask(Project project, AndroidExecutor androidExecutor) {
         this.project = project
         this.androidTestConf = getAndroidTestConfiguration(project)
-        this.executor = executor
         this.androidExecutor = androidExecutor
     }
 

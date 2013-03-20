@@ -72,7 +72,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         def task = project.task(CREATE_AVD_TASK_NAME)
         task.description = 'Prepares AVDs for emulator'
         task.group = AMEBA_TEST
-        task << { new CreateAVDTask(project, executor, androidExecutor).createAVD() }
+        task << { new CreateAVDTask(project, androidExecutor).createAVD() }
         task.dependsOn(READ_ANDROID_TEST_CONFIGURATION_TASK_NAME)
     }
 

@@ -6,7 +6,6 @@ import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.plugins.buildplugin.tasks.*
 import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.executor.AntExecutor
-import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
