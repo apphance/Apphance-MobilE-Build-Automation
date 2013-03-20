@@ -1,8 +1,6 @@
 package com.apphance.ameba.android
 
 import com.apphance.ameba.executor.AntExecutor
-import com.apphance.ameba.executor.command.Command
-import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.Project
 
 import static com.apphance.ameba.executor.AntExecutor.CLEAN
@@ -14,8 +12,8 @@ import static com.apphance.ameba.executor.AntExecutor.getCLEAN
  */
 class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder {
 
-    AndroidSingleVariantApkBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration, CommandExecutor executor) {
-        super(project, androidProjectConfiguration, executor)
+    AndroidSingleVariantApkBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration) {
+        super(project, androidProjectConfiguration)
     }
 
     AndroidBuilderInfo buildApkArtifactBuilderInfo(String variant, String debugRelease) {

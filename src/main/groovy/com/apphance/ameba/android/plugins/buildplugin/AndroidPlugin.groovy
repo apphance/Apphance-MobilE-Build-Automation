@@ -4,6 +4,7 @@ import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.android.AndroidEnvironment
 import com.apphance.ameba.android.AndroidProjectConfiguration
 import com.apphance.ameba.android.plugins.buildplugin.tasks.*
+import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
@@ -52,14 +53,19 @@ class AndroidPlugin implements Plugin<Project> {
 
     @Inject
     private CommandExecutor executor
-    @Lazy
-    private AntExecutor antExecutor = { new AntExecutor(project.rootDir) }()
+
+    @Inject
+    AndroidExecutor androidExecutor
 
     private Project project
 
     private ProjectConfiguration conf
     private AndroidProjectConfiguration androidConf
     private AndroidEnvironment androidEnvironment
+
+    private def getAntExecutor() {
+        new AntExecutor(project.rootDir)
+    }
 
     @Override
     void apply(Project project) {
@@ -119,7 +125,7 @@ class AndroidPlugin implements Plugin<Project> {
 
     private void prepareAndroidEnvironment() {
         l.lifecycle("Running android update")
-        new RunUpdateProjectTask(executor).runUpdateRecursively(project.rootDir, false)
+        new RunUpdateProjectTask(executor, androidExecutor).runUpdateRecursively(project.rootDir, false)
         this.androidEnvironment = new AndroidEnvironment(project)
         def sdkDir = androidEnvironment.getAndroidProperty('sdk.dir')
         androidConf.sdkDirectory = sdkDir == null ? null : new File(sdkDir)
@@ -214,7 +220,7 @@ class AndroidPlugin implements Plugin<Project> {
     }
 
     private void extractAvailableTargets() {
-        List<String> result = executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['android', 'list', 'target']))
+        List<String> result = androidExecutor.listTarget(project.rootDir)
         androidConf.availableTargets = parseTargets(result.join('\n'))
     }
 
@@ -318,7 +324,7 @@ class AndroidPlugin implements Plugin<Project> {
         def task = project.task(UPDATE_PROJECT_TASK_NAME)
         task.description = 'Updates project using android command line tool'
         task.group = AMEBA_BUILD
-        task << { new RunUpdateProjectTask(executor).runUpdateRecursively(project.rootDir, true) }
+        task << { new RunUpdateProjectTask(executor, androidExecutor).runUpdateRecursively(project.rootDir, true) }
     }
 
     private void prepareAllVariants() {
@@ -343,7 +349,7 @@ class AndroidPlugin implements Plugin<Project> {
         def task = project.task("build${debugRelease}${noSpaceVariantName}")
         task.description = "Builds ${debugRelease}${noSpaceVariantName}"
         task.group = AMEBA_BUILD
-        task << { new SingleVariantTask(project, executor, androidEnvironment).singleVariant(variant, debugRelease) }
+        task << { new SingleVariantTask(project, androidEnvironment).singleVariant(variant, debugRelease) }
         task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME, VERIFY_SETUP_TASK_NAME, COPY_SOURCES_TASK_NAME)
         project.tasks["buildAll$debugRelease"].dependsOn(task)
     }

@@ -1,6 +1,6 @@
 package com.apphance.ameba.android.plugins.buildplugin.tasks
 
-import com.apphance.ameba.executor.command.Command
+import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.GradleException
 
@@ -10,8 +10,11 @@ class RunUpdateProjectTask {
 
     private CommandExecutor executor
 
-    RunUpdateProjectTask(CommandExecutor executor) {
+    private AndroidExecutor androidExecutor
+
+    RunUpdateProjectTask(CommandExecutor executor, AndroidExecutor androidExecutor) {
         this.executor = executor
+        this.androidExecutor = androidExecutor
     }
 
     void runUpdateRecursively(File currentDir, boolean reRun) {
@@ -34,21 +37,7 @@ class RunUpdateProjectTask {
             if (!directory.exists()) {
                 throw new GradleException("The directory ${directory} to execute the command, does not exist! Your configuration is wrong.")
             }
-            try {
-                executor.executeCommand(new Command(runDir: directory, cmd: [
-                        'android',
-                        'update',
-                        'project',
-                        '-p',
-                        '.',
-                        '-s'
-                ], failOnError: false
-                ))
-            } catch (IOException e) {
-                throw new GradleException("""The android utility is probably not in your PATH. Please add it!
-    BEWARE! For eclipse junit build it's best to add symbolic link
-    to your \$ANDROID_HOME/tools/android in /usr/bin""", e)
-            }
+            androidExecutor.updateProject(directory)
         }
     }
 }

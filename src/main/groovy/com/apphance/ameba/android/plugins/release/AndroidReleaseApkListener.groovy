@@ -66,7 +66,7 @@ class AndroidReleaseApkListener implements AndroidBuildListener {
             debugRelease = androidConf.debugRelease[variant]
         }
         if (conf.versionString != null) {
-            AndroidSingleVariantApkBuilder builder = new AndroidSingleVariantApkBuilder(project, androidConf, executor)
+            AndroidSingleVariantApkBuilder builder = new AndroidSingleVariantApkBuilder(project, androidConf)
             AndroidBuilderInfo bi = builder.buildApkArtifactBuilderInfo(variant, debugRelease)
             logger.lifecycle("Adding variant APK artifact ${bi.id}")
             androidReleaseConf.apkFiles.put(bi.id, prepareApkArtifact(bi))

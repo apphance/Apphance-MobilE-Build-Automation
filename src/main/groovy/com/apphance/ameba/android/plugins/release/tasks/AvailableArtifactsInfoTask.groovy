@@ -49,10 +49,10 @@ class AvailableArtifactsInfoTask {
         AndroidBuildListener listener
         def builder
         if (androidEnv.isLibrary()) {
-            builder = new AndroidSingleVariantJarBuilder(project, androidConf, executor)
+            builder = new AndroidSingleVariantJarBuilder(project, androidConf)
             listener = new AndroidReleaseJarListener(project, executor)
         } else {
-            builder = new AndroidSingleVariantApkBuilder(project, androidConf, executor)
+            builder = new AndroidSingleVariantApkBuilder(project, androidConf)
             listener = new AndroidReleaseApkListener(project, executor)
         }
         if (androidConf.hasVariants()) {

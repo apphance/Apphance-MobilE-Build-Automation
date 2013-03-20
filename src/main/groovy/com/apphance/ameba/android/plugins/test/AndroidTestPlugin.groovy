@@ -1,6 +1,7 @@
 package com.apphance.ameba.android.plugins.test
 
 import com.apphance.ameba.android.plugins.test.tasks.*
+import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -19,6 +20,9 @@ class AndroidTestPlugin implements Plugin<Project> {
 
     @Inject
     private CommandExecutor executor
+
+    @Inject
+    AndroidExecutor androidExecutor
 
     private Project project
 
@@ -68,7 +72,7 @@ class AndroidTestPlugin implements Plugin<Project> {
         def task = project.task(CREATE_AVD_TASK_NAME)
         task.description = 'Prepares AVDs for emulator'
         task.group = AMEBA_TEST
-        task << { new CreateAVDTask(project, executor).createAVD() }
+        task << { new CreateAVDTask(project, executor, androidExecutor).createAVD() }
         task.dependsOn(READ_ANDROID_TEST_CONFIGURATION_TASK_NAME)
     }
 

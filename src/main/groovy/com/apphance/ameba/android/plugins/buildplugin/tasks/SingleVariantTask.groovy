@@ -12,11 +12,11 @@ class SingleVariantTask {
     private AndroidSingleVariantJarBuilder androidJarBuilder
     private AndroidSingleVariantApkBuilder androidApkBuilder
 
-    SingleVariantTask(Project project, CommandExecutor executor, AndroidEnvironment androidEnvironment) {
+    SingleVariantTask(Project project, AndroidEnvironment androidEnvironment) {
         this.androidEnvironment = androidEnvironment
         AndroidProjectConfiguration androidConf = getAndroidProjectConfiguration(project)
-        this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, androidConf, executor)
-        this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, androidConf, executor)
+        this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, androidConf)
+        this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, androidConf)
     }
 
     void singleVariant(String variant, String debugRelease) {

@@ -18,18 +18,16 @@ abstract class AbstractAndroidSingleVariantBuilder {
     Project project
     static Collection<AndroidBuildListener> buildListeners = []
 
-    CommandExecutor executor
     ProjectConfiguration conf
     AndroidProjectConfiguration androidConf
     File variantsDir
 
-    AbstractAndroidSingleVariantBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration, CommandExecutor executor) {
+    AbstractAndroidSingleVariantBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration) {
         use(PropertyCategory) {
             this.project = project
             this.conf = project.getProjectConfiguration()
             this.androidConf = androidProjectConfiguration
             this.variantsDir = project.file('variants')
-            this.executor = executor
         }
     }
 
