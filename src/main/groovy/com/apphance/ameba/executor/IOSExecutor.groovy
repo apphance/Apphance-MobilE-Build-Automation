@@ -30,12 +30,12 @@ class IOSExecutor {
 
     def buildTarget(File dir, String target, String configuration, String sdk = iosConf.sdk, String params = "") {
         commandExecutor.executeCommand(new Command(runDir: dir, cmd:
-                iosConf.xCodeBuildExecutionPath(target, configuration) + "-target $target --configuration $configuration -sdk $sdk $params".split()))
+                iosConf.xCodeBuildExecutionPath(target, configuration) + "-target $target -configuration $configuration -sdk $sdk $params".split().flatten()))
     }
 
     def buildTestTarget(File dir, String target, String configuration, String outputFilePath) {
         commandExecutor.executeCommand(new Command(runDir: dir, cmd:
-                iosConf.xCodeBuildExecutionPath(target, configuration) + "-target $target --configuration $configuration -sdk $iosConf.simulatorSDK".split(),
+                iosConf.xCodeBuildExecutionPath(target, configuration) + "-target $target -configuration $configuration -sdk $iosConf.simulatorSDK".split().flatten(),
                 environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: outputFilePath],
                 failOnError: false
         ))

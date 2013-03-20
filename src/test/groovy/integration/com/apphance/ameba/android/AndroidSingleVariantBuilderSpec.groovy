@@ -59,7 +59,7 @@ class AndroidSingleVariantBuilderSpec extends Specification {
             project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.projectName(project.rootDir)
             project.retrieveBasicProjectData()
             def builder = new AndroidSingleVariantApkBuilder(project,
-                    AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project), executor)
+                    AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project))
             AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration(project)
             return builder
         }

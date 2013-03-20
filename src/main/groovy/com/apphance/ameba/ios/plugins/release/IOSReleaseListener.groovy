@@ -235,7 +235,7 @@ class IOSReleaseListener implements IOSBuildListener {
 
     void buildArtifactsOnly(Project project, String target, String configuration) {
         if (conf.versionString != null) {
-            IOSSingleVariantBuilder builder = new IOSSingleVariantBuilder(project, executor)
+            IOSSingleVariantBuilder builder = new IOSSingleVariantBuilder(project, iosExecutor)
             IOSBuilderInfo bi = builder.buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
             prepareDistributionZipArtifact(bi, true)
             prepareDSYMZipArtifact(bi, true)
