@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration

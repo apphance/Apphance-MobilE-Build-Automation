@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.release
 
 import com.apphance.ameba.AbstractPrepareSetupOperation
-import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.util.file.FileManager
 import org.gradle.api.logging.Logger

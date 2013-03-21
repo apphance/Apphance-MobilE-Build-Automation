@@ -1,16 +1,15 @@
 package com.apphance.ameba.plugins.projectconfiguration.tasks
 
 import com.apphance.ameba.AbstractPrepareSetupOperation
-import com.apphance.ameba.AmebaCommonBuildTaskGroups
+import com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.StyledTextOutput
 import org.gradle.logging.StyledTextOutput.Style
 import org.gradle.logging.StyledTextOutputFactory
 
-import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_SETUP
+import static AmebaCommonBuildTaskGroups.AMEBA_SETUP
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 
 /**

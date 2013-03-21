@@ -5,7 +5,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_TEST
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES

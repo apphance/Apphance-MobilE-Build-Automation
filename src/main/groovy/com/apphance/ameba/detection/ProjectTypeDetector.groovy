@@ -1,9 +1,7 @@
 package com.apphance.ameba.detection
 
-import com.apphance.ameba.util.ProjectType
-
-import static com.apphance.ameba.util.ProjectType.ANDROID
-import static com.apphance.ameba.util.ProjectType.IOS
+import static ProjectType.ANDROID
+import static ProjectType.IOS
 
 class ProjectTypeDetector {
 

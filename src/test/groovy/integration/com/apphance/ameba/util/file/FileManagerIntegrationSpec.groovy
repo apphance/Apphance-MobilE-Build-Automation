@@ -47,15 +47,15 @@ class FileManagerIntegrationSpec extends Specification {
 
         and:
         def packageList = [
-                'com.apphance.ameba.integration.android',
-                'com.apphance.ameba.integration.android.apphance',
-                'com.apphance.ameba.integration.android.robolectric',
-                'com.apphance.ameba.integration.android.robotium',
-                'com.apphance.ameba.integration.android.setup',
-                'com.apphance.ameba.integration.conventions',
-                'com.apphance.ameba.integration.ios',
-                'com.apphance.ameba.integration.ios.apphance',
-                'com.apphance.ameba.integration.ios.setup',
+                'com.apphance.ameba.android',
+                'com.apphance.ameba.android.apphance',
+                'com.apphance.ameba.android.robolectric',
+                'com.apphance.ameba.android.robotium',
+                'com.apphance.ameba.android.setup',
+                'com.apphance.ameba.conventions',
+                'com.apphance.ameba.ios',
+                'com.apphance.ameba.ios.apphance',
+                'com.apphance.ameba.ios.setup',
                 'com.apphance.ameba.unit.android',
                 'integration.com.apphance.ameba',
                 'integration.com.apphance.ameba.executor.jython',
@@ -66,9 +66,9 @@ class FileManagerIntegrationSpec extends Specification {
                 'unit.com.apphance.ameba.executor.linker',
                 'unit.com.apphance.ameba.ios',
                 'unit.com.apphance.ameba.ios.plugins',
-                'unit.com.apphance.ameba.ios.plugins.apphance',
-                'unit.com.apphance.ameba.ios.plugins.buildplugin',
-                'unit.com.apphance.ameba.ios.plugins.ocunit',
+                'unit.com.apphance.ameba.plugins.ios.apphance',
+                'unit.com.apphance.ameba.plugins.ios.buildplugin',
+                'unit.com.apphance.ameba.plugins.ios.ocunit',
                 'unit.com.apphance.ameba.plugins', 'unit.com.apphance.ameba.plugins.release',
         ]
 

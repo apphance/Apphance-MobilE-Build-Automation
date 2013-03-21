@@ -1,5 +1,6 @@
 package com.apphance.ameba
 
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger

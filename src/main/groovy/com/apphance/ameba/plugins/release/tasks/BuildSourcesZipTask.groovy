@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import org.gradle.api.Project
 

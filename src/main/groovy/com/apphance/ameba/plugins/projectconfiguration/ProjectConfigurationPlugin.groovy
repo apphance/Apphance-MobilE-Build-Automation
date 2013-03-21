@@ -6,7 +6,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
 import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
 import static com.apphance.ameba.PropertyCategory.retrieveBasicProjectData
 import static org.gradle.api.logging.Logging.getLogger

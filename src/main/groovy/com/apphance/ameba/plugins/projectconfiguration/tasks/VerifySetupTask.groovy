@@ -4,7 +4,7 @@ import com.apphance.ameba.AbstractVerifySetupOperation
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_SETUP
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 
 /**

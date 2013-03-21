@@ -5,6 +5,10 @@ import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.SimpleFileLinker
 import com.apphance.ameba.plugins.AmebaPlugin
+import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
+import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever
+import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder

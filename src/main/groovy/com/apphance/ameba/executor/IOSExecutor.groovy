@@ -2,11 +2,11 @@ package com.apphance.ameba.executor
 
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.ios.IOSProjectConfiguration
+import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.google.inject.Inject
 import org.gradle.api.Project
 
-import static com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin.IOS_PROJECT_CONFIGURATION
+import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.IOS_PROJECT_CONFIGURATION
 
 class IOSExecutor {
 

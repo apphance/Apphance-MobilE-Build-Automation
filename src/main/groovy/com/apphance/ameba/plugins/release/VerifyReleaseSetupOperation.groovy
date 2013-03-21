@@ -2,8 +2,6 @@ package com.apphance.ameba.plugins.release
 
 import com.apphance.ameba.AbstractVerifySetupOperation
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.ios.IOSProjectConfiguration
-import com.apphance.ameba.ios.plugins.buildplugin.IOSPlugin
 import org.gradle.api.GradleException
 
 /**

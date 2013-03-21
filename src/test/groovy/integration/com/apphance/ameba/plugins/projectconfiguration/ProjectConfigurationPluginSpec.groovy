@@ -2,7 +2,7 @@ package com.apphance.ameba.plugins.projectconfiguration
 
 import spock.lang.Specification
 
-import static com.apphance.ameba.AmebaCommonBuildTaskGroups.*
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.*
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.*
 import static org.gradle.testfixtures.ProjectBuilder.builder
 

@@ -3,8 +3,8 @@ package com.apphance.ameba.plugins.release
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import spock.lang.Specification
 
-import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
-import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.*
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME

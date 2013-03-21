@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.projectconfiguration.tasks
 
-import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 
 class CleanConfTask {
 

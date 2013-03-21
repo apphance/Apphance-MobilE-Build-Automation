@@ -1,6 +1,6 @@
 package com.apphance.ameba.android
 
-import com.apphance.ameba.android.plugins.buildplugin.AndroidPlugin
+import com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin
 import com.apphance.ameba.plugins.AmebaPlugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder

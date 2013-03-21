@@ -4,7 +4,7 @@ import com.apphance.ameba.plugins.projectconfiguration.ShowConventionHelper
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_SETUP
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
 
 /**
  * Task for showing all conventions.

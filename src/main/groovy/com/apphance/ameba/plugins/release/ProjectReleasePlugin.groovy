@@ -9,8 +9,8 @@ import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
-import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
 

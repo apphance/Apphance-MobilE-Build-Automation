@@ -5,7 +5,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
 import spock.lang.Specification
 
-import static com.apphance.ameba.AmebaCommonBuildTaskGroups.*
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.*
 //TODO to be removed when android plugin has its own test
 class AndroidTasksSpec extends Specification {
 

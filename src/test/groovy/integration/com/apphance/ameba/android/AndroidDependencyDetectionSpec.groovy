@@ -5,6 +5,7 @@ import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
 import com.apphance.ameba.plugins.AmebaPlugin
+import com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 

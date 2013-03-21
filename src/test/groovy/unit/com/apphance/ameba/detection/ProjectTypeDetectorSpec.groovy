@@ -1,12 +1,12 @@
 package com.apphance.ameba.detection
 
-import com.apphance.ameba.integration.android.ExecuteAndroidBuildsTest
-import com.apphance.ameba.integration.ios.ExecuteIosBuildsTest
+import com.apphance.ameba.android.ExecuteAndroidBuildsTest
+import com.apphance.ameba.ios.ExecuteIosBuildsTest
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static com.apphance.ameba.util.ProjectType.ANDROID
-import static com.apphance.ameba.util.ProjectType.IOS
+import static ProjectType.ANDROID
+import static ProjectType.IOS
 
 class ProjectTypeDetectorSpec extends Specification {
 
