@@ -36,7 +36,7 @@ class UploadAndroidArtifactTask {
     }
 
     public void uploadArtifact(String variant) {
-        def builder = new AndroidSingleVariantApkBuilder(project, androidConf, executor)
+        def builder = new AndroidSingleVariantApkBuilder(project, androidConf)
         def builderInfo = builder.buildApkArtifactBuilderInfo(variant, 'Debug')
         def releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
 

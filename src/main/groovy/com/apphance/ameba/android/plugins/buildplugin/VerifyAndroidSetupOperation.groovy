@@ -26,13 +26,13 @@ class VerifyAndroidSetupOperation extends AbstractVerifySetupOperation {
         use(PropertyCategory) {
             Properties projectProperties = readProperties()
             AndroidProjectProperty.each { checkProperty(projectProperties, it) }
-            checkVariant(projectProperties)
-            checkMinSdkTarget(projectProperties)
+            checkVariant()
+            checkMinSdkTarget()
             allPropertiesOK()
         }
     }
 
-    void checkVariant(Properties properties) {
+    void checkVariant() {
         use(PropertyCategory) {
             String mainVariant = project.readProperty(AndroidProjectProperty.MAIN_VARIANT)
             if (mainVariant != null && !mainVariant.empty && !androidConf.variants.contains(mainVariant)) {
@@ -41,7 +41,7 @@ class VerifyAndroidSetupOperation extends AbstractVerifySetupOperation {
         }
     }
 
-    void checkMinSdkTarget(Properties properties) {
+    void checkMinSdkTarget() {
         use(PropertyCategory) {
             String target = project.readProperty(AndroidProjectProperty.MIN_SDK_TARGET)
             List targets = androidConf.availableTargets

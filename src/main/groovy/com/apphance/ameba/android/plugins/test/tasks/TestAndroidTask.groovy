@@ -74,15 +74,14 @@ class TestAndroidTask {
                 '../../'
         ]
         executor.executeCommand(new Command(runDir: androidTestConf.androidTestDirectory, cmd: commandAndroid))
-        def commandAnt = ["ant", "clean"]
         boolean useMockLocation = readProperty(project, MOCK_LOCATION).toString().toBoolean()
         if (useMockLocation) {
             androidManifestHelper.addPermissions(project.rootDir, 'android.permission.ACCESS_MOCK_LOCATION')
         }
         try {
             def antExecutor = new AntExecutor(androidTestConf.androidTestDirectory)
-            antExecutor.executeTarget(CLEAN, ['test.runner':${TEST_RUNNER}])
-            antExecutor.executeTarget(INSTRUMENT, ['test.runner':${TEST_RUNNER}])
+            antExecutor.executeTarget(CLEAN, ['test.runner': TEST_RUNNER])
+            antExecutor.executeTarget(INSTRUMENT, ['test.runner': TEST_RUNNER])
             File localEmFile = new File(androidTestConf.androidTestDirectory, 'coverage.em')
             if (localEmFile.exists()) {
                 boolean res = localEmFile.renameTo(androidTestConf.coverageEmFile)

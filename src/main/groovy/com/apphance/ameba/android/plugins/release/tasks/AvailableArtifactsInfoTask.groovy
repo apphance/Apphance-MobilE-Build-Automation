@@ -3,8 +3,6 @@ package com.apphance.ameba.android.plugins.release.tasks
 import com.apphance.ameba.ProjectConfiguration
 import com.apphance.ameba.android.AndroidEnvironment
 import com.apphance.ameba.android.AndroidProjectConfiguration
-import com.apphance.ameba.android.AndroidSingleVariantApkBuilder
-import com.apphance.ameba.android.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.android.plugins.buildplugin.AndroidBuildListener
 import com.apphance.ameba.android.plugins.release.AndroidReleaseApkListener
 import com.apphance.ameba.android.plugins.release.AndroidReleaseConfiguration
@@ -47,12 +45,9 @@ class AvailableArtifactsInfoTask {
 
     public void availableArtifactsInfo() {
         AndroidBuildListener listener
-        def builder
         if (androidEnv.isLibrary()) {
-            builder = new AndroidSingleVariantJarBuilder(project, androidConf)
             listener = new AndroidReleaseJarListener(project, executor)
         } else {
-            builder = new AndroidSingleVariantApkBuilder(project, androidConf)
             listener = new AndroidReleaseApkListener(project, executor)
         }
         if (androidConf.hasVariants()) {
