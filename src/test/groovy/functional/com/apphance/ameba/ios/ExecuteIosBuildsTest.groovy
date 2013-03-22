@@ -14,7 +14,7 @@ class ExecuteIosBuildsTest {
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
             '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
-    static File testProjectMoreVariants = new File("testProjects/ios-morevariants/GradleXCodeMoreVariants")
+    static File testProjectMoreVariants = new File("testProjects/ios/GradleXCodeMoreVariants")
     static File testProjectOneVariant = new File("testProjects/ios/GradleXCode")
     static File testProjectNoVersion = new File("testProjects/ios/GradleXCodeNoVersion")
     static File testProjectNoVersionString = new File("testProjects/ios/GradleXCodeNoVersionString")

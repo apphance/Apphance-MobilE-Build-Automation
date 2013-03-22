@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.android
 import org.apache.commons.io.FileUtils
 import spock.lang.Specification
 
-class AddApphanceSpec extends Specification{
+class AddApphanceSpec extends Specification {
 
     File noApphanceNoApplicationDirectory = new File('testProjects/android/android-no-apphance-no-application')
     File tmpDir = new File('tmp/testApphance')
@@ -32,6 +32,9 @@ class AddApphanceSpec extends Specification{
         helper.isApphanceInstrumentationPresent(tmpDir)
         1 == getTasks.size()
         1 == readPhone.size()
+
+        cleanup:
+        tmpDir.deleteDir()
     }
 
     def "check Apphance instrumentation"() {
