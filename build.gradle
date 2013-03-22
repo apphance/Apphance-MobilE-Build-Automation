@@ -213,7 +213,14 @@ test {
 idea {
     module {
         inheritOutputDirs = false
+
         outputDir = file('build/classes/main')
         testOutputDir = file('build/classes/test')
+
+        testSourceDirs = [
+                file('src/test/groovy/unit'),
+                file('src/test/groovy/integration'),
+                file('src/test/groovy/functional'),
+        ]
     }
 }
