@@ -1,7 +1,7 @@
 package com.apphance.ameba.android
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -211,14 +211,6 @@ class ExecuteAndroidBuildsTest {
         assertConfigSameAsBuild(testNoVariantsProject, "pmd-rules.xml")
     }
 
-    private assertRemoteSameAsBuild(File projectDirectory, File configDirectory, String fileName) {
-        File baseDir = new File(projectDirectory, "build/analysis/")
-        File resourceDir = new File("src/main/resources/com/apphance/ameba/plugins/android/analysis/tasks")
-        File configBaseDir = new File(configDirectory, "config/analysis/")
-        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
-        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
-    }
-
     @Test
     void testAnalysisFromRemote() {
         File baseDir = new File(testAndroidConventionProject, "build/analysis/")
@@ -231,6 +223,14 @@ class ExecuteAndroidBuildsTest {
         assertRemoteSameAsBuild(testAndroidConventionProject, testNoVariantsProject, "checkstyle.xml")
         assertRemoteSameAsBuild(testAndroidConventionProject, testNoVariantsProject, "findbugs-exclude.xml")
         assertRemoteSameAsBuild(testAndroidConventionProject, testNoVariantsProject, "pmd-rules.xml")
+    }
+
+    private assertRemoteSameAsBuild(File projectDirectory, File configDirectory, String fileName) {
+        File baseDir = new File(projectDirectory, "build/analysis/")
+        File resourceDir = new File("src/main/resources/com/apphance/ameba/plugins/android/analysis/tasks")
+        File configBaseDir = new File(configDirectory, "config/analysis/")
+        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
+        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
     }
 
     @Test
