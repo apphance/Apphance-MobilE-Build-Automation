@@ -1,0 +1,13 @@
+<project>
+    <target name="testTarget">
+        <checksum file="build.xml"/>
+    </target>
+
+    <target name="testTargetUsingProperties">
+        <checksum file="build.xml" property="${firstPart}${secondPart}"/>
+    </target>
+
+    <target name="testBuildInProperties">
+        <property name="antVersion" value="${ant.version}"/>
+    </target>
+</project>

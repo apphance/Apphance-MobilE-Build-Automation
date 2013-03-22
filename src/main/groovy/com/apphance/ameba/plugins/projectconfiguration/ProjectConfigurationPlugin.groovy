@@ -1,13 +1,15 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
-import com.apphance.ameba.ProjectConfiguration
-import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.plugins.projectconfiguration.tasks.*
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logging
+import org.gradle.api.Task
 
-import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
+import static com.apphance.ameba.PropertyCategory.retrieveBasicProjectData
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Plugin for basic project configuration.
@@ -15,63 +17,70 @@ import static com.apphance.ameba.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
  */
 class ProjectConfigurationPlugin implements Plugin<Project> {
 
-    def l = Logging.getLogger(getClass())
+    def l = getLogger(getClass())
 
-    public static final String PROJECT_NAME_PROPERTY = 'project.name'
+    public final static String PROJECT_NAME_PROPERTY = 'project.name'
+
+    public final static String READ_PROJECT_CONFIGURATION_TASK_NAME = 'readProjectConfiguration'
+    public final static String CLEAN_CONFIGURATION_TASK_NAME = 'cleanConfiguration'
+    public final static String PREPARE_SETUP_TASK_NAME = 'prepareSetup'
+    public final static String VERIFY_SETUP_TASK_NAME = 'verifySetup'
+    public final static String SHOW_CONVENTIONS_TASK_NAME = 'showConventions'
+    public final static String SHOW_SETUP_TASK_NAME = 'showSetup'
+    public final static String CHECK_TESTS_TASK_NAME = 'checkTests'
+
+    public final static String AMEBA_PROPERTY_DEFAULTS_CONVENTION_NAME = 'amebaPropertyDefaults'
+
+    private Project project
 
     @Override
     void apply(Project project) {
-        project.convention.plugins.put('amebaPropertyDefaults', new ProjectConfigurationConvention())
-        addMavenRepository(project)
-        readProjectConfigurationTask(project)
-        cleanConfigurationTask(project)
-        prepareShowConventionRule(project)
-        project.task('prepareSetup', type: PrepareSetupTask.class)
-        project.task('verifySetup', type: VerifySetupTask.class)
-        project.task('showSetup', type: ShowSetupTask.class)
-        project.task('checkTests', type: CheckTestsTask.class)
-        project.task('showConventions', type: ShowConventionsTask.class)
+        this.project = project
+
+        addAmebaConvention()
+        addMavenRepository()
+        prepareReadProjectConfigurationTask()
+        prepareCleanConfigurationTask()
+        prepareShowConventionRule()
+
+        project.task(PREPARE_SETUP_TASK_NAME, type: PrepareSetupTask)
+        project.task(VERIFY_SETUP_TASK_NAME, type: VerifySetupTask)
+        project.task(SHOW_SETUP_TASK_NAME, type: ShowSetupTask)
+        project.task(CHECK_TESTS_TASK_NAME, type: CheckTestsTask)
+        project.task(SHOW_CONVENTIONS_TASK_NAME, type: ShowConventionsTask)
     }
 
-    void addMavenRepository(Project project) {
+    private void addAmebaConvention() {
+        project.convention.plugins.put(AMEBA_PROPERTY_DEFAULTS_CONVENTION_NAME, new ProjectConfigurationConvention())
+    }
+
+    private void addMavenRepository() {
         project.repositories.mavenCentral()
     }
 
-    def void readProjectConfigurationTask(Project project) {
-        def task = project.task('readProjectConfiguration')
+    private void prepareReadProjectConfigurationTask() {
+        Task task = project.task(READ_PROJECT_CONFIGURATION_TASK_NAME)
         task.description = "Reads project's configuration and sets it up in projectConfiguration property of project"
         task.group = AMEBA_CONFIGURATION
-        task << {
-            // NOTE! conf.versionString and conf.versionCode need to
-            // be read before project configuration task -> task reading the version
-            // should be injected here
-            PropertyCategory.retrieveBasicProjectData(project)
-        }
+        task.doLast { retrieveBasicProjectData(project) }
     }
 
-    def void cleanConfigurationTask(Project project) {
-        def task = project.task('cleanConfiguration')
-        task.description = "Cleans configuration before each build"
+    private void prepareCleanConfigurationTask() {
+        Task task = project.task(CLEAN_CONFIGURATION_TASK_NAME)
+        task.description = 'Cleans configuration before each build'
         task.group = AMEBA_CONFIGURATION
-        task << {
-            ProjectConfiguration conf = PropertyCategory.getProjectConfiguration(project)
-            conf.buildDirectory.deleteDir()
-            conf.tmpDirectory.deleteDir()
-            conf.logDirectory.deleteDir()
-            conf.buildDirectory.mkdirs()
-            conf.logDirectory.mkdirs()
-            conf.tmpDirectory.mkdirs()
-        }
-        task.dependsOn(project.readProjectConfiguration)
+        task.doLast { new CleanConfTask(getProjectConfiguration(project)).clean() }
+        task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME)
     }
 
-    private void prepareShowConventionRule(Project project) {
+    //TODO to separate?
+    private void prepareShowConventionRule() {
         project.tasks.addRule("Pattern: showConvention<ConventionName>: Shows current convention values for convention specified by name") { String taskName ->
             if (taskName.startsWith("showConvention")) {
                 project.task(taskName) << {
                     String pluginName = taskName.substring('showConvention'.length()).replaceAll('^.') { it.toLowerCase() }
                     def pluginConventionObject = project.convention.plugins[pluginName]
-                    if (pluginConventionObject == null) {
+                    if (!pluginConventionObject) {
                         throw new GradleException("There is no convention with ${pluginName} name")
                     }
                     StringBuilder sb = new StringBuilder()

@@ -30,13 +30,13 @@ class AmebaPlugin implements Plugin<Project> {
     }
 
     static String AMEBA_ASCII_ART = '''\
+
                           _
                          ( )
    _ _   ___ ___     __  | |_      _ _
  /'_` )/' _ ` _ `\\ /'__`\\| '_`\\  /'_` )
 ( (_| || ( ) ( ) |(  ___/| |_) )( (_| |
 `\\__,_)(_) (_) (_)`\\____)(_,__/'`\\__,_)
-
 
 '''
 

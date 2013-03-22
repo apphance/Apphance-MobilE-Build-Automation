@@ -1,0 +1,8 @@
+package com.apphance.ameba.android.plugins.apphance.tasks;
+
+import android.util.Log;
+
+public class AndroidToApphanceWithLogs {
+
+
+}

@@ -1,5 +1,6 @@
 package com.apphance.ameba
 
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -18,13 +19,13 @@ class PropertyCategory {
 
     static Logger logger = Logging.getLogger(PropertyCategory.class)
 
-    public static String listPropertiesAsString(Project project, Class<Enum> properties, boolean useComments) {
+    public static String listPropertiesAsString(Project project, Class<? extends Enum> properties, boolean useComments) {
         StringBuffer sb = new StringBuffer()
         listProperties(project, properties, useComments).each { sb << it + '\n' }
         return sb.toString()
     }
 
-    public static List<String> listProperties(Project project, Class<Enum> properties, boolean useComments, Properties extraProperties = null) {
+    public static List<String> listProperties(Project project, Class<? extends Enum> properties, boolean useComments, Properties extraProperties = null) {
         String description = properties.getField('DESCRIPTION').get(null)
         List<String> s = []
         s << "###########################################################"

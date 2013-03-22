@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.release
 
-import com.apphance.ameba.ProjectConfiguration
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import org.gradle.api.Project
 
@@ -44,7 +44,7 @@ public class ProjectReleaseCategory {
             ProjectReleaseConfiguration releaseConf = getProjectReleaseConfiguration(project)
             releaseConf.projectConfiguration = project.getProjectConfiguration()
             String urlString = project.readProperty(ProjectReleaseProperty.RELEASE_PROJECT_URL)
-            if (urlString != null) {
+            if (urlString != null && !urlString.empty) {
                 def baseUrl, directory
                 (baseUrl, directory) = splitUrl(urlString)
                 releaseConf.baseUrl = baseUrl
@@ -82,9 +82,8 @@ public class ProjectReleaseCategory {
         }
     }
 
-    public static void fillMailSubject(Project project, ResourceBundle resourceBundle) {
-        ProjectConfiguration conf = PropertyCategory.getProjectConfiguration(project)
-        ProjectReleaseConfiguration releaseConf = getProjectReleaseConfiguration(project)
+    public static void fillMailSubject(ProjectConfiguration conf, ProjectReleaseConfiguration releaseConf,
+                                       ResourceBundle resourceBundle) {
         String subject = resourceBundle.getString('Subject')
         releaseConf.releaseMailSubject = Eval.me("conf", conf, /"$subject"/)
     }
