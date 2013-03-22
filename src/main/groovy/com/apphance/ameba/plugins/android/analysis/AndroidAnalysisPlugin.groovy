@@ -47,7 +47,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         task.description = 'Runs PMD analysis on project'
         task.group = AMEBA_ANALYSIS
         project.configurations.add('pmdConf')
-        project.dependencies.add('pmdConf', 'pmd:pmd:4.2.6')
+        project.dependencies.add('pmdConf', 'pmd:pmd:4.3')
         task << { new PMDTask(project).runPMD() }
     }
 
@@ -63,8 +63,8 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         task.description = "Runs Findbugs analysis on project"
         task.group = AMEBA_ANALYSIS
         project.configurations.add('findbugsConf')
-        project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs:2.0.0')
-        project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs-ant:2.0.0')
+        project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs:2.0.1')
+        project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs-ant:2.0.1')
         task << { new FindBugsTask(project).runFindbugs() }
         task.dependsOn(CLASSES_TASK_NAME)
     }
@@ -74,7 +74,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         task.description = 'Runs Checkstyle analysis on project'
         task.group = AMEBA_ANALYSIS
         project.configurations.add('checkstyleConf')
-        project.dependencies.add('checkstyleConf', 'checkstyle:checkstyle:5.0')
+        project.dependencies.add('checkstyleConf', 'com.puppycrawl.tools:checkstyle:5.6')
         task << { new CheckStyleTask(project).runCheckStyle() }
         task.dependsOn(CLASSES_TASK_NAME)
     }

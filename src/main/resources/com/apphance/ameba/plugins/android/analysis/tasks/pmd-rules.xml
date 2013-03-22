@@ -6,9 +6,8 @@
     <description>Ameba rule set</description>
     <rule ref="rulesets/typeresolution.xml/LooseCoupling"/>
     <rule ref="rulesets/typeresolution.xml/CloneMethodMustImplementCloneable"/>
-    <!--
-        <rule ref="rulesets/typeresolution.xml/UnusedImports" />
-    -->
+
+
     <rule ref="rulesets/typeresolution.xml/SignatureDeclareThrowsException"/>
     <rule ref="rulesets/braces.xml/IfStmtsMustUseBraces"/>
     <rule ref="rulesets/braces.xml/WhileLoopsMustUseBraces"/>
@@ -21,8 +20,8 @@
     <rule ref="rulesets/design.xml/AvoidDeeplyNestedIfStmts"/>
     <!--  <rule ref="rulesets/design.xml/AvoidReassigningParameters" /> -->
     <!--  <rule ref="rulesets/design.xml/SwitchDensity" /> -->
-    <rule ref="rulesets/design.xml/ConstructorCallsOverridableMethod"/>
-    <rule ref="rulesets/design.xml/AccessorClassGeneration"/>
+    <!--<rule ref="rulesets/design.xml/ConstructorCallsOverridableMethod"/>-->
+    <!--<rule ref="rulesets/design.xml/AccessorClassGeneration"/>-->
     <rule ref="rulesets/design.xml/FinalFieldCouldBeStatic"/>
     <rule ref="rulesets/design.xml/CloseResource"/>
     <rule ref="rulesets/design.xml/NonStaticInitializer"/>
@@ -50,8 +49,8 @@
     <rule ref="rulesets/design.xml/PositionLiteralsFirstInComparisons"/>
     <rule ref="rulesets/design.xml/UnnecessaryLocalBeforeReturn"/>
     <rule ref="rulesets/design.xml/NonThreadSafeSingleton"/>
-    <rule ref="rulesets/design.xml/UncommentedEmptyMethod"/>
-    <rule ref="rulesets/design.xml/UncommentedEmptyConstructor"/>
+    <!--<rule ref="rulesets/design.xml/UncommentedEmptyMethod"/>-->
+    <!--<rule ref="rulesets/design.xml/UncommentedEmptyConstructor"/>-->
     <rule ref="rulesets/design.xml/AvoidConstantsInterface"/>
     <rule ref="rulesets/design.xml/UnsynchronizedStaticDateFormatter"/>
     <rule ref="rulesets/design.xml/PreserveStackTrace"/>
@@ -131,14 +130,14 @@
     <!--    <rule ref="rulesets/j2ee.xml/StaticEJBFieldShouldBeFinal"/>-->
     <!--    <rule ref="rulesets/j2ee.xml/DoNotUseThreads"/>-->
     <!--     <rule ref="rulesets/optimizations.xml/LocalVariableCouldBeFinal" /> -->
-    <rule ref="rulesets/optimizations.xml/MethodArgumentCouldBeFinal"/>
-    <!--
-        <rule
-        ref="rulesets/optimizations.xml/AvoidInstantiatingObjectsInLoops" />
-    -->
+    <!-- <rule ref="rulesets/optimizations.xml/MethodArgumentCouldBeFinal"/> -->
+
+    <rule
+            ref="rulesets/optimizations.xml/AvoidInstantiatingObjectsInLoops"/>
+
     <rule ref="rulesets/optimizations.xml/UseArrayListInsteadOfVector"/>
     <!--     <rule ref="rulesets/optimizations.xml/SimplifyStartsWith" /> -->
-    <!-- <rule ref="rulesets/optimizations.xml/UseStringBufferForStringAppends" /> -->
+    <rule ref="rulesets/optimizations.xml/UseStringBufferForStringAppends"/>
     <rule ref="rulesets/optimizations.xml/UseArraysAsList"/>
     <rule ref="rulesets/optimizations.xml/AvoidArrayLoops"/>
     <rule ref="rulesets/optimizations.xml/UnnecessaryWrapperObjectCreation"/>
@@ -189,9 +188,8 @@
     <rule ref="rulesets/coupling.xml/LooseCoupling"/>
     <rule ref="rulesets/imports.xml/DuplicateImports"/>
     <rule ref="rulesets/imports.xml/DontImportJavaLang"/>
-    <!--
-    <rule ref="rulesets/imports.xml/UnusedImports" />
-    -->
+
+    <rule ref="rulesets/imports.xml/UnusedImports"/>
     <rule ref="rulesets/imports.xml/ImportFromSamePackage"/>
     <rule ref="rulesets/imports.xml/TooManyStaticImports"/>
     <rule ref="rulesets/junit.xml/JUnitStaticSuite"/>
@@ -213,7 +211,7 @@
     -->
     <rule ref="rulesets/controversial.xml/DontImportSun"/>
     <rule ref="rulesets/controversial.xml/SuspiciousOctalEscape"/>
-    <rule ref="rulesets/controversial.xml/CallSuperInConstructor"/>
+    <!--<rule ref="rulesets/controversial.xml/CallSuperInConstructor"/>-->
     <rule ref="rulesets/controversial.xml/UnnecessaryParentheses"/>
     <!--    <rule ref="rulesets/controversial.xml/DefaultPackage"/>-->
     <!--    <rule ref="rulesets/controversial.xml/BooleanInversion" />-->

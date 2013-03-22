@@ -36,20 +36,20 @@ class AndroidAnalysisPluginSpec extends Specification {
         then: 'external dependencies configured correctly'
         project.dependencies.configurationContainer.pmdConf.dependencies
         project.dependencies.configurationContainer.pmdConf.dependencies.find {
-            it.group == 'pmd' && it.name == 'pmd' && it.version == '4.2.6'
+            it.group == 'pmd' && it.name == 'pmd' && it.version == '4.3'
         }
 
         project.dependencies.configurationContainer.findbugsConf.dependencies
         project.dependencies.configurationContainer.findbugsConf.dependencies.find {
-            it.group == 'com.google.code.findbugs' && it.name == 'findbugs' && it.version == '2.0.0'
+            it.group == 'com.google.code.findbugs' && it.name == 'findbugs' && it.version == '2.0.1'
         }
         project.dependencies.configurationContainer.findbugsConf.dependencies.find {
-            it.group == 'com.google.code.findbugs' && it.name == 'findbugs-ant' && it.version == '2.0.0'
+            it.group == 'com.google.code.findbugs' && it.name == 'findbugs-ant' && it.version == '2.0.1'
         }
 
         project.dependencies.configurationContainer.checkstyleConf.dependencies
         project.dependencies.configurationContainer.checkstyleConf.dependencies.find {
-            it.group == 'checkstyle' && it.name == 'checkstyle' && it.version == '5.0'
+            it.group == 'com.puppycrawl.tools' && it.name == 'checkstyle' && it.version == '5.6'
         }
 
         and: 'task dependencies configured correctly'
