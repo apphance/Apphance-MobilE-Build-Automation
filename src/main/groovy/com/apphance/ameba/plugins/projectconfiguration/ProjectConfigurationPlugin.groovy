@@ -1,14 +1,20 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
+import com.apphance.ameba.configuration.AndroidConfiguration
+import com.apphance.ameba.configuration.ConfigurationSorter
+import com.apphance.ameba.configuration.ConversationManager
+import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.plugins.projectconfiguration.tasks.*
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+import javax.inject.Inject
+
 import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
 import static com.apphance.ameba.PropertyCategory.retrieveBasicProjectData
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -31,7 +37,14 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
 
     public final static String AMEBA_PROPERTY_DEFAULTS_CONVENTION_NAME = 'amebaPropertyDefaults'
 
+    @Inject
+    ProjectConfiguration pc2
+    @Inject
+    AndroidConfiguration ac
+
     private Project project
+    ConfigurationSorter resolver = new ConfigurationSorter()
+    ConversationManager conversationManager = new ConversationManager()
 
     @Override
     void apply(Project project) {
@@ -43,11 +56,24 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         prepareCleanConfigurationTask()
         prepareShowConventionRule()
 
+        prepareSetupTask2()
+
         project.task(PREPARE_SETUP_TASK_NAME, type: PrepareSetupTask)
         project.task(VERIFY_SETUP_TASK_NAME, type: VerifySetupTask)
         project.task(SHOW_SETUP_TASK_NAME, type: ShowSetupTask)
         project.task(CHECK_TESTS_TASK_NAME, type: CheckTestsTask)
         project.task(SHOW_CONVENTIONS_TASK_NAME, type: ShowConventionsTask)
+    }
+
+    private void prepareSetupTask2() {
+        def task = project.task('prepareSetup2')
+        task.group = 'conf group'
+        task.description = 'Prepares configuration (ameba.properties)'
+        task << {
+            resolver.addAll([pc2, ac])
+            def sortedConfigurations = resolver.sort()
+            conversationManager.resolveConfigurations(sortedConfigurations)
+        }
     }
 
     private void addAmebaConvention() {
