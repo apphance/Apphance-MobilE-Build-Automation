@@ -18,7 +18,7 @@ class AndroidApphancePluginSpec extends Specification {
         given:
         def project = builder().build()
 
-        and: 'prepare mock configuration'
+        and: 'prepare mock android configuration'
         def androidConf = Mock(AndroidProjectConfiguration)
         androidConf.buildableVariants >> ['sampleVariant1', 'sampleVariant2', 'sampleVariant3']
         androidConf.debugRelease >> ['sampleVariant1': 'Debug', 'sampleVariant2': 'Release', 'sampleVariant3': 'Debug']

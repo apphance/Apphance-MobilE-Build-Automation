@@ -61,7 +61,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceNoApplicationBuild() throws Exception {
-        run(tNoApplication, 'buildAll')
+        run(tNoApplication, 'prepareAllTasks')
         assertTrue(getMainActivityFile(tNoApplicationProject, 'Debug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProject, 'Debug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tNoApplicationProject, 'Debug').text.contains('import android.util.Log'))
@@ -77,7 +77,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceApplicationBuild() throws Exception {
-        run(tApplication, 'buildAll')
+        run(tApplication, 'prepareAllTasks')
         assertFalse(getMainActivityFile(tApplicationProject, 'Debug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tApplicationProject, 'Debug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tApplicationProject, 'Debug').text.contains('import android.util.Log'))
@@ -97,7 +97,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceNoApplicationBuildNoOnCreate() throws Exception {
-        run(tNoApplicationNoOnCreate, 'buildAll')
+        run(tNoApplicationNoOnCreate, 'prepareAllTasks')
         assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'Debug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'Debug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'Debug').text.contains('import android.util.Log'))
@@ -113,7 +113,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceApplicationBuildNoOnCreate() throws Exception {
-        run(tApplicationNoOnCreate, 'buildAll')
+        run(tApplicationNoOnCreate, 'prepareAllTasks')
         assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'Debug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tApplicationProjectNoOnCreate, 'Debug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'Debug').text.contains('import android.util.Log'))
@@ -133,7 +133,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceNoApplicationDifferentBuild() throws Exception {
-        run(tNoApplicationDifferentFormatting, 'buildAll')
+        run(tNoApplicationDifferentFormatting, 'prepareAllTasks')
         assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'Debug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'Debug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'Debug').text.contains('import com.apphance.android.Log'))

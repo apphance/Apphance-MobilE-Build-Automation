@@ -1,23 +1,24 @@
-package com.apphance.ameba.plugins.ios.release
+package com.apphance.ameba.plugins.ios.release.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.plugins.ios.XMLBomAwareFileReader
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
+import com.apphance.ameba.plugins.ios.XMLBomAwareFileReader
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.sun.org.apache.xpath.internal.XPathAPI
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 import org.w3c.dom.Element
+
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Manipulation of .plist file.
  *
  */
+//TODO test + refactor
 class IOSPlistProcessor {
 
-    static Logger logger = Logging.getLogger(IOSReleasePlugin.class)
+    private l = getLogger(getClass())
 
     private Element getParsedPlist(IOSProjectConfiguration iosConf) {
-        logger.debug("Reading file " + iosConf.plistFile)
+        l.debug("Reading file " + iosConf.plistFile)
         return new XMLBomAwareFileReader().readXMLFileIncludingBom(iosConf.plistFile)
     }
 

@@ -17,7 +17,7 @@ class IOSTaskSpec extends Specification {
     @Shared
     def buildTasks = [
             'clean',
-            'buildAll',
+            'prepareAllTasks',
             'buildAllSimulators',
             'build-GradleXCode-BasicConfiguration',
             'buildSingleVariant',
@@ -32,7 +32,6 @@ class IOSTaskSpec extends Specification {
             'cleanConfiguration',
             'readProjectConfiguration',
             'readIOSProjectConfiguration',
-            'readIOSParametersFromXcode',
             'readIOSProjectVersions',
     ]
 
@@ -42,25 +41,6 @@ class IOSTaskSpec extends Specification {
             'verifySetup',
             'showSetup',
             'showConventions',
-    ]
-
-    @Shared
-    def frameworkTasks = [
-            'clean',
-            'buildAll',
-            'buildAllSimulators',
-            'build-GradleXCode-BasicConfiguration',
-            'buildSingleVariant',
-            'buildFramework',
-            'copyMobileProvision',
-            'unlockKeyChain',
-            'copySources',
-            'copyDebugSources',
-    ]
-
-    @Shared
-    def ocUnitTasks = [
-            'runUnitTests',
     ]
 
     @Shared
@@ -95,13 +75,11 @@ class IOSTaskSpec extends Specification {
         tasksGroups == groups
 
         where:
-        tasks          | tasksGroups
-        buildTasks     | [AMEBA_BUILD] * buildTasks.size()
-        confTasks      | [AMEBA_CONFIGURATION] * confTasks.size()
-        setupTasks     | [AMEBA_SETUP] * setupTasks.size()
-        frameworkTasks | [AMEBA_BUILD] * frameworkTasks.size()
-        ocUnitTasks    | [com.apphance.ameba.plugins.ios.ocunit.IOSUnitTestPlugin.AMEBA_IOS_UNIT] * ocUnitTasks.size()
-        releaseTasks   | [AMEBA_RELEASE] * releaseTasks.size()
+        tasks        | tasksGroups
+        buildTasks   | [AMEBA_BUILD] * buildTasks.size()
+        confTasks    | [AMEBA_CONFIGURATION] * confTasks.size()
+        setupTasks   | [AMEBA_SETUP] * setupTasks.size()
+        releaseTasks | [AMEBA_RELEASE] * releaseTasks.size()
     }
 
     def 'tasks contains correct operations'() {

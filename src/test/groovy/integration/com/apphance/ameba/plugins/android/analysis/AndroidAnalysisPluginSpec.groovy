@@ -19,7 +19,7 @@ class AndroidAnalysisPluginSpec extends Specification {
         project.plugins.apply(AndroidAnalysisPlugin)
 
         then: 'analysis convention is added'
-        project.convention.plugins['androidAnalysis']
+        project.convention.plugins.androidAnalysis
 
         then: 'every single task is in correct group'
         project.tasks[PMD_TASK_NAME].group == AMEBA_ANALYSIS

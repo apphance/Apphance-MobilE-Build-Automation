@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.ios.apphance
+package com.apphance.ameba.plugins.ios.apphance.tasks
 
 import com.apphance.ameba.util.file.FileManager
 import groovy.io.FileType

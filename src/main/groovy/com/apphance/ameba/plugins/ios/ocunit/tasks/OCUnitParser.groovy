@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.ios.ocunit
+package com.apphance.ameba.plugins.ios.ocunit.tasks
 
 import static org.gradle.api.logging.Logging.getLogger
 
@@ -8,7 +8,7 @@ import static org.gradle.api.logging.Logging.getLogger
  */
 class OCUnitParser {
 
-    def l = getLogger(OCUnitParser.class)
+    def l = getLogger(getClass())
 
     static def TEST_STARTED = ~/^\s*Test\s+Suite\s+'\s*(\S.+(?:\.octest).*\S)\s*'\s+started\s+at\s+(\S.+\S)\s*$/
     static def TEST_FINISHED = ~/^\s*Test\s+Suite\s+'\s*(\S.+(?:\.octest).*\S)\s*'\s+finished\s+at\s+(\S.+\S)\s*$/

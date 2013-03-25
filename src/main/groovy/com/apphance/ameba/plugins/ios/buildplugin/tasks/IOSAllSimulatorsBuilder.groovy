@@ -1,8 +1,10 @@
-package com.apphance.ameba.plugins.ios.buildplugin
+package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
+import com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever
+import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import org.gradle.api.Project
 
@@ -19,7 +21,7 @@ class IOSAllSimulatorsBuilder {
         this.project = project
         this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, iosExecutor,
                 new IOSReleaseListener(project, executor, iosExecutor))
-        this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
+        this.iosConf = IOSConfigurationRetriever.getIosProjectConfiguration(project)
     }
 
     void buildAllSimulators() {

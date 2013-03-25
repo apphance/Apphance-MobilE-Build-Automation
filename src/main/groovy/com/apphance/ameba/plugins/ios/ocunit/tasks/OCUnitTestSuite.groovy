@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.ios.ocunit
+package com.apphance.ameba.plugins.ios.ocunit.tasks
 /**
  * Test suite POJO.
  *
@@ -9,12 +9,6 @@ class OCUnitTestSuite {
     String endTimestamp
     Collection<OCUnitTestSuite> testSuites = []
     Collection<OCUnitTestCase> testCases = []
-
-    int getTestsCount() {
-        int count = 0;
-        testSuites.each { testSuite -> count += testSuite.testCount }
-        return count + testCases.size()
-    }
 
     int getFailureCount() {
         int count = 0;

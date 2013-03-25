@@ -1,22 +1,22 @@
 package com.apphance.ameba.plugins.android.buildplugin
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.plugins.android.AndroidEnvironment
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
-import com.apphance.ameba.plugins.android.buildplugin.tasks.*
 import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
+import com.apphance.ameba.plugins.android.AndroidEnvironment
+import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
+import com.apphance.ameba.plugins.android.buildplugin.tasks.*
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
 import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
 import static com.apphance.ameba.PropertyCategory.readProperty
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
 import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
 import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration
 import static com.apphance.ameba.plugins.android.buildplugin.AndroidProjectProperty.EXCLUDED_BUILDS
@@ -31,7 +31,7 @@ import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
  * Plugin for various Android related tasks.
  *
  */
-//TODO plugin test after refactor
+//TODO write a test for this plugin to check task grap after configuration, auto - detection done
 class AndroidPlugin implements Plugin<Project> {
 
     private l = getLogger(getClass())
@@ -39,7 +39,7 @@ class AndroidPlugin implements Plugin<Project> {
     public static final String PROJECT_PROPERTIES_KEY = 'project.properties'
 
     public static final String REPLACE_PACKAGE_TASK_NAME = 'replacePackage'
-    public static final String BUILD_ALL_TASK_NAME = 'buildAll'
+    public static final String BUILD_ALL_TASK_NAME = 'prepareAllTasks'
     public static final String BUILD_ALL_RELEASE_TASK_NAME = 'buildAllRelease'
     public static final String BUILD_ALL_DEBUG_TASK_NAME = 'buildAllDebug'
     public static final String COPY_SOURCES_TASK_NAME = 'copySources'
@@ -350,7 +350,7 @@ class AndroidPlugin implements Plugin<Project> {
         task.group = AMEBA_BUILD
         task << { new SingleVariantTask(project, androidEnvironment).singleVariant(variant, debugRelease) }
         task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME, VERIFY_SETUP_TASK_NAME, COPY_SOURCES_TASK_NAME)
-        project.tasks["buildAll$debugRelease"].dependsOn(task)
+        project.tasks["prepareAllTasks$debugRelease"].dependsOn(task)
     }
 
     private void prepareAllInstallTasks() {

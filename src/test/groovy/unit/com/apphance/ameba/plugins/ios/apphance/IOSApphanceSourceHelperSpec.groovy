@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.ios.apphance
 
+import com.apphance.ameba.plugins.ios.apphance.tasks.IOSApphanceSourceHelper
 import spock.lang.Specification
 
 import static java.lang.System.currentTimeMillis

@@ -1,5 +1,6 @@
-package com.apphance.ameba.plugins.ios.framework
+package com.apphance.ameba.plugins.ios.framework.tasks
 
+import com.apphance.ameba.plugins.ios.framework.IOSFrameworkProperty
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.executor.command.Command
@@ -14,7 +15,7 @@ import static org.gradle.api.logging.Logging.getLogger
  * Builds iOS framework.
  */
 //TODO is this class/task really used?
-class IOSFrameworkBuilder {
+class BuildFrameworkTask {
 
     static final String FRAMEWORK_BUILD_PATH = 'Development-Framework'
 
@@ -39,9 +40,10 @@ class IOSFrameworkBuilder {
     private File iphoneosSimulatorLibrary
     private File destinationZipFile
     private Project project
+
     private CommandExecutor executor
 
-    IOSFrameworkBuilder(Project project, CommandExecutor executor) {
+    BuildFrameworkTask(Project project, CommandExecutor executor) {
         this.project = project
         this.executor = executor
         use(PropertyCategory) {

@@ -1,12 +1,12 @@
 package com.apphance.ameba.plugins.ios.buildplugin
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.ios.IOSBuilderInfo
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import com.apphance.ameba.plugins.ios.MPParser
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.util.file.FileManager
 import com.sun.org.apache.xpath.internal.XPathAPI
 import groovy.io.FileType
@@ -14,6 +14,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.xml.sax.SAXParseException
 
+import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -35,7 +36,7 @@ class IOSSingleVariantBuilder {
         use(PropertyCategory) {
             this.project = project
             this.conf = project.getProjectConfiguration()
-            this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
+            this.iosConf = getIosProjectConfiguration(project)
             this.ant = project.ant
             this.iosExecutor = iosExecutor
             this.buildListeners.addAll(buildListeners)

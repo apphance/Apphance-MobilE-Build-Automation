@@ -3,8 +3,10 @@ package com.apphance.ameba.plugins.ios.framework
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.plugins.ios.AbstractVerifyIOSSetupOperation
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
 import org.gradle.api.GradleException
+
+import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
+import static com.apphance.ameba.plugins.ios.framework.IOSFrameworkProperty.*
 
 /**
  * Verifies properties for framework building.
@@ -21,17 +23,17 @@ class VerifyFrameworkSetupOperation extends AbstractVerifyIOSSetupOperation {
     void verifySetup() {
         super.verifySetup()
         def projectProperties = readProperties()
-        iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
+        iosConf = getIosProjectConfiguration(project)
 
         IOSFrameworkProperty.each {
             if (!it.defaultValue != null) {
                 checkProperty(projectProperties, it)
             }
         }
-        checkTarget(IOSFrameworkProperty.FRAMEWORK_TARGET)
-        checkConfiguration(IOSFrameworkProperty.FRAMEWORK_CONFIGURATION)
-        checkFilesExist(IOSFrameworkProperty.FRAMEWORK_RESOURCES)
-        checkFilesExist(IOSFrameworkProperty.FRAMEWORK_HEADERS)
+        checkTarget(FRAMEWORK_TARGET)
+        checkConfiguration(FRAMEWORK_CONFIGURATION)
+        checkFilesExist(FRAMEWORK_RESOURCES)
+        checkFilesExist(FRAMEWORK_HEADERS)
         allPropertiesOK()
     }
 

@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.ios
 
-import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
+import com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -77,7 +77,7 @@ class IOSXCodeOutputParser {
 
     static File findMobileProvisionFile(Project project, String target, String configuration,
                                         boolean checkForNewBundleId = true) {
-        IOSProjectConfiguration iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
+        IOSProjectConfiguration iosConf = IOSConfigurationRetriever.getIosProjectConfiguration(project)
 
         File distributionDirectory = iosConf.distributionDirectory
         if (checkForNewBundleId && iosConf.distributionDirectories[configuration] != null) {
