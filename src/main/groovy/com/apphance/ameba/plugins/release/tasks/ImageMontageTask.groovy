@@ -23,6 +23,9 @@ class ImageMontageTask {
 
     private CommandExecutor executor
 
+    ImageMontageTask() {
+    }
+
     ImageMontageTask(Project project, CommandExecutor executor) {
         this.project = project
         this.conf = getProjectConfiguration(project)
@@ -31,22 +34,14 @@ class ImageMontageTask {
     }
 
     void imageMontage() {
-        Collection<String> command = new LinkedList<String>()
-        command << 'montage'
-        project.rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { file ->
-            if (isValid(project.rootDir, file)) {
-                command << file
-            }
-        }
-        def tempFile = File.createTempFile("image_montage_${conf.projectName}", '.png')
-        command << tempFile.toString()
-        executor.executeCommand(new Command(cmd: command, runDir: project.rootDir))
         def imageMontageFile = new File(releaseConf.targetDirectory, "${conf.projectName}-${conf.fullVersionString}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
+
+        createMontage(imageMontageFile, getFilesToMontage(project.rootDir))
         String[] convertCommand = [
                 '/opt/local/bin/convert',
-                tempFile,
+                imageMontageFile,
                 '-font',
                 'helvetica',
                 '-pointsize',
@@ -65,5 +60,25 @@ class ImageMontageTask {
         } catch (Exception e) {
             l.error("The convert binary execution failed: skipping image montage preparation. Add convert (ImageMagick) binary to the path to get image montage.")
         }
+    }
+
+    void createMontage(File outputFile, List<File> sourceFiles) {
+        def command = []
+        command << 'montage'
+        sourceFiles.each { command << it.toString() }
+        command << outputFile.toString()
+
+        executor.executeCommand(new Command(cmd: command, runDir: project.rootDir))
+    }
+
+    List<File> getFilesToMontage(File rootDir) {
+        List<File> filesToMontage = []
+
+        rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { File file ->
+            if (isValid(rootDir, file)) {
+                filesToMontage << file
+            }
+        }
+        filesToMontage
     }
 }
