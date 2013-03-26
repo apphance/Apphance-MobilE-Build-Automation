@@ -8,7 +8,7 @@ class PropertyExtractorSpec extends Specification {
 
     def 'property extractor returns correct value'() {
         given:
-        def pe = Mock(PropertyExtractor)
+        def pe = Mock(PropertyPersister)
 
         when:
         pe.get('project.type') >> IOS

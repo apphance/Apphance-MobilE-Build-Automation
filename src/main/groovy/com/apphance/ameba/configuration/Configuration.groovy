@@ -10,11 +10,15 @@ abstract class Configuration {
 
     abstract int getOrder()
 
-    List<Field> getAmebaProperties() {
+    List<Field> getPropertyFields() {
         getClass().declaredFields.findAll {
             it.accessible = true
             it.get(this)?.class == Prop
         }
+    }
+
+    List<Prop> getAmebaProperties() {
+        propertyFields*.get(this)
     }
 
     abstract String getConfigurationName()

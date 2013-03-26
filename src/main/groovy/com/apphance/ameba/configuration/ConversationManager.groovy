@@ -20,7 +20,7 @@ class ConversationManager {
                 }
             }
             if (c.enabled) {
-                c.amebaProperties.each { Field f ->
+                c.propertyFields.each { Field f ->
                     f.accessible = true
                     Prop ap = (Prop) f.get(c)
                     print "${ap.message} [${ap.defaultValue()}]: "

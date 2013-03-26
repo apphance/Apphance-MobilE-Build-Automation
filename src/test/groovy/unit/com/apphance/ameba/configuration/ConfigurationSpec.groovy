@@ -1,18 +1,23 @@
 package com.apphance.ameba.configuration
 
+import spock.lang.Shared
 import spock.lang.Specification
 
 class ConfigurationSpec extends Specification {
 
-    def 'returns list of fields annotated with @AmebaProp'() {
-        given:
-        def androidConf = new AndroidConfiguration()
+    @Shared def androidConf = new AndroidConfiguration()
 
+    def 'returns list of fields annotated with @AmebaProp'() {
         when:
-        def amebaProperties = androidConf.amebaProperties
+        def fields = androidConf.propertyFields
 
         then:
-        amebaProperties.size() > 0
-        amebaProperties.every { f -> (f.accessible = true) && f.get(androidConf)?.class == Prop }
+        fields.size() > 0
+        fields.every { f -> (f.accessible = true) && f.get(androidConf)?.class == Prop }
+    }
+
+    def 'return list of properties'() {
+        when: def props = androidConf.amebaProperties
+        then: props*.name == ['android.sdk.dir', 'android.min.sdk.target.name']
     }
 }
