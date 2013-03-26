@@ -1,16 +1,22 @@
 package com.apphance.ameba.configuration
 
-interface Configuration {
+import java.lang.reflect.Field
 
-    boolean isEnabled()
+abstract class Configuration {
 
-    void setEnabled(boolean enabled)
+    abstract boolean isEnabled()
 
-    int getOrder()
+    abstract void setEnabled(boolean enabled)
 
-    List getAmebaProperties()
+    abstract int getOrder()
 
-    String getPluginName()
+    List<Field> getAmebaProperties() {
+        getClass().declaredFields.findAll {
+            it.accessible = true
+            it.get(this)?.class == Prop
+        }
+    }
 
+    abstract String getConfigurationName()
 
 }

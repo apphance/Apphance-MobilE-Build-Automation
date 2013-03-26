@@ -71,8 +71,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.description = 'Prepares configuration (ameba.properties)'
         task << {
             resolver.addAll([pc2, ac])
-            def sortedConfigurations = resolver.sort()
-            conversationManager.resolveConfigurations(sortedConfigurations)
+            conversationManager.resolveConfigurations(resolver.sort())
         }
     }
 

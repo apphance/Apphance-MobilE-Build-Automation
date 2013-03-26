@@ -3,11 +3,13 @@ package com.apphance.ameba.configuration
 import groovy.transform.ToString
 
 @ToString
-class AmebaProperty {
+class Prop<T> {
+
     String name
     String message
-    Closure defaultValue = { '' }
-    String value
-    Closure validator = { true }
+    Closure<T> defaultValue = { null }
+    T value
+    Closure<Boolean> validator = { true }
     List possibleValues
+
 }

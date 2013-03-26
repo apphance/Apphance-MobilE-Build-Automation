@@ -4,25 +4,15 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 
-class AndroidConfiguration implements  Configuration {
+class AndroidConfiguration extends Configuration {
 
     @Inject
     ProjectConfiguration conf
 
     def enabled = false
+    int order = 1
 
-    int order = 20
-
-    String pluginName = "Android plugin"
-
-    @Override
-    List<AmebaProperty> getAmebaProperties() {
-        [
-                new AmebaProperty(name: 'android.sdk.dir', message: 'Android SDK directory'),
-                new AmebaProperty(name: 'android.target.name', message: 'Target name'),
-//                new AmebaProperty(name: 'android.', message: '', defaultValue: {}),
-        ]
-    }
+    String configurationName = "Android configuration"
 
     @Override
     boolean isEnabled() {
@@ -33,4 +23,8 @@ class AndroidConfiguration implements  Configuration {
     void setEnabled(boolean enabled) {
         this.enabled = enabled
     }
+
+    def sdkDir = new Prop<File>(name: 'android.sdk.dir', message: 'Android SDK directory')
+    def minSdkTargetName = new Prop<String>(name: 'android.min.sdk.target.name', message: 'Android min SDK target name')
+
 }
