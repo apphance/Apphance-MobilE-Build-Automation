@@ -5,6 +5,7 @@ import com.apphance.ameba.detection.ProjectTypeDetector
 import org.gradle.api.Project
 
 import javax.inject.Inject
+import java.lang.reflect.Field
 
 class ProjectConfiguration implements Configuration {
 
@@ -23,6 +24,18 @@ class ProjectConfiguration implements Configuration {
         }
     }
 
+    @AmebaProp(name = 'project.name', message = 'Project name', defaultValue = { 'Sample name' })
+    String name
+
+    @AmebaProp(name = 'project.version.code', message = 'Version code', defaultValue = { 0 })
+    Long versionCode
+
+    @AmebaProp(
+            name = 'project.type',
+            message = 'Project type',
+            defaultValue = { typeDetector.detectProjectType(project.rootDir) })
+    ProjectType projectType
+
     int order = 10
 
     @Override
@@ -32,46 +45,23 @@ class ProjectConfiguration implements Configuration {
 
     def dependsOn = []
 
-    def props = [
-            new AmebaProperty(name: 'project.name', message: 'Project name', defaultValue: { 'Sample project name' }),
-            new AmebaProperty(name: 'project.version.code', message: 'Version code', defaultValue: { 0 }),
-            new AmebaProperty(name: 'project.version.string', message: 'Version string', defaultValue: { 'NOVERSION' }),
-            new AmebaProperty(name: 'project.type', message: 'Project type', defaultValue: { typeDetector.detectProjectType(project.rootDir) }),
-            new AmebaProperty(name: 'project.log.dir', message: 'Log directory', defaultValue: { project.file('log').canonicalPath }),
-            new AmebaProperty(name: 'project.build.dir', message: 'Build directory', defaultValue: { project.file('build').canonicalPath }),
-            new AmebaProperty(name: 'project.tmp.dir', message: 'Temporary directory', defaultValue: { project.file('tmp').canonicalPath })
-    ]
+//    def props = [
+//            new AmebaProperty(name: 'project.name', message: 'Project name', defaultValue: { 'Sample project name' }),
+//            new AmebaProperty(name: 'project.version.code', message: 'Version code', defaultValue: { 0 }),
+//            new AmebaProperty(name: 'project.version.string', message: 'Version string', defaultValue: { 'NOVERSION' }),
+//            new AmebaProperty(name: 'project.type', message: 'Project type', defaultValue: { typeDetector.detectProjectType(project.rootDir) }),
+//            new AmebaProperty(name: 'project.log.dir', message: 'Log directory', defaultValue: { project.file('log').canonicalPath }),
+//            new AmebaProperty(name: 'project.build.dir', message: 'Build directory', defaultValue: { project.file('build').canonicalPath }),
+//            new AmebaProperty(name: 'project.tmp.dir', message: 'Temporary directory', defaultValue: { project.file('tmp').canonicalPath })
+//    ]
 
-    List<AmebaProperty> getAmebaProperties() {
-        props
-    }
+//    List<AmebaProperty> getAmebaProperties() {
+//        props
+//    }
 
-    String getName() {
-        propertyR('project.name')
-    }
-
-    String getVersionString() {
-
-    }
-
-    Long getVersionCode() {
-
-    }
 
     ProjectType getType() {
         ProjectType.valueOf(propertyR('project.type'))
-    }
-
-    File getLogDir() {
-
-    }
-
-    File getBuildDir() {
-
-    }
-
-    File getTmpDir() {
-
     }
 
     @Override
@@ -84,22 +74,11 @@ class ProjectConfiguration implements Configuration {
         this.enabled = true
     }
 
-
-    String propertyR(String name) {
-        amebaProperties.find { it.name == name }.value
+    @Override
+    List getAmebaProperties() {
+        null
     }
 
+
 }
-
-
-//@interface Prop {
-//    String name()
-//    String message()
-//    Class defaultValue()
-//}
-//@Prop(
-//        name = 'project.name',
-//        message = 'Project name',
-//        defaultValue = { 'Sample project name' }
-//) String versionString
 
