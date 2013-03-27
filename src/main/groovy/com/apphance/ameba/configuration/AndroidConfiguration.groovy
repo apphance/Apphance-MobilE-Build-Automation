@@ -4,7 +4,11 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 
+@com.google.inject.Singleton
 class AndroidConfiguration extends Configuration {
+
+    AndroidConfiguration() {
+    }
 
     @Inject
     ProjectConfiguration conf

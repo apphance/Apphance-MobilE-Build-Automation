@@ -6,7 +6,11 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+@com.google.inject.Singleton
 class ProjectConfiguration extends Configuration {
+
+    ProjectConfiguration() {
+    }
 
     //TODO common getter with exception
     @Inject

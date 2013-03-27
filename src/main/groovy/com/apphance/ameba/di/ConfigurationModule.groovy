@@ -1,19 +1,17 @@
 package com.apphance.ameba.di
 
-import com.apphance.ameba.configuration.AndroidConfiguration
-import com.apphance.ameba.configuration.GradlePropertiesPersister
-import com.apphance.ameba.configuration.ProjectConfiguration
-import com.apphance.ameba.configuration.PropertyPersister
+import com.apphance.ameba.configuration.*
 import com.google.inject.AbstractModule
-
-import static com.google.inject.Scopes.SINGLETON
+import com.google.inject.multibindings.Multibinder
 
 class ConfigurationModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(ProjectConfiguration).in(SINGLETON)
-        bind(AndroidConfiguration).in(SINGLETON)
+        Multibinder<Configuration> multibinder = Multibinder.newSetBinder(binder(), Configuration);
+        multibinder.addBinding().to(ProjectConfiguration)
+        multibinder.addBinding().to(AndroidConfiguration)
+
         bind(PropertyPersister).to(GradlePropertiesPersister)
     }
 }

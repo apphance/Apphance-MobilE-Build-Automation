@@ -4,7 +4,7 @@ class ConfigurationSorter {
 
     private List<Configuration> configurations = []
 
-    void addAll(List<Configuration> amebaConfigurations) {
+    void addAll(Collection<Configuration> amebaConfigurations) {
         configurations.addAll(amebaConfigurations)
     }
 

@@ -1,9 +1,8 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
-import com.apphance.ameba.configuration.AndroidConfiguration
+import com.apphance.ameba.configuration.Configuration
 import com.apphance.ameba.configuration.ConfigurationSorter
 import com.apphance.ameba.configuration.ConversationManager
-import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.plugins.projectconfiguration.tasks.*
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -38,9 +37,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
     public final static String AMEBA_PROPERTY_DEFAULTS_CONVENTION_NAME = 'amebaPropertyDefaults'
 
     @Inject
-    ProjectConfiguration pc2
-    @Inject
-    AndroidConfiguration ac
+    Set<Configuration> configurations
 
     private Project project
     ConfigurationSorter resolver = new ConfigurationSorter()
@@ -70,7 +67,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.group = 'conf group'
         task.description = 'Prepares configuration (ameba.properties)'
         task << {
-            resolver.addAll([pc2, ac])
+            resolver.addAll(configurations)
             conversationManager.resolveConfigurations(resolver.sort())
         }
     }

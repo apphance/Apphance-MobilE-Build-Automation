@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins
 
+import com.apphance.ameba.di.ConfigurationModule
 import com.apphance.ameba.plugins.android.analysis.AndroidAnalysisPlugin
 import com.apphance.ameba.plugins.android.apphance.AndroidApphancePlugin
 import com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin
@@ -142,6 +143,7 @@ class PluginMasterSpec extends Specification {
         return Guice.createInjector(
                 new EnvironmentModule(),
                 new CommandExecutorModule(project),
+                new ConfigurationModule(),
                 new AbstractModule() {
 
                     @Override

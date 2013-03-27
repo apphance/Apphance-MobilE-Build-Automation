@@ -154,6 +154,7 @@ dependencies {
         exclude group: 'org.apache.httpcomponents', module: 'httpcore'
     }
     compile 'org.python:jython-standalone:2.7-b1'
+    compile 'com.google.inject.extensions:guice-multibindings:3.0'
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
