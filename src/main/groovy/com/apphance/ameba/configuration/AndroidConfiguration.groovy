@@ -1,5 +1,8 @@
 package com.apphance.ameba.configuration
 
+import com.apphance.ameba.configuration.properties.FileProperty
+import com.apphance.ameba.configuration.properties.StringProperty
+
 import javax.inject.Inject
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
@@ -28,7 +31,12 @@ class AndroidConfiguration extends Configuration {
         this.enabled = enabled
     }
 
-    def sdkDir = new Prop<File>(name: 'android.sdk.dir', message: 'Android SDK directory')
-    def minSdkTargetName = new Prop<String>(name: 'android.min.sdk.target.name', message: 'Android min SDK target name')
+    def sdkDir = new FileProperty(
+            name: 'android.sdk.dir',
+            message: 'Android SDK directory')
+
+    def minSdkTargetName = new StringProperty(
+            name: 'android.min.sdk.target.name',
+            message: 'Android min SDK target name')
 
 }

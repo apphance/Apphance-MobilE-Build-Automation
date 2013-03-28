@@ -1,6 +1,6 @@
 package com.apphance.ameba.configuration
 
-import java.lang.reflect.Field
+import com.apphance.ameba.configuration.properties.AbstractProperty
 
 import static java.lang.System.out
 
@@ -20,9 +20,7 @@ class ConversationManager {
                 }
             }
             if (c.enabled) {
-                c.propertyFields.each { Field f ->
-                    f.accessible = true
-                    Prop ap = (Prop) f.get(c)
+                c.amebaProperties.each { AbstractProperty ap ->
                     print "${ap.message} [${ap.defaultValue()}]: "
                     out.flush()
                     readPropertyValue(ap)

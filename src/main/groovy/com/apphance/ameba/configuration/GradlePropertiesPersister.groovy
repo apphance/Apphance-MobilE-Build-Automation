@@ -1,5 +1,6 @@
 package com.apphance.ameba.configuration
 
+import com.apphance.ameba.configuration.properties.AbstractProperty
 import com.google.common.io.Files
 import com.google.inject.Inject
 import org.gradle.api.Project
@@ -35,7 +36,7 @@ class GradlePropertiesPersister implements PropertyPersister {
         propertyFile.createNewFile()
 
         configurations.each { Configuration conf ->
-            conf.amebaProperties.each { Prop prop ->
+            conf.amebaProperties.each { AbstractProperty prop ->
                 props.setProperty(prop.name, prop.value.toString())
             }
         }

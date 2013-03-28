@@ -1,5 +1,7 @@
 package com.apphance.ameba.configuration
 
+import com.apphance.ameba.configuration.properties.AbstractProperty
+
 import java.lang.reflect.Field
 
 abstract class Configuration {
@@ -13,11 +15,11 @@ abstract class Configuration {
     List<Field> getPropertyFields() {
         getClass().declaredFields.findAll {
             it.accessible = true
-            it.get(this)?.class == Prop
+            it.get(this)?.class?.superclass == AbstractProperty
         }
     }
 
-    List<Prop> getAmebaProperties() {
+    List<AbstractProperty> getAmebaProperties() {
         propertyFields*.get(this)
     }
 
