@@ -16,12 +16,11 @@ import static org.gradle.api.logging.Logging.getLogger
 @Mixin(ImageNameFilter)
 class ImageMontageTask {
 
-    private l = getLogger(getClass())
-    private Project project
-    private ProjectConfiguration conf
-    private ProjectReleaseConfiguration releaseConf
-
-    private CommandExecutor executor
+    private l = getLogger(this.class)
+    Project project
+    ProjectConfiguration conf
+    ProjectReleaseConfiguration releaseConf
+    CommandExecutor executor
 
     ImageMontageTask() {
     }
@@ -33,42 +32,47 @@ class ImageMontageTask {
         this.executor = executor
     }
 
-    void imageMontage() {
-        def imageMontageFile = new File(releaseConf.targetDirectory, "${conf.projectName}-${conf.fullVersionString}-image-montage.png")
-        imageMontageFile.parentFile.mkdirs()
-        imageMontageFile.delete()
+    AmebaArtifact imageMontage() {
+        def filesToMontage = getFilesToMontage(project.rootDir)
+        File imageMontageFile = createMontage(filesToMontage)
+        addDescription(imageMontageFile, "${conf.projectName} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}")
 
-        createMontage(imageMontageFile, getFilesToMontage(project.rootDir))
+        def imageMontageFileArtifact = new AmebaArtifact(
+                name: "Image Montage",
+                url: new URL(releaseConf.versionedApplicationUrl, "${imageMontageFile.name}"),
+                location: imageMontageFile)
+        releaseConf.imageMontageFile = imageMontageFileArtifact
+    }
+
+    void addDescription(File image, String description) {
         String[] convertCommand = [
                 '/opt/local/bin/convert',
-                imageMontageFile,
+                image,
                 '-font',
                 'helvetica',
                 '-pointsize',
                 '36',
                 '-draw',
-                "gravity southwest fill black text 0,12 '${conf.projectName} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}'",
-                imageMontageFile
+                "gravity southwest fill black text 0,12 '${description}'",
+                image
         ]
-        try {
-            executor.executeCommand(new Command(cmd: convertCommand, runDir: project.rootDir))
-            def imageMontageFileArtifact = new AmebaArtifact(
-                    name: "Image Montage",
-                    url: new URL(releaseConf.versionedApplicationUrl, "${imageMontageFile.name}"),
-                    location: imageMontageFile)
-            releaseConf.imageMontageFile = imageMontageFileArtifact
-        } catch (Exception e) {
-            l.error("The convert binary execution failed: skipping image montage preparation. Add convert (ImageMagick) binary to the path to get image montage.")
-        }
+        executor.executeCommand(new Command(cmd: convertCommand, runDir: project.rootDir))
     }
 
-    void createMontage(File outputFile, List<File> sourceFiles) {
-        def command = []
-        command << 'montage'
-        sourceFiles.each { command << it.toString() }
-        command << outputFile.toString()
+    @groovy.transform.PackageScope
+    File outputMontageFile() {
+        def imageMontageFile = new File(releaseConf.targetDirectory, "${conf.projectName}-${conf.fullVersionString}-image-montage.png")
+        imageMontageFile.parentFile.mkdirs()
+        imageMontageFile.delete()
+        imageMontageFile
+    }
 
-        executor.executeCommand(new Command(cmd: command, runDir: project.rootDir))
+    File createMontage(List<File> sourceFiles) {
+        File imageMontageFile = outputMontageFile()
+        def command = [] << 'montage' << sourceFiles.collect { it.toString() } << imageMontageFile.toString()
+        executor.executeCommand(new Command(cmd: command.flatten(), runDir: project.rootDir))
+
+        imageMontageFile
     }
 
     List<File> getFilesToMontage(File rootDir) {
