@@ -14,6 +14,11 @@ class UnlockKeyChainTask {
     private Project project
     private CommandExecutor executor
 
+    UnlockKeyChainTask(Project project, CommandExecutor executor) {
+        this.project = project
+        this.executor = executor
+    }
+
     void unlockKeyChain() {
         def keychainPassword = readOptionalPropertyOrEnvironmentVariable(project, 'osx.keychain.password')
         def keychainLocation = readOptionalPropertyOrEnvironmentVariable(project, 'osx.keychain.location')

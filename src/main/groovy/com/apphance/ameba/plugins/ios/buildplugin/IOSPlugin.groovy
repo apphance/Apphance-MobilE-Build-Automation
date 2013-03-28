@@ -116,7 +116,7 @@ class IOSPlugin implements Plugin<Project> {
               Requires osx.keychain.password and osx.keychain.location properties
               or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION environment variable"""
         task.group = AMEBA_BUILD
-        task << { new UnlockKeyChainTask().unlockKeyChain() }
+        task << { new UnlockKeyChainTask(project, executor).unlockKeyChain() }
         task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME)
     }
 

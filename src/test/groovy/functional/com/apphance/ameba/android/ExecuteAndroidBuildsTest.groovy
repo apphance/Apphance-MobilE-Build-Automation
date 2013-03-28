@@ -256,7 +256,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildAndPrepareVariantedMailMessage() {
-        runGradle('cleanRelease', 'updateProject', 'prepareAllTasks')
+        runGradle('cleanRelease', 'updateProject', 'buildAll')
         runGradle('prepareImageMontage', 'prepareMailMessage')
         assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
         assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/icon.png").exists())
@@ -269,7 +269,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildAndPrepareNonVariantedMailMessage() {
-        runGradleNoVariants('cleanRelease', 'updateProject', 'prepareAllTasks')
+        runGradleNoVariants('cleanRelease', 'updateProject', 'buildAll')
         runGradleNoVariants('prepareImageMontage', 'prepareMailMessage')
         assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
         assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/icon.png").exists())

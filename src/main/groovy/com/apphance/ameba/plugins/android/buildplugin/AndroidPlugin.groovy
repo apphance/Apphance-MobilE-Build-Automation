@@ -39,7 +39,7 @@ class AndroidPlugin implements Plugin<Project> {
     public static final String PROJECT_PROPERTIES_KEY = 'project.properties'
 
     public static final String REPLACE_PACKAGE_TASK_NAME = 'replacePackage'
-    public static final String BUILD_ALL_TASK_NAME = 'prepareAllTasks'
+    public static final String BUILD_ALL_TASK_NAME = 'buildAll'
     public static final String BUILD_ALL_RELEASE_TASK_NAME = 'buildAllRelease'
     public static final String BUILD_ALL_DEBUG_TASK_NAME = 'buildAllDebug'
     public static final String COPY_SOURCES_TASK_NAME = 'copySources'
@@ -350,7 +350,7 @@ class AndroidPlugin implements Plugin<Project> {
         task.group = AMEBA_BUILD
         task << { new SingleVariantTask(project, androidEnvironment).singleVariant(variant, debugRelease) }
         task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME, VERIFY_SETUP_TASK_NAME, COPY_SOURCES_TASK_NAME)
-        project.tasks["prepareAllTasks$debugRelease"].dependsOn(task)
+        project.tasks["buildAll$debugRelease"].dependsOn(task)
     }
 
     private void prepareAllInstallTasks() {
