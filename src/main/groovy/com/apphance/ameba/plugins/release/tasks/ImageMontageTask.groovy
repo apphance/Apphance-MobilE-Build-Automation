@@ -13,6 +13,7 @@ import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.PNGTranscoder
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
+import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 import javax.imageio.ImageIO
 import java.awt.Color
@@ -140,18 +141,34 @@ class ImageMontageTask {
     }
 
     BufferedImage getImageFrom(File file) {
-        if (file.name.endsWith('.svg')) {
-            def input = new TranscoderInput(FileUtils.openInputStream(file))
-            def tempFile = File.createTempFile('output-', '.png')
-            tempFile.deleteOnExit()
-            def outputStream = FileUtils.openOutputStream(tempFile)
+        getConverter(file.name)(file)
+    }
 
-            TranscoderOutput output = new TranscoderOutput(outputStream);
-            new PNGTranscoder().transcode(input, output);
-
-            ImageIO.read(tempFile)
-        } else {
-            ImageIO.read(file)
+    def getConverter(String filename) {
+        switch (filename) {
+            case ~/.*\.svg/: this.&svgConverter; break
+            case ~/.*\.(tif|tiff)/: this.&tifConverter; break
+            case ~/.*\.webp/: this.&webpConverter; break
+            default: ImageIO.&read
         }
+    }
+
+    BufferedImage svgConverter(File file) {
+        def input = new TranscoderInput(FileUtils.openInputStream(file))
+        def tempFile = File.createTempFile('output-', '.png')
+        tempFile.deleteOnExit()
+        def outputStream = FileUtils.openOutputStream(tempFile)
+
+        TranscoderOutput output = new TranscoderOutput(outputStream);
+        new PNGTranscoder().transcode(input, output);
+
+        ImageIO.read(tempFile)
+    }
+
+    BufferedImage tifConverter(File file) {
+        throw new NotImplementedException() // FIXME
+    }
+    BufferedImage webpConverter(File file) {
+        throw new NotImplementedException() // FIXME
     }
 }

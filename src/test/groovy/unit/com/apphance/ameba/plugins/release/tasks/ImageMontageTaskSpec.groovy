@@ -94,7 +94,7 @@ class ImageMontageTaskSpec extends Specification {
 
     def 'svg convertion'() {
         given:
-        def svgFile = new File('src/test/resources/com/apphance/ameba/plugins/release/tasks/montageFiles/1.svg')
+        def svgFile = new File('src/test/resources/com/apphance/ameba/plugins/release/tasks/montageFiles/montageFilesSubdir/1.svg')
         def images = imageMontageTask.resizeImages([svgFile])
 
         expect:
@@ -128,7 +128,7 @@ class ImageMontageTaskSpec extends Specification {
         imageMontageTask.getImageFrom(source) != null
 
         where:
-        file << ['tif', 'tiff', 'webp', 'jpg', 'jpeg', 'gif', 'png', 'raw', 'bmp']
+        file << ['tif', 'tiff', 'webp', 'jpg', 'jpeg', 'gif', 'png', 'raw', 'bmp', 'svg']
     }
 
     @Ignore('manual verification')
