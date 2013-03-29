@@ -6,16 +6,18 @@ import com.apphance.ameba.executor.linker.FileLinker
 import com.apphance.ameba.executor.linker.SimpleFileLinker
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
-import com.asprise.util.ocr.OCR
 import com.google.common.io.Files
+import ij.ImagePlus
 import org.gradle.api.Project
 import spock.lang.Ignore
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import javax.imageio.ImageIO
 
-import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
+import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
+
 import static java.io.File.createTempFile
 
 class ImageMontageTaskSpec extends Specification {
@@ -60,14 +62,21 @@ class ImageMontageTaskSpec extends Specification {
     def 'test createMontage'() {
         when:
         List<File> filesToMontage = imageMontageTask.getFilesToMontage(testMontageFilesDir)
-        File montage = imageMontageTask.createMontage(filesToMontage)
+        File montage = imageMontageTask.outputMontageFile()
+        imageMontageTask.createMontage(montage, filesToMontage)
 
         then:
         montage.exists()
+        println "Montage path: ${montage.absolutePath}"
+
         def image = ImageIO.read(montage)
 
-        image.getWidth() == 256
-        image.getHeight() == 252
+        int size = filesToMontage.count { imageMontageTask.getImageFrom(it) != null }
+//        def size = filesToMontage.size()
+        int columns = Math.min(size, imageMontageTask.MAX_NUMBER_OF_TILES_IN_ROW)
+        int rows = Math.ceil(size / columns)
+        image.getWidth() == ImageMontageTask.TILE_PX_SIZE * columns
+        image.getHeight() == ImageMontageTask.TILE_PX_SIZE * rows
     }
 
     def "test getFilesToMontage"() {
@@ -79,21 +88,82 @@ class ImageMontageTaskSpec extends Specification {
         def filenames = files.collect { it.absolutePath.split('/')[-1] }
 
         then:
-        files.size() == 4
-        filenames.sort() == ['1.jpeg', '1.svg', '2.png', '3.png']
+        files.size() == 12
+        filenames.sort() == ['1.bmp', '1.gif', '1.jpeg', '1.jpg', '1.png', '1.raw', '1.svg', '1.tif', '1.tiff', '1.webp', '2.png', '3.png']
+    }
+
+    def 'svg convertion'() {
+        given:
+        def svgFile = new File('src/test/resources/com/apphance/ameba/plugins/release/tasks/montageFiles/1.svg')
+        def images = imageMontageTask.resizeImages([svgFile])
+
+        expect:
+        svgFile.exists()
+        images.size() == 1
+    }
+
+    def 'compute width and height'() {
+        expect:
+        imageMontageTask.computeWidhtHeight(numberOfImages) == [width, height]
+
+        where:
+        numberOfImages | width | height
+        1              | 1     | 1
+        2              | 2     | 1
+        10             | 10    | 1
+        11             | 10    | 2
+        99             | 10    | 10
+        100            | 10    | 10
+        101            | 10    | 11
+    }
+
+    @Unroll
+    def '#file convertion'() {
+        given:
+        def dir = 'src/test/resources/com/apphance/ameba/plugins/release/tasks/montageFiles/montageFilesSubdir/'
+        def source = new File(dir + '1.' + file)
+
+        expect:
+        source.exists()
+        imageMontageTask.getImageFrom(source) != null
+
+        where:
+        file << ['tif', 'tiff', 'webp', 'jpg', 'jpeg', 'gif', 'png', 'raw', 'bmp']
+    }
+
+    @Ignore('manual verification')
+    def 'manually verify generated montage'() {
+        when:
+        List<File> filesToMontage = imageMontageTask.getFilesToMontage(testMontageFilesDir)
+        filesToMontage.each {
+            println(it.absolutePath)
+        }
+        File montage = imageMontageTask.outputMontageFile()
+        imageMontageTask.createMontage(montage, filesToMontage)
+        println montage.absolutePath
+
+        then:
+        montage.exists()
+        show(montage)
     }
 
     @Ignore('This test should be run and verified manually')
     def 'add descrption'() {
         given:
-        def tempFile = File.createTempFile('file-with-desc', '.png')
-        //tempFile.deleteOnExit()
+        def tempFile = File.createTempFile('file-with-desc-', '.png')
         Files.copy(fileForDescTest, tempFile)
 
         when:
         imageMontageTask.addDescription(tempFile, "Test desc")
 
         then:
-        println "open ${tempFile.absolutePath}"
+        tempFile.exists()
+        show(tempFile)
+    }
+
+    private void show(File tempFile) {
+        def img = new ImagePlus("", ImageIO.read(tempFile))
+        img.show()
+        sleep(5000)
     }
 }
