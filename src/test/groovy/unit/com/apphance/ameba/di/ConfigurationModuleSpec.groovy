@@ -1,8 +1,8 @@
 package com.apphance.ameba.di
 
-import com.apphance.ameba.configuration.AndroidConfiguration
 import com.apphance.ameba.configuration.Configuration
-import com.apphance.ameba.configuration.ProjectConfiguration
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
@@ -15,8 +15,8 @@ class ConfigurationModuleSpec extends Specification {
     @Inject AndroidConfiguration androidConf1
     @Inject AndroidConfiguration androidConf2
 
-    @Inject ProjectConfiguration projectConf1
-    @Inject ProjectConfiguration projectConf2
+    @Inject IOSConfiguration iosConf1
+    @Inject IOSConfiguration iosConf2
 
     @Inject
     Set<Configuration> configurations
@@ -44,14 +44,14 @@ class ConfigurationModuleSpec extends Specification {
         androidConf2 != null
         androidConf1.is(androidConf2)
 
-        projectConf1 != null
-        projectConf2 != null
-        projectConf1.is(projectConf2)
+        iosConf1 != null
+        iosConf2 != null
+        iosConf1.is(iosConf2)
     }
 
     def 'test multibinder'() {
         expect:
         configurations.size() == 2
-        [projectConf1, androidConf1].sort() == configurations.sort()
+        [iosConf1, androidConf1].sort() == configurations.sort()
     }
 }

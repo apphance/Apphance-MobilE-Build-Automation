@@ -1,5 +1,7 @@
 package com.apphance.ameba.configuration
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.di.ConfigurationModule
 import com.google.common.io.Files
 import com.google.inject.AbstractModule
@@ -8,8 +10,6 @@ import com.google.inject.Injector
 import org.gradle.api.Project
 import spock.lang.Shared
 import spock.lang.Specification
-
-import static com.apphance.ameba.detection.ProjectType.ANDROID
 
 class GradlePropertiesPersisterSpec extends Specification {
 
@@ -56,9 +56,8 @@ class GradlePropertiesPersisterSpec extends Specification {
         androidConfiguration.sdkDir.value = tempDir
         androidConfiguration.minSdkTargetName.value = 'min target name'
 
-        def projectConfiguration = new ProjectConfiguration()
+        def projectConfiguration = new IOSConfiguration()
         projectConfiguration.name.value = 'Project name'
-        projectConfiguration.type.value = ANDROID
 
         when:
         persister.save([androidConfiguration, projectConfiguration])
@@ -68,7 +67,6 @@ class GradlePropertiesPersisterSpec extends Specification {
         persister.get(androidConfiguration.minSdkTargetName.name) == 'min target name'
 
         persister.get(projectConfiguration.name.name) == 'Project name'
-        persister.get(projectConfiguration.type.name) == ANDROID.toString()
 
         persister.get('nonexisting') == null
 

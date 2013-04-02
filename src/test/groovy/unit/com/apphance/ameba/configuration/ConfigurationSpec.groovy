@@ -1,5 +1,6 @@
 package com.apphance.ameba.configuration
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.properties.AbstractProperty
 import spock.lang.Shared
 import spock.lang.Specification
@@ -21,6 +22,7 @@ class ConfigurationSpec extends Specification {
     def 'return list of properties'() {
         when:
         def props = androidConf.amebaProperties
-        then: props*.name == ['android.sdk.dir', 'android.min.sdk.target.name']
+        then:
+        props*.name.containsAll(['android.project.name', 'android.dir.sdk'])
     }
 }
