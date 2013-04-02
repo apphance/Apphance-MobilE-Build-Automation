@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.executor.command.CommandExecutor
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import ij.ImagePlus
@@ -13,14 +13,11 @@ import org.apache.batik.transcoder.TranscoderOutput
 import org.apache.batik.transcoder.image.PNGTranscoder
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
 
 import javax.imageio.ImageIO
-import java.awt.Color
-import java.awt.Font
-import java.awt.Graphics2D
-import java.awt.Image
+import java.awt.*
 import java.awt.image.BufferedImage
+import java.util.List
 
 import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
 import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.retrieveProjectReleaseData
@@ -147,8 +144,6 @@ class ImageMontageTask {
     def getConverter(String filename) {
         switch (filename) {
             case ~/.*\.svg/: this.&svgConverter; break
-            case ~/.*\.(tif|tiff)/: this.&tifConverter; break
-            case ~/.*\.webp/: this.&webpConverter; break
             default: ImageIO.&read
         }
     }
@@ -163,12 +158,5 @@ class ImageMontageTask {
         new PNGTranscoder().transcode(input, output);
 
         ImageIO.read(tempFile)
-    }
-
-    BufferedImage tifConverter(File file) {
-        throw new NotImplementedException() // FIXME
-    }
-    BufferedImage webpConverter(File file) {
-        throw new NotImplementedException() // FIXME
     }
 }

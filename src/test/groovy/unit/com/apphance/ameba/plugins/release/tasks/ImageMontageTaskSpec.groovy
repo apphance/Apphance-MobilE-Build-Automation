@@ -17,7 +17,6 @@ import javax.imageio.ImageIO
 
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
-
 import static java.io.File.createTempFile
 
 class ImageMontageTaskSpec extends Specification {
@@ -72,7 +71,6 @@ class ImageMontageTaskSpec extends Specification {
         def image = ImageIO.read(montage)
 
         int size = filesToMontage.count { imageMontageTask.getImageFrom(it) != null }
-//        def size = filesToMontage.size()
         int columns = Math.min(size, imageMontageTask.MAX_NUMBER_OF_TILES_IN_ROW)
         int rows = Math.ceil(size / columns)
         image.getWidth() == ImageMontageTask.TILE_PX_SIZE * columns
@@ -88,8 +86,8 @@ class ImageMontageTaskSpec extends Specification {
         def filenames = files.collect { it.absolutePath.split('/')[-1] }
 
         then:
-        files.size() == 12
-        filenames.sort() == ['1.bmp', '1.gif', '1.jpeg', '1.jpg', '1.png', '1.raw', '1.svg', '1.tif', '1.tiff', '1.webp', '2.png', '3.png']
+        files.size() == 9
+        filenames.sort() == ['1.bmp', '1.gif', '1.jpeg', '1.jpg', '1.png', '1.raw', '1.svg', '2.png', '3.png']
     }
 
     def 'svg convertion'() {
@@ -128,10 +126,10 @@ class ImageMontageTaskSpec extends Specification {
         imageMontageTask.getImageFrom(source) != null
 
         where:
-        file << ['tif', 'tiff', 'webp', 'jpg', 'jpeg', 'gif', 'png', 'raw', 'bmp', 'svg']
+        file << ['jpg', 'jpeg', 'gif', 'png', 'raw', 'bmp', 'svg']
     }
 
-    @Ignore('manual verification')
+    @Ignore('This test should be run and verified manually')
     def 'manually verify generated montage'() {
         when:
         List<File> filesToMontage = imageMontageTask.getFilesToMontage(testMontageFilesDir)
@@ -148,7 +146,7 @@ class ImageMontageTaskSpec extends Specification {
     }
 
     @Ignore('This test should be run and verified manually')
-    def 'add descrption'() {
+    def 'manually verify adding description'() {
         given:
         def tempFile = File.createTempFile('file-with-desc-', '.png')
         Files.copy(fileForDescTest, tempFile)
