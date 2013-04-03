@@ -76,8 +76,11 @@ class CommandExecutor {
             process = processBuilder.start()
 
         } catch (Exception e) {
-            if (c.failOnError)
+            if (c.failOnError) {
                 throw new CommandFailedException(e.message, c)
+            } else {
+                l.error("Error during runCommand. Command: $c, error: ${e.message}")
+            }
         }
 
         process
