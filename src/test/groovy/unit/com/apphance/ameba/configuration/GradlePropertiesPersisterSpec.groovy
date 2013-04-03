@@ -3,6 +3,8 @@ package com.apphance.ameba.configuration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.di.ConfigurationModule
+import com.apphance.ameba.executor.command.CommandLogFilesGenerator
+import com.apphance.ameba.executor.linker.FileLinker
 import com.google.common.io.Files
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
@@ -23,9 +25,16 @@ class GradlePropertiesPersisterSpec extends Specification {
 
     def setup() {
         project = Mock()
+
+        def logFileGenerator = Mock(CommandLogFilesGenerator)
+        def fileLinker = Mock(FileLinker)
+
         module = new AbstractModule() {
             @Override
             protected void configure() {
+                bind(FileLinker).toInstance(fileLinker)
+                bind(CommandLogFilesGenerator).toInstance(logFileGenerator)
+
                 bind(Project).toInstance(project)
             }
         }

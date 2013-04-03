@@ -222,6 +222,7 @@ idea {
                 file('src/test/groovy/unit'),
                 file('src/test/groovy/integration'),
                 file('src/test/groovy/functional'),
+                file('src/test/resources'),
         ]
     }
 }

@@ -10,22 +10,22 @@ import static java.io.File.pathSeparator
 class AndroidProjectConfiguration {
 
     File rootDir
-
     File sdkDirectory
     String targetName
     String minSdkTargetName
+    String mainProjectPackage
+    String mainProjectName
+    String mainVariant
+    File variantsDir
+
     Map<String, File> tmpDirs = [:]
     Map<String, String> debugRelease = [:]
     Collection<File> sdkJars = []
     Collection<File> libraryJars = []
     Collection<File> linkedLibraryJars = []
-    String mainProjectPackage
-    String mainProjectName
+
     List<String> excludedBuilds = []
     List<String> availableTargets //all targets available in Android SDK
-
-    String mainVariant
-    File variantsDir
 
     public Set<File> getAllJars() {
         Set<File> set = [] as Set

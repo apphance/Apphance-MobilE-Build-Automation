@@ -7,11 +7,12 @@ import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logging
+
+import static org.gradle.api.logging.Logging.getLogger
 
 class AmebaPlugin implements Plugin<Project> {
 
-    def l = Logging.getLogger(this.class)
+    def l = getLogger(getClass())
 
     @Override
     void apply(Project project) {

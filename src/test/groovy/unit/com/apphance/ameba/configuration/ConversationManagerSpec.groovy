@@ -19,10 +19,10 @@ class ConversationManagerSpec extends Specification {
         cm.possibleValuesString(p) == expectedString
 
         where:
-        p                                                                            | expectedString
-        new StringProperty()                                                         | ''
-        new StringProperty(possibleValues: ['a', 'b'])                               | ', possible: [a, b]'
-        new ProjectTypeProperty(possibleValues: ProjectType.values()*.name().sort()) | ', possible: [ANDROID, IOS]'
+        p                                                                                                | expectedString
+        new StringProperty()                                                                             | ''
+        new StringProperty(possibleValues: { ['a', 'b'] as List<String> })                               | ', possible: [a, b]'
+        new ProjectTypeProperty(possibleValues: { ProjectType.values()*.name().sort() as List<String> }) | ', possible: [ANDROID, IOS]'
     }
 
     def 'default value string is formatted correctly'() {
@@ -43,11 +43,11 @@ class ConversationManagerSpec extends Specification {
         cm.prompt(p) == expectedString
 
         where:
-        p                                                                                              | expectedString
-        new StringProperty(message: 'Project name')                                                    | "Project name, default: '': "
-        new StringProperty(message: 'Project name', defaultValue: { 'a' })                             | "Project name, default: 'a': "
-        new StringProperty(message: 'Project name', defaultValue: { 'a' }, possibleValues: ['a', 'b']) | "Project name, default: 'a', possible: [a, b]: "
-        new StringProperty(message: 'Project name', possibleValues: ['a', 'b'])                        | "Project name, default: '', possible: [a, b]: "
+        p                                                                                                                  | expectedString
+        new StringProperty(message: 'Project name')                                                                        | "Project name, default: '': "
+        new StringProperty(message: 'Project name', defaultValue: { 'a' })                                                 | "Project name, default: 'a': "
+        new StringProperty(message: 'Project name', defaultValue: { 'a' }, possibleValues: { ['a', 'b'] as List<String> }) | "Project name, default: 'a', possible: [a, b]: "
+        new StringProperty(message: 'Project name', possibleValues: { ['a', 'b'] as List<String> })                        | "Project name, default: '', possible: [a, b]: "
     }
 
     def 'input validation works well'() {
@@ -55,15 +55,15 @@ class ConversationManagerSpec extends Specification {
         cm.validateInput(p, input) == validationResult
 
         where:
-        p                                                                                   | input  | validationResult
-        new StringProperty(validator: {false})                                              | ''     | true
-        new StringProperty(validator: {false})                                              | '\n '  | true
-        new StringProperty(validator: {false})                                              | 'v1'   | false
-        new StringProperty(possibleValues: ['v1', 'v2'], validator: {false})                | 'v1'   | true
-        new StringProperty(possibleValues: ['v1', 'v2'], validator: {false})                | 'v3'   | false
-        new StringProperty(possibleValues: ['a', 'b'], validator: { it.matches('[0-9]+') }) | '1234' | true
-        new StringProperty(possibleValues: ['a', 'b'], validator: { it.matches('[0-9]+') }) | 'a'    | true
-        new StringProperty(possibleValues: ['a', 'b'], validator: { it.matches('[0-9]+') }) | 'c'    | false
+        p                                                                                                       | input  | validationResult
+        new StringProperty(validator: { false })                                                                | ''     | true
+        new StringProperty(validator: { false })                                                                | '\n '  | true
+        new StringProperty(validator: { false })                                                                | 'v1'   | false
+        new StringProperty(possibleValues: { ['v1', 'v2'] as List<String> }, validator: { false })              | 'v1'   | true
+        new StringProperty(possibleValues: { ['v1', 'v2'] as List<String> }, validator: { false })              | 'v3'   | false
+        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }, validator: { it.matches('[0-9]+') }) | '1234' | true
+        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }, validator: { it.matches('[0-9]+') }) | 'a'    | true
+        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }, validator: { it.matches('[0-9]+') }) | 'c'    | false
     }
 
     def 'property value is set well'() {

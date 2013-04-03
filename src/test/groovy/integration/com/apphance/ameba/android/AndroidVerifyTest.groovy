@@ -1,7 +1,7 @@
 package com.apphance.ameba.android
 
-import com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin
 import com.apphance.ameba.plugins.AmebaPlugin
+import com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Ignore
@@ -9,7 +9,7 @@ import spock.lang.Specification
 
 class AndroidVerifyTest extends Specification {
 
-    @Ignore('ignored till refactorś')
+    @Ignore('ignored till refactored')
     def "test read targets"() {
         given:
         String target_output = this.class.getResource("target_output.txt").content.text

@@ -62,24 +62,24 @@ class ConversationManager {
     @groovy.transform.PackageScope
     String defaultValueString(AbstractProperty ap) {
         ap.value ?: ap?.defaultValue() ?: ''
-     }
+    }
 
     @groovy.transform.PackageScope
     String possibleValuesString(AbstractProperty ap) {
-        ap.possibleValues ? ", possible: ${ap.possibleValues}" : ''
+        ap.possibleValues ? ", possible: ${ap.possibleValues()}" : ''
     }
 
     @groovy.transform.PackageScope
     boolean validateInput(AbstractProperty ap, String input) {
         input = input?.trim()
-        input?.empty || (input in ap.possibleValues) || (ap.validator && ap.validator(input))
+        input?.empty || (ap.possibleValues && input in ap.possibleValues()) || (ap.validator && ap.validator(input))
     }
 
     @groovy.transform.PackageScope
     void setPropertyValue(AbstractProperty ap, String input) {
         if (input?.empty) {
             ap.value = defaultValueString(ap)
-        } else if (input in ap.possibleValues || (ap.validator && ap.validator(input))) {
+        } else if (ap.possibleValues && input in ap.possibleValues() || (ap.validator && ap.validator(input))) {
             ap.value = input
         }
     }

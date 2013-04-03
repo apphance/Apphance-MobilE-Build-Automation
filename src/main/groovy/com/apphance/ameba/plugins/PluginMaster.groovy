@@ -1,21 +1,22 @@
 package com.apphance.ameba.plugins
 
+import com.apphance.ameba.detection.ProjectType
 import com.apphance.ameba.detection.ProjectTypeDetector
-import com.apphance.ameba.plugins.ios.apphance.IOSApphancePlugin
-import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
-import com.apphance.ameba.plugins.ios.framework.IOSFrameworkPlugin
-import com.apphance.ameba.plugins.ios.ocunit.IOSUnitTestPlugin
-import com.apphance.ameba.plugins.ios.release.IOSReleasePlugin
 import com.apphance.ameba.plugins.android.analysis.AndroidAnalysisPlugin
 import com.apphance.ameba.plugins.android.apphance.AndroidApphancePlugin
 import com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin
 import com.apphance.ameba.plugins.android.jarlibrary.AndroidJarLibraryPlugin
 import com.apphance.ameba.plugins.android.release.AndroidReleasePlugin
 import com.apphance.ameba.plugins.android.test.AndroidTestPlugin
+import com.apphance.ameba.plugins.ios.apphance.IOSApphancePlugin
+import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
+import com.apphance.ameba.plugins.ios.framework.IOSFrameworkPlugin
+import com.apphance.ameba.plugins.ios.ocunit.IOSUnitTestPlugin
+import com.apphance.ameba.plugins.ios.release.IOSReleasePlugin
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin
-import com.apphance.ameba.detection.ProjectType
 import com.google.inject.Injector
+import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logging
 
@@ -61,7 +62,7 @@ class PluginMaster {
         def installPlugin = {
             log.info("Applying plugin $it")
 
-            def plugin = injector.getInstance(it)
+            Plugin<Project> plugin = (Plugin<Project>) injector.getInstance(it)
 
             plugin.apply(project)
             project.plugins.add(plugin)

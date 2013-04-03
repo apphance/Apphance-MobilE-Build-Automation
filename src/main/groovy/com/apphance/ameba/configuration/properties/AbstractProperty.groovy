@@ -7,7 +7,7 @@ abstract class AbstractProperty<T> {
     Closure<T> defaultValue = { null }
     protected T value
     Closure<Boolean> validator = { true }
-    List<String> possibleValues
+    Closure<List<String>> possibleValues
 
     abstract void setValue(String value);
 
