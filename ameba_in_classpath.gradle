@@ -26,5 +26,8 @@ rootProject.buildscript {
         classpath 'org.apache.httpcomponents:httpcore:4.1.3'
         classpath 'org.python:jython-standalone:2.7-b1'
         classpath 'com.google.inject:guice:3.0'
+        classpath 'gov.nih.imagej:imagej:1.46'
+        classpath 'org.imgscalr:imgscalr-lib:4.2'
+        classpath 'batik:batik-transcoder:1.6-1'
     }
 }
