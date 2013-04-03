@@ -8,10 +8,6 @@ import ij.ImagePlus
 import ij.ImageStack
 import ij.plugin.MontageMaker
 import ij.process.ColorProcessor
-import org.apache.batik.transcoder.TranscoderInput
-import org.apache.batik.transcoder.TranscoderOutput
-import org.apache.batik.transcoder.image.PNGTranscoder
-import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
 
 import javax.imageio.ImageIO
@@ -149,14 +145,7 @@ class ImageMontageTask {
     }
 
     BufferedImage svgConverter(File file) {
-        def input = new TranscoderInput(FileUtils.openInputStream(file))
-        def tempFile = File.createTempFile('output-', '.png')
-        tempFile.deleteOnExit()
-        def outputStream = FileUtils.openOutputStream(tempFile)
-
-        TranscoderOutput output = new TranscoderOutput(outputStream);
-        new PNGTranscoder().transcode(input, output);
-
-        ImageIO.read(tempFile)
+        // TODO
+        ImageIO.read(file)
     }
 }

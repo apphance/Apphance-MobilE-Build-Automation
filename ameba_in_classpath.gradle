@@ -28,6 +28,5 @@ rootProject.buildscript {
         classpath 'com.google.inject:guice:3.0'
         classpath 'gov.nih.imagej:imagej:1.46'
         classpath 'org.imgscalr:imgscalr-lib:4.2'
-        classpath 'batik:batik-transcoder:1.6-1'
     }
 }
