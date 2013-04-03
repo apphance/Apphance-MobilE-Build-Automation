@@ -140,6 +140,7 @@ class PluginMasterSpec extends Specification {
     def createInjectorForPluginsMocks(mocks) {
         def project = Mock(Project)
         project.file('log') >> new File(System.properties['java.io.tmpdir'])
+        project.rootDir >> new File(System.properties['java.io.tmpdir'])
         return Guice.createInjector(
                 new EnvironmentModule(),
                 new CommandExecutorModule(project),

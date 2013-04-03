@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.Configuration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.detection.ProjectTypeDetector
+import com.google.common.io.Files
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import com.google.inject.Inject
@@ -23,7 +24,10 @@ class ConfigurationModuleSpec extends Specification {
 
 
     def setup() {
+        def rootDir = Files.createTempDir()
+        rootDir.deleteOnExit()
         def project = Mock(Project)
+        project.rootDir >> rootDir
         def projectTypeDetector = Mock(ProjectTypeDetector)
 
         AbstractModule module = new AbstractModule() {

@@ -56,11 +56,11 @@ class ConversationManagerSpec extends Specification {
 
         where:
         p                                                                                   | input  | validationResult
-        new StringProperty()                                                                | ''     | true
-        new StringProperty()                                                                | '\n '  | true
-        new StringProperty()                                                                | 'v1'   | false
-        new StringProperty(possibleValues: ['v1', 'v2'])                                    | 'v1'   | true
-        new StringProperty(possibleValues: ['v1', 'v2'])                                    | 'v3'   | false
+        new StringProperty(validator: {false})                                              | ''     | true
+        new StringProperty(validator: {false})                                              | '\n '  | true
+        new StringProperty(validator: {false})                                              | 'v1'   | false
+        new StringProperty(possibleValues: ['v1', 'v2'], validator: {false})                | 'v1'   | true
+        new StringProperty(possibleValues: ['v1', 'v2'], validator: {false})                | 'v3'   | false
         new StringProperty(possibleValues: ['a', 'b'], validator: { it.matches('[0-9]+') }) | '1234' | true
         new StringProperty(possibleValues: ['a', 'b'], validator: { it.matches('[0-9]+') }) | 'a'    | true
         new StringProperty(possibleValues: ['a', 'b'], validator: { it.matches('[0-9]+') }) | 'c'    | false
@@ -77,7 +77,7 @@ class ConversationManagerSpec extends Specification {
         where:
         p                                                      | input                                   | expectedValue
         new StringProperty(defaultValue: { 'lol' })            | ''                                      | 'lol'
-        new StringProperty()                                   | ''                                      | null
+        new StringProperty()                                   | ''                                      | ''
         new LongProperty(validator: { it.matches('[0-9]') })   | '5'                                     | 5L
         new FileProperty(validator: { new File(it).exists() }) | properties['java.io.tmpdir'].toString() | new File(properties['java.io.tmpdir'].toString())
     }

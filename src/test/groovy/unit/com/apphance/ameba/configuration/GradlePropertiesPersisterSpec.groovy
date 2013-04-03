@@ -53,8 +53,8 @@ class GradlePropertiesPersisterSpec extends Specification {
         def persister = injector.getInstance(PropertyPersister)
 
         def androidConfiguration = new AndroidConfiguration()
-        androidConfiguration.sdkDir.value = tempDir
-        androidConfiguration.minSdkTargetName.value = 'min target name'
+        androidConfiguration.logDir.value = tempDir
+        androidConfiguration.versionString.value = 'version string'
 
         def projectConfiguration = new IOSConfiguration()
         projectConfiguration.name.value = 'Project name'
@@ -63,8 +63,8 @@ class GradlePropertiesPersisterSpec extends Specification {
         persister.save([androidConfiguration, projectConfiguration])
 
         then:
-        persister.get(androidConfiguration.sdkDir.name) == tempDir.absolutePath
-        persister.get(androidConfiguration.minSdkTargetName.name) == 'min target name'
+        persister.get(androidConfiguration.logDir.name) == tempDir.absolutePath
+        persister.get(androidConfiguration.versionString.name) == 'version string'
 
         persister.get(projectConfiguration.name.name) == 'Project name'
 
