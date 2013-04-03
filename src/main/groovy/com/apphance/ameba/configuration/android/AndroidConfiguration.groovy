@@ -15,16 +15,12 @@ import static com.apphance.ameba.detection.ProjectType.ANDROID
 class AndroidConfiguration extends Configuration {
 
     int order = 1
-    String configurationName = 'Android configuration'
 
     @Inject
     Project project
 
     @Inject
     ProjectTypeDetector projectTypeDetector
-
-    AndroidConfiguration() {
-    }
 
     @Override
     boolean isEnabled() {
@@ -65,4 +61,8 @@ class AndroidConfiguration extends Configuration {
             message: 'Project log directory',
             defaultValue: { project.file('log') })
 
+    @Override
+    String getConfigurationName() {
+        'Project configuration'
+    }
 }

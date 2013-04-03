@@ -6,7 +6,7 @@ abstract class AbstractProperty<T> {
     String message
     Closure<T> defaultValue = { null }
     protected T value
-    Closure<Boolean> validator
+    Closure<Boolean> validator = { true }
     List<String> possibleValues
 
     abstract void setValue(String value);
@@ -14,4 +14,6 @@ abstract class AbstractProperty<T> {
     T getValue() {
         value
     }
+
+    String toString() { "$name = $value" }
 }

@@ -34,8 +34,8 @@ class ConversationManagerSpec extends Specification {
         new StringProperty()                               | ''
         new StringProperty(defaultValue: { null })         | ''
         new StringProperty(defaultValue: { '' })           | ''
-        new StringProperty(defaultValue: { 'a' })          | ", default: 'a'"
-        new ProjectTypeProperty(defaultValue: { ANDROID }) | ", default: 'ANDROID'"
+        new StringProperty(defaultValue: { 'a' })          | 'a'
+        new ProjectTypeProperty(defaultValue: { ANDROID }) | 'ANDROID'
     }
 
     def 'prompt is displayed well'() {
@@ -44,10 +44,10 @@ class ConversationManagerSpec extends Specification {
 
         where:
         p                                                                                              | expectedString
-        new StringProperty(message: 'Project name')                                                    | 'Project name: '
+        new StringProperty(message: 'Project name')                                                    | "Project name, default: '': "
         new StringProperty(message: 'Project name', defaultValue: { 'a' })                             | "Project name, default: 'a': "
         new StringProperty(message: 'Project name', defaultValue: { 'a' }, possibleValues: ['a', 'b']) | "Project name, default: 'a', possible: [a, b]: "
-        new StringProperty(message: 'Project name', possibleValues: ['a', 'b'])                        | "Project name, possible: [a, b]: "
+        new StringProperty(message: 'Project name', possibleValues: ['a', 'b'])                        | "Project name, default: '', possible: [a, b]: "
     }
 
     def 'input validation works well'() {

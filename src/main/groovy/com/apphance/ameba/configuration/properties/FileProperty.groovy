@@ -4,7 +4,9 @@ class FileProperty extends AbstractProperty<File> {
 
     @Override
     void setValue(String value) {
-        this.@value = new File(value)
+        if (value != null) {
+            this.@value = new File(value)
+        }
     }
 
     Closure<Boolean> getValidator() {

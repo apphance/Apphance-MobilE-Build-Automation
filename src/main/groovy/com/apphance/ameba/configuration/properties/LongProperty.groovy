@@ -4,6 +4,6 @@ class LongProperty extends AbstractProperty<Long> {
 
     @Override
     void setValue(String value) {
-        this.@value = value.toLong()
+        this.@value = value?.isNumber() ? value.toLong() : null
     }
 }

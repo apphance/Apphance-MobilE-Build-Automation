@@ -3,6 +3,7 @@ package com.apphance.ameba.plugins.projectconfiguration
 import com.apphance.ameba.configuration.Configuration
 import com.apphance.ameba.configuration.ConfigurationSorter
 import com.apphance.ameba.configuration.ConversationManager
+import com.apphance.ameba.configuration.PropertyPersister
 import com.apphance.ameba.plugins.projectconfiguration.tasks.*
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -39,9 +40,14 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
     @Inject
     Set<Configuration> configurations
 
+    @Inject
+    PropertyPersister propertyPersister
+
     private Project project
     ConfigurationSorter resolver = new ConfigurationSorter()
-    ConversationManager conversationManager = new ConversationManager()
+
+    @Inject
+    ConversationManager conversationManager
 
     @Override
     void apply(Project project) {
@@ -69,6 +75,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task << {
             resolver.addAll(configurations)
             conversationManager.resolveConfigurations(resolver.sort())
+            propertyPersister.save(configurations)
         }
     }
 

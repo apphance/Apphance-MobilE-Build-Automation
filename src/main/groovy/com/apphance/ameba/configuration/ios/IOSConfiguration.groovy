@@ -15,16 +15,12 @@ import static com.apphance.ameba.detection.ProjectType.IOS
 class IOSConfiguration extends Configuration {
 
     int order = 2
-    String configurationName = 'IOS configuration'
 
     @Inject
     Project project
 
     @Inject
     ProjectTypeDetector projectTypeDetector
-
-    IOSConfiguration() {
-    }
 
     @Override
     boolean isEnabled() {
@@ -65,4 +61,8 @@ class IOSConfiguration extends Configuration {
             message: 'Project log directory',
             defaultValue: { project.file('log') })
 
+    @Override
+    String getConfigurationName() {
+        'IOS configuration'
+    }
 }

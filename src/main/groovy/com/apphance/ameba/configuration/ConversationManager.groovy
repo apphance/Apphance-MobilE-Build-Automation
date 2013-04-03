@@ -1,27 +1,38 @@
 package com.apphance.ameba.configuration
 
 import com.apphance.ameba.configuration.properties.AbstractProperty
+import com.google.inject.Inject
 
 import static java.lang.System.out
+import static org.gradle.api.logging.Logging.getLogger
 
 class ConversationManager {
 
+    private log = getLogger(getClass())
+
     def reader = buildReader()
+
+    @Inject
+    PropertyPersister propertyPersister
 
     def resolveConfigurations(List<Configuration> configurations) {
         configurations.each { Configuration c ->
+            c.init()
             enablePlugin(c)
             readValues(c)
         }
+
+        log.info('All configurations resolved')
+        configurations.each { log.info(it.toString()) }
     }
 
     @groovy.transform.PackageScope
-    void enablePlugin(Configuration c) {
-        if (!c.enabled) {
-            print "Enable plugin ${c.configurationName}? [y/n] "
+    void enablePlugin(Configuration conf) {
+        if (!conf.enabled) {
+            print "Enable plugin ${conf.configurationName}? [y/n] "
             out.flush()
             if (reader.readLine()?.equalsIgnoreCase('y')) {
-                c.enabled = true
+                conf.enabled = true
             }
         }
     }
@@ -45,13 +56,13 @@ class ConversationManager {
 
     @groovy.transform.PackageScope
     String prompt(AbstractProperty ap) {
-        "${ap.message}${defaultValueString(ap)}${possibleValuesString(ap)}: "
+        "${ap.message}, default: '${defaultValueString(ap)}'${possibleValuesString(ap)}: "
     }
 
     @groovy.transform.PackageScope
     String defaultValueString(AbstractProperty ap) {
-        (ap.defaultValue && ap.defaultValue()) ? ", default: '${ap.defaultValue()}'" : ''
-    }
+        ap.value ?: ap?.defaultValue() ?: ''
+     }
 
     @groovy.transform.PackageScope
     String possibleValuesString(AbstractProperty ap) {
@@ -67,7 +78,7 @@ class ConversationManager {
     @groovy.transform.PackageScope
     void setPropertyValue(AbstractProperty ap, String input) {
         if (input?.empty) {
-            ap.value = ap.defaultValue()
+            ap.value = defaultValueString(ap)
         } else if (input in ap.possibleValues || (ap.validator && ap.validator(input))) {
             ap.value = input
         }

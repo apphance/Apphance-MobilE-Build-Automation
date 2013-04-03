@@ -1,10 +1,21 @@
 package com.apphance.ameba.configuration
 
 import com.apphance.ameba.configuration.properties.AbstractProperty
+import com.google.inject.Inject
 
 import java.lang.reflect.Field
 
+import static org.apache.commons.lang.StringUtils.join
+
 abstract class Configuration {
+
+    @Inject PropertyPersister propertyPersister
+
+    def init () {
+        amebaProperties.each {
+            it.value = propertyPersister.get(it.name)
+        }
+    }
 
     abstract boolean isEnabled()
 
@@ -25,4 +36,8 @@ abstract class Configuration {
 
     abstract String getConfigurationName()
 
+    @Override
+    public String toString() {
+        "Configuration $configurationName: ${join(amebaProperties, '\n')}\n";
+    }
 }
