@@ -18,13 +18,8 @@ class AndroidProjectConfiguration {
     String mainVariant
     File variantsDir
 
-    Map<String, File> tmpDirs = [:]
-    Map<String, String> debugRelease = [:]
     Collection<File> sdkJars = []
     Collection<File> libraryJars = []
-    Collection<File> linkedLibraryJars = []
-
-    List<String> excludedBuilds = []
     List<String> availableTargets //all targets available in Android SDK
 
     public Set<File> getAllJars() {
@@ -38,6 +33,18 @@ class AndroidProjectConfiguration {
     public String getAllJarsAsPath() {
         getAllJars().join(pathSeparator)
     }
+
+    Collection<File> linkedLibraryJars = []
+
+    //all above this comments is rewritten
+
+
+
+    Map<String, File> tmpDirs = [:]
+
+    Map<String, String> debugRelease = [:]
+
+    List<String> excludedBuilds = []
 
     boolean isBuildExcluded(String variant) {
         boolean excluded = false

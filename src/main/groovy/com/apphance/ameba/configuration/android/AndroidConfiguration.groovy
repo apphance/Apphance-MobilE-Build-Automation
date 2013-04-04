@@ -13,6 +13,7 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
+import static java.io.File.pathSeparator
 
 @com.google.inject.Singleton
 class AndroidConfiguration extends Configuration {
@@ -20,16 +21,24 @@ class AndroidConfiguration extends Configuration {
     int order = 1
     String configurationName = 'Android configuration'
 
-    @Inject
     Project project
-    @Inject
     ProjectTypeDetector projectTypeDetector
-    @Inject
     AndroidBuildXmlHelper buildXmlHelper
-    @Inject
     AndroidManifestHelper manifestHelper
-    @Inject
     AndroidExecutor androidExecutor
+
+    @Inject AndroidConfiguration(
+            Project project,
+            AndroidExecutor androidExecutor,
+            AndroidManifestHelper manifestHelper,
+            AndroidBuildXmlHelper buildXmlHelper,
+            ProjectTypeDetector projectTypeDetector) {
+        this.project = project
+        this.androidExecutor = androidExecutor
+        this.manifestHelper = manifestHelper
+        this.buildXmlHelper = buildXmlHelper
+        this.projectTypeDetector = projectTypeDetector
+    }
 
     @Override
     boolean isEnabled() {
@@ -82,6 +91,7 @@ class AndroidConfiguration extends Configuration {
     def sdkDir = new FileProperty(
             name: 'android.dir.sdk',
             message: 'Android SDK directory',
+            defaultValue: { defaultSDKDir() }
     )
 
     def mainVariant = new StringProperty(
@@ -108,10 +118,103 @@ class AndroidConfiguration extends Configuration {
 
     def mainPackage = new StringProperty(
             name: 'android.main.package',
-            message: 'Android main package'
+            message: 'Android main package',
+            defaultValue: { manifestHelper.androidPackage(project.rootDir) }
+
     )
 
+    private Collection<File> sdkJarLibs = []
 
+    Collection<File> getSdkJars() {
+        if (sdkJarLibs.empty) {
+            def sdk = sdkDir.value
+            def target = minTarget.value
+            if (target.startsWith('android')) {
+                String version = target.split("-")[1]
+                sdkJarLibs << new File(sdk, "platforms/android-$version/android.jar")
+            } else {
+                List splitTarget = target.split(':')
+                if (splitTarget.size() > 2) {
+                    String version = splitTarget[2]
+                    sdkJarLibs << new File(sdk, "platforms/android-$version/android.jar")
+                    if (target.startsWith('Google')) {
+                        def mapJarFiles = new FileNameFinder().getFileNames(sdkDir.value.path,
+                                "add-ons/addon*google*apis*google*$version/libs/maps.jar")
+                        for (String path in mapJarFiles) {
+                            sdkJarLibs << new File(path)
+                        }
+                    }
+                    if (target.startsWith('KYOCERA Corporation:DTS')) {
+                        sdkJarLibs << new File(sdk, "add-ons/addon_dual_screen_apis_kyocera_corporation_$version/libs/dualscreen.jar")
+                    }
+                    if (target.startsWith('LGE:Real3D')) {
+                        sdkJarLibs << new File(sdk, "add-ons/addon_real3d_lge_$version/libs/real3d.jar")
+                    }
+                    if (target.startsWith('Sony Ericsson Mobile Communications AB:EDK')) {
+                        sdkJarLibs << new File(sdk, "add-ons/addon_edk_sony_ericsson_mobile_communications_ab_$version/libs/com.sonyericsson.eventstream_1.jar")
+                    }
+                }
+            }
+        }
+        sdkJarLibs
+    }
+
+    private Collection<File> jarLibs
+
+    Collection<File> getJarLibraries() {
+        if (!jarLibs || !linkedJarLibs) {
+            librariesFinder(project.rootDir)
+        }
+        jarLibs
+    }
+
+    private Collection<File> linkedJarLibs
+
+    Collection<File> getLinkedJarLibraries() {
+        if (!jarLibs || !linkedJarLibs) {
+            librariesFinder(project.rootDir)
+        }
+        linkedJarLibs
+    }
+
+    private Closure librariesFinder = { File projectDir ->
+        if (!jarLibs) {
+            jarLibs = []
+        }
+        if (!linkedJarLibs) {
+            linkedJarLibs = []
+        }
+        def libraryDir = new File(projectDir, 'libs')
+        if (libraryDir.exists()) {
+            jarLibs.addAll(libraryDir.listFiles().findAll(jarMatcher))
+        }
+        def props = new Properties()
+        props.load(new FileInputStream(new File(projectDir, 'project.properties')))
+        props.findAll { it.key.startsWith('android.library.reference.') }.each {
+            File libraryProject = new File(projectDir, it.value.toString())
+            File binProject = new File(libraryProject, 'bin')
+            if (binProject.exists()) {
+                linkedJarLibs.addAll(binProject.listFiles().findAll(jarMatcher))
+            }
+            librariesFinder(libraryProject)
+        }
+    }
+
+    private Closure jarMatcher = { File f ->
+        f.name.endsWith('.jar')
+    }
+
+    Set<File> getAllJars() {
+        Set<File> set = [] as Set
+        set.addAll(getSdkJars())
+        set.addAll(getJarLibraries())
+        set.addAll(getLinkedJarLibraries())
+        return set
+    }
+
+    String getAllJarsAsPath() {
+        getAllJars().join(pathSeparator)
+    }
 
     private String defaultName() {
         buildXmlHelper.projectName(project.rootDir)
@@ -121,6 +224,7 @@ class AndroidConfiguration extends Configuration {
         def names = []
         names << project.rootDir.name
         names << buildXmlHelper.projectName(project.rootDir)
+        names
     }
 
     private File defaultSDKDir() {
