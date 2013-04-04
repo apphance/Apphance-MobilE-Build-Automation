@@ -1,7 +1,6 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
 import com.apphance.ameba.configuration.Configuration
-import com.apphance.ameba.configuration.ConfigurationSorter
 import com.apphance.ameba.configuration.ConversationManager
 import com.apphance.ameba.configuration.PropertyPersister
 import com.apphance.ameba.plugins.projectconfiguration.tasks.*
@@ -38,13 +37,12 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
     public final static String AMEBA_PROPERTY_DEFAULTS_CONVENTION_NAME = 'amebaPropertyDefaults'
 
     @Inject
-    Set<Configuration> configurations
+    Map<Integer, Configuration> configurations
 
     @Inject
     PropertyPersister propertyPersister
 
     private Project project
-    ConfigurationSorter resolver = new ConfigurationSorter()
 
     @Inject
     ConversationManager conversationManager
@@ -73,9 +71,9 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.group = 'conf group'
         task.description = 'Prepares configuration (ameba.properties)'
         task << {
-            resolver.addAll(configurations)
-            conversationManager.resolveConfigurations(resolver.sort())
-            propertyPersister.save(configurations)
+            Collection<Configuration> sorted = configurations.sort().values()
+            conversationManager.resolveConfigurations(sorted)
+            propertyPersister.save(sorted)
         }
     }
 

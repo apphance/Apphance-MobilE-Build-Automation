@@ -8,7 +8,7 @@ import spock.lang.Specification
 class ConfigurationSpec extends Specification {
 
     @Shared
-    def androidConf = new AndroidConfiguration()
+    def androidConf = new AndroidConfiguration(* [null] * 5)
 
     def 'returns list of fields annotated with @AmebaProp'() {
         when:

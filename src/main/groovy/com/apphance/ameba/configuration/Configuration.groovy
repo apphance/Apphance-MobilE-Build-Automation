@@ -11,7 +11,7 @@ abstract class Configuration {
 
     @Inject PropertyPersister propertyPersister
 
-    def init () {
+    def init() {
         amebaProperties.each {
             it.value = propertyPersister.get(it.name)
         }
@@ -20,8 +20,6 @@ abstract class Configuration {
     abstract boolean isEnabled()
 
     abstract void setEnabled(boolean enabled)
-
-    abstract int getOrder()
 
     List<Field> getPropertyFields() {
         getClass().declaredFields.findAll {

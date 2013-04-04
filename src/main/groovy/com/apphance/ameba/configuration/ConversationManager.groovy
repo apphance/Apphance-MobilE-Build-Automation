@@ -15,7 +15,7 @@ class ConversationManager {
     @Inject
     PropertyPersister propertyPersister
 
-    def resolveConfigurations(List<Configuration> configurations) {
+    def resolveConfigurations(Collection<Configuration> configurations) {
         configurations.each { Configuration c ->
             c.init()
             enablePlugin(c)

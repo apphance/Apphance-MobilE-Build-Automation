@@ -19,7 +19,7 @@ class AmebaPlugin implements Plugin<Project> {
         l.lifecycle(AMEBA_ASCII_ART)
 
         def injector = Guice.createInjector(
-                new ConfigurationModule(),
+                new ConfigurationModule(project),
                 new EnvironmentModule(),
                 new CommandExecutorModule(project),
                 new AbstractModule() {

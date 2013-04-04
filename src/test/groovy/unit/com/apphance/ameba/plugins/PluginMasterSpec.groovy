@@ -1,15 +1,15 @@
 package com.apphance.ameba.plugins
 
+import com.apphance.ameba.detection.ProjectTypeDetector
+import com.apphance.ameba.di.CommandExecutorModule
 import com.apphance.ameba.di.ConfigurationModule
+import com.apphance.ameba.di.EnvironmentModule
 import com.apphance.ameba.plugins.android.analysis.AndroidAnalysisPlugin
 import com.apphance.ameba.plugins.android.apphance.AndroidApphancePlugin
 import com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin
 import com.apphance.ameba.plugins.android.jarlibrary.AndroidJarLibraryPlugin
 import com.apphance.ameba.plugins.android.release.AndroidReleasePlugin
 import com.apphance.ameba.plugins.android.test.AndroidTestPlugin
-import com.apphance.ameba.detection.ProjectTypeDetector
-import com.apphance.ameba.di.CommandExecutorModule
-import com.apphance.ameba.di.EnvironmentModule
 import com.apphance.ameba.plugins.ios.apphance.IOSApphancePlugin
 import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
 import com.apphance.ameba.plugins.ios.framework.IOSFrameworkPlugin
@@ -138,13 +138,17 @@ class PluginMasterSpec extends Specification {
     ]
 
     def createInjectorForPluginsMocks(mocks) {
+        def rootDir = Mock(File)
+        rootDir.list() >> ['AndroidManifest.xml']
         def project = Mock(Project)
+
+        project.rootDir >> rootDir
         project.file('log') >> new File(System.properties['java.io.tmpdir'])
-        project.rootDir >> new File(System.properties['java.io.tmpdir'])
+
         return Guice.createInjector(
                 new EnvironmentModule(),
                 new CommandExecutorModule(project),
-                new ConfigurationModule(),
+                new ConfigurationModule(project),
                 new AbstractModule() {
 
                     @Override

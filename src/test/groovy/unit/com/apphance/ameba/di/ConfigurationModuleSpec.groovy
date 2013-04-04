@@ -2,7 +2,6 @@ package com.apphance.ameba.di
 
 import com.apphance.ameba.configuration.Configuration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
-import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
@@ -12,26 +11,20 @@ import com.google.inject.Inject
 import org.gradle.api.Project
 import spock.lang.Specification
 
-import static com.google.common.io.Files.createTempDir
-
 class ConfigurationModuleSpec extends Specification {
 
     @Inject AndroidConfiguration androidConf1
     @Inject AndroidConfiguration androidConf2
 
-    @Inject IOSConfiguration iosConf1
-    @Inject IOSConfiguration iosConf2
-
     @Inject
-    Set<Configuration> configurations
-
+    Map<Integer, Configuration> configurations
 
     def setup() {
         def fileLinker = Mock(FileLinker)
         def logFileGenerator = Mock(CommandLogFilesGenerator)
 
-        def rootDir = createTempDir()
-        rootDir.deleteOnExit()
+        def rootDir = Mock(File)
+        rootDir.list() >> ['AndroidManifest.xml']
 
         def project = Mock(Project)
         project.rootDir >> rootDir
@@ -52,23 +45,20 @@ class ConfigurationModuleSpec extends Specification {
 
         }
 
-        Guice.createInjector(module, new ConfigurationModule())
+        Guice.createInjector(module, new ConfigurationModule(project))
     }
 
-    def "configurations are singletons"() {
+    def 'configurations are singletons'() {
         expect:
         androidConf1 != null
         androidConf2 != null
         androidConf1.is(androidConf2)
-
-        iosConf1 != null
-        iosConf2 != null
-        iosConf1.is(iosConf2)
     }
 
-    def 'test multibinder'() {
+    def 'multibinder loads configuration in correct order'() {
         expect:
-        configurations.size() == 2
-        [iosConf1, androidConf1].sort() == configurations.sort()
+        configurations.hashCode()
+        configurations.size() > 0
+        configurations.sort().values().toArray()[0].class == AndroidConfiguration
     }
 }

@@ -14,8 +14,6 @@ import static com.apphance.ameba.detection.ProjectType.IOS
 @com.google.inject.Singleton
 class IOSConfiguration extends Configuration {
 
-    int order = 2
-
     @Inject
     Project project
 

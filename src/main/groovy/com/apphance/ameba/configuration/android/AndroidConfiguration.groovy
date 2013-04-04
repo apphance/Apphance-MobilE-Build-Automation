@@ -18,7 +18,6 @@ import static java.io.File.pathSeparator
 @com.google.inject.Singleton
 class AndroidConfiguration extends Configuration {
 
-    int order = 1
     String configurationName = 'Android configuration'
 
     Project project
@@ -27,7 +26,8 @@ class AndroidConfiguration extends Configuration {
     AndroidManifestHelper manifestHelper
     AndroidExecutor androidExecutor
 
-    @Inject AndroidConfiguration(
+    @Inject
+    AndroidConfiguration(
             Project project,
             AndroidExecutor androidExecutor,
             AndroidManifestHelper manifestHelper,

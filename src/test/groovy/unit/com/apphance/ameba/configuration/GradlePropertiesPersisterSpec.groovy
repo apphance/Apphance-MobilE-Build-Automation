@@ -2,6 +2,8 @@ package com.apphance.ameba.configuration
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.detection.ProjectType
+import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.di.ConfigurationModule
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
@@ -47,7 +49,7 @@ class GradlePropertiesPersisterSpec extends Specification {
     def "test persister get"() {
         given:
         project.getRootDir() >> this.rootDir
-        injector = Guice.createInjector(module, new ConfigurationModule())
+        injector = Guice.createInjector(module, new ConfigurationModule(project))
         def persister = injector.getInstance(PropertyPersister)
 
         expect:
@@ -58,10 +60,10 @@ class GradlePropertiesPersisterSpec extends Specification {
         given:
         def tempDir = Files.createTempDir()
         project.getRootDir() >> tempDir
-        injector = Guice.createInjector(module, new ConfigurationModule())
+        injector = Guice.createInjector(module, fakeConfModule())
         def persister = injector.getInstance(PropertyPersister)
 
-        def androidConfiguration = new AndroidConfiguration()
+        def androidConfiguration = new AndroidConfiguration(project, * [null] * 4)
         androidConfiguration.logDir.value = tempDir
         androidConfiguration.versionString.value = 'version string'
 
@@ -87,7 +89,7 @@ class GradlePropertiesPersisterSpec extends Specification {
         given:
         def tempDir = Files.createTempDir()
         project.getRootDir() >> tempDir
-        injector = Guice.createInjector(module, new ConfigurationModule())
+        injector = Guice.createInjector(module, fakeConfModule())
 
         def persister = injector.getInstance(PropertyPersister)
 
@@ -117,5 +119,13 @@ class GradlePropertiesPersisterSpec extends Specification {
         def number = 0
         directory.eachFile { number++ }
         number
+    }
+
+    def fakeConfModule() {
+        def confModule = new ConfigurationModule(project)
+        def typeDetector = Mock(ProjectTypeDetector)
+        confModule.typeDetector = typeDetector
+        typeDetector.detectProjectType(_) >> ProjectType.ANDROID
+        confModule
     }
 }
