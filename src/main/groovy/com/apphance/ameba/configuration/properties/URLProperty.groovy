@@ -1,11 +1,12 @@
 package com.apphance.ameba.configuration.properties
 
-class FileProperty extends AbstractProperty<File> {
+
+class URLProperty extends AbstractProperty<URL> {
 
     @Override
     void setValue(String value) {
         if (value)
-            this.@value = new File(value)
+            this.@value = value.toURL()
     }
 
     @Override
@@ -13,6 +14,13 @@ class FileProperty extends AbstractProperty<File> {
         if (!super.validator) {
             return super.validator
         }
-        return { true }
+        return {
+            try {
+                it.toURL()
+            } catch (e) {
+                return false
+            }
+            return true
+        }
     }
 }

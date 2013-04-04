@@ -5,6 +5,7 @@ import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Test
 
 import static org.gradle.tooling.GradleConnector.newConnector
@@ -211,7 +212,7 @@ class ExecuteAndroidBuildsTest {
         assertConfigSameAsBuild(testNoVariantsProject, "pmd-rules.xml")
     }
 
-    @Test
+    @Ignore('This test is ignored till android configuration is fully rewritten')
     void testAnalysisFromRemote() {
         File baseDir = new File(testAndroidConventionProject, "build/analysis/")
         runGradleAndroidAnalysis('updateProject', 'analysis')
@@ -233,7 +234,7 @@ class ExecuteAndroidBuildsTest {
         assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
     }
 
-    @Test
+    @Ignore('This test is ignored till android configuration is fully rewritten')
     void testAnalysisFromRemoteWrongConvention() {
         File baseDir = new File(testAndroidWrongConventionProject, "build/analysis/")
         runGradleAndroidAnalysisWrongConvention('updateProject', 'analysis')

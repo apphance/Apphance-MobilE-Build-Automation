@@ -13,6 +13,9 @@ import static com.apphance.ameba.plugins.android.analysis.AndroidAnalysisPlugin.
 @Mixin(Preconditions)
 class FindBugsTask {
 
+    public static final String FINDBUGS_HOME_DIR_PROPERTY = 'findbugs.home.dir'
+    public static final String FINDBUGS_DEFAULT_HOME = '/var/lib/analysis/findbugs'
+
     private Project project
     private AndroidProjectConfiguration androidConf
 
