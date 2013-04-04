@@ -5,7 +5,7 @@ import com.apphance.ameba.plugins.android.AndroidEnvironment
 import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
 import com.apphance.ameba.plugins.android.buildplugin.AndroidBuildListener
 import com.apphance.ameba.plugins.android.release.AndroidReleaseApkListener
-import com.apphance.ameba.plugins.android.release.AndroidReleaseConfiguration
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.android.release.AndroidReleaseJarListener
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.release.AmebaArtifact
@@ -15,7 +15,6 @@ import org.gradle.api.Project
 
 import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
 import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
-import static com.apphance.ameba.plugins.android.release.AndroidReleaseConfigurationRetriever.getAndroidReleaseConfiguration
 import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.getProjectReleaseConfiguration
 import static com.apphance.ameba.util.file.FileDownloader.downloadFile
 import static java.util.ResourceBundle.getBundle
@@ -30,25 +29,26 @@ class AvailableArtifactsInfoTask {
     private ProjectReleaseConfiguration releaseConf
     private CommandExecutor executor
     private AndroidProjectConfiguration androidConf
-    private AndroidReleaseConfiguration androidReleaseConf
     private AndroidEnvironment androidEnv
 
-    AvailableArtifactsInfoTask(Project project, CommandExecutor executor) {
+    AndroidReleaseConfiguration androidReleaseConf
+
+    AvailableArtifactsInfoTask(Project project, CommandExecutor executor, AndroidReleaseConfiguration androidReleaseConf) {
         this.project = project
         this.conf = getProjectConfiguration(project)
         this.releaseConf = getProjectReleaseConfiguration(project)
         this.executor = executor
         this.androidConf = getAndroidProjectConfiguration(project)
-        this.androidReleaseConf = getAndroidReleaseConfiguration(project)
         this.androidEnv = new AndroidEnvironment(project)
+        this.androidReleaseConf = androidReleaseConf
     }
 
     public void availableArtifactsInfo() {
         AndroidBuildListener listener
         if (androidEnv.isLibrary()) {
-            listener = new AndroidReleaseJarListener(project, executor)
+            listener = new AndroidReleaseJarListener(project, executor, androidReleaseConf)
         } else {
-            listener = new AndroidReleaseApkListener(project, executor)
+            listener = new AndroidReleaseApkListener(project, executor, androidReleaseConf)
         }
         if (androidConf.hasVariants()) {
             androidConf.variants.each { variant ->

@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.android.release
 
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.plugins.android.AndroidBuilderInfo
@@ -11,6 +12,7 @@ import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
+import com.google.inject.Inject
 import org.gradle.api.AntBuilder
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -31,14 +33,15 @@ class AndroidReleaseJarListener implements AndroidBuildListener {
 
     static Logger logger = Logging.getLogger(AndroidReleaseJarListener.class)
 
-    AndroidReleaseJarListener(Project project, CommandExecutor executor) {
+    @Inject
+    AndroidReleaseJarListener(Project project, CommandExecutor executor, AndroidReleaseConfiguration androidReleaseConf) {
         use(PropertyCategory) {
             this.conf = project.getProjectConfiguration()
             this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
             this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
-            this.androidReleaseConf = AndroidReleaseConfigurationRetriever.getAndroidReleaseConfiguration(project)
             this.ant = project.ant
             this.executor = executor
+            this.androidReleaseConf = androidReleaseConf
         }
     }
 

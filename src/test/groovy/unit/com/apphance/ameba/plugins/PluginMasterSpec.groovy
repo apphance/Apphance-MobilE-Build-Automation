@@ -20,6 +20,8 @@ import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import org.gradle.api.Project
+import org.gradle.api.internal.plugins.DefaultExtraPropertiesExtension
+import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.api.plugins.PluginContainer
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -140,7 +142,8 @@ class PluginMasterSpec extends Specification {
     def createInjectorForPluginsMocks(mocks) {
         def rootDir = Mock(File)
         rootDir.list() >> ['AndroidManifest.xml']
-        def project = Mock(Project)
+        def project = GroovyMock(Project)
+        project.ext >> new DefaultExtraPropertiesExtension()
 
         project.rootDir >> rootDir
         project.file('log') >> new File(System.properties['java.io.tmpdir'])

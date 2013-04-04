@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.android.release
 
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTask
@@ -7,10 +8,9 @@ import com.apphance.ameba.plugins.android.release.tasks.BuildDocZipTask
 import com.apphance.ameba.plugins.android.release.tasks.MailMessageTask
 import com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
 import com.apphance.ameba.executor.command.CommandExecutor
+import com.google.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-
-import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin.READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME
@@ -39,6 +39,10 @@ class AndroidReleasePlugin implements Plugin<Project> {
 
     private Project project
 
+    @Inject AndroidReleaseApkListener androidReleaseApkListener
+    @Inject AndroidReleaseJarListener androidReleaseJarListener
+    @Inject AndroidReleaseConfiguration androidReleaseConfiguration
+
     @Override
     void apply(Project project) {
         this.project = project
@@ -49,8 +53,8 @@ class AndroidReleasePlugin implements Plugin<Project> {
         prepareMailMessageTask()
 
         //TODO to be separated, refactored, redesigned :/
-        AndroidSingleVariantApkBuilder.buildListeners << new AndroidReleaseApkListener(project, executor)
-        AndroidSingleVariantJarBuilder.buildListeners << new AndroidReleaseJarListener(project, executor)
+        AndroidSingleVariantApkBuilder.buildListeners << androidReleaseApkListener
+        AndroidSingleVariantJarBuilder.buildListeners << androidReleaseJarListener
     }
 
     private void prepareBuildDocumentationZipTask() {
@@ -67,7 +71,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
         def task = project.task(PREPARE_AVAILABLE_ARTIFACTS_INFO_TASK_NAME)
         task.description = 'Prepares information about available artifacts for mail message to include'
         task.group = AMEBA_RELEASE
-        task << { new AvailableArtifactsInfoTask(project, executor).availableArtifactsInfo() }
+        task << { new AvailableArtifactsInfoTask(project, executor, androidReleaseConfiguration).availableArtifactsInfo() }
         task.dependsOn(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
     }
 
@@ -75,7 +79,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
         def task = project.task(PREPARE_MAIL_MESSAGE_TASK_NAME)
         task.description = 'Prepares mail message which summarises the release'
         task.group = AMEBA_RELEASE
-        task << { new MailMessageTask(project).mailMessage() }
+        task << { new MailMessageTask(project, androidReleaseConfiguration).mailMessage() }
         task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME,
                 PREPARE_AVAILABLE_ARTIFACTS_INFO_TASK_NAME,
                 PREPARE_FOR_RELEASE_TASK_NAME)

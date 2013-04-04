@@ -2,7 +2,7 @@ package com.apphance.ameba.plugins.android.release.tasks
 
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
-import com.apphance.ameba.plugins.android.release.AndroidReleaseConfiguration
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.apphance.ameba.util.file.FileManager
@@ -11,7 +11,6 @@ import org.gradle.api.Project
 
 import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
 import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
-import static com.apphance.ameba.plugins.android.release.AndroidReleaseConfigurationRetriever.getAndroidReleaseConfiguration
 import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.getProjectReleaseConfiguration
 import static java.util.ResourceBundle.getBundle
 import static org.gradle.api.logging.Logging.getLogger
@@ -22,13 +21,13 @@ class MailMessageTask {
     private ProjectConfiguration conf
     private ProjectReleaseConfiguration releaseConf
     private AndroidProjectConfiguration androidConf
-    private AndroidReleaseConfiguration androidReleaseConf
+    AndroidReleaseConfiguration androidReleaseConf
 
-    MailMessageTask(Project project) {
+    MailMessageTask(Project project, AndroidReleaseConfiguration androidReleaseConf) {
         this.conf = getProjectConfiguration(project)
         this.releaseConf = getProjectReleaseConfiguration(project)
         this.androidConf = getAndroidProjectConfiguration(project)
-        this.androidReleaseConf = getAndroidReleaseConfiguration(project)
+        this.androidReleaseConf = androidReleaseConf
     }
 
     public void mailMessage() {
