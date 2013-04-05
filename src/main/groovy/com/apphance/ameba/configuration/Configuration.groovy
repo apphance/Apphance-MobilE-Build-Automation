@@ -20,7 +20,9 @@ abstract class Configuration {
 
     abstract boolean isEnabled()
 
-    abstract void setEnabled(boolean enabled)
+    void setEnabled(boolean enabled) {
+        throw new IllegalStateException("Cannot change $configurationName enabled status to $enabled")
+    }
 
     List<Field> getPropertyFields() {
         getClass().declaredFields.findAll {

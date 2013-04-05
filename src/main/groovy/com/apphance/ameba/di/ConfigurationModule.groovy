@@ -5,6 +5,7 @@ import com.apphance.ameba.configuration.GradlePropertiesPersister
 import com.apphance.ameba.configuration.PropertyPersister
 import com.apphance.ameba.configuration.android.AndroidAnalysisConfiguration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidJarLibraryConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidTestConfiguration
 import com.apphance.ameba.configuration.ios.IOSConfiguration
@@ -23,6 +24,7 @@ class ConfigurationModule extends AbstractModule {
                     AndroidConfiguration,
                     AndroidAnalysisConfiguration,
                     AndroidReleaseConfiguration,
+                    AndroidJarLibraryConfiguration,
                     AndroidTestConfiguration,
             ],
             (IOS): [
