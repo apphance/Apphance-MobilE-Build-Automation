@@ -22,7 +22,7 @@ class AndroidVariantConfiguration extends Configuration {
     def mode = new StringProperty(
             name: "android.variant.${getVariantName()}.mode",
             message: "Android variant ${getVariantName()} mode",
-            possibleValues: { ['Debug', 'Release'] as List<String> }
+            possibleValues: { AndroidBuildMode.values()*.name() as List<String> }
     )
 
     def apphanceAppKey = new StringProperty(
