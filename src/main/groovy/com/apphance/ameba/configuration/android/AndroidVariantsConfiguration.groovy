@@ -1,14 +1,21 @@
 package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.Configuration
-import com.google.inject.Inject
+
+import javax.inject.Inject
 
 class AndroidVariantsConfiguration extends Configuration {
 
     String configurationName = 'Android variants configuration'
 
+    private AndroidConfiguration androidConf
+    private List<AndroidVariantConfiguration> variants
+
     @Inject
-    AndroidConfiguration androidConf
+    AndroidVariantsConfiguration(AndroidConfiguration androidConf) {
+        this.androidConf = androidConf
+        this.variants = buildVariantsList()
+    }
 
     @Override
     boolean isEnabled() {
@@ -23,23 +30,33 @@ class AndroidVariantsConfiguration extends Configuration {
         throw new IllegalStateException("${configurationName} is always enabled")
     }
 
-    @Override
-    Collection<AndroidVariantConfiguration> getSubConfigurations() {
-        //TODO getVariansName()
+    List<AndroidVariantConfiguration> buildVariantsList() {
         List<AndroidVariantConfiguration> result = []
-        if (androidConf.variantsDir.value?.exists()) {
-            androidConf.variantsDir.value.listFiles().each {
-                if (it.isDirectory()) {
-                    def avc = new AndroidVariantConfiguration(it.name)
-                    result << avc
-                }
-            }
+        if (variantsDirExistsAndIsNotEmpty()) {
+            result.addAll(extractVariantsFromDir())
         } else {
-            ['Debug', 'Release'].each {
-                def avc = new AndroidVariantConfiguration(it)
-                result << avc
-            }
+            result.addAll(extractDefaultVariants())
         }
         result
+    }
+
+    private boolean variantsDirExistsAndIsNotEmpty() {
+        File variantsDir = androidConf.variantsDir?.value
+        return (variantsDir && variantsDir.isDirectory() && variantsDir.list() > 0)
+    }
+
+    private List<AndroidVariantConfiguration> extractVariantsFromDir() {
+        File variantsDir = androidConf.variantsDir.value
+        //TODO what if a single variant folder is empty, handle?
+        variantsDir.listFiles().collect { new AndroidVariantConfiguration((it.name.toLowerCase())) }
+    }
+
+    private List<AndroidVariantConfiguration> extractDefaultVariants() {
+        AndroidBuildMode.values().collect { new AndroidVariantConfiguration(it.name().toLowerCase()) }
+    }
+
+    @Override
+    Collection<AndroidVariantConfiguration> getSubConfigurations() {
+        variants
     }
 }
