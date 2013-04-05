@@ -26,7 +26,8 @@ class AndroidTestConfiguration extends Configuration {
     private AndroidManifestHelper manifestHelper
     private AndroidBuildXmlHelper buildXmlHelper
 
-    @Inject AndroidTestConfiguration(
+    @Inject
+    AndroidTestConfiguration(
             Project project,
             AndroidConfiguration androidConf,
             AndroidManifestHelper manifestHelper,
@@ -39,7 +40,7 @@ class AndroidTestConfiguration extends Configuration {
 
     @Override
     boolean isEnabled() {
-        enabled && androidConf.enabled
+        this.@enabled && androidConf.enabled
     }
 
     @Override

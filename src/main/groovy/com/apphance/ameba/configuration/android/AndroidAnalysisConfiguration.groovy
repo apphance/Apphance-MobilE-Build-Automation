@@ -9,7 +9,6 @@ import javax.inject.Inject
 class AndroidAnalysisConfiguration extends Configuration {
 
     String configurationName = 'Android analysis configuration'
-
     private boolean enabled = false
 
     private AndroidConfiguration androidConfiguration
@@ -20,7 +19,7 @@ class AndroidAnalysisConfiguration extends Configuration {
 
     @Override
     boolean isEnabled() {
-        enabled && androidConfiguration.enabled
+        this.@enabled && androidConfiguration.enabled
     }
 
     @Override

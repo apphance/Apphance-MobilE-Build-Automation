@@ -12,6 +12,7 @@ abstract class Configuration {
     @Inject PropertyPersister propertyPersister
 
     def init() {
+        //TODO add whole configuration enabling (android.apphance.enabled...)
         amebaProperties.each {
             it.value = propertyPersister.get(it.name)
         }
