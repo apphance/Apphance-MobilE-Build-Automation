@@ -3,11 +3,7 @@ package com.apphance.ameba.di
 import com.apphance.ameba.configuration.Configuration
 import com.apphance.ameba.configuration.GradlePropertiesPersister
 import com.apphance.ameba.configuration.PropertyPersister
-import com.apphance.ameba.configuration.android.AndroidAnalysisConfiguration
-import com.apphance.ameba.configuration.android.AndroidConfiguration
-import com.apphance.ameba.configuration.android.AndroidJarLibraryConfiguration
-import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.configuration.android.AndroidTestConfiguration
+import com.apphance.ameba.configuration.android.*
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.google.inject.AbstractModule
@@ -22,6 +18,7 @@ class ConfigurationModule extends AbstractModule {
     static configurations = [
             (ANDROID): [
                     AndroidConfiguration,
+                    AndroidApphanceConfiguration,
                     AndroidAnalysisConfiguration,
                     AndroidReleaseConfiguration,
                     AndroidJarLibraryConfiguration,

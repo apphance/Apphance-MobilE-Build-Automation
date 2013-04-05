@@ -21,7 +21,7 @@ abstract class Configuration {
     abstract boolean isEnabled()
 
     void setEnabled(boolean enabled) {
-        throw new IllegalStateException("Cannot change $configurationName enabled status to $enabled")
+        throw new IllegalStateException("Cannot change '$configurationName' enabled status to: $enabled")
     }
 
     List<Field> getPropertyFields() {
