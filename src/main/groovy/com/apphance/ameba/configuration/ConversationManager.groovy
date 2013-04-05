@@ -17,6 +17,9 @@ class ConversationManager {
 
     def resolveConfigurations(Collection<Configuration> configurations) {
         configurations.each { Configuration c ->
+            if (!c.propertyPersister) {
+                c.propertyPersister = propertyPersister
+            }
             c.init()
             enablePlugin(c)
             readValues(c)
@@ -50,6 +53,10 @@ class ConversationManager {
                         break
                 }
                 setPropertyValue(ap, input)
+            }
+            def subConfigurations = c.subConfigurations
+            if(!subConfigurations.empty) {
+                resolveConfigurations(subConfigurations)
             }
         }
     }

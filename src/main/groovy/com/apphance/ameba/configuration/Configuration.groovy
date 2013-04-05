@@ -41,4 +41,8 @@ abstract class Configuration {
     public String toString() {
         "Configuration $configurationName: ${join(amebaProperties, '\n')}\n";
     }
+
+    Collection<? extends Configuration> getSubConfigurations() {
+        []
+    }
 }

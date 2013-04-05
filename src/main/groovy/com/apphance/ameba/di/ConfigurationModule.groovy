@@ -19,8 +19,9 @@ class ConfigurationModule extends AbstractModule {
             (ANDROID): [
                     AndroidConfiguration,
                     AndroidApphanceConfiguration,
-                    AndroidAnalysisConfiguration,
+                    AndroidVariantsConfiguration,
                     AndroidReleaseConfiguration,
+                    AndroidAnalysisConfiguration,
                     AndroidJarLibraryConfiguration,
                     AndroidTestConfiguration,
             ],

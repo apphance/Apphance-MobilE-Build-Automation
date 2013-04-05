@@ -48,6 +48,7 @@ class AndroidConfiguration extends Configuration {
     @Override
     void setEnabled(boolean enabled) {
         //this configuration is enabled based on project type
+        throw new IllegalStateException("${configurationName} is always enabled")
     }
 
     def projectName = new StringProperty(
