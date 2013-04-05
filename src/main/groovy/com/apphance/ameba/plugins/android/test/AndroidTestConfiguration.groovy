@@ -4,29 +4,30 @@ class AndroidTestConfiguration {
 
     public static final String AVD_PATH = 'avds'
 
-    File androidTestDirectory
-    String emmaDumpFile
-    String xmlJUnitDir
-    File coverageDir
-    File rawDir
-    File coverageEmFile
-    File coverageEcFile
-    File adbBinary
-    File androidBinary
-    File avdDir
-
-    def testProjectPackage
-    def testProjectName
-
-    String emulatorName
-    String emulatorTargetName
-
     String emulatorSkin
+    String emulatorTargetName
     String emulatorCardSize
     boolean emulatorSnapshotsEnabled
-    boolean useEmma
-    boolean testPerPackage
     boolean emulatorNoWindow
-
+    File androidTestDirectory
+    String testProjectPackage
+    String testProjectName
+    String emulatorName
+    boolean testPerPackage
+    File rawDir
+    File avdDir
     int emulatorPort
+    boolean useEmma
+    File adbBinary
+    File androidBinary
+    String emmaDumpFile
+    File coverageDir
+    File coverageEcFile
+    File coverageEmFile
+
+    String xmlJUnitDir
+
+
+
+
 }

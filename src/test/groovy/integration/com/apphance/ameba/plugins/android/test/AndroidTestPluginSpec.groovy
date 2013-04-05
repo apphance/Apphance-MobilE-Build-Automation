@@ -22,9 +22,6 @@ class AndroidTestPluginSpec extends Specification {
         when:
         project.plugins.apply(AndroidTestPlugin)
 
-        then: 'android test convention is added'
-        project.convention.plugins['androidTest']
-
         then: 'every single task is in correct group'
         project.tasks[READ_ANDROID_TEST_CONFIGURATION_TASK_NAME].group == AMEBA_CONFIGURATION
         project.tasks[CREATE_AVD_TASK_NAME].group == AMEBA_TEST

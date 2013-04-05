@@ -1,8 +1,8 @@
 package com.apphance.ameba.plugins.android.test
 
-import com.apphance.ameba.plugins.android.test.tasks.*
 import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
+import com.apphance.ameba.plugins.android.test.tasks.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -40,7 +40,6 @@ class AndroidTestPlugin implements Plugin<Project> {
     void apply(Project project) {
         this.project = project
 
-        addAndroidTestConvention()
         prepareReadAndroidTestConfigurationTask()
         prepareCreateAvdTask()
         prepareCleanAvdTask()
@@ -56,9 +55,17 @@ class AndroidTestPlugin implements Plugin<Project> {
         project.showSetup.showSetupOperations << new ShowAndroidTestSetupOperation()
     }
 
-    private void addAndroidTestConvention() {
-        project.convention.plugins.put('androidTest', new AndroidTestConvention())
-    }
+    //TODO uncomment and add in 'apply' method when emma is enabled (AndroidTestConfiguration.emmaEnabled)
+    //TODO and configuration is rewritten, hough!
+//    private addEmmaConfiguration() {
+//        project.configurations.add('emma')
+//        project.dependencies.add('emma', project.files([
+//                new File(androidConf.sdkDirectory, 'tools/lib/emma.jar')
+//        ]))
+//        project.dependencies.add('emma', project.files([
+//                new File(androidConf.sdkDirectory, 'tools/lib/emma_ant.jar')
+//        ]))
+//    }
 
     private void prepareReadAndroidTestConfigurationTask() {
         def task = project.task(READ_ANDROID_TEST_CONFIGURATION_TASK_NAME)
@@ -135,30 +142,4 @@ class AndroidTestPlugin implements Plugin<Project> {
         task << { new PrepareRobolectricTask(project).prepareRobolectric() }
         task.dependsOn(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
     }
-
-    static class AndroidTestConvention {
-        static public final String DESCRIPTION =
-            """The convention provides port address range which is used by android emulator.
-It also defines maximum time (in ms) to start android emulator and retry time (in ms.) between trying to
-reconnect to the emulator.
-"""
-        def int startPort = 5554
-        def int endPort = 5584
-        def int maxEmulatorStartupTime = 360 * 1000
-        def int retryTime = 4 * 1000
-        def String robotiumPath = '/test/android'
-        def String robolectricPath = '/test/robolectric'
-
-        def androidTest(Closure close) {
-            close.delegate = this
-            close.run()
-        }
-    }
-
-    static public final String DESCRIPTION =
-        """This plugin provides easy automated testing framework for Android applications
-
-It has support for two level of tests: integration testing done usually with the
-help of robolectric."""
-
 }

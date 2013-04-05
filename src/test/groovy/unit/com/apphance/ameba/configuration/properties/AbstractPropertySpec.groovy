@@ -23,5 +23,9 @@ class AbstractPropertySpec extends Specification {
         StringProperty      | 'bolo'                       | 'bolo'
         FileProperty        | properties['java.io.tmpdir'] | new File(properties['java.io.tmpdir'].toString())
         ProjectTypeProperty | 'ANDROID'                    | ANDROID
+        BooleanProperty     | 'true'                       | true
+        BooleanProperty     | 'false'                      | false
+        BooleanProperty     | 'whatever'                   | false
+        BooleanProperty     | null                         | null
     }
 }
