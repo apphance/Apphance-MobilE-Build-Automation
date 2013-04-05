@@ -1,6 +1,8 @@
 package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.Configuration
+import com.apphance.ameba.configuration.properties.FileProperty
+import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.google.inject.Inject
 
@@ -9,6 +11,8 @@ import com.google.inject.Inject
  */
 @com.google.inject.Singleton
 class AndroidReleaseConfiguration extends Configuration {
+
+    @Inject AndroidConfiguration androidConfiguration
 
     final String configurationName = 'Android release configuration'
 
@@ -20,16 +24,65 @@ class AndroidReleaseConfiguration extends Configuration {
     AmebaArtifact fileIndexFile
     AmebaArtifact plainFileIndexFile
 
-    AndroidConfiguration androidConfiguration
+    AmebaArtifact sourcesZip
+    AmebaArtifact documentationZip
+    AmebaArtifact imageMontageFile
+    AmebaArtifact mailMessageFile
+    AmebaArtifact qrCodeFile
 
-    @Inject
-    AndroidReleaseConfiguration(AndroidConfiguration androidConfiguration) {
-        this.androidConfiguration = androidConfiguration
-    }
+    AmebaArtifact galleryCss
+    AmebaArtifact galleryJs
+    AmebaArtifact galleryTrans
+
+    Collection<String> releaseNotes
+    String projectDirectoryName
+    File otaDirectory
+    String buildDate
+    Collection<String> releaseMailFlags
+    String releaseMailSubject
+    Locale locale
+
+    def projectIconFile = new FileProperty(
+            name: 'release.project.icon.file',
+            message: 'Path to project\'s icon file'
+    )
+
+    def projectUrl = new StringProperty(
+            name: 'release.project.url',
+            message: 'Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as ' +
+                    'subdirectory of ota dir when artifacts are created locally.'
+    )
+
+    def projectLanguage = new StringProperty(
+            name: 'release.project.language',
+            message: 'Language of the project',
+            defaultValue: {'en'}
+    )
+
+    def projectCountry = new StringProperty(
+            name: 'release.project.country',
+            message: 'Project country',
+            defaultValue: {'US'}
+    )
+
+    def mailFrom = new StringProperty(
+            name: 'release.mail.from',
+            message: 'Sender email address'
+    )
+
+    def mailTo = new StringProperty(
+            name: 'release.mail.to',
+            message: 'Recipient of release email'
+    )
+
+    def mailFlags = new StringProperty(
+            name: 'release.mail.flags',
+            message: 'Flags for release email',
+            defaultValue: {'qrCode,imageMontage'}
+    )
 
     @Override
     boolean isEnabled() {
         enabled && androidConfiguration.enabled
     }
-
 }
