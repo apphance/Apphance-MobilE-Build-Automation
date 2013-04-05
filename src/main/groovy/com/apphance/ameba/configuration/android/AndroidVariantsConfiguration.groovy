@@ -9,11 +9,14 @@ class AndroidVariantsConfiguration extends Configuration {
     String configurationName = 'Android variants configuration'
 
     private AndroidConfiguration androidConf
+    private AndroidApphanceConfiguration androidApphanceConf
+
     private List<AndroidVariantConfiguration> variants
 
     @Inject
-    AndroidVariantsConfiguration(AndroidConfiguration androidConf) {
+    AndroidVariantsConfiguration(AndroidConfiguration androidConf, AndroidApphanceConfiguration androidApphanceConf) {
         this.androidConf = androidConf
+        this.androidApphanceConf = androidApphanceConf
         this.variants = buildVariantsList()
     }
 
@@ -48,11 +51,11 @@ class AndroidVariantsConfiguration extends Configuration {
     private List<AndroidVariantConfiguration> extractVariantsFromDir() {
         File variantsDir = androidConf.variantsDir.value
         //TODO what if a single variant folder is empty, handle?
-        variantsDir.listFiles().collect { new AndroidVariantConfiguration((it.name.toLowerCase())) }
+        variantsDir.listFiles().collect { new AndroidVariantConfiguration((it.name.toLowerCase()), androidConf, androidApphanceConf) }
     }
 
     private List<AndroidVariantConfiguration> extractDefaultVariants() {
-        AndroidBuildMode.values().collect { new AndroidVariantConfiguration(it.name().toLowerCase()) }
+        AndroidBuildMode.values().collect { new AndroidVariantConfiguration(it.name().toLowerCase(), androidConf, androidApphanceConf) }
     }
 
     @Override

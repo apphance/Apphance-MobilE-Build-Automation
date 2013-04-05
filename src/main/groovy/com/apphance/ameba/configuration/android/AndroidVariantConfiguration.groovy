@@ -7,11 +7,16 @@ import com.apphance.ameba.configuration.properties.StringProperty
 
 class AndroidVariantConfiguration extends Configuration {
 
-    boolean enabled = true
-    String variantName
+    private String variantName
+    private AndroidConfiguration androidConf
+    private AndroidApphanceConfiguration androidApphanceConf
 
-    AndroidVariantConfiguration(String variantName) {
+    AndroidVariantConfiguration(String variantName,
+                                AndroidConfiguration androidConf,
+                                AndroidApphanceConfiguration androidApphanceConf) {
         this.variantName = variantName
+        this.androidConf = androidConf
+        this.androidApphanceConf = androidApphanceConf
     }
 
     def mode = new StringProperty(
@@ -35,6 +40,11 @@ class AndroidVariantConfiguration extends Configuration {
             name: "android.variant.${getVariantName()}.apphance.lib",
             message: "Apphance lib version for ${getVariantName()}",
     )
+
+    @Override
+    boolean isEnabled() {
+        androidConf.enabled
+    }
 
     @Override
     String getConfigurationName() {
