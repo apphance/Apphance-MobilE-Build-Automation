@@ -8,16 +8,16 @@ import com.apphance.ameba.configuration.properties.StringProperty
 
 class AndroidVariantConfiguration extends Configuration {
 
-    private String variantName
+    private String name
     private AndroidConfiguration androidConf
     private AndroidApphanceConfiguration androidApphanceConf
 
-    AndroidVariantConfiguration(String variantName,
+    AndroidVariantConfiguration(String name,
                                 PropertyPersister persister,
                                 AndroidConfiguration androidConf,
                                 AndroidApphanceConfiguration androidApphanceConf) {
         this.propertyPersister = persister
-        this.variantName = variantName
+        this.name = name
         this.androidConf = androidConf
         this.androidApphanceConf = androidApphanceConf
 
@@ -25,14 +25,18 @@ class AndroidVariantConfiguration extends Configuration {
     }
 
     private void initFields() {
-        mode.name = "android.variant.${variantName}.mode"
-        mode.message = "Android variant '$variantName' mode"
-        apphanceAppKey.name = "android.variant.${variantName}.apphance.appKey"
-        apphanceAppKey.message = "Apphance key for '$variantName'"
-        apphanceMode.name = "android.variant.${variantName}.apphance.mode"
-        apphanceMode.message = "Apphance mode for '$variantName'"
-        apphanceLibVersion.name = "android.variant.${variantName}.apphance.lib"
-        apphanceLibVersion.message = "Apphance lib version for '$variantName'"
+        mode.name = "android.variant.${name}.mode"
+        mode.message = "Android variant '$name' mode"
+        apphanceAppKey.name = "android.variant.${name}.apphance.appKey"
+        apphanceAppKey.message = "Apphance key for '$name'"
+        apphanceMode.name = "android.variant.${name}.apphance.mode"
+        apphanceMode.message = "Apphance mode for '$name'"
+        apphanceLibVersion.name = "android.variant.${name}.apphance.lib"
+        apphanceLibVersion.message = "Apphance lib version for '$name'"
+    }
+
+    String getName() {
+        name
     }
 
     def mode = new StringProperty(
@@ -59,6 +63,6 @@ class AndroidVariantConfiguration extends Configuration {
 
     @Override
     String getConfigurationName() {
-        "Android configuration for variant: ${this.@variantName}"
+        "Android configuration for variant: ${this.@name}"
     }
 }
