@@ -15,6 +15,9 @@ import org.gradle.api.Project
 import spock.lang.Shared
 import spock.lang.Specification
 
+import static com.apphance.ameba.detection.ProjectType.ANDROID
+import static com.apphance.ameba.detection.ProjectType.IOS
+
 class GradlePropertiesPersisterSpec extends Specification {
 
     @Shared File rootDir = new File('src/test/resources/com/apphance/ameba/configuration/persister')
@@ -25,8 +28,11 @@ class GradlePropertiesPersisterSpec extends Specification {
 
     private AbstractModule module
 
+    private ProjectTypeDetector projectTypeDetector
+
     def setup() {
         project = Mock()
+        projectTypeDetector = Mock()
 
         def logFileGenerator = Mock(CommandLogFilesGenerator)
         def fileLinker = Mock(FileLinker)
@@ -63,21 +69,25 @@ class GradlePropertiesPersisterSpec extends Specification {
         injector = Guice.createInjector(module, fakeConfModule())
         def persister = injector.getInstance(PropertyPersister)
 
-        def androidConfiguration = new AndroidConfiguration(project, * [null] * 4)
+        projectTypeDetector.detectProjectType(_) >> ANDROID
+        def androidConfiguration = new AndroidConfiguration(project, * [null] * 3, projectTypeDetector)
         androidConfiguration.logDir.value = tempDir
         androidConfiguration.versionString.value = 'version string'
 
-        def projectConfiguration = new IOSConfiguration()
-        projectConfiguration.name.value = 'Project name'
+        projectTypeDetector.detectProjectType(_) >> IOS
+        def iOSConfiguration = new IOSConfiguration()
+        iOSConfiguration.projectTypeDetector = projectTypeDetector
+        iOSConfiguration.project = project
+        iOSConfiguration.name.value = 'Project name'
 
         when:
-        persister.save([androidConfiguration, projectConfiguration])
+        persister.save([androidConfiguration, iOSConfiguration])
 
         then:
         persister.get(androidConfiguration.logDir.name) == tempDir.absolutePath
         persister.get(androidConfiguration.versionString.name) == 'version string'
 
-        persister.get(projectConfiguration.name.name) == 'Project name'
+        persister.get(iOSConfiguration.name.name) == 'Project name'
 
         persister.get('nonexisting') == null
 
@@ -125,7 +135,7 @@ class GradlePropertiesPersisterSpec extends Specification {
         def confModule = new ConfigurationModule(project)
         def typeDetector = Mock(ProjectTypeDetector)
         confModule.typeDetector = typeDetector
-        typeDetector.detectProjectType(_) >> ProjectType.ANDROID
+        typeDetector.detectProjectType(_) >> ANDROID
         confModule
     }
 }

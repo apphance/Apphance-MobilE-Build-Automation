@@ -18,6 +18,12 @@ abstract class Configuration {
         amebaProperties.each {
             it.value = propertyPersister.get(it.name)
         }
+
+        String enabled = propertyPersister.get(nameKey)
+        def enabledValue = Boolean.valueOf(enabled)
+        if (enabled && enabledValue != this.enabled) {
+            this.enabled = enabledValue
+        }
     }
 
     abstract boolean isEnabled()
@@ -46,5 +52,9 @@ abstract class Configuration {
 
     Collection<? extends Configuration> getSubConfigurations() {
         []
+    }
+
+    String getNameKey() {
+        configurationName.replace(' ', '.').toLowerCase()
     }
 }
