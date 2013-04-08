@@ -8,7 +8,7 @@ import javax.inject.Inject
 @com.google.inject.Singleton
 class AndroidAnalysisConfiguration extends Configuration {
 
-    String configurationName = 'Android analysis configuration'
+    String configurationName = 'Android Analysis Configuration'
     private boolean enabled = false
 
     private AndroidConfiguration androidConfiguration

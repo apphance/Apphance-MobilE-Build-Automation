@@ -5,9 +5,10 @@ import com.apphance.ameba.configuration.properties.StringProperty
 
 import javax.inject.Inject
 
+@com.google.inject.Singleton
 class AndroidApphanceConfiguration extends Configuration {
 
-    String configurationName = 'Android apphance configuration'
+    String configurationName = 'Android Apphance Configuration'
     private boolean enabled = false
 
     private AndroidConfiguration androidConf

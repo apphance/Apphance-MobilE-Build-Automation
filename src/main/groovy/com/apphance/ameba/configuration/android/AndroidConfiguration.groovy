@@ -18,13 +18,13 @@ import static java.io.File.pathSeparator
 @com.google.inject.Singleton
 class AndroidConfiguration extends Configuration {
 
-    String configurationName = 'Android configuration'
+    String configurationName = 'Android Configuration'
 
-    Project project
-    ProjectTypeDetector projectTypeDetector
-    AndroidBuildXmlHelper buildXmlHelper
-    AndroidManifestHelper manifestHelper
-    AndroidExecutor androidExecutor
+    private Project project
+    private ProjectTypeDetector projectTypeDetector
+    private AndroidBuildXmlHelper buildXmlHelper
+    private AndroidManifestHelper manifestHelper
+    private AndroidExecutor androidExecutor
 
     @Inject
     AndroidConfiguration(
@@ -43,11 +43,6 @@ class AndroidConfiguration extends Configuration {
     @Override
     boolean isEnabled() {
         projectTypeDetector.detectProjectType(project.rootDir) == ANDROID
-    }
-
-    @Override
-    void setEnabled(boolean enabled) {
-        //this configuration is enabled based on project type
     }
 
     def projectName = new StringProperty(
@@ -70,39 +65,31 @@ class AndroidConfiguration extends Configuration {
     def buildDir = new FileProperty(
             name: 'android.dir.build',
             message: 'Project build directory',
-            defaultValue: { project.file('build') })
+            defaultValue: { project.file('build') },
+            askUser: { false })
 
     def tmpDir = new FileProperty(
             name: 'android.dir.tmp',
             message: 'Project temporary directory',
-            defaultValue: { project.file('tmp') })
+            defaultValue: { project.file('tmp') },
+            askUser: { false })
 
     def logDir = new FileProperty(
             name: 'android.dir.log',
             message: 'Project log directory',
-            defaultValue: { project.file('log') })
+            defaultValue: { project.file('log') },
+            askUser: { false })
 
     def rootDir = new FileProperty(
             name: 'android.dir.root',
             message: 'Project root directory',
-            defaultValue: { project.rootDir }
-    )
+            defaultValue: { project.rootDir },
+            askUser: { false })
 
     def sdkDir = new FileProperty(
             name: 'android.dir.sdk',
             message: 'Android SDK directory',
             defaultValue: { defaultSDKDir() }
-    )
-
-    def mainVariant = new StringProperty(
-            name: 'android.main.variant',
-            message: 'Android main variant'
-    )
-
-    def variantsDir = new FileProperty(
-            name: 'android.dir.variants',
-            message: 'Android variants directory',
-            defaultValue: { project.file('variants') }
     )
 
     def target = new StringProperty(
@@ -120,7 +107,6 @@ class AndroidConfiguration extends Configuration {
             name: 'android.main.package',
             message: 'Android main package',
             defaultValue: { manifestHelper.androidPackage(project.rootDir) }
-
     )
 
     private Collection<File> sdkJarLibs = []

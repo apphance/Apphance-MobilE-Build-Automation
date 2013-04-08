@@ -4,10 +4,17 @@ abstract class AbstractProperty<T> {
 
     String name
     String message
-    Closure<T> defaultValue = { null }
+
     protected T value
-    Closure<Boolean> validator = { true }
+
+    Closure<T> defaultValue = { null }
     Closure<List<String>> possibleValues
+
+    Closure<Boolean> validator = { true }
+
+    Closure<Boolean> askUser = { true }
+
+    Closure<String> persistentForm = { value?.toString() ?: '' }
 
     abstract void setValue(String value);
 
@@ -15,5 +22,6 @@ abstract class AbstractProperty<T> {
         value
     }
 
+    @Override
     String toString() { "$name = $value" }
 }

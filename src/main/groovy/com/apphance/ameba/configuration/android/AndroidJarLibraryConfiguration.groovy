@@ -4,22 +4,33 @@ import com.apphance.ameba.configuration.Configuration
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.google.inject.Inject
 
-class AndroidJarLibraryConfiguration extends Configuration{
+@com.google.inject.Singleton
+class AndroidJarLibraryConfiguration extends Configuration {
 
-    final String configurationName = 'Android jar library configuration'
+    final String configurationName = 'Android Jar Library Configuration'
 
     boolean enabled = false
 
-    @Inject AndroidConfiguration androidConfiguration
+    private AndroidConfiguration androidConfiguration
+
+    @Inject
+    AndroidJarLibraryConfiguration(AndroidConfiguration androidConfiguration) {
+        this.androidConfiguration = androidConfiguration
+    }
 
     @Override
     boolean isEnabled() {
-        enabled && androidConfiguration.enabled
+        this.@enabled && androidConfiguration.enabled
+    }
+
+    @Override
+    void setEnabled(boolean enabled) {
+        this.@enabled = enabled
     }
 
     def resourcePrefix = new StringProperty(
             name: 'android.jarLibrary.resPrefix',
             message: 'Internal directory name used to embed resources in the jar',
-            defaultValue: {''}
+            defaultValue: { '' }
     )
 }
