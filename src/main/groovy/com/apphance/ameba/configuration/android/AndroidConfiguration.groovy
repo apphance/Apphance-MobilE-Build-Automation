@@ -62,35 +62,33 @@ class AndroidConfiguration extends Configuration {
             message: 'Version string',
             defaultValue: { manifestHelper.readVersion(project.rootDir).versionString })
 
+    //TODO dynamic
     def buildDir = new FileProperty(
             name: 'android.dir.build',
             message: 'Project build directory',
             defaultValue: { project.file('build') },
             askUser: { false })
 
+    //TODO dynamic
     def tmpDir = new FileProperty(
             name: 'android.dir.tmp',
             message: 'Project temporary directory',
             defaultValue: { project.file('tmp') },
             askUser: { false })
 
+    //TODO dynamic
     def logDir = new FileProperty(
             name: 'android.dir.log',
             message: 'Project log directory',
             defaultValue: { project.file('log') },
             askUser: { false })
 
+    //TODO dynamic
     def rootDir = new FileProperty(
             name: 'android.dir.root',
             message: 'Project root directory',
             defaultValue: { project.rootDir },
             askUser: { false })
-
-    def sdkDir = new FileProperty(
-            name: 'android.dir.sdk',
-            message: 'Android SDK directory',
-            defaultValue: { defaultSDKDir() }
-    )
 
     def target = new StringProperty(
             name: 'android.target',
@@ -109,6 +107,12 @@ class AndroidConfiguration extends Configuration {
             defaultValue: { manifestHelper.androidPackage(project.rootDir) }
     )
 
+    def sdkDir = new FileProperty(
+            name: 'android.dir.sdk',
+            message: 'Android SDK directory',
+            defaultValue: { defaultSDKDir() }
+    )
+
     private Collection<File> sdkJarLibs = []
 
     Collection<File> getSdkJars() {
@@ -116,7 +120,7 @@ class AndroidConfiguration extends Configuration {
             def sdk = sdkDir.value
             def target = minTarget.value
             if (target.startsWith('android')) {
-                String version = target.split("-")[1]
+                String version = target.split('-')[1]
                 sdkJarLibs << new File(sdk, "platforms/android-$version/android.jar")
             } else {
                 List splitTarget = target.split(':')

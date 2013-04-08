@@ -39,12 +39,6 @@ class AndroidVariantsConfiguration extends Configuration {
             askUser: { false }
     )
 
-    //TODO is it required?
-//    def mainVariant = new StringProperty(
-//            name: 'android.main.variant',
-//            message: 'Android main variant',
-//    )
-
     private List<AndroidVariantConfiguration> buildVariantsList() {
         List<AndroidVariantConfiguration> result = []
         if (variantsNames.value) {
@@ -89,6 +83,10 @@ class AndroidVariantsConfiguration extends Configuration {
     @Override
     Collection<AndroidVariantConfiguration> getSubConfigurations() {
         variants
+    }
+
+    String getMainVariant() {
+        variantsNames.value?.empty ? null : variantsNames.value[0]
     }
 
     Collection<AndroidVariantConfiguration> getVariants() {

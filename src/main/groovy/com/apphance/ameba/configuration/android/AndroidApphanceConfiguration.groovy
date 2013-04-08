@@ -13,7 +13,8 @@ class AndroidApphanceConfiguration extends Configuration {
 
     private AndroidConfiguration androidConf
 
-    @Inject AndroidApphanceConfiguration(AndroidConfiguration androidConf) {
+    @Inject
+    AndroidApphanceConfiguration(AndroidConfiguration androidConf) {
         this.androidConf = androidConf
     }
 
