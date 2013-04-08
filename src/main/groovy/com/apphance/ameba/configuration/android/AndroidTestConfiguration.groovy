@@ -14,6 +14,7 @@ import javax.inject.Inject
 import static java.io.File.separator
 import static java.net.InetAddress.getByAddress
 
+@com.google.inject.Singleton
 class AndroidTestConfiguration extends Configuration {
 
     String configurationName = 'Android test configuration'

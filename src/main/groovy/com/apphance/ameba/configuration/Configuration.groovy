@@ -9,7 +9,9 @@ import static org.apache.commons.lang.StringUtils.join
 
 abstract class Configuration {
 
-    @Inject PropertyPersister propertyPersister
+    @Inject
+    @groovy.transform.PackageScope
+    PropertyPersister propertyPersister
 
     def init() {
         //TODO add whole configuration enabling (android.apphance.enabled...)

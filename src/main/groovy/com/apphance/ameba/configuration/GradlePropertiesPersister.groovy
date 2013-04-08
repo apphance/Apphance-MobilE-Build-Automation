@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 
+import static java.io.File.separator
 import static org.slf4j.LoggerFactory.getLogger
 
 @com.google.inject.Singleton
@@ -19,9 +20,10 @@ class GradlePropertiesPersister implements PropertyPersister {
 
     private File propertyFile
 
-    @Inject GradlePropertiesPersister(Project project) {
+    @Inject
+    GradlePropertiesPersister(Project project) {
         props = new Properties()
-        propertyFile = new File(project.rootDir.absolutePath + '/gradle.properties')
+        propertyFile = new File("${project.rootDir.absolutePath}${separator}gradle.properties")
         if (propertyFile.exists()) {
             log.info("File ${propertyFile.absolutePath} exist. Reading configuration")
             props.load(Files.newReader(propertyFile, StandardCharsets.UTF_8))

@@ -12,35 +12,41 @@ import com.google.inject.Inject
 @com.google.inject.Singleton
 class AndroidReleaseConfiguration extends Configuration {
 
-    @Inject AndroidConfiguration androidConfiguration
-
     final String configurationName = 'Android release configuration'
 
     boolean enabled
 
     Map<String, AmebaArtifact> apkFiles = [:]
+
     Map<String, AmebaArtifact> jarFiles = [:]
     AmebaArtifact otaIndexFile
     AmebaArtifact fileIndexFile
     AmebaArtifact plainFileIndexFile
-
     AmebaArtifact sourcesZip
+
     AmebaArtifact documentationZip
     AmebaArtifact imageMontageFile
     AmebaArtifact mailMessageFile
     AmebaArtifact qrCodeFile
-
     AmebaArtifact galleryCss
+
     AmebaArtifact galleryJs
     AmebaArtifact galleryTrans
-
     Collection<String> releaseNotes
+
     String projectDirectoryName
     File otaDirectory
     String buildDate
     Collection<String> releaseMailFlags
     String releaseMailSubject
     Locale locale
+
+    private AndroidConfiguration androidConfiguration
+
+    @Inject
+    AndroidReleaseConfiguration(AndroidConfiguration androidConfiguration) {
+        this.androidConfiguration = androidConfiguration
+    }
 
     def projectIconFile = new FileProperty(
             name: 'release.project.icon.file',
@@ -56,13 +62,13 @@ class AndroidReleaseConfiguration extends Configuration {
     def projectLanguage = new StringProperty(
             name: 'release.project.language',
             message: 'Language of the project',
-            defaultValue: {'en'}
+            defaultValue: { 'en' }
     )
 
     def projectCountry = new StringProperty(
             name: 'release.project.country',
             message: 'Project country',
-            defaultValue: {'US'}
+            defaultValue: { 'US' }
     )
 
     def mailFrom = new StringProperty(
@@ -78,11 +84,16 @@ class AndroidReleaseConfiguration extends Configuration {
     def mailFlags = new StringProperty(
             name: 'release.mail.flags',
             message: 'Flags for release email',
-            defaultValue: {'qrCode,imageMontage'}
+            defaultValue: { 'qrCode,imageMontage' }
     )
 
     @Override
     boolean isEnabled() {
-        enabled && androidConfiguration.enabled
+        this.@enabled && androidConfiguration.enabled
+    }
+
+    @Override
+    void setEnabled(boolean enabled) {
+        this.@enabled = enabled
     }
 }

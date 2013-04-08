@@ -1,7 +1,6 @@
 package com.apphance.ameba.configuration
 
 import com.apphance.ameba.configuration.properties.AbstractProperty
-import com.google.inject.Inject
 
 import static java.lang.System.out
 import static org.gradle.api.logging.Logging.getLogger
@@ -12,14 +11,8 @@ class ConversationManager {
 
     def reader = buildReader()
 
-    @Inject
-    PropertyPersister propertyPersister
-
     def resolveConfigurations(Collection<Configuration> configurations) {
         configurations.each { Configuration c ->
-            if (!c.propertyPersister) {
-                c.propertyPersister = propertyPersister
-            }
             c.init()
             enablePlugin(c)
             readValues(c)
@@ -44,18 +37,20 @@ class ConversationManager {
     void readValues(Configuration c) {
         if (c.enabled) {
             c.amebaProperties.each { AbstractProperty ap ->
-                String input
-                while (true) {
-                    print prompt(ap)
-                    out.flush()
-                    input = reader.readLine()
-                    if (validateInput(ap, input))
-                        break
+                if (ap.askUser()) {
+                    String input
+                    while (true) {
+                        print prompt(ap)
+                        out.flush()
+                        input = reader.readLine()
+                        if (validateInput(ap, input))
+                            break
+                    }
+                    setPropertyValue(ap, input)
                 }
-                setPropertyValue(ap, input)
             }
             def subConfigurations = c.subConfigurations
-            if(!subConfigurations.empty) {
+            if (!subConfigurations.empty) {
                 resolveConfigurations(subConfigurations)
             }
         }
