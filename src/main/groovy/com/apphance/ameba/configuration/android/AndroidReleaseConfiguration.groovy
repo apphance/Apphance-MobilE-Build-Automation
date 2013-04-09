@@ -49,40 +49,40 @@ class AndroidReleaseConfiguration extends Configuration {
     }
 
     def projectIconFile = new FileProperty(
-            name: 'release.project.icon.file',
+            name: 'android.release.project.icon.file',
             message: 'Path to project\'s icon file'
     )
 
     def projectUrl = new StringProperty(
-            name: 'release.project.url',
+            name: 'android.release.project.url',
             message: 'Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as ' +
                     'subdirectory of ota dir when artifacts are created locally.'
     )
 
     def projectLanguage = new StringProperty(
-            name: 'release.project.language',
+            name: 'android.release.project.language',
             message: 'Language of the project',
             defaultValue: { 'en' }
     )
 
     def projectCountry = new StringProperty(
-            name: 'release.project.country',
+            name: 'android.release.project.country',
             message: 'Project country',
             defaultValue: { 'US' }
     )
 
     def mailFrom = new StringProperty(
-            name: 'release.mail.from',
+            name: 'android.release.mail.from',
             message: 'Sender email address'
     )
 
     def mailTo = new StringProperty(
-            name: 'release.mail.to',
+            name: 'android.release.mail.to',
             message: 'Recipient of release email'
     )
 
     def mailFlags = new StringProperty(
-            name: 'release.mail.flags',
+            name: 'android.release.mail.flags',
             message: 'Flags for release email',
             defaultValue: { 'qrCode,imageMontage' }
     )
