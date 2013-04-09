@@ -7,14 +7,14 @@ import java.lang.reflect.Field
 
 import static org.apache.commons.lang.StringUtils.join
 
-abstract class Configuration {
+abstract class Configuration implements GroovyInterceptable {
 
+    public static final String ACCESS_DENIED = 'Access denied to property. Configuration disabled.'
     @Inject
     @groovy.transform.PackageScope
     PropertyPersister propertyPersister
 
     def init() {
-        //TODO add whole configuration enabling (android.apphance.enabled...)
         amebaProperties.each {
             it.value = propertyPersister.get(it.name)
         }
@@ -56,5 +56,22 @@ abstract class Configuration {
 
     String getNameKey() {
         configurationName.replace(' ', '.').toLowerCase()
+    }
+
+    def invokeMethod(String name, args) {
+        if (name in ['isEnabled', 'getAmebaProperties', 'getPropertyFields', 'getClass'] || isEnabled() ||
+                !(propertyFields*.name.collect { "(get|is)${it.capitalize()}" }.any{ name ==~ it })) {
+            metaClass.getMetaMethod(name, args).invoke(this, args)
+        } else {
+            throw new IllegalStateException(ACCESS_DENIED)
+        }
+    }
+
+    def getProperty(String name) {
+        if (name in ['enabled', 'amebaProperties', 'propertyFields', 'class'] || isEnabled() || !(name in propertyFields*.name)) {
+            metaClass.getMetaProperty(name).getProperty(this)
+        } else {
+            throw new IllegalStateException(ACCESS_DENIED)
+        }
     }
 }

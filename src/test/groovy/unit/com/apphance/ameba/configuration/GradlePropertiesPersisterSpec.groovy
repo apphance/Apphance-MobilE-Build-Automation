@@ -28,11 +28,8 @@ class GradlePropertiesPersisterSpec extends Specification {
 
     private AbstractModule module
 
-    private ProjectTypeDetector projectTypeDetector
-
     def setup() {
         project = Mock()
-        projectTypeDetector = Mock()
 
         def logFileGenerator = Mock(CommandLogFilesGenerator)
         def fileLinker = Mock(FileLinker)
@@ -69,14 +66,16 @@ class GradlePropertiesPersisterSpec extends Specification {
         injector = Guice.createInjector(module, fakeConfModule())
         def persister = injector.getInstance(PropertyPersister)
 
-        projectTypeDetector.detectProjectType(_) >> ANDROID
-        def androidConfiguration = new AndroidConfiguration(project, * [null] * 3, projectTypeDetector)
+        def androidConfiguration = new AndroidConfiguration(project, * [null] * 3, Mock(ProjectTypeDetector) {
+            detectProjectType(_) >> ANDROID
+        })
         androidConfiguration.logDir.value = tempDir
         androidConfiguration.versionString.value = 'version string'
 
-        projectTypeDetector.detectProjectType(_) >> IOS
         def iOSConfiguration = new IOSConfiguration()
-        iOSConfiguration.projectTypeDetector = projectTypeDetector
+        iOSConfiguration.projectTypeDetector = Mock(ProjectTypeDetector) {
+            detectProjectType(_) >> IOS
+        }
         iOSConfiguration.project = project
         iOSConfiguration.name.value = 'Project name'
 

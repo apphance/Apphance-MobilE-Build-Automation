@@ -11,7 +11,7 @@ class ConfigurationSpec extends Specification {
     @Shared
     def androidConf = new AndroidConfiguration(* [null] * 5)
 
-    def 'returns list of fields annotated with @AmebaProp'() {
+    def 'return list of fields annotated with @AmebaProp'() {
         when:
         def fields = androidConf.propertyFields
 
@@ -30,5 +30,60 @@ class ConfigurationSpec extends Specification {
 
     def 'configuration name'() {
         expect: new AndroidReleaseConfiguration().nameKey == 'android.release.configuration'
+    }
+
+    def "don't intercept non-ameba properties"() {
+        given:
+        def configuration = new AndroidReleaseConfiguration()
+        configuration.enabled = false
+
+        expect:
+        configuration.locale == null
+    }
+
+    def "don't intercept non-ameba getters"() {
+        given:
+        def configuration = new AndroidReleaseConfiguration()
+        configuration.enabled = false
+
+        expect:
+        configuration.getLocale() == null
+        configuration.getBuildDate() == null
+    }
+
+    def 'throw exception when disabled and accessing property'() {
+        given:
+        def configuration = new AndroidReleaseConfiguration()
+        configuration.enabled = false
+
+        when:
+        configuration.projectIconFile
+
+        then:
+        def e = thrown(IllegalStateException)
+        e.message == Configuration.ACCESS_DENIED
+    }
+
+    def 'throw exception when disabled and using getter'() {
+        given:
+        def configuration = new AndroidReleaseConfiguration()
+        configuration.enabled = false
+
+        when:
+        configuration.getProjectIconFile()
+
+        then:
+        thrown(IllegalStateException)
+    }
+
+    def 'no exception when enabled'() {
+        given:
+        def androidConfiguration = Spy(AndroidConfiguration)
+        androidConfiguration.isEnabled() >> true
+        def configuration = new AndroidReleaseConfiguration(androidConfiguration)
+        configuration.enabled = true
+
+        expect:
+        androidConfiguration.isEnabled()
     }
 }

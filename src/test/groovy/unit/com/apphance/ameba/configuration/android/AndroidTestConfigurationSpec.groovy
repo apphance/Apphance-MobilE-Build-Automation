@@ -50,7 +50,9 @@ class AndroidTestConfigurationSpec extends Specification {
         def p = Mock(Project)
 
         and:
-        def ptd = Mock(ProjectTypeDetector)
+        def ptd = Mock(ProjectTypeDetector) {
+            detectProjectType(_) >> ANDROID
+        }
 
         and:
         def ac = new AndroidConfiguration(p, * [null] * 3, ptd)

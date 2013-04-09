@@ -40,6 +40,9 @@ class AndroidConfiguration extends Configuration {
         this.projectTypeDetector = projectTypeDetector
     }
 
+    AndroidConfiguration() {
+    }
+
     @Override
     boolean isEnabled() {
         projectTypeDetector.detectProjectType(project.rootDir) == ANDROID
