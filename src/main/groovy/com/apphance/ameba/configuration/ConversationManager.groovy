@@ -13,7 +13,6 @@ class ConversationManager {
 
     def resolveConfigurations(Collection<Configuration> configurations) {
         configurations.each { Configuration c ->
-            c.init()
             enablePlugin(c)
             readValues(c)
         }

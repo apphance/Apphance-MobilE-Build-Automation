@@ -10,10 +10,11 @@ import static org.apache.commons.lang.StringUtils.join
 abstract class Configuration implements GroovyInterceptable {
 
     public static final String ACCESS_DENIED = 'Access denied to property. Configuration disabled.'
+
     @Inject
-    @groovy.transform.PackageScope
     PropertyPersister propertyPersister
 
+    @Inject
     def init() {
         amebaProperties.each {
             it.value = propertyPersister.get(it.name)
@@ -60,7 +61,7 @@ abstract class Configuration implements GroovyInterceptable {
 
     def invokeMethod(String name, args) {
         if (name in ['isEnabled', 'getAmebaProperties', 'getPropertyFields', 'getClass'] || isEnabled() ||
-                !(propertyFields*.name.collect { "(get|is)${it.capitalize()}" }.any{ name ==~ it })) {
+                !(propertyFields*.name.collect { "(get|is)${it.capitalize()}" }.any { name ==~ it })) {
             metaClass.getMetaMethod(name, args).invoke(this, args)
         } else {
             throw new IllegalStateException(ACCESS_DENIED)
@@ -69,7 +70,10 @@ abstract class Configuration implements GroovyInterceptable {
 
     def getProperty(String name) {
         if (name in ['enabled', 'amebaProperties', 'propertyFields', 'class'] || isEnabled() || !(name in propertyFields*.name)) {
-            metaClass.getMetaProperty(name).getProperty(this)
+            def metaProperty = metaClass.getMetaProperty(name)
+            if (metaProperty != null) {
+                return metaProperty.getProperty(this)
+            }
         } else {
             throw new IllegalStateException(ACCESS_DENIED)
         }
