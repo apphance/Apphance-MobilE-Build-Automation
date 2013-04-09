@@ -85,9 +85,7 @@ class GradlePropertiesPersisterSpec extends Specification {
         then:
         persister.get(androidConfiguration.logDir.name) == tempDir.absolutePath
         persister.get(androidConfiguration.versionString.name) == 'version string'
-
         persister.get(iOSConfiguration.name.name) == 'Project name'
-
         persister.get('nonexisting') == null
 
         cleanup:
