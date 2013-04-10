@@ -1,15 +1,12 @@
 package com.apphance.ameba.plugins.android.analysis.tasks
 
+import com.google.inject.Inject
 import org.gradle.api.Project
 
 @Mixin(AndroidAnalysisMixin)
 class PMDTask {
 
-    private Project project
-
-    PMDTask(Project project) {
-        this.project = project
-    }
+    @Inject Project project
 
     public void runPMD() {
 

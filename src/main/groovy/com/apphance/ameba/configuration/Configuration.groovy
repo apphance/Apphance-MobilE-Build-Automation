@@ -62,7 +62,10 @@ abstract class Configuration implements GroovyInterceptable {
     def invokeMethod(String name, args) {
         if (name in ['isEnabled', 'getAmebaProperties', 'getPropertyFields', 'getClass'] || isEnabled() ||
                 !(propertyFields*.name.collect { "(get|is)${it.capitalize()}" }.any { name ==~ it })) {
-            metaClass.getMetaMethod(name, args).invoke(this, args)
+            def method = metaClass.getMetaMethod(name, args)
+            if (method != null) {
+                method.invoke(this, args)
+            }
         } else {
             throw new IllegalStateException(ACCESS_DENIED)
         }

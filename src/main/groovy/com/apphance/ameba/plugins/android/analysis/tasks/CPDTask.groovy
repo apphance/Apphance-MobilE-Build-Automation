@@ -1,14 +1,11 @@
 package com.apphance.ameba.plugins.android.analysis.tasks
 
+import com.google.inject.Inject
 import org.gradle.api.Project
 
 class CPDTask {
 
-    private Project project
-
-    CPDTask(Project project) {
-        this.project = project
-    }
+    @Inject Project project
 
     public void runCPD() {
 

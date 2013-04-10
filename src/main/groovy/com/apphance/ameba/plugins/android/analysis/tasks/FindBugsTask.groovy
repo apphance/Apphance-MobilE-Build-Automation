@@ -1,13 +1,10 @@
 package com.apphance.ameba.plugins.android.analysis.tasks
 
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.util.Preconditions
+import com.google.inject.Inject
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
-import static com.apphance.ameba.plugins.android.analysis.AndroidAnalysisPlugin.FINDBUGS_DEFAULT_HOME
-import static com.apphance.ameba.plugins.android.analysis.AndroidAnalysisPlugin.FINDBUGS_HOME_DIR_PROPERTY
 
 @Mixin(AndroidAnalysisMixin)
 @Mixin(Preconditions)
@@ -16,13 +13,8 @@ class FindBugsTask {
     public static final String FINDBUGS_HOME_DIR_PROPERTY = 'findbugs.home.dir'
     public static final String FINDBUGS_DEFAULT_HOME = '/var/lib/analysis/findbugs'
 
-    private Project project
-    private AndroidProjectConfiguration androidConf
-
-    FindBugsTask(Project project) {
-        this.project = project
-        this.androidConf = getAndroidProjectConfiguration(project)
-    }
+    @Inject Project project
+    @Inject AndroidConfiguration androidConfiguration
 
     public void runFindbugs() {
         URL findbugsXml = getResourceUrl(project, 'findbugs-exclude.xml')
@@ -48,7 +40,7 @@ class FindBugsTask {
                     excludefilter: 'build/analysis/findbugs-exclude.xml') {
                 sourcePath(path: 'src')
                 "class"(location: binClasses)
-                auxclassPath(path: androidConf.allJarsAsPath)
+                auxclassPath(path: androidConfiguration.allJarsAsPath)
             }
         }
     }
