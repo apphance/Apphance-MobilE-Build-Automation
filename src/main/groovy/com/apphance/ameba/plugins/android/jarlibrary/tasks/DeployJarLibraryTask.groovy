@@ -1,25 +1,15 @@
 package com.apphance.ameba.plugins.android.jarlibrary.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.google.inject.Inject
 import org.gradle.api.Project
-
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
 
 //TODO be tested & refactored
 @Mixin(AndroidJarLibraryMixin)
 class DeployJarLibraryTask {
 
-    private Project project
-    private ProjectConfiguration conf
-    private AndroidProjectConfiguration androidConf
-
-    DeployJarLibraryTask(Project project) {
-        this.project = project
-        this.conf = getProjectConfiguration(project)
-        this.androidConf = getAndroidProjectConfiguration(project)
-    }
+    @Inject Project project
+    @Inject AndroidConfiguration androidConf
 
     Closure deployJarLibrary = {
         repositories {
@@ -28,7 +18,8 @@ class DeployJarLibraryTask {
             }
         }
         artifacts {
-            jarLibraryConfiguration file: project.file(getJarLibraryFilePath(androidConf.mainProjectName, conf.versionString)), name: androidConf.mainProjectName
+            jarLibraryConfiguration file: project.file(getJarLibraryFilePath(androidConf.projectName.value, androidConf.versionString.value)),
+                    name: androidConf.projectName.value
         }
     }
 }
