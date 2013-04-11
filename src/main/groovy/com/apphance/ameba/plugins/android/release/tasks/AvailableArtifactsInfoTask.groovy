@@ -2,10 +2,10 @@ package com.apphance.ameba.plugins.android.release.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
+import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.android.AndroidEnvironment
 import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
-import com.apphance.ameba.plugins.android.buildplugin.AndroidBuildListener
+import com.apphance.ameba.plugins.android.release.AndroidBuildListener
 import com.apphance.ameba.plugins.android.release.AndroidReleaseApkListener
 import com.apphance.ameba.plugins.android.release.AndroidReleaseJarListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
@@ -32,39 +32,33 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     @Inject AndroidConfiguration androidConfiguration
     @Inject AndroidReleaseConfiguration androidReleaseConf
+    @Inject AndroidVariantsConfiguration variantsConf
 
     @Inject CommandExecutor executor
 
     private ProjectReleaseConfiguration releaseConf
     private AndroidProjectConfiguration androidConf
-    private AndroidEnvironment androidEnv
 
     @TaskAction
     public void availableArtifactsInfo() {
         this.releaseConf = getProjectReleaseConfiguration(project)
         this.androidConf = getAndroidProjectConfiguration(project)
-        this.androidEnv = new AndroidEnvironment(project)
 
         AndroidBuildListener listener
-        if (androidEnv.isLibrary()) {
+        if (androidConfiguration.isLibrary()) {
             listener = new AndroidReleaseJarListener(project, executor, androidReleaseConf)
         } else {
             listener = new AndroidReleaseApkListener(project, executor, androidReleaseConf)
         }
-        if (androidConf.hasVariants()) {
-            androidConf.variants.each { variant ->
-                listener.buildArtifactsOnly(project, variant, null)
-            }
-        } else {
-            listener.buildArtifactsOnly(project, 'Debug', 'Debug')
-            listener.buildArtifactsOnly(project, 'Release', 'Release')
+        variantsConf.variants*.name.each {
+            listener.buildArtifactsOnly(project, it, null)
         }
         if (androidConfiguration.versionString.value) {
             String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${androidConfiguration.versionString.value}"
             prepareFileIndexArtifact(otaFolderPrefix)
             preparePlainFileIndexArtifact(otaFolderPrefix)
             prepareOtaIndexFile()
-            prepareFileIndexFile(androidConf.variants)
+            prepareFileIndexFile(variantsConf.variants*.name)
             preparePlainFileIndexFile()
         } else {
             l.debug('Skipping building artifacts, the build is not versioned')

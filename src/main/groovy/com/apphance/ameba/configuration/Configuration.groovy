@@ -20,7 +20,7 @@ abstract class Configuration {
             it.value = propertyPersister.get(it.name)
         }
 
-        String enabled = propertyPersister.get(nameKey)
+        String enabled = propertyPersister.get(enabledPropKey)
         def enabledValue = Boolean.valueOf(enabled)
         if (enabled && enabledValue != this.enabled) {
             this.enabled = enabledValue
@@ -57,7 +57,7 @@ abstract class Configuration {
         []
     }
 
-    String getNameKey() {
-        configurationName.replace(' ', '.').toLowerCase()
+    String getEnabledPropKey() {
+        configurationName.replace(' ', '.').toLowerCase() + '.enabled'
     }
 }

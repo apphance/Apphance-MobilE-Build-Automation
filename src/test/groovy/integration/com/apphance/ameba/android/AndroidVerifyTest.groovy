@@ -37,7 +37,7 @@ class AndroidVerifyTest extends Specification {
         when:
         project.plugins.apply AmebaPlugin
         def plugin = project.plugins.getPlugin AndroidPlugin
-        def targets = plugin.androidConf.availableTargets
+        def targets = plugin.androidConfiguration.availableTargets
 
         then:
         'Google Inc.:Google APIs:10' in targets

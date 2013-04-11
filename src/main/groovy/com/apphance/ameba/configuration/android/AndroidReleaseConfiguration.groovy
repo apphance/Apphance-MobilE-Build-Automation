@@ -87,6 +87,10 @@ class AndroidReleaseConfiguration extends Configuration {
             defaultValue: { 'qrCode,imageMontage' }
     )
 
+    File getTargetDirectory() {
+        new File(new File(otaDirectory, projectDirectoryName), androidConfiguration.versionString.value)
+    }
+
     @Override
     boolean isEnabled() {
         this.@enabled

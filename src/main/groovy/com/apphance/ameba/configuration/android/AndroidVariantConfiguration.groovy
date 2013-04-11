@@ -5,21 +5,27 @@ import com.apphance.ameba.configuration.PropertyPersister
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
+import com.google.inject.Inject
+import org.gradle.api.GradleException
+import org.gradle.api.Project
 
 class AndroidVariantConfiguration extends Configuration {
 
-    private String name
+    Project project
+    final String name
     private AndroidConfiguration androidConf
     private AndroidApphanceConfiguration androidApphanceConf
 
     AndroidVariantConfiguration(String name,
                                 PropertyPersister persister,
                                 AndroidConfiguration androidConf,
-                                AndroidApphanceConfiguration androidApphanceConf) {
+                                AndroidApphanceConfiguration androidApphanceConf,
+                                Project project) {
         this.propertyPersister = persister
         this.name = name
         this.androidConf = androidConf
         this.androidApphanceConf = androidApphanceConf
+        this.project = project
 
         initFields()
     }
@@ -33,10 +39,6 @@ class AndroidVariantConfiguration extends Configuration {
         apphanceMode.message = "Apphance mode for '$name'"
         apphanceLibVersion.name = "android.variant.${name}.apphance.lib"
         apphanceLibVersion.message = "Apphance lib version for '$name'"
-    }
-
-    String getName() {
-        name
     }
 
     def mode = new StringProperty(
@@ -70,4 +72,13 @@ class AndroidVariantConfiguration extends Configuration {
     String getConfigurationName() {
         "Android configuration for variant: ${this.@name}"
     }
+
+    File getTmpDirectory() {
+        def rootDir = androidConf.rootDir.value
+        if (rootDir == null) {
+            rootDir = project.rootDir
+        }
+        new File(rootDir.parent, ("tmp-${rootDir.name}-" + name).replaceAll('[\\\\ /]', '_'))
+    }
+
 }

@@ -38,7 +38,7 @@ apphance:only="true">
         def manifest = new XmlSlurper().parse(new File(projectDir, ANDROID_MANIFEST))
         def versionCode = manifest.@'android:versionCode'.text().toLong()
         def versionString = manifest.@'android:versionName'.text()
-        new Expando(versionCode: versionCode, versionString: versionString)
+        [versionCode: versionCode, versionString: versionString]
     }
 
     void updateVersion(File projectDir, String versionString, Long versionCode) {

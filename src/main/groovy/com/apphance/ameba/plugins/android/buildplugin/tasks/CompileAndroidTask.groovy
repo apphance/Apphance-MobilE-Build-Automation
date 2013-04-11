@@ -1,25 +1,27 @@
 package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.executor.AntExecutor
+import com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups
+import org.gradle.api.DefaultTask
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.executor.AntExecutor.DEBUG
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
-//TODO refactor/test
-class CompileAndroidTask {
+class CompileAndroidTask extends DefaultTask{
+
+    static String NAME = 'compileAndroid'
+    String description = 'Performs code generation/compile tasks for android (if needed)'
+    String group = AMEBA_BUILD
 
     private l = getLogger(getClass())
 
-    private Project project
-    private AntExecutor antExecutor
-
-    CompileAndroidTask(Project project, AntExecutor antExecutor) {
-        this.project = project
-        this.antExecutor = antExecutor
-    }
-
+    @TaskAction
     void compileAndroid() {
+        def antExecutor = new AntExecutor(project.rootDir)
+
         l.lifecycle("Prepares to compile Java for static code analysis")
         File gen = project.file('gen')
         if (!gen.exists() || gen.list().length == 0) {

@@ -1,23 +1,21 @@
 package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.executor.AntExecutor
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.executor.AntExecutor.CLEAN
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
-//TODO refactor/test
-class CleanAndroidTask {
+class CleanAndroidTask extends DefaultTask {
 
-    private Project project
-    private AntExecutor antExecutor
+    static String NAME = 'cleanAndroid'
+    String description = 'Cleans the application'
+    String group = AMEBA_BUILD
 
-    CleanAndroidTask(Project project, AntExecutor antExecutor) {
-        this.project = project
-        this.antExecutor = antExecutor
-    }
-
+    @TaskAction
     void cleanAndroid() {
-        antExecutor.executeTarget CLEAN
+        new AntExecutor(project.rootDir).executeTarget CLEAN
         File tmpDir = project.file("tmp")
         project.ant.delete(dir: tmpDir)
     }

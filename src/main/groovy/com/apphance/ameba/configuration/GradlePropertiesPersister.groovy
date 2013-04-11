@@ -52,7 +52,7 @@ class GradlePropertiesPersister implements PropertyPersister {
 
         configurations.each { Configuration conf ->
 
-            props.setProperty(conf.nameKey, conf.enabled.toString())
+            props.setProperty(conf.enabledPropKey, conf.enabled.toString())
 
             conf.amebaProperties.each { AbstractProperty prop ->
                 props.setProperty(prop.name, prop?.value?.toString() ?: '')

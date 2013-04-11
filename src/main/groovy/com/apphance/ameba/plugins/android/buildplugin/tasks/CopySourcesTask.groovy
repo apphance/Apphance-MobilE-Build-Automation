@@ -1,37 +1,31 @@
 package com.apphance.ameba.plugins.android.buildplugin.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
-import org.gradle.api.Project
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.google.inject.Inject
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
-//TODO refactor/test
-class CopySourcesTask {
+class CopySourcesTask extends DefaultTask {
 
-    private ProjectConfiguration conf
-    private AndroidProjectConfiguration androidConf
-    private File directory
-    private AntBuilder ant
+    static String NAME = 'copySources'
+    String description = 'Copies all sources to tmp directory for build'
+    String group = AMEBA_BUILD
 
-    CopySourcesTask(Project project) {
-        this.conf = getProjectConfiguration(project)
-        this.androidConf = getAndroidProjectConfiguration(project)
-        this.directory = project.rootDir
-        this.ant = project.ant
-    }
+    @Inject AndroidConfiguration androidConfiguration
+    @Inject AndroidVariantsConfiguration androidVariantsConfiguration
 
+    @TaskAction
     void copySources() {
-        androidConf.variants.each { variant ->
-            ant.sync(toDir: androidConf.tmpDirs[variant], overwrite: true, failonerror: false, verbose: false) {
-                fileset(dir: "${directory}/") {
-                    exclude(name: androidConf.tmpDirs[variant].absolutePath + '/**/*')
-                    conf.sourceExcludes.each {
-                        if (!it.equals('**/local.properties') && !it.equals('**/gen/**')) {
-                            exclude(name: it)
-                        }
-                    }
+        assert androidVariantsConfiguration.variants != null
+
+        androidVariantsConfiguration.variants.each { variant ->
+            project.ant.sync(toDir: variant.tmpDirectory, overwrite: true, failonerror: false, verbose: false) {
+                fileset(dir: "${project.rootDir}/") {
+                    exclude(name: variant.tmpDirectory.absolutePath + '/**/*')
+                    androidConfiguration.sourceExcludes.each { exclude(name: it) }
                 }
             }
         }

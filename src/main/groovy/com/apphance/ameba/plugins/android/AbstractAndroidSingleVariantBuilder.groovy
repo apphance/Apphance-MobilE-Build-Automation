@@ -2,7 +2,7 @@ package com.apphance.ameba.plugins.android
 
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.plugins.android.buildplugin.AndroidBuildListener
+import com.apphance.ameba.plugins.android.release.AndroidBuildListener
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging

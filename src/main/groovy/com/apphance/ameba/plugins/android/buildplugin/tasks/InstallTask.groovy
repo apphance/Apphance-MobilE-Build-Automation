@@ -1,28 +1,36 @@
 package com.apphance.ameba.plugins.android.buildplugin.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
+import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.executor.AntExecutor
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
-import org.gradle.api.Project
+import com.google.inject.Inject
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.getProjectReleaseConfiguration
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
-class InstallTask {
+class InstallTask extends DefaultTask {
 
-    private AntExecutor antExecutor
-    private ProjectConfiguration conf
-    private ProjectReleaseConfiguration releaseConf
+    String group = AMEBA_BUILD
 
-    InstallTask(Project project, AntExecutor antExecutor) {
-        this.antExecutor = antExecutor
-        this.conf = getProjectConfiguration(project)
-        this.releaseConf = getProjectReleaseConfiguration(project)
+    @Inject AndroidConfiguration androidConf
+    @Inject AndroidReleaseConfiguration androidReleaseConf
+
+    AndroidVariantConfiguration variant
+
+    @TaskAction
+    void install() {
+        String debugRelease = variant.mode.value.toLowerCase().capitalize()
+        def firstLetterLowerCase = debugRelease[0].toLowerCase()
+        File targetDirectory = androidReleaseConf.targetDirectory
+        def apkName = "${androidConf.projectName.value}-${debugRelease}-${variant}-${androidConf.versionString.value}.apk".toString()
+        File apkFile = new File(targetDirectory, apkName)
+        new AntExecutor(project.rootDir).executeTarget "install${firstLetterLowerCase}", ['out.final.file': apkFile.canonicalPath]
     }
 
-    void install(String variant, String debugRelease) {
-        def firstLetterLowerCase = debugRelease[0].toLowerCase()
-        File apkFile = new File(releaseConf.targetDirectory, "${conf.projectName}-${debugRelease}-${variant}-${conf.fullVersionString}.apk".toString())
-        antExecutor.executeTarget "install${firstLetterLowerCase}", ['out.final.file': apkFile.canonicalPath]
+    @Override
+    String getDescription() {
+        "Installs $name"
     }
 }

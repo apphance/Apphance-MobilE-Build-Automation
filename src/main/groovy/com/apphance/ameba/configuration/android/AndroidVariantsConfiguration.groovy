@@ -75,7 +75,7 @@ class AndroidVariantsConfiguration extends Configuration {
     }
 
     private AndroidVariantConfiguration createVariant(String name) {
-        def avc = new AndroidVariantConfiguration(name, propertyPersister, androidConf, androidApphanceConf)
+        def avc = new AndroidVariantConfiguration(name, propertyPersister, androidConf, androidApphanceConf, project)
         avc.init()
         avc
     }

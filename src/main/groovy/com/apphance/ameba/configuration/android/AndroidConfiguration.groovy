@@ -8,6 +8,7 @@ import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 import javax.inject.Inject
@@ -25,6 +26,7 @@ class AndroidConfiguration extends Configuration {
     private AndroidBuildXmlHelper buildXmlHelper
     private AndroidManifestHelper manifestHelper
     private AndroidExecutor androidExecutor
+    private Properties androidProperties
 
     @Inject
     AndroidConfiguration(
@@ -38,8 +40,10 @@ class AndroidConfiguration extends Configuration {
         this.manifestHelper = manifestHelper
         this.buildXmlHelper = buildXmlHelper
         this.projectTypeDetector = projectTypeDetector
-    }
 
+        readProperties()
+    }
+    
     @Override
     boolean isActive() {
         projectTypeDetector.detectProjectType(project.rootDir) == ANDROID
@@ -117,6 +121,8 @@ class AndroidConfiguration extends Configuration {
             message: 'Android SDK directory',
             defaultValue: { defaultSDKDir() }
     )
+
+    final Collection<String> sourceExcludes = ['**/*.class', '**/bin/**', '**/build/*']
 
     private Collection<File> sdkJarLibs = []
 
@@ -245,5 +251,21 @@ class AndroidConfiguration extends Configuration {
             }
         }
         targets.sort()
+    }
+
+    def readProperties() {
+        this.androidProperties = new Properties()
+        if (project != null) {
+            ['local', 'build', 'default', 'project'].each {
+                File propFile = project.file("${it}.properties")
+                if (propFile?.exists()) {
+                    this.androidProperties.load(new FileInputStream(propFile))
+                }
+            }
+        }
+    }
+
+    boolean isLibrary() {
+        androidProperties.get('android.library') == 'true'
     }
 }

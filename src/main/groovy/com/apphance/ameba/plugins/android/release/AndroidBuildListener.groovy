@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.android.buildplugin
+package com.apphance.ameba.plugins.android.release
 
 import com.apphance.ameba.plugins.android.AndroidBuilderInfo
 import org.gradle.api.Project

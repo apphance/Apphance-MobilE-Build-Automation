@@ -2,21 +2,27 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
+import com.google.inject.Inject
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.TaskAction
 
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin.PROJECT_PROPERTIES_KEY
 
-class RunUpdateProjectTask {
+class RunUpdateProjectTask extends DefaultTask {
 
+    static String NAME = 'updateProject'
+    static final String PROJECT_PROPERTIES_KEY = 'project.properties'
+    String description = 'Updates project using android command line tool'
+    String group = AMEBA_BUILD
+
+    @Inject
     private CommandExecutor executor
-
+    @Inject
     private AndroidExecutor androidExecutor
 
-    RunUpdateProjectTask(CommandExecutor executor, AndroidExecutor androidExecutor) {
-        this.executor = executor
-        this.androidExecutor = androidExecutor
-    }
-
+    @TaskAction
     void runUpdateRecursively(File currentDir, boolean reRun) {
         runUpdateProject(currentDir, reRun)
         Properties prop = new Properties()

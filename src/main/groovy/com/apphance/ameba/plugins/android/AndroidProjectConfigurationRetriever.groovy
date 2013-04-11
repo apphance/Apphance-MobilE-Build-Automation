@@ -1,9 +1,8 @@
 package com.apphance.ameba.plugins.android
 
 import com.apphance.ameba.PropertyCategory
+import com.google.inject.Inject
 import org.gradle.api.Project
-
-import static com.apphance.ameba.plugins.android.buildplugin.AndroidProjectProperty.MAIN_VARIANT
 
 /**
  * Retrieves android project configuration.
@@ -25,10 +24,6 @@ public class AndroidProjectConfigurationRetriever {
     static void readAndroidProjectConfiguration(Project project) {
         use(PropertyCategory) {
             AndroidProjectConfiguration androidConf = getAndroidProjectConfiguration(project)
-            androidConf.mainVariant = project.readProperty(MAIN_VARIANT)
-            if (androidConf.mainVariant == null || androidConf.mainVariant.empty) {
-                androidConf.mainVariant = androidConf.variants[0]
-            }
             androidConf.mainProjectPackage = manifestHelper.androidPackage(project.rootDir)
             androidConf.mainProjectName = buildXmlHelper.projectName(project.rootDir)
         }

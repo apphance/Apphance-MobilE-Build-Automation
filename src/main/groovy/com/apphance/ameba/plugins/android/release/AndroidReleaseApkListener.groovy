@@ -7,7 +7,6 @@ import com.apphance.ameba.plugins.android.AndroidBuilderInfo
 import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
 import com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
-import com.apphance.ameba.plugins.android.buildplugin.AndroidBuildListener
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory

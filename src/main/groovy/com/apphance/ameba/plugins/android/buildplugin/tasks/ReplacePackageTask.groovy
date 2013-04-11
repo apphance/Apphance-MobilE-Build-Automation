@@ -3,22 +3,24 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
-//TODO refactor/test
-class ReplacePackageTask {
+class ReplacePackageTask extends DefaultTask {
+
+    static String NAME = 'replacePackage'
+    String description = """Replaces manifest's package with a new one. Requires oldPackage and newPackage
+           parameters. Optionally it takes newLabel or newName parameters if application's label/name is to be replaced"""
+    String group = AMEBA_BUILD
 
     private l = getLogger(getClass())
 
-    private Project project
     private AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
 
-    ReplacePackageTask(Project project) {
-        this.project = project
-    }
-
+    @TaskAction
     void replacePackage() {
         use(PropertyCategory) {
             String oldPackage = project.readExpectedProperty('oldPackage')

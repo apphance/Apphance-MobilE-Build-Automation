@@ -27,7 +27,8 @@ class AmebaPlugin implements Plugin<Project> {
                     protected void configure() {
                         bind(Project).toInstance(project)
                     }
-                })
+                }
+        )
         injector.getInstance(PluginMaster).enhanceProject(project)
 
         project.tasks.each { injector.injectMembers(it) }
