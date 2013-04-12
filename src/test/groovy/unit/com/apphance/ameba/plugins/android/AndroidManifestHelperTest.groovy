@@ -44,7 +44,7 @@ class AndroidManifestHelperTest {
         manifestHelper.restoreOriginalManifest(tmpDir)
         projectConfiguration.updateVersionDetails(manifestHelper.readVersion(tmpDir))
         projectConfiguration.setVersionString('2.0.3')
-        manifestHelper.updateVersion(tmpDir, new Expando(versionCode: newVersionCode, versionString: newVersionString))
+        manifestHelper.updateVersion(tmpDir, newVersionString, newVersionCode)
         try {
             ProjectConfiguration projectConfiguration2 = new ProjectConfiguration()
             projectConfiguration2.updateVersionDetails(manifestHelper.readVersion(tmpDir))

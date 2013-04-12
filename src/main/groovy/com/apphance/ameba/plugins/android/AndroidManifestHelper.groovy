@@ -41,12 +41,12 @@ apphance:only="true">
         new Expando(versionCode: versionCode, versionString: versionString)
     }
 
-    void updateVersion(File projectDir, Expando versionDetails) {
+    void updateVersion(File projectDir, String versionString, Long versionCode) {
         def file = new File(projectDir, ANDROID_MANIFEST)
         saveOriginalFile(projectDir, file)
         def manifest = new XmlSlurper(false, false).parse(file)
-        manifest.@'android:versionName' = versionDetails.versionString.toString()
-        manifest.@'android:versionCode' = versionDetails.versionCode.toString()
+        manifest.@'android:versionName' = versionString.toString()
+        manifest.@'android:versionCode' = versionCode.toString()
         file.delete()
         file << XmlUtil.serialize(manifest)
     }

@@ -27,6 +27,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
     public final static String VERIFY_RELEASE_NOTES_TASK_NAME = 'verifyReleaseNotes'
     public final static String PREPARE_IMAGE_MONTAGE_TASK_NAME = 'prepareImageMontage'
     public final static String SEND_MAIL_MESSAGE_TASK_NAME = 'sendMailMessage'
+    public final static String PREPARE_MAIL_MESSAGE_TASK_NAME = 'prepareMailMessage'
     public final static String CLEAN_RELEASE_TASK_NAME = 'cleanRelease'
     public final static String BUILD_SOURCES_ZIP_TASK_NAME = 'buildSourcesZip'
 
@@ -107,9 +108,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
              flags are one of: qrCode,imageMontage"""
         task.group = AMEBA_RELEASE
         task.doLast { new SendMailMessageTask(project).sendMailMessage() }
-        task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME,
-                PREPARE_FOR_RELEASE_TASK_NAME,
-                VERIFY_RELEASE_NOTES_TASK_NAME)
+        task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME, PREPARE_FOR_RELEASE_TASK_NAME, VERIFY_RELEASE_NOTES_TASK_NAME, PREPARE_MAIL_MESSAGE_TASK_NAME)
     }
 
     private void prepareCleanReleaseTask() {

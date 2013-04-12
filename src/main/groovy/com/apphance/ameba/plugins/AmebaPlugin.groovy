@@ -29,6 +29,8 @@ class AmebaPlugin implements Plugin<Project> {
                     }
                 })
         injector.getInstance(PluginMaster).enhanceProject(project)
+
+        project.tasks.each { injector.injectMembers(it) }
     }
 
     static String AMEBA_ASCII_ART = '''\

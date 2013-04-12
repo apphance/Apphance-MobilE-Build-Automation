@@ -69,7 +69,5 @@ class PluginMaster {
         }
 
         plugins[projectType].each installPlugin
-
-        project.tasks.each {injector.injectMembers(it)}
     }
 }

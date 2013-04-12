@@ -1,31 +1,39 @@
 package com.apphance.ameba.plugins.android.release.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
-import org.gradle.api.Project
+import com.google.inject.Inject
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.*
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.google.common.base.Preconditions.checkNotNull
 import static org.gradle.api.logging.Logging.getLogger
 
-class UpdateVersionTask {
+class UpdateVersionTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    private Project project
-    private ProjectConfiguration conf
+    static String name = 'updateVersion'
+    String group = AMEBA_RELEASE
+    String description = """Updates version stored in manifest file of the project.
+           Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
+
     private AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
 
-    UpdateVersionTask(Project project) {
-        this.project = project
-        this.conf = getProjectConfiguration(project)
-    }
+    @Inject AndroidConfiguration androidConfiguration
 
+    @TaskAction
     public void updateVersion() {
-        conf.versionString = readPropertyOrEnvironmentVariable(project, 'version.string')
-        conf.versionCode = readOptionalPropertyOrEnvironmentVariable(project, 'version.code') as Long
-        manifestHelper.updateVersion(project.rootDir, new Expando(versionCode: conf.versionCode, versionString: conf.versionString))
-        l.debug("New version code: $conf.versionCode")
-        l.debug("Updated version string to: $conf.versionString")
-        l.debug("Configuration : $conf")
+        def versionString = androidConfiguration.versionString.value
+        def versionCode = androidConfiguration.versionCode.value
+
+        checkNotNull(versionString)
+        checkNotNull(versionCode)
+
+        manifestHelper.updateVersion(project.rootDir, versionString, versionCode)
+
+        l.debug("New version code: $versionCode")
+        l.debug("Updated version string to: $versionString")
     }
 }
