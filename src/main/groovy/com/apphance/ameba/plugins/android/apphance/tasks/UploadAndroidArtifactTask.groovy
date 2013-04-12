@@ -1,57 +1,53 @@
 package com.apphance.ameba.plugins.android.apphance.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
-import com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever
+import com.apphance.ameba.configuration.android.AndroidApphanceConfiguration
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
-import com.apphance.ameba.plugins.apphance.ApphanceProperty
-import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.util.Preconditions
+import com.google.inject.Inject
 import groovy.json.JsonSlurper
 import org.apache.http.util.EntityUtils
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.Project
 import org.gradle.api.logging.Logging
+import org.gradle.api.tasks.TaskAction
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
 
 @Mixin(Preconditions)
 //TODO to be tested and refactored
-class UploadAndroidArtifactTask {
-
+class UploadAndroidArtifactTask extends DefaultTask {
 
     def l = Logging.getLogger(getClass())
 
-    private Project project
-    private CommandExecutor executor
-    private ProjectConfiguration conf
-    private AndroidProjectConfiguration androidConf
+    String description = 'Uploads apk & image_montage to Apphance server'
+    String group = AMEBA_APPHANCE_SERVICE
+    String variant
 
-    UploadAndroidArtifactTask(Project project, CommandExecutor executor) {
-        this.project = project
-        this.executor = executor
-        this.conf = PropertyCategory.getProjectConfiguration(project)
-        this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
-    }
+    @Inject AndroidApphanceConfiguration androidApphanceConfiguration
+    @Inject AndroidConfiguration androidConfiguration
 
-    public void uploadArtifact(String variant) {
+    @TaskAction
+    public void uploadArtifact() {
+        def androidConf = getAndroidProjectConfiguration(project)
         def builder = new AndroidSingleVariantApkBuilder(project, androidConf)
         def builderInfo = builder.buildApkArtifactBuilderInfo(variant, 'Debug')
         def releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
 
-        //TODO gradle.properties + validation
-        String user = project['apphanceUserName']
-        String pass = project['apphancePassword']
-        //TODO gradle.properties + validation
+        String user = androidApphanceConfiguration.user.value
+        String pass = androidApphanceConfiguration.pass.value
+        String key = androidApphanceConfiguration.key.value
 
-        String key = project[ApphanceProperty.APPLICATION_KEY.propertyName]
         ApphanceNetworkHelper networkHelper = null
 
         try {
             networkHelper = new ApphanceNetworkHelper(user, pass)
 
-            def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false, ['apk', 'image_montage'])
+            def response = networkHelper.updateArtifactQuery(key, androidConfiguration.versionString.value, androidConfiguration.versionCode.value, false,
+                    ['apk', 'image_montage'])
             l.debug("Upload version query response: ${response.statusLine}")
             throwIfCondition(!response.entity, "Error while uploading version query, empty response received")
 

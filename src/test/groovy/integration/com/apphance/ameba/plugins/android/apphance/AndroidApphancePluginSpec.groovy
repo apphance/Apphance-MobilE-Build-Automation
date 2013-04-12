@@ -1,13 +1,13 @@
 package com.apphance.ameba.plugins.android.apphance
 
 import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
+import com.apphance.ameba.plugins.android.apphance.tasks.AndroidLogsConversionTask
+import com.apphance.ameba.plugins.android.apphance.tasks.ApphanceLogsConversionTask
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.ANDROID_PROJECT_CONFIGURATION_KEY
-import static com.apphance.ameba.plugins.android.apphance.AndroidApphancePlugin.CONVERT_LOGS_TO_ANDROID_TASK_NAME
-import static com.apphance.ameba.plugins.android.apphance.AndroidApphancePlugin.CONVERT_LOGS_TO_APPHANCE_TASK_NAME
 import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_IMAGE_MONTAGE_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
@@ -47,8 +47,8 @@ class AndroidApphancePluginSpec extends Specification {
         !project.tasks.asMap['uploadSamplevariant2']
 
         then: 'each task has correct group'
-        project.tasks[CONVERT_LOGS_TO_APPHANCE_TASK_NAME].group == AMEBA_APPHANCE_SERVICE
-        project.tasks[CONVERT_LOGS_TO_ANDROID_TASK_NAME].group == AMEBA_APPHANCE_SERVICE
+        project.tasks[ApphanceLogsConversionTask.taskName].group == AMEBA_APPHANCE_SERVICE
+        project.tasks[AndroidLogsConversionTask.taskName].group == AMEBA_APPHANCE_SERVICE
         project.tasks['uploadSamplevariant1'].group == AMEBA_APPHANCE_SERVICE
         project.tasks['uploadSamplevariant3'].group == AMEBA_APPHANCE_SERVICE
 
