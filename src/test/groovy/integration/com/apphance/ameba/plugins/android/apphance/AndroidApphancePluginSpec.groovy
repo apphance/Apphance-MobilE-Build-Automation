@@ -1,59 +1,59 @@
 package com.apphance.ameba.plugins.android.apphance
 
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
+import com.apphance.ameba.configuration.android.AndroidApphanceConfiguration
 import com.apphance.ameba.plugins.android.apphance.tasks.AndroidLogsConversionTask
 import com.apphance.ameba.plugins.android.apphance.tasks.ApphanceLogsConversionTask
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.ANDROID_PROJECT_CONFIGURATION_KEY
-import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_IMAGE_MONTAGE_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidApphancePluginSpec extends Specification {
 
 
-    def "plugin tasks' graph configured correctly"() {
+    def 'tasks defined in plugin available when configuration is active'() {
         given:
         def project = builder().build()
 
-        and: 'prepare mock configuration'
-        def androidConf = Mock(AndroidProjectConfiguration)
-        androidConf.buildableVariants >> ['sampleVariant1', 'sampleVariant2', 'sampleVariant3']
-        androidConf.debugRelease >> ['sampleVariant1': 'Debug', 'sampleVariant2': 'Release', 'sampleVariant3': 'Debug']
-
-        and: 'add mocked configuration'
-        project.ext.set(ANDROID_PROJECT_CONFIGURATION_KEY, androidConf)
-
-        and: 'add faked build tasks to project'
-        project.task('buildDebug-sampleVariant1')
-        project.task('buildDebug-sampleVariant3')
-
         and:
-        project.plugins.apply(ProjectConfigurationPlugin)
+        def aap = new AndroidApphancePlugin()
+
+        and: 'create mock android release configuration and set it'
+        def aac = Spy(AndroidApphanceConfiguration)
+        aac.isActive() >> true
+        aap.apphanceConf = aac
 
         when:
-        project.plugins.apply(AndroidApphancePlugin)
+        aap.apply(project)
 
         then: 'apphance configuration was added'
         project.configurations.apphance
 
-        then: 'tasks were added to graph'
-        project.tasks['buildDebug-sampleVariant1']
-        project.tasks['buildDebug-sampleVariant3']
-
-        then: 'this task is missing'
-        !project.tasks.asMap['uploadSamplevariant2']
-
         then: 'each task has correct group'
-        project.tasks[ApphanceLogsConversionTask.taskName].group == AMEBA_APPHANCE_SERVICE
-        project.tasks[AndroidLogsConversionTask.taskName].group == AMEBA_APPHANCE_SERVICE
-        project.tasks['uploadSamplevariant1'].group == AMEBA_APPHANCE_SERVICE
-        project.tasks['uploadSamplevariant3'].group == AMEBA_APPHANCE_SERVICE
+        project.tasks[ApphanceLogsConversionTask.NAME].group == AMEBA_APPHANCE_SERVICE
+        project.tasks[AndroidLogsConversionTask.NAME].group == AMEBA_APPHANCE_SERVICE
+    }
 
-        then: 'each task has correct dependencies'
-        project.tasks['uploadSamplevariant1'].dependsOn.containsAll([PREPARE_IMAGE_MONTAGE_TASK_NAME, 'buildDebug-sampleVariant1'])
-        project.tasks['uploadSamplevariant3'].dependsOn.containsAll([PREPARE_IMAGE_MONTAGE_TASK_NAME, 'buildDebug-sampleVariant3'])
+    def 'no tasks available when configuration is inactive'() {
+        given:
+        def project = builder().build()
+
+        and:
+        def aap = new AndroidApphancePlugin()
+
+        and: 'create mock android release configuration and set it'
+        def aac = Spy(AndroidApphanceConfiguration)
+        aac.isActive() >> false
+        aap.apphanceConf = aac
+
+        when:
+        aap.apply(project)
+
+        then:
+        !project.configurations.findByName('apphance')
+
+        then:
+        !project.getTasksByName(ApphanceLogsConversionTask.NAME, false)
+        !project.getTasksByName(AndroidLogsConversionTask.NAME, false)
     }
 }

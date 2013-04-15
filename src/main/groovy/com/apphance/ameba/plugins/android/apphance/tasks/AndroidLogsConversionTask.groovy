@@ -10,7 +10,7 @@ class AndroidLogsConversionTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    static String taskName = 'convertLogsToAndroid'
+    static String NAME = 'convertLogsToAndroid'
     String group = AMEBA_APPHANCE_SERVICE
     String description = 'Converts all logs to android from apphance logs for the source project'
 

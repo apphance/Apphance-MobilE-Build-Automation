@@ -8,7 +8,7 @@ import static org.gradle.api.logging.Logging.getLogger
 
 class ApphanceLogsConversionTask extends DefaultTask {
 
-    static String taskName = "convertLogsToApphance"
+    static String NAME = 'convertLogsToApphance'
     String group = AMEBA_APPHANCE_SERVICE
     String description = 'Converts all logs to apphance from android logs for the source project'
 

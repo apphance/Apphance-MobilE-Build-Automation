@@ -67,7 +67,7 @@ class AndroidReleasePluginSpec extends Specification {
         when:
         arp.apply(project)
 
-        then: 'every single task is in correct group'
+        then:
         !project.getTasksByName(UpdateVersionTask.NAME, false)
         !project.getTasksByName(BuildDocZipTask.NAME, false)
         !project.getTasksByName(AvailableArtifactsInfoTask.NAME, false)
