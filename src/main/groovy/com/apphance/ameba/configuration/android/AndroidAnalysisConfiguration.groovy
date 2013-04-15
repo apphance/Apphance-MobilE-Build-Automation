@@ -13,18 +13,24 @@ class AndroidAnalysisConfiguration extends Configuration {
 
     private AndroidConfiguration androidConfiguration
 
-    @Inject AndroidAnalysisConfiguration(AndroidConfiguration androidConfiguration) {
+    @Inject
+    AndroidAnalysisConfiguration(AndroidConfiguration androidConfiguration) {
         this.androidConfiguration = androidConfiguration
     }
 
     @Override
     boolean isEnabled() {
-        this.@enabled && androidConfiguration.enabled
+        this.@enabled
     }
 
     @Override
     void setEnabled(boolean enabled) {
         this.@enabled = enabled
+    }
+
+    @Override
+    boolean isActive() {
+        this.@enabled && androidConfiguration.enabled
     }
 
     def analysisConfigUrl = new URLProperty(

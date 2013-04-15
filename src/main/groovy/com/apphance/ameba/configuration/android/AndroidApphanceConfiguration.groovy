@@ -20,12 +20,17 @@ class AndroidApphanceConfiguration extends Configuration {
 
     @Override
     boolean isEnabled() {
-        androidConf.enabled && this.@enabled
+        this.@enabled
     }
 
     @Override
     void setEnabled(boolean enabled) {
         this.@enabled = enabled
+    }
+
+    @Override
+    boolean isActive() {
+        androidConf.enabled && this.@enabled
     }
 
     def user = new StringProperty(

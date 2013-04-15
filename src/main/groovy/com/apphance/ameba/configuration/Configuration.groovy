@@ -46,6 +46,8 @@ abstract class Configuration implements GroovyInterceptable {
 
     abstract String getConfigurationName()
 
+    abstract boolean isActive()
+
     @Override
     public String toString() {
         "Configuration $configurationName: ${join(amebaProperties, '\n')}\n";
@@ -60,7 +62,7 @@ abstract class Configuration implements GroovyInterceptable {
     }
 
     def invokeMethod(String name, args) {
-        if (name in ['isEnabled', 'getAmebaProperties', 'getPropertyFields', 'getClass'] || isEnabled() ||
+        if (name in ['isActive', 'isEnabled', 'getAmebaProperties', 'getPropertyFields', 'getClass'] || isEnabled() ||
                 !(propertyFields*.name.collect { "(get|is)${it.capitalize()}" }.any { name ==~ it })) {
             def method = metaClass.getMetaMethod(name, args)
             if (method != null) {
@@ -72,7 +74,7 @@ abstract class Configuration implements GroovyInterceptable {
     }
 
     def getProperty(String name) {
-        if (name in ['enabled', 'amebaProperties', 'propertyFields', 'class'] || isEnabled() || !(name in propertyFields*.name)) {
+        if (name in ['active', 'enabled', 'amebaProperties', 'propertyFields', 'class'] || isEnabled() || !(name in propertyFields*.name)) {
             def metaProperty = metaClass.getMetaProperty(name)
             if (metaProperty != null) {
                 return metaProperty.getProperty(this)
