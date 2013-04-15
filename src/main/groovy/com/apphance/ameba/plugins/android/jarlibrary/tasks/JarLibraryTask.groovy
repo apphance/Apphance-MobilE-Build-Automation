@@ -3,19 +3,26 @@ package com.apphance.ameba.plugins.android.jarlibrary.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidJarLibraryConfiguration
 import com.google.inject.Inject
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.readProperty
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
 //TODO to be tested & refactored
 @Mixin(AndroidJarLibraryMixin)
-class JarLibraryTask {
+class JarLibraryTask extends DefaultTask {
 
-    @Inject Project project
-    @Inject AndroidConfiguration androidConf
-    @Inject AndroidJarLibraryConfiguration androidJarLibraryConfiguration
+    static String NAME = 'jarLibrary'
+    String group = AMEBA_BUILD
+    String description = 'Prepares jar library with embedded resources'
 
-    public void jarLibrary() {
+    @Inject
+    private AndroidConfiguration androidConf
+    @Inject
+    private AndroidJarLibraryConfiguration jarLibConf
+
+    @TaskAction
+    void jarLibrary() {
         androidConf.tmpDir.value.mkdirs()
         def manifestFile = new File(androidConf.tmpDir.value, 'MANIFEST.MF')
         project.ant.manifest(file: manifestFile) {
@@ -56,6 +63,6 @@ class JarLibraryTask {
     }
 
     private String jarLibraryPrefix() {
-        readProperty(project, androidJarLibraryConfiguration.resourcePrefix.value) ?: androidConf.projectName.value
+        jarLibConf.resourcePrefix.value ?: androidConf.projectName.value
     }
 }
