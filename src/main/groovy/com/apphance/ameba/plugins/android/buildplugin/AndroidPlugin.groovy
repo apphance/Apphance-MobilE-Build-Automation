@@ -7,6 +7,7 @@ import com.apphance.ameba.plugins.android.buildplugin.tasks.*
 import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
+import com.apphance.ameba.plugins.projectconfiguration.tasks.CleanConfTask
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -273,7 +274,7 @@ class AndroidPlugin implements Plugin<Project> {
         task.group = AMEBA_BUILD
         task << { new CleanAndroidTask(project, antExecutor).cleanAndroid() }
         project.tasks[CLEAN_TASK_NAME].dependsOn(CLEAN_ANDROID_TASK_NAME)
-        task.dependsOn(CLEAN_CONFIGURATION_TASK_NAME)
+        task.dependsOn(CleanConfTask.NAME)
     }
 
     private void prepareCompileAndroidTask() {

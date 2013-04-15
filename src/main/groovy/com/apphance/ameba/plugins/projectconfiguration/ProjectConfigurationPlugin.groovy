@@ -11,14 +11,23 @@ import org.gradle.api.Task
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
 import static com.apphance.ameba.PropertyCategory.retrieveBasicProjectData
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
- * Plugin for basic project configuration.
+ * This is the base plugin which should be applied in any project.
  *
+ * The plugin should be applied before any other Ameba plugin. It reads basic project configuration and loads shared
+ * configuration for all other plugins.
+ *
+ * This plugin provides setup-related tasks. The tasks allow to generate new configuration,
+ * verify existing configuration and show the configuration to the user.
+ * It also adds several utility tasks that can be used across all types of projects.
+ *
+ * Conventions defined in this task are used to provide default values for properties from all other plugins.
+ * Defining such defaults and importing them from your shared location is the easiest way to provide
+ * organisation-specific defaults across your projects.
  */
 class ProjectConfigurationPlugin implements Plugin<Project> {
 
@@ -27,12 +36,10 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
     public final static String PROJECT_NAME_PROPERTY = 'project.name'
 
     public final static String READ_PROJECT_CONFIGURATION_TASK_NAME = 'readProjectConfiguration'
-    public final static String CLEAN_CONFIGURATION_TASK_NAME = 'cleanConfiguration'
     public final static String PREPARE_SETUP_TASK_NAME = 'prepareSetup'
     public final static String VERIFY_SETUP_TASK_NAME = 'verifySetup'
     public final static String SHOW_CONVENTIONS_TASK_NAME = 'showConventions'
     public final static String SHOW_SETUP_TASK_NAME = 'showSetup'
-    public final static String CHECK_TESTS_TASK_NAME = 'checkTests'
 
     public final static String AMEBA_PROPERTY_DEFAULTS_CONVENTION_NAME = 'amebaPropertyDefaults'
 
@@ -54,15 +61,16 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         addAmebaConvention()
         addMavenRepository()
         prepareReadProjectConfigurationTask()
-        prepareCleanConfigurationTask()
         prepareShowConventionRule()
 
         prepareSetupTask2()
 
+        project.task(CleanConfTask.NAME, type: CleanConfTask, dependsOn: READ_PROJECT_CONFIGURATION_TASK_NAME)
+        project.task(CheckTestsTask.NAME, type: CheckTestsTask, dependsOn: READ_PROJECT_CONFIGURATION_TASK_NAME)
+
         project.task(PREPARE_SETUP_TASK_NAME, type: PrepareSetupTask)
         project.task(VERIFY_SETUP_TASK_NAME, type: VerifySetupTask)
         project.task(SHOW_SETUP_TASK_NAME, type: ShowSetupTask)
-        project.task(CHECK_TESTS_TASK_NAME, type: CheckTestsTask)
         project.task(SHOW_CONVENTIONS_TASK_NAME, type: ShowConventionsTask)
     }
 
@@ -92,14 +100,6 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.doLast { retrieveBasicProjectData(project) }
     }
 
-    private void prepareCleanConfigurationTask() {
-        Task task = project.task(CLEAN_CONFIGURATION_TASK_NAME)
-        task.description = 'Cleans configuration before each build'
-        task.group = AMEBA_CONFIGURATION
-        task.doLast { new CleanConfTask(getProjectConfiguration(project)).clean() }
-        task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME)
-    }
-
     //TODO to separate?
     private void prepareShowConventionRule() {
         project.tasks.addRule("Pattern: showConvention<ConventionName>: Shows current convention values for convention specified by name") { String taskName ->
@@ -117,23 +117,6 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
             }
         }
     }
-
-
-    static public final String DESCRIPTION =
-        """This is the base plugin which should be applied in any project.
-
-The plugin should be applied before any other Ameba plugin. It reads basic project configuration and loads shared
-configuration for all other plugins.
-
-This plugin provides setup-related tasks. The tasks allow to generate new configuration,
-verify existing configuration and show the configuration to the user.
-It also adds several utility tasks that can be used across all types of projects.
-
-Conventions defined in this task are used to provide default values for properties from all other plugins.
-Defining such defaults and importing them from your shared location is the easiest way to provide
-organisation-specific defaults across your projects.
-
-"""
 
     static class ProjectConfigurationConvention {
         static public final String DESCRIPTION =
