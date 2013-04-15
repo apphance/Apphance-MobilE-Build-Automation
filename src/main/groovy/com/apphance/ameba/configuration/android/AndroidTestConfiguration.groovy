@@ -51,7 +51,7 @@ class AndroidTestConfiguration extends Configuration {
 
     @Override
     boolean isActive() {
-        this.@enabled && androidConf.enabled
+        this.@enabled && androidConf.active
     }
 
     def emulatorSkin = new StringProperty(

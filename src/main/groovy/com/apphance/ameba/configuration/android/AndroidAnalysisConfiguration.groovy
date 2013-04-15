@@ -30,7 +30,7 @@ class AndroidAnalysisConfiguration extends Configuration {
 
     @Override
     boolean isActive() {
-        this.@enabled && androidConfiguration.enabled
+        this.@enabled && androidConfiguration.active
     }
 
     def analysisConfigUrl = new URLProperty(

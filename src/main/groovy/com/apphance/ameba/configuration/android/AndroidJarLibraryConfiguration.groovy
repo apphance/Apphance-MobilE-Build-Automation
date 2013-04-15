@@ -30,7 +30,7 @@ class AndroidJarLibraryConfiguration extends Configuration {
 
     @Override
     boolean isActive() {
-        this.@enabled && androidConfiguration.enabled
+        this.@enabled && androidConfiguration.active
     }
 
     def resourcePrefix = new StringProperty(

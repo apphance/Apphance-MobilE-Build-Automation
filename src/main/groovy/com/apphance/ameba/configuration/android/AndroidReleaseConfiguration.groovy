@@ -99,6 +99,6 @@ class AndroidReleaseConfiguration extends Configuration {
 
     @Override
     boolean isActive() {
-        this.@enabled && androidConfiguration.enabled
+        this.@enabled && androidConfiguration.active
     }
 }

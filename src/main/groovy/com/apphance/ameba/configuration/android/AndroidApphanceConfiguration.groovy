@@ -30,7 +30,7 @@ class AndroidApphanceConfiguration extends Configuration {
 
     @Override
     boolean isActive() {
-        androidConf.enabled && this.@enabled
+        this.@enabled && androidConf.active
     }
 
     def user = new StringProperty(
