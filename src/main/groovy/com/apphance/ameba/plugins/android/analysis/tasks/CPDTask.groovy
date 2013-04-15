@@ -1,11 +1,14 @@
 package com.apphance.ameba.plugins.android.analysis.tasks
 
-import com.google.inject.Inject
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
 
-class CPDTask {
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
 
-    @Inject Project project
+class CPDTask extends DefaultTask {
+
+    static String NAME = 'cpd'
+    String group = AMEBA_ANALYSIS
+    String description = 'Runs CPD (duplicated code) analysis on project'
 
     public void runCPD() {
 

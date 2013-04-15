@@ -2,13 +2,19 @@ package com.apphance.ameba.plugins.android.analysis.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.google.inject.Inject
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
 
 @Mixin(AndroidAnalysisMixin)
-class CheckstyleTask {
+class CheckstyleTask extends DefaultTask {
 
-    @Inject Project project
-    @Inject AndroidConfiguration androidConfiguration
+    static String NAME = 'checkstyle'
+    String group = AMEBA_ANALYSIS
+    String description = 'Runs Checkstyle analysis on project'
+
+    @Inject
+    private AndroidConfiguration androidConfiguration
 
     public void runCheckStyle() {
 

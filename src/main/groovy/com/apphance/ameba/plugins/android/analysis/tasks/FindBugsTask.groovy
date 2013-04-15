@@ -3,18 +3,24 @@ package com.apphance.ameba.plugins.android.analysis.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.util.Preconditions
 import com.google.inject.Inject
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.Project
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
 
 @Mixin(AndroidAnalysisMixin)
 @Mixin(Preconditions)
-class FindBugsTask {
+class FindBugsTask extends DefaultTask {
 
     public static final String FINDBUGS_HOME_DIR_PROPERTY = 'findbugs.home.dir'
     public static final String FINDBUGS_DEFAULT_HOME = '/var/lib/analysis/findbugs'
 
-    @Inject Project project
-    @Inject AndroidConfiguration androidConfiguration
+    static String NAME = 'findbugs'
+    String group = AMEBA_ANALYSIS
+    String description = 'Runs Findbugs analysis on project'
+
+    @Inject
+    private AndroidConfiguration androidConfiguration
 
     public void runFindbugs() {
         URL findbugsXml = getResourceUrl(project, 'findbugs-exclude.xml')
