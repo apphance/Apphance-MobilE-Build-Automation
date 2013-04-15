@@ -1,52 +1,55 @@
 package com.apphance.ameba.plugins.android.test.tasks
 
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
-import com.apphance.ameba.plugins.android.test.AndroidTestConfiguration
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidTestConfiguration
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
+import com.apphance.ameba.plugins.android.AndroidManifestHelper
 import com.apphance.ameba.util.file.FileManager
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskAction
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.PropertyCategory.readProperty
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
-import static com.apphance.ameba.plugins.android.test.AndroidTestConfigurationRetriever.getAndroidTestConfiguration
-import static com.apphance.ameba.plugins.android.test.AndroidTestProperty.MOCK_LOCATION
 import static com.apphance.ameba.executor.AntExecutor.CLEAN
 import static com.apphance.ameba.executor.AntExecutor.INSTRUMENT
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
-class TestAndroidTask {
+class TestAndroidTask extends DefaultTask {
 
     public static final String TEST_RUNNER = "pl.polidea.instrumentation.PolideaInstrumentationTestRunner"
 
     private l = getLogger(getClass())
 
-    private Project project
-    private AndroidProjectConfiguration androidConf
-    private AndroidTestConfiguration androidTestConf
+    static String NAME = 'pmd'
+    String group = AMEBA_TEST
+    String description = 'Runs android tests on the project'
+
+    @Inject
+    private AndroidConfiguration androidConf
+    @Inject
+    private AndroidTestConfiguration testConf
+    @Inject
     private CommandExecutor executor
-    private AndroidManifestHelper androidManifestHelper = new AndroidManifestHelper()
-    Process emulatorProcess
-    Process logcatProcess
+    @Inject
+    private AndroidManifestHelper manifestHelper
+    private Process emulatorProcess
+    private Process logcatProcess
 
-    TestAndroidTask(Project project, CommandExecutor executor) {
-        this.project = project
-        this.androidConf = getAndroidProjectConfiguration(project)
-        this.androidTestConf = getAndroidTestConfiguration(project)
-        this.executor = executor
-    }
-
+    @TaskAction
     void testAndroid() {
         // TODO: what to do when no test directory exists ?? should I automatically make one ??
-        if (!androidTestConf.androidTestDirectory.exists()) {
+        if (!testConf.testDir.value?.exists()) {
             println "Test directory not found. Please run gradle prepareRobotium in order to create simple Robotium project. Aborting"
             return
         }
         prepareTestBuilds()
-        startEmulator(androidTestConf.emulatorNoWindow)
+        startEmulator(testConf.emulatorNoWindow.value)
         try {
             installTestBuilds()
             runAndroidTests()
@@ -56,14 +59,14 @@ class TestAndroidTask {
     }
 
     private prepareTestBuilds() {
-        androidTestConf.coverageDir.delete()
-        androidTestConf.coverageDir.mkdirs()
-        androidTestConf.coverageDir.mkdir()
+        testConf.coverageDir.delete()
+        testConf.coverageDir.mkdirs()
+        testConf.coverageDir.mkdir()
         // empty raw dir first
-        if (androidTestConf.rawDir.exists()) {
-            deleteNonEmptyDirectory(androidTestConf.rawDir)
+        if (testConf.rawDir.exists()) {
+            deleteNonEmptyDirectory(testConf.rawDir)
         }
-        androidTestConf.rawDir.mkdir()
+        testConf.rawDir.mkdir()
         def commandAndroid = [
                 'android',
                 'update',
@@ -73,25 +76,25 @@ class TestAndroidTask {
                 '-m',
                 '../../'
         ]
-        executor.executeCommand(new Command(runDir: androidTestConf.androidTestDirectory, cmd: commandAndroid))
-        boolean useMockLocation = readProperty(project, MOCK_LOCATION).toString().toBoolean()
+        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: commandAndroid))
+        boolean useMockLocation = readProperty(project, testConf.mockLocation.value).toString().toBoolean()
         if (useMockLocation) {
-            androidManifestHelper.addPermissions(project.rootDir, 'android.permission.ACCESS_MOCK_LOCATION')
+            manifestHelper.addPermissions(project.rootDir, 'android.permission.ACCESS_MOCK_LOCATION')
         }
         try {
-            def antExecutor = new AntExecutor(androidTestConf.androidTestDirectory)
+            def antExecutor = new AntExecutor(testConf.testDir.value)
             antExecutor.executeTarget(CLEAN, ['test.runner': TEST_RUNNER])
             antExecutor.executeTarget(INSTRUMENT, ['test.runner': TEST_RUNNER])
-            File localEmFile = new File(androidTestConf.androidTestDirectory, 'coverage.em')
+            File localEmFile = new File(testConf.testDir.value, 'coverage.em')
             if (localEmFile.exists()) {
-                boolean res = localEmFile.renameTo(androidTestConf.coverageEmFile)
-                l.lifecycle("Renamed ${localEmFile} to ${androidTestConf.coverageEmFile} with result: ${res}")
+                boolean res = localEmFile.renameTo(testConf.coverageEMFile)
+                l.lifecycle("Renamed ${localEmFile} to ${testConf.coverageEMFile} with result: ${res}")
             } else {
-                l.lifecycle("No ${localEmFile}. Not renaming to ${androidTestConf.coverageEmFile}")
+                l.lifecycle("No ${localEmFile}. Not renaming to ${testConf.coverageEMFile}")
             }
         } finally {
             if (useMockLocation) {
-                androidManifestHelper.restoreOriginalManifest(project.rootDir)
+                manifestHelper.restoreOriginalManifest(project.rootDir)
             }
         }
     }
@@ -111,14 +114,13 @@ class TestAndroidTask {
     }
 
     private void startEmulator(boolean noWindow) {
-        l.lifecycle("Starting emulator ${androidTestConf.emulatorName}")
-        androidTestConf.emulatorPort = findFreeEmulatorPort()
+        l.lifecycle("Starting emulator ${testConf.emulatorName}")
         def emulatorCommand = [
                 'emulator',
                 '-avd',
-                androidTestConf.emulatorName,
+                testConf.emulatorName,
                 '-port',
-                androidTestConf.emulatorPort,
+                testConf.emulatorPort,
                 '-no-boot-anim'
         ]
         if (noWindow) {
@@ -128,42 +130,15 @@ class TestAndroidTask {
         Thread.sleep(4 * 1000) // sleep for some time.
         runLogCat(project)
         waitUntilEmulatorReady()
-        l.lifecycle("Started emulator ${androidTestConf.emulatorName}")
-    }
-
-    private int findFreeEmulatorPort() {
-        int startPort = 5554
-        int endPort = 5584
-        for (int port = startPort; port <= endPort; port += 2) {
-            l.lifecycle("Android emulator probing. trying ports: ${port} ${port + 1}")
-            try {
-                ServerSocket ss1 = new ServerSocket(port, 0, Inet4Address.getByAddress([127, 0, 0, 1] as byte[]))
-                try {
-                    ss1.setReuseAddress(true)
-                    ServerSocket ss2 = new ServerSocket(port + 1, 0, Inet4Address.getByAddress([127, 0, 0, 1] as byte[]))
-                    try {
-                        ss2.setReuseAddress(true)
-                        l.lifecycle("Success! ${port} ${port + 1} are free")
-                        return port
-                    } finally {
-                        ss2.close()
-                    }
-                } finally {
-                    ss1.close()
-                }
-            } catch (IOException e) {
-                l.lifecycle("Could not obtain ports ${port} ${port + 1}")
-            }
-        }
-        throw new GradleException("Could not find free emulator port (tried all from ${startPort} to ${endPort}!... ")
+        l.lifecycle("Started emulator ${testConf.emulatorName}")
     }
 
     private void runLogCat(Project project) {
-        l.lifecycle("Starting logcat monitor on ${androidTestConf.emulatorName}")
+        l.lifecycle("Starting logcat monitor on ${testConf.emulatorName}")
         String[] commandRunLogcat = [
-                androidTestConf.adbBinary,
+                testConf.getADBBinary(),
                 '-s',
-                "emulator-${androidTestConf.emulatorPort}",
+                "emulator-${testConf.emulatorPort}",
                 'logcat',
                 '-v',
                 'time'
@@ -172,11 +147,11 @@ class TestAndroidTask {
     }
 
     private void waitUntilEmulatorReady() {
-        l.lifecycle("Waiting until emulator is ready ${androidTestConf.emulatorName}")
+        l.lifecycle("Waiting until emulator is ready ${testConf.emulatorName}")
         String[] commandRunShell = [
-                androidTestConf.adbBinary,
+                testConf.getADBBinary(),
                 '-s',
-                "emulator-${androidTestConf.emulatorPort}",
+                "emulator-${testConf.emulatorPort}",
                 'shell',
                 'getprop',
                 'dev.bootcomplete'
@@ -185,7 +160,7 @@ class TestAndroidTask {
         while (true) {
             def res = executor.executeCommand(new Command(runDir: project.rootDir, cmd: commandRunShell, failOnError: false))
             if (res != null && res[0] == "1") {
-                l.lifecycle("Emulator is ready ${androidTestConf.emulatorName}!")
+                l.lifecycle("Emulator is ready ${testConf.emulatorName}!")
                 break
             }
             if (System.currentTimeMillis() - startTime > 360 * 1000) {
@@ -197,53 +172,53 @@ class TestAndroidTask {
     }
 
     private void installTestBuilds() {
-        executor.executeCommand(new Command(runDir: androidTestConf.androidTestDirectory, cmd: [
-                androidTestConf.adbBinary,
+        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
+                testConf.getADBBinary(),
                 '-s',
-                "emulator-${androidTestConf.emulatorPort}",
+                "emulator-${testConf.emulatorPort}",
                 'uninstall',
-                androidConf.mainProjectPackage
+                androidConf.mainPackage.value
         ], failOnError: false))
-        executor.executeCommand(new Command(runDir: androidTestConf.androidTestDirectory, cmd: [
-                androidTestConf.adbBinary,
+        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
+                testConf.getADBBinary(),
                 '-s',
-                "emulator-${androidTestConf.emulatorPort}",
+                "emulator-${testConf.emulatorPort}",
                 'uninstall',
-                androidTestConf.testProjectPackage
+                testConf.testProjectPackage
         ], failOnError: false))
         executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
-                androidTestConf.adbBinary,
+                testConf.getADBBinary(),
                 '-s',
-                "emulator-${androidTestConf.emulatorPort}",
+                "emulator-${testConf.emulatorPort}",
                 'install',
-                "bin/${androidConf.mainProjectName}-debug.apk"
+                "bin/${androidConf.projectName.value}-debug.apk"
         ]))
-        executor.executeCommand(new Command(runDir: androidTestConf.androidTestDirectory, cmd: [
-                androidTestConf.adbBinary,
+        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
+                testConf.getADBBinary(),
                 '-s',
-                "emulator-${androidTestConf.emulatorPort}",
+                "emulator-${testConf.emulatorPort}",
                 'install',
-                "bin/${androidTestConf.testProjectName}-instrumented.apk"
+                "bin/${testConf.testProjectName}-instrumented.apk"
         ]))
     }
 
     private void runAndroidTests() {
-        l.lifecycle("Running tests on ${androidTestConf.emulatorName}")
-        if (androidTestConf.testPerPackage) {
+        l.lifecycle("Running tests on ${testConf.emulatorName}")
+        if (testConf.testPerPackage) {
             def allPackages = []
-            FileManager.findAllPackages("", new File(androidTestConf.androidTestDirectory, "src"), allPackages)
+            FileManager.findAllPackages("", new File(testConf.getTestDir().value, "src"), allPackages)
             l.lifecycle("Running tests on packages ${allPackages}")
             allPackages.each {
                 l.lifecycle("Running tests for package ${it}")
                 def commandRunTests = prepareTestCommandLine(it)
                 l.lifecycle("Running  ${commandRunTests}")
-                executor.executeCommand(new Command(runDir: androidTestConf.androidTestDirectory, cmd: commandRunTests))
+                executor.executeCommand(new Command(runDir: testConf.getTestDir().value, cmd: commandRunTests))
             }
         } else {
             def commandRunTests = prepareTestCommandLine(null)
-            executor.executeCommand(new Command(runDir: androidTestConf.androidTestDirectory, cmd: commandRunTests))
+            executor.executeCommand(new Command(runDir: testConf.getTestDir().value, cmd: commandRunTests))
         }
-        if (androidTestConf.useEmma) {
+        if (testConf.emmaEnabled.value) {
             extractEmmaCoverage()
             prepareCoverageReport()
         }
@@ -252,9 +227,9 @@ class TestAndroidTask {
 
     private String[] prepareTestCommandLine(String packageName) {
         def commandLine = [
-                androidTestConf.adbBinary,
+                testConf.getADBBinary(),
                 '-s',
-                "emulator-${androidTestConf.emulatorPort}",
+                "emulator-${testConf.emulatorPort}",
                 'shell',
                 'am',
                 'instrument',
@@ -267,32 +242,32 @@ class TestAndroidTask {
                     packageName
             ]
         }
-        if (androidTestConf.useEmma) {
+        if (testConf.emmaEnabled.value) {
             commandLine += [
                     '-e',
                     'coverage',
                     'true',
                     '-e',
                     'coverageFile',
-                    androidTestConf.emmaDumpFile,
+                    testConf.emmaDumpFilePath,
             ]
         }
-        commandLine << "${androidTestConf.testProjectPackage}/${TEST_RUNNER}"
+        commandLine << "${testConf.testProjectPackage}/${TEST_RUNNER}"
         return (String[]) commandLine
     }
 
     private void extractEmmaCoverage() {
-        l.lifecycle("Extracting coverage report from ${androidTestConf.emulatorName}")
+        l.lifecycle("Extracting coverage report from ${testConf.emulatorName}")
         String[] commandDownloadCoverageFile = [
-                androidTestConf.adbBinary,
+                testConf.getADBBinary(),
                 '-s',
-                "emulator-${androidTestConf.emulatorPort}",
+                "emulator-${testConf.emulatorPort}",
                 'pull',
-                androidTestConf.emmaDumpFile,
-                androidTestConf.coverageEcFile
+                testConf.emmaDumpFilePath,
+                testConf.coverageECFile
         ]
-        executor.executeCommand(new Command(runDir: androidTestConf.androidTestDirectory, cmd: commandDownloadCoverageFile))
-        l.lifecycle("Pulled coverage report from ${androidTestConf.emulatorName} to ${androidTestConf.coverageDir}...")
+        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: commandDownloadCoverageFile))
+        l.lifecycle("Pulled coverage report from ${testConf.emulatorName} to ${testConf.coverageDir}...")
     }
 
     private void prepareCoverageReport() {
@@ -300,34 +275,34 @@ class TestAndroidTask {
                 classpath: project.configurations.emma.asPath)
         project.ant.emma {
             report(sourcepath: "${project.rootDir}/src") {
-                fileset(dir: androidTestConf.coverageDir) {
+                fileset(dir: testConf.coverageDir) {
                     include(name: 'coverage.ec*')
                     include(name: 'coverage.em')
                 }
-                xml(outfile: "${androidTestConf.coverageDir}/android_coverage.xml")
-                txt(outfile: "${androidTestConf.coverageDir}/android_coverage.txt")
-                html(outfile: "${androidTestConf.coverageDir}/android_coverage.html")
+                xml(outfile: "${testConf.coverageDir}/android_coverage.xml")
+                txt(outfile: "${testConf.coverageDir}/android_coverage.txt")
+                html(outfile: "${testConf.coverageDir}/android_coverage.html")
             }
         }
-        l.lifecycle("Prepared coverage report from ${androidTestConf.emulatorName} to ${androidTestConf.coverageDir}...")
+        l.lifecycle("Prepared coverage report from ${testConf.emulatorName} to ${testConf.coverageDir}...")
     }
 
     private void extractXMLJUnitFiles() {
-        l.lifecycle("Extracting coverage report from ${androidTestConf.emulatorName}")
+        l.lifecycle("Extracting coverage report from ${testConf.emulatorName}")
         String[] commandDownloadXmlFile = [
-                androidTestConf.adbBinary,
+                testConf.getADBBinary(),
                 '-s',
-                "emulator-${androidTestConf.emulatorPort}",
+                "emulator-${testConf.emulatorPort}",
                 'pull',
-                androidTestConf.xmlJUnitDir
+                testConf.XMLJUnitDirPath
         ]
-        executor.executeCommand(new Command(rawDir: androidTestConf.coverageDir, cmd: commandDownloadXmlFile))
+        executor.executeCommand(new Command(rawDir: testConf.coverageDir, cmd: commandDownloadXmlFile))
     }
 
     private void stopEmulator() {
-        l.lifecycle("Stopping emulator ${androidTestConf.emulatorName} and logcat")
+        l.lifecycle("Stopping emulator ${testConf.emulatorName} and logcat")
         emulatorProcess?.destroy()
         logcatProcess?.destroy()
-        l.lifecycle("Stopped emulator ${androidTestConf.emulatorName} and logcat")
+        l.lifecycle("Stopped emulator ${testConf.emulatorName} and logcat")
     }
 }

@@ -1,42 +1,44 @@
 package com.apphance.ameba.plugins.android.test.tasks
 
-import com.apphance.ameba.plugins.android.test.AndroidTestConfiguration
+import com.apphance.ameba.configuration.android.AndroidTestConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.Project
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.android.test.AndroidTestConfigurationRetriever.getAndroidTestConfiguration
+import javax.inject.Inject
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
-class StartEmulatorTask {
+class StartEmulatorTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    private Project project
+    static String NAME = 'startEmulator'
+    String group = AMEBA_TEST
+    String description = 'Starts emulator for manual inspection'
+
+    @Inject
     private CommandExecutor executor
-    private AndroidTestConfiguration androidTestConf
+    @Inject
+    private AndroidTestConfiguration testConf
     private Process emulatorProcess
 
-    StartEmulatorTask(Project project, CommandExecutor executor) {
-        this.project = project
-        this.executor = executor
-        this.androidTestConf = getAndroidTestConfiguration(project)
-    }
-
+    @TaskAction
     void startEmulator() {
         startEmulator(true)
     }
 
     private void startEmulator(boolean noWindow) {
-        l.lifecycle("Starting emulator ${androidTestConf.emulatorName}")
-        androidTestConf.emulatorPort = findFreeEmulatorPort()
+        l.lifecycle("Starting emulator ${testConf.emulatorName}")
         def emulatorCommand = [
                 'emulator',
                 '-avd',
-                androidTestConf.emulatorName,
+                testConf.emulatorName,
                 '-port',
-                androidTestConf.emulatorPort,
+                testConf.emulatorPort,
                 '-no-boot-anim'
         ]
         if (noWindow) {
@@ -44,44 +46,17 @@ class StartEmulatorTask {
         }
         emulatorProcess = executor.startCommand(new Command(runDir: project.rootDir, cmd: emulatorCommand))
         Thread.sleep(4 * 1000) // sleep for some time.
-        runLogCat(project)
+        runLogCat()
         waitUntilEmulatorReady()
-        l.lifecycle("Started emulator ${androidTestConf.emulatorName}")
+        l.lifecycle("Started emulator ${testConf.emulatorName}")
     }
 
-    private int findFreeEmulatorPort() {
-        int startPort = 5554
-        int endPort = 5584
-        for (int port = startPort; port <= endPort; port += 2) {
-            l.lifecycle("Android emulator probing. trying ports: ${port} ${port + 1}")
-            try {
-                ServerSocket ss1 = new ServerSocket(port, 0, Inet4Address.getByAddress([127, 0, 0, 1] as byte[]))
-                try {
-                    ss1.setReuseAddress(true)
-                    ServerSocket ss2 = new ServerSocket(port + 1, 0, Inet4Address.getByAddress([127, 0, 0, 1] as byte[]))
-                    try {
-                        ss2.setReuseAddress(true)
-                        l.lifecycle("Success! ${port} ${port + 1} are free")
-                        return port
-                    } finally {
-                        ss2.close()
-                    }
-                } finally {
-                    ss1.close()
-                }
-            } catch (IOException e) {
-                l.lifecycle("Could not obtain ports ${port} ${port + 1}")
-            }
-        }
-        throw new GradleException("Could not find free emulator port (tried all from ${startPort} to ${endPort}!... ")
-    }
-
-    private void runLogCat(Project project) {
-        l.lifecycle("Starting logcat monitor on ${androidTestConf.emulatorName}")
+    private void runLogCat() {
+        l.lifecycle("Starting logcat monitor on ${testConf.emulatorName}")
         String[] commandRunLogcat = [
-                androidTestConf.adbBinary,
+                testConf.getADBBinary(),
                 '-s',
-                "emulator-${androidTestConf.emulatorPort}",
+                "emulator-${testConf.emulatorPort}",
                 'logcat',
                 '-v',
                 'time'
@@ -90,11 +65,11 @@ class StartEmulatorTask {
     }
 
     private void waitUntilEmulatorReady() {
-        l.lifecycle("Waiting until emulator is ready ${androidTestConf.emulatorName}")
+        l.lifecycle("Waiting until emulator is ready ${testConf.emulatorName}")
         String[] commandRunShell = [
-                androidTestConf.adbBinary,
+                testConf.getADBBinary(),
                 '-s',
-                "emulator-${androidTestConf.emulatorPort}",
+                "emulator-${testConf.emulatorPort}",
                 'shell',
                 'getprop',
                 'dev.bootcomplete'
@@ -103,7 +78,7 @@ class StartEmulatorTask {
         while (true) {
             def res = executor.executeCommand(new Command(runDir: project.rootDir, cmd: commandRunShell, failOnError: false))
             if (res != null && res[0] == "1") {
-                l.lifecycle("Emulator is ready ${androidTestConf.emulatorName}!")
+                l.lifecycle("Emulator is ready ${testConf.emulatorName}!")
                 break
             }
             if (System.currentTimeMillis() - startTime > 360 * 1000) {

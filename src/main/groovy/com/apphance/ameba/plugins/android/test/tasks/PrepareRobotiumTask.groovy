@@ -1,35 +1,39 @@
 package com.apphance.ameba.plugins.android.test.tasks
 
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
-import com.apphance.ameba.plugins.android.test.AndroidTestConfiguration
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidTestConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
+import com.apphance.ameba.plugins.android.AndroidManifestHelper
 import groovy.text.SimpleTemplateEngine
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
-import static com.apphance.ameba.plugins.android.test.AndroidTestConfigurationRetriever.getAndroidTestConfiguration
+import javax.inject.Inject
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
-class PrepareRobotiumTask {
+class PrepareRobotiumTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
+    static String NAME = 'prepareRobotium'
+    String group = AMEBA_TEST
+    String description = 'Prepares file structure for Robotium test framework'
+
     private String robotiumPath = 'test/android'
-    private Project project
+
+    @Inject
     private CommandExecutor executor
-    private AndroidProjectConfiguration androidConf
-    private AndroidTestConfiguration androidTestConf
-    private AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
+    @Inject
+    private AndroidConfiguration androidConf
+    @Inject
+    private AndroidTestConfiguration testConf
+    @Inject
+    private AndroidManifestHelper manifestHelper
 
-    PrepareRobotiumTask(Project project, CommandExecutor executor) {
-        this.executor = executor
-        this.project = project
-        this.androidConf = getAndroidProjectConfiguration(project)
-        this.androidTestConf = getAndroidTestConfiguration(project)
-    }
-
+    @TaskAction
     void prepareRobotium() {
         File path = new File(project.rootDir.path, robotiumPath)
         setUpAndroidRobotiumProject(path)
@@ -45,7 +49,7 @@ class PrepareRobotiumTask {
         if (path.exists()) {
             println "Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
             command = [
-                    androidTestConf.androidBinary,
+                    testConf.androidBinary.canonicalPath,
                     '-v',
                     'update',
                     'test-project',
@@ -58,7 +62,7 @@ class PrepareRobotiumTask {
             println "No Robotium project detected, new one is going to be created"
             path.mkdirs()
             command = [
-                    androidTestConf.androidBinary,
+                    testConf.androidBinary.canonicalPath,
                     '-v',
                     'create',
                     'test-project',
@@ -120,7 +124,7 @@ class PrepareRobotiumTask {
 
     private void copyTemplateTestActivity(File path) {
         println "Coping template Robotium test Activity class"
-        File srcDir = new File(path.path + '/src/' + androidConf.mainProjectPackage.replace('.', File.separator))
+        File srcDir = new File(path.path + '/src/' + androidConf.mainPackage.value.replace('.', File.separator))
         srcDir.mkdirs()
 
         // Delete the default test class
@@ -133,7 +137,7 @@ class PrepareRobotiumTask {
 
 
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        def binding = [packageName: androidConf.mainProjectPackage, mainActivity: manifestHelper.getMainActivityName(project.rootDir)]
+        def binding = [packageName: androidConf.mainPackage.value, mainActivity: manifestHelper.getMainActivityName(project.rootDir)]
         def baseCaseResult = engine.createTemplate(baseCaseTemplate).make(binding)
         def helloCaseResult = engine.createTemplate(helloCaseTemplate).make(binding)
 
