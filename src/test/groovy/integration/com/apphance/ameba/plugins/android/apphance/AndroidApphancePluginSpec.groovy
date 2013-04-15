@@ -19,7 +19,7 @@ class AndroidApphancePluginSpec extends Specification {
         def aap = new AndroidApphancePlugin()
 
         and: 'create mock android release configuration and set it'
-        def aac = Spy(AndroidApphanceConfiguration)
+        def aac = Mock(AndroidApphanceConfiguration)
         aac.isActive() >> true
         aap.apphanceConf = aac
 
@@ -42,7 +42,7 @@ class AndroidApphancePluginSpec extends Specification {
         def aap = new AndroidApphancePlugin()
 
         and: 'create mock android release configuration and set it'
-        def aac = Spy(AndroidApphanceConfiguration)
+        def aac = Mock(AndroidApphanceConfiguration)
         aac.isActive() >> false
         aap.apphanceConf = aac
 

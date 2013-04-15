@@ -24,7 +24,7 @@ class AndroidAnalysisPluginSpec extends Specification {
         def aap = new AndroidAnalysisPlugin()
 
         and:
-        def aac = Spy(AndroidAnalysisConfiguration)
+        def aac = Mock(AndroidAnalysisConfiguration)
         aac.isActive() >> true
         aap.analysisConf = aac
 
@@ -82,7 +82,7 @@ class AndroidAnalysisPluginSpec extends Specification {
         def aap = new AndroidAnalysisPlugin()
 
         and:
-        def aac = Spy(AndroidAnalysisConfiguration)
+        def aac = Mock(AndroidAnalysisConfiguration)
         aac.isActive() >> false
         aap.analysisConf = aac
 

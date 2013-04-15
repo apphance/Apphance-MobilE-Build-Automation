@@ -3,13 +3,10 @@ package com.apphance.ameba.plugins.android.jarlibrary
 import com.apphance.ameba.configuration.android.AndroidJarLibraryConfiguration
 import com.apphance.ameba.plugins.android.jarlibrary.tasks.DeployJarLibraryTask
 import com.apphance.ameba.plugins.android.jarlibrary.tasks.JarLibraryTask
-import com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin.READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME
-import static com.apphance.ameba.plugins.android.jarlibrary.AndroidJarLibraryPlugin.DEPLOY_JAR_LIBRARY_TASK_NAME
-import static com.apphance.ameba.plugins.android.jarlibrary.AndroidJarLibraryPlugin.JAR_LIBRARY_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidJarLibraryPluginSpec extends Specification {
@@ -23,7 +20,7 @@ class AndroidJarLibraryPluginSpec extends Specification {
         def ajlp = new AndroidJarLibraryPlugin()
 
         and: 'create mock android release configuration and set it'
-        def ajlc = Spy(AndroidJarLibraryConfiguration)
+        def ajlc = Mock(AndroidJarLibraryConfiguration)
         ajlc.isActive() >> true
         ajlp.jarLibConf = ajlc
 
@@ -51,7 +48,7 @@ class AndroidJarLibraryPluginSpec extends Specification {
         def ajlp = new AndroidJarLibraryPlugin()
 
         and: 'create mock android release configuration and set it'
-        def ajlc = Spy(AndroidJarLibraryConfiguration)
+        def ajlc = Mock(AndroidJarLibraryConfiguration)
         ajlc.isActive() >> false
         ajlp.jarLibConf = ajlc
 
