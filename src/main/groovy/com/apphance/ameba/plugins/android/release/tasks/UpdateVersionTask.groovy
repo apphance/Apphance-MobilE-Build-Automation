@@ -14,7 +14,7 @@ class UpdateVersionTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    static String name = 'updateVersion'
+    static String NAME = 'updateVersion'
     String group = AMEBA_RELEASE
     String description = """Updates version stored in manifest file of the project.
            Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""

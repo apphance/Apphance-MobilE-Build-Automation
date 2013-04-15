@@ -26,7 +26,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    static String name = 'prepareAvailableArtifactsInfo'
+    static String NAME = 'prepareAvailableArtifactsInfo'
     String description = 'Prepares information about available artifacts for mail message to include'
     String group = AMEBA_RELEASE
 

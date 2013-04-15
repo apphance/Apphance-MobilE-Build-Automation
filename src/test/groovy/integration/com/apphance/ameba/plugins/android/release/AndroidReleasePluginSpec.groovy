@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.android.release
 
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.ameba.plugins.android.release.tasks.BuildDocZipTask
 import com.apphance.ameba.plugins.android.release.tasks.MailMessageTask
@@ -10,42 +11,66 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEAS
 import static com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin.READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_FOR_RELEASE_TASK_NAME
-import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.SEND_MAIL_MESSAGE_TASK_NAME
 import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidReleasePluginSpec extends Specification {
 
-    def "plugin tasks' graph configured correctly"() {
+    def 'tasks defined in plugin available when configuration is active'() {
+
         given:
         def project = builder().build()
 
-        and: 'add fake task, otherwise ProjectReleasePlugin must be loaded'
-        project.task(SEND_MAIL_MESSAGE_TASK_NAME)
+        and:
+        def arp = new AndroidReleasePlugin()
+
+        and: 'create mock android release configuration and set it'
+        def arc = Spy(AndroidReleaseConfiguration)
+        arc.isActive() >> true
+        arp.releaseConf = arc
 
         when:
-        project.plugins.apply(AndroidReleasePlugin)
+        arp.apply(project)
 
         then: 'every single task is in correct group'
-        project.tasks[UpdateVersionTask.name].group == AMEBA_RELEASE
-        project.tasks[BuildDocZipTask.name].group == AMEBA_RELEASE
-        project.tasks[AvailableArtifactsInfoTask.name].group == AMEBA_RELEASE
-        project.tasks[MailMessageTask.name].group == AMEBA_RELEASE
+        project.tasks[UpdateVersionTask.NAME].group == AMEBA_RELEASE
+        project.tasks[BuildDocZipTask.NAME].group == AMEBA_RELEASE
+        project.tasks[AvailableArtifactsInfoTask.NAME].group == AMEBA_RELEASE
+        project.tasks[MailMessageTask.NAME].group == AMEBA_RELEASE
 
         then: 'every task has correct dependencies'
-        project.tasks[UpdateVersionTask.name].dependsOn.contains(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
+        project.tasks[UpdateVersionTask.NAME].dependsOn.contains(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
 
-        project.tasks[BuildDocZipTask.name].dependsOn.flatten().containsAll(JAVADOC_TASK_NAME,
+        project.tasks[BuildDocZipTask.NAME].dependsOn.flatten().containsAll(JAVADOC_TASK_NAME,
                 READ_PROJECT_CONFIGURATION_TASK_NAME,
                 PREPARE_FOR_RELEASE_TASK_NAME)
 
-        project.tasks[AvailableArtifactsInfoTask.name].dependsOn.contains(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
+        project.tasks[AvailableArtifactsInfoTask.NAME].dependsOn.contains(READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
 
-        project.tasks[MailMessageTask.name].dependsOn.containsAll(READ_PROJECT_CONFIGURATION_TASK_NAME,
-                AvailableArtifactsInfoTask.name,
+        project.tasks[MailMessageTask.NAME].dependsOn.flatten().containsAll(READ_PROJECT_CONFIGURATION_TASK_NAME,
+                AvailableArtifactsInfoTask.NAME,
                 PREPARE_FOR_RELEASE_TASK_NAME)
+    }
 
-        then: 'sendMailMessage tasks depends on prepareMailMessage'
-        project.tasks[SEND_MAIL_MESSAGE_TASK_NAME].dependsOn.contains(MailMessageTask.name)
+    def 'no tasks available when configuration is inactive'() {
+        given:
+        def project = builder().build()
+
+        and:
+        def arp = new AndroidReleasePlugin()
+
+        and: 'create mock android release configuration and set it'
+        def arc = Spy(AndroidReleaseConfiguration)
+        arc.isActive() >> false
+        arp.releaseConf = arc
+
+        when:
+        arp.apply(project)
+
+        then: 'every single task is in correct group'
+        !project.getTasksByName(UpdateVersionTask.NAME, false)
+        !project.getTasksByName(BuildDocZipTask.NAME, false)
+        !project.getTasksByName(AvailableArtifactsInfoTask.NAME, false)
+        !project.getTasksByName(MailMessageTask.NAME, false)
     }
 }

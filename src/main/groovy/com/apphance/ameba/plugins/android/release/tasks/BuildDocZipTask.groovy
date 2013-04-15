@@ -13,7 +13,7 @@ class BuildDocZipTask extends DefaultTask {
 
     private l = getLogger(this.class)
 
-    static String name = 'buildDocumentationZip'
+    static String NAME = 'buildDocumentationZip'
     String description = 'Builds documentation .zip file'
     String group = AMEBA_RELEASE
 
