@@ -1,12 +1,12 @@
 package com.apphance.ameba.configuration.android
 
-import com.apphance.ameba.configuration.Configuration
+import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
 
 import javax.inject.Inject
 
 @com.google.inject.Singleton
-class AndroidApphanceConfiguration extends Configuration {
+class AndroidApphanceConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Android Apphance Configuration'
     private boolean enabled = false

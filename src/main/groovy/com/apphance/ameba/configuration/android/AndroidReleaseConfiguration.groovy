@@ -1,6 +1,6 @@
 package com.apphance.ameba.configuration.android
 
-import com.apphance.ameba.configuration.Configuration
+import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.plugins.release.AmebaArtifact
@@ -10,7 +10,7 @@ import com.google.inject.Inject
  * Keeps configuration for android release.
  */
 @com.google.inject.Singleton
-class AndroidReleaseConfiguration extends Configuration {
+class AndroidReleaseConfiguration extends AbstractConfiguration {
 
     final String configurationName = 'Android release configuration'
 

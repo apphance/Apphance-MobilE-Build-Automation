@@ -1,6 +1,6 @@
 package com.apphance.ameba.configuration.android
 
-import com.apphance.ameba.configuration.Configuration
+import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import org.gradle.api.Project
 
@@ -9,7 +9,7 @@ import javax.inject.Inject
 import static com.apphance.ameba.configuration.properties.ListStringProperty.getSEPARATOR
 
 @com.google.inject.Singleton
-class AndroidVariantsConfiguration extends Configuration {
+class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Android variants configuration'
 

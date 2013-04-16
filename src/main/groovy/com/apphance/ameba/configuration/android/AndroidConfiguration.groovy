@@ -1,6 +1,6 @@
 package com.apphance.ameba.configuration.android
 
-import com.apphance.ameba.configuration.Configuration
+import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.LongProperty
 import com.apphance.ameba.configuration.properties.StringProperty
@@ -8,7 +8,6 @@ import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 import javax.inject.Inject
@@ -17,7 +16,7 @@ import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static java.io.File.pathSeparator
 
 @com.google.inject.Singleton
-class AndroidConfiguration extends Configuration {
+class AndroidConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Android Configuration'
 

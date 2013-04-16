@@ -65,7 +65,7 @@ class ConfigurationSpec extends Specification {
 
         then:
         def e = thrown(IllegalStateException)
-        e.message == Configuration.ACCESS_DENIED
+        e.message == AbstractConfiguration.ACCESS_DENIED
     }
 
     @Ignore('Rewrite access checking to Guice AOP')

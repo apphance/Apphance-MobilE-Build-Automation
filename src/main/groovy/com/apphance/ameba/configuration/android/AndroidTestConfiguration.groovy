@@ -1,6 +1,6 @@
 package com.apphance.ameba.configuration.android
 
-import com.apphance.ameba.configuration.Configuration
+import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.BooleanProperty
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
@@ -15,7 +15,7 @@ import static java.io.File.separator
 import static java.net.InetAddress.getByAddress
 
 @com.google.inject.Singleton
-class AndroidTestConfiguration extends Configuration {
+class AndroidTestConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Android test configuration'
 

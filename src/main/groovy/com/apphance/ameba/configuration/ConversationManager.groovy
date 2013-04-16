@@ -11,8 +11,8 @@ class ConversationManager {
 
     def reader = buildReader()
 
-    def resolveConfigurations(Collection<Configuration> configurations) {
-        configurations.each { Configuration c ->
+    def resolveConfigurations(Collection<AbstractConfiguration> configurations) {
+        configurations.each { AbstractConfiguration c ->
             enablePlugin(c)
             readValues(c)
         }
@@ -22,7 +22,7 @@ class ConversationManager {
     }
 
     @groovy.transform.PackageScope
-    void enablePlugin(Configuration conf) {
+    void enablePlugin(AbstractConfiguration conf) {
         if (!conf.enabled) {
             print "Enable plugin ${conf.configurationName}? [y/n] "
             out.flush()
@@ -33,7 +33,7 @@ class ConversationManager {
     }
 
     @groovy.transform.PackageScope
-    void readValues(Configuration c) {
+    void readValues(AbstractConfiguration c) {
         if (c.enabled) {
             c.amebaProperties.each { AbstractProperty ap ->
                 if (ap.askUser()) {

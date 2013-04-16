@@ -1,6 +1,6 @@
 package com.apphance.ameba.configuration.ios
 
-import com.apphance.ameba.configuration.Configuration
+import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.LongProperty
 import com.apphance.ameba.configuration.properties.StringProperty
@@ -12,7 +12,7 @@ import javax.inject.Inject
 import static com.apphance.ameba.detection.ProjectType.IOS
 
 @com.google.inject.Singleton
-class IOSConfiguration extends Configuration {
+class IOSConfiguration extends AbstractConfiguration {
 
     @Inject
     Project project

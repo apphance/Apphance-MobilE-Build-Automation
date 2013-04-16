@@ -1,6 +1,6 @@
 package com.apphance.ameba.di
 
-import com.apphance.ameba.configuration.Configuration
+import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
@@ -17,7 +17,7 @@ class ConfigurationModuleSpec extends Specification {
     @Inject AndroidConfiguration androidConf2
 
     @Inject
-    Map<Integer, Configuration> configurations
+    Map<Integer, AbstractConfiguration> configurations
 
     def setup() {
         def fileLinker = Mock(FileLinker)

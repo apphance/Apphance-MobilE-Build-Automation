@@ -41,7 +41,7 @@ class GradlePropertiesPersister implements PropertyPersister {
     }
 
     @Override
-    def save(Collection<Configuration> configurations) {
+    def save(Collection<AbstractConfiguration> configurations) {
         if (propertyFile.exists()) {
             def backupFile = propertyFile.absolutePath + timeStamp
             log.info("Making backup of old configuration: $backupFile")
@@ -50,7 +50,7 @@ class GradlePropertiesPersister implements PropertyPersister {
         }
         propertyFile.createNewFile()
 
-        configurations.each { Configuration conf ->
+        configurations.each { AbstractConfiguration conf ->
 
             props.setProperty(conf.enabledPropKey, conf.enabled.toString())
 

@@ -1,6 +1,6 @@
 package com.apphance.ameba.di
 
-import com.apphance.ameba.configuration.Configuration
+import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.GradlePropertiesPersister
 import com.apphance.ameba.configuration.PropertyPersister
 import com.apphance.ameba.configuration.android.*
@@ -41,7 +41,7 @@ class ConfigurationModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        MapBinder<Integer, Configuration> m = MapBinder.newMapBinder(binder(), Integer, Configuration)
+        MapBinder<Integer, AbstractConfiguration> m = MapBinder.newMapBinder(binder(), Integer, AbstractConfiguration)
 
         int index = 0
 

@@ -1,15 +1,13 @@
 package com.apphance.ameba.configuration.android
 
-import com.apphance.ameba.configuration.Configuration
+import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.PropertyPersister
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
-import com.google.inject.Inject
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 
-class AndroidVariantConfiguration extends Configuration {
+class AndroidVariantConfiguration extends AbstractConfiguration {
 
     Project project
     final String name
