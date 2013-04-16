@@ -1,12 +1,17 @@
 package com.apphance.ameba.configuration
 
+import com.apphance.ameba.configuration.properties.FileProperty
+import com.apphance.ameba.configuration.properties.ListStringProperty
+import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.configuration.properties.URLProperty
 import com.apphance.ameba.plugins.release.AmebaArtifact
 
 interface ReleaseConfiguration extends Configuration {
 
+    //TODO how this field is set?
     Collection<String> getReleaseNotes()
 
-    URL getBaseURL()
+    URLProperty getProjectURL()
 
     String getProjectDirectoryName()
 
@@ -24,15 +29,15 @@ interface ReleaseConfiguration extends Configuration {
 
     AmebaArtifact getQRCodeFile()
 
-    Collection<String> getReleaseMailFlags()
+    ListStringProperty getReleaseMailFlags()
 
     String getReleaseMailSubject()
 
-    String getReleaseMailFrom()
+    StringProperty getReleaseMailFrom()
 
-    String getReleaseMailTo()
+    StringProperty getReleaseMailTo()
 
-    File getIconFile()
+    FileProperty getProjectIconFile()
 
     AmebaArtifact getGalleryCSS()
 
