@@ -1,8 +1,7 @@
-package com.apphance.ameba.configuration
+package com.apphance.ameba.configuration.reader
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.ios.IOSConfiguration
-import com.apphance.ameba.detection.ProjectType
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.di.ConfigurationModule
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator

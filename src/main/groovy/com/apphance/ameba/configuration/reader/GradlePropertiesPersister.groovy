@@ -1,5 +1,6 @@
-package com.apphance.ameba.configuration
+package com.apphance.ameba.configuration.reader
 
+import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.util.SortedProperties
 import com.apphance.ameba.configuration.properties.AbstractProperty
 import com.google.common.io.Files

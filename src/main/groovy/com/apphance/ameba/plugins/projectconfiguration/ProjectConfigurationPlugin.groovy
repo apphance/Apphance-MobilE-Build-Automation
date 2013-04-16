@@ -1,8 +1,8 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
 import com.apphance.ameba.configuration.AbstractConfiguration
-import com.apphance.ameba.configuration.ConversationManager
-import com.apphance.ameba.configuration.PropertyPersister
+import com.apphance.ameba.configuration.reader.ConversationManager
+import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.plugins.projectconfiguration.tasks.*
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin

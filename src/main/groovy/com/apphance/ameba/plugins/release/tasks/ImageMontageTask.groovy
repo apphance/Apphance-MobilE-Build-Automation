@@ -1,34 +1,34 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
+import com.apphance.ameba.configuration.ProjectConfiguration
+import com.apphance.ameba.configuration.ReleaseConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.retrieveProjectReleaseData
+import javax.inject.Inject
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
 import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(ImageNameFilter)
-class ImageMontageTask {
+class ImageMontageTask extends DefaultTask {
 
     private l = getLogger(getClass())
-    private Project project
-    private ProjectConfiguration conf
-    private ProjectReleaseConfiguration releaseConf
 
+    static String NAME = 'prepareImageMontage'
+    String group = AMEBA_RELEASE
+    String description = 'Builds montage of images found in the project'
+
+    @Inject
     private CommandExecutor executor
-
-    ImageMontageTask(Project project, CommandExecutor executor) {
-        this.project = project
-        this.conf = getProjectConfiguration(project)
-        this.releaseConf = retrieveProjectReleaseData(project)
-        this.executor = executor
-    }
+    @Inject
+    private ProjectConfiguration conf
+    @Inject
+    private ReleaseConfiguration releaseConf
 
     void imageMontage() {
         Collection<String> command = new LinkedList<String>()
@@ -38,10 +38,10 @@ class ImageMontageTask {
                 command << file
             }
         }
-        def tempFile = File.createTempFile("image_montage_${conf.projectName}", '.png')
+        def tempFile = File.createTempFile("image_montage_${conf.projectName.value}", '.png')
         command << tempFile.toString()
         executor.executeCommand(new Command(cmd: command, runDir: project.rootDir))
-        def imageMontageFile = new File(releaseConf.targetDirectory, "${conf.projectName}-${conf.fullVersionString}-image-montage.png")
+        def imageMontageFile = new File(releaseConf.targetDirectory, "${conf.projectName.value}-${conf.fullVersionString}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
         String[] convertCommand = [
@@ -52,7 +52,7 @@ class ImageMontageTask {
                 '-pointsize',
                 '36',
                 '-draw',
-                "gravity southwest fill black text 0,12 '${conf.projectName} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}'",
+                "gravity southwest fill black text 0,12 '${conf.projectName.value} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}'",
                 imageMontageFile
         ]
         try {

@@ -1,4 +1,4 @@
-package com.apphance.ameba.configuration
+package com.apphance.ameba.configuration.reader
 
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.LongProperty

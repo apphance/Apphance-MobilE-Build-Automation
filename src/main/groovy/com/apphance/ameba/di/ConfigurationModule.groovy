@@ -1,10 +1,11 @@
 package com.apphance.ameba.di
 
-import com.apphance.ameba.configuration.AbstractConfiguration
-import com.apphance.ameba.configuration.GradlePropertiesPersister
-import com.apphance.ameba.configuration.PropertyPersister
+import com.apphance.ameba.configuration.*
 import com.apphance.ameba.configuration.android.*
 import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.configuration.reader.GradlePropertiesPersister
+import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.google.inject.AbstractModule
 import com.google.inject.multibindings.MapBinder
@@ -15,7 +16,7 @@ import static com.apphance.ameba.detection.ProjectType.IOS
 
 class ConfigurationModule extends AbstractModule {
 
-    static configurations = [
+    def configurations = [
             (ANDROID): [
                     AndroidConfiguration,
                     AndroidApphanceConfiguration,
@@ -27,6 +28,18 @@ class ConfigurationModule extends AbstractModule {
             ],
             (IOS): [
                     IOSConfiguration,
+
+            ],
+    ]
+
+    def interfaces = [
+            (ANDROID): [
+                    (ProjectConfiguration): AndroidConfiguration,
+                    (ReleaseConfiguration): AndroidReleaseConfiguration
+            ],
+            (IOS): [
+                    (ProjectConfiguration): IOSConfiguration,
+                    (ReleaseConfiguration): IOSReleaseConfiguration
             ],
     ]
 
@@ -47,6 +60,10 @@ class ConfigurationModule extends AbstractModule {
 
         configurations[typeDetector.detectProjectType(project.rootDir)].each {
             m.addBinding(index++).to(it)
+        }
+
+        interfaces[typeDetector.detectProjectType(project.rootDir)].each {
+            bind(it.key).to(it.value)
         }
 
         bind(PropertyPersister).to(GradlePropertiesPersister)

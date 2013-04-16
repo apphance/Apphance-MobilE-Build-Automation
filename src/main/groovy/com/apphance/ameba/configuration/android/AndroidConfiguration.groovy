@@ -1,6 +1,7 @@
 package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.AbstractConfiguration
+import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.LongProperty
 import com.apphance.ameba.configuration.properties.StringProperty
@@ -16,7 +17,7 @@ import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static java.io.File.pathSeparator
 
 @com.google.inject.Singleton
-class AndroidConfiguration extends AbstractConfiguration {
+class AndroidConfiguration extends AbstractConfiguration implements ProjectConfiguration {
 
     String configurationName = 'Android Configuration'
 
@@ -48,7 +49,7 @@ class AndroidConfiguration extends AbstractConfiguration {
         projectTypeDetector.detectProjectType(project.rootDir) == ANDROID
     }
 
-    def projectName = new StringProperty(
+    StringProperty projectName = new StringProperty(
             name: 'android.project.name',
             message: 'Project name',
             defaultValue: { defaultName() },
@@ -73,7 +74,7 @@ class AndroidConfiguration extends AbstractConfiguration {
             askUser: { false })
 
     //TODO dynamic
-    def tmpDir = new FileProperty(
+    FileProperty tmpDir = new FileProperty(
             name: 'android.dir.tmp',
             message: 'Project temporary directory',
             defaultValue: { project.file('tmp') },
@@ -261,5 +262,15 @@ class AndroidConfiguration extends AbstractConfiguration {
 
     boolean isLibrary() {
         androidProperties.get('android.library') == 'true'
+    }
+
+    @Override
+    String getFullVersionString() {
+        "$versionString.value_$versionCode.value"
+    }
+
+    @Override
+    String getProjectVersionedName() {
+        "$projectName.value-$fullVersionString"
     }
 }

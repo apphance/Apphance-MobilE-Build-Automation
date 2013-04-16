@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat
  *  Category used to get release-specific methods.
  *
  */
+//TODO to be removed
 public class ProjectReleaseCategory {
 
     public static final String PROJECT_RELEASE_CONFIGURATION_KEY = 'project.release.configuration'
@@ -84,7 +85,7 @@ public class ProjectReleaseCategory {
 
     public static void fillMailSubject(AndroidConfiguration conf, ResourceBundle resourceBundle) {
         String subject = resourceBundle.getString('Subject')
-        Eval.me("conf", [projectName:conf.projectName.value, fullVersionString:conf.versionString.value], /"$subject"/)
+        Eval.me("conf", [projectName: conf.projectName.value, fullVersionString: conf.versionString.value], /"$subject"/)
     }
 
     public static splitUrl(String urlString) {

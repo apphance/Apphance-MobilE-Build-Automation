@@ -1,7 +1,7 @@
 package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.AbstractConfiguration
-import com.apphance.ameba.configuration.PropertyPersister
+import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.StringProperty

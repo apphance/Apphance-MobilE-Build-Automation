@@ -7,12 +7,13 @@ import com.apphance.ameba.executor.linker.FileLinker
 import com.apphance.ameba.plugins.AmebaPlugin
 import com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever
 import org.gradle.testfixtures.ProjectBuilder
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
-
+@Ignore('requires compiled project to run')
 class AndroidDependencyDetectionSpec extends Specification {
 
     def fileLinker = Mock(FileLinker)

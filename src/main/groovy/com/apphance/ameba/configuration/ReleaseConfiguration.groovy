@@ -21,11 +21,19 @@ interface ReleaseConfiguration extends Configuration {
 
     AmebaArtifact getSourcesZip()
 
+    void setSourcesZip(AmebaArtifact aa)
+
     AmebaArtifact getDocumentationZip()
+
+    void setDocumentationZip(AmebaArtifact aa)
 
     AmebaArtifact getImageMontageFile()
 
+    void setImageMontageFile(AmebaArtifact aa)
+
     AmebaArtifact getMailMessageFile()
+
+    void setMailMessageFile(AmebaArtifact aa)
 
     AmebaArtifact getQRCodeFile()
 
@@ -41,9 +49,15 @@ interface ReleaseConfiguration extends Configuration {
 
     AmebaArtifact getGalleryCSS()
 
+    void setGalleryCSS(AmebaArtifact aa)
+
     AmebaArtifact getGalleryJS()
 
+    void setGalleryJS(AmebaArtifact aa)
+
     AmebaArtifact getGalleryTrans()
+
+    void setGalleryTrans(AmebaArtifact aa)
 
     Locale getLocale()
 

@@ -1,6 +1,7 @@
 package com.apphance.ameba.configuration
 
 import com.apphance.ameba.configuration.properties.AbstractProperty
+import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.google.inject.Inject
 
 import java.lang.reflect.Field

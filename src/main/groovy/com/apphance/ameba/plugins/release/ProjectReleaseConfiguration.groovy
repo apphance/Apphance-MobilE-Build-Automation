@@ -6,6 +6,7 @@ import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
  * Configuration for project release.
  *
  */
+//TODO to be removed
 class ProjectReleaseConfiguration {
 
     ProjectConfiguration projectConfiguration

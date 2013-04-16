@@ -1,33 +1,41 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
-import org.gradle.api.Project
+import com.apphance.ameba.configuration.ReleaseConfiguration
+import com.apphance.ameba.configuration.reader.EnvPropertyReader
+import org.apache.tools.ant.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.readPropertyOrEnvironmentVariable
-import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.retrieveProjectReleaseData
+import javax.inject.Inject
 
-class SendMailMessageTask {
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 
-    private Project project
-    private AntBuilder ant
-    private ProjectReleaseConfiguration releaseConf
+class SendMailMessageTask extends DefaultTask {
 
-    SendMailMessageTask(Project project) {
-        this.project = project
-        this.ant = project.ant
-        this.releaseConf = retrieveProjectReleaseData(project)
-    }
+    static String NAME = 'sendMailMessage'
+    String group = AMEBA_RELEASE
+    String description = """Sends mail message. Requires mail.server, mail.port properties
+             or corresponding MAIL_SERVER, MAIL_PORT env variables (no authentication).
+             It also uses certain properties to send mails:
+             release.mail.from, release.mail.to, release.mail.flags
+             flags are one of: qrCode,imageMontage"""
 
+    @Inject
+    private ReleaseConfiguration releaseConf
+    @Inject
+    private EnvPropertyReader envPropertyReader
+
+    @TaskAction
     void sendMailMessage() {
-        def mailServer = readPropertyOrEnvironmentVariable(project, 'mail.server')
-        def mailPort = readPropertyOrEnvironmentVariable(project, 'mail.port')
+        def mailServer = envPropertyReader.readProperty('mail.server')
+        def mailPort = envPropertyReader.readProperty('mail.port')
 
         Properties props = System.getProperties()
         props.put('mail.smtp.host', mailServer)
         props.put('mail.smtp.port', mailPort)
 
         project.configurations.mail.each {
-            org.apache.tools.ant.Project.class.classLoader.addURL(it.toURI().toURL())
+            Project.class.classLoader.addURL(it.toURI().toURL())
         }
 
         ant.mail(
@@ -38,10 +46,10 @@ class SendMailMessageTask {
                 tolist: releaseConf.releaseMailTo) {
             from(address: releaseConf.releaseMailFrom)
             message(mimetype: "text/html", releaseConf.mailMessageFile.location.text)
-            if (releaseConf.releaseMailFlags.contains("qrCode")) {
-                fileset(file: releaseConf.qrCodeFile.location)
+            if (releaseConf.releaseMailFlags.value.contains("qrCode")) {
+                fileset(file: releaseConf.QRCodeFile.location)
             }
-            if (releaseConf.releaseMailFlags.contains("imageMontage") && releaseConf.imageMontageFile != null) {
+            if (releaseConf.releaseMailFlags.value.contains("imageMontage") && releaseConf.imageMontageFile != null) {
                 fileset(file: releaseConf.imageMontageFile.location)
             }
         }

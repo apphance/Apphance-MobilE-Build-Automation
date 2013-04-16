@@ -20,7 +20,7 @@ class MailMessageTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    static String NAME = PREPARE_MAIL_MESSAGE_TASK_NAME
+    static String NAME = 'prepareMailMessage'
     String group = AMEBA_RELEASE
     String description = 'Prepares mail message which summarises the release'
 

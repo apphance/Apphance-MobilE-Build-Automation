@@ -1,4 +1,4 @@
-package com.apphance.ameba.configuration
+package com.apphance.ameba.configuration.reader
 
 import spock.lang.Specification
 

@@ -7,14 +7,12 @@ import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTa
 import com.apphance.ameba.plugins.android.release.tasks.BuildDocZipTask
 import com.apphance.ameba.plugins.android.release.tasks.MailMessageTask
 import com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
+import com.apphance.ameba.plugins.release.tasks.PrepareForReleaseTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin.READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME
-import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
-import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_FOR_RELEASE_TASK_NAME
 import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
 
 /**
@@ -41,20 +39,18 @@ class AndroidReleasePlugin implements Plugin<Project> {
 
             project.task(
                     UpdateVersionTask.NAME,
-                    type: UpdateVersionTask,
-                    dependsOn: READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
+                    type: UpdateVersionTask)
             project.task(
                     AvailableArtifactsInfoTask.NAME,
-                    type: AvailableArtifactsInfoTask,
-                    dependsOn: READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
+                    type: AvailableArtifactsInfoTask)
             project.task(
                     BuildDocZipTask.NAME,
                     type: BuildDocZipTask,
-                    dependsOn: [JAVADOC_TASK_NAME, READ_PROJECT_CONFIGURATION_TASK_NAME, PREPARE_FOR_RELEASE_TASK_NAME])
+                    dependsOn: [JAVADOC_TASK_NAME, PrepareForReleaseTask.NAME])
             project.task(
                     MailMessageTask.NAME,
                     type: MailMessageTask,
-                    dependsOn: [AvailableArtifactsInfoTask.NAME, READ_PROJECT_CONFIGURATION_TASK_NAME, PREPARE_FOR_RELEASE_TASK_NAME])
+                    dependsOn: [AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME])
 
             //TODO to be separated, refactored, redesigned :/
             AndroidSingleVariantApkBuilder.buildListeners << androidReleaseApkListener

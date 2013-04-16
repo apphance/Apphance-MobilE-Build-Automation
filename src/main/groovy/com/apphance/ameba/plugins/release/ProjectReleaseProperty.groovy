@@ -4,6 +4,7 @@ package com.apphance.ameba.plugins.release
  * Properties for all release-related plugins.
  *
  */
+//TODO to be removed
 enum ProjectReleaseProperty {
 
     RELEASE_PROJECT_ICON_FILE('release.project.icon.file', 'Path to project\'s icon file'),

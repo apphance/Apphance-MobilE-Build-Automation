@@ -1,34 +1,40 @@
 package com.apphance.ameba.plugins.release.tasks
 
+import com.apphance.ameba.configuration.ReleaseConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.retrieveProjectReleaseData
+import javax.inject.Inject
 
-class CopyGalleryFilesTask {
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
 
-    private ProjectReleaseConfiguration releaseConf
+class CopyGalleryFilesTask extends DefaultTask {
 
-    CopyGalleryFilesTask(Project project) {
-        this.releaseConf = retrieveProjectReleaseData(project)
-    }
+    static String NAME = 'copyGalleryFiles'
+    String group = AMEBA_CONFIGURATION
+    String description = 'Copy files required by swipe jquerymobile gallery'
 
-    public void copy() {
+    @Inject
+    private ReleaseConfiguration releaseConf
+
+
+    @TaskAction
+    void copy() {
         prepareGalleryArtifacts()
-        releaseConf.galleryCss.location.parentFile.mkdirs()
-        releaseConf.galleryJs.location.parentFile.mkdirs()
-        releaseConf.galleryCss.location.setText(getClass().getResourceAsStream('swipegallery/_css/jquery.swipegallery.css').text, 'utf-8')
-        releaseConf.galleryJs.location.setText(getClass().getResourceAsStream('swipegallery/_res/jquery.swipegallery.js').text, 'utf-8')
+        releaseConf.galleryCSS.location.parentFile.mkdirs()
+        releaseConf.galleryJS.location.parentFile.mkdirs()
+        releaseConf.galleryCSS.location.setText(getClass().getResourceAsStream('swipegallery/_css/jquery.swipegallery.css').text, 'utf-8')
+        releaseConf.galleryJS.location.setText(getClass().getResourceAsStream('swipegallery/_res/jquery.swipegallery.js').text, 'utf-8')
         releaseConf.galleryTrans.location.setText(getClass().getResourceAsStream('swipegallery/_res/trans.png').text, 'utf-8')
     }
 
     private prepareGalleryArtifacts() {
-        releaseConf.galleryCss = new AmebaArtifact(
+        releaseConf.galleryCSS = new AmebaArtifact(
                 name: 'CSS Gallery',
                 url: new URL(releaseConf.versionedApplicationUrl, '_css/jquery.swipegallery.css'),
                 location: new File(releaseConf.targetDirectory, '_css/jquery.swipegallery.css'))
-        releaseConf.galleryJs = new AmebaArtifact(
+        releaseConf.galleryJS = new AmebaArtifact(
                 name: 'JS Gallery',
                 url: new URL(releaseConf.versionedApplicationUrl, '_res/jquery.swipegallery.js'),
                 location: new File(releaseConf.targetDirectory, '_res/jquery.swipegallery.js'))
