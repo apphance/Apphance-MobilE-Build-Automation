@@ -36,7 +36,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     def variantsNames = new ListStringProperty(
             name: 'android.variants',
-            askUser: { true }
+            askUser: { false }
     )
 
     private List<AndroidVariantConfiguration> buildVariantsList() {
@@ -44,11 +44,11 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
         if (variantsNames.value) {
             result.addAll(extractVariantsFromProperties())
         } else if (variantsDirExistsAndIsNotEmpty()) {
+            variantsNames.value = variantsDir.listFiles().collect { it.name.toLowerCase() }.join(SEPARATOR)
             result.addAll(extractVariantsFromDir())
-            variantsNames.value = result*.name.join(SEPARATOR)
         } else {
+            variantsNames.value = AndroidBuildMode.values().collect { it.name().toLowerCase() }.join(SEPARATOR)
             result.addAll(extractDefaultVariants())
-            variantsNames.value = result*.name.join(SEPARATOR)
         }
         result
     }
@@ -67,11 +67,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     }
 
     private List<AndroidVariantConfiguration> extractVariantsFromDir() {
-        getVariantsDir().listFiles()*.name.collect { String dirName ->
-            AndroidBuildMode.values()*.name().collect { String modeName ->
-                createVariant(dirName.toLowerCase().capitalize() + modeName.toLowerCase().capitalize())
-            }
-        }.flatten()
+        getVariantsDir().listFiles().collect { createVariant(it.name.toLowerCase()) }
     }
 
     private List<AndroidVariantConfiguration> extractDefaultVariants() {

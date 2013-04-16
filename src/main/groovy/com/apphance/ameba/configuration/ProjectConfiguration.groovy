@@ -13,5 +13,9 @@ public interface ProjectConfiguration extends Configuration {
 
     FileProperty getTmpDir()
 
+    FileProperty getBuildDir()
+
+    FileProperty getLogDir()
+
     Collection<String> getSourceExcludes()
 }

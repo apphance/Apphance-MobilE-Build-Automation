@@ -14,8 +14,10 @@ class InstallTask extends DefaultTask {
 
     String group = AMEBA_BUILD
 
-    @Inject AndroidConfiguration androidConf
-    @Inject AndroidReleaseConfiguration androidReleaseConf
+    @Inject
+    private AndroidConfiguration androidConf
+    @Inject
+    private AndroidReleaseConfiguration androidReleaseConf
 
     AndroidVariantConfiguration variant
 

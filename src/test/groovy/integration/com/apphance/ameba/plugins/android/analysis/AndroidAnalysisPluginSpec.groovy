@@ -76,9 +76,6 @@ class AndroidAnalysisPluginSpec extends Specification {
         def project = builder().build()
 
         and:
-        project.tasks.add(CLASSES_TASK_NAME)
-
-        and:
         def aap = new AndroidAnalysisPlugin()
 
         and:
@@ -89,7 +86,7 @@ class AndroidAnalysisPluginSpec extends Specification {
         when:
         aap.apply(project)
 
-        then: 'configurations for tasks were added properly'
+        then:
         !project.configurations.findByName('pmdConf')
         !project.configurations.findByName('findbugsConf')
         !project.configurations.findByName('checkstyleConf')

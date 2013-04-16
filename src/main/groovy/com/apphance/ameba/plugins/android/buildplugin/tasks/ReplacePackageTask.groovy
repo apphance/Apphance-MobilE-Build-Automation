@@ -3,6 +3,7 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.google.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -18,7 +19,10 @@ class ReplacePackageTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    private AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
+    @Inject
+    private AndroidManifestHelper manifestHelper
+    @Inject
+    private AndroidBuildXmlHelper buildXMLHelper
 
     @TaskAction
     void replacePackage() {
@@ -38,7 +42,6 @@ class ReplacePackageTask extends DefaultTask {
             }
             if (newName != null) {
                 l.lifecycle("Replacing name with ${newName}")
-                AndroidBuildXmlHelper buildXMLHelper = new AndroidBuildXmlHelper()
                 buildXMLHelper.replaceProjectName(project.rootDir, newName)
             }
             File sourceFolder = project.file("src/" + oldPackage.replaceAll('\\.', '/'))

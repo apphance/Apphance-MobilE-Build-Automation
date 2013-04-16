@@ -2,8 +2,6 @@ package com.apphance.ameba.plugins.android.buildplugin
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
-import com.apphance.ameba.executor.AndroidExecutor
-import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.android.buildplugin.tasks.*
 import com.apphance.ameba.plugins.projectconfiguration.tasks.CleanConfTask
 import org.gradle.api.Plugin
@@ -11,9 +9,6 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
-import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.VERIFY_SETUP_TASK_NAME
-import static org.gradle.api.logging.Logging.getLogger
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
 import static org.gradle.api.plugins.JavaPlugin.COMPILE_JAVA_TASK_NAME
 import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
@@ -29,39 +24,49 @@ import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
  */
 class AndroidPlugin implements Plugin<Project> {
 
-    private l = getLogger(getClass())
-
-    public static final String READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME = 'readAndroidProjectConfiguration'
-
-    @Inject AndroidConfiguration androidConfiguration
-    @Inject AndroidVariantsConfiguration variantsConf
-    @Inject CommandExecutor executor
-    @Inject AndroidExecutor androidExecutor
+    @Inject
+    private AndroidConfiguration androidConfiguration
+    @Inject
+    private AndroidVariantsConfiguration variantsConf
 
     @Override
     void apply(Project project) {
 
-        if (androidConfiguration.enabled) {
+        if (androidConfiguration.isEnabled()) {
             prepareJavaEnvironment(project)
 
-            project.task(CleanClassesTask.NAME, type: CleanClassesTask)
-            project.task(CopySourcesTask.name, type: CopySourcesTask)
-            project.task(ReplacePackageTask.NAME, type: ReplacePackageTask)
-            project.task(RunUpdateProjectTask.NAME, TYPE: RunUpdateProjectTask)
+            project.task(RunUpdateProjectTask.NAME, type: RunUpdateProjectTask)
 
-            project.task(CleanAndroidTask.NAME, type: CleanAndroidTask, dependsOn: CleanConfTask.NAME)
+            project.task(CleanClassesTask.NAME,
+                    type: CleanClassesTask,
+                    dependsOn: RunUpdateProjectTask.NAME)
+
+            project.task(CopySourcesTask.NAME,
+                    type: CopySourcesTask,
+                    dependsOn: RunUpdateProjectTask.NAME)
+
+            project.task(ReplacePackageTask.NAME,
+                    type: ReplacePackageTask,
+                    dependsOn: RunUpdateProjectTask.NAME)
+
+            project.task(CleanAndroidTask.NAME,
+                    type: CleanAndroidTask,
+                    dependsOn: [CleanConfTask.NAME, RunUpdateProjectTask.NAME])
+
             project.tasks[CLEAN_TASK_NAME].dependsOn(CleanAndroidTask.NAME)
 
-            project.task(CompileAndroidTask.NAME, type: CompileAndroidTask)
+            project.task(CompileAndroidTask.NAME,
+                    type: CompileAndroidTask,
+                    dependsOn: RunUpdateProjectTask.NAME)
+
             project.tasks[JAVADOC_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
             project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
 
             variantsConf.variants.each {
-                project.task("install${it.name}", type: InstallTask, variant: it,
-                        dependsOn: READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
-
                 project.task("build${it.name}", type: SingleVariantTask, variant: it,
-                        dependsOn: [READ_PROJECT_CONFIGURATION_TASK_NAME, VERIFY_SETUP_TASK_NAME, CopySourcesTask.NAME])
+                        dependsOn: [CopySourcesTask.NAME, RunUpdateProjectTask.NAME])
+
+                project.task("install${it.name}", type: InstallTask, variant: it, dependsOn: "build${it.name}")
             }
         }
     }
@@ -80,11 +85,17 @@ class AndroidPlugin implements Plugin<Project> {
         project.compileJava.options.encoding = 'UTF-8'
         project.javadoc.options.encoding = 'UTF-8'
         project.compileTestJava.options.encoding = 'UTF-8'
-        project.dependencies.add('compile', project.files('ext-classes'))
-        project.dependencies.add('compile', project.files(androidConfiguration.sdkJars))
-        project.dependencies.add('compile', project.files(androidConfiguration.jarLibraries))
-        project.dependencies.add('compile', project.files(androidConfiguration.linkedJarLibraries))
-
-        println "########### project.dependencies: ${project.dependencies}"
+        project.dependencies {
+            add('compile', project.files('ext-classes'))
+            if (androidConfiguration.sdkJars) {
+                add('compile', project.files(androidConfiguration.sdkJars))
+            }
+            if (androidConfiguration.jarLibraries) {
+                add('compile', project.files(androidConfiguration.jarLibraries))
+            }
+            if (androidConfiguration.linkedJarLibraries) {
+                add('compile', project.files(androidConfiguration.linkedJarLibraries))
+            }
+        }
     }
 }

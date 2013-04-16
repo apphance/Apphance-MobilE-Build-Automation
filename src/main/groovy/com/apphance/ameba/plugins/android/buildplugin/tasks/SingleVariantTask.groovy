@@ -16,8 +16,10 @@ import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetr
 class SingleVariantTask extends DefaultTask {
 
     String group = AMEBA_BUILD
+
+    @Inject
+    private AndroidConfiguration androidConfiguration
     AndroidVariantConfiguration variant
-    @Inject AndroidConfiguration androidConfiguration
 
     private AndroidSingleVariantJarBuilder androidJarBuilder
     private AndroidSingleVariantApkBuilder androidApkBuilder

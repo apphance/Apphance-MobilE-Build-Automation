@@ -7,7 +7,6 @@ import com.google.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-import static com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin.READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME
 
 /**
  * Helps building the library with resources embedded. It is useful in case we want to generate libraries like
@@ -32,8 +31,7 @@ class AndroidJarLibraryPlugin implements Plugin<Project> {
         if (jarLibConf.isEnabled()) {
 
             project.task(JarLibraryTask.NAME,
-                    type: JarLibraryTask,
-                    dependsOn: READ_ANDROID_PROJECT_CONFIGURATION_TASK_NAME)
+                    type: JarLibraryTask)
 
             project.configurations.add('jarLibraryConfiguration')
 

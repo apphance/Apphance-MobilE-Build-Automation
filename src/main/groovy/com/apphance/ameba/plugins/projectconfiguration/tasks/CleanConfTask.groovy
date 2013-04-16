@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.projectconfiguration.tasks
 
-import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.ProjectConfiguration
 import com.google.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -13,7 +13,8 @@ class CleanConfTask extends DefaultTask {
     String description = 'Cleans configuration before each build'
     String group = AMEBA_CONFIGURATION
 
-    @Inject AndroidConfiguration conf
+    @Inject
+    private ProjectConfiguration conf
 
     @TaskAction
     void clean() {

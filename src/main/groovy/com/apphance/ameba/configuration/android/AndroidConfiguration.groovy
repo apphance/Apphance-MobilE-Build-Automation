@@ -67,7 +67,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
             defaultValue: { manifestHelper.readVersion(project.rootDir).versionString })
 
     //TODO dynamic
-    def buildDir = new FileProperty(
+    FileProperty buildDir = new FileProperty(
             name: 'android.dir.build',
             message: 'Project build directory',
             defaultValue: { project.file('build') },
@@ -81,7 +81,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
             askUser: { false })
 
     //TODO dynamic
-    def logDir = new FileProperty(
+    FileProperty logDir = new FileProperty(
             name: 'android.dir.log',
             message: 'Project log directory',
             defaultValue: { project.file('log') },

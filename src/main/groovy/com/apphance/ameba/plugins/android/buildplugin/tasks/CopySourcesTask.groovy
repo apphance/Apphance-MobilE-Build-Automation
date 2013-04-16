@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.google.common.base.Preconditions
 import com.google.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -14,12 +15,14 @@ class CopySourcesTask extends DefaultTask {
     String description = 'Copies all sources to tmp directory for build'
     String group = AMEBA_BUILD
 
-    @Inject AndroidConfiguration androidConfiguration
-    @Inject AndroidVariantsConfiguration androidVariantsConfiguration
+    @Inject
+    private AndroidConfiguration androidConfiguration
+    @Inject
+    private AndroidVariantsConfiguration androidVariantsConfiguration
 
     @TaskAction
     void copySources() {
-        assert androidVariantsConfiguration.variants != null
+        Preconditions.checkNotNull(androidVariantsConfiguration.variants)
 
         androidVariantsConfiguration.variants.each { variant ->
             project.ant.sync(toDir: variant.tmpDirectory, overwrite: true, failonerror: false, verbose: false) {
