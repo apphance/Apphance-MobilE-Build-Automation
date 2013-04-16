@@ -29,7 +29,7 @@ class AndroidJarLibraryPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        if (jarLibConf.isActive()) {
+        if (jarLibConf.isEnabled()) {
 
             project.task(JarLibraryTask.NAME,
                     type: JarLibraryTask,

@@ -21,7 +21,7 @@ class AndroidJarLibraryPluginSpec extends Specification {
 
         and: 'create mock android release configuration and set it'
         def ajlc = Mock(AndroidJarLibraryConfiguration)
-        ajlc.isActive() >> true
+        ajlc.isEnabled() >> true
         ajlp.jarLibConf = ajlc
 
         when:
@@ -49,7 +49,7 @@ class AndroidJarLibraryPluginSpec extends Specification {
 
         and: 'create mock android release configuration and set it'
         def ajlc = Mock(AndroidJarLibraryConfiguration)
-        ajlc.isActive() >> false
+        ajlc.isEnabled() >> false
         ajlp.jarLibConf = ajlc
 
         when:

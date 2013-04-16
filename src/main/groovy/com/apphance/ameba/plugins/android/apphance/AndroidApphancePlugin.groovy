@@ -35,7 +35,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        if (apphanceConf.isActive()) {
+        if (apphanceConf.isEnabled()) {
             this.project = project
 
             addApphanceConfiguration(project)

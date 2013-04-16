@@ -62,11 +62,6 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    boolean isActive() {
-        androidConf.active
-    }
-
-    @Override
     String getConfigurationName() {
         "Android configuration for variant: ${this.@name}"
     }

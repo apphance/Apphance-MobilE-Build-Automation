@@ -19,7 +19,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Android test configuration'
 
-    private boolean enabled = false
+    private boolean enabledInternal = false
     private Integer emulatorPort
 
     private Project project
@@ -41,17 +41,12 @@ class AndroidTestConfiguration extends AbstractConfiguration {
 
     @Override
     boolean isEnabled() {
-        this.@enabled
+        enabledInternal && androidConf.isEnabled()
     }
 
     @Override
     void setEnabled(boolean enabled) {
-        this.@enabled = enabled
-    }
-
-    @Override
-    boolean isActive() {
-        this.@enabled && androidConf.active
+        enabledInternal = enabled
     }
 
     def emulatorSkin = new StringProperty(

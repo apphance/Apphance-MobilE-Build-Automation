@@ -97,9 +97,4 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     boolean isEnabled() {
         androidConf.enabled
     }
-
-    @Override
-    boolean isActive() {
-        androidConf.active
-    }
 }

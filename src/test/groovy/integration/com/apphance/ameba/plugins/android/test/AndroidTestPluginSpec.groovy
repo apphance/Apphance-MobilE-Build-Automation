@@ -22,7 +22,7 @@ class AndroidTestPluginSpec extends Specification {
 
         and:
         def atc = GroovyStub(AndroidTestConfiguration)
-        atc.isActive() >> true
+        atc.isEnabled() >> true
         atc.emmaEnabled >> new BooleanProperty(value: true)
         atp.testConf = atc
 
@@ -66,7 +66,7 @@ class AndroidTestPluginSpec extends Specification {
 
         and:
         def atc = Mock(AndroidTestConfiguration)
-        atc.isActive() >> false
+        atc.isEnabled() >> false
         atp.testConf = atc
 
         when:

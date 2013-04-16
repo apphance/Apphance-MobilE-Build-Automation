@@ -26,7 +26,7 @@ class AndroidReleasePluginSpec extends Specification {
 
         and: 'create mock android release configuration and set it'
         def arc = Mock(AndroidReleaseConfiguration)
-        arc.isActive() >> true
+        arc.isEnabled() >> true
         arp.releaseConf = arc
 
         when:
@@ -61,7 +61,7 @@ class AndroidReleasePluginSpec extends Specification {
 
         and: 'create mock android release configuration and set it'
         def arc = Mock(AndroidReleaseConfiguration)
-        arc.isActive() >> false
+        arc.isEnabled() >> false
         arp.releaseConf = arc
 
         when:

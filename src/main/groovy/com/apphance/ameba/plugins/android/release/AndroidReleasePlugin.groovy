@@ -37,7 +37,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        if (releaseConf.isActive()) {
+        if (releaseConf.isEnabled()) {
 
             project.task(
                     UpdateVersionTask.NAME,

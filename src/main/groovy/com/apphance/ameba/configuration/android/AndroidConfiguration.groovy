@@ -42,11 +42,6 @@ class AndroidConfiguration extends AbstractConfiguration {
 
         readProperties()
     }
-    
-    @Override
-    boolean isActive() {
-        projectTypeDetector.detectProjectType(project.rootDir) == ANDROID
-    }
 
     @Override
     boolean isEnabled() {

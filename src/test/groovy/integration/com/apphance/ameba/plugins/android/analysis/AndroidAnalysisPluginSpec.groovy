@@ -25,7 +25,7 @@ class AndroidAnalysisPluginSpec extends Specification {
 
         and:
         def aac = Mock(AndroidAnalysisConfiguration)
-        aac.isActive() >> true
+        aac.isEnabled() >> true
         aap.analysisConf = aac
 
         when:
@@ -83,7 +83,7 @@ class AndroidAnalysisPluginSpec extends Specification {
 
         and:
         def aac = Mock(AndroidAnalysisConfiguration)
-        aac.isActive() >> false
+        aac.isEnabled() >> false
         aap.analysisConf = aac
 
         when:

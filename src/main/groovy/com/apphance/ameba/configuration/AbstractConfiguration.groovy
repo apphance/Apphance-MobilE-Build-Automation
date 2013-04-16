@@ -44,8 +44,6 @@ abstract class AbstractConfiguration implements Configuration {
 
     abstract String getConfigurationName()
 
-    abstract boolean isActive()
-
     @Override
     public String toString() {
         "Configuration $configurationName: ${join(amebaProperties, '\n')}\n";

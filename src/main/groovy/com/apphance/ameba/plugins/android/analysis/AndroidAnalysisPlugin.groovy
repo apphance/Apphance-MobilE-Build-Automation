@@ -23,7 +23,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        if (analysisConf.isActive()) {
+        if (analysisConf.isEnabled()) {
 
             project.configurations.add('pmdConf')
             project.dependencies.add('pmdConf', 'pmd:pmd:4.3')

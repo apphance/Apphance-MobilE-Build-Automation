@@ -9,7 +9,7 @@ import javax.inject.Inject
 class AndroidAnalysisConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Android Analysis Configuration'
-    private boolean enabled = false
+    private boolean enabledInternal = false
 
     private AndroidConfiguration androidConfiguration
 
@@ -20,17 +20,12 @@ class AndroidAnalysisConfiguration extends AbstractConfiguration {
 
     @Override
     boolean isEnabled() {
-        this.@enabled
+        enabledInternal && androidConfiguration.isEnabled()
     }
 
     @Override
     void setEnabled(boolean enabled) {
-        this.@enabled = enabled
-    }
-
-    @Override
-    boolean isActive() {
-        this.@enabled && androidConfiguration.active
+        enabledInternal = enabled
     }
 
     def analysisConfigUrl = new URLProperty(

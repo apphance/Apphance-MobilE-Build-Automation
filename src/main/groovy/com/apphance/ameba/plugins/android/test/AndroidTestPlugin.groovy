@@ -22,7 +22,7 @@ class AndroidTestPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        if (testConf.isActive()) {
+        if (testConf.isEnabled()) {
 
             if (testConf.emmaEnabled.value) {
                 project.configurations.add('emma')

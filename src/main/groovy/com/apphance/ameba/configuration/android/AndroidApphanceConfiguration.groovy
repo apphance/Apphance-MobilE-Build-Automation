@@ -9,7 +9,7 @@ import javax.inject.Inject
 class AndroidApphanceConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Android Apphance Configuration'
-    private boolean enabled = false
+    private boolean enabledInternal = false
 
     private AndroidConfiguration androidConf
 
@@ -20,17 +20,12 @@ class AndroidApphanceConfiguration extends AbstractConfiguration {
 
     @Override
     boolean isEnabled() {
-        this.@enabled
+        enabledInternal && androidConf.isEnabled()
     }
 
     @Override
     void setEnabled(boolean enabled) {
-        this.@enabled = enabled
-    }
-
-    @Override
-    boolean isActive() {
-        this.@enabled && androidConf.active
+        enabledInternal = enabled
     }
 
     def user = new StringProperty(

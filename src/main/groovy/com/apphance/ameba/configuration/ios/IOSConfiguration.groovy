@@ -30,11 +30,6 @@ class IOSConfiguration extends AbstractConfiguration {
         //this configuration is enabled based on project type
     }
 
-    @Override
-    boolean isActive() {
-        return false  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     def name = new StringProperty(
             name: 'ios.project.name',
             message: 'Project name',

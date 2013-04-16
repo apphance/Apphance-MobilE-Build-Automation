@@ -17,7 +17,7 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
 
     final String configurationName = 'Android release configuration'
 
-    private boolean enabled
+    private boolean enabledInternal
 
     Map<String, AmebaArtifact> apkFiles = [:]
     Map<String, AmebaArtifact> jarFiles = [:]
@@ -102,16 +102,11 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
 
     @Override
     boolean isEnabled() {
-        this.@enabled
+        enabledInternal && androidConfiguration.isEnabled()
     }
 
     @Override
     void setEnabled(boolean enabled) {
-        this.@enabled = enabled
-    }
-
-    @Override
-    boolean isActive() {
-        this.@enabled && androidConfiguration.active
+        enabledInternal = enabled
     }
 }

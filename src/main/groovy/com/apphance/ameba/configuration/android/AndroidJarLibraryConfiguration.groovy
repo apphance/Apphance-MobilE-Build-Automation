@@ -9,7 +9,7 @@ class AndroidJarLibraryConfiguration extends AbstractConfiguration {
 
     final String configurationName = 'Android Jar Library Configuration'
 
-    private boolean enabled = false
+    private boolean enabledInternal = false
 
     private AndroidConfiguration androidConfiguration
 
@@ -20,17 +20,12 @@ class AndroidJarLibraryConfiguration extends AbstractConfiguration {
 
     @Override
     boolean isEnabled() {
-        this.@enabled
+        enabledInternal && androidConfiguration.isEnabled()
     }
 
     @Override
     void setEnabled(boolean enabled) {
-        this.@enabled = enabled
-    }
-
-    @Override
-    boolean isActive() {
-        this.@enabled && androidConfiguration.active
+        enabledInternal = enabled
     }
 
     def resourcePrefix = new StringProperty(
