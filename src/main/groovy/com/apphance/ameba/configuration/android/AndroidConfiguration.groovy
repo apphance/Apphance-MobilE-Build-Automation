@@ -59,7 +59,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     def versionCode = new LongProperty(
             name: 'android.version.code',
             message: 'Version code',
-            defaultValue: { manifestHelper.readVersion(project.rootDir).versionCode as Long })
+            defaultValue: { manifestHelper.readVersion(project.rootDir).versionCode })
 
     def versionString = new StringProperty(
             name: 'android.version.string',
