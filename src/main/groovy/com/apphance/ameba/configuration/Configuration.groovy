@@ -5,4 +5,6 @@ public interface Configuration {
     boolean isEnabled()
 
     void setEnabled(boolean enabled)
+
+    void verify()
 }

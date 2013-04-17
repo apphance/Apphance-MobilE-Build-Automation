@@ -14,6 +14,7 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
+import static com.google.common.base.Strings.isNullOrEmpty
 import static java.io.File.pathSeparator
 
 @com.google.inject.Singleton
@@ -266,11 +267,16 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     @Override
     String getFullVersionString() {
-        "$versionString.value_$versionCode.value"
+        "${versionString.value}_${versionCode.value}"
     }
 
     @Override
     String getProjectVersionedName() {
         "$projectName.value-$fullVersionString"
+    }
+
+    @Override
+    void verify() {
+        check !isNullOrEmpty(target.value), "Property ${target.name} is required"
     }
 }

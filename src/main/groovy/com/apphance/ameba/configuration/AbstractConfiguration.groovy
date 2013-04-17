@@ -16,6 +16,11 @@ abstract class AbstractConfiguration implements Configuration {
     PropertyPersister propertyPersister
 
     @Inject
+    ConfigurationVerifyManager verifier
+
+    List<String> errors = []
+
+    @Inject
     def init() {
         amebaProperties.each {
             it.value = propertyPersister.get(it.name)
@@ -26,6 +31,8 @@ abstract class AbstractConfiguration implements Configuration {
         if (enabled && enabledValue != this.enabled) {
             this.enabled = enabledValue
         }
+
+        verifier.registerConfiguration(this)
     }
 
     void setEnabled(boolean enabled) {
@@ -47,7 +54,7 @@ abstract class AbstractConfiguration implements Configuration {
 
     @Override
     public String toString() {
-        "Configuration $configurationName: ${join(amebaProperties, '\n')}\n";
+        "Configuration $configurationName: \n${join(amebaProperties, '\n')}\n";
     }
 
     Collection<? extends AbstractConfiguration> getSubConfigurations() {
@@ -56,5 +63,15 @@ abstract class AbstractConfiguration implements Configuration {
 
     String getEnabledPropKey() {
         configurationName.replace(' ', '.').toLowerCase() + '.enabled'
+    }
+
+    def check(boolean cond, String message) {
+        if (!cond) {
+            errors << message
+        }
+    }
+
+    @Override
+    void verify() {
     }
 }

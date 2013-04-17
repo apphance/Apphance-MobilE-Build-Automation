@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins
 
+import com.apphance.ameba.configuration.ConfigurationVerifyManager
 import com.apphance.ameba.di.CommandExecutorModule
 import com.apphance.ameba.di.ConfigurationModule
 import com.apphance.ameba.di.EnvironmentModule
@@ -27,6 +28,8 @@ class AmebaPlugin implements Plugin<Project> {
         injector.getInstance(PluginMaster).enhanceProject(project)
 
         project.tasks.each { injector.injectMembers(it) }
+
+        injector.getInstance(ConfigurationVerifyManager).verify()
     }
 
     static String AMEBA_ASCII_ART = '''\
