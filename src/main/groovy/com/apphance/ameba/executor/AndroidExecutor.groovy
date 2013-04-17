@@ -1,5 +1,6 @@
 package com.apphance.ameba.executor
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.google.inject.Inject
@@ -7,15 +8,17 @@ import org.gradle.api.GradleException
 
 class AndroidExecutor {
 
-    CommandExecutor executor
+    private AndroidConfiguration conf
+    private CommandExecutor executor
 
     @Inject
-    AndroidExecutor(CommandExecutor executor) {
+    AndroidExecutor(AndroidConfiguration conf, CommandExecutor executor) {
+        this.conf = conf
         this.executor = executor
     }
 
     def updateProject(File directory) {
-        run(directory, "update project -p . -s")
+        run(directory, "update project -p . -t ${conf.target.value} -n ${conf.projectName.value} -s")
     }
 
     def listAvd(File directory) {
