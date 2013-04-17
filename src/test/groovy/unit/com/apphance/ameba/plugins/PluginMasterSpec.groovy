@@ -21,7 +21,6 @@ import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import org.gradle.api.Project
 import org.gradle.api.internal.plugins.DefaultExtraPropertiesExtension
-import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.api.plugins.PluginContainer
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -157,6 +156,7 @@ class PluginMasterSpec extends Specification {
                     @Override
                     protected void configure() {
                         bind(Project).toInstance(project)
+                        bind(AntBuilder).toInstance(new AntBuilder())
                         bind(ProjectTypeDetector).toInstance(projectTypeDetectorMock)
                         mocks.each { type, instance ->
                             bind(type).toInstance(instance)

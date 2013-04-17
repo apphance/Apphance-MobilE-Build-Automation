@@ -11,6 +11,7 @@ class AndroidBuilderInfo {
     File originalFile
     String fullReleaseName
     String filePrefix
+    File tmpDir
 
     String getId() {
         variant

@@ -7,7 +7,6 @@ import com.apphance.ameba.executor.linker.SimpleFileLinker
 import com.apphance.ameba.plugins.AmebaPlugin
 import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
-import com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.Project
@@ -15,7 +14,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
-
 
 @Ignore('to rewrite..')
 class AndroidSingleVariantBuilderSpec extends Specification {
@@ -65,9 +63,7 @@ class AndroidSingleVariantBuilderSpec extends Specification {
             }
             project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.projectName(project.rootDir)
             project.retrieveBasicProjectData()
-            def builder = new AndroidSingleVariantApkBuilder(project,
-                    AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project))
-            AndroidProjectConfigurationRetriever.readAndroidProjectConfiguration(project)
+            def builder = new AndroidSingleVariantApkBuilder(* [null] * 2)
             return builder
         }
     }

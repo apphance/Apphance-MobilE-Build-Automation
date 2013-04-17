@@ -37,8 +37,8 @@ class AddApphanceSpec extends Specification {
         tmpDir.deleteDir()
     }
 
-    def "check Apphance instrumentation"() {
+    def 'check apphance instrumentation'() {
         expect:
-        AndroidManifestHelper.isApphanceInstrumentationPresent(new File('testProjects/android/android-basic'))
+        helper.isApphanceInstrumentationPresent(new File('testProjects/android/android-basic'))
     }
 }

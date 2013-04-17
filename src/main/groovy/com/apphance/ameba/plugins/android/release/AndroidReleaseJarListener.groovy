@@ -1,21 +1,16 @@
 package com.apphance.ameba.plugins.android.release
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.plugins.android.AndroidBuilderInfo
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
-import com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
-import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import com.apphance.ameba.plugins.release.ProjectReleaseCategory
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
-import com.google.inject.Inject
 import org.gradle.api.AntBuilder
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Listener that builds .jar file for library.
@@ -23,58 +18,50 @@ import org.gradle.api.logging.Logging
  */
 class AndroidReleaseJarListener implements AndroidBuildListener {
 
-    ProjectConfiguration conf
-    ProjectReleaseConfiguration releaseConf
-    AndroidProjectConfiguration androidConf
-    AndroidReleaseConfiguration androidReleaseConf
-    AntBuilder ant
-    CommandExecutor executor
+    private Logger l = getLogger(getClass())
 
-    static Logger logger = Logging.getLogger(AndroidReleaseJarListener.class)
+    private AndroidConfiguration conf
+    private AndroidReleaseConfiguration releaseConf
+    private AntBuilder ant
 
-    @Inject
-    AndroidReleaseJarListener(Project project, CommandExecutor executor, AndroidReleaseConfiguration androidReleaseConf) {
-        use(PropertyCategory) {
-            this.conf = project.getProjectConfiguration()
-            this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
-            this.androidConf = AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration(project)
-            this.ant = project.ant
-            this.executor = executor
-            this.androidReleaseConf = androidReleaseConf
-        }
+    AndroidReleaseJarListener(Project project, AndroidConfiguration conf, AndroidReleaseConfiguration releaseConf) {
+        this.conf = conf
+        this.releaseConf = releaseConf
+        this.ant = project.ant
     }
 
-    String getFolderPrefix() {
-        return "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
-    }
-
-    public void buildDone(Project project, AndroidBuilderInfo bi) {
+    @Override
+    void buildDone(Project project, AndroidBuilderInfo bi) {
         AmebaArtifact apkArtifact = prepareJarArtifact(bi)
         project.ant {
             copy(file: bi.originalFile, tofile: apkArtifact.location)
         }
     }
 
-    private AmebaArtifact prepareJarArtifact(AndroidBuilderInfo bi) {
-        AmebaArtifact artifact = new AmebaArtifact()
-        artifact.name = "Jar ${bi.debugRelease} file for ${bi.variant}"
-        artifact.url = new URL(releaseConf.baseUrl, "${getFolderPrefix()}/${bi.filePrefix}.jar")
-        artifact.location = new File(releaseConf.otaDirectory, "${getFolderPrefix()}/${bi.filePrefix}.jar")
-        return artifact
+    @Override
+    void buildArtifactsOnly(Project project, AndroidVariantConfiguration avc) {
+        if (conf.versionString.value?.trim()) {
+            def builder = new AndroidSingleVariantJarBuilder(project, conf)
+            def bi = builder.buildJarArtifactBuilderInfo(avc)
+            l.lifecycle("Adding variant JAR artifact ${bi.id}")
+            releaseConf.jarFiles.put(bi.id, prepareJarArtifact(bi))
+        } else {
+            l.lifecycle("Skipping building artifacts -> the build is not versioned")
+        }
     }
 
-    void buildArtifactsOnly(Project project, String variant, String debugRelease = null) {
-        if (variant != null && debugRelease == null) {
-            debugRelease = androidConf.debugRelease[variant]
-        }
-        if (conf.versionString != null) {
-            AndroidSingleVariantJarBuilder builder = new AndroidSingleVariantJarBuilder(project, androidConf)
-            AndroidBuilderInfo bi = builder.buildJarArtifactBuilderInfo(variant, debugRelease)
-            logger.lifecycle("Adding variant JAR artifact ${bi.id}")
-            androidReleaseConf.jarFiles.put(bi.id, prepareJarArtifact(bi))
-        } else {
-            logger.lifecycle("Skipping building artifacts -> the build is not versioned")
-        }
+    private AmebaArtifact prepareJarArtifact(AndroidBuilderInfo bi) {
+        AmebaArtifact artifact = new AmebaArtifact()
+
+        artifact.name = "Jar ${bi.debugRelease} file for ${bi.variant}"
+        artifact.url = new URL(releaseConf.projectURL.value, "${getFolderPrefix()}/${bi.filePrefix}.jar")
+        artifact.location = new File(releaseConf.otaDirectory, "${getFolderPrefix()}/${bi.filePrefix}.jar")
+
+        artifact
+    }
+
+    private String getFolderPrefix() {
+        "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
     }
 
 }

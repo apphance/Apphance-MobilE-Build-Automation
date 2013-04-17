@@ -1,9 +1,12 @@
 package com.apphance.ameba.plugins.android
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.executor.AntExecutor
 import org.gradle.api.Project
 
-import static com.apphance.ameba.executor.AntExecutor.getCLEAN
+import static com.apphance.ameba.executor.AntExecutor.CLEAN
+
 
 /**
  * Builds Jar for the project - one per variant.
@@ -11,34 +14,32 @@ import static com.apphance.ameba.executor.AntExecutor.getCLEAN
  */
 class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder {
 
-    AndroidSingleVariantJarBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration) {
-        super(project, androidProjectConfiguration)
+    AndroidSingleVariantJarBuilder(Project project, AndroidConfiguration androidConf) {
+        super(project, androidConf)
     }
 
-    AndroidBuilderInfo buildJarArtifactBuilderInfo(String variant, String debugRelease) {
-        if (variant != null && debugRelease == null) {
-            debugRelease = androidConf.debugRelease[variant]
-        }
-        String debugReleaseLowercase = debugRelease?.toLowerCase()
-        String variablePart = debugReleaseLowercase + "-${variant}"
-        File binDir = new File(androidConf.tmpDirs[variant], "bin")
+    AndroidBuilderInfo buildJarArtifactBuilderInfo(AndroidVariantConfiguration avc) {
+        String debugReleaseLowercase = avc.mode.value?.toLowerCase()
+        String variablePart = debugReleaseLowercase + "-${avc.name}"
+        File binDir = new File(new File(androidConf.tmpDir.value, avc.name), "bin")
         AndroidBuilderInfo bi = new AndroidBuilderInfo(
-                variant: variant,
-                debugRelease: debugRelease,
+                variant: avc.name,
+                debugRelease: avc.mode.value?.toLowerCase(),
+                tmpDir: avc.tmpDir,
                 buildDirectory: binDir,
                 originalFile: new File(binDir, "classes.jar"),
-                fullReleaseName: "${conf.projectName}-${variablePart}-${conf.fullVersionString}",
-                filePrefix: "${conf.projectName}-${variablePart}-${conf.fullVersionString}")
+                fullReleaseName: "${androidConf.projectName.value}-${variablePart}-${androidConf.fullVersionString}",
+                filePrefix: "${androidConf.projectName.value}-${variablePart}-${androidConf.fullVersionString}")
         bi
     }
 
     @Override
     void buildSingle(AndroidBuilderInfo bi) {
-        def antExecutor = new AntExecutor(androidConf.tmpDirs[bi.variant])
+        def antExecutor = new AntExecutor(bi.tmpDir)
         antExecutor.executeTarget CLEAN
         if (bi.variant != null) {
             project.ant {
-                copy(todir: new File(androidConf.tmpDirs[bi.variant], 'res/raw'), failonerror: false, overwrite: 'true', verbose: 'true') {
+                copy(todir: new File(bi.tmpDir, 'res/raw'), failonerror: false, overwrite: 'true', verbose: 'true') {
                     fileset(dir: new File(variantsDir, bi.variant),
                             includes: '*', excludes: 'market_variant.txt')
                 }

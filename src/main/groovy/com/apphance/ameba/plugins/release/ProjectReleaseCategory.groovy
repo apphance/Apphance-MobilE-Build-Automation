@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.release
 
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import org.gradle.api.Project
 
 import java.text.SimpleDateFormat
@@ -83,9 +83,10 @@ public class ProjectReleaseCategory {
         }
     }
 
-    public static void fillMailSubject(AndroidConfiguration conf, ResourceBundle resourceBundle) {
+    public static void fillMailSubject(ProjectConfiguration conf, ProjectReleaseConfiguration releaseConf,
+                                       ResourceBundle resourceBundle) {
         String subject = resourceBundle.getString('Subject')
-        Eval.me("conf", [projectName: conf.projectName.value, fullVersionString: conf.versionString.value], /"$subject"/)
+        releaseConf.releaseMailSubject = Eval.me("conf", conf, /"$subject"/)
     }
 
     public static splitUrl(String urlString) {

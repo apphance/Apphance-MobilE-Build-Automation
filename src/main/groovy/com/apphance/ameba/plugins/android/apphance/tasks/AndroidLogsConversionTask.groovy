@@ -1,24 +1,22 @@
 package com.apphance.ameba.plugins.android.apphance.tasks
 
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.TaskAction
-
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 import static org.gradle.api.logging.Logging.getLogger
 
-class AndroidLogsConversionTask extends DefaultTask {
+class AndroidLogsConversionTask {
 
     private l = getLogger(getClass())
 
     static String NAME = 'convertLogsToAndroid'
-    String group = AMEBA_APPHANCE_SERVICE
-    String description = 'Converts all logs to android from apphance logs for the source project'
 
-    @TaskAction
-    public void convertLogsToAndroid() {
-        File inDir = project.rootDir
+    private AntBuilder ant
+
+    AndroidLogsConversionTask(AntBuilder project) {
+        this.ant = project
+    }
+
+    void convertLogsToAndroid(File inDir) {
         l.debug("Replacing apphance logs with android in: $inDir.absolutePath")
-        project.ant.replace(
+        ant.replace(
                 casesensitive: 'true',
                 token: 'import com.apphance.android.Log;',
                 value: 'import android.util.Log;',

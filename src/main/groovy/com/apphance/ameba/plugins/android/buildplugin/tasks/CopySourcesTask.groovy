@@ -25,9 +25,9 @@ class CopySourcesTask extends DefaultTask {
         Preconditions.checkNotNull(androidVariantsConfiguration.variants)
 
         androidVariantsConfiguration.variants.each { variant ->
-            project.ant.sync(toDir: variant.tmpDirectory, overwrite: true, failonerror: false, verbose: false) {
+            project.ant.sync(toDir: variant.tmpDir, overwrite: true, failonerror: false, verbose: false) {
                 fileset(dir: "${project.rootDir}/") {
-                    exclude(name: variant.tmpDirectory.absolutePath + '/**/*')
+                    exclude(name: variant.tmpDir.absolutePath + '/**/*')
                     androidConfiguration.sourceExcludes.each { exclude(name: it) }
                 }
             }

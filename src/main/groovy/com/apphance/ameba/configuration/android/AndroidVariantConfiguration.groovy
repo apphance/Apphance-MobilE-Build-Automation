@@ -1,15 +1,13 @@
 package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.AbstractConfiguration
-import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
-import org.gradle.api.Project
+import com.apphance.ameba.configuration.reader.PropertyPersister
 
 class AndroidVariantConfiguration extends AbstractConfiguration {
 
-    Project project
     final String name
     private AndroidConfiguration androidConf
     private AndroidApphanceConfiguration androidApphanceConf
@@ -17,13 +15,11 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     AndroidVariantConfiguration(String name,
                                 PropertyPersister persister,
                                 AndroidConfiguration androidConf,
-                                AndroidApphanceConfiguration androidApphanceConf,
-                                Project project) {
+                                AndroidApphanceConfiguration androidApphanceConf) {
         this.propertyPersister = persister
         this.name = name
         this.androidConf = androidConf
         this.androidApphanceConf = androidApphanceConf
-        this.project = project
 
         initFields()
     }
@@ -66,11 +62,8 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
         "Android configuration for variant: ${this.@name}"
     }
 
-    File getTmpDirectory() {
+    File getTmpDir() {
         def rootDir = androidConf.rootDir.value
-        if (rootDir == null) {
-            rootDir = project.rootDir
-        }
         new File(rootDir.parent, ("tmp-${rootDir.name}-" + name).replaceAll('[\\\\ /]', '_'))
     }
 

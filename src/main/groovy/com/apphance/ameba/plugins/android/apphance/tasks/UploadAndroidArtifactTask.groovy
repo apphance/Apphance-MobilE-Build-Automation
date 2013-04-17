@@ -1,10 +1,11 @@
 package com.apphance.ameba.plugins.android.apphance.tasks
 
+import com.apphance.ameba.configuration.ReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidApphanceConfiguration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
-import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.util.Preconditions
 import com.google.inject.Inject
 import groovy.json.JsonSlurper
@@ -15,7 +16,6 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
 
 @Mixin(Preconditions)
 //TODO to be tested and refactored
@@ -25,17 +25,19 @@ class UploadAndroidArtifactTask extends DefaultTask {
 
     String description = 'Uploads apk & image_montage to Apphance server'
     String group = AMEBA_APPHANCE_SERVICE
-    String variant
 
-    @Inject AndroidApphanceConfiguration androidApphanceConfiguration
-    @Inject AndroidConfiguration androidConfiguration
+    @Inject
+    private AndroidApphanceConfiguration androidApphanceConfiguration
+    @Inject
+    private AndroidConfiguration androidConfiguration
+    @Inject
+    private ReleaseConfiguration releaseConf
+    AndroidVariantConfiguration variant
 
     @TaskAction
     public void uploadArtifact() {
-        def androidConf = getAndroidProjectConfiguration(project)
-        def builder = new AndroidSingleVariantApkBuilder(project, androidConf)
-        def builderInfo = builder.buildApkArtifactBuilderInfo(variant, 'Debug')
-        def releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
+        def builder = new AndroidSingleVariantApkBuilder(project, androidConfiguration)
+        def builderInfo = builder.buildApkArtifactBuilderInfo(variant)
 
         String user = androidApphanceConfiguration.user.value
         String pass = androidApphanceConfiguration.pass.value

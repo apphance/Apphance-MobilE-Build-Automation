@@ -1,42 +1,39 @@
 package com.apphance.ameba.plugins.android.apphance.tasks
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
+import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
 import com.apphance.ameba.plugins.apphance.ApphancePluginCommons
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
-import static com.apphance.ameba.plugins.apphance.ApphanceProperty.*
+import javax.inject.Inject
+
 import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
 import static org.gradle.api.logging.Logging.getLogger
 
-@Mixin(ApphancePluginCommons)
-
 //TODO to be tested
 //TODO to be refactored when apphance artifact uploading is back in progress
-class AddAndroidApphanceTask {
+@Mixin(ApphancePluginCommons)
+class AddApphanceToAndroid {
 
     def l = getLogger(getClass())
 
     private static final JAR_PATTERN = ~/.*android\.(pre\-)?production\-(\d+\.)+\d+\.jar/
-    private static String EVENT_LOG_WIDGET_PACKAGE = 'com.apphance.android.eventlog.widget'
-    private static String EVENT_LOG_ACTIVITY_PACKAGE = 'com.apphance.android.eventlog.activity'
 
+    @Inject
     private Project project
+    @Inject
+    private AndroidConfiguration androidConf
+    @Inject
+    private AndroidManifestHelper manifestHelper
+    @Inject
     private AntBuilder ant
-    private AndroidProjectConfiguration androidConf
-    private AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
 
-    AddAndroidApphanceTask(Project project) {
-        this.project = project
-        this.ant = project.ant
-        this.androidConf = getAndroidProjectConfiguration(project)
-    }
-
-    public void addApphance(String variant) {
-        File variantDir = getVariantDir(project, variant)
+    public void addApphance(AndroidVariantConfiguration avc) {
+        File variantDir = avc.tmpDir
         if (!checkIfApphancePresent(variantDir)) {
             l.debug("Apphance not found in project: $variantDir.absolutePath")
             File mainFile
@@ -44,10 +41,7 @@ class AddAndroidApphanceTask {
             (mainFile, isActivity) = getMainApplicationFile(variantDir)
             if (mainFile) {
                 new ApphanceLogsConversionTask(ant).convertLogsToApphance(variantDir)
-                if (logEvents()) {
-                    replaceViewsWithApphance(variantDir)
-                }
-                addApphanceInit(variantDir, mainFile, isActivity)
+                addApphanceInit(variantDir, mainFile, isActivity, avc.apphanceAppKey.value, avc.apphanceMode.value)
                 copyApphanceJar(variantDir)
                 addApphanceToManifest(variantDir)
             }
@@ -56,13 +50,12 @@ class AddAndroidApphanceTask {
         }
     }
 
-    private File getVariantDir(Project project, String variant) {
-        variant != null ? androidConf.tmpDirs[variant] : project.rootDir
+    private File getVariantDir(String variant) {
+        new File(androidConf.tmpDir.value, variant)
     }
 
     private boolean checkIfApphancePresent(File directory) {
         boolean found = false
-        //TODO jakaś sprytniejsza metoda?
         directory.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { file ->
             if (file.name.endsWith('.java') && file.text.contains('Apphance.startNewSession')) {
                 found = true
@@ -105,91 +98,10 @@ class AddAndroidApphanceTask {
         }
     }
 
-    private boolean logEvents() {
-        project[APPHANCE_LOG_EVENTS.propertyName].toString().toBoolean()
-    }
-
-    private void replaceViewsWithApphance(File directory) {
-        l.debug("Replacing android views with apphance loggable versions for: $directory.absolutePath")
-        replaceViewWithApphance(directory, 'Button')
-        replaceViewWithApphance(directory, 'CheckBox')
-        replaceViewWithApphance(directory, 'EditText')
-        replaceViewWithApphance(directory, 'ImageButton')
-        replaceViewWithApphance(directory, 'ListView')
-        replaceViewWithApphance(directory, 'RadioGroup')
-        replaceViewWithApphance(directory, 'SeekBar')
-        replaceViewWithApphance(directory, 'Spinner')
-        replaceViewWithApphance(directory, 'TextView')
-
-        replaceActivityWithApphance(directory, 'Activity')
-        replaceActivityWithApphance(directory, 'ActivityGroup')
-    }
-
-    private void replaceViewWithApphance(File directory, String viewName) {
-        replaceViewExtendsWithApphance(directory, viewName);
-        replaceTagResourcesOpeningTag(directory, viewName, EVENT_LOG_WIDGET_PACKAGE + "." + viewName)
-        replaceTagResourcesClosingTag(directory, viewName, EVENT_LOG_WIDGET_PACKAGE + "." + viewName)
-    }
-
-    private void replaceViewExtendsWithApphance(File directory, String viewName) {
-        String newClassName = EVENT_LOG_WIDGET_PACKAGE + '.' + viewName
-        l.debug("Replacing extends with Apphance for $viewName to $newClassName")
-        ant.replace(casesensitive: 'true', token: "extends $viewName ",
-                value: "extends $newClassName ", summary: true) {
-            fileset(dir: new File(directory, 'src')) { include(name: '**/*.java') }
-        }
-    }
-
-    private void replaceTagResourcesOpeningTag(File directory, String tagName, String replacement) {
-        l.debug("Replacing tag resources with Apphance for $tagName to $replacement")
-        ant.replace(casesensitive: 'true', token: "<$tagName ",
-                value: "<$replacement ", summary: true) {
-            fileset(dir: new File(directory, 'res/layout')) { include(name: '**/*.xml') }
-        }
-        ant.replaceregexp(flags: 'gm') {
-            regexp(pattern: "<$tagName(\\s*)")
-            substitution(expression: "<$replacement\\1")
-            fileset(dir: new File(directory, 'res/layout')) { include(name: '**/*.xml') }
-        }
-        ant.replace(casesensitive: 'true', token: "<$tagName>",
-                value: "<$replacement>", summary: true) {
-            fileset(dir: new File(directory, 'res/layout')) { include(name: '**/*.xml') }
-        }
-    }
-
-    private void replaceTagResourcesClosingTag(File directory, String tagName, String replacement) {
-        l.debug("Replacing tag resources with Apphance for $tagName to $replacement")
-        ant.replace(casesensitive: 'true', token: "</$tagName ",
-                value: "</$replacement ", summary: true) {
-            fileset(dir: new File(directory, 'res/layout')) { include(name: '**/*.xml') }
-        }
-        ant.replaceregexp(flags: 'gm') {
-            regexp(pattern: "</$tagName(\\s*)")
-            substitution(expression: "</$replacement\\1")
-            fileset(dir: new File(directory, 'res/layout')) { include(name: '**/*.xml') }
-        }
-        ant.replace(casesensitive: 'true', token: "</$tagName>",
-                value: "</$replacement>", summary: true) {
-            fileset(dir: new File(directory, 'res/layout')) { include(name: '**/*.xml') }
-        }
-    }
-
-    private void replaceActivityWithApphance(File directory, String activityName) {
-        String newClassName = EVENT_LOG_ACTIVITY_PACKAGE + "." + activityName
-        l.debug("Replacing extends with Apphance for: $activityName to $newClassName")
-        ant.replace(casesensitive: 'true', token: "extends $activityName ",
-                value: "extends $newClassName ", summary: true) {
-            fileset(dir: new File(directory, 'src')) { include(name: '**/*.java') }
-        }
-    }
-
-    private def addApphanceInit(File directory, File mainFile, boolean isActivity) {
+    private def addApphanceInit(File directory, File mainFile, boolean isActivity, String apphanceAppKey, ApphanceMode apphanceMode) {
         l.debug("Adding apphance init to file: $mainFile.absolutePath")
         File newMainClassFile = new File(directory, 'newMainClassFile.java')
-        String startSession = """Apphance.startNewSession(this, "${appKey()}", ${apphanceMode()});"""
-        if (logEvents()) {
-            startSession = startSession + 'com.apphance.android.eventlog.EventLog.setInvertedIdMap(this);'
-        }
+        String startSession = """Apphance.startNewSession(this, "$apphanceAppKey", ${mapApphanceMode(apphanceMode)});"""
         String importApphance = 'import com.apphance.android.Apphance;'
         boolean onCreatePresent = isOnCreatePresent(mainFile)
         if (onCreatePresent) {
@@ -208,12 +120,8 @@ class AddAndroidApphanceTask {
         newMainClassFile.delete()
     }
 
-    private String appKey() {
-        project[APPLICATION_KEY.propertyName] as String
-    }
-
-    private String apphanceMode() {
-        ((project.hasProperty(APPHANCE_MODE.propertyName) && project[APPHANCE_MODE.propertyName].equals('QA'))) ?
+    private String mapApphanceMode(ApphanceMode apphanceMode) {
+        (apphanceMode == ApphanceMode.QA) ?
             'Apphance.Mode.QA'
         :
             'Apphance.Mode.Silent'

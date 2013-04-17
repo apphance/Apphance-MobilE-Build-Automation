@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.android.release
 
+import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.plugins.android.AndroidBuilderInfo
 import org.gradle.api.Project
 
@@ -8,7 +9,8 @@ import org.gradle.api.Project
  *
  */
 interface AndroidBuildListener {
+
     void buildDone(Project project, AndroidBuilderInfo bi)
 
-    void buildArtifactsOnly(Project project, String variant, String debugRelease)
+    void buildArtifactsOnly(Project project, AndroidVariantConfiguration avc)
 }

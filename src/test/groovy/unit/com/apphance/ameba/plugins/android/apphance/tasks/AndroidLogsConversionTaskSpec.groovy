@@ -1,8 +1,5 @@
 package com.apphance.ameba.plugins.android.apphance.tasks
 
-import org.gradle.api.Project
-import org.gradle.api.internal.project.DefaultProject
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
 import static java.lang.System.getProperties
@@ -12,16 +9,16 @@ class AndroidLogsConversionTaskSpec extends Specification {
     def 'converts apphance logs to android'() {
 
         given:
-        def tmpDir = new File(properties['java.io.tmpdir'].toString(), 'src')
-        tmpDir.mkdirs()
-
         def ant = new AntBuilder()
-        Project proj = ProjectBuilder.builder().withProjectDir(tmpDir.parentFile).build()
-        AndroidLogsConversionTask logConverter = proj.task('logConverter', type: AndroidLogsConversionTask)
+        def logConverter = new AndroidLogsConversionTask(ant)
 
         and:
         def filenameWithLogs = 'ApphanceToAndroidWithLogs.java'
         def filenameWithoutLogs = 'ApphanceToAndroidWithoutLogs.java'
+
+        and:
+        def tmpDir = new File(properties['java.io.tmpdir'].toString(), 'src')
+        tmpDir.mkdirs()
 
         and:
         def classWithLogs = new File(getClass().getResource(
@@ -38,7 +35,7 @@ class AndroidLogsConversionTaskSpec extends Specification {
                 toFile: new File(tmpDir.canonicalPath, filenameWithoutLogs))
 
         when:
-        logConverter.convertLogsToAndroid()
+        logConverter.convertLogsToAndroid(tmpDir.parentFile)
 
         then:
         !(new File(tmpDir, filenameWithLogs).text).contains('com.apphance.android.Log')

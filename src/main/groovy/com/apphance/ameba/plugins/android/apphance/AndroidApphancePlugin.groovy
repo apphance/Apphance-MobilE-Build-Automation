@@ -1,17 +1,21 @@
 package com.apphance.ameba.plugins.android.apphance
 
 import com.apphance.ameba.configuration.android.AndroidApphanceConfiguration
+import com.apphance.ameba.configuration.android.AndroidBuildMode
+import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.plugins.android.apphance.tasks.AddApphanceToAndroid
 import com.apphance.ameba.plugins.android.apphance.tasks.AndroidLogsConversionTask
 import com.apphance.ameba.plugins.android.apphance.tasks.ApphanceLogsConversionTask
 import com.apphance.ameba.plugins.android.apphance.tasks.UploadAndroidArtifactTask
 import com.apphance.ameba.plugins.apphance.ApphancePluginCommons
+import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_IMAGE_MONTAGE_TASK_NAME
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 
 /**
  * Adds Apphance in automated way.
@@ -20,10 +24,12 @@ import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_IM
  *
  * The plugin provides integration with Apphance service. It performs the
  * following tasks: adding Apphance on-the-fly while building the application
- * (for all Debug builds), removing Apphance on-the-fly while building the application//TODO
+ * (for all Debug builds), removing Apphance on-the-fly while building the application
  * (for all Release builds), submitting the application to apphance at release time.
  *
  */
+//TODO this is class is still to be refactored after configuration for android is finished
+//TODO Apphance Setup Task
 @Mixin(ApphancePluginCommons)
 class AndroidApphancePlugin implements Plugin<Project> {
 
@@ -32,6 +38,8 @@ class AndroidApphancePlugin implements Plugin<Project> {
     private AndroidVariantsConfiguration variantsConf
     @Inject
     private AndroidApphanceConfiguration apphanceConf
+    @Inject
+    private AddApphanceToAndroid addAndroidApphance
 
     @Override
     void apply(Project project) {
@@ -41,28 +49,39 @@ class AndroidApphancePlugin implements Plugin<Project> {
             addApphanceConfiguration(project)
             preProcessBuildsWithApphance()
 
-            project.task(ApphanceLogsConversionTask.NAME, type: ApphanceLogsConversionTask)
-            project.task(AndroidLogsConversionTask.NAME, type: AndroidLogsConversionTask)
+            //TODO probably both to be removed
+            def t1 = project.task(ApphanceLogsConversionTask.NAME,
+                    group: AMEBA_APPHANCE_SERVICE,
+                    description: 'Converts all logs to apphance from android logs for the source project')
+            t1 << {
+                new ApphanceLogsConversionTask(project.ant).convertLogsToApphance(project.rootDir)
+            }
+            def t2 = project.task(AndroidLogsConversionTask.NAME,
+                    group: AMEBA_APPHANCE_SERVICE,
+                    description: 'Converts all logs to android from apphance logs for the source project')
+            t2 << {
+                new AndroidLogsConversionTask(project.ant).convertLogsToAndroid(project.rootDir)
+            }
         }
     }
 
     private void preProcessBuildsWithApphance() {
-        //TODO after AndroidPlugin
-//        androidConf.buildableVariants.each { variant ->
-//            if (androidConf.debugRelease.get(variant) == 'Debug') {
-//                def task = project.tasks["buildDebug-$variant"]
-//                task.doFirst {
-//                    new AddAndroidApphanceTask(project).addApphance(variant)
-//                }
-//                prepareSingleBuildUploadTask(variant, task.name)
-//            }
-//        }
+        //TODO for each variant add apphance if it's enabled in variant conf
+        variantsConf.variants.each { avc ->
+            if (avc.mode.value?.toLowerCase() == AndroidBuildMode.DEBUG.name().toLowerCase()) {
+                def task = project.task(avc.name)
+                task.doFirst {
+                    addAndroidApphance.addApphance(avc)
+                }
+                prepareSingleBuildUploadTask(avc, task.name)
+            }
+        }
     }
 
-    private void prepareSingleBuildUploadTask(String variantName, String buildTaskName) {
-        def task = project.task("upload${variantName.toLowerCase().capitalize()}", type: UploadAndroidArtifactTask)
-        task.variant = variantName
+    private void prepareSingleBuildUploadTask(AndroidVariantConfiguration variant, String buildTaskName) {
+        def task = project.task("upload${variant.name.toLowerCase().capitalize()}", type: UploadAndroidArtifactTask) as UploadAndroidArtifactTask
+        task.variant = variant
         task.dependsOn(buildTaskName)
-        task.dependsOn(PREPARE_IMAGE_MONTAGE_TASK_NAME)
+        task.dependsOn(ImageMontageTask.NAME)
     }
 }

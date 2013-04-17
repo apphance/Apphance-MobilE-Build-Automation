@@ -284,7 +284,7 @@ apphance:only="true">
         }.size() != 0
     }
 
-    static boolean isApphanceInstrumentationPresent(File projectDir) {
+    boolean isApphanceInstrumentationPresent(File projectDir) {
         def file = new File(projectDir, ANDROID_MANIFEST)
         def manifest = new XmlSlurper().parse(file)
 

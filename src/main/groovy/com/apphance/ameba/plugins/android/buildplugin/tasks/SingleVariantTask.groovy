@@ -3,7 +3,6 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.plugins.android.AndroidBuilderInfo
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
 import com.google.inject.Inject
@@ -11,7 +10,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
 
 class SingleVariantTask extends DefaultTask {
 
@@ -26,19 +24,18 @@ class SingleVariantTask extends DefaultTask {
 
     @Inject
     def init() {
-        AndroidProjectConfiguration androidConf = getAndroidProjectConfiguration(project)
-        this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, androidConf)
-        this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, androidConf)
+        this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, androidConfiguration)
+        this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, androidConfiguration)
     }
 
     @TaskAction
     void singleVariant() {
-        String debugRelease = variant.mode.value.toLowerCase().capitalize()
+        String mode = variant.mode.value.toLowerCase()
         if (androidConfiguration.isLibrary()) {
-            AndroidBuilderInfo bi = androidJarBuilder.buildJarArtifactBuilderInfo(variant.name, debugRelease)
+            AndroidBuilderInfo bi = androidJarBuilder.buildJarArtifactBuilderInfo(variant)
             androidJarBuilder.buildSingle(bi)
         } else {
-            AndroidBuilderInfo bi = androidApkBuilder.buildApkArtifactBuilderInfo(variant.name, debugRelease)
+            AndroidBuilderInfo bi = androidApkBuilder.buildApkArtifactBuilderInfo(variant)
             androidApkBuilder.buildSingle(bi)
         }
     }

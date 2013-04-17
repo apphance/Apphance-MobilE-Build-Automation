@@ -3,7 +3,6 @@ package com.apphance.ameba.plugins.android.release.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
-import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.util.file.FileManager
 import com.google.inject.Inject
 import groovy.text.SimpleTemplateEngine
@@ -11,7 +10,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_MAIL_MESSAGE_TASK_NAME
 import static com.google.common.base.Preconditions.checkNotNull
 import static java.util.ResourceBundle.getBundle
 import static org.gradle.api.logging.Logging.getLogger
@@ -24,9 +22,12 @@ class MailMessageTask extends DefaultTask {
     String group = AMEBA_RELEASE
     String description = 'Prepares mail message which summarises the release'
 
-    @Inject AndroidConfiguration androidConfiguration
-    @Inject AndroidReleaseConfiguration releaseConf
-    @Inject AndroidVariantsConfiguration variantsConf
+    @Inject
+    private AndroidConfiguration androidConfiguration
+    @Inject
+    private AndroidReleaseConfiguration releaseConf
+    @Inject
+    private AndroidVariantsConfiguration variantsConf
 
     @TaskAction
     public void mailMessage() {
@@ -42,7 +43,7 @@ class MailMessageTask extends DefaultTask {
 
         def fileSize = releaseConf.apkFiles[mainBuild].location.size()
         ResourceBundle rb = getBundle("${this.class.package.name}.mail_message", releaseConf.locale, this.class.classLoader)
-        releaseConf.releaseMailSubject = ProjectReleaseCategory.fillMailSubject(androidConfiguration, rb)
+        releaseConf.releaseMailSubject = fillMailSubject()
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         def binding = [
                 title: androidConfiguration.projectName.value,
@@ -58,5 +59,10 @@ class MailMessageTask extends DefaultTask {
         def result = engine.createTemplate(mailTemplate).make(binding)
         releaseConf.mailMessageFile.location.write(result.toString(), "utf-8")
         l.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")
+    }
+
+    private void fillMailSubject(ResourceBundle resourceBundle) {
+        String subject = resourceBundle.getString('Subject')
+        Eval.me("conf", [projectName: androidConfiguration.projectName.value, fullVersionString: androidConfiguration.fullVersionString], /"$subject"/)
     }
 }
