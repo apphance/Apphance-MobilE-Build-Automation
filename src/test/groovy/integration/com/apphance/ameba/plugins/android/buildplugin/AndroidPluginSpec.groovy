@@ -48,10 +48,15 @@ class AndroidPluginSpec extends Specification {
         project.tasks[CompileAndroidTask.NAME].group == AMEBA_BUILD
 
         and:
-        project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME)
+        project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME, RunUpdateProjectTask.NAME)
         project.tasks[CLEAN_TASK_NAME].dependsOn.flatten().containsAll(CleanAndroidTask.NAME)
         project.tasks[JAVADOC_TASK_NAME].dependsOn.flatten().containsAll(CompileAndroidTask.NAME)
         project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn.flatten().containsAll(CompileAndroidTask.NAME)
+        project.tasks[CleanClassesTask.NAME].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
+        project.tasks[CopySourcesTask.NAME].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
+        project.tasks[ReplacePackageTask.NAME].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
+        project.tasks[CompileAndroidTask.NAME].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
+
 
         and:
         project.plugins.findPlugin(JavaPlugin)
@@ -123,6 +128,13 @@ class AndroidPluginSpec extends Specification {
         project.tasks['buildv2']
         project.tasks['installv1']
         project.tasks['installv2']
+
+        and:
+        project.tasks['buildv1'].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
+        project.tasks['buildv2'].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
+        project.tasks['installv1'].dependsOn.flatten()*.toString().containsAll('buildv1')
+        project.tasks['installv2'].dependsOn.flatten()*.toString().containsAll('buildv2')
+
 
         and:
         project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME)

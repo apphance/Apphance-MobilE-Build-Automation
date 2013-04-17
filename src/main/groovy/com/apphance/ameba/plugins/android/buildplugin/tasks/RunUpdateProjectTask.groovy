@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.android.buildplugin.tasks
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.executor.AndroidExecutor
 import com.google.inject.Inject
 import org.gradle.api.DefaultTask
@@ -15,6 +16,8 @@ class RunUpdateProjectTask extends DefaultTask {
     String description = 'Updates project using android command line tool'
     String group = AMEBA_BUILD
 
+    @Inject
+    private AndroidConfiguration conf
     @Inject
     private AndroidExecutor androidExecutor
 
@@ -42,6 +45,6 @@ class RunUpdateProjectTask extends DefaultTask {
         if (!directory.exists()) {
             throw new GradleException("The directory ${directory} to execute the command, does not exist! Your configuration is wrong.")
         }
-        androidExecutor.updateProject(directory)
+        androidExecutor.updateProject(directory, conf.target.value, conf.projectName.value)
     }
 }
