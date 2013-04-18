@@ -3,7 +3,6 @@ package com.apphance.ameba.configuration
 import com.apphance.ameba.configuration.properties.AbstractProperty
 import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.google.inject.Inject
-import org.gradle.api.Project
 
 import java.lang.reflect.Field
 
@@ -15,9 +14,6 @@ abstract class AbstractConfiguration implements Configuration {
 
     @Inject
     PropertyPersister propertyPersister
-
-    @Inject
-    Project project
 
     List<String> errors = []
 
@@ -32,8 +28,6 @@ abstract class AbstractConfiguration implements Configuration {
         if (enabled && enabledValue != this.enabled) {
             this.enabled = enabledValue
         }
-
-        project.confsToVerify << this
     }
 
     void setEnabled(boolean enabled) {

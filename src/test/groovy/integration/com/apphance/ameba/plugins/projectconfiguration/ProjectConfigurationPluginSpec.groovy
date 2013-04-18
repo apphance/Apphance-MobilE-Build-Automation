@@ -35,7 +35,6 @@ class ProjectConfigurationPluginSpec extends Specification {
         then: 'each task has correct dependency'
         project.tasks[CleanConfTask.NAME].dependsOn.contains(READ_PROJECT_CONFIGURATION_TASK_NAME)
         project.tasks[PREPARE_SETUP_TASK_NAME].dependsOn.contains(READ_PROJECT_CONFIGURATION_TASK_NAME)
-        project.tasks[VERIFY_SETUP_TASK_NAME].dependsOn.contains(READ_PROJECT_CONFIGURATION_TASK_NAME)
         project.tasks[SHOW_SETUP_TASK_NAME].dependsOn.contains(READ_PROJECT_CONFIGURATION_TASK_NAME)
         project.tasks[CheckTestsTask.NAME].dependsOn.contains(READ_PROJECT_CONFIGURATION_TASK_NAME)
 

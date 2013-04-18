@@ -45,7 +45,7 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
     public final static String AMEBA_PROPERTY_DEFAULTS_CONVENTION_NAME = 'amebaPropertyDefaults'
 
     @Inject
-    Map<Integer, AbstractConfiguration> configurations
+    private Map<Integer, AbstractConfiguration> configurations
 
     @Inject
     PropertyPersister propertyPersister

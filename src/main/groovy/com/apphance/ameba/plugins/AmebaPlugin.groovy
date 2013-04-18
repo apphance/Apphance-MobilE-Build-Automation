@@ -19,7 +19,6 @@ class AmebaPlugin implements Plugin<Project> {
         l.lifecycle(AMEBA_ASCII_ART)
 
         project.ext.set('prepared', project.file('ameba.properties').exists())
-        project.ext.set('confsToVerify', [])
 
         def injector = Guice.createInjector(
                 new GradleModule(project),
