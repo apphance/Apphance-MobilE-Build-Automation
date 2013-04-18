@@ -9,13 +9,15 @@ import com.apphance.ameba.configuration.properties.URLProperty
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.google.inject.Inject
 
+import java.text.SimpleDateFormat
+
 /**
  * Keeps configuration for android release.
  */
 @com.google.inject.Singleton
 class AndroidReleaseConfiguration extends AbstractConfiguration implements ReleaseConfiguration {
 
-    final String configurationName = 'Android release configuration'
+    final String configurationName = 'Android Release Configuration'
 
     private boolean enabledInternal
 
@@ -36,19 +38,38 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     AmebaArtifact galleryJS
     AmebaArtifact galleryTrans
 
-    Collection<String> releaseNotes
+    Collection<String> releaseNotes //TODO Jarek
 
-    String projectDirectoryName
-    File otaDirectory
-    String buildDate
     String releaseMailSubject
-    Locale locale
+    String projectDirectoryName     //TODO Jarek
 
     private AndroidConfiguration androidConfiguration
 
     @Inject
     AndroidReleaseConfiguration(AndroidConfiguration androidConfiguration) {
         this.androidConfiguration = androidConfiguration
+    }
+
+    Locale getLocale() {
+        def lang = projectLanguage.value
+        def country = projectCountry.value
+
+        def locale = Locale.getDefault()
+
+        if (lang && country)
+            locale = new Locale(lang, country)
+        else if (lang)
+            locale = new Locale(lang)
+
+        locale
+    }
+
+    String getBuildDate() {
+        new SimpleDateFormat("dd-MM-yyyy HH:mm zzz", locale).format(new Date())
+    }
+
+    File getOtaDirectory() {
+        new File(androidConfiguration.rootDir.value, 'ameba-ota')
     }
 
     FileProperty projectIconFile = new FileProperty(
@@ -91,7 +112,7 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     )
 
     File getTargetDirectory() {
-        new File(new File(otaDirectory, projectDirectoryName), androidConfiguration.versionString.value)
+        new File(new File(otaDirectory, projectDirectoryName), androidConfiguration.fullVersionString)
     }
 
     @Override

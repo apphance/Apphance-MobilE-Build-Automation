@@ -86,17 +86,17 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         otaIndexFile.location.mkdirs()
         otaIndexFile.location.delete()
         URL otaIndexTemplate = this.class.getResource('index.html')
-        ResourceBundle rb = getBundle("${this.class.package.name}.index", androidReleaseConf.locale, this.class.classLoader)
+        def rb = getBundle("${this.class.package.name}.index", androidReleaseConf.locale, this.class.classLoader)
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         engine.verbose = l.debugEnabled
         def binding = [
                 baseUrl: otaIndexFile.url,
                 title: androidConf.projectName.value,
-                androidConf: androidConf,
                 version: androidConf.versionString.value,
                 releaseNotes: androidReleaseConf.releaseNotes,
                 currentDate: androidReleaseConf.buildDate,
                 iconFileName: androidReleaseConf.projectIconFile.value.name,
+                androidVariantsConf: variantsConf,
                 androidReleaseConf: androidReleaseConf,
                 rb: rb
         ]
@@ -118,9 +118,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     }
 
     private void prepareFileIndexFile(Collection<String> variants) {
-        URL fileIndexTemplate = this.class.getResource('file_index.html')
-        ResourceBundle rb = getBundle("${this.class.package.name}.file_index",
-                androidReleaseConf.locale, this.class.classLoader)
+        URL fileIndexTemplate = getClass().getResource('file_index.html')
+        def rb = getBundle("${getClass().package.name}.file_index", androidReleaseConf.locale, getClass().classLoader)
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         engine.verbose = l.debugEnabled
         def binding = [
@@ -130,8 +129,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 apkFiles: androidReleaseConf.apkFiles,
                 version: androidConf.versionString.value,
                 currentDate: androidReleaseConf.buildDate,
-                androidConf: androidConf,
-                releaseConf: androidReleaseConf,
+                androidVariantsConf: variantsConf,
                 androidReleaseConf: androidReleaseConf,
                 rb: rb
         ]
@@ -152,8 +150,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 apkFiles: androidReleaseConf.apkFiles,
                 version: androidConf.versionString.value,
                 currentDate: androidReleaseConf.buildDate,
-                androidConf: androidConf,
-                releaseConf: androidReleaseConf,
+                androidVariantsConf: variantsConf,
                 androidReleaseConf: androidReleaseConf,
                 rb: rb
         ]

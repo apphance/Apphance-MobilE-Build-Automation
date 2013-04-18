@@ -17,7 +17,7 @@ import static java.net.InetAddress.getByAddress
 @com.google.inject.Singleton
 class AndroidTestConfiguration extends AbstractConfiguration {
 
-    String configurationName = 'Android test configuration'
+    String configurationName = 'Android Test Configuration'
 
     private boolean enabledInternal = false
     private Integer emulatorPort

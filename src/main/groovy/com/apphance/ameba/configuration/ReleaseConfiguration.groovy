@@ -62,12 +62,6 @@ interface ReleaseConfiguration extends Configuration {
     Locale getLocale()
 
     File getTargetDirectory()
-//    {
-//        new File(new File(otaDirectory, projectDirectoryName), projectConfiguration.fullVersionString)
-//    }
 
     URL getVersionedApplicationUrl()
-//    {
-//        new URL(baseUrl, "${projectDirectoryName}/${projectConfiguration.fullVersionString}/")
-//    }
 }

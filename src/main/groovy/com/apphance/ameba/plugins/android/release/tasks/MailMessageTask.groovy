@@ -37,13 +37,12 @@ class MailMessageTask extends DefaultTask {
         releaseConf.mailMessageFile.location.delete()
 
         l.lifecycle("Variants: ${variantsConf.variants*.name}")
-        URL mailTemplate = this.class.getResource('mail_message.html')
         def mainBuild = variantsConf.mainVariant
         l.lifecycle("Main build used for size calculation: ${mainBuild}")
 
         def fileSize = releaseConf.apkFiles[mainBuild].location.size()
-        ResourceBundle rb = getBundle("${this.class.package.name}.mail_message", releaseConf.locale, this.class.classLoader)
-        releaseConf.releaseMailSubject = fillMailSubject()
+        def rb = getBundle("${getClass().package.name}.mail_message", releaseConf.locale, getClass().classLoader)
+        releaseConf.releaseMailSubject = fillMailSubject(rb)
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         def binding = [
                 title: androidConfiguration.projectName.value,
@@ -56,13 +55,14 @@ class MailMessageTask extends DefaultTask {
                 releaseMailFlags: releaseConf.releaseMailFlags,
                 rb: rb
         ]
+        URL mailTemplate = getClass().getResource('mail_message.html')
         def result = engine.createTemplate(mailTemplate).make(binding)
-        releaseConf.mailMessageFile.location.write(result.toString(), "utf-8")
+        releaseConf.mailMessageFile.location.write(result.toString(), 'UTF-8')
         l.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")
     }
 
-    private void fillMailSubject(ResourceBundle resourceBundle) {
-        String subject = resourceBundle.getString('Subject')
-        Eval.me("conf", [projectName: androidConfiguration.projectName.value, fullVersionString: androidConfiguration.fullVersionString], /"$subject"/)
+    private void fillMailSubject(ResourceBundle rb) {
+        String subject = rb.getString('Subject')
+        Eval.me("conf", androidConfiguration, /"$subject"/)
     }
 }
