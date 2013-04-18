@@ -23,10 +23,12 @@ class GradlePropertiesPersister implements PropertyPersister {
 
     private File propertyFile
 
+    private String amebaPropFilename = 'ameba.properties'
+
     @Inject
     GradlePropertiesPersister(Project project) {
         props = new SortedProperties()
-        propertyFile = new File("${project.rootDir.absolutePath}${separator}gradle.properties")
+        propertyFile = new File("${project.rootDir.absolutePath}${separator}$amebaPropFilename")
         if (propertyFile.exists()) {
             log.info("File ${propertyFile.absolutePath} exist. Reading configuration")
             props.load(Files.newReader(propertyFile, UTF_8))
