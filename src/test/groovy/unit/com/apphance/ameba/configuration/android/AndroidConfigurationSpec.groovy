@@ -2,6 +2,7 @@ package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.detection.ProjectTypeDetector
 import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Ignore
 import spock.lang.Specification
 
@@ -45,4 +46,12 @@ class AndroidConfigurationSpec extends Specification {
         ['subproject', 'subsubproject'] == androidConf.linkedJarLibraries*.parentFile.parentFile.name
     }
 
+    def 'no exception during readProperties'() {
+        given:
+        def project = ProjectBuilder.builder().build()
+        def androidConfiguration = new AndroidConfiguration(project, null, null, null, null)
+
+        expect:
+        androidConfiguration.readProperties()
+    }
 }

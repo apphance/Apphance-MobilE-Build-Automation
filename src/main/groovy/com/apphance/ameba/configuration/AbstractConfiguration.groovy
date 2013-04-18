@@ -3,6 +3,7 @@ package com.apphance.ameba.configuration
 import com.apphance.ameba.configuration.properties.AbstractProperty
 import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.google.inject.Inject
+import org.gradle.api.Project
 
 import java.lang.reflect.Field
 
@@ -16,7 +17,7 @@ abstract class AbstractConfiguration implements Configuration {
     PropertyPersister propertyPersister
 
     @Inject
-    ConfigurationVerifyManager verifier
+    Project project
 
     List<String> errors = []
 
@@ -32,7 +33,7 @@ abstract class AbstractConfiguration implements Configuration {
             this.enabled = enabledValue
         }
 
-        verifier.registerConfiguration(this)
+        project.confsToVerify << this
     }
 
     void setEnabled(boolean enabled) {
@@ -71,7 +72,10 @@ abstract class AbstractConfiguration implements Configuration {
         }
     }
 
-    @Override
-    void verify() {
+    List<String> verify() {
+        checkProperties()
+        errors
     }
+
+    void checkProperties() {}
 }

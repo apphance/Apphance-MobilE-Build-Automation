@@ -6,5 +6,5 @@ public interface Configuration {
 
     void setEnabled(boolean enabled)
 
-    void verify()
+    List<String> verify()
 }

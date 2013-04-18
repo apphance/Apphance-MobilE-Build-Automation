@@ -13,6 +13,7 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.PropertyCategory.retrieveBasicProjectData
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -69,16 +70,15 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         project.task(CheckTestsTask.NAME, type: CheckTestsTask, dependsOn: READ_PROJECT_CONFIGURATION_TASK_NAME)
 
         project.task(PREPARE_SETUP_TASK_NAME, type: PrepareSetupTask)
-        project.task(VERIFY_SETUP_TASK_NAME, type: VerifySetupTask)
+        project.task(VerifySetupTask.NAME, type: VerifySetupTask)
         project.task(SHOW_SETUP_TASK_NAME, type: ShowSetupTask)
         project.task(SHOW_CONVENTIONS_TASK_NAME, type: ShowConventionsTask)
     }
 
     private void prepareSetupTask2() {
-        def task = project.task('prepareSetup2')
-        task.group = 'conf group'
-        task.description = 'Prepares configuration (ameba.properties)'
-        task << {
+        project.task('prepareSetup2',
+                group: AMEBA_SETUP,
+                description: 'Prepares configuration (ameba.properties)') << {
             Collection<AbstractConfiguration> sorted = configurations.sort().values()
             conversationManager.resolveConfigurations(sorted)
             propertyPersister.save(sorted)

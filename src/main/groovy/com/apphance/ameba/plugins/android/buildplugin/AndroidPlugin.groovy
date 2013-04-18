@@ -32,7 +32,7 @@ class AndroidPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
 
-        if (androidConfiguration.isEnabled()) {
+        if (androidConfiguration.isEnabled() && project.prepared) {
             prepareJavaEnvironment(project)
 
             project.task(RunUpdateProjectTask.NAME, type: RunUpdateProjectTask)

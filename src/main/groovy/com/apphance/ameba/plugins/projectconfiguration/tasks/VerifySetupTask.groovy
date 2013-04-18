@@ -1,11 +1,10 @@
 package com.apphance.ameba.plugins.projectconfiguration.tasks
 
-import com.apphance.ameba.AbstractVerifySetupOperation
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
-import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 
 /**
  * Verifies all properties.
@@ -13,17 +12,21 @@ import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurati
  */
 class VerifySetupTask extends DefaultTask {
 
-    VerifySetupTask() {
-        this.description = 'Verifies if the project can be build properly'
-        this.group = AMEBA_SETUP
-        this.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME)
-    }
-
-    List<AbstractVerifySetupOperation> verifySetupOperations = []
+    static String NAME = 'verifySetup'
+    String description = 'Verifies if the project can be build properly'
+    String group = AMEBA_SETUP
 
     @TaskAction
     void verifySetup() {
-        verifySetupOperations.each { it.project = project }
-        verifySetupOperations.each { it.verifySetup() }
+        List errors = []
+        project.confsToVerify.each {
+            it.verify()
+            errors += it.errors
+        }
+
+        if (errors) {
+            errors.each { println "ERROR: $it" }
+            throw new GradleException('Verification error')
+        }
     }
 }

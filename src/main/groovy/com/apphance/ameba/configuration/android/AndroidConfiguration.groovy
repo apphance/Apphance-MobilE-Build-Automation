@@ -22,7 +22,6 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     String configurationName = 'Android Configuration'
 
-    private Project project
     private ProjectTypeDetector projectTypeDetector
     private AndroidBuildXmlHelper buildXmlHelper
     private AndroidManifestHelper manifestHelper
@@ -276,7 +275,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     }
 
     @Override
-    void verify() {
+    void checkProperties() {
         check !isNullOrEmpty(target.value), "Property ${target.name} is required"
     }
 }

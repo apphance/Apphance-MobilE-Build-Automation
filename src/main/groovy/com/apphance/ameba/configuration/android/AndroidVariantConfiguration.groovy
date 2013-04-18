@@ -1,11 +1,11 @@
 package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.AbstractConfiguration
-import com.apphance.ameba.configuration.ConfigurationVerifyManager
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyPersister
+import org.gradle.api.Project
 
 class AndroidVariantConfiguration extends AbstractConfiguration {
 
@@ -17,12 +17,12 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
                                 PropertyPersister persister,
                                 AndroidConfiguration androidConf,
                                 AndroidApphanceConfiguration androidApphanceConf,
-                                ConfigurationVerifyManager verifier) {
+                                Project project) {
         this.propertyPersister = persister
         this.name = name
         this.androidConf = androidConf
         this.androidApphanceConf = androidApphanceConf
-        this.verifier = verifier
+        this.project = project
 
         initFields()
     }
