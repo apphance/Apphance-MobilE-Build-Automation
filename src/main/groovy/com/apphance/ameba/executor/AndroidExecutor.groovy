@@ -23,7 +23,21 @@ class AndroidExecutor {
     }
 
     def listTarget(File directory) {
-        run(directory, "list target")
+        List<String> output = run(directory, "list target")
+        parseTargets(output)
+    }
+
+    private List<String> parseTargets(List<String> input) {
+        def targets = []
+        def targetPattern = /id:.*"(.*)"/
+        def targetPrefix = 'id:'
+        input.each {
+            def targetMatcher = (it =~ targetPattern)
+            if (it.startsWith(targetPrefix) && targetMatcher.matches()) {
+                targets << targetMatcher[0][1]
+            }
+        }
+        targets.sort()
     }
 
     def createAvdEmulator(File directory, String name, String targetName, String skin, String cardSize, File avdDir, boolean snapshotsEnabled) {

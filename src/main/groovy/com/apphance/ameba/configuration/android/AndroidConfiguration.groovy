@@ -220,20 +220,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     }
 
     private List<String> possibleTargets() {
-        parseTargets(androidExecutor.listTarget(rootDir))
-    }
-
-    private List<String> parseTargets(List<String> input) {
-        def targets = []
-        def targetPattern = /id:.*"(.*)"/
-        def targetPrefix = 'id:'
-        input.each {
-            def targetMatcher = (it =~ targetPattern)
-            if (it.startsWith(targetPrefix) && targetMatcher.matches()) {
-                targets << targetMatcher[0][1]
-            }
-        }
-        targets.sort()
+        androidExecutor.listTarget(rootDir)
     }
 
     def readProperties() {
