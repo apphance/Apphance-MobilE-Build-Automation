@@ -79,6 +79,7 @@ class GradlePropertiesPersisterSpec extends Specification {
 
         when:
         persister.save([androidConfiguration, iOSConfiguration])
+        persister.init(project)
 
         then:
         persister.get(androidConfiguration.versionString.name) == 'version string'

@@ -27,6 +27,10 @@ class GradlePropertiesPersister implements PropertyPersister {
 
     @Inject
     GradlePropertiesPersister(Project project) {
+        init(project)
+    }
+
+    void init(Project project) {
         props = new SortedProperties()
         propertyFile = new File("${project.rootDir.absolutePath}${separator}$amebaPropFilename")
         if (propertyFile.exists()) {
