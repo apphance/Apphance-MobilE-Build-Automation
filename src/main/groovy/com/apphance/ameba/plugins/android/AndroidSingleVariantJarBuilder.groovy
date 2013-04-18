@@ -21,7 +21,7 @@ class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder
     AndroidBuilderInfo buildJarArtifactBuilderInfo(AndroidVariantConfiguration avc) {
         String debugReleaseLowercase = avc.mode.value?.toLowerCase()
         String variablePart = debugReleaseLowercase + "-${avc.name}"
-        File binDir = new File(new File(androidConf.tmpDir.value, avc.name), "bin")
+        File binDir = new File(new File(androidConf.tmpDir, avc.name), "bin")
         AndroidBuilderInfo bi = new AndroidBuilderInfo(
                 variant: avc.name,
                 debugRelease: avc.mode.value?.toLowerCase(),

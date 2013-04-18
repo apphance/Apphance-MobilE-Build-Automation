@@ -66,7 +66,7 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     }
 
     File getTmpDir() {
-        def rootDir = androidConf.rootDir.value
+        def rootDir = androidConf.rootDir
         new File(rootDir.parent, ("tmp-${rootDir.name}-" + name).replaceAll('[\\\\ /]', '_'))
     }
 

@@ -19,6 +19,6 @@ class CleanClassesTask extends DefaultTask {
 
     @TaskAction
     void cleanClasses() {
-        project.ant.delete(dir: conf.buildDir.value)
+        project.ant.delete(dir: conf.buildDir)
     }
 }

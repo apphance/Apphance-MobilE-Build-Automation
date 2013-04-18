@@ -18,12 +18,12 @@ class CleanConfTask extends DefaultTask {
 
     @TaskAction
     void clean() {
-        conf.buildDir.value.deleteDir()
-        conf.tmpDir.value.deleteDir()
-        conf.logDir.value.deleteDir()
+        conf.buildDir.deleteDir()
+        conf.tmpDir.deleteDir()
+        conf.logDir.deleteDir()
 
-        conf.buildDir.value.mkdirs()
-        conf.tmpDir.value.mkdirs()
-        conf.logDir.value.mkdirs()
+        conf.buildDir.mkdirs()
+        conf.tmpDir.mkdirs()
+        conf.logDir.mkdirs()
     }
 }

@@ -32,12 +32,12 @@ class PrepareForReleaseTask extends DefaultTask {
         releaseConf.sourcesZip = new AmebaArtifact(
                 name: "$projectConf.projectName.value-src",
                 url: null, // we do not publish
-                location: new File(projectConf.tmpDir.value, sourceZipName))
+                location: new File(projectConf.tmpDir, sourceZipName))
         def documentationZipName = "$projectConf.projectVersionedName-doc.zip"
         releaseConf.documentationZip = new AmebaArtifact(
                 name: "$projectConf.projectName.value-doc",
                 url: null,
-                location: new File(projectConf.tmpDir.value, documentationZipName))
+                location: new File(projectConf.tmpDir, documentationZipName))
         releaseConf.targetDirectory.mkdirs()
     }
 

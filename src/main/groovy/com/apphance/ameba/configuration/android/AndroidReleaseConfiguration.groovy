@@ -69,7 +69,7 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     }
 
     File getOtaDirectory() {
-        new File(androidConfiguration.rootDir.value, 'ameba-ota')
+        new File(androidConfiguration.rootDir, 'ameba-ota')
     }
 
     FileProperty projectIconFile = new FileProperty(

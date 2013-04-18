@@ -1,8 +1,11 @@
 package com.apphance.ameba.plugins.android.buildplugin.tasks
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.executor.AntExecutor
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.executor.AntExecutor.CLEAN
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
@@ -13,10 +16,12 @@ class CleanAndroidTask extends DefaultTask {
     String description = 'Cleans the application'
     String group = AMEBA_BUILD
 
+    @Inject
+    private AndroidConfiguration conf
+
     @TaskAction
     void cleanAndroid() {
         new AntExecutor(project.rootDir).executeTarget CLEAN
-        File tmpDir = project.file("tmp")
-        project.ant.delete(dir: tmpDir)
+        ant.delete(dir: conf.tmpDir)
     }
 }

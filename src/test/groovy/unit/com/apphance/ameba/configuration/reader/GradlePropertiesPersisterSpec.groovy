@@ -68,7 +68,6 @@ class GradlePropertiesPersisterSpec extends Specification {
         def androidConfiguration = new AndroidConfiguration(project, * [null] * 3, Mock(ProjectTypeDetector) {
             detectProjectType(_) >> ANDROID
         })
-        androidConfiguration.logDir.value = tempDir
         androidConfiguration.versionString.value = 'version string'
 
         def iOSConfiguration = new IOSConfiguration()
@@ -82,7 +81,6 @@ class GradlePropertiesPersisterSpec extends Specification {
         persister.save([androidConfiguration, iOSConfiguration])
 
         then:
-        persister.get(androidConfiguration.logDir.name) == tempDir.absolutePath
         persister.get(androidConfiguration.versionString.name) == 'version string'
         persister.get(iOSConfiguration.name.name) == 'Project name'
         persister.get('nonexisting') == null

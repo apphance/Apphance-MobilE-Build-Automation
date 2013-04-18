@@ -23,8 +23,8 @@ class JarLibraryTask extends DefaultTask {
 
     @TaskAction
     void jarLibrary() {
-        androidConf.tmpDir.value.mkdirs()
-        def manifestFile = new File(androidConf.tmpDir.value, 'MANIFEST.MF')
+        androidConf.tmpDir.mkdirs()
+        def manifestFile = new File(androidConf.tmpDir, 'MANIFEST.MF')
         project.ant.manifest(file: manifestFile) {
             attribute(name: 'Specification-Title', value: androidConf.projectName.value)
             attribute(name: 'Specification-Vendor', value: androidConf.projectName.value)
@@ -33,12 +33,12 @@ class JarLibraryTask extends DefaultTask {
             attribute(name: 'Implementation-Vendor', value: androidConf.projectName.value)
             attribute(name: 'Implementation-Vendor-Id', value: androidConf.projectName.value)
         }
-        def manifestPropertiesFile = new File(androidConf.tmpDir.value, 'manifest.properties')
+        def manifestPropertiesFile = new File(androidConf.tmpDir, 'manifest.properties')
         def properties = new Properties()
         properties.setProperty("implementation.title", androidConf.versionString.value)
         properties.setProperty("implementation.version", androidConf.versionCode.value.toString())
         properties.store(manifestPropertiesFile.newOutputStream(), "Automatically generated with Ameba")
-        File resDir = new File(androidConf.tmpDir.value, "${jarLibraryPrefix()}-res")
+        File resDir = new File(androidConf.tmpDir, "${jarLibraryPrefix()}-res")
         project.ant.delete(dir: resDir)
         resDir.mkdirs()
         project.ant.copy(todir: resDir) {
@@ -53,7 +53,7 @@ class JarLibraryTask extends DefaultTask {
                 exclude(name: '**/test/*.class')
                 exclude(name: 'R*.class')
             }
-            fileset(dir: androidConf.tmpDir.value) {
+            fileset(dir: androidConf.tmpDir) {
                 include(name: 'manifest.properties')
                 include(name: "${resDir.name}/**")
                 exclude(name: '**/test*.*')

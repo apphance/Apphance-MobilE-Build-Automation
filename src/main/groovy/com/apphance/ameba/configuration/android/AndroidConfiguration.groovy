@@ -59,40 +59,28 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     def versionCode = new LongProperty(
             name: 'android.version.code',
             message: 'Version code',
-            defaultValue: { manifestHelper.readVersion(project.rootDir).versionCode })
+            defaultValue: { manifestHelper.readVersion(rootDir).versionCode })
 
     def versionString = new StringProperty(
             name: 'android.version.string',
             message: 'Version string',
-            defaultValue: { manifestHelper.readVersion(project.rootDir).versionString })
+            defaultValue: { manifestHelper.readVersion(rootDir).versionString })
 
-    //TODO dynamic
-    FileProperty buildDir = new FileProperty(
-            name: 'android.dir.build',
-            message: 'Project build directory',
-            defaultValue: { project.file('build') },
-            askUser: { false })
+    File getBuildDir() {
+        project.file('build')
+    }
 
-    //TODO dynamic
-    FileProperty tmpDir = new FileProperty(
-            name: 'android.dir.tmp',
-            message: 'Project temporary directory',
-            defaultValue: { project.file('tmp') },
-            askUser: { false })
+    File getTmpDir() {
+        project.file('ameba-tmp')
+    }
 
-    //TODO dynamic
-    FileProperty logDir = new FileProperty(
-            name: 'android.dir.log',
-            message: 'Project log directory',
-            defaultValue: { project.file('log') },
-            askUser: { false })
+    File getLogDir() {
+        project.file('ameba-log')
+    }
 
-    //TODO dynamic
-    def rootDir = new FileProperty(
-            name: 'android.dir.root',
-            message: 'Project root directory',
-            defaultValue: { project.rootDir },
-            askUser: { false })
+    File getRootDir() {
+        project.rootDir
+    }
 
     def target = new StringProperty(
             name: 'android.target',
@@ -108,7 +96,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     def mainPackage = new StringProperty(
             name: 'android.main.package',
             message: 'Android main package',
-            defaultValue: { manifestHelper.androidPackage(project.rootDir) }
+            defaultValue: { manifestHelper.androidPackage(rootDir) }
     )
 
     def sdkDir = new FileProperty(
@@ -159,7 +147,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     Collection<File> getJarLibraries() {
         if (!jarLibs || !linkedJarLibs) {
-            librariesFinder(project.rootDir)
+            librariesFinder(rootDir)
         }
         jarLibs
     }
@@ -168,7 +156,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     Collection<File> getLinkedJarLibraries() {
         if (!jarLibs || !linkedJarLibs) {
-            librariesFinder(project.rootDir)
+            librariesFinder(rootDir)
         }
         linkedJarLibs
     }
@@ -213,13 +201,13 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     }
 
     private String defaultName() {
-        buildXmlHelper.projectName(project.rootDir)
+        buildXmlHelper.projectName(rootDir)
     }
 
     private List<String> possibleNames() {
         def names = []
-        names << project.rootDir.name
-        names << buildXmlHelper.projectName(project.rootDir)
+        names << rootDir.name
+        names << buildXmlHelper.projectName(rootDir)
         names
     }
 
@@ -232,7 +220,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     }
 
     private List<String> possibleTargets() {
-        parseTargets(androidExecutor.listTarget(project.rootDir))
+        parseTargets(androidExecutor.listTarget(rootDir))
     }
 
     private List<String> parseTargets(List<String> input) {
@@ -271,9 +259,8 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     @Override
     String getProjectVersionedName() {
-        "$projectName.value-$fullVersionString"
+        "${projectName.value}-$fullVersionString"
     }
-
     @Override
     void checkProperties() {
         check !isNullOrEmpty(target.value), "Property ${target.name} is required"

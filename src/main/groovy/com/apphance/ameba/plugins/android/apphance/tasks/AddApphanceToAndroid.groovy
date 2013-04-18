@@ -50,10 +50,6 @@ class AddApphanceToAndroid {
         }
     }
 
-    private File getVariantDir(String variant) {
-        new File(androidConf.tmpDir.value, variant)
-    }
-
     private boolean checkIfApphancePresent(File directory) {
         boolean found = false
         directory.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { file ->

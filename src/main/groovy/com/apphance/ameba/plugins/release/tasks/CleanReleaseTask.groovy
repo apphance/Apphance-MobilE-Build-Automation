@@ -23,8 +23,8 @@ class CleanReleaseTask extends DefaultTask {
     @TaskAction
     void clean() {
         releaseConf.otaDirectory.deleteDir()
-        conf.tmpDir.value.deleteDir()
+        conf.tmpDir.deleteDir()
         releaseConf.otaDirectory.mkdirs()
-        conf.tmpDir.value.mkdirs()
+        conf.tmpDir.mkdirs()
     }
 }
