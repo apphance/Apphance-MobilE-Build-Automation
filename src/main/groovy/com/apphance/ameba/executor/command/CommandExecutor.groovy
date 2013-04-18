@@ -18,7 +18,8 @@ class CommandExecutor {
     private FileLinker fileLinker
     private CommandLogFilesGenerator logFileGenerator
 
-    @Inject CommandExecutor(FileLinker fileLinker, CommandLogFilesGenerator logFileGenerator) {
+    @Inject
+    CommandExecutor(FileLinker fileLinker, CommandLogFilesGenerator logFileGenerator) {
         this.fileLinker = fileLinker
         this.logFileGenerator = logFileGenerator
     }
@@ -79,7 +80,7 @@ class CommandExecutor {
             if (c.failOnError) {
                 throw new CommandFailedException(e.message, c)
             } else {
-                l.error("Error during runCommand. Command: $c, error: ${e.message}")
+                l.error("Error while executing command: ${c.commandForPublic}, in dir: ${c.runDir}, error: ${e.message}")
             }
         }
 
