@@ -7,7 +7,7 @@ class ListStringProperty extends AbstractProperty<List<String>> {
     @Override
     void setValue(String value) {
         if (value && value.trim())
-            this.@value = value.split(SEPARATOR)
+            this.@value = value.trim().split(SEPARATOR)*.trim()
     }
 
     Closure<String> persistentForm = { value?.join(SEPARATOR) ?: '' }

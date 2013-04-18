@@ -36,7 +36,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     def variantsNames = new ListStringProperty(
             name: 'android.variants',
-            askUser: { true }
+            message: 'Variants'
     )
 
     private List<AndroidVariantConfiguration> buildVariantsList() {

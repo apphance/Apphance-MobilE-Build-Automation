@@ -79,8 +79,8 @@ class ConversationManager {
 
     @groovy.transform.PackageScope
     void setPropertyValue(AbstractProperty ap, String input) {
-        if (input?.empty) {
-            ap.value = defaultValueString(ap)
+        if (input?.empty && !ap.value) {
+            ap.value = ap?.defaultValue() ?: ''
         } else if (ap.possibleValues && input in ap.possibleValues() || (ap.validator && ap.validator(input))) {
             ap.value = input
         }
