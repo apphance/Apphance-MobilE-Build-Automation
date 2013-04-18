@@ -54,13 +54,13 @@ class AndroidReleaseApkListener implements AndroidBuildListener {
         AmebaArtifact artifact = new AmebaArtifact()
 
         artifact.name = "APK ${bi.debugRelease} file for ${bi.variant}"
-        artifact.url = new URL(releaseConf.projectURL.value, "${getFolderPrefix()}/${bi.filePrefix}.apk")
-        artifact.location = new File(releaseConf.otaDirectory, "${getFolderPrefix()}/${bi.filePrefix}.apk")
+        artifact.url = new URL(releaseConf.baseURL, "${getFolderPrefix()}/${bi.filePrefix}.apk")
+        artifact.location = new File(releaseConf.otaDir, "${getFolderPrefix()}/${bi.filePrefix}.apk")
 
         artifact
     }
 
     private String getFolderPrefix() {
-        "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
+        "${releaseConf.projectDirName}/${conf.fullVersionString}"
     }
 }

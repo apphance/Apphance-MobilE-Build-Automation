@@ -23,12 +23,12 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
     }
 
     @Override
-    String getProjectDirectoryName() {
+    String getProjectDirName() {
         return null  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    File getOtaDirectory() {
+    File getOtaDir() {
         return null  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -155,5 +155,10 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
     @Override
     boolean isEnabled() {
         return false  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    URL getBaseURL() {
+        return null  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

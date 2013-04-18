@@ -45,7 +45,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
             listener.buildArtifactsOnly(project, it)
         }
         if (androidConf.versionString.value) {
-            String otaFolderPrefix = "${androidReleaseConf.projectDirectoryName}/${androidConf.versionString.value}"
+            String otaFolderPrefix = "${androidReleaseConf.projectDirName}/${androidConf.versionString.value}"
             prepareFileIndexArtifact(otaFolderPrefix)
             preparePlainFileIndexArtifact(otaFolderPrefix)
             prepareOtaIndexFile()
@@ -59,8 +59,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     private prepareFileIndexArtifact(String otaFolderPrefix) {
         AmebaArtifact fileIndexFile = new AmebaArtifact(
                 name: "The file index file: ${androidConf.projectName.value}",
-                url: new URL(androidReleaseConf.projectURL.value, "${otaFolderPrefix}/file_index.html"),
-                location: new File(androidReleaseConf.otaDirectory, "${otaFolderPrefix}/file_index.html")
+                url: new URL(androidReleaseConf.baseURL, "${otaFolderPrefix}/file_index.html"),
+                location: new File(androidReleaseConf.otaDir, "${otaFolderPrefix}/file_index.html")
         )
         fileIndexFile.location.parentFile.mkdirs()
         fileIndexFile.location.delete()
@@ -70,19 +70,19 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     private preparePlainFileIndexArtifact(String otaFolderPrefix) {
         AmebaArtifact plainFileIndexFile = new AmebaArtifact(
                 name: "The plain file index file: ${androidConf.projectName.value}",
-                url: new URL(androidReleaseConf.projectURL.value, "${otaFolderPrefix}/plain_file_index.html"),
-                location: new File(androidReleaseConf.otaDirectory, "${otaFolderPrefix}/plain_file_index.html"))
+                url: new URL(androidReleaseConf.baseURL, "${otaFolderPrefix}/plain_file_index.html"),
+                location: new File(androidReleaseConf.otaDir, "${otaFolderPrefix}/plain_file_index.html"))
         plainFileIndexFile.location.parentFile.mkdirs()
         plainFileIndexFile.location.delete()
         androidReleaseConf.plainFileIndexFile = plainFileIndexFile
     }
 
     private void prepareOtaIndexFile() {
-        String otaFolderPrefix = "${androidReleaseConf.projectDirectoryName}/${androidConf.versionString.value}"
+        String otaFolderPrefix = "${androidReleaseConf.projectDirName}/${androidConf.versionString.value}"
         AmebaArtifact otaIndexFile = new AmebaArtifact(
                 name: "The ota index file: ${androidConf.projectName.value}",
-                url: new URL(androidReleaseConf.projectURL.value, "${otaFolderPrefix}/index.html"),
-                location: new File(androidReleaseConf.otaDirectory, "${otaFolderPrefix}/index.html"))
+                url: new URL(androidReleaseConf.baseURL, "${otaFolderPrefix}/index.html"),
+                location: new File(androidReleaseConf.otaDir, "${otaFolderPrefix}/index.html"))
         otaIndexFile.location.mkdirs()
         otaIndexFile.location.delete()
         URL otaIndexTemplate = this.class.getResource('index.html')

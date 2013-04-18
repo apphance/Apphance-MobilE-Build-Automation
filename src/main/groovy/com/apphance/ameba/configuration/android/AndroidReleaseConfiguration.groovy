@@ -38,11 +38,9 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     AmebaArtifact galleryJS
     AmebaArtifact galleryTrans
 
-    Collection<String> releaseNotes //TODO Jarek
+    Collection<String> releaseNotes
 
     String releaseMailSubject
-    String projectDirectoryName     //TODO Jarek
-
     private AndroidConfiguration androidConfiguration
 
     @Inject
@@ -50,9 +48,10 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
         this.androidConfiguration = androidConfiguration
     }
 
+    @Override
     Locale getLocale() {
-        def lang = projectLanguage.value
-        def country = projectCountry.value
+        def lang = projectLanguage.value?.trim()
+        def country = projectCountry.value?.trim()
 
         def locale = Locale.getDefault()
 
@@ -64,13 +63,16 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
         locale
     }
 
+    @Override
     String getBuildDate() {
         new SimpleDateFormat("dd-MM-yyyy HH:mm zzz", locale).format(new Date())
     }
 
-    File getOtaDirectory() {
+    @Override
+    File getOtaDir() {
         new File(androidConfiguration.rootDir, 'ameba-ota')
     }
+
 
     FileProperty projectIconFile = new FileProperty(
             name: 'android.release.project.icon.file',
@@ -82,6 +84,20 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             message: 'Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as ' +
                     'subdirectory of ota dir when artifacts are created locally.'
     )
+
+    @Override
+    String getProjectDirName() {
+        def url = projectURL.value
+        def split = url.path.split('/')
+        split[-1]
+    }
+
+    @Override
+    URL getBaseURL() {
+        def url = projectURL.value
+        def split = url.path.split('/')
+        new URL(url.protocol, url.host, url.port, (split[0..-2]).join('/') + '/')
+    }
 
     def projectLanguage = new StringProperty(
             name: 'android.release.project.language',
@@ -111,13 +127,14 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             defaultValue: { ['qrCode', 'imageMontage'] as List<String> }
     )
 
+    @Override
     File getTargetDirectory() {
-        new File(new File(otaDirectory, projectDirectoryName), androidConfiguration.fullVersionString)
+        new File(new File(otaDir, projectDirName), androidConfiguration.fullVersionString)
     }
 
     @Override
     URL getVersionedApplicationUrl() {
-        new URL(projectURL.value, "${projectDirectoryName}/${androidConfiguration.fullVersionString}/")
+        new URL(baseURL, "${projectDirName}/${androidConfiguration.fullVersionString}/")
     }
 
     @Override

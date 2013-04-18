@@ -13,9 +13,9 @@ interface ReleaseConfiguration extends Configuration {
 
     URLProperty getProjectURL()
 
-    String getProjectDirectoryName()
+    String getProjectDirName()
 
-    File getOtaDirectory()
+    File getOtaDir()
 
     String getBuildDate()
 
@@ -64,4 +64,6 @@ interface ReleaseConfiguration extends Configuration {
     File getTargetDirectory()
 
     URL getVersionedApplicationUrl()
+
+    URL getBaseURL()
 }
