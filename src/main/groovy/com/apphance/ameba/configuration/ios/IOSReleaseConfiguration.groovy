@@ -161,4 +161,14 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
     URL getBaseURL() {
         return null  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    StringProperty getMailPort() {
+        return null  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    StringProperty getMailServer() {
+        return null  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

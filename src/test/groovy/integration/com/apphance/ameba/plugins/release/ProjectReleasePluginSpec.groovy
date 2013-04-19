@@ -35,7 +35,6 @@ class ProjectReleasePluginSpec extends Specification {
         then: 'every task exists and is in correct group'
         project.tasks[CopyGalleryFilesTask.NAME].group == AMEBA_CONFIGURATION
         project.tasks[PrepareForReleaseTask.NAME].group == AMEBA_RELEASE
-        project.tasks[VerifyReleaseNotesTask.NAME].group == AMEBA_RELEASE
         project.tasks[ImageMontageTask.NAME].group == AMEBA_RELEASE
         project.tasks[SendMailMessageTask.NAME].group == AMEBA_RELEASE
         project.tasks[CleanReleaseTask.NAME].group == AMEBA_RELEASE
@@ -43,11 +42,9 @@ class ProjectReleasePluginSpec extends Specification {
 
         then: 'each task has correct dependency'
         project.tasks[PrepareForReleaseTask.NAME].dependsOn.flatten().containsAll(CopyGalleryFilesTask.NAME)
-        project.tasks[VerifyReleaseNotesTask.NAME].dependsOn.flatten().containsAll(PrepareForReleaseTask.NAME)
         project.tasks[ImageMontageTask.NAME].dependsOn.flatten().containsAll(PrepareForReleaseTask.NAME)
         project.tasks[SendMailMessageTask.NAME].dependsOn.flatten().containsAll(
                 PrepareForReleaseTask.NAME,
-                VerifyReleaseNotesTask.NAME,
                 'prepareMailMessage')
         project.tasks[CleanReleaseTask.NAME].dependsOn.flatten().containsAll(CLEAN_TASK_NAME)
         project.tasks[BuildSourcesZipTask.NAME].dependsOn.flatten().containsAll(PrepareForReleaseTask.NAME)
@@ -78,6 +75,5 @@ class ProjectReleasePluginSpec extends Specification {
         !project.getTasksByName(ImageMontageTask.NAME, false)
         !project.getTasksByName(PrepareForReleaseTask.NAME, false)
         !project.getTasksByName(SendMailMessageTask.NAME, false)
-        !project.getTasksByName(VerifyReleaseNotesTask.NAME, false)
     }
 }

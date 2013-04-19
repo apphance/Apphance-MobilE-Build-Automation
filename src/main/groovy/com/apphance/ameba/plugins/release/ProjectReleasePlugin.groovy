@@ -45,17 +45,13 @@ class ProjectReleasePlugin implements Plugin<Project> {
                     type: PrepareForReleaseTask,
                     dependsOn: [CopyGalleryFilesTask.NAME])
 
-            project.task(VerifyReleaseNotesTask.NAME,
-                    type: VerifyReleaseNotesTask,
-                    dependsOn: [PrepareForReleaseTask.NAME])
-
             project.task(ImageMontageTask.NAME,
                     type: ImageMontageTask,
                     dependsOn: [PrepareForReleaseTask.NAME])
 
             project.task(SendMailMessageTask.NAME,
                     type: SendMailMessageTask,
-                    dependsOn: [PrepareForReleaseTask.NAME, VerifyReleaseNotesTask.NAME, 'prepareMailMessage'])
+                    dependsOn: [PrepareForReleaseTask.NAME, 'prepareMailMessage'])
 
             project.task(CleanReleaseTask.NAME,
                     type: CleanReleaseTask,

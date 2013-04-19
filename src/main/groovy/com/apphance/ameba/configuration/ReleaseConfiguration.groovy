@@ -8,7 +8,6 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 
 interface ReleaseConfiguration extends Configuration {
 
-    //TODO how this field is set?
     Collection<String> getReleaseNotes()
 
     URLProperty getProjectURL()
@@ -66,4 +65,8 @@ interface ReleaseConfiguration extends Configuration {
     URL getVersionedApplicationUrl()
 
     URL getBaseURL()
+
+    StringProperty getMailPort()
+
+    StringProperty getMailServer()
 }

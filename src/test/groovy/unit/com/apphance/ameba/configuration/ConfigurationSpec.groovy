@@ -29,7 +29,7 @@ class ConfigurationSpec extends Specification {
     }
 
     def 'configuration name'() {
-        expect: new AndroidReleaseConfiguration().enabledPropKey == 'android.release.configuration.enabled'
+        expect: new AndroidReleaseConfiguration(* [null] * 2).enabledPropKey == 'android.release.configuration.enabled'
     }
 
     @Ignore('Rewrite access checking to Guice AOP')
@@ -85,7 +85,7 @@ class ConfigurationSpec extends Specification {
         given:
         def androidConfiguration = Spy(AndroidConfiguration)
         androidConfiguration.isEnabled() >> true
-        def configuration = new AndroidReleaseConfiguration(androidConfiguration)
+        def configuration = new AndroidReleaseConfiguration(androidConfiguration, null)
         configuration.enabled = true
 
         expect:

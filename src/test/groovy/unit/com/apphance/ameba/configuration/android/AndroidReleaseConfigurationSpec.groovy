@@ -3,7 +3,7 @@ package com.apphance.ameba.configuration.android
 import spock.lang.Specification
 
 class AndroidReleaseConfigurationSpec extends Specification {
-    def arc = new AndroidReleaseConfiguration(Mock(AndroidConfiguration))
+    def arc = new AndroidReleaseConfiguration(Mock(AndroidConfiguration), null)
 
     def setup() {
         arc.projectURL.value = 'http://ota.polidea.pl/SATGuruAndroid-32DRDK64'

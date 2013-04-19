@@ -6,6 +6,7 @@ import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.properties.URLProperty
+import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.google.inject.Inject
 
@@ -38,14 +39,28 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     AmebaArtifact galleryJS
     AmebaArtifact galleryTrans
 
-    Collection<String> releaseNotes
 
     String releaseMailSubject
     private AndroidConfiguration androidConfiguration
+    private PropertyReader reader
 
     @Inject
-    AndroidReleaseConfiguration(AndroidConfiguration androidConfiguration) {
+    AndroidReleaseConfiguration(AndroidConfiguration androidConfiguration, PropertyReader reader) {
         this.androidConfiguration = androidConfiguration
+        this.reader = reader
+    }
+
+    Collection<String> getReleaseNotes() {
+        def notes = []
+        def sources = [{ reader.systemProperty('release.notes') }, { reader.envVariable('RELEASE_NOTES') }]
+        for (Closure<String> c in sources) {
+            def value = c.call()
+            if (value) {
+                notes.addAll(value.split('\n'))
+                break
+            }
+        }
+        notes
     }
 
     @Override
@@ -126,6 +141,18 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             message: 'Flags for release email',
             defaultValue: { ['qrCode', 'imageMontage'] as List<String> }
     )
+
+    @Override
+    StringProperty getMailPort() {
+
+        return null  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    StringProperty getMailServer() {
+
+        return null  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
     @Override
     File getTargetDirectory() {
