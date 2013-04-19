@@ -30,7 +30,6 @@ class SingleVariantTask extends DefaultTask {
 
     @TaskAction
     void singleVariant() {
-        String mode = variant.mode.value.toLowerCase()
         if (androidConfiguration.isLibrary()) {
             AndroidBuilderInfo bi = androidJarBuilder.buildJarArtifactBuilderInfo(variant)
             androidJarBuilder.buildSingle(bi)

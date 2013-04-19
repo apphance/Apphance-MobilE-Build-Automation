@@ -16,7 +16,7 @@ class CopySourcesTask extends DefaultTask {
     String group = AMEBA_BUILD
 
     @Inject
-    private AndroidConfiguration androidConfiguration
+    AndroidConfiguration androidConfiguration
     @Inject
     private AndroidVariantsConfiguration androidVariantsConfiguration
 

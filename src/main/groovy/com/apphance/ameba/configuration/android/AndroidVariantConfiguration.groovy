@@ -33,6 +33,8 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
         apphanceMode.message = "Apphance mode for '$name'"
         apphanceLibVersion.name = "android.variant.${name}.apphance.lib"
         apphanceLibVersion.message = "Apphance lib version for '$name'"
+
+        super.init()
     }
 
     def mode = new StringProperty(

@@ -26,7 +26,7 @@ class RunUpdateProjectTask extends DefaultTask {
         runUpdateRecursively(project.rootDir)
     }
 
-    private void runUpdateRecursively(File currentDir) {
+    void runUpdateRecursively(File currentDir) {
         runUpdateProject(project.rootDir)
         Properties prop = new Properties()
         File propFile = new File(currentDir, PROJECT_PROPERTIES_KEY)

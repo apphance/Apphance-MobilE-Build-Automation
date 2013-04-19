@@ -114,7 +114,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     private Collection<File> sdkJarLibs = []
 
     Collection<File> getSdkJars() {
-        if (sdkJarLibs.empty) {
+        if (sdkJarLibs.empty && target.value) {
             def sdk = sdkDir.value
             def target = minTarget.value
             if (target.startsWith('android')) {

@@ -54,7 +54,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     }
 
     private List<AndroidVariantConfiguration> extractVariantsFromProperties() {
-        variantsNames.value.collect { createVariant(it.toLowerCase()) }
+        variantsNames.value.collect { createVariant(it) }
     }
 
     private boolean variantsDirExistsAndIsNotEmpty() {

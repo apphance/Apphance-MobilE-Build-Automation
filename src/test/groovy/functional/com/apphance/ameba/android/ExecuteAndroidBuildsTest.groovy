@@ -383,7 +383,7 @@ class ExecuteAndroidBuildsTest {
         try {
             substituteProperties(propsFile, propsOrigFile)
             def baos = new ByteArrayOutputStream();
-            runGradle(baos, 'clean', 'buildDebug-test')
+            runGradle(baos, 'clean', 'buildTestDebug')
             def res = baos.toString('UTF-8')
             println res
             assertTrue(res.contains("add-ons/addon-google_apis-google-8/libs/maps.jar"))

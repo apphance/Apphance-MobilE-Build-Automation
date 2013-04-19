@@ -63,10 +63,10 @@ class AndroidPlugin implements Plugin<Project> {
             project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
 
             variantsConf.variants.each {
-                project.task("build${it.name}", type: SingleVariantTask, variant: it,
-                        dependsOn: [CopySourcesTask.NAME, RunUpdateProjectTask.NAME])
+                def buildName = "build${it.name}"
+                project.task(buildName, type: SingleVariantTask, dependsOn: [CopySourcesTask.NAME, RunUpdateProjectTask.NAME]).variant = it
 
-                project.task("install${it.name}", type: InstallTask, variant: it, dependsOn: "build${it.name}")
+                project.task("install${it.name}", type: InstallTask, dependsOn: buildName).variant = it
             }
         }
     }
