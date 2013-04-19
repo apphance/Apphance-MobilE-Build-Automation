@@ -39,6 +39,9 @@ class PluginMasterSpec extends Specification {
         and:
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
+        def amebaProperties = Mock(File)
+        amebaProperties.exists() >> true
+        project.file('ameba.properties') >> amebaProperties
 
         and:
         projectTypeDetectorMock.detectProjectType(_) >> type
@@ -67,6 +70,9 @@ class PluginMasterSpec extends Specification {
         and:
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
+        def amebaProperties = Mock(File)
+        amebaProperties.exists() >> true
+        project.file('ameba.properties') >> amebaProperties
 
         and: 'tell that project is Android'
         projectTypeDetectorMock.detectProjectType(_) >> ANDROID
@@ -95,6 +101,9 @@ class PluginMasterSpec extends Specification {
         and:
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
+        def amebaProperties = Mock(File)
+        amebaProperties.exists() >> true
+        project.file('ameba.properties') >> amebaProperties
 
         and: 'tell that project is iOS'
         projectTypeDetectorMock.detectProjectType(_) >> IOS

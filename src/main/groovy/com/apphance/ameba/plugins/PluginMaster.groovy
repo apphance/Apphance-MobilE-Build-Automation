@@ -22,9 +22,6 @@ import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
-import static ProjectType.ANDROID
-import static ProjectType.IOS
-
 class PluginMaster {
 
     def log = Logging.getLogger(getClass())
@@ -34,8 +31,11 @@ class PluginMaster {
     @Inject Injector injector
 
     static plugins = [
-            (IOS): [
+            COMMON: [
                     ProjectConfigurationPlugin,
+            ],
+
+            IOS: [
                     IOSPlugin,
                     ProjectReleasePlugin,
                     IOSFrameworkPlugin,
@@ -44,8 +44,7 @@ class PluginMaster {
                     IOSUnitTestPlugin,
             ],
 
-            (ANDROID): [
-                    ProjectConfigurationPlugin,
+            ANDROID: [
                     AndroidPlugin,
                     ProjectReleasePlugin,
                     AndroidAnalysisPlugin,
@@ -68,6 +67,10 @@ class PluginMaster {
             project.plugins.add(plugin)
         }
 
-        plugins[projectType].each installPlugin
+        plugins['COMMON'].each installPlugin
+
+        if (project.file('ameba.properties').exists()) {
+            plugins[projectType.name()].each installPlugin
+        }
     }
 }

@@ -18,8 +18,6 @@ class AmebaPlugin implements Plugin<Project> {
     void apply(Project project) {
         l.lifecycle(AMEBA_ASCII_ART)
 
-        project.ext.set('prepared', project.file('ameba.properties').exists())
-
         def injector = Guice.createInjector(
                 new GradleModule(project),
                 new ConfigurationModule(project),
