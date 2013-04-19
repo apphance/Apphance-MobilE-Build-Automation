@@ -44,8 +44,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         variantsConf.variants.each {
             listener.buildArtifactsOnly(project, it)
         }
-        if (androidConf.versionString.value) {
-            String otaFolderPrefix = "${androidReleaseConf.projectDirName}/${androidConf.versionString.value}"
+        if (androidConf.versionString) {
+            String otaFolderPrefix = "${androidReleaseConf.projectDirName}/${androidConf.versionString}"
             prepareFileIndexArtifact(otaFolderPrefix)
             preparePlainFileIndexArtifact(otaFolderPrefix)
             prepareOtaIndexFile()
@@ -78,7 +78,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     }
 
     private void prepareOtaIndexFile() {
-        String otaFolderPrefix = "${androidReleaseConf.projectDirName}/${androidConf.versionString.value}"
+        String otaFolderPrefix = "${androidReleaseConf.projectDirName}/${androidConf.versionString}"
         AmebaArtifact otaIndexFile = new AmebaArtifact(
                 name: "The ota index file: ${androidConf.projectName.value}",
                 url: new URL(androidReleaseConf.baseURL, "${otaFolderPrefix}/index.html"),
@@ -92,7 +92,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         def binding = [
                 baseUrl: otaIndexFile.url,
                 title: androidConf.projectName.value,
-                version: androidConf.versionString.value,
+                version: androidConf.versionString,
                 releaseNotes: androidReleaseConf.releaseNotes,
                 currentDate: androidReleaseConf.buildDate,
                 iconFileName: androidReleaseConf.projectIconFile.value.name,
@@ -107,11 +107,11 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         project.ant.copy(file: androidReleaseConf.projectIconFile.value.name, tofile: new File(otaIndexFile.location.parentFile,
                 androidReleaseConf.projectIconFile.value.name))
         String urlEncoded = URLEncoder.encode(otaIndexFile.url.toString(), 'utf-8')
-        File outputFile = new File(androidReleaseConf.targetDirectory, "qrcode-${androidConf.projectName.value}-${androidConf.versionString.value}.png")
+        File outputFile = new File(androidReleaseConf.targetDirectory, "qrcode-${androidConf.projectName.value}-${androidConf.versionString}.png")
         downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), outputFile)
         AmebaArtifact qrCodeArtifact = new AmebaArtifact(
                 name: 'QR Code',
-                url: new URL(androidReleaseConf.versionedApplicationUrl, "qrcode-${androidConf.projectName.value}-${androidConf.versionString.value}.png"),
+                url: new URL(androidReleaseConf.versionedApplicationUrl, "qrcode-${androidConf.projectName.value}-${androidConf.versionString}.png"),
                 location: outputFile)
         androidReleaseConf.QRCodeFile = qrCodeArtifact
         l.lifecycle("QRCode created: ${qrCodeArtifact.location}")
@@ -127,7 +127,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 title: androidConf.projectName.value,
                 variants: variants,
                 apkFiles: androidReleaseConf.apkFiles,
-                version: androidConf.versionString.value,
+                version: androidConf.versionString,
                 currentDate: androidReleaseConf.buildDate,
                 androidVariantsConf: variantsConf,
                 androidReleaseConf: androidReleaseConf,
@@ -148,7 +148,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 baseUrl: androidReleaseConf.plainFileIndexFile.url,
                 title: androidConf.projectName.value,
                 apkFiles: androidReleaseConf.apkFiles,
-                version: androidConf.versionString.value,
+                version: androidConf.versionString,
                 currentDate: androidReleaseConf.buildDate,
                 androidVariantsConf: variantsConf,
                 androidReleaseConf: androidReleaseConf,

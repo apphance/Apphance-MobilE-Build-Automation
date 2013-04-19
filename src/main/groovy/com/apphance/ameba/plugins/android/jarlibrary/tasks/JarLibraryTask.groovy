@@ -28,15 +28,15 @@ class JarLibraryTask extends DefaultTask {
         project.ant.manifest(file: manifestFile) {
             attribute(name: 'Specification-Title', value: androidConf.projectName.value)
             attribute(name: 'Specification-Vendor', value: androidConf.projectName.value)
-            attribute(name: 'Implementation-Title', value: androidConf.versionString.value)
-            attribute(name: 'Implementation-Version', value: androidConf.versionCode.value)
+            attribute(name: 'Implementation-Title', value: androidConf.versionString)
+            attribute(name: 'Implementation-Version', value: androidConf.versionCode)
             attribute(name: 'Implementation-Vendor', value: androidConf.projectName.value)
             attribute(name: 'Implementation-Vendor-Id', value: androidConf.projectName.value)
         }
         def manifestPropertiesFile = new File(androidConf.tmpDir, 'manifest.properties')
         def properties = new Properties()
-        properties.setProperty("implementation.title", androidConf.versionString.value)
-        properties.setProperty("implementation.version", androidConf.versionCode.value.toString())
+        properties.setProperty("implementation.title", androidConf.versionString)
+        properties.setProperty("implementation.version", androidConf.versionCode.toString())
         properties.store(manifestPropertiesFile.newOutputStream(), "Automatically generated with Ameba")
         File resDir = new File(androidConf.tmpDir, "${jarLibraryPrefix()}-res")
         project.ant.delete(dir: resDir)
@@ -44,7 +44,7 @@ class JarLibraryTask extends DefaultTask {
         project.ant.copy(todir: resDir) {
             fileset(dir: project.file('res'))
         }
-        File destFile = project.file(getJarLibraryFilePath(androidConf.projectName.value, androidConf.versionString.value))
+        File destFile = project.file(getJarLibraryFilePath(androidConf.projectName.value, androidConf.versionString))
         File classesDir = project.file("bin/classes")
         destFile.delete()
         project.ant.jar(destfile: destFile, manifest: manifestFile, manifestencoding: 'utf-8') {

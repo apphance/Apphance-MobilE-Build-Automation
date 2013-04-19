@@ -26,7 +26,7 @@ class InstallTask extends DefaultTask {
         String debugRelease = variant.mode.value.toLowerCase().capitalize()
         def firstLetterLowerCase = debugRelease[0].toLowerCase()
         File targetDirectory = androidReleaseConf.targetDirectory
-        def apkName = "${androidConf.projectName.value}-${debugRelease}-${variant}-${androidConf.versionString.value}.apk".toString()
+        def apkName = "${androidConf.projectName.value}-${debugRelease}-${variant}-${androidConf.versionString}.apk".toString()
         File apkFile = new File(targetDirectory, apkName)
         new AntExecutor(project.rootDir).executeTarget "install${firstLetterLowerCase}", ['out.final.file': apkFile.canonicalPath]
     }

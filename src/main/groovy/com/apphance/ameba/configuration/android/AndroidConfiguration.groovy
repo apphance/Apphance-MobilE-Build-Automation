@@ -3,7 +3,6 @@ package com.apphance.ameba.configuration.android
 import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
-import com.apphance.ameba.configuration.properties.LongProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.AndroidExecutor
@@ -57,28 +56,32 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
             possibleValues: { possibleNames() }
     )
 
-    def versionCode = new LongProperty(
-            name: 'android.version.code',
-            message: 'Version code',
-            defaultValue: { manifestHelper.readVersion(rootDir).versionCode })
+    @Override
+    Long getVersionCode() {
+        manifestHelper.readVersion(rootDir).versionCode
+    }
 
-    def versionString = new StringProperty(
-            name: 'android.version.string',
-            message: 'Version string',
-            defaultValue: { manifestHelper.readVersion(rootDir).versionString })
+    @Override
+    String getVersionString() {
+        manifestHelper.readVersion(rootDir).versionString
+    }
 
+    @Override
     File getBuildDir() {
         project.file('build')
     }
 
+    @Override
     File getTmpDir() {
         project.file('ameba-tmp')
     }
 
+    @Override
     File getLogDir() {
         project.file('ameba-log')
     }
 
+    @Override
     File getRootDir() {
         project.rootDir
     }
@@ -242,7 +245,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     @Override
     String getFullVersionString() {
-        "${versionString.value}_${versionCode.value}"
+        "${versionString}_${versionCode}"
     }
 
     @Override

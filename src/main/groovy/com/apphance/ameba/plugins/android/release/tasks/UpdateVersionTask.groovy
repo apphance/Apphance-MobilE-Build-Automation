@@ -19,14 +19,16 @@ class UpdateVersionTask extends DefaultTask {
     String description = """Updates version stored in manifest file of the project.
            Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
 
-    private AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
+    @Inject
+    private AndroidManifestHelper manifestHelper
 
-    @Inject AndroidConfiguration androidConfiguration
+    @Inject
+    private AndroidConfiguration androidConfiguration
 
     @TaskAction
     public void updateVersion() {
-        def versionString = androidConfiguration.versionString.value
-        def versionCode = androidConfiguration.versionCode.value
+        def versionString = androidConfiguration.versionString
+        def versionCode = androidConfiguration.versionCode
 
         checkNotNull(versionString)
         checkNotNull(versionCode)

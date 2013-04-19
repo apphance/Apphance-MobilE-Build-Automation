@@ -25,7 +25,7 @@ class ConfigurationSpec extends Specification {
         when:
         def props = androidConf.amebaProperties
         then:
-        props*.name.containsAll(['android.project.name', 'android.version.code', 'android.version.string'])
+        props*.name.containsAll(['android.project.name'])
     }
 
     def 'configuration name'() {

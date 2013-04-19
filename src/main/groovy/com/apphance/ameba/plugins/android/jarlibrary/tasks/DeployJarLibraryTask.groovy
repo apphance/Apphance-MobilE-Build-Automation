@@ -27,11 +27,11 @@ class DeployJarLibraryTask extends DefaultTask {
     private Closure deployJarLibrary = {
         repositories {
             mavenDeployer {
-                pom.version = pom.version == '0' ? conf.versionString : pom.version
+                pom.version = pom.version == '0' ? androidConf.versionString : pom.version
             }
         }
         artifacts {
-            jarLibraryConfiguration file: project.file(getJarLibraryFilePath(androidConf.projectName.value, androidConf.versionString.value)),
+            jarLibraryConfiguration file: project.file(getJarLibraryFilePath(androidConf.projectName.value, androidConf.versionString)),
                     name: androidConf.projectName.value
         }
     }

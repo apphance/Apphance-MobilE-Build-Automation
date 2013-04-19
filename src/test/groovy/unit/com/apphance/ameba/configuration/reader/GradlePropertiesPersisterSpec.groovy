@@ -68,7 +68,6 @@ class GradlePropertiesPersisterSpec extends Specification {
         def androidConfiguration = new AndroidConfiguration(project, * [null] * 3, Mock(ProjectTypeDetector) {
             detectProjectType(_) >> ANDROID
         })
-        androidConfiguration.versionString.value = 'version string'
 
         def iOSConfiguration = new IOSConfiguration()
         iOSConfiguration.projectTypeDetector = Mock(ProjectTypeDetector) {
@@ -82,7 +81,6 @@ class GradlePropertiesPersisterSpec extends Specification {
         persister.init(project)
 
         then:
-        persister.get(androidConfiguration.versionString.name) == 'version string'
         persister.get(iOSConfiguration.name.name) == 'Project name'
         persister.get('nonexisting') == null
 

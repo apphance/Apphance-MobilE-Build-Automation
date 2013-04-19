@@ -40,7 +40,7 @@ class AndroidReleaseApkListener implements AndroidBuildListener {
 
     @Override
     void buildArtifactsOnly(Project project, AndroidVariantConfiguration avc) {
-        if (conf.versionString != null) {
+        if (conf.versionString) {
             def builder = new AndroidSingleVariantApkBuilder(project, conf)
             def bi = builder.buildApkArtifactBuilderInfo(avc)
             l.lifecycle("Adding variant APK artifact ${bi.id}")

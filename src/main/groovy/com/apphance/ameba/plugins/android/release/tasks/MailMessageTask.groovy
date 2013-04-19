@@ -46,7 +46,7 @@ class MailMessageTask extends DefaultTask {
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         def binding = [
                 title: androidConfiguration.projectName.value,
-                version: androidConfiguration.versionString.value,
+                version: androidConfiguration.versionString,
                 currentDate: releaseConf.buildDate,
                 otaUrl: releaseConf.otaIndexFile?.url,
                 fileIndexUrl: releaseConf.fileIndexFile?.url,

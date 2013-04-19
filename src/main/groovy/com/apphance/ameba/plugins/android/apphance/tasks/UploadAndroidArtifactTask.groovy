@@ -48,7 +48,7 @@ class UploadAndroidArtifactTask extends DefaultTask {
         try {
             networkHelper = new ApphanceNetworkHelper(user, pass)
 
-            def response = networkHelper.updateArtifactQuery(key, androidConfiguration.versionString.value, androidConfiguration.versionCode.value, false,
+            def response = networkHelper.updateArtifactQuery(key, androidConfiguration.versionString, androidConfiguration.versionCode, false,
                     ['apk', 'image_montage'])
             l.debug("Upload version query response: ${response.statusLine}")
             throwIfCondition(!response.entity, "Error while uploading version query, empty response received")
