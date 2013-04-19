@@ -18,7 +18,7 @@ class AndroidAnalysisConfigurationSpec extends Specification {
 
         when:
         ptd.detectProjectType(_) >> type
-        def ac = new AndroidConfiguration(p, * [null] * 3, ptd)
+        def ac = new AndroidConfiguration(p, * [null] * 3, ptd, null)
         def aac = new AndroidAnalysisConfiguration(ac)
         aac.enabled = internalField
 

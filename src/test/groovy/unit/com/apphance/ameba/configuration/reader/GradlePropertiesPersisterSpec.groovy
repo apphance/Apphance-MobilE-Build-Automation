@@ -67,7 +67,7 @@ class GradlePropertiesPersisterSpec extends Specification {
 
         def androidConfiguration = new AndroidConfiguration(project, * [null] * 3, Mock(ProjectTypeDetector) {
             detectProjectType(_) >> ANDROID
-        })
+        }, null)
 
         def iOSConfiguration = new IOSConfiguration()
         iOSConfiguration.projectTypeDetector = Mock(ProjectTypeDetector) {

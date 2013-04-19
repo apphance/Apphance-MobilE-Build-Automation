@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
@@ -26,6 +27,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     private AndroidBuildXmlHelper buildXmlHelper
     private AndroidManifestHelper manifestHelper
     private AndroidExecutor androidExecutor
+    private PropertyReader reader
     private Properties androidProperties
 
     @Inject
@@ -34,12 +36,14 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
             AndroidExecutor androidExecutor,
             AndroidManifestHelper manifestHelper,
             AndroidBuildXmlHelper buildXmlHelper,
-            ProjectTypeDetector projectTypeDetector) {
+            ProjectTypeDetector projectTypeDetector,
+            PropertyReader reader) {
         this.project = project
         this.androidExecutor = androidExecutor
         this.manifestHelper = manifestHelper
         this.buildXmlHelper = buildXmlHelper
         this.projectTypeDetector = projectTypeDetector
+        this.reader = reader
 
         readProperties()
     }
@@ -57,13 +61,19 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     )
 
     @Override
-    Long getVersionCode() {
-        manifestHelper.readVersion(rootDir).versionCode
+    String getVersionCode() {
+        reader.systemProperty('version.code') ?:
+            reader.envVariable('VERSION_CODE') ?:
+                manifestHelper.readVersion(rootDir).versionCode ?:
+                    ''
     }
 
     @Override
     String getVersionString() {
-        manifestHelper.readVersion(rootDir).versionString
+        reader.systemProperty('version.string') ?:
+            reader.envVariable('VERSION_STRING') ?:
+                manifestHelper.readVersion(rootDir).versionString ?:
+                    'git '
     }
 
     @Override
@@ -256,5 +266,9 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     @Override
     void checkProperties() {
         check !isNullOrEmpty(target.value), "Property ${target.name} is required"
+
+
     }
+
+
 }

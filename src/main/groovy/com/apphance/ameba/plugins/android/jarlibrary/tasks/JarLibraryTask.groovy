@@ -36,7 +36,7 @@ class JarLibraryTask extends DefaultTask {
         def manifestPropertiesFile = new File(androidConf.tmpDir, 'manifest.properties')
         def properties = new Properties()
         properties.setProperty("implementation.title", androidConf.versionString)
-        properties.setProperty("implementation.version", androidConf.versionCode.toString())
+        properties.setProperty("implementation.version", androidConf.versionCode)
         properties.store(manifestPropertiesFile.newOutputStream(), "Automatically generated with Ameba")
         File resDir = new File(androidConf.tmpDir, "${jarLibraryPrefix()}-res")
         project.ant.delete(dir: resDir)

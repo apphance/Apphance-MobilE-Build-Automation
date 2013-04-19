@@ -4,7 +4,7 @@ import com.apphance.ameba.configuration.properties.StringProperty
 
 public interface ProjectConfiguration extends Configuration {
 
-    Long getVersionCode()
+    String getVersionCode()
 
     String getVersionString()
 

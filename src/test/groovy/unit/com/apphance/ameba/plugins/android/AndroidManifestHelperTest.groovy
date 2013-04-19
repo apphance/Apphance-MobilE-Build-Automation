@@ -37,7 +37,7 @@ class AndroidManifestHelperTest {
 
     @Test
     void testUpdateVersion() {
-        def newVersionCode = 1234L
+        def newVersionCode = '1234'
         def newVersionString = '2.0.3'
 
         ProjectConfiguration projectConfiguration = new ProjectConfiguration()
@@ -48,7 +48,7 @@ class AndroidManifestHelperTest {
         try {
             ProjectConfiguration projectConfiguration2 = new ProjectConfiguration()
             projectConfiguration2.updateVersionDetails(manifestHelper.readVersion(tmpDir))
-            assertEquals(newVersionCode, projectConfiguration2.versionCode)
+            assertEquals(newVersionCode.toLong(), projectConfiguration2.versionCode)
             assertEquals(newVersionString, projectConfiguration2.versionString)
         } finally {
             manifestHelper.restoreOriginalManifest(tmpDir)

@@ -21,7 +21,7 @@ class AndroidTestConfigurationSpec extends Specification {
 
         when:
         ptd.detectProjectType(_) >> type
-        def ac = new AndroidConfiguration(p, * [null] * 3, ptd)
+        def ac = new AndroidConfiguration(p, * [null] * 3, ptd, null)
         def atc = new AndroidTestConfiguration(p, ac, * [null] * 2)
         atc.enabled = internalField
 
@@ -55,7 +55,7 @@ class AndroidTestConfigurationSpec extends Specification {
         }
 
         and:
-        def ac = new AndroidConfiguration(p, * [null] * 3, ptd)
+        def ac = new AndroidConfiguration(p, * [null] * 3, ptd, null)
 
         and:
         def amh = Mock(AndroidManifestHelper)
