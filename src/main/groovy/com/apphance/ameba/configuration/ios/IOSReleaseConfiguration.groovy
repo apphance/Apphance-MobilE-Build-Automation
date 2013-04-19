@@ -163,12 +163,12 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
     }
 
     @Override
-    StringProperty getMailPort() {
+    String getMailPort() {
         return null  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    StringProperty getMailServer() {
+    String getMailServer() {
         return null  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

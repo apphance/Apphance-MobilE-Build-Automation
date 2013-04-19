@@ -66,7 +66,7 @@ interface ReleaseConfiguration extends Configuration {
 
     URL getBaseURL()
 
-    StringProperty getMailPort()
+    String getMailPort()
 
-    StringProperty getMailServer()
+    String getMailServer()
 }

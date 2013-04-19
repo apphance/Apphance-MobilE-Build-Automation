@@ -51,16 +51,7 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     }
 
     Collection<String> getReleaseNotes() {
-        def notes = []
-        def sources = [{ reader.systemProperty('release.notes') }, { reader.envVariable('RELEASE_NOTES') }]
-        for (Closure<String> c in sources) {
-            def value = c.call()
-            if (value) {
-                notes.addAll(value.split('\n'))
-                break
-            }
-        }
-        notes
+        (reader.systemProperty('release.notes') ?: reader.envVariable('RELEASE_NOTES') ?: '').split('\n')
     }
 
     @Override
@@ -142,16 +133,24 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             defaultValue: { ['qrCode', 'imageMontage'] as List<String> }
     )
 
-    @Override
-    StringProperty getMailPort() {
+    private StringProperty mailPortInternal = new StringProperty(
+            name: 'mail.port',
+            message: 'Mail port'
+    )
 
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+    private StringProperty mailServerInternal = new StringProperty(
+            name: 'mail.server',
+            message: 'Mail server'
+    )
+
+    @Override
+    String getMailPort() {
+        reader.systemProperty('mail.port') ?: reader.envVariable('MAIL_PORT') ?: mailPortInternal.value ?: ''
     }
 
     @Override
-    StringProperty getMailServer() {
-
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+    String getMailServer() {
+        reader.systemProperty('mail.server') ?: reader.envVariable('MAIL_SERVER') ?: mailServerInternal.value ?: ''
     }
 
     @Override

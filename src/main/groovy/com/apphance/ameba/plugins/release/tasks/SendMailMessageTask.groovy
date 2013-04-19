@@ -1,7 +1,6 @@
 package com.apphance.ameba.plugins.release.tasks
 
 import com.apphance.ameba.configuration.ReleaseConfiguration
-import com.apphance.ameba.configuration.reader.PropertyReader
 import org.apache.tools.ant.Project
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -22,13 +21,11 @@ class SendMailMessageTask extends DefaultTask {
 
     @Inject
     private ReleaseConfiguration releaseConf
-    @Inject
-    private PropertyReader envPropertyReader
 
     @TaskAction
     void sendMailMessage() {
-        def mailServer = envPropertyReader.readProperty('mail.server')
-        def mailPort = envPropertyReader.readProperty('mail.port')
+        def mailServer = releaseConf.mailServer
+        def mailPort = releaseConf.mailPort
 
         Properties props = System.getProperties()
         props.put('mail.smtp.host', mailServer)
