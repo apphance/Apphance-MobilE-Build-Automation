@@ -68,23 +68,28 @@ class GradlePropertiesPersister implements PropertyPersister {
                          |""".stripMargin())
 
         configurations.each { AbstractConfiguration conf ->
-
-            writer.append("""\n# ${conf.configurationName}
-                             |# ${'=' * conf.configurationName.length()}
-                             |""".stripMargin())
-
-            writer.write("${conf.enabledPropKey}=${conf.enabled}\n".toString())
-
-            if (conf.enabled) {
-                conf.amebaProperties.each { AbstractProperty prop ->
-                    writer.write("${prop.name}=${prop.persistentForm()}\n".toString())
-                }
-            }
+            saveConf(conf, writer)
         }
 
         writer.flush()
         writer.close()
         log.info("New configuration written successfully")
+    }
+
+    void saveConf(AbstractConfiguration conf, Writer writer) {
+        writer.append("""\n# ${conf.configurationName}
+                             |# ${'=' * conf.configurationName.length()}
+                             |""".stripMargin())
+
+        writer.write("${conf.enabledPropKey}=${conf.enabled}\n".toString())
+
+        if (conf.enabled) {
+            conf.amebaProperties.each { AbstractProperty prop ->
+                writer.write("${prop.name}=${prop.persistentForm()}\n".toString())
+            }
+
+            conf.subConfigurations.each {saveConf(it, writer)}
+        }
     }
 
     static String getTimeStamp() {
