@@ -2,14 +2,14 @@ package com.apphance.ameba.configuration.reader
 
 import spock.lang.Specification
 
-class EnvPropertyReaderSpec extends Specification {
+class PropertyReaderSpec extends Specification {
 
     def 'exception thrown when invalid name passed'() {
         given:
-        def epr = new EnvPropertyReader()
+        def epr = new PropertyReader()
 
         when:
-        epr.readProperty(name)
+        epr.systemProperty(name)
 
         then:
         def e = thrown(IllegalArgumentException)
@@ -21,7 +21,7 @@ class EnvPropertyReaderSpec extends Specification {
 
     def 'correct property is returned'() {
         given:
-        def epr = new EnvPropertyReader()
+        def epr = new PropertyReader()
 
         and: 'clear settings'
         System.setProperty(name, '')
@@ -29,9 +29,9 @@ class EnvPropertyReaderSpec extends Specification {
         when:
         system.each {
             System.setProperty(it.key, it.value)
-
         }
-        def p = epr.readProperty(name)
+
+        def p = epr.systemProperty(name)
 
         then:
         p == expectedP

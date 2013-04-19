@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.release.tasks
 
 import com.apphance.ameba.configuration.ReleaseConfiguration
-import com.apphance.ameba.configuration.reader.EnvPropertyReader
+import com.apphance.ameba.configuration.reader.PropertyReader
 import org.apache.tools.ant.Project
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -23,7 +23,7 @@ class SendMailMessageTask extends DefaultTask {
     @Inject
     private ReleaseConfiguration releaseConf
     @Inject
-    private EnvPropertyReader envPropertyReader
+    private PropertyReader envPropertyReader
 
     @TaskAction
     void sendMailMessage() {
