@@ -7,6 +7,8 @@ import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.detection.ProjectType
 import spock.lang.Specification
 
+import javax.imageio.ImageIO
+
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static java.lang.System.getProperties
 
@@ -52,18 +54,19 @@ class ConversationManagerSpec extends Specification {
 
     def 'input validation works well'() {
         expect:
-        cm.validateInput(p, input) == validationResult
+        cm.validateInput(input, p) == validationResult
 
         where:
-        p                                                                                                       | input  | validationResult
-        new StringProperty(validator: { false })                                                                | ''     | true
-        new StringProperty(validator: { false })                                                                | '\n '  | true
-        new StringProperty(validator: { false })                                                                | 'v1'   | false
-        new StringProperty(possibleValues: { ['v1', 'v2'] as List<String> }, validator: { false })              | 'v1'   | true
-        new StringProperty(possibleValues: { ['v1', 'v2'] as List<String> }, validator: { false })              | 'v3'   | false
-        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }, validator: { it.matches('[0-9]+') }) | '1234' | true
-        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }, validator: { it.matches('[0-9]+') }) | 'a'    | true
-        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }, validator: { it.matches('[0-9]+') }) | 'c'    | false
+        p                                                                                                                   | input  | validationResult
+        new StringProperty(validator: { false })                                                                            | ''     | true
+        new StringProperty(validator: { false })                                                                            | '\n '  | true
+        new StringProperty(validator: { false })                                                                            | 'v1'   | false
+        new StringProperty(possibleValues: { ['v1', 'v2'] as List<String> }, validator: { false })                          | 'v1'   | true
+        new StringProperty(possibleValues: { ['v1', 'v2'] as List<String> }, validator: { false })                          | 'v3'   | false
+        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }, validator: { it.matches('[0-9]+') })             | '1234' | true
+        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }, validator: { it.matches('[0-9]+') })             | 'a'    | true
+        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }, validator: { it.matches('[0-9]+') })             | 'c'    | false
+        new FileProperty(validator: { it?.trim() ? new File(it as String).exists() && ImageIO.read(new File(it)) : false }) | 'bolo' | false
     }
 
     def 'property value is set well'() {

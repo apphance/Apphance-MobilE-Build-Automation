@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.BooleanProperty
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
 import org.gradle.api.GradleException
@@ -19,6 +20,9 @@ class AndroidTestConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Android Test Configuration'
 
+    private final List<String> BOOLEAN_VALUES = ['true', 'false']
+    private final Closure<Boolean> BOOLEAN_VALIDATOR = { it in BOOLEAN_VALUES }
+
     private boolean enabledInternal = false
     private Integer emulatorPort
 
@@ -26,17 +30,20 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     private AndroidConfiguration androidConf
     private AndroidManifestHelper manifestHelper
     private AndroidBuildXmlHelper buildXmlHelper
+    private AndroidExecutor androidExecutor
 
     @Inject
     AndroidTestConfiguration(
             Project project,
             AndroidConfiguration androidConf,
             AndroidManifestHelper manifestHelper,
-            AndroidBuildXmlHelper buildXmlHelper) {
+            AndroidBuildXmlHelper buildXmlHelper,
+            AndroidExecutor androidExecutor) {
         this.project = project
         this.androidConf = androidConf
         this.manifestHelper = manifestHelper
         this.buildXmlHelper = buildXmlHelper
+        this.androidExecutor = androidExecutor
     }
 
     @Override
@@ -49,36 +56,55 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         enabledInternal = enabled
     }
 
-    def emulatorSkin = new StringProperty(
-            name: 'android.test.emulator.skin',
-            message: 'Android emulator skin',
-            defaultValue: { 'WVGA800' }
-    )
-
+    //TODO required?
     def emulatorTarget = new StringProperty(
             name: 'android.test.emulator.target',
             message: 'Target of the emulator',
-            defaultValue: { androidConf.target.value }
+            defaultValue: { androidConf.target.value },
+            possibleValues: { androidExecutor.listTarget(androidConf.rootDir) },
+            validator: { it in androidExecutor.listTarget(androidConf.rootDir) }
     )
 
+    //TODO required?
+    def emulatorSkin = new StringProperty(
+            name: 'android.test.emulator.skin',
+            message: 'Android emulator skin',
+            defaultValue: { androidExecutor.defaultSkinForTarget(androidConf.rootDir, emulatorTarget.value) },
+            possibleValues: { possibleSkins() },
+            validator: { it in possibleSkins() }
+    )
+
+    private List<String> possibleSkins() {
+        androidExecutor.listSkinsForTarget(androidConf.rootDir, emulatorTarget.value)
+    }
+
+    //TODO required?
     def emulatorCardSize = new StringProperty(
             name: 'android.test.emulator.card.size',
             message: 'Size of the SD card attached to emulator',
-            defaultValue: { '200M' }
+            defaultValue: { '200M' },
+            validator: { it?.matches('[0-9]+[KM]') }
     )
 
+    //TODO required?
     def emulatorSnapshotEnabled = new BooleanProperty(
             name: 'android.test.emulator.snapshot.enabled',
             message: 'Flag specifying if emulator uses snapshots (much faster)',
-            defaultValue: { true }
+            defaultValue: { true },
+            validator: BOOLEAN_VALIDATOR,
+            possibleValues: { BOOLEAN_VALUES }
     )
 
+    //TODO required?
     def emulatorNoWindow = new BooleanProperty(
             name: 'android.test.emulator.no.window',
             message: 'Flag specifying if no-window option should be used with emulator',
-            defaultValue: { true }
+            defaultValue: { true },
+            validator: BOOLEAN_VALIDATOR,
+            possibleValues: { BOOLEAN_VALUES }
     )
 
+    //TODO required?
     def testDir = new FileProperty(
             name: 'android.dir.test',
             message: 'Directory where Robotium test project is located',
@@ -103,16 +129,22 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         project.rootDir.getAbsolutePath().replaceAll('[\\\\ /]', '_')
     }
 
+    //TODO required?
     def testPerPackage = new BooleanProperty(
             name: 'android.test.per.package',
             message: 'Flag specifying if tests should be run per package. If false, then all are run at once',
-            defaultValue: { false }
+            defaultValue: { false },
+            validator: BOOLEAN_VALIDATOR,
+            possibleValues: { BOOLEAN_VALUES }
     )
 
+    //TODO required?
     def mockLocation = new BooleanProperty(
             name: 'android.test.mock.location',
             message: 'Whether the test application should be build with location mocking enabled (for testing location-based apps)',
-            defaultValue: { false }
+            defaultValue: { false },
+            validator: BOOLEAN_VALIDATOR,
+            possibleValues: { BOOLEAN_VALUES }
     )
 
     File getRawDir() {
@@ -157,10 +189,13 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         throw new GradleException("Could not find free emulator port (tried all from ${startPort} to ${endPort}!... ")
     }
 
+    //TODO required?
     def emmaEnabled = new BooleanProperty(
             name: 'android.test.emma.enabled',
             message: 'Whether emma test coverage should be run',
-            defaultValue: { true }
+            defaultValue: { true },
+            validator: BOOLEAN_VALIDATOR,
+            possibleValues: { BOOLEAN_VALUES }
     )
 
     File getADBBinary() {
@@ -191,4 +226,8 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         "/data/data/${androidConf.mainPackage}/files/"
     }
 
+    @Override
+    void checkProperties() {
+
+    }
 }

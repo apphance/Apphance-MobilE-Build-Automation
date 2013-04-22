@@ -24,7 +24,7 @@ class AndroidExecutorSpec extends Specification {
         then: 1 * commandExecutor.executeCommand({ it.commandForExecution.join(' ') == 'android command' })
     }
 
-    def 'test listTarget'() {
+    def 'test list targets'() {
         given:
         def ce = Mock(CommandExecutor)
         ce.executeCommand(_) >> targets.split('\n')
@@ -36,7 +36,40 @@ class AndroidExecutorSpec extends Specification {
         def output = ae.listTarget(Mock(File))
 
         then:
-        ['Google Inc.:Google APIs:3', 'Google Inc.:Google APIs:4', 'android-3', 'android-4'] == output
+        ['Google Inc.:Google APIs:3', 'Google Inc.:Google APIs:4', 'android-17', 'android-3', 'android-4'] == output
+    }
+
+    def 'test list skins'() {
+        given:
+        def ce = Mock(CommandExecutor)
+        ce.executeCommand(_) >> targets.split('\n')
+
+        and:
+        def ae = new AndroidExecutor(ce)
+
+        when:
+        def output = ae.listSkinsForTarget(Mock(File), 'android-3')
+
+        then:
+        ['HVGA', 'HVGA-L', 'HVGA-P', 'QVGA-L', 'QVGA-P'] == output
+    }
+
+    def 'test default skin for target'() {
+        given:
+        def ce = Mock(CommandExecutor)
+        ce.executeCommand(_) >> targets.split('\n')
+
+        and:
+        def ae = new AndroidExecutor(ce)
+
+        expect:
+        skin == ae.defaultSkinForTarget(Mock(File), target)
+
+        where:
+        skin      | target
+        'HVGA'    | 'android-3'
+        'WVGA800' | 'android-4'
+        'WVGA800' | 'Google Inc.:Google APIs:4'
     }
 
     def targets = "Available Android targets:\n" +
@@ -82,5 +115,12 @@ class AndroidExecutorSpec extends Specification {
             "          API for Google Maps\n" +
             "     Skins: WVGA854, HVGA, WVGA800 (default), QVGA\n" +
             "     ABIs : armeabi\n" +
-            "----------"
+            "----------\n" +
+            "id: 24 or \"android-17\"\n" +
+            "     Name: Android 4.2\n" +
+            "     Type: Platform\n" +
+            "     API level: 17\n" +
+            "     Revision: 1\n" +
+            "     Skins: HVGA, QVGA, WQVGA400, WQVGA432, WSVGA, WVGA800 (default), WVGA854, WXGA720, WXGA800, WXGA800-7in\n" +
+            "     ABIs : armeabi-v7a, mips"
 }

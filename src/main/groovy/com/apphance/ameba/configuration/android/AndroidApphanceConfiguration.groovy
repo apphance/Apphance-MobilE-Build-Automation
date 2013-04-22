@@ -37,9 +37,4 @@ class AndroidApphanceConfiguration extends AbstractConfiguration {
             name: 'android.apphance.pass',
             message: 'Apphance pass'
     )
-
-    def key = new StringProperty(
-            name: 'android.apphance.key',
-            message: 'Apphance key'
-    )
 }

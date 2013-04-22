@@ -124,7 +124,7 @@ class PrepareRobotiumTask extends DefaultTask {
 
     private void copyTemplateTestActivity(File path) {
         println "Coping template Robotium test Activity class"
-        File srcDir = new File(path.path + '/src/' + androidConf.mainPackage.value.replace('.', File.separator))
+        File srcDir = new File(path.path + '/src/' + androidConf.mainPackage.replace('.', File.separator))
         srcDir.mkdirs()
 
         // Delete the default test class
@@ -137,7 +137,7 @@ class PrepareRobotiumTask extends DefaultTask {
 
 
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        def binding = [packageName: androidConf.mainPackage.value, mainActivity: manifestHelper.getMainActivityName(project.rootDir)]
+        def binding = [packageName: androidConf.mainPackage, mainActivity: manifestHelper.getMainActivityName(project.rootDir)]
         def baseCaseResult = engine.createTemplate(baseCaseTemplate).make(binding)
         def helloCaseResult = engine.createTemplate(helloCaseTemplate).make(binding)
 

@@ -22,7 +22,7 @@ class AndroidTestConfigurationSpec extends Specification {
         when:
         ptd.detectProjectType(_) >> type
         def ac = new AndroidConfiguration(p, * [null] * 3, ptd, null)
-        def atc = new AndroidTestConfiguration(p, ac, * [null] * 2)
+        def atc = new AndroidTestConfiguration(p, ac, * [null] * 3)
         atc.enabled = internalField
 
         then:
@@ -38,7 +38,7 @@ class AndroidTestConfigurationSpec extends Specification {
 
     def 'emulator port is found well'() {
         given:
-        def atc = new AndroidTestConfiguration(* [null] * 4)
+        def atc = new AndroidTestConfiguration(* [null] * 5)
 
         expect:
         atc.emulatorPort
@@ -66,7 +66,7 @@ class AndroidTestConfigurationSpec extends Specification {
         abxh.projectName(_) >> 'androidName'
 
         and:
-        def atc = new AndroidTestConfiguration(p, ac, amh, abxh)
+        def atc = new AndroidTestConfiguration(p, ac, amh, abxh, null)
         atc.enabled = true
 
         when:

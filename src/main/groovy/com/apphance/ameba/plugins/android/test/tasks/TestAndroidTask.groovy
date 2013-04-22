@@ -178,7 +178,7 @@ class TestAndroidTask extends DefaultTask {
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'uninstall',
-                androidConf.mainPackage.value
+                androidConf.mainPackage
         ], failOnError: false))
         executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
                 testConf.getADBBinary(),

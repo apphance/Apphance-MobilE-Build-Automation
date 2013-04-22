@@ -23,8 +23,8 @@ class AndroidReleaseConfigurationSpec extends Specification {
 
     def 'locale is set correct'() {
         when:
-        arc.projectCountry.value = country
-        arc.projectLanguage.value = lang
+        arc.country.value = country
+        arc.language.value = lang
 
         then:
         arc.locale == locale

@@ -34,9 +34,9 @@ apphance:only="true">
         manifest.@package
     }
 
-    def readVersion(File projectDir) {
+    Map<String, String> readVersion(File projectDir) {
         def manifest = new XmlSlurper().parse(new File(projectDir, ANDROID_MANIFEST))
-        Long versionCode = manifest.@'android:versionCode'.text().toLong()
+        String versionCode = manifest.@'android:versionCode'.text()
         String versionString = manifest.@'android:versionName'.text()
         [versionCode: versionCode, versionString: versionString]
     }

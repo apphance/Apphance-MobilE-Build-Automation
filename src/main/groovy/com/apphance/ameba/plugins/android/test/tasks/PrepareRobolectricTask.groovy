@@ -51,7 +51,7 @@ class PrepareRobolectricTask extends DefaultTask {
     }
 
     private String roboPath(File path) {
-        String _path = androidConf.mainPackage.value.replace('.', File.separator)
+        String _path = androidConf.mainPackage.replace('.', File.separator)
         return path.path + File.separator + 'src' + File.separator + 'test' + File.separator + 'java' + File.separator + _path + File.separator + 'test'
     }
 
@@ -91,7 +91,7 @@ class PrepareRobolectricTask extends DefaultTask {
         URL testClassTemplate = this.class.getResource("MyFirstTest.java_")
 
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        def binding = [packageName: androidConf.mainPackage.value]
+        def binding = [packageName: androidConf.mainPackage]
         def result = engine.createTemplate(testClassTemplate).make(binding)
         output.write(result.toString())
     }

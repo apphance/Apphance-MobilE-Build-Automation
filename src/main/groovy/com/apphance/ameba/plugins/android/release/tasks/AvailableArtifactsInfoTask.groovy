@@ -97,7 +97,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 version: androidConf.versionString,
                 releaseNotes: androidReleaseConf.releaseNotes,
                 currentDate: androidReleaseConf.buildDate,
-                iconFileName: androidReleaseConf.projectIconFile.value?.name,
+                iconFileName: androidReleaseConf.iconFile.value?.name,
                 variantsConf: variantsConf,
                 androidReleaseConf: androidReleaseConf,
                 rb: rb
@@ -107,7 +107,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         androidReleaseConf.otaIndexFile = otaIndexFile
         l.lifecycle("Ota index created: ${otaIndexFile}")
 
-        def iconFile = androidReleaseConf.projectIconFile.value?.name
+        def iconFile = androidReleaseConf.iconFile.value?.name
         project.ant.copy(file: iconFile, tofile: new File(otaIndexFile.location?.parentFile, iconFile))
         String urlEncoded = URLEncoder.encode(otaIndexFile.url.toString(), 'utf-8')
         def qrCodeFile = "qrcode-${androidConf.projectName.value}-${androidConf.fullVersionString}.png"

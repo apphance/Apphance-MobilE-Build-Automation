@@ -9,7 +9,7 @@ import static com.apphance.ameba.detection.ProjectType.IOS
 
 class AndroidAnalysisConfigurationSpec extends Specification {
 
-    def 'android analysis configuration is enabled based on project type and internal field'() {
+    def 'configuration is enabled based on project type and internal field'() {
         given:
         def p = Mock(Project)
 
@@ -31,5 +31,25 @@ class AndroidAnalysisConfigurationSpec extends Specification {
         false   | IOS     | false
         true    | ANDROID | true
         false   | ANDROID | false
+    }
+
+    def 'configuration is verified properly'() {
+        given:
+        def aac = new AndroidAnalysisConfiguration(null)
+
+        when:
+        aac.analysisConfigUrl.value = analysisURL
+        def errors = aac.verify()
+
+        then:
+        validator.call(errors)
+
+        where:
+        analysisURL             | validator
+        'http://ota.polidea.pl' | { it.size() == 0 }
+        null                    | { it.size() == 0 }
+        'invalid'               | { it.size() == 1 && it[0] == 'Property \'android.analysis.config.url\' is not valid! Should be valid URL address!' }
+
+
     }
 }

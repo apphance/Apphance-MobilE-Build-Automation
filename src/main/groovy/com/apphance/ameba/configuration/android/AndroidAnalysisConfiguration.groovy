@@ -32,5 +32,12 @@ class AndroidAnalysisConfiguration extends AbstractConfiguration {
             name: 'android.analysis.config.url',
             message: 'Android analysis config URL',
     )
+
+    @Override
+    void checkProperties() {
+        if (analysisConfigUrl.isSet()) {
+            check !checkException { analysisConfigUrl.value }, "Property '${analysisConfigUrl.name}' is not valid! Should be valid URL address!"
+        }
+    }
 }
 

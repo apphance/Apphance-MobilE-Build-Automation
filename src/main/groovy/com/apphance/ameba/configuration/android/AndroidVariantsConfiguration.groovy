@@ -32,11 +32,13 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     def init() {
         super.init()
         this.variants = buildVariantsList()
+
     }
 
     def variantsNames = new ListStringProperty(
             name: 'android.variants',
-            message: 'Variants'
+            message: 'Variants',
+            possibleValues: { variantsNames.value ?: [] }
     )
 
     private List<AndroidVariantConfiguration> buildVariantsList() {
@@ -100,5 +102,10 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     @Override
     boolean isEnabled() {
         androidConf.enabled
+    }
+
+    @Override
+    void checkProperties() {
+        check variantsNames.value.sort() == variants*.name.sort(), "List in '${variantsNames.name}' property is not equal to the list of names of configured variants, check 'ameba.properties' file!"
     }
 }

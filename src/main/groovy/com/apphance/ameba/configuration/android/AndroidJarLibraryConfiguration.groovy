@@ -28,9 +28,9 @@ class AndroidJarLibraryConfiguration extends AbstractConfiguration {
         enabledInternal = enabled
     }
 
+    //TODO required? validation?
     def resourcePrefix = new StringProperty(
             name: 'android.jarLibrary.resPrefix',
-            message: 'Internal directory name used to embed resources in the jar',
-            defaultValue: { '' }
+            message: 'Internal directory name used to embed resources in the jar'
     )
 }

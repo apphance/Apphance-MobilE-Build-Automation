@@ -35,6 +35,8 @@ class URLPropertySpec extends Specification {
 
         when:
         urlp.value = 'malformed'
+        urlp.value
+
         then:
         def e = thrown(MalformedURLException)
         e.message.contains('malformed')

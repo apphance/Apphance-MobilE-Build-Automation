@@ -12,7 +12,7 @@ class ConversationManager {
 
     def reader = buildReader()
 
-    def resolveConfigurations(Collection<AbstractConfiguration> configurations) {
+    def resolveConfigurations(Collection<? extends AbstractConfiguration> configurations) {
         configurations.each { AbstractConfiguration c ->
             enablePlugin(c)
             readValues(c)
@@ -36,23 +36,32 @@ class ConversationManager {
     @groovy.transform.PackageScope
     void readValues(AbstractConfiguration c) {
         if (c.enabled) {
-            c.amebaProperties.each { AbstractProperty ap ->
-                if (ap.askUser()) {
-                    String input
-                    while (true) {
-                        print prompt(ap)
-                        out.flush()
-                        input = reader.readLine()
-                        if (validateInput(ap, input))
-                            break
-                    }
-                    setPropertyValue(ap, input)
-                }
+            readProperties(c.amebaProperties)
+            if (!c.subConfigurations?.empty) {
+                resolveConfigurations(c.subConfigurations)
             }
-            def subConfigurations = c.subConfigurations
-            if (!subConfigurations.empty) {
-                resolveConfigurations(subConfigurations)
+        }
+    }
+
+    private void readProperties(List<AbstractProperty> properties) {
+        properties.each {
+            readProperty(it)
+        }
+    }
+
+    private void readProperty(AbstractProperty ap) {
+        if (ap.interactive()) {
+            String input
+
+            while (true) {
+                print prompt(ap)
+                out.flush()
+                input = reader.readLine()
+                if (validateInput(input, ap))
+                    break
             }
+
+            setPropertyValue(ap, input)
         }
     }
 
@@ -72,9 +81,12 @@ class ConversationManager {
     }
 
     @groovy.transform.PackageScope
-    boolean validateInput(AbstractProperty ap, String input) {
+    boolean validateInput(String input, AbstractProperty ap) {
         input = input?.trim()
-        input?.empty || (ap.possibleValues && input in ap.possibleValues()) || (ap.validator && ap.validator(input))
+        input?.empty ?
+            ap.defaultValue() ? true : !ap.required()
+        :
+            (ap.possibleValues && input in ap.possibleValues()) || (ap.validator && ap.validator(input))
     }
 
     @groovy.transform.PackageScope

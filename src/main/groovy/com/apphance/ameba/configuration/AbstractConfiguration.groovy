@@ -71,13 +71,13 @@ abstract class AbstractConfiguration implements Configuration {
         errors
     }
 
-    protected String checkExecption (Closure cl) {
+    protected String checkException(Closure cl) {
         try {
             cl.call()
-        } catch (Exception e) {
+        } catch (e) {
             return e.message
         }
-        return ''
+        ''
     }
 
     void checkProperties() {}

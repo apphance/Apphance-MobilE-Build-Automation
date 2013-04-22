@@ -3,24 +3,40 @@ package com.apphance.ameba.configuration.properties
 
 class URLProperty extends AbstractProperty<URL> {
 
+    private Closure<Boolean> internalValidator
+    private String internalValue
+
     @Override
     void setValue(String value) {
+        value = value?.trim()
         if (value)
-            this.@value = value.toURL()
+            this.internalValue = value
+    }
+
+    @Override
+    URL getValue() {
+        internalValue ? internalValue.toURL() : null
+    }
+
+    boolean isSet() {
+        internalValue?.trim() as boolean
+    }
+
+    @Override
+    void setValidator(Closure<Boolean> validator) {
+        internalValidator = validator
     }
 
     @Override
     Closure<Boolean> getValidator() {
-        if (!super.validator) {
-            return super.validator
-        }
-        return {
-            try {
-                it.toURL()
-            } catch (e) {
-                return false
+        internalValidator ?:
+            {
+                try {
+                    it.toURL()
+                } catch (e) {
+                    return false
+                }
+                return true
             }
-            return true
-        }
     }
 }

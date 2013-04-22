@@ -48,7 +48,7 @@ interface ReleaseConfiguration extends Configuration {
 
     StringProperty getReleaseMailTo()
 
-    FileProperty getProjectIconFile()
+    FileProperty getIconFile()
 
     AmebaArtifact getGalleryCSS()
 

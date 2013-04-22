@@ -13,16 +13,16 @@ import groovy.json.JsonSlurper
 import org.apache.http.util.EntityUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(Preconditions)
 //TODO to be tested and refactored
 class UploadAndroidArtifactTask extends DefaultTask {
 
-    def l = Logging.getLogger(getClass())
+    def l = getLogger(getClass())
 
     String description = 'Uploads apk & image_montage to Apphance server'
     String group = AMEBA_APPHANCE_SERVICE
@@ -45,7 +45,10 @@ class UploadAndroidArtifactTask extends DefaultTask {
 
         String user = androidApphanceConfiguration.user.value
         String pass = androidApphanceConfiguration.pass.value
-        String key = androidApphanceConfiguration.key.value
+        String key = variant.apphanceAppKey.value
+
+        validateUser(user)
+        validatePass(pass)
 
         ApphanceNetworkHelper networkHelper = null
 
@@ -73,6 +76,22 @@ class UploadAndroidArtifactTask extends DefaultTask {
             throw new GradleException(msg)
         } finally {
             networkHelper?.closeConnection()
+        }
+    }
+
+    @groovy.transform.PackageScope
+    void validateUser(String user) {
+        if (!user || user?.trim()?.empty) {
+            throw new GradleException("""|Property 'android.apphance.user' has invalid value!
+                                         |This property must be set when invoking task: ${this.name}""")
+        }
+    }
+
+    @groovy.transform.PackageScope
+    void validatePass(String pass) {
+        if (!pass || pass?.trim()?.empty) {
+            throw new GradleException("""|Property 'android.apphance.pass' has invalid value!
+                                         |This property must be set when invoking task: ${this.name}""")
         }
     }
 }

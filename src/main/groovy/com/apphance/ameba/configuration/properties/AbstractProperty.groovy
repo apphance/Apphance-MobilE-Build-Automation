@@ -8,13 +8,16 @@ abstract class AbstractProperty<T> {
     protected T value
 
     Closure<T> defaultValue = { null as T }
+
     Closure<List<String>> possibleValues
 
     Closure<Boolean> validator = { true }
 
-    Closure<Boolean> askUser = { true }
+    Closure<Boolean> interactive = { true }
 
     Closure<String> persistentForm = { value?.toString() ?: '' }
+
+    Closure<Boolean> required = { false }
 
     abstract void setValue(String value);
 

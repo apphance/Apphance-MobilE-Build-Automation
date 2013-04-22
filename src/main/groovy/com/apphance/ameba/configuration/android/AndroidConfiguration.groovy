@@ -13,6 +13,7 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
+import static com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask.getWHITESPACE_PATTERN
 import static com.google.common.base.Strings.isNullOrEmpty
 import static java.io.File.pathSeparator
 
@@ -56,7 +57,8 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
             name: 'android.project.name',
             message: 'Project name',
             defaultValue: { defaultName() },
-            possibleValues: { possibleNames() }
+            possibleValues: { possibleNames() },
+            required: { true }
     )
 
     @Override
@@ -92,19 +94,15 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     def target = new StringProperty(
             name: 'android.target',
             message: 'Android target',
-            possibleValues: { possibleTargets() }
+            defaultValue: { androidProperties.getProperty('target') ?: '' },
+            required: { true },
+            possibleValues: { possibleTargets() },
+            validator: { it in possibleTargets() }
     )
 
-    def minTarget = new StringProperty(
-            name: 'android.target.min.sdk',
-            message: 'Android minimal SDK target'
-    )
-
-    def mainPackage = new StringProperty(
-            name: 'android.main.package',
-            message: 'Android main package',
-            defaultValue: { manifestHelper.androidPackage(rootDir) }
-    )
+    String getMainPackage() {
+        manifestHelper.androidPackage(rootDir)
+    }
 
     File getSDKDir() {
         def androidHome = reader.envVariable('ANDROID_HOME')
@@ -117,7 +115,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     Collection<File> getSdkJars() {
         if (sdkJarLibs.empty && target.value) {
-            def target = minTarget.value
+            def target = target.value
             if (target.startsWith('android')) {
                 String version = target.split('-')[1]
                 sdkJarLibs << new File(SDKDir, "platforms/android-$version/android.jar")
@@ -206,7 +204,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     }
 
     private List<String> possibleNames() {
-        [rootDir.name, buildXmlHelper.projectName(rootDir)]
+        [rootDir.name, defaultName()]
     }
 
     private List<String> possibleTargets() {
@@ -214,13 +212,11 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     }
 
     def readProperties() {
-        this.androidProperties = new Properties()
-        if (project != null) {
-            ['local', 'build', 'default', 'project'].each {
-                File propFile = project.file("${it}.properties")
-                if (propFile?.exists()) {
-                    this.androidProperties.load(new FileInputStream(propFile))
-                }
+        androidProperties = new Properties()
+        ['local', 'build', 'default', 'project'].each {
+            File propFile = project.file("${it}.properties")
+            if (propFile?.exists()) {
+                androidProperties.load(new FileInputStream(propFile))
             }
         }
     }
@@ -241,7 +237,12 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     @Override
     void checkProperties() {
-        check !isNullOrEmpty(target.value), "Property ${target.name} is required"
-        check projectName.value, "Project name is required"
+        check !isNullOrEmpty(reader.envVariable('ANDROID_HOME')), "Environment variable 'ANDROID_HOME' must be set!"
+        check !rootDir.canWrite(), "No write access to project root dir ${rootDir.absolutePath}, check file system permissions!"
+        check !isNullOrEmpty(projectName.value), "Property ${projectName.name} must be set!"
+        check !versionCode?.matches('[0-9]+'), "Property 'versionCode' must have numerical value! Check AndroidManifest.xml file!"
+        check !WHITESPACE_PATTERN.matcher(versionString ?: '').find(), "Property 'versionName' must not have whitespace characters! Check AndroidManifest.xml file!"
+        check !isNullOrEmpty(target.value), "Property ${target.name} must be set!"
+        check !isNullOrEmpty(mainPackage), "Property 'package' must be set! Check AndroidManifest.xml file!"
     }
 }

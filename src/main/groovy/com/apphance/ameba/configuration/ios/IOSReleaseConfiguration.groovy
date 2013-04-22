@@ -103,7 +103,7 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
     }
 
     @Override
-    FileProperty getProjectIconFile() {
+    FileProperty getIconFile() {
         return null  //To change body of implemented methods use File | Settings | File Templates.
     }
 

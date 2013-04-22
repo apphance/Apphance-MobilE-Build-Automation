@@ -3,6 +3,7 @@ package com.apphance.ameba.configuration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.properties.AbstractProperty
+import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
@@ -10,7 +11,7 @@ import spock.lang.Specification
 class ConfigurationSpec extends Specification {
 
     @Shared
-    def androidConf = new AndroidConfiguration(* [null] * 6)
+    def androidConf = new AndroidConfiguration(ProjectBuilder.builder().build(), * [null] * 5)
 
     def 'return list of fields annotated with @AmebaProp'() {
         when:
@@ -60,7 +61,7 @@ class ConfigurationSpec extends Specification {
         configuration.enabled = false
 
         when:
-        configuration.projectIconFile
+        configuration.iconFile
 
         then:
         def e = thrown(IllegalStateException)
@@ -74,7 +75,7 @@ class ConfigurationSpec extends Specification {
         configuration.enabled = false
 
         when:
-        configuration.getProjectIconFile()
+        configuration.getIconFile()
 
         then:
         thrown(IllegalStateException)

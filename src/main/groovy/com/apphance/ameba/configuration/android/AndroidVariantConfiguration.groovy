@@ -6,6 +6,8 @@ import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyPersister
 
+import static com.apphance.ameba.configuration.apphance.ApphanceMode.DISABLED
+
 class AndroidVariantConfiguration extends AbstractConfiguration {
 
     final String name
@@ -42,21 +44,36 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     }
 
     def mode = new StringProperty(
-            possibleValues: { AndroidBuildMode.values()*.name() as List<String>},
-            defaultValue: { AndroidBuildMode.DEBUG.name() }
+            possibleValues: { possibleModes() },
+            defaultValue: { AndroidBuildMode.DEBUG.name() },
+            validator: { it in possibleModes() },
+            required: { true }
     )
 
+    private List<String> possibleModes() {
+        AndroidBuildMode.values()*.name() as List<String>
+    }
+
     def apphanceAppKey = new StringProperty(
-            askUser: { androidApphanceConf.enabled }
+            interactive: { androidApphanceConf.enabled },
+            required: { androidApphanceConf.enabled },
+            validator: { it?.matches('[a-z0-9]+') }
     )
 
     def apphanceMode = new ApphanceModeProperty(
-            possibleValues: { ApphanceMode.values()*.name() as List<String> },
-            askUser: { androidApphanceConf.enabled }
+            interactive: { androidApphanceConf.enabled },
+            required: { androidApphanceConf.enabled },
+            possibleValues: { possibleApphanceModes() },
+            validator: { it in possibleApphanceModes() }
     )
 
+    private List<String> possibleApphanceModes() {
+        ApphanceMode.values()*.name() as List<String>
+    }
+
     def apphanceLibVersion = new StringProperty(
-            askUser: { androidApphanceConf.enabled }
+            interactive: { androidApphanceConf.enabled && !(DISABLED == apphanceMode.value) },
+            validator: { it?.matches('([0-9]+\\.)*[0-9]+') }
     )
 
     @Override
@@ -66,7 +83,7 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
 
     @Override
     String getConfigurationName() {
-        "Android configuration for variant: ${this.@name}"
+        "Android configuration variant ${this.@name}"
     }
 
     File getTmpDir() {
