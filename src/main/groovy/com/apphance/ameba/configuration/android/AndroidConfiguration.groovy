@@ -2,7 +2,6 @@ package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ProjectConfiguration
-import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.detection.ProjectTypeDetector
@@ -113,11 +112,10 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
             defaultValue: { manifestHelper.androidPackage(rootDir) }
     )
 
-    def sdkDir = new FileProperty(
-            name: 'android.dir.sdk',
-            message: 'Android SDK directory',
-            defaultValue: { defaultSDKDir() }
-    )
+    File getSDKDir() {
+        def androidHome = reader.systemProperty('ANDROID_HOME')
+        androidHome ? new File(androidHome) : null
+    }
 
     final Collection<String> sourceExcludes = ['**/*.class', '**/bin/**', '**/build/*']
 
@@ -125,31 +123,30 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     Collection<File> getSdkJars() {
         if (sdkJarLibs.empty && target.value) {
-            def sdk = sdkDir.value
             def target = minTarget.value
             if (target.startsWith('android')) {
                 String version = target.split('-')[1]
-                sdkJarLibs << new File(sdk, "platforms/android-$version/android.jar")
+                sdkJarLibs << new File(SDKDir, "platforms/android-$version/android.jar")
             } else {
                 List splitTarget = target.split(':')
                 if (splitTarget.size() > 2) {
                     String version = splitTarget[2]
-                    sdkJarLibs << new File(sdk, "platforms/android-$version/android.jar")
+                    sdkJarLibs << new File(SDKDir, "platforms/android-$version/android.jar")
                     if (target.startsWith('Google')) {
-                        def mapJarFiles = new FileNameFinder().getFileNames(sdkDir.value.path,
+                        def mapJarFiles = new FileNameFinder().getFileNames(SDKDir.canonicalPath,
                                 "add-ons/addon*google*apis*google*$version/libs/maps.jar")
                         for (String path in mapJarFiles) {
                             sdkJarLibs << new File(path)
                         }
                     }
                     if (target.startsWith('KYOCERA Corporation:DTS')) {
-                        sdkJarLibs << new File(sdk, "add-ons/addon_dual_screen_apis_kyocera_corporation_$version/libs/dualscreen.jar")
+                        sdkJarLibs << new File(SDKDir, "add-ons/addon_dual_screen_apis_kyocera_corporation_$version/libs/dualscreen.jar")
                     }
                     if (target.startsWith('LGE:Real3D')) {
-                        sdkJarLibs << new File(sdk, "add-ons/addon_real3d_lge_$version/libs/real3d.jar")
+                        sdkJarLibs << new File(SDKDir, "add-ons/addon_real3d_lge_$version/libs/real3d.jar")
                     }
                     if (target.startsWith('Sony Ericsson Mobile Communications AB:EDK')) {
-                        sdkJarLibs << new File(sdk, "add-ons/addon_edk_sony_ericsson_mobile_communications_ab_$version/libs/com.sonyericsson.eventstream_1.jar")
+                        sdkJarLibs << new File(SDKDir, "add-ons/addon_edk_sony_ericsson_mobile_communications_ab_$version/libs/com.sonyericsson.eventstream_1.jar")
                     }
                 }
             }
@@ -216,11 +213,6 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     private List<String> possibleNames() {
         [rootDir.name, buildXmlHelper.projectName(rootDir)]
-    }
-
-    private File defaultSDKDir() {
-        def androidHome = reader.systemProperty('ANDROID_HOME')
-        androidHome ? new File(androidHome) : null
     }
 
     private List<String> possibleTargets() {

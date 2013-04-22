@@ -28,7 +28,7 @@ class AndroidTestPluginSpec extends Specification {
 
         and:
         def ac = GroovyStub(AndroidConfiguration)
-        ac.sdkDir >> new FileProperty(value: Files.createTempDir())
+        ac.SDKDir >> Files.createTempDir()
         atp.androidConf = ac
 
         when:

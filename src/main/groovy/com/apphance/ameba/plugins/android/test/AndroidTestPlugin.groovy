@@ -27,10 +27,10 @@ class AndroidTestPlugin implements Plugin<Project> {
             if (testConf.emmaEnabled.value) {
                 project.configurations.add('emma')
                 project.dependencies.add('emma', project.files([
-                        new File(androidConf.sdkDir.value, 'tools/lib/emma.jar')
+                        new File(androidConf.SDKDir, 'tools/lib/emma.jar')
                 ]))
                 project.dependencies.add('emma', project.files([
-                        new File(androidConf.sdkDir.value, 'tools/lib/emma_ant.jar')
+                        new File(androidConf.SDKDir, 'tools/lib/emma_ant.jar')
                 ]))
             }
 

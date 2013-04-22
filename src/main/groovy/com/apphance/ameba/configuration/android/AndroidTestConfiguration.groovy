@@ -164,11 +164,11 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     )
 
     File getADBBinary() {
-        new File(androidConf.sdkDir.value, "platform${separator}tools")
+        new File(androidConf.SDKDir, "platform${separator}tools")
     }
 
     File getAndroidBinary() {
-        new File(androidConf.sdkDir.value, "tools${separator}android")
+        new File(androidConf.SDKDir, "tools${separator}android")
     }
 
     String getEmmaDumpFilePath() {
