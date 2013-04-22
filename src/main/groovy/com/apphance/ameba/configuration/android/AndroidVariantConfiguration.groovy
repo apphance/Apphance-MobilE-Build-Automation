@@ -42,7 +42,8 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     }
 
     def mode = new StringProperty(
-            possibleValues: { AndroidBuildMode.values()*.name() as List<String> }
+            possibleValues: { AndroidBuildMode.values()*.name() as List<String>},
+            defaultValue: { AndroidBuildMode.DEBUG.name() }
     )
 
     def apphanceAppKey = new StringProperty(
@@ -69,8 +70,7 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     }
 
     File getTmpDir() {
-        def rootDir = androidConf.rootDir
-        new File(rootDir.parent, ("tmp-${rootDir.name}-" + name).replaceAll('[\\\\ /]', '_'))
+        new File(androidConf.tmpDir, name)
     }
 
 }
