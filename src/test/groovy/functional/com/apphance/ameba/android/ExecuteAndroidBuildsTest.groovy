@@ -360,7 +360,7 @@ class ExecuteAndroidBuildsTest {
         try {
             Properties p = new Properties()
             p.put('apphance.lib', "com.apphanc:android.production:1.8")
-            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug')
+            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
             projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
         } catch (Exception e) {
 
