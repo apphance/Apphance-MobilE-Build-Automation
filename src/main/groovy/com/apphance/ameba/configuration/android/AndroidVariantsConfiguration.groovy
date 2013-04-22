@@ -75,7 +75,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     }
 
     private List<AndroidVariantConfiguration> extractDefaultVariants() {
-        AndroidBuildMode.values().collect { createVariant(it.name().toLowerCase()) }
+        AndroidBuildMode.values().collect { createVariant(it.name().toLowerCase().capitalize()) }
     }
 
     private AndroidVariantConfiguration createVariant(String name) {
