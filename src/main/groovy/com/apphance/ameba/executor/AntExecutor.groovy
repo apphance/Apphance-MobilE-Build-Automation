@@ -21,7 +21,7 @@ class AntExecutor {
 
     def executeTarget(File rootDir, String command, Map params = [:]) {
         try {
-            executor.executeCommand(new Command([runDir: rootDir, cmd: "ant $command".split(), failOnError: false] + params))
+            executor.executeCommand(new Command([runDir: rootDir, cmd: "ant $command".split(), failOnError: true] + params))
         } catch (IOException e) {
             throw new GradleException("Error during execution: ant $command, $params", e)
         }
