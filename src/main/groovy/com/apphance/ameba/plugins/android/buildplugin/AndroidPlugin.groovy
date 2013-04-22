@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
 import com.apphance.ameba.plugins.android.buildplugin.tasks.*
 import com.apphance.ameba.plugins.projectconfiguration.tasks.CleanConfTask
+import com.apphance.ameba.plugins.projectconfiguration.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -72,6 +73,12 @@ class AndroidPlugin implements Plugin<Project> {
                         dependsOn: [CopySourcesTask.NAME, RunUpdateProjectTask.NAME, "buildAll${it.mode.value.toLowerCase().capitalize()}"]).variant = it
 
                 project.task("install${it.name}", type: InstallTask, dependsOn: buildName).variant = it
+            }
+
+            project.tasks.each {
+                if (!(it.name in [VerifySetupTask.NAME, 'prepareSetup2'])) {
+                    it.dependsOn VerifySetupTask.NAME
+                }
             }
         }
     }
