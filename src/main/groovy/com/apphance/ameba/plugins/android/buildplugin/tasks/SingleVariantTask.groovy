@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.AndroidBuilderInfo
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
@@ -23,9 +24,12 @@ class SingleVariantTask extends DefaultTask {
     private AndroidSingleVariantApkBuilder androidApkBuilder
 
     @Inject
+    AntExecutor antExecutor
+
+    @Inject
     def init() {
-        this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, androidConfiguration)
-        this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, androidConfiguration)
+        this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, androidConfiguration, antExecutor)
+        this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, androidConfiguration, antExecutor)
     }
 
     @TaskAction

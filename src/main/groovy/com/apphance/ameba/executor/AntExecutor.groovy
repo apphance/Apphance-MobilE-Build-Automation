@@ -1,7 +1,9 @@
 package com.apphance.ameba.executor
 
-import org.apache.tools.ant.Project
-import org.apache.tools.ant.ProjectHelper
+import com.apphance.ameba.executor.command.Command
+import com.apphance.ameba.executor.command.CommandExecutor
+import com.google.inject.Inject
+import org.gradle.api.GradleException
 
 /**
  * Executor of ant targets.
@@ -12,21 +14,16 @@ class AntExecutor {
     public static String CLEAN = "clean"
     public static String INSTRUMENT = "instrument"
 
-    Project antProject
+    @Inject
+    CommandExecutor executor
 
-    AntExecutor(File rootDir, String buildFileName = 'build.xml') {
-        antProject = new Project()
-        antProject.setName("Ant project from $rootDir")
-        antProject.initProperties()
+    File rootDir
 
-        String buildFilePath = rootDir.absolutePath + '/' + buildFileName
-        File buildFile = new File(buildFilePath)
-        if (!buildFile.exists()) throw new IllegalArgumentException("No $buildFileName in $rootDir")
-        ProjectHelper.configureProject(antProject, buildFile)
-    }
-
-    def executeTarget(String target, Map<String, String> properties = [:]) {
-        properties.each { name, value -> antProject.setProperty(name, value) }
-        antProject.executeTarget(target)
+    def executeTarget(File rootDir, String command, Map params = [:]) {
+        try {
+            executor.executeCommand(new Command([runDir: rootDir, cmd: "ant $command".split(), failOnError: false] + params))
+        } catch (IOException e) {
+            throw new GradleException("Error during execution: ant $command, $params", e)
+        }
     }
 }

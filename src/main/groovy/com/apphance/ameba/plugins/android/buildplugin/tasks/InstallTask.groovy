@@ -19,6 +19,9 @@ class InstallTask extends DefaultTask {
     @Inject
     private AndroidReleaseConfiguration androidReleaseConf
 
+    @Inject
+    AntExecutor antExecutor
+
     AndroidVariantConfiguration variant
 
     @TaskAction
@@ -28,7 +31,7 @@ class InstallTask extends DefaultTask {
         File targetDirectory = androidReleaseConf.targetDirectory
         def apkName = "${androidConf.projectName.value}-${debugRelease}-${variant}-${androidConf.versionString}.apk".toString()
         File apkFile = new File(targetDirectory, apkName)
-        new AntExecutor(project.rootDir).executeTarget "install${firstLetterLowerCase}", ['out.final.file': apkFile.canonicalPath]
+        antExecutor.executeTarget project.rootDir, "install${firstLetterLowerCase}", ['out.final.file': apkFile.canonicalPath]
     }
 
     @Override

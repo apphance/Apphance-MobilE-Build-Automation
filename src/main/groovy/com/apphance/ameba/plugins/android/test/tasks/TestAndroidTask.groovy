@@ -37,6 +37,8 @@ class TestAndroidTask extends DefaultTask {
     @Inject
     private CommandExecutor executor
     @Inject
+    private AntExecutor antExecutor
+    @Inject
     private AndroidManifestHelper manifestHelper
     private Process emulatorProcess
     private Process logcatProcess
@@ -82,9 +84,8 @@ class TestAndroidTask extends DefaultTask {
             manifestHelper.addPermissions(project.rootDir, 'android.permission.ACCESS_MOCK_LOCATION')
         }
         try {
-            def antExecutor = new AntExecutor(testConf.testDir.value)
-            antExecutor.executeTarget(CLEAN, ['test.runner': TEST_RUNNER])
-            antExecutor.executeTarget(INSTRUMENT, ['test.runner': TEST_RUNNER])
+            antExecutor.executeTarget testConf.testDir.value, CLEAN, ['test.runner': TEST_RUNNER]
+            antExecutor.executeTarget testConf.testDir.value, INSTRUMENT, ['test.runner': TEST_RUNNER]
             File localEmFile = new File(testConf.testDir.value, 'coverage.em')
             if (localEmFile.exists()) {
                 boolean res = localEmFile.renameTo(testConf.coverageEMFile)

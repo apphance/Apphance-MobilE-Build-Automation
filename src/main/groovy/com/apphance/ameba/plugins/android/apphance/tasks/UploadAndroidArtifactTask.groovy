@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.ReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidApphanceConfiguration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
 import com.apphance.ameba.util.Preconditions
@@ -34,9 +35,12 @@ class UploadAndroidArtifactTask extends DefaultTask {
     private ReleaseConfiguration releaseConf
     AndroidVariantConfiguration variant
 
+    @Inject
+    AntExecutor executor
+
     @TaskAction
     public void uploadArtifact() {
-        def builder = new AndroidSingleVariantApkBuilder(project, androidConfiguration)
+        def builder = new AndroidSingleVariantApkBuilder(project, androidConfiguration, executor)
         def builderInfo = builder.buildApkArtifactBuilderInfo(variant)
 
         String user = androidApphanceConfiguration.user.value

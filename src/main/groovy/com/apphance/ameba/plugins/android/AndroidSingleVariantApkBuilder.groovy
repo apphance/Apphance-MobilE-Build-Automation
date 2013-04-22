@@ -13,8 +13,12 @@ import static com.apphance.ameba.executor.AntExecutor.CLEAN
  */
 class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder {
 
-    AndroidSingleVariantApkBuilder(Project project, AndroidConfiguration androidConf) {
+    AntExecutor antExecutor
+
+    AndroidSingleVariantApkBuilder(Project project, AndroidConfiguration androidConf, AntExecutor antExecutor) {
         super(project, androidConf)
+
+        this.antExecutor = antExecutor
     }
 
     AndroidBuilderInfo buildApkArtifactBuilderInfo(AndroidVariantConfiguration avc) {
@@ -36,8 +40,7 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
 
     @Override
     void buildSingle(AndroidBuilderInfo bi) {
-        def antExecutor = new AntExecutor(bi.tmpDir)
-        antExecutor.executeTarget CLEAN
+        antExecutor.executeTarget bi.tmpDir, CLEAN
         def variantPropertiesDir = new File(variantsDir, bi.variant)
         if (bi.variant != null && variantPropertiesDir.exists()) {
             project.ant {
@@ -47,7 +50,7 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
                 }
             }
         }
-        antExecutor.executeTarget bi.debugRelease.toLowerCase()
+        antExecutor.executeTarget bi.tmpDir, bi.debugRelease.toLowerCase()
         logger.lifecycle("Apk file created: ${bi.originalFile}")
         buildListeners.each {
             it.buildDone(project, bi)

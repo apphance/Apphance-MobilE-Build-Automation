@@ -19,9 +19,12 @@ class CleanAndroidTask extends DefaultTask {
     @Inject
     private AndroidConfiguration conf
 
+    @Inject
+    AntExecutor antExecutor
+
     @TaskAction
     void cleanAndroid() {
-        new AntExecutor(project.rootDir).executeTarget CLEAN
+        antExecutor.executeTarget project.rootDir, CLEAN
         ant.delete(dir: conf.tmpDir)
     }
 }

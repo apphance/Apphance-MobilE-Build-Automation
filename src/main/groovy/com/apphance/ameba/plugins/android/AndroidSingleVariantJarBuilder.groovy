@@ -7,15 +7,17 @@ import org.gradle.api.Project
 
 import static com.apphance.ameba.executor.AntExecutor.CLEAN
 
-
 /**
  * Builds Jar for the project - one per variant.
  *
  */
 class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder {
 
-    AndroidSingleVariantJarBuilder(Project project, AndroidConfiguration androidConf) {
+    AntExecutor antExecutor
+
+    AndroidSingleVariantJarBuilder(Project project, AndroidConfiguration androidConf, AntExecutor executor) {
         super(project, androidConf)
+        this.antExecutor = executor
     }
 
     AndroidBuilderInfo buildJarArtifactBuilderInfo(AndroidVariantConfiguration avc) {
@@ -35,8 +37,7 @@ class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder
 
     @Override
     void buildSingle(AndroidBuilderInfo bi) {
-        def antExecutor = new AntExecutor(bi.tmpDir)
-        antExecutor.executeTarget CLEAN
+        antExecutor.executeTarget bi.tmpDir, CLEAN
         if (bi.variant != null) {
             project.ant {
                 copy(todir: new File(bi.tmpDir, 'res/raw'), failonerror: false, overwrite: 'true', verbose: 'true') {
@@ -45,7 +46,7 @@ class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder
                 }
             }
         }
-        antExecutor.executeTarget bi.debugRelease.toLowerCase()
+        antExecutor.executeTarget bi.tmpDir, bi.debugRelease.toLowerCase()
         logger.lifecycle("Jar file created: ${bi.originalFile}")
         buildListeners.each {
             it.buildDone(project, bi)

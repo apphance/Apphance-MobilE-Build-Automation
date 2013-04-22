@@ -1,9 +1,8 @@
 package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.executor.AntExecutor
-import com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups
+import com.google.inject.Inject
 import org.gradle.api.DefaultTask
-import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.executor.AntExecutor.DEBUG
@@ -11,6 +10,9 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
 class CompileAndroidTask extends DefaultTask{
+
+    @Inject
+    AntExecutor antExecutor
 
     static String NAME = 'compileAndroid'
     String description = 'Performs code generation/compile tasks for android (if needed)'
@@ -20,13 +22,11 @@ class CompileAndroidTask extends DefaultTask{
 
     @TaskAction
     void compileAndroid() {
-        def antExecutor = new AntExecutor(project.rootDir)
-
         l.lifecycle("Prepares to compile Java for static code analysis")
         File gen = project.file('gen')
         if (!gen.exists() || gen.list().length == 0) {
             l.lifecycle("Regenerating gen directory by running debug project")
-            antExecutor.executeTarget DEBUG
+            antExecutor.executeTarget project.rootDir, DEBUG
         } else {
             l.lifecycle("Not regenerating gen directory! You might need to run clean in order to get latest data (you can also run any of the android builds)")
         }
