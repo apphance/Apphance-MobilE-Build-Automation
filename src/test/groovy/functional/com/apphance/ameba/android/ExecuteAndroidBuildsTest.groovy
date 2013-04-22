@@ -326,7 +326,7 @@ class ExecuteAndroidBuildsTest {
         ProjectConfiguration projectConf = new ProjectConfiguration()
         try {
             Properties p = new Properties()
-            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
+            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug')
             projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
@@ -343,7 +343,7 @@ class ExecuteAndroidBuildsTest {
         try {
             Properties p = new Properties()
             p.put('apphance.lib', "com.apphance:android.production:1.8.2")
-            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
+            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug')
             projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
@@ -360,7 +360,7 @@ class ExecuteAndroidBuildsTest {
         try {
             Properties p = new Properties()
             p.put('apphance.lib', "com.apphanc:android.production:1.8")
-            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
+            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug')
             projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
         } catch (Exception e) {
 
