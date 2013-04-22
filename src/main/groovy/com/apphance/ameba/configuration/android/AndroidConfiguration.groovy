@@ -107,7 +107,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     )
 
     File getSDKDir() {
-        def androidHome = reader.systemProperty('ANDROID_HOME')
+        def androidHome = reader.envVariable('ANDROID_HOME')
         androidHome ? new File(androidHome) : null
     }
 
