@@ -26,7 +26,7 @@ class TestAndroidTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    static String NAME = 'pmd'
+    static String NAME = 'testAndroid'
     String group = AMEBA_TEST
     String description = 'Runs android tests on the project'
 
