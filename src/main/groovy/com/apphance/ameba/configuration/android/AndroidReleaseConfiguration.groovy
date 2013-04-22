@@ -182,6 +182,11 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     void setEnabled(boolean enabled) {
         enabledInternal = enabled
     }
+
+    @Override
+    void checkProperties() {
+        check !checkExecption {baseURL}, "Error in android.release.project.url property: ${checkExecption {baseURL}}"
+    }
 }
 
 //TODO verify - copied from VerifyReleaseSetupOperation

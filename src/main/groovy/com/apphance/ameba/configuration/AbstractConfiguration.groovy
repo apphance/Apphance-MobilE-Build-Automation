@@ -60,15 +60,24 @@ abstract class AbstractConfiguration implements Configuration {
         configurationName.replace(' ', '.').toLowerCase() + '.enabled'
     }
 
-    def check(boolean cond, String message) {
+    final def check(boolean cond, String message) {
         if (!cond) {
             errors << message
         }
     }
 
-    List<String> verify() {
+    final List<String> verify() {
         checkProperties()
         errors
+    }
+
+    protected String checkExecption (Closure cl) {
+        try {
+            cl.call()
+        } catch (Exception e) {
+            return e.message
+        }
+        return ''
     }
 
     void checkProperties() {}
