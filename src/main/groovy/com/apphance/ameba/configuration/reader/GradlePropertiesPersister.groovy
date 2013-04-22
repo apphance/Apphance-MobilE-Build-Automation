@@ -1,8 +1,8 @@
 package com.apphance.ameba.configuration.reader
 
 import com.apphance.ameba.configuration.AbstractConfiguration
-import com.apphance.ameba.util.SortedProperties
 import com.apphance.ameba.configuration.properties.AbstractProperty
+import com.apphance.ameba.util.SortedProperties
 import com.google.common.io.Files
 import com.google.inject.Inject
 import org.gradle.api.Project
@@ -30,6 +30,7 @@ class GradlePropertiesPersister implements PropertyPersister {
         init(project)
     }
 
+    @Override
     void init(Project project) {
         props = new SortedProperties()
         propertyFile = new File("${project.rootDir.absolutePath}${separator}$amebaPropFilename")
@@ -88,7 +89,7 @@ class GradlePropertiesPersister implements PropertyPersister {
                 writer.write("${prop.name}=${prop.persistentForm()}\n".toString())
             }
 
-            conf.subConfigurations.each {saveConf(it, writer)}
+            conf.subConfigurations.each { saveConf(it, writer) }
         }
     }
 

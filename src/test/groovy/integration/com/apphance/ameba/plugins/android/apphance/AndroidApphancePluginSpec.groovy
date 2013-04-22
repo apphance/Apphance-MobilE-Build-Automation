@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.android.AndroidApphanceConfiguration
 import com.apphance.ameba.configuration.android.AndroidBuildMode
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.plugins.android.apphance.tasks.AndroidLogsConversionTask
 import com.apphance.ameba.plugins.android.apphance.tasks.ApphanceLogsConversionTask
 import spock.lang.Specification
@@ -108,8 +109,9 @@ class AndroidApphancePluginSpec extends Specification {
     }
 
     private AndroidVariantConfiguration createVariant(String name, AndroidBuildMode mode) {
-        def avc = new AndroidVariantConfiguration(name, * [null] * 3)
-        avc.mode.value = mode.name()
+        def avc = GroovyMock(AndroidVariantConfiguration)
+        avc.name >> name
+        avc.mode >> new StringProperty(value: mode.name())
         avc
     }
 }

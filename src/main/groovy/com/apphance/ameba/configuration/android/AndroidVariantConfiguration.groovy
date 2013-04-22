@@ -37,6 +37,10 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
         super.init()
     }
 
+    String getName() {
+        this.@name
+    }
+
     def mode = new StringProperty(
             possibleValues: { AndroidBuildMode.values()*.name() as List<String> }
     )

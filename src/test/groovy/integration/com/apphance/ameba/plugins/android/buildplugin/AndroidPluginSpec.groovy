@@ -107,8 +107,8 @@ class AndroidPluginSpec extends Specification {
         and:
         def avc = GroovyMock(AndroidVariantsConfiguration)
         avc.variants >> [
-                new AndroidVariantConfiguration('v1', * [null] * 3),
-                new AndroidVariantConfiguration('v2', * [null] * 3)
+                createVariant('v1'),
+                createVariant('v2')
         ]
         ap.variantsConf = avc
 
@@ -146,5 +146,9 @@ class AndroidPluginSpec extends Specification {
         project.plugins.findPlugin(JavaPlugin)
     }
 
-
+    private AndroidVariantConfiguration createVariant(String name) {
+        def avc = GroovyMock(AndroidVariantConfiguration)
+        avc.name >> name
+        avc
+    }
 }

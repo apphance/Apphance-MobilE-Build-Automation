@@ -5,7 +5,9 @@ import org.gradle.api.Project
 
 interface PropertyPersister {
 
-    def abstract get(String name)
-    def abstract save(Collection<AbstractConfiguration> configurations)
+    def get(String name)
+
+    def save(Collection<AbstractConfiguration> configurations)
+
     void init(Project project)
 }

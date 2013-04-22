@@ -73,7 +73,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
         reader.systemProperty('version.string') ?:
             reader.envVariable('VERSION_STRING') ?:
                 manifestHelper.readVersion(rootDir).versionString ?:
-                    'git '
+                    ''
     }
 
     @Override
@@ -203,11 +203,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     }
 
     Set<File> getAllJars() {
-        Set<File> set = [] as Set
-        set.addAll(getSdkJars())
-        set.addAll(getJarLibraries())
-        set.addAll(getLinkedJarLibraries())
-        return set
+        [getSdkJars(), getJarLibraries(), getLinkedJarLibraries()].flatten() as Set
     }
 
     String getAllJarsAsPath() {
@@ -219,18 +215,12 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     }
 
     private List<String> possibleNames() {
-        def names = []
-        names << rootDir.name
-        names << buildXmlHelper.projectName(rootDir)
-        names
+        [rootDir.name, buildXmlHelper.projectName(rootDir)]
     }
 
     private File defaultSDKDir() {
-        def androidHome = System.getenv('ANDROID_HOME')
-        if (androidHome) {
-            return new File(androidHome)
-        }
-        null
+        def androidHome = reader.systemProperty('ANDROID_HOME')
+        androidHome ? new File(androidHome) : null
     }
 
     private List<String> possibleTargets() {
@@ -266,9 +256,5 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     @Override
     void checkProperties() {
         check !isNullOrEmpty(target.value), "Property ${target.name} is required"
-
-
     }
-
-
 }
