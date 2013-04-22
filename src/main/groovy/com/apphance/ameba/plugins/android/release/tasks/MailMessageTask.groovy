@@ -7,6 +7,7 @@ import com.apphance.ameba.util.file.FileManager
 import com.google.inject.Inject
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
@@ -31,7 +32,9 @@ class MailMessageTask extends DefaultTask {
 
     @TaskAction
     public void mailMessage() {
+
         checkNotNull(releaseConf?.mailMessageFile?.location?.parentFile)
+        validateReleaseNotes(releaseConf.releaseNotes)
 
         releaseConf.mailMessageFile.location.parentFile.mkdirs()
         releaseConf.mailMessageFile.location.delete()
@@ -59,6 +62,15 @@ class MailMessageTask extends DefaultTask {
         def result = engine.createTemplate(mailTemplate).make(binding)
         releaseConf.mailMessageFile.location.write(result.toString(), 'UTF-8')
         l.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")
+    }
+
+    @groovy.transform.PackageScope
+    void validateReleaseNotes(Collection<String> releaseNotes) {
+        if (!releaseNotes || releaseNotes.empty) {
+            throw new GradleException("""|Release notes are empty!
+                                         |Set them either by 'release.notes' system property or
+                                         |'RELEASE_NOTES environment variable!""")
+        }
     }
 
     private void fillMailSubject(ResourceBundle rb) {

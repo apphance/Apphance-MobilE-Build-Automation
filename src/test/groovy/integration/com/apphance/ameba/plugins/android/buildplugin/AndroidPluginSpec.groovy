@@ -3,11 +3,14 @@ package com.apphance.ameba.plugins.android.buildplugin
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.plugins.android.buildplugin.tasks.*
 import com.apphance.ameba.plugins.projectconfiguration.tasks.CleanConfTask
 import org.gradle.api.plugins.JavaPlugin
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
+import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
 import static org.gradle.api.plugins.JavaPlugin.COMPILE_JAVA_TASK_NAME
@@ -107,8 +110,8 @@ class AndroidPluginSpec extends Specification {
         and:
         def avc = GroovyMock(AndroidVariantsConfiguration)
         avc.variants >> [
-                createVariant('v1'),
-                createVariant('v2')
+                createVariant('v1', DEBUG.name()),
+                createVariant('v2', RELEASE.name())
         ]
         ap.variantsConf = avc
 
@@ -146,9 +149,10 @@ class AndroidPluginSpec extends Specification {
         project.plugins.findPlugin(JavaPlugin)
     }
 
-    private AndroidVariantConfiguration createVariant(String name) {
+    private AndroidVariantConfiguration createVariant(String name, String mode) {
         def avc = GroovyMock(AndroidVariantConfiguration)
         avc.name >> name
+        avc.mode >> new StringProperty(value: mode)
         avc
     }
 }

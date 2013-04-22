@@ -171,4 +171,14 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
     String getMailServer() {
         return null  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    String getReleaseCode() {
+        return null  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    String getReleaseString() {
+        return null  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

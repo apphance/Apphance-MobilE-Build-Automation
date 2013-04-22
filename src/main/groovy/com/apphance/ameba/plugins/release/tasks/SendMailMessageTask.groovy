@@ -3,9 +3,11 @@ package com.apphance.ameba.plugins.release.tasks
 import com.apphance.ameba.configuration.ReleaseConfiguration
 import org.apache.tools.ant.Project
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
+import java.util.regex.Pattern
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 
@@ -19,13 +21,18 @@ class SendMailMessageTask extends DefaultTask {
              release.mail.from, release.mail.to, release.mail.flags
              flags are one of: qrCode,imageMontage"""
 
+    private Pattern WHITESPACE = Pattern.compile('\\s+')
+
     @Inject
     private ReleaseConfiguration releaseConf
 
     @TaskAction
     void sendMailMessage() {
-        def mailServer = releaseConf.mailServer
-        def mailPort = releaseConf.mailPort
+        String mailServer = releaseConf.mailServer
+        String mailPort = releaseConf.mailPort
+
+        validateMailServer(mailServer)
+        validateMailPort(mailPort)
 
         Properties props = System.getProperties()
         props.put('mail.smtp.host', mailServer)
@@ -49,6 +56,25 @@ class SendMailMessageTask extends DefaultTask {
             if (releaseConf.releaseMailFlags.value.contains("imageMontage") && releaseConf.imageMontageFile != null) {
                 fileset(file: releaseConf.imageMontageFile.location)
             }
+        }
+    }
+
+    @groovy.transform.PackageScope
+    void validateMailServer(String mailServer) {
+        mailServer = mailServer?.trim()
+        if (!mailServer || mailServer?.empty || WHITESPACE.matcher(mailServer ?: '').find())
+            throw new GradleException("""|Property 'mail.server' has invalid value!
+                                         |Set it either by 'mail.server' system property or
+                                         |'MAIL_SERVER' environment variable!""".stripMargin())
+    }
+
+    @groovy.transform.PackageScope
+    void validateMailPort(String mailPort) {
+        mailPort = mailPort?.trim()
+        if (mailPort?.empty || !mailPort?.matches('[0-9]+')) {
+            throw new GradleException("""|Property 'mail.port' has invalid value!
+                                         |Set it either by 'mail.port' system property or 'MAIL_PORT' environment variable.
+                                         |This property must have numeric value!""".stripMargin())
         }
     }
 }

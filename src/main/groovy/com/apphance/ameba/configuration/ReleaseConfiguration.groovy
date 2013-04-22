@@ -10,6 +10,10 @@ interface ReleaseConfiguration extends Configuration {
 
     Collection<String> getReleaseNotes()
 
+    String getReleaseCode()
+
+    String getReleaseString()
+
     URLProperty getProjectURL()
 
     String getProjectDirName()
