@@ -242,5 +242,6 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     @Override
     void checkProperties() {
         check !isNullOrEmpty(target.value), "Property ${target.name} is required"
+        check projectName.value, "Project name is required"
     }
 }

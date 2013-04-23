@@ -185,7 +185,8 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
 
     @Override
     void checkProperties() {
-        check !checkExecption {baseURL}, "Error in android.release.project.url property: ${checkExecption {baseURL}}"
+        check !checkExecption { baseURL }, "Error in android.release.project.url property: ${checkExecption { baseURL }}"
+        check projectIconFile.value, "property ${projectIconFile.name} missing"
     }
 }
 

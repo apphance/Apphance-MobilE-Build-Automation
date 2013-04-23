@@ -60,8 +60,8 @@ abstract class AbstractConfiguration implements Configuration {
         configurationName.replace(' ', '.').toLowerCase() + '.enabled'
     }
 
-    final def check(boolean cond, String message) {
-        if (!cond) {
+    final def check(condition, String message) {
+        if (!condition) {
             errors << message
         }
     }
