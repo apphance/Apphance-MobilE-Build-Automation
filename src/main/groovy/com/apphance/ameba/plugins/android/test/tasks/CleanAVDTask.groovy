@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.android.test.tasks
 
 import com.apphance.ameba.configuration.android.AndroidTestConfiguration
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
@@ -16,6 +17,7 @@ class CleanAVDTask extends DefaultTask {
     @Inject
     private AndroidTestConfiguration testConf
 
+    @TaskAction
     void cleanAVD() {
         ant.delete(dir: testConf.getAVDDir())
     }
