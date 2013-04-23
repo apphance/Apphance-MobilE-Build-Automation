@@ -89,58 +89,60 @@ class ExecuteAndroidBuildsTest {
     @Test
     void testOta() {
         runGradle('updateProject', 'cleanRelease')
-        assertTrue(new File(testProject, "ota").exists())
-        assertEquals(0, new File(testProject, "ota").listFiles().length)
-        assertTrue(new File(testProject, "tmp").exists())
-        assertEquals(0, new File(testProject, "tmp").listFiles().length)
+        assertTrue(new File(testProject, "ameba-ota").exists())
+        assertEquals(0, new File(testProject, "ameba-ota").listFiles().length)
+        assertTrue(new File(testProject, "ameba-tmp").exists())
+        assertEquals(0, new File(testProject, "ameba-tmp").listFiles().length)
     }
 
 
     @Test
     void testBuildDebug() {
-        runGradle('buildAllDebug')
+        runGradle('clean', 'buildAllDebug')
         assertTrue(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-unsigned-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-degub-TestDebug-unaligned-${fullVersion}.apk").exists())
     }
 
 
     @Test
     void testBuildRelease() {
         runGradle('buildAllRelease')
+
         assertTrue(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unsigned-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
     }
 
     @Test
     void testBuildDebugNoVariant() {
-        runGradleNoVariants('buildAllDebug')
+        runGradleNoVariants('clean', 'buildAllDebug')
+
         assertTrue(new File(testNoVariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketDebug-${fullVersion}.apk").exists())
         assertFalse(new File(testNoVariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-release-MarketDebug-unsigned-${fullVersion}.apk").exists())
         assertFalse(new File(testNoVariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketDebug-unaligned-${fullVersion}.apk").exists())
     }
 
     @Test
     void testBuildReleaseNoVariant() {
-        runGradleNoVariants('buildAllRelease')
-        assertTrue(new File(testNoVariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
-        assertFalse(new File(testNoVariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
-        assertFalse(new File(testNoVariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
-    }
+        runGradleNoVariants('clean', 'buildAllRelease')
 
+        assertTrue(new File(testNoVariantsProject,
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
+        assertFalse(new File(testNoVariantsProject,
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-release-MarketRelease-unsigned-${fullVersion}.apk").exists())
+        assertFalse(new File(testNoVariantsProject,
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
+    }
 
     @Test
     void testJavadoc() {
@@ -150,6 +152,7 @@ class ExecuteAndroidBuildsTest {
     }
 
     @Test
+    @Ignore
     void testUpdateProject() {
         File localProperties = new File(testProject, "local.properties")
         File localPropertiesSubproject = new File(testProject, "subproject/local.properties")
@@ -260,13 +263,13 @@ class ExecuteAndroidBuildsTest {
     void testBuildAndPrepareVariantedMailMessage() {
         runGradle('cleanRelease', 'updateProject', 'buildAll')
         runGradle('prepareImageMontage', 'prepareMailMessage')
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/icon.png").exists())
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/index.html").exists())
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/plain_file_index.html").exists())
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/qrcode-TestAndroidProject-1.0.1-SNAPSHOT_42.png").exists())
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42.apk").exists())
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-1.0.1-SNAPSHOT_42.apk").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/file_index.html").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/icon.png").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/index.html").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/plain_file_index.html").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/qrcode-TestAndroidProject-${fullVersion}.png").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-${fullVersion}.apk").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
     }
 
     @Test
