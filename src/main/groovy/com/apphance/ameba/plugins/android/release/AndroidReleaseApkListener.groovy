@@ -3,6 +3,7 @@ package com.apphance.ameba.plugins.android.release
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.AndroidBuilderInfo
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.release.AmebaArtifact
@@ -21,13 +22,15 @@ class AndroidReleaseApkListener implements AndroidBuildListener {
     private AndroidConfiguration conf
     private AndroidReleaseConfiguration releaseConf
     private AntBuilder ant
+    private AntExecutor antExecutor
 
     private Logger l = getLogger(getClass())
 
-    AndroidReleaseApkListener(Project project, AndroidConfiguration conf, AndroidReleaseConfiguration releaseConf) {
+    AndroidReleaseApkListener(Project project, AndroidConfiguration conf, AndroidReleaseConfiguration releaseConf, AntExecutor antExecutor) {
         this.conf = conf
         this.releaseConf = releaseConf
         this.ant = project.ant
+        this.antExecutor = antExecutor
     }
 
     @Override
@@ -41,7 +44,7 @@ class AndroidReleaseApkListener implements AndroidBuildListener {
     @Override
     void buildArtifactsOnly(Project project, AndroidVariantConfiguration avc) {
         if (conf.versionString) {
-            def builder = new AndroidSingleVariantApkBuilder(project, conf)
+            def builder = new AndroidSingleVariantApkBuilder(project, conf, antExecutor)
             def bi = builder.buildApkArtifactBuilderInfo(avc)
             l.lifecycle("Adding variant APK artifact ${bi.id}")
             releaseConf.apkFiles.put(bi.id, prepareApkArtifact(bi))

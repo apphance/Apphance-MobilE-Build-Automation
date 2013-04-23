@@ -3,6 +3,7 @@ package com.apphance.ameba.plugins.android.release
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.AndroidBuilderInfo
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.plugins.release.AmebaArtifact
@@ -23,11 +24,13 @@ class AndroidReleaseJarListener implements AndroidBuildListener {
     private AndroidConfiguration conf
     private AndroidReleaseConfiguration releaseConf
     private AntBuilder ant
+    private AntExecutor antExecutor
 
-    AndroidReleaseJarListener(Project project, AndroidConfiguration conf, AndroidReleaseConfiguration releaseConf) {
+    AndroidReleaseJarListener(Project project, AndroidConfiguration conf, AndroidReleaseConfiguration releaseConf, AntExecutor antExecutor) {
         this.conf = conf
         this.releaseConf = releaseConf
         this.ant = project.ant
+        this.antExecutor = antExecutor
     }
 
     @Override
@@ -41,7 +44,7 @@ class AndroidReleaseJarListener implements AndroidBuildListener {
     @Override
     void buildArtifactsOnly(Project project, AndroidVariantConfiguration avc) {
         if (conf.versionString.trim()) {
-            def builder = new AndroidSingleVariantJarBuilder(project, conf)
+            def builder = new AndroidSingleVariantJarBuilder(project, conf, antExecutor)
             def bi = builder.buildJarArtifactBuilderInfo(avc)
             l.lifecycle("Adding variant JAR artifact ${bi.id}")
             releaseConf.jarFiles.put(bi.id, prepareJarArtifact(bi))

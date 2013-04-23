@@ -3,6 +3,7 @@ package com.apphance.ameba.plugins.android.release.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.release.AndroidBuildListener
 import com.apphance.ameba.plugins.android.release.AndroidReleaseApkListener
 import com.apphance.ameba.plugins.android.release.AndroidReleaseJarListener
@@ -31,21 +32,22 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     private AndroidReleaseConfiguration androidReleaseConf
     @Inject
     private AndroidVariantsConfiguration variantsConf
+    @Inject AntExecutor antExecutor
 
     @TaskAction
     public void availableArtifactsInfo() {
 
         AndroidBuildListener listener
         if (androidConf.isLibrary()) {
-            listener = new AndroidReleaseJarListener(project, androidConf, androidReleaseConf)
+            listener = new AndroidReleaseJarListener(project, androidConf, androidReleaseConf, antExecutor)
         } else {
-            listener = new AndroidReleaseApkListener(project, androidConf, androidReleaseConf)
+            listener = new AndroidReleaseApkListener(project, androidConf, androidReleaseConf, antExecutor)
         }
         variantsConf.variants.each {
             listener.buildArtifactsOnly(project, it)
         }
-        if (androidConf.versionString) {
-            String otaFolderPrefix = "${androidReleaseConf.projectDirName}/${androidConf.versionString}"
+        if (androidConf.fullVersionString) {
+            String otaFolderPrefix = "${androidReleaseConf.projectDirName}/${androidConf.fullVersionString}"
             prepareFileIndexArtifact(otaFolderPrefix)
             preparePlainFileIndexArtifact(otaFolderPrefix)
             prepareOtaIndexFile()
@@ -78,7 +80,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     }
 
     private void prepareOtaIndexFile() {
-        String otaFolderPrefix = "${androidReleaseConf.projectDirName}/${androidConf.versionString}"
+        String otaFolderPrefix = "${androidReleaseConf.projectDirName}/${androidConf.fullVersionString}"
         AmebaArtifact otaIndexFile = new AmebaArtifact(
                 name: "The ota index file: ${androidConf.projectName.value}",
                 url: new URL(androidReleaseConf.baseURL, "${otaFolderPrefix}/index.html"),
@@ -95,8 +97,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 version: androidConf.versionString,
                 releaseNotes: androidReleaseConf.releaseNotes,
                 currentDate: androidReleaseConf.buildDate,
-                iconFileName: androidReleaseConf.projectIconFile.value.name,
-                androidVariantsConf: variantsConf,
+                iconFileName: androidReleaseConf.projectIconFile.value?.name,
+                variantsConf: variantsConf,
                 androidReleaseConf: androidReleaseConf,
                 rb: rb
         ]
@@ -104,14 +106,16 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         otaIndexFile.location.write(result.toString(), 'utf-8')
         androidReleaseConf.otaIndexFile = otaIndexFile
         l.lifecycle("Ota index created: ${otaIndexFile}")
-        project.ant.copy(file: androidReleaseConf.projectIconFile.value.name, tofile: new File(otaIndexFile.location.parentFile,
-                androidReleaseConf.projectIconFile.value.name))
+
+        def iconFile = androidReleaseConf.projectIconFile.value?.name
+        project.ant.copy(file: iconFile, tofile: new File(otaIndexFile.location?.parentFile, iconFile))
         String urlEncoded = URLEncoder.encode(otaIndexFile.url.toString(), 'utf-8')
-        File outputFile = new File(androidReleaseConf.targetDirectory, "qrcode-${androidConf.projectName.value}-${androidConf.versionString}.png")
+        def qrCodeFile = "qrcode-${androidConf.projectName.value}-${androidConf.fullVersionString}.png"
+        File outputFile = new File(androidReleaseConf.targetDirectory, qrCodeFile)
         downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), outputFile)
         AmebaArtifact qrCodeArtifact = new AmebaArtifact(
                 name: 'QR Code',
-                url: new URL(androidReleaseConf.versionedApplicationUrl, "qrcode-${androidConf.projectName.value}-${androidConf.versionString}.png"),
+                url: new URL(androidReleaseConf.versionedApplicationUrl, qrCodeFile),
                 location: outputFile)
         androidReleaseConf.QRCodeFile = qrCodeArtifact
         l.lifecycle("QRCode created: ${qrCodeArtifact.location}")

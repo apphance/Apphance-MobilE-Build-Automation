@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.android.release
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTask
@@ -31,6 +32,8 @@ class AndroidReleasePlugin implements Plugin<Project> {
     private AndroidConfiguration conf
     @Inject
     private AndroidReleaseConfiguration releaseConf
+    @Inject
+    private AntExecutor antExecutor
 
     @Override
     void apply(Project project) {
@@ -52,8 +55,8 @@ class AndroidReleasePlugin implements Plugin<Project> {
                     dependsOn: [AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME])
 
             //TODO to be separated, refactored, redesigned :/
-            AndroidSingleVariantApkBuilder.buildListeners << new AndroidReleaseApkListener(project, conf, releaseConf)
-            AndroidSingleVariantJarBuilder.buildListeners << new AndroidReleaseJarListener(project, conf, releaseConf)
+            AndroidSingleVariantApkBuilder.buildListeners << new AndroidReleaseApkListener(project, conf, releaseConf, antExecutor)
+            AndroidSingleVariantJarBuilder.buildListeners << new AndroidReleaseJarListener(project, conf, releaseConf, antExecutor)
         }
     }
 }
