@@ -272,13 +272,15 @@ class ExecuteAndroidBuildsTest {
     void testBuildAndPrepareNonVariantedMailMessage() {
         runGradleNoVariants('cleanRelease', 'updateProject', 'buildAll')
         runGradleNoVariants('prepareImageMontage', 'prepareMailMessage')
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/icon.png").exists())
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/index.html").exists())
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/plain_file_index.html").exists())
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/qrcode-TestAndroidProject-1.0.1-SNAPSHOT_42.png").exists())
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
+        def fullVersion = '1.0.1_42'
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/file_index.html").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/icon.png").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/index.html").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/plain_file_index.html").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/qrcode-TestAndroidProject-${fullVersion}.png").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/TestAndroidProject-debug-MarketDebug-${fullVersion}.apk").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/TestAndroidProject-release-MarketRelease-${fullVersion}.apk")
+                .exists())
     }
 
     @Test
@@ -326,7 +328,7 @@ class ExecuteAndroidBuildsTest {
         ProjectConfiguration projectConf = new ProjectConfiguration()
         try {
             Properties p = new Properties()
-            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug')
+            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
             projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
@@ -337,23 +339,25 @@ class ExecuteAndroidBuildsTest {
     }
 
     @Test
+    @Ignore('Do we still support apphance lib configuration via command line?')
     void testCorrectApphanceDependencyFromProperty() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
         try {
             Properties p = new Properties()
             p.put('apphance.lib', "com.apphance:android.production:1.8.2")
-            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug')
+            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
             projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
         }
-        def androidLib = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/android.production-1.8.2.jar")
+        def androidLib = new File("testProjects/android/android-no-apphance-application/MarketDebug/libs/android.production-1.8.2.jar")
         assertTrue(androidLib.exists())
         assertEquals('android.production-1.8.2.jar', androidLib.name)
     }
 
     @Test
+    @Ignore('Do we still support apphance lib configuration via command line?')
     void testIncorrectApphanceDependencyFromProperty() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
