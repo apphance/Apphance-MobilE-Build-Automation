@@ -63,14 +63,18 @@ class AndroidPlugin implements Plugin<Project> {
             project.tasks[JAVADOC_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
             project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
 
-            project.task('buildAllDebug')
-            project.task('buildAllRelease')
+            def buildAllDebug = project.task('buildAllDebug')
+            def buildAllRelease = project.task('buildAllRelease')
+            project.task('buildAll', dependsOn: [buildAllDebug, buildAllRelease])
 
             variantsConf.variants.each {
                 def buildName = "build${it.name}"
                 project.task(buildName,
                         type: SingleVariantTask,
-                        dependsOn: [CopySourcesTask.NAME, RunUpdateProjectTask.NAME, "buildAll${it.mode.value.toLowerCase().capitalize()}"]).variant = it
+                        dependsOn: [CopySourcesTask.NAME, RunUpdateProjectTask.NAME]).variant = it
+
+                def debugRelaseBuild = "buildAll${it.mode.value.toLowerCase().capitalize()}"
+                project.tasks[debugRelaseBuild].dependsOn buildName
 
                 project.task("install${it.name}", type: InstallTask, dependsOn: buildName).variant = it
             }
