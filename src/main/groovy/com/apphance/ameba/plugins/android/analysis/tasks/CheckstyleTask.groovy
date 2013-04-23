@@ -3,6 +3,7 @@ package com.apphance.ameba.plugins.android.analysis.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.google.inject.Inject
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
 
@@ -14,8 +15,9 @@ class CheckstyleTask extends DefaultTask {
     String description = 'Runs Checkstyle analysis on project'
 
     @Inject
-    private AndroidConfiguration androidConfiguration
+    AndroidConfiguration androidConfiguration
 
+    @TaskAction
     public void runCheckStyle() {
 
         URL checkstyleXml = getResourceUrl(project, 'checkstyle.xml')

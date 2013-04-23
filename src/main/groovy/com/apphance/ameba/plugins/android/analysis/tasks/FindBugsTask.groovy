@@ -5,6 +5,7 @@ import com.apphance.ameba.util.Preconditions
 import com.google.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
 
@@ -20,8 +21,9 @@ class FindBugsTask extends DefaultTask {
     String description = 'Runs Findbugs analysis on project'
 
     @Inject
-    private AndroidConfiguration androidConfiguration
+    AndroidConfiguration androidConfiguration
 
+    @TaskAction
     public void runFindbugs() {
         URL findbugsXml = getResourceUrl(project, 'findbugs-exclude.xml')
         File analysisDir = project.file('build/analysis')
