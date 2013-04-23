@@ -21,7 +21,7 @@ class ProjectReleaseConfiguration {
     AmebaArtifact documentationZip
     AmebaArtifact imageMontageFile
     AmebaArtifact mailMessageFile
-    AmebaArtifact qrCodeFile
+    AmebaArtifact QRCodeFile
 
     Collection<String> releaseMailFlags
     String releaseMailSubject

@@ -186,7 +186,7 @@ class IOSReleasePlugin implements Plugin<Project> {
                 name: "QR Code",
                 url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName}-${conf.fullVersionString}.png"),
                 location: outputFile)
-        releaseConf.qrCodeFile = qrCodeArtifact
+        releaseConf.QRCodeFile = qrCodeArtifact
         l.lifecycle("QRCode created: ${qrCodeArtifact.location}")
     }
 

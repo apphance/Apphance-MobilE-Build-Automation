@@ -27,7 +27,7 @@ ${rb.getString('Released')} ${currentDate}
     <li>${rb.getString('Image_montage')} <a href="${androidReleaseConf.imageMontageFile.getRelativeUrl(baseUrl)}"
                                             rel="external">${androidReleaseConf.imageMontageFile.url}</a></li>
     <% } %>
-    <% if (androidReleaseConf.qrCodeFile != null) { %>
+    <% if (androidReleaseConf.QRCodeFile != null) { %>
     <li>${rb.getString('QR_code')} <a href="${androidReleaseConf.QRCodeFile.getRelativeUrl(baseUrl)}" rel="external">${androidReleaseConf.QRCodeFile.url}</a>
     </li>
     <% } %>
