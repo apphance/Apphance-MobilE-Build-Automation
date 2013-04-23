@@ -27,6 +27,7 @@ class ExecuteAndroidBuildsTest {
     static ProjectConnection testAndroidConventionConnection
     static ProjectConnection testAndroidWrongConventionConnection
     static ProjectConnection testAndroidNoApphanceApplicationConnection
+    private static final String fullVersion = '1.0.1_42'
 
     @BeforeClass
     static void beforeClass() {
@@ -272,21 +273,20 @@ class ExecuteAndroidBuildsTest {
     void testBuildAndPrepareNonVariantedMailMessage() {
         runGradleNoVariants('cleanRelease', 'updateProject', 'buildAll')
         runGradleNoVariants('prepareImageMontage', 'prepareMailMessage')
-        def fullVersion = '1.0.1_42'
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/file_index.html").exists())
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/icon.png").exists())
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/index.html").exists())
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/plain_file_index.html").exists())
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/qrcode-TestAndroidProject-${fullVersion}.png").exists())
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/TestAndroidProject-debug-MarketDebug-${fullVersion}.apk").exists())
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/$fullVersion/TestAndroidProject-release-MarketRelease-${fullVersion}.apk")
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/file_index.html").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/icon.png").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/index.html").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/plain_file_index.html").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/qrcode-TestAndroidProject-${fullVersion}.png").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-${fullVersion}.apk").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk")
                 .exists())
     }
 
     @Test
     void testBuildDocumentationZip() {
         runGradle('buildDocumentationZip')
-        File file = new File('testProjects/android/android-basic/tmp/TestAndroidProject-1.0.1-SNAPSHOT_42-doc.zip')
+        File file = new File("testProjects/android/android-basic/ameba-tmp/TestAndroidProject-${fullVersion}-doc.zip")
         assertTrue(file.exists())
         assertTrue(file.size() > 30000)
     }
@@ -294,7 +294,7 @@ class ExecuteAndroidBuildsTest {
     @Test
     void testBuildSourcesZip() {
         runGradle('buildSourcesZip')
-        File file = new File('testProjects/android/android-basic/tmp/TestAndroidProject-1.0.1-SNAPSHOT_42-src.zip')
+        File file = new File("testProjects/android/android-basic/ameba-tmp/TestAndroidProject-${fullVersion}-src.zip")
         assertTrue(file.exists())
         assertTrue(file.size() > 30000)
     }
