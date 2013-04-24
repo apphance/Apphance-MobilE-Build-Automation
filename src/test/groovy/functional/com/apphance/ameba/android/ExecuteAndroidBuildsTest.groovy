@@ -151,8 +151,7 @@ class ExecuteAndroidBuildsTest {
         assertFalse(new File(testProject, "build/docs").listFiles().length == 0)
     }
 
-    @Test // FIXME
-    @Ignore
+    @Test
     void testUpdateProject() {
         File localProperties = new File(testProject, "local.properties")
         File localPropertiesSubproject = new File(testProject, "subproject/local.properties")

@@ -2,11 +2,11 @@ package com.apphance.ameba.plugins.ios.apphance
 
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
+import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.IOS_PROJECT_CONFIGURATION
 import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.BUILD_ALL_SIMULATORS_TASK_NAME
-import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_IMAGE_MONTAGE_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSApphancePluginSpec extends Specification {
@@ -69,8 +69,8 @@ class IOSApphancePluginSpec extends Specification {
         !project.tasks.findByName(BUILD_ALL_SIMULATORS_TASK_NAME)
 
         then: 'each tasks has correct dependency'
-        project.tasks['upload-id1'].dependsOn.containsAll('build-id1', PREPARE_IMAGE_MONTAGE_TASK_NAME)
-        project.tasks['upload-id2'].dependsOn.containsAll('build-id2', PREPARE_IMAGE_MONTAGE_TASK_NAME)
+        project.tasks['upload-id1'].dependsOn.containsAll('build-id1', ImageMontageTask.NAME)
+        project.tasks['upload-id2'].dependsOn.containsAll('build-id2', ImageMontageTask.NAME)
     }
 
     def "plugin tasks' graph configured correctly when buildAllSimulators tasks exists"() {

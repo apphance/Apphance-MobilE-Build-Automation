@@ -1,12 +1,12 @@
 package com.apphance.ameba.plugins.ios.release
 
+import com.apphance.ameba.plugins.release.tasks.SendMailMessageTask
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.READ_IOS_PROJECT_VERSIONS_TASK_NAME
 import static com.apphance.ameba.plugins.ios.release.IOSReleasePlugin.*
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
-import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.SEND_MAIL_MESSAGE_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSReleasePluginSpec extends Specification {
@@ -17,7 +17,7 @@ class IOSReleasePluginSpec extends Specification {
         def project = builder().build()
 
         and: 'add fake task send mail task to satisfy dependencies'
-        project.task(SEND_MAIL_MESSAGE_TASK_NAME)
+        project.task(SendMailMessageTask.NAME)
 
         when:
         project.plugins.apply(IOSReleasePlugin)

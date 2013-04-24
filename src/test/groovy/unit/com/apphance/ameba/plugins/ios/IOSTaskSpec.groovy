@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.ios
 
 import com.apphance.ameba.plugins.AmebaPlugin
 import org.gradle.testfixtures.ProjectBuilder
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -9,6 +10,7 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.*
 import static com.apphance.ameba.plugins.ios.buildplugin.IOSProjectProperty.DISTRIBUTION_DIR
 import static com.apphance.ameba.plugins.ios.buildplugin.IOSProjectProperty.PLIST_FILE
 
+@Ignore('To be removed')
 class IOSTaskSpec extends Specification {
 
     @Shared

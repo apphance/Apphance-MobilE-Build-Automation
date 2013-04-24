@@ -1,50 +1,44 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
+import com.google.inject.Inject
 import ij.ImagePlus
 import ij.ImageStack
 import ij.plugin.MontageMaker
 import ij.process.ColorProcessor
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
 import javax.imageio.ImageIO
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.util.List
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.retrieveProjectReleaseData
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
 import static org.gradle.api.logging.Logging.getLogger
 import static org.imgscalr.Scalr.pad
 
 @Mixin(ImageNameFilter)
-class ImageMontageTask {
+class ImageMontageTask extends DefaultTask {
 
-    private log = getLogger(this.class)
-    Project project
-    ProjectConfiguration conf
-    ProjectReleaseConfiguration releaseConf
-    CommandExecutor executor
+    def log = getLogger(this.class)
 
-    static int TILE_PX_SIZE = 120
-    static int MAX_NUMBER_OF_TILES_IN_ROW = 10
-    static int DESCRIPTION_FONT_SIZE = 10
+    static String NAME = 'prepareImageMontage'
+    String group = AMEBA_RELEASE
+    String description = 'Builds montage of images found in the project'
 
-    ImageMontageTask() {
-    }
+    @Inject ProjectConfiguration conf
+    @Inject ProjectReleaseConfiguration releaseConf
 
-    ImageMontageTask(Project project, CommandExecutor executor) {
-        this.project = project
-        this.conf = getProjectConfiguration(project)
-        this.releaseConf = retrieveProjectReleaseData(project)
-        this.executor = executor
-    }
+    public static int TILE_PX_SIZE = 120
+    public static int MAX_NUMBER_OF_TILES_IN_ROW = 10
+    public static int DESCRIPTION_FONT_SIZE = 10
 
+    @TaskAction
     AmebaArtifact imageMontage() {
         def filesToMontage = getFilesToMontage(project.rootDir)
         File imageMontageFile = outputMontageFile()
@@ -123,7 +117,7 @@ class ImageMontageTask {
 
             if (image != null) {
                 image = pad(image, 20, Color.WHITE)
-                image.getScaledInstance(TILE_PX_SIZE, TILE_PX_SIZE, Image.SCALE_DEFAULT)
+                image.getScaledInstance(owner.TILE_PX_SIZE, TILE_PX_SIZE, Image.SCALE_DEFAULT)
             } else {
                 log.error("Problem during converting ${it.absolutePath}")
             }

@@ -27,7 +27,7 @@ class RunUpdateProjectTask extends DefaultTask {
     }
 
     void runUpdateRecursively(File currentDir) {
-        runUpdateProject(project.rootDir)
+        runUpdateProject(currentDir)
         Properties prop = new Properties()
         File propFile = new File(currentDir, PROJECT_PROPERTIES_KEY)
         if (propFile.exists()) {

@@ -6,6 +6,7 @@ import com.apphance.ameba.plugins.ios.release.tasks.BuildDocZipTask
 import com.apphance.ameba.plugins.ios.release.tasks.PrepareAvailableArtifactsInfoTask
 import com.apphance.ameba.plugins.ios.release.tasks.PrepareMailMessageTask
 import com.apphance.ameba.plugins.ios.release.tasks.UpdateVersionTask
+import com.apphance.ameba.plugins.release.tasks.SendMailMessageTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -14,7 +15,6 @@ import javax.inject.Inject
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.READ_IOS_PROJECT_VERSIONS_TASK_NAME
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
-import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.SEND_MAIL_MESSAGE_TASK_NAME
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -77,7 +77,7 @@ class IOSReleasePlugin implements Plugin<Project> {
         task.group = AMEBA_RELEASE
         task << { new PrepareMailMessageTask(project).prepareMailMessage() }
         task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME, PREPARE_AVAILABLE_ARTIFACTS_INFO_TASK_NAME)
-        def sendMailTask = project.tasks.getByName(SEND_MAIL_MESSAGE_TASK_NAME)
+        def sendMailTask = project.tasks.getByName(SendMailMessageTask.NAME)
         sendMailTask.dependsOn(task)
         sendMailTask.description += ',installableSimulator'
     }

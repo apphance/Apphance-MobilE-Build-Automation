@@ -9,6 +9,7 @@ import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.google.common.io.Files
 import ij.ImagePlus
 import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -21,7 +22,8 @@ import static java.io.File.createTempFile
 
 class ImageMontageTaskSpec extends Specification {
 
-    def imageMontageTask = new ImageMontageTask()
+    def p = ProjectBuilder.builder().build()
+    def imageMontageTask = p.task(ImageMontageTask.NAME, type: ImageMontageTask) as ImageMontageTask
 
     private File testMontageFilesDir = new File('src/test/resources/com/apphance/ameba/plugins/release/tasks/montageFiles')
     def fileForDescTest = new File('src/test/resources/com/apphance/ameba/plugins/release/tasks/Blank.jpg')
@@ -34,7 +36,7 @@ class ImageMontageTaskSpec extends Specification {
         CommandLogFilesGenerator logFileGenerator = Mock()
         CommandExecutor commandExecutor = new CommandExecutor(fileLinker, logFileGenerator)
 
-        imageMontageTask.project = project
+        imageMontageTask.project >> project
         imageMontageTask.executor = commandExecutor
         imageMontageTask.conf = conf
         imageMontageTask.releaseConf = releaseConf
@@ -44,7 +46,6 @@ class ImageMontageTaskSpec extends Specification {
         releaseConf.targetDirectory >> testDir
         conf.projectName >> 'testProjectName'
         conf.fullVersionString >> 'fullVersionString'
-        project.rootDir >> new File(System.getProperty("user.dir"))
         logFileGenerator.commandLogFiles() >> [(ERR): createTempFile('err', 'log'), (STD): createTempFile('std', 'log')]
         0 * _
     }

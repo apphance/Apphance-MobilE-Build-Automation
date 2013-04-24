@@ -3,12 +3,10 @@ package com.apphance.ameba.plugins.ios.apphance
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.apphance.ApphancePluginCommons
-import com.apphance.ameba.plugins.apphance.PrepareApphanceSetupOperation
-import com.apphance.ameba.plugins.apphance.ShowApphancePropertiesOperation
-import com.apphance.ameba.plugins.apphance.VerifyApphanceSetupOperation
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.apphance.tasks.AddIOSApphanceTask
 import com.apphance.ameba.plugins.ios.apphance.tasks.UploadIOSArtifactTask
+import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
 import com.apphance.ameba.util.Preconditions
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -46,9 +44,9 @@ class IOSApphancePlugin implements Plugin<Project> {
         preProcessBuildsWithApphance()
         preProcessBuildAllSimulatorsTask()
 
-        project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
-        project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
-        project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
+//        project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
+//        project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
+//        project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
     }
 
     private void preProcessBuildsWithApphance() {
@@ -65,7 +63,7 @@ class IOSApphancePlugin implements Plugin<Project> {
         task.group = AMEBA_APPHANCE_SERVICE
         task << { new UploadIOSArtifactTask(project, iosExecutor, e).uploadIOSArtifact() }
         task.dependsOn(buildTask.name)
-        task.dependsOn(PREPARE_IMAGE_MONTAGE_TASK_NAME)
+        task.dependsOn(ImageMontageTask.NAME)
     }
 
     private void preProcessBuildAllSimulatorsTask() {
@@ -77,6 +75,5 @@ class IOSApphancePlugin implements Plugin<Project> {
     }
 
     static public final String DESCRIPTION =
-        """This plugins provides automated adding of Apphance libraries to the project.
-"""
+        "This plugins provides automated adding of Apphance libraries to the project.\n"
 }
