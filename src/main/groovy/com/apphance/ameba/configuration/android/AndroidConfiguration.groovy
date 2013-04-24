@@ -13,7 +13,7 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
-import static com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask.getWHITESPACE_PATTERN
+import static com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask.WHITESPACE_PATTERN
 import static com.google.common.base.Strings.isNullOrEmpty
 import static java.io.File.pathSeparator
 
@@ -106,7 +106,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     File getSDKDir() {
         def androidHome = reader.envVariable('ANDROID_HOME')
-        androidHome ? new File(androidHome) : null
+        androidHome ? new File(androidHome, 'sdk') : null
     }
 
     final Collection<String> sourceExcludes = ['**/*.class', '**/bin/**', '**/build/*', '**/ameba-tmp/**/*', '**/ameba-ota/**/*']
@@ -238,9 +238,9 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     @Override
     void checkProperties() {
         check !isNullOrEmpty(reader.envVariable('ANDROID_HOME')), "Environment variable 'ANDROID_HOME' must be set!"
-        check !rootDir.canWrite(), "No write access to project root dir ${rootDir.absolutePath}, check file system permissions!"
+        check rootDir.canWrite(), "No write access to project root dir ${rootDir.absolutePath}, check file system permissions!"
         check !isNullOrEmpty(projectName.value), "Property ${projectName.name} must be set!"
-        check !versionCode?.matches('[0-9]+'), "Property 'versionCode' must have numerical value! Check AndroidManifest.xml file!"
+        check versionCode?.matches('[0-9]+'), "Property 'versionCode' must have numerical value! Check AndroidManifest.xml file!"
         check !WHITESPACE_PATTERN.matcher(versionString ?: '').find(), "Property 'versionName' must not have whitespace characters! Check AndroidManifest.xml file!"
         check !isNullOrEmpty(target.value), "Property ${target.name} must be set!"
         check !isNullOrEmpty(mainPackage), "Property 'package' must be set! Check AndroidManifest.xml file!"

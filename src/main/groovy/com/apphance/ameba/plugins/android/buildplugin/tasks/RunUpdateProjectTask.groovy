@@ -17,9 +17,9 @@ class RunUpdateProjectTask extends DefaultTask {
     String group = AMEBA_BUILD
 
     @Inject
-    private AndroidConfiguration conf
+    AndroidConfiguration conf
     @Inject
-    private AndroidExecutor androidExecutor
+    AndroidExecutor androidExecutor
 
     @TaskAction
     void runUpdate() {
@@ -27,7 +27,7 @@ class RunUpdateProjectTask extends DefaultTask {
     }
 
     void runUpdateRecursively(File currentDir) {
-        runUpdateProject(project.rootDir)
+        runUpdateProject(currentDir)
         Properties prop = new Properties()
         File propFile = new File(currentDir, PROJECT_PROPERTIES_KEY)
         if (propFile.exists()) {
