@@ -98,7 +98,6 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
         new File(androidConfiguration.rootDir, 'ameba-ota')
     }
 
-    //TODO required?
     FileProperty iconFile = new FileProperty(
             name: 'android.release.project.icon.file',
             message: 'Path to project\'s icon file',
@@ -106,12 +105,17 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             validator: { it?.trim() ? (new File(it as String).exists() && ImageIO.read(new File(it as String))) : false }
     )
 
-    //TODO required?
     URLProperty projectURL = new URLProperty(
             name: 'android.release.project.url',
             message: 'Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as ' +
                     'subdirectory of ota dir when artifacts are created locally.',
-            required: { true }
+            required: { true },
+            validator: {
+                try {
+                    projectURL.value
+                    return true
+                } catch (Exception e) { return false }
+            }
     )
 
     @Override
@@ -128,7 +132,6 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
         new URL(url.protocol, url.host, url.port, (split[0..-2]).join('/') + '/')
     }
 
-    //TODO required?
     def language = new StringProperty(
             name: 'android.release.project.language',
             message: 'Language of the project',
@@ -136,7 +139,6 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             validator: { it?.length() == 2 && it?.every { (it as Character).isLowerCase() } }
     )
 
-    //TODO required?
     def country = new StringProperty(
             name: 'android.release.project.country',
             message: 'Project country',
@@ -144,21 +146,18 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             validator: { it?.length() == 2 && it?.every { (it as Character).isUpperCase() } }
     )
 
-    //TODO required?
     StringProperty releaseMailFrom = new StringProperty(
             name: 'android.release.mail.from',
             message: 'Sender email address',
             validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : false }
     )
 
-    //TODO required?
     StringProperty releaseMailTo = new StringProperty(
             name: 'android.release.mail.to',
             message: 'Recipient of release email',
             validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : false }
     )
 
-    //TODO required?
     ListStringProperty releaseMailFlags = new ListStringProperty(
             name: 'android.release.mail.flags',
             message: 'Flags for release email',
@@ -172,7 +171,6 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             validator: { it?.matches('[0-9]+') }
     )
 
-    //TODO validator?
     private StringProperty mailServerInternal = new StringProperty(
             name: 'mail.server',
             message: 'Mail server'

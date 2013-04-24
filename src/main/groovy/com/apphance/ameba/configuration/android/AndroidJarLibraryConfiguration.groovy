@@ -11,16 +11,16 @@ class AndroidJarLibraryConfiguration extends AbstractConfiguration {
 
     private boolean enabledInternal = false
 
-    private AndroidConfiguration androidConfiguration
+    private AndroidConfiguration androidConf
 
     @Inject
     AndroidJarLibraryConfiguration(AndroidConfiguration androidConfiguration) {
-        this.androidConfiguration = androidConfiguration
+        this.androidConf = androidConfiguration
     }
 
     @Override
     boolean isEnabled() {
-        enabledInternal && androidConfiguration.isEnabled()
+        enabledInternal && androidConf.isEnabled()
     }
 
     @Override
@@ -28,9 +28,16 @@ class AndroidJarLibraryConfiguration extends AbstractConfiguration {
         enabledInternal = enabled
     }
 
-    //TODO required? validation?
     def resourcePrefix = new StringProperty(
             name: 'android.jarLibrary.resPrefix',
-            message: 'Internal directory name used to embed resources in the jar'
+            message: 'Internal directory name used to embed resources in the jar',
+            validator: {
+                try { return new File(androidConf.tmpDir, "${it}-res").mkdirs() } catch (Exception e) { return false }
+            }
     )
+
+    @Override
+    void checkProperties() {
+        check !resourcePrefix.validator(), "Property ${resourcePrefix.value} is not valid! Can not create '${new File(androidConf.tmpDir, "${resourcePrefix.value}-res")}' directory"
+    }
 }

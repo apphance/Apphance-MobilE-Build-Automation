@@ -56,7 +56,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         enabledInternal = enabled
     }
 
-    //TODO required?
     def emulatorTarget = new StringProperty(
             name: 'android.test.emulator.target',
             message: 'Target of the emulator',
@@ -65,7 +64,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             validator: { it in androidExecutor.listTarget(androidConf.rootDir) }
     )
 
-    //TODO required?
     def emulatorSkin = new StringProperty(
             name: 'android.test.emulator.skin',
             message: 'Android emulator skin',
@@ -78,7 +76,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         androidExecutor.listSkinsForTarget(androidConf.rootDir, emulatorTarget.value)
     }
 
-    //TODO required?
     def emulatorCardSize = new StringProperty(
             name: 'android.test.emulator.card.size',
             message: 'Size of the SD card attached to emulator',
@@ -86,7 +83,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             validator: { it?.matches('[0-9]+[KM]') }
     )
 
-    //TODO required?
     def emulatorSnapshotEnabled = new BooleanProperty(
             name: 'android.test.emulator.snapshot.enabled',
             message: 'Flag specifying if emulator uses snapshots (much faster)',
@@ -95,7 +91,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             possibleValues: { BOOLEAN_VALUES }
     )
 
-    //TODO required?
     def emulatorNoWindow = new BooleanProperty(
             name: 'android.test.emulator.no.window',
             message: 'Flag specifying if no-window option should be used with emulator',
@@ -104,11 +99,11 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             possibleValues: { BOOLEAN_VALUES }
     )
 
-    //TODO required?
     def testDir = new FileProperty(
             name: 'android.dir.test',
             message: 'Directory where Robotium test project is located',
-            defaultValue: { project.file("android${separator}test".toString()) }
+            defaultValue: { project.file("android${separator}test".toString()) },
+            validator: { try { return new File(it).mkdirs() } catch (Exception e) { return false } }
     )
 
     String getTestProjectPackage() {
@@ -129,7 +124,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         project.rootDir.getAbsolutePath().replaceAll('[\\\\ /]', '_')
     }
 
-    //TODO required?
     def testPerPackage = new BooleanProperty(
             name: 'android.test.per.package',
             message: 'Flag specifying if tests should be run per package. If false, then all are run at once',
@@ -138,7 +132,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             possibleValues: { BOOLEAN_VALUES }
     )
 
-    //TODO required?
     def mockLocation = new BooleanProperty(
             name: 'android.test.mock.location',
             message: 'Whether the test application should be build with location mocking enabled (for testing location-based apps)',
@@ -162,11 +155,11 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         emulatorPort
     }
 
+    //TODO refactor
     private int findFreeEmulatorPort() {
         int startPort = 5554
         int endPort = 5584
         for (int port = startPort; port <= endPort; port += 2) {
-//            l.lifecycle("Android emulator probing. trying ports: ${port} ${port + 1}")
             try {
                 ServerSocket ss1 = new ServerSocket(port, 0, getByAddress([127, 0, 0, 1] as byte[]))
                 try {
@@ -174,7 +167,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
                     ServerSocket ss2 = new ServerSocket(port + 1, 0, getByAddress([127, 0, 0, 1] as byte[]))
                     try {
                         ss2.setReuseAddress(true)
-//                        l.lifecycle("Success! ${port} ${port + 1} are free")
                         return port
                     } finally {
                         ss2.close()
@@ -183,13 +175,11 @@ class AndroidTestConfiguration extends AbstractConfiguration {
                     ss1.close()
                 }
             } catch (IOException e) {
-//                l.lifecycle("Could not obtain ports ${port} ${port + 1}")
             }
         }
         throw new GradleException("Could not find free emulator port (tried all from ${startPort} to ${endPort}!... ")
     }
 
-    //TODO required?
     def emmaEnabled = new BooleanProperty(
             name: 'android.test.emma.enabled',
             message: 'Whether emma test coverage should be run',
@@ -228,6 +218,14 @@ class AndroidTestConfiguration extends AbstractConfiguration {
 
     @Override
     void checkProperties() {
-
+        check !(emulatorTarget.validator(emulatorTarget.value)), "Property '${emulatorTarget.name}' is not valid! Should be valid android target!"
+        check !(emulatorSkin.validator(emulatorSkin.value)), "Property '${emulatorSkin.name}' is not valid! Should be valid android skin!"
+        check !(emulatorCardSize.validator(emulatorCardSize.value)), "Property '${emulatorCardSize.name}' is not valid! Should match <NUMBER>[K|M]"
+        check !(emulatorSnapshotEnabled.validator(emulatorSnapshotEnabled.value)), "Property '${emulatorSnapshotEnabled.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
+        check !(emulatorNoWindow.validator(emulatorNoWindow.value)), "Property '${emulatorNoWindow.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
+        check !(testPerPackage.validator(testPerPackage.value)), "Property '${testPerPackage.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
+        check !(mockLocation.validator(mockLocation.value)), "Property '${mockLocation.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
+        check !(emmaEnabled.validator(emmaEnabled.value)), "Property '${emmaEnabled.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
+        check !(testDir.validator(testDir.value)), "Property '${testDir.name}' is not valid! Should be valid directory name!"
     }
 }

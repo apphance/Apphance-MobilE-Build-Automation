@@ -1,6 +1,7 @@
 package com.apphance.ameba.plugins.release.tasks
 
 import com.apphance.ameba.configuration.ReleaseConfiguration
+import com.apphance.ameba.configuration.properties.StringProperty
 import org.apache.tools.ant.Project
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -28,15 +29,16 @@ class SendMailMessageTask extends DefaultTask {
 
     @TaskAction
     void sendMailMessage() {
-        String mailServer = releaseConf.mailServer
-        String mailPort = releaseConf.mailPort
 
-        validateMailServer(mailServer)
-        validateMailPort(mailPort)
+        validateMailServer(releaseConf.mailServer)
+        validateMailPort(releaseConf.mailPort)
+
+        validate(releaseConf.releaseMailFrom)
+        validate(releaseConf.releaseMailTo)
 
         Properties props = System.getProperties()
-        props.put('mail.smtp.host', mailServer)
-        props.put('mail.smtp.port', mailPort)
+        props.put('mail.smtp.host', releaseConf.mailServer)
+        props.put('mail.smtp.port', releaseConf.mailPort)
 
         project.configurations.mail.each {
             Project.class.classLoader.addURL(it.toURI().toURL())
@@ -75,6 +77,14 @@ class SendMailMessageTask extends DefaultTask {
             throw new GradleException("""|Property 'mail.port' has invalid value!
                                          |Set it either by 'mail.port' system property or 'MAIL_PORT' environment variable.
                                          |This property must have numeric value!""".stripMargin())
+        }
+    }
+
+    @groovy.transform.PackageScope
+    void validate(StringProperty mail) {
+        if (!mail.validator(mail.value)) {
+            throw new GradleException("""|Property ${mail.name} is not set!
+                                         |Shoud be valid email address!""".stripMargin())
         }
     }
 }
