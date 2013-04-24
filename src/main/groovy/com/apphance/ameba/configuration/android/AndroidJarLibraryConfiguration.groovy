@@ -29,7 +29,7 @@ class AndroidJarLibraryConfiguration extends AbstractConfiguration {
     }
 
     def resourcePrefix = new StringProperty(
-            name: 'android.jarLibrary.resPrefix',
+            name: 'android.jar.library.resPrefix',
             message: 'Internal directory name used to embed resources in the jar',
             validator: {
                 try { return new File(androidConf.tmpDir, "${it}-res").mkdirs() } catch (Exception e) { return false }
@@ -38,6 +38,6 @@ class AndroidJarLibraryConfiguration extends AbstractConfiguration {
 
     @Override
     void checkProperties() {
-        check !resourcePrefix.validator(), "Property ${resourcePrefix.value} is not valid! Can not create '${new File(androidConf.tmpDir, "${resourcePrefix.value}-res")}' directory"
+        check !resourcePrefix.validator(), "Property ${resourcePrefix.name} is not valid! Can not create '${new File(androidConf.tmpDir, "${resourcePrefix.value}-res")}' directory"
     }
 }

@@ -17,9 +17,9 @@ class RunUpdateProjectTask extends DefaultTask {
     String group = AMEBA_BUILD
 
     @Inject
-    private AndroidConfiguration conf
+    AndroidConfiguration conf
     @Inject
-    private AndroidExecutor androidExecutor
+    AndroidExecutor androidExecutor
 
     @TaskAction
     void runUpdate() {

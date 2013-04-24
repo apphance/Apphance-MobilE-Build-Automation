@@ -102,7 +102,7 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             name: 'android.release.project.icon.file',
             message: 'Path to project\'s icon file',
             required: { true },
-            validator: { it?.trim() ? (new File(it as String).exists() && ImageIO.read(new File(it as String))) : false }
+            validator: { it?.absolutePath?.trim() ? (new File(it as String).exists() && ImageIO.read(new File(it as String))) : false }
     )
 
     URLProperty projectURL = new URLProperty(
@@ -209,8 +209,8 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     @Override
     void checkProperties() {
         check !checkException { baseURL }, "Property '${projectURL.name}' is not valid! Should be valid URL address!"
-        check !(language.validator(language.value)), "Property '${language.name}' is not valid! Should be two letter lowercase!"
-        check !(country.validator(country.value)), "Property '${country.name}' is not valid! Should be two letter uppercase!"
+        check language.validator(language.value), "Property '${language.name}' is not valid! Should be two letter lowercase!"
+        check country.validator(country.value), "Property '${country.name}' is not valid! Should be two letter uppercase!"
         check !(releaseMailFrom.validator(releaseMailFrom.value)), "Property '${releaseMailFrom.name} is not valid! Should be valid email address!"
         check !(releaseMailTo.validator(releaseMailTo.value)), "Property '${releaseMailTo.name} is not valid! Should be valid email address!"
         check !(releaseMailFlags.value ? releaseMailFlags.value.every { it in ALL_EMAIL_FLAGS } : true), "Property '${releaseMailFlags.name}' is not valid! Possible values: ${ALL_EMAIL_FLAGS}"

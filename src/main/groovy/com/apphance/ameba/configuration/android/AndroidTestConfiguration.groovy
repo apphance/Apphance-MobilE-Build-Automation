@@ -218,9 +218,9 @@ class AndroidTestConfiguration extends AbstractConfiguration {
 
     @Override
     void checkProperties() {
-        check !(emulatorTarget.validator(emulatorTarget.value)), "Property '${emulatorTarget.name}' is not valid! Should be valid android target!"
-        check !(emulatorSkin.validator(emulatorSkin.value)), "Property '${emulatorSkin.name}' is not valid! Should be valid android skin!"
-        check !(emulatorCardSize.validator(emulatorCardSize.value)), "Property '${emulatorCardSize.name}' is not valid! Should match <NUMBER>[K|M]"
+        check emulatorTarget.validator(emulatorTarget.value), "Property '${emulatorTarget.name}' is not valid! Should be valid android target!"
+        check emulatorSkin.validator(emulatorSkin.value), "Property '${emulatorSkin.name}' is not valid! Should be valid android skin!"
+        check emulatorCardSize.validator(emulatorCardSize.value), "Property '${emulatorCardSize.name}' is not valid! Should match <NUMBER>[K|M]"
         check !(emulatorSnapshotEnabled.validator(emulatorSnapshotEnabled.value)), "Property '${emulatorSnapshotEnabled.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
         check !(emulatorNoWindow.validator(emulatorNoWindow.value)), "Property '${emulatorNoWindow.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
         check !(testPerPackage.validator(testPerPackage.value)), "Property '${testPerPackage.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
