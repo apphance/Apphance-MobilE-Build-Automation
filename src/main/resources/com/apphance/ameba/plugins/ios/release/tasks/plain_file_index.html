@@ -72,8 +72,8 @@ ${rb.getString('Released')} ${currentDate}
     <li>${rb.getString('Image_montage')} <a href="${releaseConf.imageMontageFile.getRelativeUrl(baseUrl)}"
                                             rel="external">${releaseConf.imageMontageFile.url}</a></li>
     <% } %>
-    <% if (releaseConf.qrCodeFile != null) { %>
-    <li>${rb.getString('QR_code')} <a href="${releaseConf.qrCodeFile.getRelativeUrl(baseUrl)}" rel="external">${releaseConf.qrCodeFile.url}</a>
+    <% if (releaseConf.QRCodeFile != null) { %>
+    <li>${rb.getString('QR_code')} <a href="${releaseConf.QRCodeFile.getRelativeUrl(baseUrl)}" rel="external">${releaseConf.QRCodeFile.url}</a>
     </li>
     <% } %>
 </ul>

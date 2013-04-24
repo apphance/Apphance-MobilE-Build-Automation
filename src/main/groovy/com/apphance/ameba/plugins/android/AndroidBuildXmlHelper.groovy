@@ -9,13 +9,13 @@ class AndroidBuildXmlHelper {
 
     private final static String BUILD_XML = 'build.xml'
 
-    static String projectName(File projectDir) {
+    String projectName(File projectDir) {
         def buildXml = new File(projectDir, BUILD_XML)
         def xml = new XmlSlurper().parse(buildXml)
         xml.@'name'.text()
     }
 
-    static void replaceProjectName(File projectDir, String newName) {
+    void replaceProjectName(File projectDir, String newName) {
         def buildXml = new File(projectDir, BUILD_XML)
         def xml = new XmlSlurper().parse(buildXml)
         xml.@'name' = newName

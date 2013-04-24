@@ -1,12 +1,10 @@
 package com.apphance.ameba.plugins.projectconfiguration.tasks
 
-import com.apphance.ameba.PropertyCategory
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
-import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
 
@@ -16,13 +14,9 @@ import static groovy.io.FileType.FILES
  */
 class CheckTestsTask extends DefaultTask {
 
-    CheckTestsTask() {
-        use(PropertyCategory) {
-            this.group = AMEBA_TEST
-            this.description = 'Checks if there are any failed junit test results in the project and fails if therea are'
-            this.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME)
-        }
-    }
+    static String NAME = 'checkTests'
+    String group = AMEBA_TEST
+    String description = 'Checks if there are any failed junit test results in the project and fails if therea are'
 
     @TaskAction
     void checkTests() {

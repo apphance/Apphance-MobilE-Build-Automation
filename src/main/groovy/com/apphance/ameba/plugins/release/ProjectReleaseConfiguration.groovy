@@ -6,6 +6,7 @@ import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
  * Configuration for project release.
  *
  */
+//TODO to be removed
 class ProjectReleaseConfiguration {
 
     ProjectConfiguration projectConfiguration
@@ -20,7 +21,7 @@ class ProjectReleaseConfiguration {
     AmebaArtifact documentationZip
     AmebaArtifact imageMontageFile
     AmebaArtifact mailMessageFile
-    AmebaArtifact qrCodeFile
+    AmebaArtifact QRCodeFile
 
     Collection<String> releaseMailFlags
     String releaseMailSubject

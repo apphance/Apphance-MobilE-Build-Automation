@@ -1,21 +1,29 @@
 package com.apphance.ameba.plugins.projectconfiguration.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
+import com.apphance.ameba.configuration.ProjectConfiguration
+import com.google.inject.Inject
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-class CleanConfTask {
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
 
+class CleanConfTask extends DefaultTask {
+
+    static String NAME = 'cleanConfiguration'
+    String description = 'Cleans configuration before each build'
+    String group = AMEBA_CONFIGURATION
+
+    @Inject
     private ProjectConfiguration conf
 
-    CleanConfTask(ProjectConfiguration conf) {
-        this.conf = conf
-    }
-
+    @TaskAction
     void clean() {
-        conf.buildDirectory.deleteDir()
-        conf.tmpDirectory.deleteDir()
-        conf.logDirectory.deleteDir()
-        conf.buildDirectory.mkdirs()
-        conf.logDirectory.mkdirs()
-        conf.tmpDirectory.mkdirs()
+        conf.buildDir.deleteDir()
+        conf.tmpDir.deleteDir()
+        conf.logDir.deleteDir()
+
+        conf.buildDir.mkdirs()
+        conf.tmpDir.mkdirs()
+        conf.logDir.mkdirs()
     }
 }

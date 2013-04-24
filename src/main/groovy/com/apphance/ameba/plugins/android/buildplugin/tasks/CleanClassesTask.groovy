@@ -1,17 +1,24 @@
 package com.apphance.ameba.plugins.android.buildplugin.tasks
 
-import org.gradle.api.Project
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-//TODO refactor/test
-class CleanClassesTask {
+import javax.inject.Inject
 
-    private Project project
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
-    CleanClassesTask(Project project) {
-        this.project = project
-    }
+class CleanClassesTask extends DefaultTask {
 
+    static String NAME = 'cleanClasses'
+    String description = 'Cleans only the compiled classes'
+    String group = AMEBA_BUILD
+
+    @Inject
+    private AndroidConfiguration conf
+
+    @TaskAction
     void cleanClasses() {
-        project.ant.delete(dir: project.file('build'))
+        project.ant.delete(dir: conf.buildDir)
     }
 }

@@ -6,11 +6,12 @@ import static com.google.common.io.Files.createTempDir
 
 class AndroidBuildXmlHelperSpec extends Specification {
 
-    def PROJECT_DIR = new File('testProjects/android/android-basic')
+    def helper = new AndroidBuildXmlHelper()
+    def buildXML = new File(getClass().getResource('build.xml').toURI())
     def tmpDir = createTempDir()
 
     def setup() {
-        new File(tmpDir, 'build.xml') << new File(PROJECT_DIR, 'build.xml').text
+        new File(tmpDir, 'build.xml') << buildXML.text
     }
 
     def cleanup() {
@@ -19,14 +20,14 @@ class AndroidBuildXmlHelperSpec extends Specification {
 
     def 'test read name from build.xml'() {
         expect:
-        'TestAndroidProject' == AndroidBuildXmlHelper.projectName(PROJECT_DIR)
+        'TestAndroidProject' == helper.projectName(tmpDir)
     }
 
     def 'test replace project name in build.xml'() {
         when:
-        AndroidBuildXmlHelper.replaceProjectName(tmpDir, 'NewName')
+        helper.replaceProjectName(tmpDir, 'NewName')
 
         then:
-        'NewName' == AndroidBuildXmlHelper.projectName(tmpDir)
+        'NewName' == helper.projectName(tmpDir)
     }
 }

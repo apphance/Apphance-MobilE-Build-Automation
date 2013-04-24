@@ -1,14 +1,15 @@
 package com.apphance.ameba.plugins
 
+import com.apphance.ameba.detection.ProjectTypeDetector
+import com.apphance.ameba.di.CommandExecutorModule
+import com.apphance.ameba.di.ConfigurationModule
+import com.apphance.ameba.di.EnvironmentModule
 import com.apphance.ameba.plugins.android.analysis.AndroidAnalysisPlugin
 import com.apphance.ameba.plugins.android.apphance.AndroidApphancePlugin
 import com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin
 import com.apphance.ameba.plugins.android.jarlibrary.AndroidJarLibraryPlugin
 import com.apphance.ameba.plugins.android.release.AndroidReleasePlugin
 import com.apphance.ameba.plugins.android.test.AndroidTestPlugin
-import com.apphance.ameba.detection.ProjectTypeDetector
-import com.apphance.ameba.di.CommandExecutorModule
-import com.apphance.ameba.di.EnvironmentModule
 import com.apphance.ameba.plugins.ios.apphance.IOSApphancePlugin
 import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
 import com.apphance.ameba.plugins.ios.framework.IOSFrameworkPlugin
@@ -19,6 +20,7 @@ import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import org.gradle.api.Project
+import org.gradle.api.internal.plugins.DefaultExtraPropertiesExtension
 import org.gradle.api.plugins.PluginContainer
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -37,6 +39,9 @@ class PluginMasterSpec extends Specification {
         and:
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
+        def amebaProperties = Mock(File)
+        amebaProperties.exists() >> true
+        project.file('ameba.properties') >> amebaProperties
 
         and:
         projectTypeDetectorMock.detectProjectType(_) >> type
@@ -65,6 +70,9 @@ class PluginMasterSpec extends Specification {
         and:
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
+        def amebaProperties = Mock(File)
+        amebaProperties.exists() >> true
+        project.file('ameba.properties') >> amebaProperties
 
         and: 'tell that project is Android'
         projectTypeDetectorMock.detectProjectType(_) >> ANDROID
@@ -93,6 +101,9 @@ class PluginMasterSpec extends Specification {
         and:
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
+        def amebaProperties = Mock(File)
+        amebaProperties.exists() >> true
+        project.file('ameba.properties') >> amebaProperties
 
         and: 'tell that project is iOS'
         projectTypeDetectorMock.detectProjectType(_) >> IOS
@@ -137,16 +148,24 @@ class PluginMasterSpec extends Specification {
     ]
 
     def createInjectorForPluginsMocks(mocks) {
-        def project = Mock(Project)
+        def rootDir = Mock(File)
+        rootDir.list() >> ['AndroidManifest.xml']
+        def project = GroovyMock(Project)
+        project.ext >> new DefaultExtraPropertiesExtension()
+
+        project.rootDir >> rootDir
         project.file('log') >> new File(System.properties['java.io.tmpdir'])
+
         return Guice.createInjector(
                 new EnvironmentModule(),
                 new CommandExecutorModule(project),
+                new ConfigurationModule(project),
                 new AbstractModule() {
 
                     @Override
                     protected void configure() {
                         bind(Project).toInstance(project)
+                        bind(AntBuilder).toInstance(new AntBuilder())
                         bind(ProjectTypeDetector).toInstance(projectTypeDetectorMock)
                         mocks.each { type, instance ->
                             bind(type).toInstance(instance)

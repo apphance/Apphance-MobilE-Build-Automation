@@ -1,16 +1,18 @@
 package com.apphance.ameba.plugins.android.analysis.tasks
 
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
 
 @Mixin(AndroidAnalysisMixin)
-class PMDTask {
+class PMDTask extends DefaultTask {
 
-    private Project project
+    static String NAME = 'pmd'
+    String group = AMEBA_ANALYSIS
+    String description = 'Runs PMD analysis on project'
 
-    PMDTask(Project project) {
-        this.project = project
-    }
-
+    @TaskAction
     public void runPMD() {
 
         URL pmdXml = getResourceUrl(project, 'pmd-rules.xml')

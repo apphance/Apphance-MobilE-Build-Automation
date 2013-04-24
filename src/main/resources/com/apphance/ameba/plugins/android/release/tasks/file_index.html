@@ -26,22 +26,22 @@
                     </div>
                 </header>
                 <ul data-role="listview" data-inset="true" data-theme="a">
-                    <% androidConf.variants.each { variant -> %>
-                    <% if (androidReleaseConf.apkFiles[variant] != null) { %>
-                    <li><a href="${androidReleaseConf.apkFiles[variant].getRelativeUrl(baseUrl)}" rel="external">
-                        <h3>${rb.getString('Apk_file')}: ${variant}</h3></a></li>
+                    <% androidVariantsConf.variants.each { variant -> %>
+                    <% if (androidReleaseConf.apkFiles[variant.name] != null) { %>
+                    <li><a href="${androidReleaseConf.apkFiles[variant.name].getRelativeUrl(baseUrl)}" rel="external">
+                        <h3>${rb.getString('Apk_file')}: ${variant.name}</h3></a></li>
                     <% } %>
                     <% } %>
-                    <% if (releaseConf.mailMessageFile != null) { %>
-                    <li><a href="${releaseConf.mailMessageFile.getRelativeUrl(baseUrl)}" rel="external">
+                    <% if (androidReleaseConf.mailMessageFile != null) { %>
+                    <li><a href="${androidReleaseConf.mailMessageFile.getRelativeUrl(baseUrl)}" rel="external">
                         <h3>${rb.getString('Mail_message')}</h3></a></li>
                     <% } %>
-                    <% if (releaseConf.imageMontageFile != null) { %>
-                    <li><a href="${releaseConf.imageMontageFile.getRelativeUrl(baseUrl)}" rel="external">
+                    <% if (androidReleaseConf.imageMontageFile != null) { %>
+                    <li><a href="${androidReleaseConf.imageMontageFile.getRelativeUrl(baseUrl)}" rel="external">
                         <h3>${rb.getString('Image_montage_file')}</h3></a></li>
                     <% } %>
-                    <% if (releaseConf.qrCodeFile != null) { %>
-                    <li><a href="${releaseConf.qrCodeFile.getRelativeUrl(baseUrl)}" rel="external">
+                    <% if (androidReleaseConf.QRCodeFile != null) { %>
+                    <li><a href="${androidReleaseConf.QRCodeFile.getRelativeUrl(baseUrl)}" rel="external">
                         <h3>${rb.getString('QR_Code')}</h3></a></li>
                     <% } %>
                     <% if (androidReleaseConf.plainFileIndexFile != null) { %>

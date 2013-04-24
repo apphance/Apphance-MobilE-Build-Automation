@@ -1,25 +1,28 @@
 package com.apphance.ameba.plugins.android.test.tasks
 
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import groovy.text.SimpleTemplateEngine
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
+import javax.inject.Inject
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
-class PrepareRobolectricTask {
+class PrepareRobolectricTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
+    static String NAME = 'prepareRobolectric'
+    String group = AMEBA_TEST
+    String description = 'Prepares file structure for Robolectric test framework'
+
     private String robolectricPath = 'test/robolectric'
-    private Project project
-    private AndroidProjectConfiguration androidConf
+    @Inject
+    private AndroidConfiguration androidConf
 
-    PrepareRobolectricTask(Project project) {
-        this.project = project
-        this.androidConf = getAndroidProjectConfiguration(project)
-    }
-
+    @TaskAction
     void prepareRobolectric() {
         File path = new File(project.rootDir.path, robolectricPath)
         if (path.exists()) {
@@ -48,7 +51,7 @@ class PrepareRobolectricTask {
     }
 
     private String roboPath(File path) {
-        String _path = androidConf.mainProjectPackage.replace('.', File.separator)
+        String _path = androidConf.mainPackage.replace('.', File.separator)
         return path.path + File.separator + 'src' + File.separator + 'test' + File.separator + 'java' + File.separator + _path + File.separator + 'test'
     }
 
@@ -88,9 +91,8 @@ class PrepareRobolectricTask {
         URL testClassTemplate = this.class.getResource("MyFirstTest.java_")
 
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        def binding = [packageName: androidConf.mainProjectPackage]
+        def binding = [packageName: androidConf.mainPackage]
         def result = engine.createTemplate(testClassTemplate).make(binding)
         output.write(result.toString())
-
     }
 }

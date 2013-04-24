@@ -1,31 +1,65 @@
 package com.apphance.ameba.plugins.android.release.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
-import org.gradle.api.Project
+import com.google.inject.Inject
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.*
+import java.util.regex.Pattern
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static org.gradle.api.logging.Logging.getLogger
 
-class UpdateVersionTask {
+class UpdateVersionTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    private Project project
-    private ProjectConfiguration conf
-    private AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
+    static String NAME = 'updateVersion'
+    String group = AMEBA_RELEASE
+    String description = """Updates version stored in manifest file of the project.
+           Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
 
-    UpdateVersionTask(Project project) {
-        this.project = project
-        this.conf = getProjectConfiguration(project)
+    static Pattern WHITESPACE_PATTERN = Pattern.compile('\\s+')
+
+    @Inject
+    private AndroidManifestHelper manifestHelper
+
+    @Inject
+    private AndroidReleaseConfiguration releaseConf
+
+    @TaskAction
+    public void updateVersion() {
+        def releaseString = releaseConf.releaseString
+        def releaseCode = releaseConf.releaseCode
+
+        validateReleaseString(releaseString)
+        validateReleaseCode(releaseCode)
+
+        manifestHelper.updateVersion(project.rootDir, releaseString, releaseCode)
+
+        l.debug("New version code: $releaseCode")
+        l.debug("Updated version string to: $releaseString")
     }
 
-    public void updateVersion() {
-        conf.versionString = readPropertyOrEnvironmentVariable(project, 'version.string')
-        conf.versionCode = readOptionalPropertyOrEnvironmentVariable(project, 'version.code') as Long
-        manifestHelper.updateVersion(project.rootDir, new Expando(versionCode: conf.versionCode, versionString: conf.versionString))
-        l.debug("New version code: $conf.versionCode")
-        l.debug("Updated version string to: $conf.versionString")
-        l.debug("Configuration : $conf")
+    @groovy.transform.PackageScope
+    void validateReleaseString(String releaseString) {
+        releaseString = releaseString?.trim()
+        if (!releaseString || releaseString?.empty || WHITESPACE_PATTERN.matcher(releaseString ?: '').find()) {
+            throw new GradleException("""|Property 'release.string' has invalid value!
+                                         |Set it either by 'release.string' system property or 'RELEASE_STRING' environment variable!
+                                         |This property must not contain white space characters!""".stripMargin())
+        }
+    }
+
+    @groovy.transform.PackageScope
+    void validateReleaseCode(String releaseCode) {
+        releaseCode = releaseCode?.trim()
+        if (releaseCode?.empty || !releaseCode?.matches('[0-9]+')) {
+            throw new GradleException("""|Property 'release.code' has invalid value!
+                                         |Set it either by 'release.code' system property or 'RELEASE_CODE' environment variable!
+                                         |This property must have numeric value!""".stripMargin())
+        }
     }
 }

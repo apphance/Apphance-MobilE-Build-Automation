@@ -1,21 +1,23 @@
 package com.apphance.ameba.plugins.android.analysis.tasks
 
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
-import org.gradle.api.Project
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.google.inject.Inject
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
 
 @Mixin(AndroidAnalysisMixin)
-class CheckStyleTask {
+class CheckstyleTask extends DefaultTask {
 
-    private Project project
-    private AndroidProjectConfiguration androidConf
+    static String NAME = 'checkstyle'
+    String group = AMEBA_ANALYSIS
+    String description = 'Runs Checkstyle analysis on project'
 
-    CheckStyleTask(Project project) {
-        this.project = project
-        this.androidConf = getAndroidProjectConfiguration(project)
-    }
+    @Inject
+    AndroidConfiguration androidConfiguration
 
+    @TaskAction
     public void runCheckStyle() {
 
         URL checkstyleXml = getResourceUrl(project, 'checkstyle.xml')
@@ -48,7 +50,7 @@ class CheckStyleTask {
                 formatter(type: 'xml', tofile: 'build/analysis/checkstyle-report.xml')
                 classpath(path: 'bin/classes')
                 classpath(path: cp)
-                classpath(path: androidConf.allJarsAsPath)
+                classpath(path: androidConfiguration.allJarsAsPath)
                 fileset(dir: 'src', includes: '**/*.java')
             }
         }

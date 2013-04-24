@@ -1,34 +1,50 @@
 package com.apphance.ameba.plugins.android.buildplugin.tasks
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.AndroidBuilderInfo
-import com.apphance.ameba.plugins.android.AndroidEnvironment
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
-import org.gradle.api.Project
+import com.google.inject.Inject
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
-class SingleVariantTask {
+class SingleVariantTask extends DefaultTask {
 
-    private AndroidEnvironment androidEnvironment
+    String group = AMEBA_BUILD
+
+    @Inject
+    private AndroidConfiguration androidConfiguration
+    AndroidVariantConfiguration variant
+
     private AndroidSingleVariantJarBuilder androidJarBuilder
     private AndroidSingleVariantApkBuilder androidApkBuilder
 
-    SingleVariantTask(Project project, AndroidEnvironment androidEnvironment) {
-        this.androidEnvironment = androidEnvironment
-        AndroidProjectConfiguration androidConf = getAndroidProjectConfiguration(project)
-        this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, androidConf)
-        this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, androidConf)
+    @Inject
+    AntExecutor antExecutor
+
+    @Inject
+    def init() {
+        this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, androidConfiguration, antExecutor)
+        this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, androidConfiguration, antExecutor)
     }
 
-    void singleVariant(String variant, String debugRelease) {
-        if (androidEnvironment.isLibrary()) {
-            AndroidBuilderInfo bi = androidJarBuilder.buildJarArtifactBuilderInfo(variant, debugRelease)
+    @TaskAction
+    void singleVariant() {
+        if (androidConfiguration.isLibrary()) {
+            AndroidBuilderInfo bi = androidJarBuilder.buildJarArtifactBuilderInfo(variant)
             androidJarBuilder.buildSingle(bi)
         } else {
-            AndroidBuilderInfo bi = androidApkBuilder.buildApkArtifactBuilderInfo(variant, debugRelease)
+            AndroidBuilderInfo bi = androidApkBuilder.buildApkArtifactBuilderInfo(variant)
             androidApkBuilder.buildSingle(bi)
         }
+    }
+
+    @Override
+    String getDescription() {
+        "Builds ${name}"
     }
 }

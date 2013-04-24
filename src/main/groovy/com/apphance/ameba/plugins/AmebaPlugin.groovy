@@ -1,32 +1,32 @@
 package com.apphance.ameba.plugins
 
 import com.apphance.ameba.di.CommandExecutorModule
+import com.apphance.ameba.di.ConfigurationModule
 import com.apphance.ameba.di.EnvironmentModule
-import com.google.inject.AbstractModule
+import com.apphance.ameba.di.GradleModule
 import com.google.inject.Guice
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logging
+
+import static org.gradle.api.logging.Logging.getLogger
 
 class AmebaPlugin implements Plugin<Project> {
 
-    def l = Logging.getLogger(this.class)
+    def l = getLogger(getClass())
 
     @Override
     void apply(Project project) {
         l.lifecycle(AMEBA_ASCII_ART)
 
         def injector = Guice.createInjector(
+                new GradleModule(project),
+                new ConfigurationModule(project),
                 new EnvironmentModule(),
                 new CommandExecutorModule(project),
-                new AbstractModule() {
-                    @Override
-                    protected void configure() {
-                        bind(Project).toInstance(project)
-                    }
-                })
-
+        )
         injector.getInstance(PluginMaster).enhanceProject(project)
+
+        project.tasks.each { injector.injectMembers(it) }
     }
 
     static String AMEBA_ASCII_ART = '''\

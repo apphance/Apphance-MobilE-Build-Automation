@@ -1,23 +1,28 @@
 package com.apphance.ameba.plugins.android.release.tasks
 
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
-import org.gradle.api.Project
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
+import com.google.common.base.Preconditions
+import com.google.inject.Inject
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.getProjectReleaseConfiguration
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static org.gradle.api.logging.Logging.getLogger
 
-class BuildDocZipTask {
+class BuildDocZipTask extends DefaultTask {
 
-    private l = getLogger(getClass())
-    private Project project
-    private ProjectReleaseConfiguration releaseConf
+    private l = getLogger(this.class)
 
-    BuildDocZipTask(Project project) {
-        this.project = project
-        this.releaseConf = getProjectReleaseConfiguration(project)
-    }
+    static String NAME = 'buildDocumentationZip'
+    String description = 'Builds documentation .zip file'
+    String group = AMEBA_RELEASE
 
+    @Inject AndroidReleaseConfiguration releaseConf
+
+    @TaskAction
     public void buildDocZip() {
+        Preconditions.checkNotNull(releaseConf?.documentationZip?.location)
+
         File destZip = releaseConf.documentationZip.location
         destZip.mkdirs()
         destZip.delete()

@@ -45,7 +45,7 @@ class ApphanceNetworkHelper {
         localcontext.setAttribute(AUTH_CACHE, authCache);
     }
 
-    HttpResponse updateArtifactQuery(String apphanceKey, String versionString, long versionNumber, boolean setAsCurrent, ArrayList resourcesToUpdate) {
+    HttpResponse updateArtifactQuery(String apphanceKey, String versionString, String versionNumber, boolean setAsCurrent, ArrayList resourcesToUpdate) {
 
         HttpPost post = new HttpPost('/api/application.update_version')
 

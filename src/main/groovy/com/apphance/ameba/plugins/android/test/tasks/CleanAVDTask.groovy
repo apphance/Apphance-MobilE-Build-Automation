@@ -1,21 +1,24 @@
 package com.apphance.ameba.plugins.android.test.tasks
 
-import com.apphance.ameba.plugins.android.test.AndroidTestConfiguration
-import org.gradle.api.Project
+import com.apphance.ameba.configuration.android.AndroidTestConfiguration
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.android.test.AndroidTestConfigurationRetriever.getAndroidTestConfiguration
+import javax.inject.Inject
 
-class CleanAVDTask {
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
 
-    private AntBuilder ant
-    private AndroidTestConfiguration androidTestConf
+class CleanAVDTask extends DefaultTask {
 
-    CleanAVDTask(Project project) {
-        this.ant = project.ant
-        this.androidTestConf = getAndroidTestConfiguration(project)
-    }
+    static String NAME = 'cleanAVD'
+    String group = AMEBA_TEST
+    String description = 'Cleans AVDs for emulators'
 
+    @Inject
+    private AndroidTestConfiguration testConf
+
+    @TaskAction
     void cleanAVD() {
-        ant.delete(dir: androidTestConf.avdDir)
+        ant.delete(dir: testConf.getAVDDir())
     }
 }
