@@ -59,7 +59,7 @@ class ExecuteAndroidBuildsTest {
 
     protected void runGradleWithProperties(Properties p, ProjectConnection pc = gradleWithPropertiesConnection, String... tasks) {
         def buildLauncher = pc.newBuild()
-        def args = p.collect { property, value -> "-Dorg.gradle.project.${property}=${value}" }
+        def args = p.collect { property, value -> "-D${property}=${value}" }
         GRADLE_DAEMON_ARGS.each { args << it }
         buildLauncher.setJvmArguments(args as String[])
         buildLauncher.forTasks(tasks).run()
@@ -125,11 +125,11 @@ class ExecuteAndroidBuildsTest {
         runGradleNoVariants('clean', 'buildAllDebug')
 
         assertTrue(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketDebug-${fullVersion}.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-${fullVersion}.apk").exists())
         assertFalse(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-release-MarketDebug-unsigned-${fullVersion}.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-debug-MarketDebug-unsigned-${fullVersion}.apk").exists())
         assertFalse(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketDebug-unaligned-${fullVersion}.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-unaligned-${fullVersion}.apk").exists())
     }
 
     @Test
@@ -151,7 +151,7 @@ class ExecuteAndroidBuildsTest {
         assertFalse(new File(testProject, "build/docs").listFiles().length == 0)
     }
 
-    @Test
+    @Test // FIXME
     @Ignore
     void testUpdateProject() {
         File localProperties = new File(testProject, "local.properties")
@@ -173,8 +173,8 @@ class ExecuteAndroidBuildsTest {
         ProjectConfiguration projectConf = new ProjectConfiguration()
         try {
             Properties p = new Properties()
-            p.put('version.string', 'TEST_UPDATE')
-            p.put('version.code', 43)
+            p.put('release.string', 'TEST_UPDATE')
+            p.put('release.code', 43)
             runGradleWithProperties(p, 'updateProject', 'updateVersion')
             projectConf.updateVersionDetails(manifestHelper.readVersion(new File("testProjects/android/android-basic")))
             assertEquals(43, projectConf.versionCode)
@@ -216,7 +216,7 @@ class ExecuteAndroidBuildsTest {
         assertConfigSameAsBuild(testNoVariantsProject, "pmd-rules.xml")
     }
 
-    @Ignore('This test is ignored till android configuration is fully rewritten')
+    @Test // FIXME
     void testAnalysisFromRemote() {
         File baseDir = new File(testAndroidConventionProject, "build/analysis/")
         runGradleAndroidAnalysis('updateProject', 'analysis')
@@ -238,7 +238,7 @@ class ExecuteAndroidBuildsTest {
         assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
     }
 
-    @Ignore('This test is ignored till android configuration is fully rewritten')
+    @Test // FIXME
     void testAnalysisFromRemoteWrongConvention() {
         File baseDir = new File(testAndroidWrongConventionProject, "build/analysis/")
         runGradleAndroidAnalysisWrongConvention('updateProject', 'analysis')
@@ -336,13 +336,12 @@ class ExecuteAndroidBuildsTest {
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
         }
-        def androidLib = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/android.pre-production-1.8.2.jar")
+        def androidLib = new File("testProjects/android/android-no-apphance-application/ameba-tmp/TestDebug/libs/android.pre-production-1.8.2.jar")
         assertTrue(androidLib.exists())
         assertEquals('android.pre-production-1.8.2.jar', androidLib.name)
     }
 
-    @Test
-    @Ignore('Do we still support apphance lib configuration via command line?')
+    @Test // FIXME
     void testCorrectApphanceDependencyFromProperty() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
@@ -359,8 +358,7 @@ class ExecuteAndroidBuildsTest {
         assertEquals('android.production-1.8.2.jar', androidLib.name)
     }
 
-    @Test
-    @Ignore('Do we still support apphance lib configuration via command line?')
+    @Test // FIXME
     void testIncorrectApphanceDependencyFromProperty() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
@@ -382,7 +380,7 @@ class ExecuteAndroidBuildsTest {
         assertTrue(androidLibsDir.list().length == 0)
     }
 
-    @Test
+    @Test // FIXME
     void testGoogleAPITarget() {
 
         def propsFile = new File(testProject, 'project.properties')
