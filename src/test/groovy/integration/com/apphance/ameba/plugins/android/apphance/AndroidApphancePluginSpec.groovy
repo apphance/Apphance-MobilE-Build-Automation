@@ -12,6 +12,7 @@ import spock.lang.Specification
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+import static com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin.BUILD_ALL_DEBUG_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidApphancePluginSpec extends Specification {
@@ -69,6 +70,7 @@ class AndroidApphancePluginSpec extends Specification {
     def 'tasks & variants defined in plugin available when configuration is active'() {
         given:
         def project = builder().build()
+        project.task(BUILD_ALL_DEBUG_TASK_NAME)
 
         and:
         def aap = new AndroidApphancePlugin()
