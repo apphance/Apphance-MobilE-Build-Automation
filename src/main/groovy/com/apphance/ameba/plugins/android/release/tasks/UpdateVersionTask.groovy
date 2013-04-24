@@ -48,9 +48,8 @@ class UpdateVersionTask extends DefaultTask {
         releaseString = releaseString?.trim()
         if (!releaseString || releaseString?.empty || WHITESPACE_PATTERN.matcher(releaseString ?: '').find()) {
             throw new GradleException("""|Property 'release.string' has invalid value!
-                                         |Set it either by 'release.string' system property or
-                                         |'RELEASE_STRING environment variable!
-                                         |This property must not contain white space characters!""")
+                                         |Set it either by 'release.string' system property or 'RELEASE_STRING' environment variable!
+                                         |This property must not contain white space characters!""".stripMargin())
         }
     }
 
@@ -59,9 +58,8 @@ class UpdateVersionTask extends DefaultTask {
         releaseCode = releaseCode?.trim()
         if (releaseCode?.empty || !releaseCode?.matches('[0-9]+')) {
             throw new GradleException("""|Property 'release.code' has invalid value!
-                                         |Set it either by 'release.code' system property or
-                                         |'RELEASE_CODE environment variable!
-                                         |This property must have numeric value!""")
+                                         |Set it either by 'release.code' system property or 'RELEASE_CODE' environment variable!
+                                         |This property must have numeric value!""".stripMargin())
         }
     }
 }

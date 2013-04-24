@@ -25,6 +25,8 @@ import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
  */
 class AndroidPlugin implements Plugin<Project> {
 
+    public static final String BUILD_ALL_DEBUG_TASK_NAME = 'buildAllDebug'
+    public static final String BUILD_ALL_RELEASE_TASK_NAME = 'buildAllRelease'
     @Inject
     private AndroidConfiguration androidConfiguration
     @Inject
@@ -63,9 +65,9 @@ class AndroidPlugin implements Plugin<Project> {
             project.tasks[JAVADOC_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
             project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
 
-            def buildAllDebug = project.task('buildAllDebug')
-            def buildAllRelease = project.task('buildAllRelease')
-            project.task('buildAll', dependsOn: [buildAllDebug, buildAllRelease])
+            project.task(BUILD_ALL_DEBUG_TASK_NAME)
+            project.task(BUILD_ALL_RELEASE_TASK_NAME)
+            project.task('buildAll', dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME])
 
             variantsConf.variants.each {
                 def buildName = "build${it.name}"

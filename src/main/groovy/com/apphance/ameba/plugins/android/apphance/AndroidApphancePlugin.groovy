@@ -16,6 +16,8 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+import static com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin.BUILD_ALL_DEBUG_TASK_NAME
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Adds Apphance in automated way.
@@ -32,6 +34,8 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHAN
 //TODO Apphance Setup Task
 @Mixin(ApphancePluginCommons)
 class AndroidApphancePlugin implements Plugin<Project> {
+
+    def log = getLogger(this.class)
 
     private Project project
     @Inject
@@ -69,11 +73,15 @@ class AndroidApphancePlugin implements Plugin<Project> {
         //TODO for each variant add apphance if it's enabled in variant conf
         variantsConf.variants.each { avc ->
             if (avc.mode.value?.toLowerCase() == AndroidBuildMode.DEBUG.name().toLowerCase()) {
-                def task = project.task(avc.name)
+                log.lifecycle("Adding apphance task for ${avc.name}")
+                def task = project.task(avc.name, dependsOn: "build${avc.name}")
+                project.tasks[BUILD_ALL_DEBUG_TASK_NAME].dependsOn task
                 task.doFirst {
                     addAndroidApphance.addApphance(avc)
                 }
                 prepareSingleBuildUploadTask(avc, task.name)
+            } else {
+                log.lifecycle("Not adding apphance to ${avc.name} because it is not in debug mode")
             }
         }
     }

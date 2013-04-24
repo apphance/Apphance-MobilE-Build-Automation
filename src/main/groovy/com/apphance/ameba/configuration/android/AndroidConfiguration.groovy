@@ -109,7 +109,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
         androidHome ? new File(androidHome) : null
     }
 
-    final Collection<String> sourceExcludes = ['**/*.class', '**/bin/**', '**/build/*']
+    final Collection<String> sourceExcludes = ['**/*.class', '**/bin/**', '**/build/*', '**/ameba-tmp/**/*', '**/ameba-ota/**/*']
 
     private Collection<File> sdkJarLibs = []
 
