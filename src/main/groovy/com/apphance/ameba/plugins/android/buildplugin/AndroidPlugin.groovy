@@ -75,7 +75,7 @@ class AndroidPlugin implements Plugin<Project> {
                         type: SingleVariantTask,
                         dependsOn: [CopySourcesTask.NAME, RunUpdateProjectTask.NAME]).variant = it
 
-                def debugRelaseBuild = "buildAll${it.mode.value.toLowerCase().capitalize()}"
+                def debugRelaseBuild = "buildAll${it.mode.name().toLowerCase().capitalize()}"
                 project.tasks[debugRelaseBuild].dependsOn buildName
 
                 project.task("install${it.name}", type: InstallTask, dependsOn: buildName).variant = it

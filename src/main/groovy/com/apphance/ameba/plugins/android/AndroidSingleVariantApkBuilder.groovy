@@ -22,13 +22,13 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
     }
 
     AndroidBuilderInfo buildApkArtifactBuilderInfo(AndroidVariantConfiguration avc) {
-        String debugReleaseLowercase = avc.mode.value?.toLowerCase()
+        String debugReleaseLowercase = avc.mode.name().toLowerCase()
         String variablePart = debugReleaseLowercase + "-${avc.name}"
         File binDir = new File(new File(androidConf.tmpDir, avc.name), 'bin')
         AndroidBuilderInfo bi = new AndroidBuilderInfo
         (
                 variant: avc.name,
-                debugRelease: avc.mode.value,
+                debugRelease: avc.mode.name(),
                 tmpDir: avc.tmpDir,
                 buildDirectory: binDir,
                 originalFile: new File(binDir, "${androidConf.projectName.value}-${debugReleaseLowercase}.apk"),

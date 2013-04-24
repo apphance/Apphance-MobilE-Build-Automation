@@ -26,7 +26,7 @@ class InstallTask extends DefaultTask {
 
     @TaskAction
     void install() {
-        String debugRelease = variant.mode.value.toLowerCase().capitalize()
+        String debugRelease = variant.mode.name().toLowerCase().capitalize()
         def firstLetterLowerCase = debugRelease[0].toLowerCase()
         File targetDirectory = androidReleaseConf.targetDirectory
         def apkName = "${androidConf.projectName.value}-${debugRelease}-${variant}-${androidConf.versionString}.apk".toString()

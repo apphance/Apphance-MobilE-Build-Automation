@@ -6,6 +6,8 @@ import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyPersister
 
+import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
+import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
 import static com.apphance.ameba.configuration.apphance.ApphanceMode.DISABLED
 
 class AndroidVariantConfiguration extends AbstractConfiguration {
@@ -27,8 +29,6 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     }
 
     private void initFields() {
-        mode.name = "android.variant.${name}.mode"
-        mode.message = "Android variant '$name' mode"
         apphanceAppKey.name = "android.variant.${name}.apphance.appKey"
         apphanceAppKey.message = "Apphance key for '$name'"
         apphanceMode.name = "android.variant.${name}.apphance.mode"
@@ -43,15 +43,8 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
         this.@name
     }
 
-    def mode = new StringProperty(
-            possibleValues: { possibleModes() },
-            defaultValue: { AndroidBuildMode.DEBUG.name() },
-            validator: { it in possibleModes() },
-            required: { true }
-    )
-
-    private List<String> possibleModes() {
-        AndroidBuildMode.values()*.name() as List<String>
+    AndroidBuildMode getMode() {
+        this.@name.toLowerCase().contains(DEBUG.name().toLowerCase()) ? DEBUG : RELEASE
     }
 
     def apphanceAppKey = new StringProperty(
