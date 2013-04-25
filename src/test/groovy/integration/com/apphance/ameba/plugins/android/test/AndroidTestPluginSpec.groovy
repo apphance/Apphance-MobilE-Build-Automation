@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidTestConfiguration
 import com.apphance.ameba.configuration.properties.BooleanProperty
 import com.apphance.ameba.configuration.properties.FileProperty
+import com.apphance.ameba.plugins.android.buildplugin.tasks.CompileAndroidTask
 import com.apphance.ameba.plugins.android.test.tasks.*
 import com.google.common.io.Files
 import spock.lang.Specification
@@ -46,7 +47,7 @@ class AndroidTestPluginSpec extends Specification {
 
         then: 'every task has correct dependencies'
         project.tasks[TestAndroidTask.NAME].dependsOn.flatten().contains(CreateAVDTask.NAME)
-        project.tasks[TestRobolectricTask.NAME].dependsOn.flatten().contains(COMPILE_JAVA_TASK_NAME)
+        project.tasks[TestRobolectricTask.NAME].dependsOn.flatten().contains(CompileAndroidTask.NAME)
 
         then: 'robotium configuration and dependencies added'
         project.configurations.robotium

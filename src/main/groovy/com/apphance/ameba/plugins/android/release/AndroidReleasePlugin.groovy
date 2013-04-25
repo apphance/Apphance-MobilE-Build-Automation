@@ -6,7 +6,6 @@ import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTask
-import com.apphance.ameba.plugins.android.release.tasks.BuildDocZipTask
 import com.apphance.ameba.plugins.android.release.tasks.MailMessageTask
 import com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
 import com.apphance.ameba.plugins.release.tasks.PrepareForReleaseTask
@@ -14,8 +13,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
-
-import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
 
 /**
  * Plugin that provides release functionality for android.<br><br>

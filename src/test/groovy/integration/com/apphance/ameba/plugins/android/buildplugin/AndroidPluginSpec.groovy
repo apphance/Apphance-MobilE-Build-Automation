@@ -53,16 +53,10 @@ class AndroidPluginSpec extends Specification {
         and:
         project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME, UpdateProjectTask.NAME)
         project.tasks[CLEAN_TASK_NAME].dependsOn.flatten().containsAll(CleanAndroidTask.NAME)
-        project.tasks[JAVADOC_TASK_NAME].dependsOn.flatten().containsAll(CompileAndroidTask.NAME)
-        project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn.flatten().containsAll(CompileAndroidTask.NAME)
         project.tasks[CleanClassesTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
         project.tasks[CopySourcesTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
         project.tasks[ReplacePackageTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
         project.tasks[CompileAndroidTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
-
-
-        and:
-        project.plugins.findPlugin(JavaPlugin)
     }
 
     def 'no tasks available when configuration is inactive'() {
@@ -142,11 +136,6 @@ class AndroidPluginSpec extends Specification {
         and:
         project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME)
         project.tasks[CLEAN_TASK_NAME].dependsOn.flatten().containsAll(CleanAndroidTask.NAME)
-        project.tasks[JAVADOC_TASK_NAME].dependsOn.flatten().containsAll(CompileAndroidTask.NAME)
-        project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn.flatten().containsAll(CompileAndroidTask.NAME)
-
-        and:
-        project.plugins.findPlugin(JavaPlugin)
     }
 
     private AndroidVariantConfiguration createVariant(String name, AndroidBuildMode mode) {

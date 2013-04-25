@@ -5,6 +5,7 @@ import com.apphance.ameba.plugins.android.analysis.tasks.CPDTask
 import com.apphance.ameba.plugins.android.analysis.tasks.CheckstyleTask
 import com.apphance.ameba.plugins.android.analysis.tasks.FindBugsTask
 import com.apphance.ameba.plugins.android.analysis.tasks.PMDTask
+import com.apphance.ameba.plugins.android.buildplugin.tasks.CompileAndroidTask
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
@@ -67,8 +68,8 @@ class AndroidAnalysisPluginSpec extends Specification {
                 CPDTask.NAME,
                 PMDTask.NAME,
                 CheckstyleTask.NAME)
-        project.tasks[FindBugsTask.NAME].dependsOn.contains(CLASSES_TASK_NAME)
-        project.tasks[CheckstyleTask.NAME].dependsOn.contains(CLASSES_TASK_NAME)
+        project.tasks[FindBugsTask.NAME].dependsOn.contains(CompileAndroidTask.NAME)
+        project.tasks[CheckstyleTask.NAME].dependsOn.contains(CompileAndroidTask.NAME)
     }
 
     def 'no tasks available when configuration is inactive'() {

@@ -2,14 +2,12 @@ package com.apphance.ameba.plugins.android.release
 
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTask
-import com.apphance.ameba.plugins.android.release.tasks.BuildDocZipTask
 import com.apphance.ameba.plugins.android.release.tasks.MailMessageTask
 import com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
 import com.apphance.ameba.plugins.release.tasks.PrepareForReleaseTask
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidReleasePluginSpec extends Specification {
@@ -32,14 +30,10 @@ class AndroidReleasePluginSpec extends Specification {
 
         then: 'every single task is in correct group'
         project.tasks[UpdateVersionTask.NAME].group == AMEBA_RELEASE
-        project.tasks[BuildDocZipTask.NAME].group == AMEBA_RELEASE
         project.tasks[AvailableArtifactsInfoTask.NAME].group == AMEBA_RELEASE
         project.tasks[MailMessageTask.NAME].group == AMEBA_RELEASE
 
         then: 'every task has correct dependencies'
-
-        project.tasks[BuildDocZipTask.NAME].dependsOn.flatten().containsAll(JAVADOC_TASK_NAME,
-                PrepareForReleaseTask.NAME)
 
         project.tasks[MailMessageTask.NAME].dependsOn.flatten().containsAll(
                 AvailableArtifactsInfoTask.NAME,
@@ -63,7 +57,6 @@ class AndroidReleasePluginSpec extends Specification {
 
         then:
         !project.getTasksByName(UpdateVersionTask.NAME, false)
-        !project.getTasksByName(BuildDocZipTask.NAME, false)
         !project.getTasksByName(AvailableArtifactsInfoTask.NAME, false)
         !project.getTasksByName(MailMessageTask.NAME, false)
     }

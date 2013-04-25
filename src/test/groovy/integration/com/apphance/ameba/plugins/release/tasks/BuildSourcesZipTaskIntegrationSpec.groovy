@@ -2,7 +2,6 @@ package com.apphance.ameba.plugins.release.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.plugins.android.release.tasks.BuildDocZipTask
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import spock.lang.Specification
 
@@ -47,7 +46,7 @@ class BuildSourcesZipTaskIntegrationSpec extends Specification {
         arc.sourcesZip >> null
 
         and:
-        def task = project.task(BuildDocZipTask.NAME, type: BuildSourcesZipTask) as BuildSourcesZipTask
+        def task = project.task(BuildSourcesZipTask.NAME, type: BuildSourcesZipTask) as BuildSourcesZipTask
         task.releaseConf = arc
 
         when:
