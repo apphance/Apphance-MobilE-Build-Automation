@@ -46,10 +46,6 @@ class AndroidReleasePlugin implements Plugin<Project> {
                     AvailableArtifactsInfoTask.NAME,
                     type: AvailableArtifactsInfoTask)
             project.task(
-                    BuildDocZipTask.NAME,
-                    type: BuildDocZipTask,
-                    dependsOn: [JAVADOC_TASK_NAME, PrepareForReleaseTask.NAME])
-            project.task(
                     MailMessageTask.NAME,
                     type: MailMessageTask,
                     dependsOn: [AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME])

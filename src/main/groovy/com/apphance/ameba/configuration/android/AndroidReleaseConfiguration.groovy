@@ -214,6 +214,6 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
         check !(releaseMailFrom.validator(releaseMailFrom.value)), "Property '${releaseMailFrom.name} is not valid! Should be valid email address!"
         check !(releaseMailTo.validator(releaseMailTo.value)), "Property '${releaseMailTo.name} is not valid! Should be valid email address!"
         check !(releaseMailFlags.value ? releaseMailFlags.value.every { it in ALL_EMAIL_FLAGS } : true), "Property '${releaseMailFlags.name}' is not valid! Possible values: ${ALL_EMAIL_FLAGS}"
-        check !(iconFile.validator(iconFile.value)), "Property '${iconFile.name}' is not valid! Should be existing file!"
+        check iconFile.validator(iconFile.value), "Property '${iconFile.name}' (${iconFile.value}) is not valid! Should be existing image file!"
     }
 }

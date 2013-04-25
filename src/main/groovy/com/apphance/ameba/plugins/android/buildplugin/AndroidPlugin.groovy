@@ -11,8 +11,6 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
-import static org.gradle.api.plugins.JavaPlugin.COMPILE_JAVA_TASK_NAME
-import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
 
 /**
  * This is the main android build plugin.
@@ -36,7 +34,6 @@ class AndroidPlugin implements Plugin<Project> {
     void apply(Project project) {
 
         if (androidConfiguration.isEnabled()) {
-            prepareJavaEnvironment(project)
 
             project.task(UpdateProjectTask.NAME, type: UpdateProjectTask)
 
@@ -56,14 +53,13 @@ class AndroidPlugin implements Plugin<Project> {
                     type: CleanAndroidTask,
                     dependsOn: [CleanConfTask.NAME, UpdateProjectTask.NAME])
 
+            project.task(CLEAN_TASK_NAME)
+
             project.tasks[CLEAN_TASK_NAME].dependsOn(CleanAndroidTask.NAME)
 
             project.task(CompileAndroidTask.NAME,
                     type: CompileAndroidTask,
                     dependsOn: UpdateProjectTask.NAME)
-
-            project.tasks[JAVADOC_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
-            project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
 
             project.task(BUILD_ALL_DEBUG_TASK_NAME)
             project.task(BUILD_ALL_RELEASE_TASK_NAME)
@@ -85,34 +81,6 @@ class AndroidPlugin implements Plugin<Project> {
                 if (!(it.name in [VerifySetupTask.NAME, 'prepareSetup2'])) {
                     it.dependsOn VerifySetupTask.NAME
                 }
-            }
-        }
-    }
-
-    private void prepareJavaEnvironment(Project project) {
-        project.plugins.apply('java')
-        def javaConventions = project.convention.plugins.java
-        javaConventions.sourceSets {
-            main {
-                output.classesDir = project.file('bin')
-                output.resourcesDir = project.file('bin')
-                java { srcDir project.file('src') }
-                java { srcDir project.file('gen') }
-            }
-        }
-        project.compileJava.options.encoding = 'UTF-8'
-        project.javadoc.options.encoding = 'UTF-8'
-        project.compileTestJava.options.encoding = 'UTF-8'
-        project.dependencies {
-            add('compile', project.files('ext-classes'))
-            if (androidConfiguration.sdkJars) {
-                add('compile', project.files(androidConfiguration.sdkJars))
-            }
-            if (androidConfiguration.jarLibraries) {
-                add('compile', project.files(androidConfiguration.jarLibraries))
-            }
-            if (androidConfiguration.linkedJarLibraries) {
-                add('compile', project.files(androidConfiguration.linkedJarLibraries))
             }
         }
     }

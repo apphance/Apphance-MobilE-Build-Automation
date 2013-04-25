@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.android.test
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidTestConfiguration
+import com.apphance.ameba.plugins.android.buildplugin.tasks.CompileAndroidTask
 import com.apphance.ameba.plugins.android.test.tasks.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -54,7 +55,7 @@ class AndroidTestPlugin implements Plugin<Project> {
 
             project.task(TestRobolectricTask.NAME,
                     type: TestRobolectricTask,
-                    dependsOn: [COMPILE_JAVA_TASK_NAME])
+                    dependsOn: [CompileAndroidTask.NAME])
 
             project.configurations.add('robotium')
             project.dependencies.add('robotium', 'com.jayway.android.robotium:robotium-solo:3.1')
