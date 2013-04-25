@@ -47,17 +47,17 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
         this.@name.toLowerCase().contains(DEBUG.name().toLowerCase()) ? DEBUG : RELEASE
     }
 
-    def apphanceAppKey = new StringProperty(
-            interactive: { androidApphanceConf.enabled },
-            required: { androidApphanceConf.enabled },
-            validator: { it?.matches('[a-z0-9]+') }
-    )
-
     def apphanceMode = new ApphanceModeProperty(
             interactive: { androidApphanceConf.enabled },
             required: { androidApphanceConf.enabled },
             possibleValues: { possibleApphanceModes() },
             validator: { it in possibleApphanceModes() }
+    )
+
+    def apphanceAppKey = new StringProperty(
+            interactive: { androidApphanceConf.enabled && !(DISABLED == apphanceMode.value) },
+            required: { androidApphanceConf.enabled },
+            validator: { it?.matches('[a-z0-9]+') }
     )
 
     private List<String> possibleApphanceModes() {

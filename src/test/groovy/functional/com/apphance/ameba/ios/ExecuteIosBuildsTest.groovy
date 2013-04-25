@@ -4,11 +4,13 @@ import org.gradle.tooling.BuildException
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Test
 
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.*
 
+@Ignore('Ignored in M2')
 class ExecuteIosBuildsTest {
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',

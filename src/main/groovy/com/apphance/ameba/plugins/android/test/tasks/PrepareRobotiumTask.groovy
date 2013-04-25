@@ -114,7 +114,8 @@ class PrepareRobotiumTask extends DefaultTask {
         }
     }
 
-    private void downloadFile(URL url, File file) {
+    @groovy.transform.PackageScope
+    void downloadFile(URL url, File file) {
         l.info("Downloading file from ${url} to ${file}")
         def stream = new FileOutputStream(file)
         def out = new BufferedOutputStream(stream)

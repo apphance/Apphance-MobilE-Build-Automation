@@ -4,11 +4,17 @@ import org.gradle.tooling.BuildException
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
-import org.junit.*
+import org.junit.After
+import org.junit.AfterClass
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Ignore
+import org.junit.Test
 
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
+@Ignore('To be implemented in good ConversationManagerSpec')
 class RunVerifyAndroidErrorsSetupTest {
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',

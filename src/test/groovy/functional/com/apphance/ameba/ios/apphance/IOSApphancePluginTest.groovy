@@ -2,10 +2,12 @@ package com.apphance.ameba.ios.apphance
 
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
+import org.junit.Ignore
 import org.junit.Test
 
 import static org.junit.Assert.assertTrue
 
+@Ignore("Ignored in M2")
 class IOSApphancePluginTest {
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
