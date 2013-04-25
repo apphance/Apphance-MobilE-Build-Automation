@@ -21,7 +21,7 @@ class BuildDocZipTask extends DefaultTask {
 
     @TaskAction
     public void buildDocZip() {
-        Preconditions.checkNotNull(releaseConf?.documentationZip?.location)
+        Preconditions.checkNotNull(releaseConf?.documentationZip?.location, 'Documentation ZIP artifact is not configured!')
 
         File destZip = releaseConf.documentationZip.location
         destZip.mkdirs()

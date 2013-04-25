@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.android.test.tasks
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-class CleanAVDTaskTest extends Specification {
+class CleanAVDTaskSpec extends Specification {
 
     def p = ProjectBuilder.builder().build()
     def cleanAVDTask = p.task(CleanAVDTask.NAME, type: CleanAVDTask) as CleanAVDTask

@@ -271,29 +271,6 @@ class ExecuteAndroidBuildsTest {
     }
 
     @Test
-    void testBuildDocumentationZip() {
-        runGradle('buildDocumentationZip')
-        File file = new File("testProjects/android/android-basic/ameba-tmp/TestAndroidProject-${fullVersion}-doc.zip")
-        assertTrue(file.exists())
-        assertTrue(file.size() > 30000)
-    }
-
-    @Test
-    void testBuildSourcesZip() {
-        runGradle('buildSourcesZip')
-        File file = new File("testProjects/android/android-basic/ameba-tmp/TestAndroidProject-${fullVersion}-src.zip")
-        assertTrue(file.exists())
-        assertTrue(file.size() > 30000)
-    }
-
-    @Test
-    void testRunCleanAVD() {
-        runGradle('cleanAVD')
-        File avdsDirectory = new File('testProjects/android/android-basic/avds')
-        assertFalse(avdsDirectory.exists())
-    }
-
-    @Test
     void testRunAndroidCreateAVD() {
         runGradle('cleanAVD', 'createAVD')
         def files = [
@@ -362,39 +339,5 @@ class ExecuteAndroidBuildsTest {
         def androidLibsDir = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/")
         assertTrue(androidLibsDir.exists())
         assertTrue(androidLibsDir.list().length == 0)
-    }
-
-    @Ignore('works, but should be tested in another way!')
-    void testGoogleAPITarget() {
-
-        def propsFile = new File(testProject, 'ameba.properties')
-        def propsOrigFile = new File(testProject.canonicalPath, 'ameba.properties.orig')
-        try {
-            substituteProperties(propsFile, propsOrigFile)
-            def baos = new ByteArrayOutputStream();
-            runGradle(baos, 'clean', 'buildTestDebug')
-            def res = baos.toString('UTF-8')
-            println res
-            assertTrue(res.contains("add-ons/addon-google_apis-google-8/libs/maps.jar"))
-
-        } finally {
-            propsFile.delete()
-            propsOrigFile.renameTo(propsFile)
-        }
-    }
-
-    private void substituteProperties(propsFile, propsOrigFile) {
-        if (propsOrigFile.exists())
-            propsOrigFile.delete()
-        propsOrigFile << propsFile.text
-        def propsOrig = new Properties()
-        propsFile.withInputStream {
-            propsOrig.load(it)
-        }
-        propsOrig['android.target'] = 'Google Inc.:Google APIs:8'
-        propsFile.write('')
-        propsOrig.each { k, v ->
-            propsFile.append("$k=$v\n")
-        }
     }
 }

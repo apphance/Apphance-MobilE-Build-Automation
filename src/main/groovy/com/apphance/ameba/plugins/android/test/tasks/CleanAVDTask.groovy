@@ -15,7 +15,7 @@ class CleanAVDTask extends DefaultTask {
     String description = 'Cleans AVDs for emulators'
 
     @Inject
-    private AndroidTestConfiguration testConf
+    AndroidTestConfiguration testConf
 
     @TaskAction
     void cleanAVD() {

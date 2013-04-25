@@ -9,6 +9,7 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileManager.removeMissingSymlinks
+import static com.google.common.base.Preconditions.checkNotNull
 import static org.gradle.api.logging.Logging.getLogger
 
 class BuildSourcesZipTask extends DefaultTask {
@@ -26,12 +27,14 @@ class BuildSourcesZipTask extends DefaultTask {
 
     @TaskAction
     void buildSourcesZip() {
+        checkNotNull(releaseConf?.sourcesZip?.location, 'Sources ZIP artifact is not configured!')
+
         File destZip = releaseConf.sourcesZip.location
-        l.lifecycle('Removing empty symlinks')
+
         removeMissingSymlinks(project.rootDir)
+
         destZip.parentFile.mkdirs()
         destZip.delete()
-        l.debug('Compressing sources')
         ant.zip(destfile: destZip) {
             fileset(dir: project.rootDir) {
                 exclude(name: 'build/**')
