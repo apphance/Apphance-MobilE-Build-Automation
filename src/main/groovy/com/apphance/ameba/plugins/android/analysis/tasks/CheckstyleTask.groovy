@@ -7,7 +7,6 @@ import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
 
-@Mixin(AndroidAnalysisMixin)
 class CheckstyleTask extends DefaultTask {
 
     static String NAME = 'checkstyle'
@@ -16,11 +15,13 @@ class CheckstyleTask extends DefaultTask {
 
     @Inject
     AndroidConfiguration androidConfiguration
+    @Inject
+    AndroidAnalysisResourceLocator resourceLocator
 
     @TaskAction
     public void runCheckStyle() {
 
-        URL checkstyleXml = getResourceUrl(project, 'checkstyle.xml')
+        URL checkstyleXml = resourceLocator.getResourceUrl(project, 'checkstyle.xml')
         File analysisDir = project.file('build/analysis')
         File checkstyleFile = new File(analysisDir, 'checkstyle.xml')
 
@@ -28,14 +29,14 @@ class CheckstyleTask extends DefaultTask {
         checkstyleFile.delete()
         checkstyleFile << checkstyleXml.getContent()
 
-        URL checkstyleSuppressionXml = getResourceUrl(project, 'checkstyle-suppressions.xml')
+        URL checkstyleSuppressionXml = resourceLocator.getResourceUrl(project, 'checkstyle-suppressions.xml')
         File checkstyleSuppressionFile = new File(analysisDir, 'checkstyle-suppressions.xml')
 
         checkstyleSuppressionFile.parentFile.mkdirs()
         checkstyleSuppressionFile.delete()
         checkstyleSuppressionFile << checkstyleSuppressionXml.getContent()
 
-        URL checkstyleLocalSuppressionXml = getResourceUrl(project, 'checkstyle-local-suppressions.xml')
+        URL checkstyleLocalSuppressionXml = resourceLocator.getResourceUrl(project, 'checkstyle-local-suppressions.xml')
         File checkstyleLocalSuppressionFile = new File(analysisDir, 'checkstyle-local-suppressions.xml')
 
         checkstyleLocalSuppressionFile.parentFile.mkdirs()

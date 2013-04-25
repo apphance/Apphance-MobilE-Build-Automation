@@ -1,22 +1,27 @@
 package com.apphance.ameba.plugins.android.analysis.tasks
 
+import com.apphance.ameba.configuration.android.AndroidAnalysisConfiguration
 import org.gradle.api.Project
 import org.gradle.api.logging.Logging
 
-class AndroidAnalysisMixin {
+import javax.inject.Inject
+
+class AndroidAnalysisResourceLocator {
 
     private l = Logging.getLogger(getClass())
 
-    public URL getResourceUrl(Project project, String resourceName) {
+    @Inject
+    AndroidAnalysisConfiguration analysisConf
+
+    URL getResourceUrl(Project project, String resourceName) {
         l.info("Reading resource $resourceName")
 
-        URL baseUrl = project.file('config/analysis').toURI().toURL()
+        URL configUrl = project.file('config/analysis').toURI().toURL()
+        URL baseUrl = configUrl
 
-        //TODO convention will be switched to AndroidAnalysisConfiguration when anroid configuration is implemented
-//        if (convention.baseAnalysisConfigUrl != null) {
-//            baseUrl = new URL(convention.baseAnalysisConfigUrl)
-//            l.info("Base config url $baseUrl")
-//        }
+        if (analysisConf.analysisConfigUrl.isSet()) {
+            baseUrl = analysisConf.analysisConfigUrl.value
+        }
 
         URL targetURL = new URL(baseUrl, resourceName)
         if (targetURL.getProtocol() != 'file') {
@@ -26,7 +31,7 @@ class AndroidAnalysisMixin {
                 return targetURL
             } catch (IOException e) {
                 l.warn("Exception $e while reading from $targetURL. Falling back")
-//                targetURL = new URL(configUrl, resourceName)//TODO what if URL comes from configuration and fails?
+                targetURL = new URL(configUrl, resourceName)
             }
         }
         l.info("Reading resource from file $targetURL")

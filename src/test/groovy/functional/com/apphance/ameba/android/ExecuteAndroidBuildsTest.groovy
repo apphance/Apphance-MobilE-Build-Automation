@@ -151,7 +151,7 @@ class ExecuteAndroidBuildsTest {
         assertFalse(new File(testProject, "build/docs").listFiles().length == 0)
     }
 
-    @Test
+    @Ignore('using old configuration, to be rewritten')
     void testUpdateVersion() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
@@ -178,14 +178,6 @@ class ExecuteAndroidBuildsTest {
         assertTrue(new File(baseDir, "pmd-result.xml").exists())
     }
 
-    private assertConfigSameAsBuild(File projectDirectory, String fileName) {
-        File baseDir = new File(projectDirectory, "build/analysis/")
-        File resourceDir = new File("src/main/resources/com/apphance/ameba/plugins/android/analysis/tasks")
-        File configBaseDir = new File(projectDirectory, "config/analysis/")
-        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
-        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
-    }
-
     @Test
     void testAnalysisFromConfig() {
         File baseDir = new File(testNoVariantsProject, "build/analysis/")
@@ -200,7 +192,7 @@ class ExecuteAndroidBuildsTest {
         assertConfigSameAsBuild(testNoVariantsProject, "pmd-rules.xml")
     }
 
-    @Test // FIXME
+    @Test
     void testAnalysisFromRemote() {
         File baseDir = new File(testAndroidConventionProject, "build/analysis/")
         runGradleAndroidAnalysis('updateProject', 'analysis')
@@ -214,15 +206,7 @@ class ExecuteAndroidBuildsTest {
         assertRemoteSameAsBuild(testAndroidConventionProject, testNoVariantsProject, "pmd-rules.xml")
     }
 
-    private assertRemoteSameAsBuild(File projectDirectory, File configDirectory, String fileName) {
-        File baseDir = new File(projectDirectory, "build/analysis/")
-        File resourceDir = new File("src/main/resources/com/apphance/ameba/plugins/android/analysis/tasks")
-        File configBaseDir = new File(configDirectory, "config/analysis/")
-        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
-        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
-    }
-
-    @Test // FIXME
+    @Test
     void testAnalysisFromRemoteWrongConvention() {
         File baseDir = new File(testAndroidWrongConventionProject, "build/analysis/")
         runGradleAndroidAnalysisWrongConvention('updateProject', 'analysis')
@@ -232,6 +216,22 @@ class ExecuteAndroidBuildsTest {
         assertConfigSameAsBuild(testAndroidWrongConventionProject, "checkstyle.xml")
         assertConfigSameAsBuild(testAndroidWrongConventionProject, "findbugs-exclude.xml")
         assertConfigSameAsBuild(testAndroidWrongConventionProject, "pmd-rules.xml")
+    }
+
+    private assertConfigSameAsBuild(File projectDirectory, String fileName) {
+        File baseDir = new File(projectDirectory, "build/analysis/")
+        File resourceDir = new File("src/main/resources/com/apphance/ameba/plugins/android/analysis/tasks")
+        File configBaseDir = new File(projectDirectory, "config/analysis/")
+        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
+        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
+    }
+
+    private assertRemoteSameAsBuild(File projectDirectory, File configDirectory, String fileName) {
+        File baseDir = new File(projectDirectory, "build/analysis/")
+        File resourceDir = new File("src/main/resources/com/apphance/ameba/plugins/android/analysis/tasks")
+        File configBaseDir = new File(configDirectory, "config/analysis/")
+        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
+        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
     }
 
     @Test
@@ -309,7 +309,7 @@ class ExecuteAndroidBuildsTest {
         }
     }
 
-    @Test
+    @Ignore('to be used after apphance rewritten')
     void testDefaultApphanceDependency() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
@@ -325,7 +325,7 @@ class ExecuteAndroidBuildsTest {
         assertEquals('android.pre-production-1.8.2.jar', androidLib.name)
     }
 
-    @Test // FIXME
+    @Ignore('to be used after apphance rewritten')
     void testCorrectApphanceDependencyFromProperty() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
@@ -342,7 +342,7 @@ class ExecuteAndroidBuildsTest {
         assertEquals('android.production-1.8.2.jar', androidLib.name)
     }
 
-    @Test // FIXME
+    @Ignore('to be used after apphance rewritten')
     void testIncorrectApphanceDependencyFromProperty() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
