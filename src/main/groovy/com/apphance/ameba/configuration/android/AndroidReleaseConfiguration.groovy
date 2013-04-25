@@ -104,7 +104,7 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             required: { true },
             validator: {
                 def file = new File(androidConfiguration.rootDir, it as String)
-                it?.absolutePath?.trim() ? (file.exists() && ImageIO.read(file)) : false
+                file?.absolutePath?.trim() ? (file.exists() && ImageIO.read(file)) : false
             }
     )
 
