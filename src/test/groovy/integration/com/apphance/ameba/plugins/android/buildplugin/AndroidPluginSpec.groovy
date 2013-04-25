@@ -46,19 +46,19 @@ class AndroidPluginSpec extends Specification {
         project.tasks[CleanClassesTask.NAME].group == AMEBA_BUILD
         project.tasks[CopySourcesTask.NAME].group == AMEBA_BUILD
         project.tasks[ReplacePackageTask.NAME].group == AMEBA_BUILD
-        project.tasks[RunUpdateProjectTask.NAME].group == AMEBA_BUILD
+        project.tasks[UpdateProjectTask.NAME].group == AMEBA_BUILD
         project.tasks[CleanAndroidTask.NAME].group == AMEBA_BUILD
         project.tasks[CompileAndroidTask.NAME].group == AMEBA_BUILD
 
         and:
-        project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME, RunUpdateProjectTask.NAME)
+        project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME, UpdateProjectTask.NAME)
         project.tasks[CLEAN_TASK_NAME].dependsOn.flatten().containsAll(CleanAndroidTask.NAME)
         project.tasks[JAVADOC_TASK_NAME].dependsOn.flatten().containsAll(CompileAndroidTask.NAME)
         project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn.flatten().containsAll(CompileAndroidTask.NAME)
-        project.tasks[CleanClassesTask.NAME].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
-        project.tasks[CopySourcesTask.NAME].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
-        project.tasks[ReplacePackageTask.NAME].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
-        project.tasks[CompileAndroidTask.NAME].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
+        project.tasks[CleanClassesTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
+        project.tasks[CopySourcesTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
+        project.tasks[ReplacePackageTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
+        project.tasks[CompileAndroidTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
 
 
         and:
@@ -87,7 +87,7 @@ class AndroidPluginSpec extends Specification {
         !project.getTasksByName(CleanClassesTask.NAME, false)
         !project.getTasksByName(CopySourcesTask.NAME, false)
         !project.getTasksByName(ReplacePackageTask.NAME, false)
-        !project.getTasksByName(RunUpdateProjectTask.NAME, false)
+        !project.getTasksByName(UpdateProjectTask.NAME, false)
         !project.getTasksByName(CleanAndroidTask.NAME, false)
         !project.getTasksByName(CompileAndroidTask.NAME, false)
     }
@@ -122,7 +122,7 @@ class AndroidPluginSpec extends Specification {
         project.tasks[CleanClassesTask.NAME].group == AMEBA_BUILD
         project.tasks[CopySourcesTask.NAME].group == AMEBA_BUILD
         project.tasks[ReplacePackageTask.NAME].group == AMEBA_BUILD
-        project.tasks[RunUpdateProjectTask.NAME].group == AMEBA_BUILD
+        project.tasks[UpdateProjectTask.NAME].group == AMEBA_BUILD
         project.tasks[CleanAndroidTask.NAME].group == AMEBA_BUILD
         project.tasks[CompileAndroidTask.NAME].group == AMEBA_BUILD
 
@@ -133,8 +133,8 @@ class AndroidPluginSpec extends Specification {
         project.tasks['installv2']
 
         and:
-        project.tasks['buildv1'].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
-        project.tasks['buildv2'].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
+        project.tasks['buildv1'].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
+        project.tasks['buildv2'].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
         project.tasks['installv1'].dependsOn.flatten()*.toString().containsAll('buildv1')
         project.tasks['installv2'].dependsOn.flatten()*.toString().containsAll('buildv2')
 

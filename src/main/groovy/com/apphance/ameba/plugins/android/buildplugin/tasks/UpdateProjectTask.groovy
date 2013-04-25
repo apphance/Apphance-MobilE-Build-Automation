@@ -9,10 +9,9 @@ import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
-class RunUpdateProjectTask extends DefaultTask {
+class UpdateProjectTask extends DefaultTask {
 
     static String NAME = 'updateProject'
-    static final String PROJECT_PROPERTIES_KEY = 'project.properties'
     String description = 'Updates project using android command line tool'
     String group = AMEBA_BUILD
 
@@ -23,19 +22,20 @@ class RunUpdateProjectTask extends DefaultTask {
 
     @TaskAction
     void runUpdate() {
-        runUpdateRecursively(project.rootDir)
+        runUpdateRecursively(conf.rootDir)
     }
 
     void runUpdateRecursively(File currentDir) {
         runUpdateProject(currentDir)
-        Properties prop = new Properties()
-        File propFile = new File(currentDir, PROJECT_PROPERTIES_KEY)
+
+        def propFile = new File(currentDir, 'project.properties')
+
         if (propFile.exists()) {
+            def prop = new Properties()
             prop.load(new FileInputStream(propFile))
             prop.each { key, value ->
                 if (key.startsWith('android.library.reference.')) {
-                    File libraryProject = new File(currentDir, value.toString())
-                    runUpdateRecursively(libraryProject)
+                    runUpdateRecursively(new File(currentDir, value.toString()))
                 }
             }
         }

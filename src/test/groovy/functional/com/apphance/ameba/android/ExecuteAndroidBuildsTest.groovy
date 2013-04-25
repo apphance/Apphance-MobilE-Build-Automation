@@ -152,21 +152,6 @@ class ExecuteAndroidBuildsTest {
     }
 
     @Test
-    void testUpdateProject() {
-        File localProperties = new File(testProject, "local.properties")
-        File localPropertiesSubproject = new File(testProject, "subproject/local.properties")
-        File localPropertiesSubsubproject = new File(testProject, "subproject/subsubproject/local.properties")
-        localProperties.delete()
-        localPropertiesSubproject.delete()
-        localPropertiesSubsubproject.delete()
-        runGradle('updateProject')
-        assertTrue(localProperties.exists())
-        assertTrue(localPropertiesSubproject.exists())
-        assertTrue(localPropertiesSubsubproject.exists())
-    }
-
-
-    @Test
     void testUpdateVersion() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()

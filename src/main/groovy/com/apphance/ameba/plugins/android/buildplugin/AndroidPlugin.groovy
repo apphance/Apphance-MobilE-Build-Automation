@@ -38,29 +38,29 @@ class AndroidPlugin implements Plugin<Project> {
         if (androidConfiguration.isEnabled()) {
             prepareJavaEnvironment(project)
 
-            project.task(RunUpdateProjectTask.NAME, type: RunUpdateProjectTask)
+            project.task(UpdateProjectTask.NAME, type: UpdateProjectTask)
 
             project.task(CleanClassesTask.NAME,
                     type: CleanClassesTask,
-                    dependsOn: RunUpdateProjectTask.NAME)
+                    dependsOn: UpdateProjectTask.NAME)
 
             project.task(CopySourcesTask.NAME,
                     type: CopySourcesTask,
-                    dependsOn: RunUpdateProjectTask.NAME)
+                    dependsOn: UpdateProjectTask.NAME)
 
             project.task(ReplacePackageTask.NAME,
                     type: ReplacePackageTask,
-                    dependsOn: RunUpdateProjectTask.NAME)
+                    dependsOn: UpdateProjectTask.NAME)
 
             project.task(CleanAndroidTask.NAME,
                     type: CleanAndroidTask,
-                    dependsOn: [CleanConfTask.NAME, RunUpdateProjectTask.NAME])
+                    dependsOn: [CleanConfTask.NAME, UpdateProjectTask.NAME])
 
             project.tasks[CLEAN_TASK_NAME].dependsOn(CleanAndroidTask.NAME)
 
             project.task(CompileAndroidTask.NAME,
                     type: CompileAndroidTask,
-                    dependsOn: RunUpdateProjectTask.NAME)
+                    dependsOn: UpdateProjectTask.NAME)
 
             project.tasks[JAVADOC_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
             project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
@@ -73,7 +73,7 @@ class AndroidPlugin implements Plugin<Project> {
                 def buildName = "build${it.name}"
                 project.task(buildName,
                         type: SingleVariantTask,
-                        dependsOn: [CopySourcesTask.NAME, RunUpdateProjectTask.NAME]).variant = it
+                        dependsOn: [CopySourcesTask.NAME, UpdateProjectTask.NAME]).variant = it
 
                 def debugRelaseBuild = "buildAll${it.mode.name().toLowerCase().capitalize()}"
                 project.tasks[debugRelaseBuild].dependsOn buildName
