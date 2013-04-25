@@ -106,7 +106,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     File getSDKDir() {
         def androidHome = reader.envVariable('ANDROID_HOME')
-        androidHome ? new File(androidHome, 'sdk') : null
+        androidHome ? new File(androidHome) : null
     }
 
     final Collection<String> sourceExcludes = ['**/*.class', '**/bin/**', '**/build/*', '**/ameba-tmp/**/*', '**/ameba-ota/**/*']
