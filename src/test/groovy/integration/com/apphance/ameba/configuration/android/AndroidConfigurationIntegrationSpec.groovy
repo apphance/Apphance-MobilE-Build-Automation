@@ -3,12 +3,14 @@ package com.apphance.ameba.configuration.android
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidConfigurationIntegrationSpec extends Specification {
 
-    def 'sdk jars list contains maps.jar'() {
+    @Unroll
+    def 'sdk jars list contains maps.jar target: #target'() {
         given:
         def project = builder().build()
 
