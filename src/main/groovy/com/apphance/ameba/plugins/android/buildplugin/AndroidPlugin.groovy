@@ -53,7 +53,9 @@ class AndroidPlugin implements Plugin<Project> {
                     type: CleanAndroidTask,
                     dependsOn: [CleanConfTask.NAME, UpdateProjectTask.NAME])
 
-            project.task(CLEAN_TASK_NAME)
+            project.task(CLEAN_TASK_NAME) << {
+                androidConfiguration.buildDir.deleteDir()
+            }
 
             project.tasks[CLEAN_TASK_NAME].dependsOn(CleanAndroidTask.NAME)
 

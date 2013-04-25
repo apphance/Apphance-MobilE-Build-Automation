@@ -100,9 +100,12 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
 
     FileProperty iconFile = new FileProperty(
             name: 'android.release.project.icon.file',
-            message: 'Path to project\'s icon file',
+            message: 'Path to project\'s icon file, must be relative to the root dir of project',
             required: { true },
-            validator: { it?.absolutePath?.trim() ? (new File(it as String).exists() && ImageIO.read(new File(it as String))) : false }
+            validator: {
+                def file = new File(androidConfiguration.rootDir, it as String)
+                it?.absolutePath?.trim() ? (file.exists() && ImageIO.read(file)) : false
+            }
     )
 
     URLProperty projectURL = new URLProperty(

@@ -144,13 +144,6 @@ class ExecuteAndroidBuildsTest {
                 "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
     }
 
-    @Test
-    void testJavadoc() {
-        runGradle('updateProject', 'javadoc')
-        assertTrue(new File(testProject, "build/docs").isDirectory())
-        assertFalse(new File(testProject, "build/docs").listFiles().length == 0)
-    }
-
     @Ignore('using old configuration, to be rewritten')
     void testUpdateVersion() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
