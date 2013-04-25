@@ -1,11 +1,9 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import com.apphance.ameba.executor.command.CommandExecutor
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
+import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
-import com.apphance.ameba.executor.linker.FileLinker
-import com.apphance.ameba.executor.linker.SimpleFileLinker
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.google.common.io.Files
 import ij.ImagePlus
 import org.gradle.api.Project
@@ -29,25 +27,21 @@ class ImageMontageTaskSpec extends Specification {
     def fileForDescTest = new File('src/test/resources/com/apphance/ameba/plugins/release/tasks/Blank.jpg')
 
     def setup() {
-        Project project = Mock()
-        ProjectConfiguration conf = Mock()
-        ProjectReleaseConfiguration releaseConf = Mock()
-        FileLinker fileLinker = new SimpleFileLinker()
-        CommandLogFilesGenerator logFileGenerator = Mock()
-        CommandExecutor commandExecutor = new CommandExecutor(fileLinker, logFileGenerator)
-
-        imageMontageTask.project >> project
-        imageMontageTask.executor = commandExecutor
-        imageMontageTask.conf = conf
-        imageMontageTask.releaseConf = releaseConf
+        def project = GroovyStub(Project)
+        def conf = GroovyStub(AndroidConfiguration)
+        def releaseConf = GroovyStub(AndroidReleaseConfiguration)
+        def logFileGenerator = Stub(CommandLogFilesGenerator)
 
         def testDir = Files.createTempDir()
         testDir.deleteOnExit()
-        releaseConf.targetDirectory >> testDir
-        conf.projectName >> 'testProjectName'
+        releaseConf.getTargetDirectory() >> testDir
+        conf.getProjectName() >> new StringProperty(value: 'testProjectName')
         conf.fullVersionString >> 'fullVersionString'
         logFileGenerator.commandLogFiles() >> [(ERR): createTempFile('err', 'log'), (STD): createTempFile('std', 'log')]
-        0 * _
+
+        imageMontageTask.project >> project
+        imageMontageTask.androidConf = conf
+        imageMontageTask.androidReleaseConf = releaseConf
     }
 
     def "test outputMontageFile"() {
@@ -150,7 +144,7 @@ class ImageMontageTaskSpec extends Specification {
     @Ignore('This test should be run and verified manually')
     def 'manually verify adding description'() {
         given:
-        def tempFile = File.createTempFile('file-with-desc-', '.png')
+        def tempFile = createTempFile('file-with-desc-', '.png')
         Files.copy(fileForDescTest, tempFile)
 
         when:

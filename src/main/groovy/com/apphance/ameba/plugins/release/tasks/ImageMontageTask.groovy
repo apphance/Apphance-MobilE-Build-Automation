@@ -1,5 +1,7 @@
 package com.apphance.ameba.plugins.release.tasks
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
@@ -31,8 +33,8 @@ class ImageMontageTask extends DefaultTask {
     String group = AMEBA_RELEASE
     String description = 'Builds montage of images found in the project'
 
-    @Inject ProjectConfiguration conf
-    @Inject ProjectReleaseConfiguration releaseConf
+    @Inject AndroidConfiguration androidConf
+    @Inject AndroidReleaseConfiguration androidReleaseConf
 
     public static int TILE_PX_SIZE = 120
     public static int MAX_NUMBER_OF_TILES_IN_ROW = 10
@@ -43,11 +45,11 @@ class ImageMontageTask extends DefaultTask {
         def filesToMontage = getFilesToMontage(project.rootDir)
         File imageMontageFile = outputMontageFile()
         createMontage(imageMontageFile, filesToMontage)
-        addDescription(imageMontageFile, "${conf.projectName} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}")
+        addDescription(imageMontageFile, "${androidConf.projectName.value} Version: ${androidConf.fullVersionString} Generated: ${androidReleaseConf.buildDate}")
 
         def imageMontageFileArtifact = new AmebaArtifact(
-                name: "Image Montage", url: new URL(releaseConf.versionedApplicationUrl, "${imageMontageFile.name}"), location: imageMontageFile)
-        releaseConf.imageMontageFile = imageMontageFileArtifact
+                name: "Image Montage", url: new URL(androidReleaseConf.projectURL.value, "${imageMontageFile.name}"), location: imageMontageFile)
+        androidReleaseConf.imageMontageFile = imageMontageFileArtifact
     }
 
     void addDescription(File image, String description) {
@@ -63,7 +65,7 @@ class ImageMontageTask extends DefaultTask {
     }
 
     File outputMontageFile() {
-        def imageMontageFile = new File(releaseConf.targetDirectory, "${conf.projectName}-${conf.fullVersionString}-image-montage.png")
+        def imageMontageFile = new File(androidReleaseConf.targetDirectory, "${androidConf.projectName.value}-${androidConf.fullVersionString}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
         imageMontageFile
@@ -117,7 +119,7 @@ class ImageMontageTask extends DefaultTask {
 
             if (image != null) {
                 image = pad(image, 20, Color.WHITE)
-                image.getScaledInstance(owner.TILE_PX_SIZE, TILE_PX_SIZE, Image.SCALE_DEFAULT)
+                image.getScaledInstance(TILE_PX_SIZE, TILE_PX_SIZE, Image.SCALE_DEFAULT)
             } else {
                 log.error("Problem during converting ${it.absolutePath}")
             }
