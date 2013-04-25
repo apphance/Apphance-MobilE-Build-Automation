@@ -57,8 +57,10 @@ class ConversationManager {
                 print prompt(ap)
                 out.flush()
                 input = reader.readLine()
-                if (validateInput(input, ap))
+                if (validateInput(input, ap)) {
                     break
+                }
+                println "Invalid input"
             }
 
             setPropertyValue(ap, input)
@@ -83,19 +85,23 @@ class ConversationManager {
     @groovy.transform.PackageScope
     boolean validateInput(String input, AbstractProperty ap) {
         input = input?.trim()
-        input?.empty ?
-            ap.defaultValue() ? true : !ap.required()
-        :
+        if (input?.empty) {
+            ap.value || ap.defaultValue() || !ap.required()
+        } else {
             (ap.possibleValues && input in ap.possibleValues()) || (ap.validator && ap.validator(input))
+        }
     }
 
     @groovy.transform.PackageScope
     void setPropertyValue(AbstractProperty ap, String input) {
-        if (input?.empty && !ap.value) {
-            ap.value = ap?.defaultValue() ?: ''
+        if (input?.empty) {
+            if (!ap.value) {
+                ap.value = ap?.defaultValue() ?: ''
+            }
         } else if (ap.possibleValues && input in ap.possibleValues() || (ap.validator && ap.validator(input))) {
             ap.value = input
         }
+        log.info("value was set to ${ap.value}")
     }
 
     private Reader buildReader() {
