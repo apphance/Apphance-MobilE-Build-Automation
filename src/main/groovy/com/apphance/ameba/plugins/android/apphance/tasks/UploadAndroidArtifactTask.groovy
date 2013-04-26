@@ -1,19 +1,20 @@
 package com.apphance.ameba.plugins.android.apphance.tasks
 
-import com.apphance.ameba.configuration.ReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidApphanceConfiguration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.executor.AntExecutor
-import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
+import com.apphance.ameba.plugins.android.AndroidArtifactBuilder
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
 import com.apphance.ameba.util.Preconditions
-import com.google.inject.Inject
 import groovy.json.JsonSlurper
 import org.apache.http.util.EntityUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 import static org.gradle.api.logging.Logging.getLogger
@@ -28,11 +29,13 @@ class UploadAndroidArtifactTask extends DefaultTask {
     String group = AMEBA_APPHANCE_SERVICE
 
     @Inject
-    private AndroidApphanceConfiguration androidApphanceConfiguration
+    AndroidApphanceConfiguration androidApphanceConfiguration
     @Inject
-    private AndroidConfiguration androidConfiguration
+    AndroidConfiguration conf
     @Inject
-    private ReleaseConfiguration releaseConf
+    AndroidReleaseConfiguration releaseConf
+    @Inject
+    AndroidArtifactBuilder artifactBuilder
     AndroidVariantConfiguration variant
 
     @Inject
@@ -40,8 +43,7 @@ class UploadAndroidArtifactTask extends DefaultTask {
 
     @TaskAction
     public void uploadArtifact() {
-        def builder = new AndroidSingleVariantApkBuilder(project, androidConfiguration, executor)
-        def builderInfo = builder.buildApkArtifactBuilderInfo(variant)
+        def builderInfo = artifactBuilder.apkArtifactBuilderInfo(variant)
 
         String user = androidApphanceConfiguration.user.value
         String pass = androidApphanceConfiguration.pass.value
@@ -55,7 +57,7 @@ class UploadAndroidArtifactTask extends DefaultTask {
         try {
             networkHelper = new ApphanceNetworkHelper(user, pass)
 
-            def response = networkHelper.updateArtifactQuery(key, androidConfiguration.versionString, androidConfiguration.versionCode, false,
+            def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false,
                     ['apk', 'image_montage'])
             l.debug("Upload version query response: ${response.statusLine}")
             throwIfCondition(!response.entity, "Error while uploading version query, empty response received")

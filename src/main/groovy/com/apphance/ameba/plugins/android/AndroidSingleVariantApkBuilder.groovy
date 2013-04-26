@@ -1,7 +1,5 @@
 package com.apphance.ameba.plugins.android
 
-import com.apphance.ameba.configuration.android.AndroidConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.executor.AntExecutor
 import org.gradle.api.Project
 
@@ -13,29 +11,8 @@ import static com.apphance.ameba.executor.AntExecutor.CLEAN
  */
 class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder {
 
-    AntExecutor antExecutor
-
-    AndroidSingleVariantApkBuilder(Project project, AndroidConfiguration androidConf, AntExecutor antExecutor) {
-        super(project, androidConf)
-
-        this.antExecutor = antExecutor
-    }
-
-    AndroidBuilderInfo buildApkArtifactBuilderInfo(AndroidVariantConfiguration avc) {
-        String debugReleaseLowercase = avc.mode.name().toLowerCase()
-        String variablePart = debugReleaseLowercase + "-${avc.name}"
-        File binDir = new File(new File(androidConf.tmpDir, avc.name), 'bin')
-        AndroidBuilderInfo bi = new AndroidBuilderInfo
-        (
-                variant: avc.name,
-                debugRelease: avc.mode.name(),
-                tmpDir: avc.tmpDir,
-                buildDirectory: binDir,
-                originalFile: new File(binDir, "${androidConf.projectName.value}-${debugReleaseLowercase}.apk"),
-                fullReleaseName: "${androidConf.projectName.value}-${variablePart}-${androidConf.fullVersionString}",
-                filePrefix: "${androidConf.projectName.value}-${variablePart}-${androidConf.fullVersionString}"
-        )
-        return bi
+    AndroidSingleVariantApkBuilder(Project project, AntExecutor antExecutor) {
+        super(project, antExecutor)
     }
 
     @Override
@@ -50,7 +27,7 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
                 }
             }
         }
-        antExecutor.executeTarget bi.tmpDir, bi.debugRelease.toLowerCase()
+        antExecutor.executeTarget bi.tmpDir, bi.mode.name().toLowerCase()
         logger.lifecycle("Apk file created: ${bi.originalFile}")
         buildListeners.each {
             it.buildDone(project, bi)

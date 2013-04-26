@@ -1,7 +1,5 @@
 package com.apphance.ameba.plugins.android
 
-import com.apphance.ameba.configuration.android.AndroidConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.executor.AntExecutor
 import org.gradle.api.Project
 
@@ -13,26 +11,8 @@ import static com.apphance.ameba.executor.AntExecutor.CLEAN
  */
 class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder {
 
-    AntExecutor antExecutor
-
-    AndroidSingleVariantJarBuilder(Project project, AndroidConfiguration androidConf, AntExecutor executor) {
-        super(project, androidConf)
-        this.antExecutor = executor
-    }
-
-    AndroidBuilderInfo buildJarArtifactBuilderInfo(AndroidVariantConfiguration avc) {
-        String debugReleaseLowercase = avc.mode.name().toLowerCase()
-        String variablePart = debugReleaseLowercase + "-${avc.name}"
-        File binDir = new File(new File(androidConf.tmpDir, avc.name), "bin")
-        AndroidBuilderInfo bi = new AndroidBuilderInfo(
-                variant: avc.name,
-                debugRelease: avc.mode.name().toLowerCase(),
-                tmpDir: avc.tmpDir,
-                buildDirectory: binDir,
-                originalFile: new File(binDir, "classes.jar"),
-                fullReleaseName: "${androidConf.projectName.value}-${variablePart}-${androidConf.fullVersionString}",
-                filePrefix: "${androidConf.projectName.value}-${variablePart}-${androidConf.fullVersionString}")
-        bi
+    AndroidSingleVariantJarBuilder(Project project, AntExecutor executor) {
+        super(project, executor)
     }
 
     @Override
@@ -46,7 +26,7 @@ class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder
                 }
             }
         }
-        antExecutor.executeTarget bi.tmpDir, bi.debugRelease.toLowerCase()
+        antExecutor.executeTarget bi.tmpDir, bi.mode.name().toLowerCase()
         logger.lifecycle("Jar file created: ${bi.originalFile}")
         buildListeners.each {
             it.buildDone(project, bi)
