@@ -45,8 +45,8 @@ class SendMailMessageTask extends DefaultTask {
         }
 
         ant.mail(
-                mailhost: mailServer,
-                mailport: mailPort,
+                mailhost: releaseConf.mailServer,
+                mailport: releaseConf.mailPort,
                 subject: releaseConf.releaseMailSubject,
                 charset: 'utf-8',
                 tolist: releaseConf.releaseMailTo) {
