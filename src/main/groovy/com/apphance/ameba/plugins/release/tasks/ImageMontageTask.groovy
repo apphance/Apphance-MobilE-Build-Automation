@@ -74,8 +74,9 @@ class ImageMontageTask extends DefaultTask {
     List<File> getFilesToMontage(File rootDir) {
         List<File> filesToMontage = []
 
-        rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { File file ->
-            if (isValid(rootDir, file)) {
+        rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL, excludeFilter: '**/ameba-*/**']) { File file ->
+            //FIXME apply better filter
+            if (isValid(rootDir, file) && ['ameba-ota', 'ameba-tmp'].every {!file.absolutePath.contains(it)}) {
                 filesToMontage << file
             }
         }
@@ -130,6 +131,7 @@ class ImageMontageTask extends DefaultTask {
     }
 
     BufferedImage getImageFrom(File file) {
+        log.info("Reading file: $file.absolutePath")
         getConverter(file.name)(file)
     }
 
