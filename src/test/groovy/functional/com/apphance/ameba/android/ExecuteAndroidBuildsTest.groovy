@@ -263,22 +263,6 @@ class ExecuteAndroidBuildsTest {
                 .exists())
     }
 
-    @Test
-    void testRunAndroidCreateAVD() {
-        runGradle('cleanAVD', 'createAVD')
-        def files = [
-                'config.ini',
-                'sdcard.img',
-                'snapshots.img',
-                'userdata.img'
-        ]
-        File avdsDirectory = new File('testProjects/android/android-basic/avds')
-        assertTrue(avdsDirectory.exists())
-        files.each {
-            assertTrue(it, new File(avdsDirectory, it).exists())
-        }
-    }
-
     @Ignore('to be used after apphance rewritten')
     void testDefaultApphanceDependency() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()

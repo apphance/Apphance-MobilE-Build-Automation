@@ -5,7 +5,7 @@ import spock.lang.Specification
 
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
-class CleanAVDTaskIntegrationSpec extends Specification {
+class CleanAVDTaskSpec extends Specification {
 
     def 'avds dir is deleted'() {
         given:

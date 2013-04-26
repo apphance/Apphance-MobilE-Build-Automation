@@ -77,18 +77,17 @@ class CommandExecutorSpec extends Specification {
         new File(logFiles[STD].text.trim()).exists()
     }
 
-    //TODO executing commands with env variables passed, not working right now!!!
-//    def "executor invokes 'ls' command with dir passed through env variable"() {
-//
-//        expect:
-//        def command = new Command(cmd: cmd, runDir: runDir, environment: env, failOnError: false)
-//        println command
-//        expectedOutput == executor.executeCommand(command)
-//
-//        where:
-//        expectedOutput   | runDir                  | cmd                               | env
-//        ['main', 'test'] | new File('src', 'test') | ['bash', '-c', 'ls \\$DIR_TO_LS'] | [DIR_TO_LS: new File('src', 'test').parentFile.canonicalPath]
-//    }
+    //this test may by potentially unsafe on windows workstations
+    def "executor invokes 'ls' command with dir passed through env variable"() {
+
+        expect:
+        def command = new Command(cmd: cmd, runDir: runDir, environment: env, failOnError: false)
+        expectedOutput == executor.executeCommand(command)
+
+        where:
+        expectedOutput   | runDir                  | cmd                               | env
+        ['main', 'test'] | new File('src', 'test') | ['bash', '-c', 'ls \\$DIR_TO_LS'] | [DIR_TO_LS: new File('src', 'test').parentFile.canonicalPath]
+    }
 
     def 'executor handles input correctly'() {
         given:
