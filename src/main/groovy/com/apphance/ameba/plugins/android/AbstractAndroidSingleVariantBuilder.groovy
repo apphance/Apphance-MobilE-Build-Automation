@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.android
 
-import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.release.AndroidBuildListener
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -17,12 +17,12 @@ abstract class AbstractAndroidSingleVariantBuilder {
     static Collection<AndroidBuildListener> buildListeners = []
 
     Project project
-    AndroidConfiguration androidConf
     File variantsDir
+    AntExecutor antExecutor
 
-    AbstractAndroidSingleVariantBuilder(Project project, AndroidConfiguration androidConf) {
+    AbstractAndroidSingleVariantBuilder(Project project, AntExecutor antExecutor) {
         this.project = project
-        this.androidConf = androidConf
+        this.antExecutor = antExecutor
         this.variantsDir = project.file('variants')//TODO
     }
 

@@ -1,4 +1,7 @@
 package com.apphance.ameba.plugins.android
+
+import com.apphance.ameba.configuration.android.AndroidBuildMode
+
 /**
  * Information used to build artifacts.  Useful information grouped together needed
  * by various artifacts generated along the way.
@@ -6,7 +9,7 @@ package com.apphance.ameba.plugins.android
 class AndroidBuilderInfo {
 
     String variant
-    String debugRelease
+    AndroidBuildMode mode
     File buildDirectory
     File originalFile
     String fullReleaseName
