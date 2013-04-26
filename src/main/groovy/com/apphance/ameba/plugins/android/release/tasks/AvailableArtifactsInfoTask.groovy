@@ -39,9 +39,9 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
         AndroidBuildListener listener
         if (androidConf.isLibrary()) {
-            listener = new AndroidReleaseJarListener(project, androidConf, androidReleaseConf, antExecutor)
+            listener = new AndroidReleaseJarListener(androidConf, androidReleaseConf, antExecutor)
         } else {
-            listener = new AndroidReleaseApkListener(project, androidConf, androidReleaseConf, antExecutor)
+            listener = new AndroidReleaseApkListener(androidConf, androidReleaseConf, antExecutor)
         }
         variantsConf.variants.each {
             listener.buildArtifactsOnly(project, it)
@@ -106,7 +106,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         otaIndexFile.location.write(result.toString(), 'utf-8')
         androidReleaseConf.otaIndexFile = otaIndexFile
         l.lifecycle("Ota index created: ${otaIndexFile}")
-        
+
         def iconFile = androidReleaseConf.iconFile.value
         ant.copy(file: new File(project.rootDir, iconFile.path), tofile: new File(otaIndexFile.location.parentFile, iconFile.name))
 

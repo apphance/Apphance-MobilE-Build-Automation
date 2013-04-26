@@ -7,7 +7,6 @@ import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.AndroidBuilderInfo
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import org.gradle.api.AntBuilder
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 
@@ -23,13 +22,11 @@ class AndroidReleaseJarListener implements AndroidBuildListener {
 
     private AndroidConfiguration conf
     private AndroidReleaseConfiguration releaseConf
-    private AntBuilder ant
     private AntExecutor antExecutor
 
-    AndroidReleaseJarListener(Project project, AndroidConfiguration conf, AndroidReleaseConfiguration releaseConf, AntExecutor antExecutor) {
+    AndroidReleaseJarListener(AndroidConfiguration conf, AndroidReleaseConfiguration releaseConf, AntExecutor antExecutor) {
         this.conf = conf
         this.releaseConf = releaseConf
-        this.ant = project.ant
         this.antExecutor = antExecutor
     }
 

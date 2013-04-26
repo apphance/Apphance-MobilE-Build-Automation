@@ -48,8 +48,8 @@ class AndroidReleasePlugin implements Plugin<Project> {
                     dependsOn: [AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME])
 
             //TODO to be separated, refactored, redesigned :/
-            AndroidSingleVariantApkBuilder.buildListeners << new AndroidReleaseApkListener(project, conf, releaseConf, antExecutor)
-            AndroidSingleVariantJarBuilder.buildListeners << new AndroidReleaseJarListener(project, conf, releaseConf, antExecutor)
+            AndroidSingleVariantApkBuilder.buildListeners << new AndroidReleaseApkListener(conf, releaseConf, antExecutor)
+            AndroidSingleVariantJarBuilder.buildListeners << new AndroidReleaseJarListener(conf, releaseConf, antExecutor)
         }
     }
 }
