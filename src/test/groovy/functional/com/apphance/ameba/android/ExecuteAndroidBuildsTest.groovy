@@ -87,16 +87,6 @@ class ExecuteAndroidBuildsTest {
     }
 
     @Test
-    void testOta() {
-        runGradle('updateProject', 'cleanRelease')
-        assertTrue(new File(testProject, "ameba-ota").exists())
-        assertEquals(0, new File(testProject, "ameba-ota").listFiles().length)
-        assertTrue(new File(testProject, "ameba-tmp").exists())
-        assertEquals(0, new File(testProject, "ameba-tmp").listFiles().length)
-    }
-
-
-    @Test
     void testBuildDebug() {
         runGradle('clean', 'buildAllDebug')
         assertTrue(new File(testProject,
@@ -106,7 +96,6 @@ class ExecuteAndroidBuildsTest {
         assertFalse(new File(testProject,
                 "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-degub-TestDebug-unaligned-${fullVersion}.apk").exists())
     }
-
 
     @Test
     void testBuildRelease() {
