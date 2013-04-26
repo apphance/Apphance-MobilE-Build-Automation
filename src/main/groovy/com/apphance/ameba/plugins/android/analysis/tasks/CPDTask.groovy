@@ -1,15 +1,17 @@
 package com.apphance.ameba.plugins.android.analysis.tasks
 
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-class CPDTask {
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
 
-    private Project project
+class CPDTask extends DefaultTask {
 
-    CPDTask(Project project) {
-        this.project = project
-    }
+    static String NAME = 'cpd'
+    String group = AMEBA_ANALYSIS
+    String description = 'Runs CPD (duplicated code) analysis on project'
 
+    @TaskAction
     public void runCPD() {
 
         def cp = project.configurations.pmdConf.asPath

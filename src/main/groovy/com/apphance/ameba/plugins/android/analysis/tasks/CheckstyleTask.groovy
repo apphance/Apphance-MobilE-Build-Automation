@@ -1,24 +1,27 @@
 package com.apphance.ameba.plugins.android.analysis.tasks
 
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
-import org.gradle.api.Project
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.google.inject.Inject
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
 
-@Mixin(AndroidAnalysisMixin)
-class CheckStyleTask {
+class CheckstyleTask extends DefaultTask {
 
-    private Project project
-    private AndroidProjectConfiguration androidConf
+    static String NAME = 'checkstyle'
+    String group = AMEBA_ANALYSIS
+    String description = 'Runs Checkstyle analysis on project'
 
-    CheckStyleTask(Project project) {
-        this.project = project
-        this.androidConf = getAndroidProjectConfiguration(project)
-    }
+    @Inject
+    AndroidConfiguration androidConfiguration
+    @Inject
+    AndroidAnalysisResourceLocator resourceLocator
 
+    @TaskAction
     public void runCheckStyle() {
 
-        URL checkstyleXml = getResourceUrl(project, 'checkstyle.xml')
+        URL checkstyleXml = resourceLocator.getResourceUrl(project, 'checkstyle.xml')
         File analysisDir = project.file('build/analysis')
         File checkstyleFile = new File(analysisDir, 'checkstyle.xml')
 
@@ -26,14 +29,14 @@ class CheckStyleTask {
         checkstyleFile.delete()
         checkstyleFile << checkstyleXml.getContent()
 
-        URL checkstyleSuppressionXml = getResourceUrl(project, 'checkstyle-suppressions.xml')
+        URL checkstyleSuppressionXml = resourceLocator.getResourceUrl(project, 'checkstyle-suppressions.xml')
         File checkstyleSuppressionFile = new File(analysisDir, 'checkstyle-suppressions.xml')
 
         checkstyleSuppressionFile.parentFile.mkdirs()
         checkstyleSuppressionFile.delete()
         checkstyleSuppressionFile << checkstyleSuppressionXml.getContent()
 
-        URL checkstyleLocalSuppressionXml = getResourceUrl(project, 'checkstyle-local-suppressions.xml')
+        URL checkstyleLocalSuppressionXml = resourceLocator.getResourceUrl(project, 'checkstyle-local-suppressions.xml')
         File checkstyleLocalSuppressionFile = new File(analysisDir, 'checkstyle-local-suppressions.xml')
 
         checkstyleLocalSuppressionFile.parentFile.mkdirs()
@@ -48,7 +51,7 @@ class CheckStyleTask {
                 formatter(type: 'xml', tofile: 'build/analysis/checkstyle-report.xml')
                 classpath(path: 'bin/classes')
                 classpath(path: cp)
-                classpath(path: androidConf.allJarsAsPath)
+                classpath(path: androidConfiguration.allJarsAsPath)
                 fileset(dir: 'src', includes: '**/*.java')
             }
         }

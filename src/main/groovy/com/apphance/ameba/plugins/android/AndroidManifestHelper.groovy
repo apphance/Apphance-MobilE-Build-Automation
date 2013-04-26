@@ -34,19 +34,19 @@ apphance:only="true">
         manifest.@package
     }
 
-    Expando readVersion(File projectDir) {
+    Map<String, String> readVersion(File projectDir) {
         def manifest = new XmlSlurper().parse(new File(projectDir, ANDROID_MANIFEST))
-        def versionCode = manifest.@'android:versionCode'.text().toLong()
-        def versionString = manifest.@'android:versionName'.text()
-        new Expando(versionCode: versionCode, versionString: versionString)
+        String versionCode = manifest.@'android:versionCode'.text()
+        String versionString = manifest.@'android:versionName'.text()
+        [versionCode: versionCode, versionString: versionString]
     }
 
-    void updateVersion(File projectDir, Expando versionDetails) {
+    void updateVersion(File projectDir, String versionString, String versionCode) {
         def file = new File(projectDir, ANDROID_MANIFEST)
         saveOriginalFile(projectDir, file)
         def manifest = new XmlSlurper(false, false).parse(file)
-        manifest.@'android:versionName' = versionDetails.versionString.toString()
-        manifest.@'android:versionCode' = versionDetails.versionCode.toString()
+        manifest.@'android:versionName' = versionString
+        manifest.@'android:versionCode' = versionCode
         file.delete()
         file << XmlUtil.serialize(manifest)
     }
@@ -284,7 +284,7 @@ apphance:only="true">
         }.size() != 0
     }
 
-    static boolean isApphanceInstrumentationPresent(File projectDir) {
+    boolean isApphanceInstrumentationPresent(File projectDir) {
         def file = new File(projectDir, ANDROID_MANIFEST)
         def manifest = new XmlSlurper().parse(file)
 

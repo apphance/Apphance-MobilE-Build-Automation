@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>${title}</title>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.css"/>
+    <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.js"></script>
+</head>
+<body>
+<div data-role="page" id="home">
+    <div data-role="header">
+        <h1>${rb.getString('Files_to_download')}</h1>
+    </div>
+    <div data-role="content">
+        <div>
+            <section id="applications">
+                <header style="text-align:center;">
+                    <h3>
+                        <div>${title}</div>
+                    </h3>
+                    <div>
+                        ${rb.getString('Version')} ${version}<br>
+                        ${rb.getString('Released')} ${currentDate}
+                    </div>
+                </header>
+                <p>
+                <ul data-role="listview" data-inset="true" data-theme="a">
+                    <% targets.each { target -> %>
+                    <% if (target != "Frankified") {%>
+
+                    <li><a href="#${target}"><h3>${target}</h3></a></li>
+
+                    <% } %>
+
+                    <% } %>
+                </ul>
+            </section>
+        </div>
+        <div>
+            <section id="other">
+                <header style="text-align:center;">
+                    <h3>
+                        <div>${rb.getString('Other')}</div>
+                    </h3>
+                </header>
+                <p>
+                <ul data-role="listview" data-inset="true" data-theme="a">
+                    <% if (releaseConf.mailMessageFile != null) { %>
+                    <li><a href="${releaseConf.mailMessageFile.getRelativeUrl(baseUrl)}" rel="external">
+                        <h3>${rb.getString('Mail_message')}</h3></a></li>
+                    <% } %>
+                    <% if (releaseConf.imageMontageFile != null) { %>
+                    <li><a href="${releaseConf.imageMontageFile.getRelativeUrl(baseUrl)}" rel="external">
+                        <h3>${rb.getString('Image_montage_file')}</h3></a></li>
+                    <% } %>
+                    <% if (releaseConf.QRCodeFile != null) { %>
+                    <li><a href="${releaseConf.QRCodeFile.getRelativeUrl(baseUrl)}" rel="external">
+                        <h3>${rb.getString('QR_Code')}</h3></a></li>
+                    <% } %>
+                    <% if (iosReleaseConf.plainFileIndexFile != null) { %>
+                    <li><a href="${iosReleaseConf.plainFileIndexFile.getRelativeUrl(baseUrl)}" rel="external">
+                        <h3>${rb.getString('Plain_file_index')}</h3></a></li>
+                    <% } %>
+                    <li><a href="#provprofiles"><h3>${rb.getString('Valid_UDIDs')}</h3></a></li>
+                </ul>
+            </section>
+        </div>
+    </div>
+</div>
+<% targets.each { target -> %>
+<% if (target != "Frankified") {%>
+
+<div data-role="page" id="${target}" data-add-back-btn="true">
+    <div data-role="header">
+        <h1>${target}</h1>
+    </div>
+    <div data-role="content">
+        <% configurations.each { configuration -> %>
+        <% def id = "${target}-${configuration}".toString() %>
+        <% if (!iosConf.isBuildExcluded(id)) {%>
+        <section id="${configuration}">
+            <header style="text-align:center;">
+                <h3>
+                    <div>${rb.getString('Configuration')} ${configuration}</div>
+                </h3>
+            </header>
+            <p>
+            <ul data-role="listview" data-inset="true" data-theme="a">
+                <% if (iosReleaseConf.distributionZipFiles[id] != null) { %>
+                <li><a href="${iosReleaseConf.distributionZipFiles[id].getRelativeUrl(baseUrl)}" rel="external">
+                    <h3>${rb.getString('Zip_file')}</h3></a></li>
+                <% } %>
+                <% if (iosReleaseConf.dSYMZipFiles[id] != null) { %>
+                <li><a href="${iosReleaseConf.dSYMZipFiles[id].getRelativeUrl(baseUrl)}" rel="external">
+                    <h3>${rb.getString('dSYM_file')}</h3></a></li>
+                <% } %>
+                <% if (iosReleaseConf.ipaFiles[id] != null) { %>
+                <li><a href="${iosReleaseConf.ipaFiles[id].getRelativeUrl(baseUrl)}" rel="external">
+                    <h3>${rb.getString('Ipa_file')}</h3></a></li>
+                <% } %>
+                <% if (iosReleaseConf.manifestFiles[id] != null) { %>
+                <li><a href="${iosReleaseConf.manifestFiles[id].getRelativeUrl(baseUrl)}" rel="external">
+                    <h3>${rb.getString('Manifest_file')}</h3></a></li>
+                <% } %>
+                <% if (iosReleaseConf.mobileProvisionFiles[id] != null) { %>
+                <li><a href="${iosReleaseConf.mobileProvisionFiles[id].getRelativeUrl(baseUrl)}" rel="external">
+                    <h3>${rb.getString('Mobileprovision_file')}</h3></a></li>
+                <% } %>
+            </ul>
+        </section>
+        <% } %>
+        <% } %>
+        <% } %>
+
+        <% if (!iosReleaseConf.dmgImageFiles.empty) { %>
+        <section id="simulatorImages">
+            <header style="text-align:center;">
+                <h3>
+                    <div>${rb.getString('Simulator_images')}</div>
+                </h3>
+            </header>
+            <p>
+            <ul data-role="listview" data-inset="true" data-theme="a">
+                <% iosConf.families.each { family -> %>
+                <% if (iosReleaseConf.dmgImageFiles[family + '-' + target] != null) { %>
+                <li><a href="${iosReleaseConf.dmgImageFiles[family + '-' + target].getRelativeUrl(baseUrl)}"
+                       rel="external"><h3>
+                    ${java.text.MessageFormat.format(rb.getString('Family_simulator'),family)}</h3></a></li>
+                <% } %>
+                <% } %>
+            </ul>
+        </section>
+        <% } %>
+    </div>
+</div>
+<% } %>
+<div data-role="page" id="provprofiles" data-add-back-btn="true">
+    <div data-role="header">
+        <h1>${rb.getString('List_of_valid_UDIDs')}</h1>
+    </div>
+    <div data-role="content">
+        <div>${rb.getString('List_of_valid_UDIDs')}</div>
+        <div style="word-wrap: break-word">
+            <% targets.each { target -> %>
+            <h2>${target}</h2>
+            <ul>
+                <% udids[target].each { udid -> %>
+                <li>${udid}</li>
+                <% } %>
+            </ul>
+            <% } %>
+        </div>
+    </div>
+</div>
+</body>
+</html>

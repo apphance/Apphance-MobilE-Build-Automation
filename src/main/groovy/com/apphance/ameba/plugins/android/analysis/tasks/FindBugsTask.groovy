@@ -1,28 +1,33 @@
 package com.apphance.ameba.plugins.android.analysis.tasks
 
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.util.Preconditions
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.Project
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
-import static com.apphance.ameba.plugins.android.analysis.AndroidAnalysisPlugin.FINDBUGS_DEFAULT_HOME
-import static com.apphance.ameba.plugins.android.analysis.AndroidAnalysisPlugin.FINDBUGS_HOME_DIR_PROPERTY
+import javax.inject.Inject
 
-@Mixin(AndroidAnalysisMixin)
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
+
 @Mixin(Preconditions)
-class FindBugsTask {
+class FindBugsTask extends DefaultTask {
 
-    private Project project
-    private AndroidProjectConfiguration androidConf
+    public static final String FINDBUGS_HOME_DIR_PROPERTY = 'findbugs.home.dir'
+    public static final String FINDBUGS_DEFAULT_HOME = '/var/lib/analysis/findbugs'
 
-    FindBugsTask(Project project) {
-        this.project = project
-        this.androidConf = getAndroidProjectConfiguration(project)
-    }
+    static String NAME = 'findbugs'
+    String group = AMEBA_ANALYSIS
+    String description = 'Runs Findbugs analysis on project'
 
+    @Inject
+    AndroidConfiguration androidConfiguration
+    @Inject
+    AndroidAnalysisResourceLocator resourceLocator
+
+    @TaskAction
     public void runFindbugs() {
-        URL findbugsXml = getResourceUrl(project, 'findbugs-exclude.xml')
+        URL findbugsXml = resourceLocator.getResourceUrl(project, 'findbugs-exclude.xml')
         File analysisDir = project.file('build/analysis')
         File findbugsFile = new File(analysisDir, "findbugs-exclude.xml")
 
@@ -45,7 +50,7 @@ class FindBugsTask {
                     excludefilter: 'build/analysis/findbugs-exclude.xml') {
                 sourcePath(path: 'src')
                 "class"(location: binClasses)
-                auxclassPath(path: androidConf.allJarsAsPath)
+                auxclassPath(path: androidConfiguration.allJarsAsPath)
             }
         }
     }

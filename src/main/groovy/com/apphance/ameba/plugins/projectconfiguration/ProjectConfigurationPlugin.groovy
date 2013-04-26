@@ -1,19 +1,34 @@
 package com.apphance.ameba.plugins.projectconfiguration
 
+import com.apphance.ameba.configuration.AbstractConfiguration
+import com.apphance.ameba.configuration.reader.ConversationManager
+import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.plugins.projectconfiguration.tasks.*
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
+import javax.inject.Inject
+
 import static com.apphance.ameba.PropertyCategory.retrieveBasicProjectData
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
- * Plugin for basic project configuration.
+ * This is the base plugin which should be applied in any project.
  *
+ * The plugin should be applied before any other Ameba plugin. It reads basic project configuration and loads shared
+ * configuration for all other plugins.
+ *
+ * This plugin provides setup-related tasks. The tasks allow to generate new configuration,
+ * verify existing configuration and show the configuration to the user.
+ * It also adds several utility tasks that can be used across all types of projects.
+ *
+ * Conventions defined in this task are used to provide default values for properties from all other plugins.
+ * Defining such defaults and importing them from your shared location is the easiest way to provide
+ * organisation-specific defaults across your projects.
  */
 class ProjectConfigurationPlugin implements Plugin<Project> {
 
@@ -22,16 +37,23 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
     public final static String PROJECT_NAME_PROPERTY = 'project.name'
 
     public final static String READ_PROJECT_CONFIGURATION_TASK_NAME = 'readProjectConfiguration'
-    public final static String CLEAN_CONFIGURATION_TASK_NAME = 'cleanConfiguration'
     public final static String PREPARE_SETUP_TASK_NAME = 'prepareSetup'
     public final static String VERIFY_SETUP_TASK_NAME = 'verifySetup'
     public final static String SHOW_CONVENTIONS_TASK_NAME = 'showConventions'
     public final static String SHOW_SETUP_TASK_NAME = 'showSetup'
-    public final static String CHECK_TESTS_TASK_NAME = 'checkTests'
 
     public final static String AMEBA_PROPERTY_DEFAULTS_CONVENTION_NAME = 'amebaPropertyDefaults'
 
+    @Inject
+    private Map<Integer, AbstractConfiguration> configurations
+
+    @Inject
+    PropertyPersister propertyPersister
+
     private Project project
+
+    @Inject
+    ConversationManager conversationManager
 
     @Override
     void apply(Project project) {
@@ -40,14 +62,27 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         addAmebaConvention()
         addMavenRepository()
         prepareReadProjectConfigurationTask()
-        prepareCleanConfigurationTask()
         prepareShowConventionRule()
 
+        prepareSetupTask2()
+
+        project.task(CleanConfTask.NAME, type: CleanConfTask, dependsOn: READ_PROJECT_CONFIGURATION_TASK_NAME)
+        project.task(CheckTestsTask.NAME, type: CheckTestsTask, dependsOn: READ_PROJECT_CONFIGURATION_TASK_NAME)
+
         project.task(PREPARE_SETUP_TASK_NAME, type: PrepareSetupTask)
-        project.task(VERIFY_SETUP_TASK_NAME, type: VerifySetupTask)
+        project.task(VerifySetupTask.NAME, type: VerifySetupTask)
         project.task(SHOW_SETUP_TASK_NAME, type: ShowSetupTask)
-        project.task(CHECK_TESTS_TASK_NAME, type: CheckTestsTask)
         project.task(SHOW_CONVENTIONS_TASK_NAME, type: ShowConventionsTask)
+    }
+
+    private void prepareSetupTask2() {
+        project.task('prepareSetup2',
+                group: AMEBA_SETUP,
+                description: 'Prepares configuration (ameba.properties)') << {
+            Collection<AbstractConfiguration> sorted = configurations.sort().values()
+            conversationManager.resolveConfigurations(sorted)
+            propertyPersister.save(sorted)
+        }
     }
 
     private void addAmebaConvention() {
@@ -63,14 +98,6 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
         task.description = "Reads project's configuration and sets it up in projectConfiguration property of project"
         task.group = AMEBA_CONFIGURATION
         task.doLast { retrieveBasicProjectData(project) }
-    }
-
-    private void prepareCleanConfigurationTask() {
-        Task task = project.task(CLEAN_CONFIGURATION_TASK_NAME)
-        task.description = 'Cleans configuration before each build'
-        task.group = AMEBA_CONFIGURATION
-        task.doLast { new CleanConfTask(getProjectConfiguration(project)).clean() }
-        task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME)
     }
 
     //TODO to separate?
@@ -90,23 +117,6 @@ class ProjectConfigurationPlugin implements Plugin<Project> {
             }
         }
     }
-
-
-    static public final String DESCRIPTION =
-        """This is the base plugin which should be applied in any project.
-
-The plugin should be applied before any other Ameba plugin. It reads basic project configuration and loads shared
-configuration for all other plugins.
-
-This plugin provides setup-related tasks. The tasks allow to generate new configuration,
-verify existing configuration and show the configuration to the user.
-It also adds several utility tasks that can be used across all types of projects.
-
-Conventions defined in this task are used to provide default values for properties from all other plugins.
-Defining such defaults and importing them from your shared location is the easiest way to provide
-organisation-specific defaults across your projects.
-
-"""
 
     static class ProjectConfigurationConvention {
         static public final String DESCRIPTION =

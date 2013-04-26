@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.ios.apphance
 
+import com.apphance.ameba.plugins.ios.apphance.tasks.PbxProjectHelper
 import spock.lang.Specification
 
 class IOSPBXProjectHelperSpec extends Specification {

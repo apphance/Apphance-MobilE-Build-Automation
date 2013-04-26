@@ -1,11 +1,11 @@
 package com.apphance.ameba.plugins.android
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.plugins.android.buildplugin.AndroidBuildListener
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.plugins.android.release.AndroidBuildListener
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Base builder. Builds binary files - APK or JAR- depends on implementation.
@@ -13,22 +13,19 @@ import org.gradle.api.logging.Logging
  */
 abstract class AbstractAndroidSingleVariantBuilder {
 
-    static Logger logger = Logging.getLogger(AbstractAndroidSingleVariantBuilder.class)
-    Project project
+    Logger logger = getLogger(getClass())
     static Collection<AndroidBuildListener> buildListeners = []
 
-    ProjectConfiguration conf
-    AndroidProjectConfiguration androidConf
+    Project project
+    AndroidConfiguration androidConf
     File variantsDir
 
-    AbstractAndroidSingleVariantBuilder(Project project, AndroidProjectConfiguration androidProjectConfiguration) {
-        use(PropertyCategory) {
-            this.project = project
-            this.conf = project.getProjectConfiguration()
-            this.androidConf = androidProjectConfiguration
-            this.variantsDir = project.file('variants')
-        }
+    AbstractAndroidSingleVariantBuilder(Project project, AndroidConfiguration androidConf) {
+        this.project = project
+        this.androidConf = androidConf
+        this.variantsDir = project.file('variants')//TODO
     }
 
     abstract void buildSingle(AndroidBuilderInfo bi)
+
 }

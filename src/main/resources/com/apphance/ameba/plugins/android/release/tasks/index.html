@@ -44,10 +44,10 @@
                 <li>
                     <div class="ui-grid-a">
                         <div class="ui-block-a">
-                            <div style="font-size:1.5em">${androidConf.mainVariant.replaceAll('_',' ')}</div>
+                            <div style="font-size:1.5em">${variantsConf.mainVariant.replaceAll('_',' ')}</div>
                         </div>
                         <div class="ui-block-b" style="text-align:right"><a
-                                href="${androidReleaseConf.apkFiles[androidConf.mainVariant].url}"
+                                href="${androidReleaseConf.apkFiles[variantsConf.mainVariant].url}"
                                 data-role="button" data-inline="true" rel="external" data-theme="a">${rb.getString('Install')}</a>
                         </div>
                     </div>
@@ -68,8 +68,8 @@
         </ul>
         <% } %>
         <% def other_installs = [] %>
-        <% androidConf.variants.each { variant -> %>
-        <% if (androidConf.mainVariant != variant) { other_installs << variant } %>
+        <% variantsConf.variants.each { variant -> %>
+        <% if (variantsConf.mainVariant != variant.name) { other_installs << variant.name } %>
         <% } %>
         <% if (other_installs.size > 0) { %>
         <div>

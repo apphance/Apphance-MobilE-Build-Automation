@@ -4,11 +4,13 @@ import org.gradle.tooling.BuildException
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Test
 
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.*
 
+@Ignore('Ignored in M2')
 class ExecuteIosBuildsTest {
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
@@ -93,7 +95,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildOneVariant() {
-        runGradleOneVariant('unlockKeyChain', 'buildAll')
+        runGradleOneVariant('unlockKeyChain', 'prepareAllTasks')
         assertTrue(new File(testProjectOneVariant,
                 "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
         assertTrue(new File(testProjectOneVariant,
@@ -109,7 +111,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildMoreVariants() {
-        runGradleMoreVariants('unlockKeyChain', 'buildAll')
+        runGradleMoreVariants('unlockKeyChain', 'prepareAllTasks')
         assertTrue(new File(testProjectMoreVariants,
                 "ota/ssasdadasdasd/1.0-SNAPSHOT_32/GradleXCodeMoreVariants/BasicConfiguration/GradleXCodeMoreVariants-BasicConfiguration-1.0-SNAPSHOT_32.ipa").exists())
         assertTrue(new File(testProjectMoreVariants,
@@ -150,7 +152,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareMoreVariantsMailMessage() {
-        runGradleMoreVariants('cleanRelease', 'unlockKeyChain', 'buildAll')
+        runGradleMoreVariants('cleanRelease', 'unlockKeyChain', 'prepareAllTasks')
         runGradleMoreVariants('prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/icon.png").exists())
@@ -163,7 +165,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareMoreVariantsMailMessageWithSimulators() {
-        runGradleMoreVariants('cleanRelease', 'unlockKeyChain', 'buildAll')
+        runGradleMoreVariants('cleanRelease', 'unlockKeyChain', 'prepareAllTasks')
         runGradleMoreVariants('buildAllSimulators', 'prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/icon.png").exists())
@@ -176,7 +178,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareOneVariantMailMessage() {
-        runGradleOneVariant('cleanRelease', 'unlockKeyChain', 'buildAll')
+        runGradleOneVariant('cleanRelease', 'unlockKeyChain', 'prepareAllTasks')
         runGradleOneVariant('prepareImageMontage', 'prepareMailMessage')
         assertTrue(new File(testProjectOneVariant, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/file_index.html").exists())
         assertTrue(new File(testProjectOneVariant, "ota/ssasdadasdasd/1.0-SNAPSHOT_32/icon.png").exists())
@@ -190,7 +192,7 @@ class ExecuteIosBuildsTest {
     @Test
     void testBuildNoVersion() {
         try {
-            runGradleNoVersion('cleanRelease', 'buildAll')
+            runGradleNoVersion('cleanRelease', 'prepareAllTasks')
             fail("There should be a version exception thrown!")
         } catch (BuildException e) {
             String message = e.cause.cause.cause.message
@@ -201,7 +203,7 @@ class ExecuteIosBuildsTest {
     @Test
     void testBuildNoVersionString() {
         try {
-            runGradleNoVersionString('cleanRelease', 'buildAll')
+            runGradleNoVersionString('cleanRelease', 'prepareAllTasks')
             fail("There should be a version exception thrown!")
         } catch (BuildException e) {
             String message = e.cause.cause.cause.message

@@ -1,13 +1,14 @@
 package com.apphance.ameba.plugins.ios.framework
 
 import com.apphance.ameba.AbstractPrepareSetupOperation
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.util.file.FileManager
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+
+import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
 
 /**
  * Prepares properties for framework preparation.
@@ -28,7 +29,7 @@ class PrepareFrameworkSetupOperation extends AbstractPrepareSetupOperation {
         def headerFiles = FileManager.getFiles(project, { it.name.endsWith('.h') })
         def resourceFiles = FileManager.getFiles(project, { it.name.endsWith('.png') })
         use(PropertyCategory) {
-            IOSProjectConfiguration iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
+            IOSProjectConfiguration iosConf = getIosProjectConfiguration(project)
             IOSFrameworkProperty.each {
                 switch (it) {
                     case IOSFrameworkProperty.FRAMEWORK_CONFIGURATION:

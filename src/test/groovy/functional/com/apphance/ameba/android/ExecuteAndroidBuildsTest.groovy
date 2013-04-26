@@ -5,6 +5,7 @@ import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Test
 
 import static org.gradle.tooling.GradleConnector.newConnector
@@ -26,6 +27,7 @@ class ExecuteAndroidBuildsTest {
     static ProjectConnection testAndroidConventionConnection
     static ProjectConnection testAndroidWrongConventionConnection
     static ProjectConnection testAndroidNoApphanceApplicationConnection
+    private static final String fullVersion = '1.0.1_42'
 
     @BeforeClass
     static void beforeClass() {
@@ -57,7 +59,7 @@ class ExecuteAndroidBuildsTest {
 
     protected void runGradleWithProperties(Properties p, ProjectConnection pc = gradleWithPropertiesConnection, String... tasks) {
         def buildLauncher = pc.newBuild()
-        def args = p.collect { property, value -> "-Dorg.gradle.project.${property}=${value}" }
+        def args = p.collect { property, value -> "-D${property}=${value}" }
         GRADLE_DAEMON_ARGS.each { args << it }
         buildLauncher.setJvmArguments(args as String[])
         buildLauncher.forTasks(tasks).run()
@@ -85,91 +87,60 @@ class ExecuteAndroidBuildsTest {
     }
 
     @Test
-    void testOta() {
-        runGradle('updateProject', 'cleanRelease')
-        assertTrue(new File(testProject, "ota").exists())
-        assertEquals(0, new File(testProject, "ota").listFiles().length)
-        assertTrue(new File(testProject, "tmp").exists())
-        assertEquals(0, new File(testProject, "tmp").listFiles().length)
-    }
-
-
-    @Test
     void testBuildDebug() {
-        runGradle('buildAllDebug')
+        runGradle('clean', 'buildAllDebug')
         assertTrue(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-unsigned-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-degub-TestDebug-unaligned-${fullVersion}.apk").exists())
     }
-
 
     @Test
     void testBuildRelease() {
         runGradle('buildAllRelease')
+
         assertTrue(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unsigned-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
-                "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
     }
 
     @Test
     void testBuildDebugNoVariant() {
-        runGradleNoVariants('buildAllDebug')
+        runGradleNoVariants('clean', 'buildAllDebug')
+
         assertTrue(new File(testNoVariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-${fullVersion}.apk").exists())
         assertFalse(new File(testNoVariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-debug-MarketDebug-unsigned-${fullVersion}.apk").exists())
         assertFalse(new File(testNoVariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-unaligned-${fullVersion}.apk").exists())
     }
 
     @Test
     void testBuildReleaseNoVariant() {
-        runGradleNoVariants('buildAllRelease')
+        runGradleNoVariants('clean', 'buildAllRelease')
+
         assertTrue(new File(testNoVariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
         assertFalse(new File(testNoVariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unsigned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-release-MarketRelease-unsigned-${fullVersion}.apk").exists())
         assertFalse(new File(testNoVariantsProject,
-                "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Debug-unaligned-1.0.1-SNAPSHOT_42.apk").exists())
+                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
     }
 
-
-    @Test
-    void testJavadoc() {
-        runGradle('updateProject', 'javadoc')
-        assertTrue(new File(testProject, "build/docs").isDirectory())
-        assertFalse(new File(testProject, "build/docs").listFiles().length == 0)
-    }
-
-    @Test
-    void testUpdateProject() {
-        File localProperties = new File(testProject, "local.properties")
-        File localPropertiesSubproject = new File(testProject, "subproject/local.properties")
-        File localPropertiesSubsubproject = new File(testProject, "subproject/subsubproject/local.properties")
-        localProperties.delete()
-        localPropertiesSubproject.delete()
-        localPropertiesSubsubproject.delete()
-        runGradle('updateProject')
-        assertTrue(localProperties.exists())
-        assertTrue(localPropertiesSubproject.exists())
-        assertTrue(localPropertiesSubsubproject.exists())
-    }
-
-
-    @Test
+    @Ignore('using old configuration, to be rewritten')
     void testUpdateVersion() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
         try {
             Properties p = new Properties()
-            p.put('version.string', 'TEST_UPDATE')
-            p.put('version.code', 43)
+            p.put('release.string', 'TEST_UPDATE')
+            p.put('release.code', 43)
             runGradleWithProperties(p, 'updateProject', 'updateVersion')
             projectConf.updateVersionDetails(manifestHelper.readVersion(new File("testProjects/android/android-basic")))
             assertEquals(43, projectConf.versionCode)
@@ -187,14 +158,6 @@ class ExecuteAndroidBuildsTest {
         assertTrue(new File(baseDir, "cpd-result.xml").exists())
         assertTrue(new File(baseDir, "findbugs-result.xml").exists())
         assertTrue(new File(baseDir, "pmd-result.xml").exists())
-    }
-
-    private assertConfigSameAsBuild(File projectDirectory, String fileName) {
-        File baseDir = new File(projectDirectory, "build/analysis/")
-        File resourceDir = new File("src/main/resources/com/apphance/ameba/plugins/android/analysis/tasks")
-        File configBaseDir = new File(projectDirectory, "config/analysis/")
-        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
-        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
     }
 
     @Test
@@ -225,14 +188,6 @@ class ExecuteAndroidBuildsTest {
         assertRemoteSameAsBuild(testAndroidConventionProject, testNoVariantsProject, "pmd-rules.xml")
     }
 
-    private assertRemoteSameAsBuild(File projectDirectory, File configDirectory, String fileName) {
-        File baseDir = new File(projectDirectory, "build/analysis/")
-        File resourceDir = new File("src/main/resources/com/apphance/ameba/plugins/android/analysis/tasks")
-        File configBaseDir = new File(configDirectory, "config/analysis/")
-        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
-        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
-    }
-
     @Test
     void testAnalysisFromRemoteWrongConvention() {
         File baseDir = new File(testAndroidWrongConventionProject, "build/analysis/")
@@ -243,6 +198,22 @@ class ExecuteAndroidBuildsTest {
         assertConfigSameAsBuild(testAndroidWrongConventionProject, "checkstyle.xml")
         assertConfigSameAsBuild(testAndroidWrongConventionProject, "findbugs-exclude.xml")
         assertConfigSameAsBuild(testAndroidWrongConventionProject, "pmd-rules.xml")
+    }
+
+    private assertConfigSameAsBuild(File projectDirectory, String fileName) {
+        File baseDir = new File(projectDirectory, "build/analysis/")
+        File resourceDir = new File("src/main/resources/com/apphance/ameba/plugins/android/analysis/tasks")
+        File configBaseDir = new File(projectDirectory, "config/analysis/")
+        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
+        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
+    }
+
+    private assertRemoteSameAsBuild(File projectDirectory, File configDirectory, String fileName) {
+        File baseDir = new File(projectDirectory, "build/analysis/")
+        File resourceDir = new File("src/main/resources/com/apphance/ameba/plugins/android/analysis/tasks")
+        File configBaseDir = new File(configDirectory, "config/analysis/")
+        assertEquals(new File(baseDir, fileName).text, new File(configBaseDir, fileName).text)
+        assertFalse(new File(baseDir, fileName).text.equals(new File(resourceDir, fileName).text))
     }
 
     @Test
@@ -258,108 +229,70 @@ class ExecuteAndroidBuildsTest {
     void testBuildAndPrepareVariantedMailMessage() {
         runGradle('cleanRelease', 'updateProject', 'buildAll')
         runGradle('prepareImageMontage', 'prepareMailMessage')
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/icon.png").exists())
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/index.html").exists())
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/plain_file_index.html").exists())
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/qrcode-TestAndroidProject-1.0.1-SNAPSHOT_42.png").exists())
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-test-1.0.1-SNAPSHOT_42.apk").exists())
-        assertTrue(new File(testProject, "ota/AdadalkjsaTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-market-1.0.1-SNAPSHOT_42.apk").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/file_index.html").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/icon.png").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/index.html").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/plain_file_index.html").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/qrcode-TestAndroidProject-${fullVersion}.png").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-${fullVersion}.apk").exists())
+        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
     }
 
     @Test
     void testBuildAndPrepareNonVariantedMailMessage() {
         runGradleNoVariants('cleanRelease', 'updateProject', 'buildAll')
         runGradleNoVariants('prepareImageMontage', 'prepareMailMessage')
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/file_index.html").exists())
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/icon.png").exists())
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/index.html").exists())
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/plain_file_index.html").exists())
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/qrcode-TestAndroidProject-1.0.1-SNAPSHOT_42.png").exists())
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-debug-Debug-1.0.1-SNAPSHOT_42.apk").exists())
-        assertTrue(new File(testNoVariantsProject, "ota/asdlakjljsdTest/1.0.1-SNAPSHOT_42/TestAndroidProject-release-Release-1.0.1-SNAPSHOT_42.apk").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/file_index.html").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/icon.png").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/index.html").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/plain_file_index.html").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/qrcode-TestAndroidProject-${fullVersion}.png").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-${fullVersion}.apk").exists())
+        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk")
+                .exists())
     }
 
-    @Test
-    void testBuildDocumentationZip() {
-        runGradle('buildDocumentationZip')
-        File file = new File('testProjects/android/android-basic/tmp/TestAndroidProject-1.0.1-SNAPSHOT_42-doc.zip')
-        assertTrue(file.exists())
-        assertTrue(file.size() > 30000)
-    }
-
-    @Test
-    void testBuildSourcesZip() {
-        runGradle('buildSourcesZip')
-        File file = new File('testProjects/android/android-basic/tmp/TestAndroidProject-1.0.1-SNAPSHOT_42-src.zip')
-        assertTrue(file.exists())
-        assertTrue(file.size() > 30000)
-    }
-
-    @Test
-    void testRunCleanAVD() {
-        runGradle('cleanAVD')
-        File avdsDirectory = new File('testProjects/android/android-basic/avds')
-        assertFalse(avdsDirectory.exists())
-    }
-
-    @Test
-    void testRunAndroidCreateAVD() {
-        runGradle('cleanAVD', 'createAVD')
-        def files = [
-                'config.ini',
-                'sdcard.img',
-                'snapshots.img',
-                'userdata.img'
-        ]
-        File avdsDirectory = new File('testProjects/android/android-basic/avds')
-        assertTrue(avdsDirectory.exists())
-        files.each {
-            assertTrue(it, new File(avdsDirectory, it).exists())
-        }
-    }
-
-    @Test
+    @Ignore('to be used after apphance rewritten')
     void testDefaultApphanceDependency() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
         try {
             Properties p = new Properties()
-            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
+            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
             projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
         }
-        def androidLib = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/android.pre-production-1.8.2.jar")
+        def androidLib = new File("testProjects/android/android-no-apphance-application/ameba-tmp/TestDebug/libs/android.pre-production-1.8.2.jar")
         assertTrue(androidLib.exists())
         assertEquals('android.pre-production-1.8.2.jar', androidLib.name)
     }
 
-    @Test
+    @Ignore('to be used after apphance rewritten')
     void testCorrectApphanceDependencyFromProperty() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
         try {
             Properties p = new Properties()
             p.put('apphance.lib', "com.apphance:android.production:1.8.2")
-            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
+            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
             projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
         }
-        def androidLib = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/android.production-1.8.2.jar")
+        def androidLib = new File("testProjects/android/android-no-apphance-application/MarketDebug/libs/android.production-1.8.2.jar")
         assertTrue(androidLib.exists())
         assertEquals('android.production-1.8.2.jar', androidLib.name)
     }
 
-    @Test
+    @Ignore('to be used after apphance rewritten')
     void testIncorrectApphanceDependencyFromProperty() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
         ProjectConfiguration projectConf = new ProjectConfiguration()
         try {
             Properties p = new Properties()
             p.put('apphance.lib', "com.apphanc:android.production:1.8")
-            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildDebug-Debug')
+            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
             projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
         } catch (Exception e) {
 
@@ -372,39 +305,5 @@ class ExecuteAndroidBuildsTest {
         def androidLibsDir = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/")
         assertTrue(androidLibsDir.exists())
         assertTrue(androidLibsDir.list().length == 0)
-    }
-
-    @Test
-    void testGoogleAPITarget() {
-
-        def propsFile = new File(testProject, 'project.properties')
-        def propsOrigFile = new File(testProject.canonicalPath, 'project.properties.orig')
-        try {
-            substituteProperties(propsFile, propsOrigFile)
-            def baos = new ByteArrayOutputStream();
-            runGradle(baos, 'clean', 'buildDebug-test')
-            def res = baos.toString('UTF-8')
-            println res
-            assertTrue(res.contains("add-ons/addon-google_apis-google-8/libs/maps.jar"))
-
-        } finally {
-            propsFile.delete()
-            propsOrigFile.renameTo(propsFile)
-        }
-    }
-
-    private void substituteProperties(propsFile, propsOrigFile) {
-        if (propsOrigFile.exists())
-            propsOrigFile.delete()
-        propsOrigFile << propsFile.text
-        def propsOrig = new Properties()
-        propsFile.withInputStream {
-            propsOrig.load(it)
-        }
-        propsOrig['target'] = 'Google Inc.:Google APIs:8'
-        propsFile.write('')
-        propsOrig.each { k, v ->
-            propsFile.append("$k=$v\n")
-        }
     }
 }

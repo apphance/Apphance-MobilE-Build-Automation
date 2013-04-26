@@ -1,60 +1,51 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.configuration.ProjectConfiguration
+import com.apphance.ameba.configuration.ReleaseConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.retrieveProjectReleaseData
-import static com.apphance.ameba.plugins.release.ProjectReleaseProperty.*
+import javax.inject.Inject
 
-class PrepareForReleaseTask {
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 
-    private Project project
-    private ProjectConfiguration conf
-    private ProjectReleaseConfiguration releaseConf
+class PrepareForReleaseTask extends DefaultTask {
 
-    PrepareForReleaseTask(Project project) {
-        this.project = project
-        this.conf = getProjectConfiguration(project)
-        this.releaseConf = retrieveProjectReleaseData(project)
-    }
+    static String NAME = 'prepareForRelease'
+    String group = AMEBA_RELEASE
+    String description = 'Prepares project for release'
 
-    public void prepare() {
+    @Inject
+    private ProjectConfiguration projectConf
+    @Inject
+    private ReleaseConfiguration releaseConf
+
+    @TaskAction
+    void prepare() {
         prepareSourcesAndDocumentationArtifacts()
         prepareMailArtifacts()
     }
 
     private prepareSourcesAndDocumentationArtifacts() {
-        def sourceZipName = conf.projectVersionedName + "-src.zip"
+        def sourceZipName = projectConf.projectVersionedName + "-src.zip"
         releaseConf.sourcesZip = new AmebaArtifact(
-                name: conf.projectName + "-src",
+                name: "$projectConf.projectName.value-src",
                 url: null, // we do not publish
-                location: new File(conf.tmpDirectory, sourceZipName))
-        def documentationZipName = conf.projectVersionedName + "-doc.zip"
+                location: new File(projectConf.tmpDir, sourceZipName))
+        def documentationZipName = "$projectConf.projectVersionedName-doc.zip"
         releaseConf.documentationZip = new AmebaArtifact(
-                name: conf.projectName + "-doc",
+                name: "$projectConf.projectName.value-doc",
                 url: null,
-                location: new File(conf.tmpDirectory, documentationZipName))
+                location: new File(projectConf.tmpDir, documentationZipName))
         releaseConf.targetDirectory.mkdirs()
     }
 
     private prepareMailArtifacts() {
         releaseConf.mailMessageFile = new AmebaArtifact(
-                name: "Mail message file",
-                url: new URL(releaseConf.versionedApplicationUrl, "message_file.html"),
-                location: new File(releaseConf.targetDirectory, "message_file.html"))
-        use(PropertyCategory) {
-            releaseConf.releaseMailFrom = project.readExpectedProperty(RELEASE_MAIL_FROM)
-            releaseConf.releaseMailTo = project.readExpectedProperty(RELEASE_MAIL_TO)
-            releaseConf.releaseMailFlags = []
-            String flags = project.readProperty(RELEASE_MAIL_FLAGS)
-            if (flags != null) {
-                releaseConf.releaseMailFlags = flags.tokenize(",").collect { it.trim() }
-            }
-        }
+                name: 'Mail message file',
+                url: new URL(releaseConf.versionedApplicationUrl, 'message_file.html'),
+                location: new File(releaseConf.targetDirectory, 'message_file.html'))
     }
 }
 

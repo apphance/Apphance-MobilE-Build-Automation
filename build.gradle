@@ -13,6 +13,12 @@ allprojects {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        failOnVersionConflict()
+    }
+}
+
 apply {
     plugin 'maven'
     plugin 'signing'
@@ -149,11 +155,20 @@ dependencies {
     compile('com.google.inject:guice:3.0') {
         exclude group: 'org.sonatype.sisu.inject'
     }
+    compile('com.google.inject.extensions:guice-multibindings:3.0') {
+        exclude group: 'org.sonatype.sisu.inject'
+    }
 
     compile('org.apache.httpcomponents:httpmime:4.2.2') {
         exclude group: 'org.apache.httpcomponents', module: 'httpcore'
     }
     compile 'org.python:jython-standalone:2.7-b1'
+
+    compile 'gov.nih.imagej:imagej:1.46'
+    compile 'org.imgscalr:imgscalr-lib:4.2'
+
+    compile 'org.apache.directory.studio:org.apache.commons.lang:2.6'
+    compile 'com.google.guava:guava:14.0.1'
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
@@ -221,6 +236,7 @@ idea {
                 file('src/test/groovy/unit'),
                 file('src/test/groovy/integration'),
                 file('src/test/groovy/functional'),
+                file('src/test/resources'),
         ]
     }
 }

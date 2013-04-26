@@ -1,26 +1,30 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
-import org.gradle.api.Project
+import com.apphance.ameba.configuration.ProjectConfiguration
+import com.apphance.ameba.configuration.ReleaseConfiguration
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.retrieveProjectReleaseData
+import javax.inject.Inject
 
-class CleanReleaseTask {
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 
-    private ProjectConfiguration conf
-    private ProjectReleaseConfiguration releaseConf
+class CleanReleaseTask extends DefaultTask {
 
-    CleanReleaseTask(Project project) {
-        this.conf = getProjectConfiguration(project)
-        this.releaseConf = retrieveProjectReleaseData(project)
-    }
+    static String NAME = 'cleanRelease'
+    String description = 'Cleans release related directories'
+    String group = AMEBA_RELEASE
 
+    @Inject
+    ProjectConfiguration conf
+    @Inject
+    ReleaseConfiguration releaseConf
+
+    @TaskAction
     void clean() {
-        releaseConf.otaDirectory.deleteDir()
-        conf.tmpDirectory.deleteDir()
-        releaseConf.otaDirectory.mkdirs()
-        conf.tmpDirectory.mkdirs()
+        releaseConf.otaDir.deleteDir()
+        conf.tmpDir.deleteDir()
+        releaseConf.otaDir.mkdirs()
+        conf.tmpDir.mkdirs()
     }
 }

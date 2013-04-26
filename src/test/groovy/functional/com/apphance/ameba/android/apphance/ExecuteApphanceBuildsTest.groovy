@@ -26,12 +26,12 @@ class ExecuteApphanceBuildsTest {
     static ProjectConnection tNoApplicationNoOnCreate
 
     File getMainApplicationFile(File directory, String variant) {
-        File tmpDir = new File(directory.parentFile, 'tmp-' + directory.name + '-' + variant)
+        File tmpDir = new File(new File(directory, 'ameba-tmp'), variant)
         return new File(tmpDir, 'src/com/apphance/amebaTest/android/MainApplication.java')
     }
 
     File getMainActivityFile(File directory, String variant) {
-        File tmpDir = new File(directory.parentFile, 'tmp-' + directory.name + '-' + variant)
+        File tmpDir = new File(new File(directory, 'ameba-tmp'), variant)
         return new File(tmpDir, 'src/com/apphance/amebaTest/android/TestActivity.java')
     }
 
@@ -61,88 +61,88 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceNoApplicationBuild() throws Exception {
-        run(tNoApplication, 'buildAll')
-        assertTrue(getMainActivityFile(tNoApplicationProject, 'Debug').text.contains('Apphance.startNewSession('))
-        assertTrue(getMainActivityFile(tNoApplicationProject, 'Debug').text.contains('import com.apphance.android.Log'))
-        assertFalse(getMainActivityFile(tNoApplicationProject, 'Debug').text.contains('import android.util.Log'))
+        run(tNoApplication, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
+        assertTrue(getMainActivityFile(tNoApplicationProject, 'TestDebug').text.contains('Apphance.startNewSession('))
+        assertTrue(getMainActivityFile(tNoApplicationProject, 'TestDebug').text.contains('import com.apphance.android.Log'))
+        assertFalse(getMainActivityFile(tNoApplicationProject, 'TestDebug').text.contains('import android.util.Log'))
 
-        assertFalse(getMainApplicationFile(tNoApplicationProject, 'Debug').exists())
+        assertFalse(getMainApplicationFile(tNoApplicationProject, 'TestDebug').exists())
 
-        assertFalse(getMainActivityFile(tNoApplicationProject, 'Release').text.contains('Apphance.startNewSession('))
-        assertFalse(getMainActivityFile(tNoApplicationProject, 'Release').text.contains('import com.apphance.android.Log'))
-        assertTrue(getMainActivityFile(tNoApplicationProject, 'Release').text.contains('import android.util.Log'))
+        assertFalse(getMainActivityFile(tNoApplicationProject, 'TestRelease').text.contains('Apphance.startNewSession('))
+        assertFalse(getMainActivityFile(tNoApplicationProject, 'TestRelease').text.contains('import com.apphance.android.Log'))
+        assertTrue(getMainActivityFile(tNoApplicationProject, 'TestRelease').text.contains('import android.util.Log'))
 
-        assertFalse(getMainApplicationFile(tNoApplicationProject, 'Release').exists())
+        assertFalse(getMainApplicationFile(tNoApplicationProject, 'TestRelease').exists())
     }
 
     @Test
     public void testNoApphanceApplicationBuild() throws Exception {
-        run(tApplication, 'buildAll')
-        assertFalse(getMainActivityFile(tApplicationProject, 'Debug').text.contains('Apphance.startNewSession('))
-        assertTrue(getMainActivityFile(tApplicationProject, 'Debug').text.contains('import com.apphance.android.Log'))
-        assertFalse(getMainActivityFile(tApplicationProject, 'Debug').text.contains('import android.util.Log'))
+        run(tApplication, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
+        assertFalse(getMainActivityFile(tApplicationProject, 'TestDebug').text.contains('Apphance.startNewSession('))
+        assertTrue(getMainActivityFile(tApplicationProject, 'TestDebug').text.contains('import com.apphance.android.Log'))
+        assertFalse(getMainActivityFile(tApplicationProject, 'TestDebug').text.contains('import android.util.Log'))
 
-        assertTrue(getMainApplicationFile(tApplicationProject, 'Debug').text.contains('Apphance.startNewSession('))
-        assertTrue(getMainApplicationFile(tApplicationProject, 'Debug').text.contains('import com.apphance.android.Log'))
-        assertFalse(getMainActivityFile(tApplicationProject, 'Debug').text.contains('import android.util.Log'))
+        assertTrue(getMainApplicationFile(tApplicationProject, 'TestDebug').text.contains('Apphance.startNewSession('))
+        assertTrue(getMainApplicationFile(tApplicationProject, 'TestDebug').text.contains('import com.apphance.android.Log'))
+        assertFalse(getMainActivityFile(tApplicationProject, 'TestDebug').text.contains('import android.util.Log'))
 
-        assertFalse(getMainActivityFile(tApplicationProject, 'Release').text.contains('Apphance.startNewSession('))
-        assertFalse(getMainActivityFile(tApplicationProject, 'Release').text.contains('import com.apphance.android.Log'))
-        assertTrue(getMainActivityFile(tApplicationProject, 'Release').text.contains('import android.util.Log'))
+        assertFalse(getMainActivityFile(tApplicationProject, 'TestRelease').text.contains('Apphance.startNewSession('))
+        assertFalse(getMainActivityFile(tApplicationProject, 'TestRelease').text.contains('import com.apphance.android.Log'))
+        assertTrue(getMainActivityFile(tApplicationProject, 'TestRelease').text.contains('import android.util.Log'))
 
-        assertFalse(getMainApplicationFile(tApplicationProject, 'Release').text.contains('Apphance.startNewSession('))
-        assertFalse(getMainApplicationFile(tApplicationProject, 'Release').text.contains('import com.apphance.android.Log'))
-        assertTrue(getMainActivityFile(tApplicationProject, 'Release').text.contains('import android.util.Log'))
+        assertFalse(getMainApplicationFile(tApplicationProject, 'TestRelease').text.contains('Apphance.startNewSession('))
+        assertFalse(getMainApplicationFile(tApplicationProject, 'TestRelease').text.contains('import com.apphance.android.Log'))
+        assertTrue(getMainActivityFile(tApplicationProject, 'TestRelease').text.contains('import android.util.Log'))
     }
 
     @Test
     public void testNoApphanceNoApplicationBuildNoOnCreate() throws Exception {
-        run(tNoApplicationNoOnCreate, 'buildAll')
-        assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'Debug').text.contains('Apphance.startNewSession('))
-        assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'Debug').text.contains('import com.apphance.android.Log'))
-        assertFalse(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'Debug').text.contains('import android.util.Log'))
+        run(tNoApplicationNoOnCreate, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
+        assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'TestDebug').text.contains('Apphance.startNewSession('))
+        assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'TestDebug').text.contains('import com.apphance.android.Log'))
+        assertFalse(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'TestDebug').text.contains('import android.util.Log'))
 
-        assertFalse(getMainApplicationFile(tNoApplicationProjectNoOnCreate, 'Debug').exists())
+        assertFalse(getMainApplicationFile(tNoApplicationProjectNoOnCreate, 'TestDebug').exists())
 
-        assertFalse(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'Release').text.contains('Apphance.startNewSession('))
-        assertFalse(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'Release').text.contains('import com.apphance.android.Log'))
-        assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'Release').text.contains('import android.util.Log'))
+        assertFalse(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'TestRelease').text.contains('Apphance.startNewSession('))
+        assertFalse(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'TestRelease').text.contains('import com.apphance.android.Log'))
+        assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'TestRelease').text.contains('import android.util.Log'))
 
-        assertFalse(getMainApplicationFile(tNoApplicationProjectNoOnCreate, 'Release').exists())
+        assertFalse(getMainApplicationFile(tNoApplicationProjectNoOnCreate, 'TestRelease').exists())
     }
 
     @Test
     public void testNoApphanceApplicationBuildNoOnCreate() throws Exception {
-        run(tApplicationNoOnCreate, 'buildAll')
-        assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'Debug').text.contains('Apphance.startNewSession('))
-        assertTrue(getMainActivityFile(tApplicationProjectNoOnCreate, 'Debug').text.contains('import com.apphance.android.Log'))
-        assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'Debug').text.contains('import android.util.Log'))
+        run(tApplicationNoOnCreate, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
+        assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestDebug').text.contains('Apphance.startNewSession('))
+        assertTrue(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestDebug').text.contains('import com.apphance.android.Log'))
+        assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestDebug').text.contains('import android.util.Log'))
 
-        assertTrue(getMainApplicationFile(tApplicationProjectNoOnCreate, 'Debug').text.contains('Apphance.startNewSession('))
-        assertTrue(getMainApplicationFile(tApplicationProjectNoOnCreate, 'Debug').text.contains('import com.apphance.android.Log'))
-        assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'Debug').text.contains('import android.util.Log'))
+        assertTrue(getMainApplicationFile(tApplicationProjectNoOnCreate, 'TestDebug').text.contains('Apphance.startNewSession('))
+        assertTrue(getMainApplicationFile(tApplicationProjectNoOnCreate, 'TestDebug').text.contains('import com.apphance.android.Log'))
+        assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestDebug').text.contains('import android.util.Log'))
 
-        assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'Release').text.contains('Apphance.startNewSession('))
-        assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'Release').text.contains('import com.apphance.android.Log'))
-        assertTrue(getMainActivityFile(tApplicationProjectNoOnCreate, 'Release').text.contains('import android.util.Log'))
+        assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestRelease').text.contains('Apphance.startNewSession('))
+        assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestRelease').text.contains('import com.apphance.android.Log'))
+        assertTrue(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestRelease').text.contains('import android.util.Log'))
 
-        assertFalse(getMainApplicationFile(tApplicationProjectNoOnCreate, 'Release').text.contains('Apphance.startNewSession('))
-        assertFalse(getMainApplicationFile(tApplicationProjectNoOnCreate, 'Release').text.contains('import com.apphance.android.Log'))
-        assertTrue(getMainActivityFile(tApplicationProjectNoOnCreate, 'Release').text.contains('import android.util.Log'))
+        assertFalse(getMainApplicationFile(tApplicationProjectNoOnCreate, 'TestRelease').text.contains('Apphance.startNewSession('))
+        assertFalse(getMainApplicationFile(tApplicationProjectNoOnCreate, 'TestRelease').text.contains('import com.apphance.android.Log'))
+        assertTrue(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestRelease').text.contains('import android.util.Log'))
     }
 
     @Test
     public void testNoApphanceNoApplicationDifferentBuild() throws Exception {
-        run(tNoApplicationDifferentFormatting, 'buildAll')
-        assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'Debug').text.contains('Apphance.startNewSession('))
-        assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'Debug').text.contains('Apphance.startNewSession('))
-        assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'Debug').text.contains('import com.apphance.android.Log'))
-        assertFalse(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'Debug').text.contains('import android.util.Log'))
-        assertFalse(getMainApplicationFile(tNoApplicationProjectDifferentFormatting, 'Debug').exists())
-        assertFalse(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'Release').text.contains('Apphance.startNewSession('))
-        assertFalse(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'Release').text.contains('import com.apphance.android.Log'))
-        assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'Release').text.contains('import android.util.Log'))
-        assertFalse(getMainApplicationFile(tNoApplicationProjectDifferentFormatting, 'Release').exists())
+        run(tNoApplicationDifferentFormatting, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
+        assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestDebug').text.contains('Apphance.startNewSession('))
+        assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestDebug').text.contains('Apphance.startNewSession('))
+        assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestDebug').text.contains('import com.apphance.android.Log'))
+        assertFalse(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestDebug').text.contains('import android.util.Log'))
+        assertFalse(getMainApplicationFile(tNoApplicationProjectDifferentFormatting, 'TestDebug').exists())
+        assertFalse(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestRelease').text.contains('Apphance.startNewSession('))
+        assertFalse(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestRelease').text.contains('import com.apphance.android.Log'))
+        assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestRelease').text.contains('import android.util.Log'))
+        assertFalse(getMainApplicationFile(tNoApplicationProjectDifferentFormatting, 'TestRelease').exists())
     }
 
 }

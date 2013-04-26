@@ -1,16 +1,13 @@
 package com.apphance.ameba.plugins.ios.ocunit
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.executor.IOSExecutor
-import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
+import com.apphance.ameba.plugins.ios.ocunit.tasks.RunUnitTestsTasks
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -19,50 +16,33 @@ import static org.gradle.api.logging.Logging.getLogger
  */
 class IOSUnitTestPlugin implements Plugin<Project> {
 
-    static final String AMEBA_IOS_UNIT = 'Ameba iOS OCUnit tests'
+    public static final String AMEBA_IOS_UNIT = 'Ameba iOS OCUnit tests'
+    public static final String RUN_UNIT_TESTS_TASK_NAME = 'runUnitTests'
 
     def l = getLogger(getClass())
 
     @Inject
-    CommandExecutor executor
+    private IOSExecutor iosExecutor
 
-    @Inject
-    IOSExecutor iosExecutor
-
-    Project project
-    ProjectConfiguration conf
-    IOSProjectConfiguration iosConf
+    private Project project
 
     @Override
     void apply(Project project) {
-        use(PropertyCategory) {
-            this.project = project
-            this.conf = project.getProjectConfiguration()
-            this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
-            project.extensions.iosUnitTests = new IOSUnitTestConvention()
-            prepareRunUnitTestsTask()
-        }
+        this.project = project
+        addIOSUnitTestsConvention()
+        prepareRunUnitTestsTask()
+    }
+
+    private void addIOSUnitTestsConvention() {
+        project.convention.plugins.put('iosUnitTests', new IOSUnitTestConvention())
     }
 
     private void prepareRunUnitTestsTask() {
-        def task = project.task('runUnitTests')
+        def task = project.task(RUN_UNIT_TESTS_TASK_NAME)
         task.description = "Build and executes Unit tests. Requires UnitTests target."
         task.group = AMEBA_IOS_UNIT
-        task << {
-            def configuration = project.iosUnitTests.configuration
-            def target = project.iosUnitTests.target
-            l.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
-            conf.tmpDirectory.mkdirs()
-            def testResults = new File(conf.tmpDirectory, "test-${target}-${configuration}.txt")
-            l.lifecycle("Trying to create file: ${testResults.canonicalPath}")
-            testResults.createNewFile()
-            iosExecutor.buildTestTarget(project.rootDir, target, configuration, "${testResults.canonicalPath}".toString())
-            OCUnitParser parser = new OCUnitParser()
-            parser.parse(testResults.text.split('\n') as List)
-            File unitTestFile = new File(conf.tmpDirectory, "TEST-all.xml")
-            new XMLJunitExporter(unitTestFile, parser.testSuites).export()
-        }
-        task.dependsOn(project.readProjectConfiguration)
+        task << { new RunUnitTestsTasks(project, iosExecutor).runUnitTests() }
+        task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME)
     }
 
     class IOSUnitTestConvention {

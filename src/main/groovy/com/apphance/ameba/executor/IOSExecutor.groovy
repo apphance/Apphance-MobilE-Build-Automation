@@ -6,7 +6,7 @@ import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.google.inject.Inject
 import org.gradle.api.Project
 
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.IOS_PROJECT_CONFIGURATION
+import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
 
 class IOSExecutor {
 
@@ -17,7 +17,7 @@ class IOSExecutor {
     Project project
 
     IOSProjectConfiguration getIosConf() {
-        project.ext.get IOS_PROJECT_CONFIGURATION
+        getIosProjectConfiguration(project)
     }
 
     def showSdks() {

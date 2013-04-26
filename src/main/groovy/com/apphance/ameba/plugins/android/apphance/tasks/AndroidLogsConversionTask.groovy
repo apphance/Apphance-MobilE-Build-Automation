@@ -4,14 +4,17 @@ import static org.gradle.api.logging.Logging.getLogger
 
 class AndroidLogsConversionTask {
 
-    private AntBuilder ant
     private l = getLogger(getClass())
 
-    AndroidLogsConversionTask(AntBuilder ant) {
-        this.ant = ant
+    static String NAME = 'convertLogsToAndroid'
+
+    private AntBuilder ant
+
+    AndroidLogsConversionTask(AntBuilder project) {
+        this.ant = project
     }
 
-    public void convertLogsToAndroid(File inDir) {
+    void convertLogsToAndroid(File inDir) {
         l.debug("Replacing apphance logs with android in: $inDir.absolutePath")
         ant.replace(
                 casesensitive: 'true',

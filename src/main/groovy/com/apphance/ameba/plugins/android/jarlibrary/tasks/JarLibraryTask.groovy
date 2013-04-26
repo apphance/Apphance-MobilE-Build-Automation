@@ -1,52 +1,50 @@
 package com.apphance.ameba.plugins.android.jarlibrary.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
-import com.apphance.ameba.plugins.android.jarlibrary.AndroidJarLibraryProperty
-import org.gradle.api.Project
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidJarLibraryConfiguration
+import com.google.inject.Inject
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.PropertyCategory.readProperty
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
 //TODO to be tested & refactored
 @Mixin(AndroidJarLibraryMixin)
-class JarLibraryTask {
+class JarLibraryTask extends DefaultTask {
 
-    private Project project
-    private ProjectConfiguration conf
-    private AndroidProjectConfiguration androidConf
+    static String NAME = 'jarLibrary'
+    String group = AMEBA_BUILD
+    String description = 'Prepares jar library with embedded resources'
 
+    @Inject
+    private AndroidConfiguration androidConf
+    @Inject
+    private AndroidJarLibraryConfiguration jarLibConf
 
-    JarLibraryTask(Project project) {
-        this.project = project
-        this.conf = getProjectConfiguration(project)
-        this.androidConf = getAndroidProjectConfiguration(project)
-    }
-
-    public void jarLibrary() {
-        conf.tmpDirectory.mkdirs()
-        def manifestFile = new File(conf.tmpDirectory, 'MANIFEST.MF')
+    @TaskAction
+    void jarLibrary() {
+        androidConf.tmpDir.mkdirs()
+        def manifestFile = new File(androidConf.tmpDir, 'MANIFEST.MF')
         project.ant.manifest(file: manifestFile) {
-            attribute(name: 'Specification-Title', value: androidConf.mainProjectName)
-            attribute(name: 'Specification-Vendor', value: androidConf.mainProjectName)
-            attribute(name: 'Implementation-Title', value: conf.versionString)
-            attribute(name: 'Implementation-Version', value: conf.versionCode)
-            attribute(name: 'Implementation-Vendor', value: androidConf.mainProjectName)
-            attribute(name: 'Implementation-Vendor-Id', value: androidConf.mainProjectName)
+            attribute(name: 'Specification-Title', value: androidConf.projectName.value)
+            attribute(name: 'Specification-Vendor', value: androidConf.projectName.value)
+            attribute(name: 'Implementation-Title', value: androidConf.versionString)
+            attribute(name: 'Implementation-Version', value: androidConf.versionCode)
+            attribute(name: 'Implementation-Vendor', value: androidConf.projectName.value)
+            attribute(name: 'Implementation-Vendor-Id', value: androidConf.projectName.value)
         }
-        def manifestPropertiesFile = new File(conf.tmpDirectory, 'manifest.properties')
+        def manifestPropertiesFile = new File(androidConf.tmpDir, 'manifest.properties')
         def properties = new Properties()
-        properties.setProperty("implementation.title", conf.versionString)
-        properties.setProperty("implementation.version", Long.toString(conf.versionCode))
+        properties.setProperty("implementation.title", androidConf.versionString)
+        properties.setProperty("implementation.version", androidConf.versionCode)
         properties.store(manifestPropertiesFile.newOutputStream(), "Automatically generated with Ameba")
-        File resDir = new File(conf.tmpDirectory, "${jarLibraryPrefix()}-res")
+        File resDir = new File(androidConf.tmpDir, "${jarLibraryPrefix()}-res")
         project.ant.delete(dir: resDir)
         resDir.mkdirs()
         project.ant.copy(todir: resDir) {
             fileset(dir: project.file('res'))
         }
-        File destFile = project.file(getJarLibraryFilePath(androidConf.mainProjectName, conf.versionString))
+        File destFile = project.file(getJarLibraryFilePath(androidConf.projectName.value, androidConf.versionString))
         File classesDir = project.file("bin/classes")
         destFile.delete()
         project.ant.jar(destfile: destFile, manifest: manifestFile, manifestencoding: 'utf-8') {
@@ -55,7 +53,7 @@ class JarLibraryTask {
                 exclude(name: '**/test/*.class')
                 exclude(name: 'R*.class')
             }
-            fileset(dir: conf.tmpDirectory) {
+            fileset(dir: androidConf.tmpDir) {
                 include(name: 'manifest.properties')
                 include(name: "${resDir.name}/**")
                 exclude(name: '**/test*.*')
@@ -65,6 +63,6 @@ class JarLibraryTask {
     }
 
     private String jarLibraryPrefix() {
-        readProperty(project, AndroidJarLibraryProperty.RES_PREFIX) ?: androidConf.mainProjectName
+        jarLibConf.resourcePrefix.value ?: androidConf.projectName.value
     }
 }

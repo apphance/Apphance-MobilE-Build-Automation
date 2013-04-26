@@ -7,6 +7,8 @@ import com.apphance.ameba.util.file.FileManager
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
+
 /**
  * Prepares IOS properties.
  *
@@ -26,7 +28,7 @@ class PrepareIOSSetupOperation extends AbstractPrepareSetupOperation {
             project.ext[IOSProjectProperty.PROJECT_DIRECTORY.propertyName] = xCodeProjFiles[0]
         }
         use(PropertyCategory) {
-            IOSProjectConfiguration iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
+            IOSProjectConfiguration iosConf = getIosProjectConfiguration(project)
             BufferedReader br = getReader()
             IOSProjectProperty.each {
                 switch (it) {

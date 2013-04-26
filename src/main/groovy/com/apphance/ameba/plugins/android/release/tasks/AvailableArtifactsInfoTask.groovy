@@ -1,69 +1,57 @@
 package com.apphance.ameba.plugins.android.release.tasks
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.plugins.android.AndroidEnvironment
-import com.apphance.ameba.plugins.android.AndroidProjectConfiguration
-import com.apphance.ameba.plugins.android.buildplugin.AndroidBuildListener
+import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
+import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.executor.AntExecutor
+import com.apphance.ameba.plugins.android.release.AndroidBuildListener
 import com.apphance.ameba.plugins.android.release.AndroidReleaseApkListener
-import com.apphance.ameba.plugins.android.release.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.android.release.AndroidReleaseJarListener
-import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
+import com.google.inject.Inject
 import groovy.text.SimpleTemplateEngine
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.android.AndroidProjectConfigurationRetriever.getAndroidProjectConfiguration
-import static com.apphance.ameba.plugins.android.release.AndroidReleaseConfigurationRetriever.getAndroidReleaseConfiguration
-import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.getProjectReleaseConfiguration
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileDownloader.downloadFile
 import static java.util.ResourceBundle.getBundle
 import static org.gradle.api.logging.Logging.getLogger
 
-class AvailableArtifactsInfoTask {
+class AvailableArtifactsInfoTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    private Project project
-    private ProjectConfiguration conf
-    private ProjectReleaseConfiguration releaseConf
-    private CommandExecutor executor
-    private AndroidProjectConfiguration androidConf
+    static String NAME = 'prepareAvailableArtifactsInfo'
+    String description = 'Prepares information about available artifacts for mail message to include'
+    String group = AMEBA_RELEASE
+
+    @Inject
+    private AndroidConfiguration androidConf
+    @Inject
     private AndroidReleaseConfiguration androidReleaseConf
-    private AndroidEnvironment androidEnv
+    @Inject
+    private AndroidVariantsConfiguration variantsConf
+    @Inject AntExecutor antExecutor
 
-    AvailableArtifactsInfoTask(Project project, CommandExecutor executor) {
-        this.project = project
-        this.conf = getProjectConfiguration(project)
-        this.releaseConf = getProjectReleaseConfiguration(project)
-        this.executor = executor
-        this.androidConf = getAndroidProjectConfiguration(project)
-        this.androidReleaseConf = getAndroidReleaseConfiguration(project)
-        this.androidEnv = new AndroidEnvironment(project)
-    }
-
+    @TaskAction
     public void availableArtifactsInfo() {
+
         AndroidBuildListener listener
-        if (androidEnv.isLibrary()) {
-            listener = new AndroidReleaseJarListener(project, executor)
+        if (androidConf.isLibrary()) {
+            listener = new AndroidReleaseJarListener(project, androidConf, androidReleaseConf, antExecutor)
         } else {
-            listener = new AndroidReleaseApkListener(project, executor)
+            listener = new AndroidReleaseApkListener(project, androidConf, androidReleaseConf, antExecutor)
         }
-        if (androidConf.hasVariants()) {
-            androidConf.variants.each { variant ->
-                listener.buildArtifactsOnly(project, variant, null)
-            }
-        } else {
-            listener.buildArtifactsOnly(project, 'Debug', 'Debug')
-            listener.buildArtifactsOnly(project, 'Release', 'Release')
+        variantsConf.variants.each {
+            listener.buildArtifactsOnly(project, it)
         }
-        if (conf.versionString) {
-            String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
+        if (androidConf.fullVersionString) {
+            String otaFolderPrefix = "${androidReleaseConf.projectDirName}/${androidConf.fullVersionString}"
             prepareFileIndexArtifact(otaFolderPrefix)
             preparePlainFileIndexArtifact(otaFolderPrefix)
             prepareOtaIndexFile()
-            prepareFileIndexFile(androidConf.variants)
+            prepareFileIndexFile(variantsConf.variants*.name)
             preparePlainFileIndexFile()
         } else {
             l.debug('Skipping building artifacts, the build is not versioned')
@@ -72,9 +60,9 @@ class AvailableArtifactsInfoTask {
 
     private prepareFileIndexArtifact(String otaFolderPrefix) {
         AmebaArtifact fileIndexFile = new AmebaArtifact(
-                name: "The file index file: ${conf.projectName}",
-                url: new URL(releaseConf.baseUrl, "${otaFolderPrefix}/file_index.html"),
-                location: new File(releaseConf.otaDirectory, "${otaFolderPrefix}/file_index.html")
+                name: "The file index file: ${androidConf.projectName.value}",
+                url: new URL(androidReleaseConf.baseURL, "${otaFolderPrefix}/file_index.html"),
+                location: new File(androidReleaseConf.otaDir, "${otaFolderPrefix}/file_index.html")
         )
         fileIndexFile.location.parentFile.mkdirs()
         fileIndexFile.location.delete()
@@ -83,34 +71,34 @@ class AvailableArtifactsInfoTask {
 
     private preparePlainFileIndexArtifact(String otaFolderPrefix) {
         AmebaArtifact plainFileIndexFile = new AmebaArtifact(
-                name: "The plain file index file: ${conf.projectName}",
-                url: new URL(releaseConf.baseUrl, "${otaFolderPrefix}/plain_file_index.html"),
-                location: new File(releaseConf.otaDirectory, "${otaFolderPrefix}/plain_file_index.html"))
+                name: "The plain file index file: ${androidConf.projectName.value}",
+                url: new URL(androidReleaseConf.baseURL, "${otaFolderPrefix}/plain_file_index.html"),
+                location: new File(androidReleaseConf.otaDir, "${otaFolderPrefix}/plain_file_index.html"))
         plainFileIndexFile.location.parentFile.mkdirs()
         plainFileIndexFile.location.delete()
         androidReleaseConf.plainFileIndexFile = plainFileIndexFile
     }
 
     private void prepareOtaIndexFile() {
-        String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
+        String otaFolderPrefix = "${androidReleaseConf.projectDirName}/${androidConf.fullVersionString}"
         AmebaArtifact otaIndexFile = new AmebaArtifact(
-                name: "The ota index file: ${conf.projectName}",
-                url: new URL(releaseConf.baseUrl, "${otaFolderPrefix}/index.html"),
-                location: new File(releaseConf.otaDirectory, "${otaFolderPrefix}/index.html"))
+                name: "The ota index file: ${androidConf.projectName.value}",
+                url: new URL(androidReleaseConf.baseURL, "${otaFolderPrefix}/index.html"),
+                location: new File(androidReleaseConf.otaDir, "${otaFolderPrefix}/index.html"))
         otaIndexFile.location.mkdirs()
         otaIndexFile.location.delete()
         URL otaIndexTemplate = this.class.getResource('index.html')
-        ResourceBundle rb = getBundle("${this.class.package.name}.index", releaseConf.locale, this.class.classLoader)
+        def rb = getBundle("${this.class.package.name}.index", androidReleaseConf.locale, this.class.classLoader)
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         engine.verbose = l.debugEnabled
         def binding = [
                 baseUrl: otaIndexFile.url,
-                title: conf.projectName,
-                androidConf: androidConf,
-                version: conf.fullVersionString,
-                releaseNotes: releaseConf.releaseNotes,
-                currentDate: releaseConf.buildDate,
-                iconFileName: releaseConf.iconFile.name,
+                title: androidConf.projectName.value,
+                version: androidConf.versionString,
+                releaseNotes: androidReleaseConf.releaseNotes,
+                currentDate: androidReleaseConf.buildDate,
+                iconFileName: androidReleaseConf.iconFile.value?.name,
+                variantsConf: variantsConf,
                 androidReleaseConf: androidReleaseConf,
                 rb: rb
         ]
@@ -118,34 +106,35 @@ class AvailableArtifactsInfoTask {
         otaIndexFile.location.write(result.toString(), 'utf-8')
         androidReleaseConf.otaIndexFile = otaIndexFile
         l.lifecycle("Ota index created: ${otaIndexFile}")
-        project.ant.copy(file: releaseConf.iconFile, tofile: new File(otaIndexFile.location.parentFile,
-                releaseConf.iconFile.name))
+        
+        def iconFile = androidReleaseConf.iconFile.value
+        ant.copy(file: new File(project.rootDir, iconFile.path), tofile: new File(otaIndexFile.location.parentFile, iconFile.name))
+
         String urlEncoded = URLEncoder.encode(otaIndexFile.url.toString(), 'utf-8')
-        File outputFile = new File(releaseConf.targetDirectory, "qrcode-${conf.projectName}-${conf.fullVersionString}.png")
+        def qrCodeFile = "qrcode-${androidConf.projectName.value}-${androidConf.fullVersionString}.png"
+        File outputFile = new File(androidReleaseConf.targetDirectory, qrCodeFile)
         downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), outputFile)
         AmebaArtifact qrCodeArtifact = new AmebaArtifact(
                 name: 'QR Code',
-                url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName}-${conf.fullVersionString}.png"),
+                url: new URL(androidReleaseConf.versionedApplicationUrl, qrCodeFile),
                 location: outputFile)
-        releaseConf.qrCodeFile = qrCodeArtifact
+        androidReleaseConf.QRCodeFile = qrCodeArtifact
         l.lifecycle("QRCode created: ${qrCodeArtifact.location}")
     }
 
     private void prepareFileIndexFile(Collection<String> variants) {
-        URL fileIndexTemplate = this.class.getResource('file_index.html')
-        ResourceBundle rb = getBundle("${this.class.package.name}.file_index",
-                releaseConf.locale, this.class.classLoader)
+        URL fileIndexTemplate = getClass().getResource('file_index.html')
+        def rb = getBundle("${getClass().package.name}.file_index", androidReleaseConf.locale, getClass().classLoader)
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         engine.verbose = l.debugEnabled
         def binding = [
                 baseUrl: androidReleaseConf.fileIndexFile.url,
-                title: conf.projectName,
+                title: androidConf.projectName.value,
                 variants: variants,
                 apkFiles: androidReleaseConf.apkFiles,
-                version: conf.fullVersionString,
-                currentDate: releaseConf.buildDate,
-                androidConf: androidConf,
-                releaseConf: releaseConf,
+                version: androidConf.versionString,
+                currentDate: androidReleaseConf.buildDate,
+                androidVariantsConf: variantsConf,
                 androidReleaseConf: androidReleaseConf,
                 rb: rb
         ]
@@ -157,17 +146,16 @@ class AvailableArtifactsInfoTask {
     private void preparePlainFileIndexFile() {
         URL plainFileIndexTemplate = this.class.getResource('plain_file_index.html')
         ResourceBundle rb = getBundle("${this.class.package.name}.plain_file_index",
-                releaseConf.locale, this.class.classLoader)
+                androidReleaseConf.locale, this.class.classLoader)
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         engine.verbose = l.debugEnabled
         def binding = [
                 baseUrl: androidReleaseConf.plainFileIndexFile.url,
-                title: conf.projectName,
+                title: androidConf.projectName.value,
                 apkFiles: androidReleaseConf.apkFiles,
-                version: conf.fullVersionString,
-                currentDate: releaseConf.buildDate,
-                androidConf: androidConf,
-                releaseConf: releaseConf,
+                version: androidConf.versionString,
+                currentDate: androidReleaseConf.buildDate,
+                androidVariantsConf: variantsConf,
                 androidReleaseConf: androidReleaseConf,
                 rb: rb
         ]

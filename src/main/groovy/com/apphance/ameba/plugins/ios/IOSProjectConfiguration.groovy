@@ -25,6 +25,7 @@ class IOSProjectConfiguration {
     List<String> schemes = []
     File plistFile
     List<String> excludedBuilds = []
+    String pListFileName
 
     boolean isBuildExcluded(String id) {
         boolean excluded = false

@@ -21,9 +21,9 @@ class ProjectConfiguration {
         "$projectName-$fullVersionString"
     }
 
-    void updateVersionDetails(Expando e) {
-        versionString = e.versionString
-        versionCode = e.versionCode
+    void updateVersionDetails(Map versionDetails) {
+        versionString = versionDetails.versionString
+        versionCode = versionDetails.versionCode
     }
 
     @Override

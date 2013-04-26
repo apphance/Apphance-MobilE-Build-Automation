@@ -18,7 +18,8 @@ class CommandExecutor {
     private FileLinker fileLinker
     private CommandLogFilesGenerator logFileGenerator
 
-    @Inject CommandExecutor(FileLinker fileLinker, CommandLogFilesGenerator logFileGenerator) {
+    @Inject
+    CommandExecutor(FileLinker fileLinker, CommandLogFilesGenerator logFileGenerator) {
         this.fileLinker = fileLinker
         this.logFileGenerator = logFileGenerator
     }
@@ -50,12 +51,12 @@ class CommandExecutor {
 
         handleExitValue(exitValue, c)
 
-        if (commandLogs[ERR].text) {
+        if (commandLogs[ERR]?.text) {
             l.warn("Command err: ${fileLinker.fileLink(commandLogs[ERR])}, contains some text. It may be info about" +
                     " potential problems")
         }
 
-        commandLogs[STD].readLines()
+        commandLogs[STD]?.readLines()
     }
 
     private Process runCommand(Command c, Map<CommandLogFilesGenerator.LogFile, File> commandLog) {
@@ -63,21 +64,25 @@ class CommandExecutor {
 
         try {
             def processBuilder = new ProcessBuilder(c.commandForExecution)
-            //out and err is redirected separately because xcodebuild for some commands returns '0' but display
-            //warnings which are redirected to std, then parsing of output command fails
-            //separate stream redirection solves this issue
             processBuilder.
                     directory(c.runDir).
                     redirectInput(prepareInputFile(c.input)).
-                    redirectOutput(commandLog[STD]).
-                    redirectError(commandLog[ERR]).
                     environment().putAll(c.environment)
+
+            //out and err is redirected separately because xcodebuild for some commands returns '0' but display
+            //warnings which are redirected to std, then parsing of output command fails
+            //separate stream redirection solves this issue
+            if (commandLog[STD]) processBuilder.redirectOutput(commandLog[STD])
+            if (commandLog[ERR]) processBuilder.redirectError(commandLog[ERR])
 
             process = processBuilder.start()
 
         } catch (Exception e) {
-            if (c.failOnError)
+            if (c.failOnError) {
                 throw new CommandFailedException(e.message, c)
+            } else {
+                l.error("Error while executing command: ${c.commandForPublic}, in dir: ${c.runDir}, error: ${e.message}")
+            }
         }
 
         process

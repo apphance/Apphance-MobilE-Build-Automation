@@ -4,6 +4,7 @@ package com.apphance.ameba.plugins.ios.framework
  *
  */
 public enum IOSFrameworkProperty {
+
     FRAMEWORK_TARGET('ios.framework.target', 'Target to build framework project with'),
     FRAMEWORK_CONFIGURATION('ios.framework.configuration', 'Configuration to build framework project with', 'Debug'),
     FRAMEWORK_VERSION('ios.framework.version', 'Version of framework (usually single alphabet letter A)', 'A'),

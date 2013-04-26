@@ -8,6 +8,7 @@ import org.junit.*
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
+@Ignore('turn on when non-interactive setup implemented')
 class RunPrepareAndroidSetupTest {
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
@@ -53,7 +54,7 @@ class RunPrepareAndroidSetupTest {
         return res
     }
 
-    @Test
+
     public void testGenerateNoChange() throws Exception {
         runTests('\n' * 252 + 'y\n', 'prepareSetup')
         String text = gradleProperties.text
@@ -61,7 +62,6 @@ class RunPrepareAndroidSetupTest {
         assertEquals(originalText, text)
     }
 
-    @Test
     public void testGenerateDefaults() throws Exception {
         gradleProperties.delete()
         runTests('\n' * 252 + 'y\n', 'prepareSetup')

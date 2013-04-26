@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>${title}</title>
+</head>
+<body>
+<h1>${title}</h1>
+${rb.getString('Version')} ${version}<br>
+${rb.getString('Released')} ${currentDate}
+<h2>${rb.getString('Application_files')}</h2>
+<ul>
+    <% targets.each { target -> %>
+    <li><b>${target}</b><br>
+        ${rb.getString('Applications')}<br>
+        <ul>
+            <% configurations.each { configuration -> %>
+            <% def id = "${target}-${configuration}".toString() %>
+            <% if (!iosConf.isBuildExcluded(id)) {%>
+            <li>${configuration}
+                <ul>
+                    <% if (iosReleaseConf.distributionZipFiles[id] != null) { %>
+                    <li>${rb.getString('Application_zip')} <a
+                            href="${iosReleaseConf.distributionZipFiles[id].getRelativeUrl(baseUrl)}" rel="external">${iosReleaseConf.distributionZipFiles[id].url}</a>
+                    </li>
+                    <% } %>
+                    <% if (iosReleaseConf.dSYMZipFiles[id] != null) { %>
+                    <li>${rb.getString('dSYM_zip')} <a href="${iosReleaseConf.dSYMZipFiles[id].getRelativeUrl(baseUrl)}"
+                                                       rel="external">${iosReleaseConf.dSYMZipFiles[id].url}</a></li>
+                    <% } %>
+                    <% if (iosReleaseConf.ipaFiles[id] != null) { %>
+                    <li>${rb.getString('IPA_file')} <a href="${iosReleaseConf.ipaFiles[id].getRelativeUrl(baseUrl)}"
+                                                       rel="external">${iosReleaseConf.ipaFiles[id].url}</a></li>
+                    <% } %>
+                    <% if (iosReleaseConf.manifestFiles[id] != null) { %>
+                    <li>${rb.getString('Manifest_file')} <a
+                            href="${iosReleaseConf.manifestFiles[id].getRelativeUrl(baseUrl)}" rel="external">${iosReleaseConf.manifestFiles[id].url}</a>
+                    </li>
+                    <% } %>
+                    <% if (iosReleaseConf.mobileProvisionFiles[id] != null) { %>
+                    <li>${rb.getString('Mobileprovision_file')} <a
+                            href="${iosReleaseConf.mobileProvisionFiles[id].getRelativeUrl(baseUrl)}" rel="external">${iosReleaseConf.mobileProvisionFiles[id].url}</a>
+                    </li>
+                    <% } %>
+                </ul>
+            </li>
+            <% } %>
+            <% } %>
+        </ul>
+        <% if (!iosReleaseConf.dmgImageFiles.empty) { %>
+        ${rb.getString('Simulator_images')}</br>
+        <ul>
+            <% iosConf.families.each { family -> %>
+            <% if (iosReleaseConf.dmgImageFiles[family + '-' + target] != null) { %>
+            <li>${java.text.MessageFormat.format(rb.getString('family_image'),family)}
+                <a href="${iosReleaseConf.dmgImageFiles[family + '-' + target].getRelativeUrl(baseUrl)}"
+                   rel="external">${iosReleaseConf.dmgImageFiles[family + '-' + target].url}</a></li>
+            <% } %>
+            <% } %>
+        </ul>
+        <% } %>
+    </li>
+    <% } %>
+</ul>
+<h2>${rb.getString('Other')}</h2>
+<ul>
+    <% if (releaseConf.mailMessageFile != null) { %>
+    <li>${rb.getString('Mail_message')} <a href="${releaseConf.mailMessageFile.getRelativeUrl(baseUrl)}" rel="external">${releaseConf.mailMessageFile.url}</a>
+    </li>
+    <% } %>
+    <% if (releaseConf.imageMontageFile != null) { %>
+    <li>${rb.getString('Image_montage')} <a href="${releaseConf.imageMontageFile.getRelativeUrl(baseUrl)}"
+                                            rel="external">${releaseConf.imageMontageFile.url}</a></li>
+    <% } %>
+    <% if (releaseConf.QRCodeFile != null) { %>
+    <li>${rb.getString('QR_code')} <a href="${releaseConf.QRCodeFile.getRelativeUrl(baseUrl)}" rel="external">${releaseConf.QRCodeFile.url}</a>
+    </li>
+    <% } %>
+</ul>
+</body>
+</html>
