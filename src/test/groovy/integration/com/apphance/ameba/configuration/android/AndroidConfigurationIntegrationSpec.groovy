@@ -10,7 +10,7 @@ import static org.gradle.testfixtures.ProjectBuilder.builder
 class AndroidConfigurationIntegrationSpec extends Specification {
 
     @Unroll
-    def 'sdk jars list contains maps.jar target: #target'() {
+    def 'sdk jars list contains valid jars for target: #target'() {
         given:
         def project = builder().build()
 
@@ -23,8 +23,7 @@ class AndroidConfigurationIntegrationSpec extends Specification {
 
         where:
         target                       | verify
-        // FIXME
-        //'Google Inc.:Google APIs:17' | { it*.path.any { it.endsWith('addon-google_apis-google-17/libs/maps.jar') } }
+        'Google Inc.:Google APIs:17' | { it*.path.any { it.endsWith('addon-google_apis-google-17/libs/maps.jar') } }
         'android-8'                  | { it*.path.any { it.endsWith('android-8/android.jar') } }
     }
 }

@@ -9,7 +9,6 @@ import org.junit.Test
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
-//TODO really buildAll everywhere? Refactor!!!
 class ExecuteApphanceBuildsTest {
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
@@ -62,7 +61,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceNoApplicationBuild() throws Exception {
-        run(tNoApplication, 'buildAll')
+        run(tNoApplication, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
         assertTrue(getMainActivityFile(tNoApplicationProject, 'TestDebug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProject, 'TestDebug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tNoApplicationProject, 'TestDebug').text.contains('import android.util.Log'))
@@ -78,7 +77,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceApplicationBuild() throws Exception {
-        run(tApplication, 'buildAll')
+        run(tApplication, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
         assertFalse(getMainActivityFile(tApplicationProject, 'TestDebug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tApplicationProject, 'TestDebug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tApplicationProject, 'TestDebug').text.contains('import android.util.Log'))
@@ -98,7 +97,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceNoApplicationBuildNoOnCreate() throws Exception {
-        run(tNoApplicationNoOnCreate, 'buildAll')
+        run(tNoApplicationNoOnCreate, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
         assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'TestDebug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'TestDebug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'TestDebug').text.contains('import android.util.Log'))
@@ -114,7 +113,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceApplicationBuildNoOnCreate() throws Exception {
-        run(tApplicationNoOnCreate, 'buildAll')
+        run(tApplicationNoOnCreate, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
         assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestDebug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestDebug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestDebug').text.contains('import android.util.Log'))
@@ -134,7 +133,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceNoApplicationDifferentBuild() throws Exception {
-        run(tNoApplicationDifferentFormatting, 'buildAll')
+        run(tNoApplicationDifferentFormatting, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
         assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestDebug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestDebug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestDebug').text.contains('import com.apphance.android.Log'))
