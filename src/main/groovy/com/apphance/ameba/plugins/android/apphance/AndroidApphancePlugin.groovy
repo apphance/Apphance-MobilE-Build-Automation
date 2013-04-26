@@ -85,7 +85,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     }
 
     private void prepareSingleBuildUploadTask(AndroidVariantConfiguration variant, String buildTaskName) {
-        def task = project.task("upload${variant.name.toLowerCase().capitalize()}", type: UploadAndroidArtifactTask) as UploadAndroidArtifactTask
+        def task = project.task("upload${variant.name}", type: UploadAndroidArtifactTask) as UploadAndroidArtifactTask
         task.variant = variant
         task.dependsOn(buildTaskName)
         task.dependsOn(ImageMontageTask.NAME)

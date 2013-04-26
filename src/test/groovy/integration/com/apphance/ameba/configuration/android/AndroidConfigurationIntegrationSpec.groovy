@@ -22,8 +22,8 @@ class AndroidConfigurationIntegrationSpec extends Specification {
         verify.call(ac.sdkJars)
 
         where:
-        target                       | verify
-        'Google Inc.:Google APIs:17' | { it*.path.any { it.endsWith('addon-google_apis-google-17/libs/maps.jar') } }
-        'android-8'                  | { it*.path.any { it.endsWith('android-8/android.jar') } }
+        target                      | verify
+        'Google Inc.:Google APIs:7' | { it*.path.any { it.endsWith('addon-google_apis-google-7/libs/maps.jar') } }
+        'android-8'                 | { it*.path.any { it.endsWith('android-8/android.jar') } }
     }
 }

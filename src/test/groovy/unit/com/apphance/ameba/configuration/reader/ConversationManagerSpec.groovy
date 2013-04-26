@@ -1,16 +1,11 @@
 package com.apphance.ameba.configuration.reader
 
-import com.apphance.ameba.configuration.properties.FileProperty
-import com.apphance.ameba.configuration.properties.LongProperty
 import com.apphance.ameba.configuration.properties.ProjectTypeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.detection.ProjectType
 import spock.lang.Specification
 
-import javax.imageio.ImageIO
-
 import static com.apphance.ameba.detection.ProjectType.ANDROID
-import static java.lang.System.getProperties
 
 class ConversationManagerSpec extends Specification {
 
@@ -52,21 +47,36 @@ class ConversationManagerSpec extends Specification {
         new StringProperty(message: 'Project name', possibleValues: { ['a', 'b'] as List<String> })                        | "Project name, default: '', possible: [a, b]: "
     }
 
+    def 'empty input validation works well'() {
+        expect:
+        cm.validateInput(input, p) == validationResult
+
+        where:
+        p                                                                                  | input  | validationResult
+        new StringProperty(value: 'val', defaultValue: { '' }, required: { false })        | '  '   | true
+        new StringProperty(value: 'val', defaultValue: { 'def val' }, required: { false }) | '\n'   | true
+        new StringProperty(value: 'val', defaultValue: { '' }, required: { true })         | '  '   | true
+        new StringProperty(value: 'val', defaultValue: { 'def val' }, required: { true })  | null   | true
+        new StringProperty(value: '', defaultValue: { 'def val' }, required: { true })     | '\t'   | true
+        new StringProperty(value: '', defaultValue: { '' }, required: { true })            | '\n\n' | false
+        new StringProperty(value: '', defaultValue: { '' }, required: { false })           | ''     | true
+        new StringProperty(value: '', defaultValue: { 'def val' }, required: { false })    | '   '  | true
+    }
+
     def 'input validation works well'() {
         expect:
         cm.validateInput(input, p) == validationResult
 
         where:
-        p                                                                                                                   | input  | validationResult
-        new StringProperty(validator: { false })                                                                            | ''     | true
-        new StringProperty(validator: { false })                                                                            | '\n '  | true
-        new StringProperty(validator: { false })                                                                            | 'v1'   | false
-        new StringProperty(possibleValues: { ['v1', 'v2'] as List<String> }, validator: { false })                          | 'v1'   | true
-        new StringProperty(possibleValues: { ['v1', 'v2'] as List<String> }, validator: { false })                          | 'v3'   | false
-        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }, validator: { it.matches('[0-9]+') })             | '1234' | true
-        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }, validator: { it.matches('[0-9]+') })             | 'a'    | true
-        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }, validator: { it.matches('[0-9]+') })             | 'c'    | false
-        new FileProperty(validator: { it?.trim() ? new File(it as String).exists() && ImageIO.read(new File(it)) : false }) | 'bolo' | false
+        p                                                                                   | input | validationResult
+        new StringProperty(possibleValues: null, validator: null)                           | 'aaa' | true
+        new StringProperty(possibleValues: { ['aaa'] })                                     | 'aaa' | true
+        new StringProperty(possibleValues: { ['bbb'] })                                     | 'aaa' | false
+        new StringProperty(possibleValues: { ['bbb'] }, validator: { it.matches('[a]+') })  | 'aaa' | true
+        new StringProperty(possibleValues: { ['bbb'] }, validator: { !it.matches('[a]+') }) | 'aaa' | false
+        new StringProperty(validator: { it.matches('[a]+') })                               | 'aaa' | true
+        new StringProperty(validator: { !it.matches('[a]+') }, possibleValues: { ['aaa'] }) | 'aaa' | true
+        new StringProperty(validator: { !it.matches('[a]+') })                              | 'aaa' | false
     }
 
     def 'property value is set well'() {
@@ -74,14 +84,13 @@ class ConversationManagerSpec extends Specification {
         cm.setPropertyValue(p, input)
 
         then:
-        p.hashCode()
         p.value == expectedValue
 
         where:
-        p                                                      | input                                   | expectedValue
-        new StringProperty(defaultValue: { 'lol' })            | ''                                      | 'lol'
-        new StringProperty()                                   | ''                                      | ''
-        new LongProperty(validator: { it.matches('[0-9]') })   | '5'                                     | 5L
-        new FileProperty(validator: { new File(it).exists() }) | properties['java.io.tmpdir'].toString() | new File(properties['java.io.tmpdir'].toString())
+        p                                                         | input | expectedValue
+        new StringProperty()                                      | '\n'  | null
+        new StringProperty(defaultValue: { 'aaa' })               | ''    | 'aaa'
+        new StringProperty(value: 'aaa')                          | ''    | 'aaa'
+        new StringProperty(value: 'bbb', defaultValue: { 'bbb' }) | 'aaa' | 'aaa'
     }
 }

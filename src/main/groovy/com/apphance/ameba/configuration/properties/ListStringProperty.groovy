@@ -6,7 +6,7 @@ class ListStringProperty extends AbstractProperty<List<String>> {
 
     @Override
     void setValue(String value) {
-        if (value && value.trim())
+        if (value?.trim())
             this.@value = value.trim().split(SEPARATOR)*.trim()
     }
 

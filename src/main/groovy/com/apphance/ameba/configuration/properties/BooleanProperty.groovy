@@ -4,7 +4,7 @@ class BooleanProperty extends AbstractProperty<Boolean> {
 
     @Override
     void setValue(String value) {
-        if (value) {
+        if (value?.trim()) {
             this.@value = value.trim().toBoolean()
         }
     }

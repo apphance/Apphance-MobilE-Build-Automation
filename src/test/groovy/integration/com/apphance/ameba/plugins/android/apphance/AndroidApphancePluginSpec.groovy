@@ -88,6 +88,11 @@ class AndroidApphancePluginSpec extends Specification {
         ]
         aap.variantsConf = avc
 
+        and: 'add tasks that AndroidPlugin creates'
+        project.task('buildv1')
+        project.task('buildv2')
+        project.task('buildv3')
+
         when:
         aap.apply(project)
 
@@ -99,14 +104,9 @@ class AndroidApphancePluginSpec extends Specification {
         project.tasks[AndroidLogsConversionTask.NAME].group == AMEBA_APPHANCE_SERVICE
 
         and: 'apphance tasks defined'
-        project.hashCode()
-        project.tasks['v1']
-        !project.tasks.findByName('v2')
-        project.tasks['v3']
-        project.tasks['uploadV1']
-        !project.tasks.findByName('uploadV2')
-        project.tasks['uploadV3']
-
+        project.tasks['uploadv1'].dependsOn.flatten().contains('buildv1')
+        !project.tasks.findByName('uploadv2')
+        project.tasks['uploadv3'].dependsOn.flatten().contains('buildv3')
     }
 
     private AndroidVariantConfiguration createVariant(String name, AndroidBuildMode mode) {
