@@ -49,9 +49,9 @@ class SendMailMessageTask extends DefaultTask {
                 mailport: releaseConf.mailPort,
                 subject: releaseConf.releaseMailSubject,
                 charset: 'utf-8',
-                tolist: releaseConf.releaseMailTo) {
-            from(address: releaseConf.releaseMailFrom)
-            message(mimetype: "text/html", releaseConf.mailMessageFile.location.text)
+                tolist: releaseConf.releaseMailTo.value) {
+            from(address: releaseConf.releaseMailFrom.value)
+            message(mimetype: "text/html", releaseConf.mailMessageFile?.location?.text)
             if (releaseConf.releaseMailFlags.value.contains("qrCode")) {
                 fileset(file: releaseConf.QRCodeFile.location)
             }
