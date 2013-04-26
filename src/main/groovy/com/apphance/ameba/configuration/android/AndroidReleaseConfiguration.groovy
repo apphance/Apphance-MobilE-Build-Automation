@@ -146,19 +146,19 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             name: 'android.release.project.country',
             message: 'Project country',
             defaultValue: { 'US' },
-            validator: { it?.length() == 2 && it?.every { (it as Character).isUpperCase() } }
+            validator: {it?.length() == 2 && it?.every { (it as Character).isUpperCase() }}
     )
 
     StringProperty releaseMailFrom = new StringProperty(
             name: 'android.release.mail.from',
             message: 'Sender email address',
-            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : false }
+            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : true }
     )
 
     StringProperty releaseMailTo = new StringProperty(
             name: 'android.release.mail.to',
             message: 'Recipient of release email',
-            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : false }
+            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : true }
     )
 
     ListStringProperty releaseMailFlags = new ListStringProperty(
@@ -214,9 +214,11 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
         check !checkException { baseURL }, "Property '${projectURL.name}' is not valid! Should be valid URL address!"
         check language.validator(language.value), "Property '${language.name}' is not valid! Should be two letter lowercase!"
         check country.validator(country.value), "Property '${country.name}' is not valid! Should be two letter uppercase!"
-        check !(releaseMailFrom.validator(releaseMailFrom.value)), "Property '${releaseMailFrom.name}' is not valid! Should be valid email address!"
-        check !(releaseMailTo.validator(releaseMailTo.value)), "Property '${releaseMailTo.name}' is not valid! Should be valid email address!"
-        check !(releaseMailFlags.value ? releaseMailFlags.value.every { it in ALL_EMAIL_FLAGS } : true), "Property '${releaseMailFlags.name}' is not valid! Possible values: ${ALL_EMAIL_FLAGS}"
+        check releaseMailFrom.validator(releaseMailFrom.value), "Property '${releaseMailFrom.name} is not valid! Should be valid " +
+                "email address! Current value: ${releaseMailFrom.value}"
+        check releaseMailTo.validator(releaseMailTo.value), "Property '${releaseMailTo.name} is not valid! Should be valid email address!  Current value: ${releaseMailTo.value}"
+        check releaseMailFlags.validator(releaseMailFlags.persistentForm()), "Property '${releaseMailFlags.name}' is not valid! Possible values: " +
+                "${ALL_EMAIL_FLAGS} Current value: ${releaseMailFlags.value}"
         check iconFile.validator(iconFile.value), "Property '${iconFile.name}' (${iconFile.value}) is not valid! Should be existing image file!"
     }
 }

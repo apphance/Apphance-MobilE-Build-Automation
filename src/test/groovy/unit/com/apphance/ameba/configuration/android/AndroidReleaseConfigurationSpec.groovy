@@ -92,5 +92,14 @@ class AndroidReleaseConfigurationSpec extends Specification {
         null             | null          | 'imap.prop.pl'     | 'imap.prop.pl'
     }
 
-
+    def 'mail validators'() {
+        expect:
+        arc.releaseMailFlags.validator('qrCode,imageMontage')
+        arc.releaseMailFrom.validator('')
+        arc.releaseMailFrom.validator(null)
+        arc.releaseMailFrom.validator('Jenkins <no-reply@polidea.pl>')
+        arc.releaseMailTo.validator('qwilt-team@polidea.pl')
+        arc.releaseMailTo.validator('')
+        arc.releaseMailTo.validator(null)
+    }
 }
