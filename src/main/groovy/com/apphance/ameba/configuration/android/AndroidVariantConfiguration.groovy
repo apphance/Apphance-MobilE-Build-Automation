@@ -76,7 +76,7 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
 
     @Override
     String getConfigurationName() {
-        "Android Variant Configuration ${this.@name}"
+        "Android Variant ${this.@name}"
     }
 
     File getTmpDir() {

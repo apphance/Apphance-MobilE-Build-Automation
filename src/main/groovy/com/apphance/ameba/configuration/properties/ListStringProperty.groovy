@@ -6,8 +6,9 @@ class ListStringProperty extends AbstractProperty<List<String>> {
 
     @Override
     void setValue(String value) {
-        if (value?.trim())
-            this.@value = value.trim().split(SEPARATOR)*.trim()
+        if (value?.trim()) {
+            this.@value = value.trim().replaceAll('[\\[\\]]', '').split(SEPARATOR)*.trim()
+        }
     }
 
     Closure<String> persistentForm = { value?.join(SEPARATOR) ?: '' }
