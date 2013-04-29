@@ -74,7 +74,7 @@ class AndroidSingleVariantBuilderSpec extends Specification {
 
         then:
         'test' == ai.variant
-        new File("testProjects/android/tmp-android-basic-test/bin").absolutePath == ai.buildDirectory.absolutePath
+        new File("testProjects/android/tmp-android-basic-test/bin").absolutePath == ai.buildDir.absolutePath
         new File("testProjects/android/tmp-android-basic-test/bin/TestAndroidProject-debug.apk").absolutePath == ai.originalFile.absolutePath
         'TestAndroidProject-debug-test-1.0.1_42' == ai.fullReleaseName
         'TestAndroidProject-debug-test-1.0.1_42' == ai.filePrefix
@@ -87,7 +87,7 @@ class AndroidSingleVariantBuilderSpec extends Specification {
         then:
         'market' == ai.variant
         'Release' == ai.mode
-        new File("testProjects/android/tmp-android-basic-market/bin").absolutePath == ai.buildDirectory.absolutePath
+        new File("testProjects/android/tmp-android-basic-market/bin").absolutePath == ai.buildDir.absolutePath
         new File("testProjects/android/tmp-android-basic-market/bin/TestAndroidProject-release.apk").absolutePath == ai.originalFile.absolutePath
         'TestAndroidProject-release-market-1.0.1_42' == ai.fullReleaseName
         'TestAndroidProject-release-market-1.0.1_42' == ai.filePrefix
@@ -100,7 +100,7 @@ class AndroidSingleVariantBuilderSpec extends Specification {
         then:
         'Debug' == ai.variant
         'Debug' == ai.mode
-        new File("testProjects/android/tmp-android-novariants-Debug/bin").absolutePath == ai.buildDirectory.absolutePath
+        new File("testProjects/android/tmp-android-novariants-Debug/bin").absolutePath == ai.buildDir.absolutePath
         new File("testProjects/android/tmp-android-novariants-Debug/bin/TestAndroidProject-debug.apk").absolutePath == ai.originalFile.absolutePath
         'TestAndroidProject-debug-Debug-1.0.1_42' == ai.fullReleaseName
         'TestAndroidProject-debug-Debug-1.0.1_42' == ai.filePrefix
@@ -113,7 +113,7 @@ class AndroidSingleVariantBuilderSpec extends Specification {
         then:
         'Release' == ai.variant
         'Release' == ai.mode
-        new File("testProjects/android/tmp-android-novariants-Release/bin").absolutePath == ai.buildDirectory.absolutePath
+        new File("testProjects/android/tmp-android-novariants-Release/bin").absolutePath == ai.buildDir.absolutePath
         new File("testProjects/android/tmp-android-novariants-Release/bin/TestAndroidProject-release.apk").absolutePath == ai.originalFile.absolutePath
         'TestAndroidProject-release-Release-1.0.1_42' == ai.fullReleaseName
         'TestAndroidProject-release-Release-1.0.1_42' == ai.filePrefix

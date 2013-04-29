@@ -1,9 +1,11 @@
 package com.apphance.ameba.plugins.android
 
+import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.release.AndroidBuildListener
-import org.gradle.api.Project
 import org.gradle.api.logging.Logger
+
+import javax.inject.Inject
 
 import static org.gradle.api.logging.Logging.getLogger
 
@@ -14,18 +16,18 @@ import static org.gradle.api.logging.Logging.getLogger
 abstract class AbstractAndroidSingleVariantBuilder {
 
     Logger logger = getLogger(getClass())
-    static Collection<AndroidBuildListener> buildListeners = []
+    Collection<AndroidBuildListener> buildListeners = []
 
-    Project project
-    File variantsDir
+    @Inject
+    AntBuilder ant
+    @Inject
     AntExecutor antExecutor
-
-    AbstractAndroidSingleVariantBuilder(Project project, AntExecutor antExecutor) {
-        this.project = project
-        this.antExecutor = antExecutor
-        this.variantsDir = project.file('variants')//TODO
-    }
+    @Inject
+    AndroidVariantsConfiguration variantsConfiguration
 
     abstract void buildSingle(AndroidBuilderInfo bi)
 
+    void registerListener(AndroidBuildListener listener) {
+        buildListeners << listener
+    }
 }

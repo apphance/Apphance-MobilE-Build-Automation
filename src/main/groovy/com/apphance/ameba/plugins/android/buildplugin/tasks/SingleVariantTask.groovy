@@ -2,9 +2,7 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
-import com.apphance.ameba.executor.AntExecutor
-import com.apphance.ameba.plugins.android.AndroidArtifactBuilder
-import com.apphance.ameba.plugins.android.AndroidBuilderInfo
+import com.apphance.ameba.plugins.android.AndroidArtifactProvider
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
 import org.gradle.api.DefaultTask
@@ -21,29 +19,20 @@ class SingleVariantTask extends DefaultTask {
     @Inject
     AndroidConfiguration androidConfiguration
     @Inject
-    AndroidArtifactBuilder artifactBuilder
+    AndroidArtifactProvider artifactBuilder
+    @Inject
+    AndroidSingleVariantJarBuilder jarBuilder
+    @Inject
+    AndroidSingleVariantApkBuilder apkBuilder
+
     AndroidVariantConfiguration variant
-
-    private AndroidSingleVariantJarBuilder androidJarBuilder
-    private AndroidSingleVariantApkBuilder androidApkBuilder
-
-    @Inject
-    AntExecutor antExecutor
-
-    @Inject
-    def init() {
-        this.androidApkBuilder = new AndroidSingleVariantApkBuilder(project, antExecutor)
-        this.androidJarBuilder = new AndroidSingleVariantJarBuilder(project, antExecutor)
-    }
 
     @TaskAction
     void singleVariant() {
         if (androidConfiguration.isLibrary()) {
-            AndroidBuilderInfo bi = artifactBuilder.jarArtifactBuilderInfo(variant)
-            androidJarBuilder.buildSingle(bi)
+            jarBuilder.buildSingle(artifactBuilder.jarArtifactBuilderInfo(variant))
         } else {
-            AndroidBuilderInfo bi = artifactBuilder.apkArtifactBuilderInfo(variant)
-            androidApkBuilder.buildSingle(bi)
+            apkBuilder.buildSingle(artifactBuilder.apkArtifactBuilderInfo(variant))
         }
     }
 

@@ -44,7 +44,7 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     }
 
     AndroidBuildMode getMode() {
-        this.@name.toLowerCase().contains(DEBUG.name().toLowerCase()) ? DEBUG : RELEASE
+        this.@name.toLowerCase().contains(DEBUG.lowerCase()) ? DEBUG : RELEASE
     }
 
     def apphanceMode = new ApphanceModeProperty(
@@ -76,7 +76,7 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
 
     @Override
     String getConfigurationName() {
-        "Android configuration variant ${this.@name}"
+        "Android Variant Configuration ${this.@name}"
     }
 
     File getTmpDir() {

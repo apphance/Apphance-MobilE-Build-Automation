@@ -8,12 +8,12 @@ import com.apphance.ameba.configuration.android.AndroidBuildMode
  */
 class AndroidBuilderInfo {
 
-    String variant
-    AndroidBuildMode mode
-    File buildDirectory
-    File originalFile
     String fullReleaseName
     String filePrefix
+    String variant
+    AndroidBuildMode mode
+    File originalFile
+    File buildDir
     File tmpDir
 
     String getId() {
@@ -21,7 +21,7 @@ class AndroidBuilderInfo {
     }
 
     @Override
-    public String toString() {
-        getProperties()
+    String toString() {
+        this.properties
     }
 }

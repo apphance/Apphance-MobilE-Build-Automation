@@ -1,8 +1,6 @@
 package com.apphance.ameba.plugins.android.release
 
-import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.plugins.android.AndroidArtifactBuilder
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTask
@@ -26,11 +24,15 @@ import javax.inject.Inject
 class AndroidReleasePlugin implements Plugin<Project> {
 
     @Inject
-    AndroidConfiguration conf
-    @Inject
     AndroidReleaseConfiguration releaseConf
     @Inject
-    AndroidArtifactBuilder artifactBuilder
+    AndroidSingleVariantApkBuilder apkBuilder
+    @Inject
+    AndroidReleaseApkListener apkListener
+    @Inject
+    AndroidSingleVariantJarBuilder jarBuilder
+    @Inject
+    AndroidReleaseJarListener jarListener
 
     @Override
     void apply(Project project) {
@@ -47,9 +49,8 @@ class AndroidReleasePlugin implements Plugin<Project> {
                     type: MailMessageTask,
                     dependsOn: [AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME])
 
-            //TODO to be separated, refactored, redesigned :/
-            AndroidSingleVariantApkBuilder.buildListeners << new AndroidReleaseApkListener(artifactBuilder)
-            AndroidSingleVariantJarBuilder.buildListeners << new AndroidReleaseJarListener(artifactBuilder)
+            apkBuilder.registerListener(apkListener)
+            jarBuilder.registerListener(jarListener)
         }
     }
 }

@@ -21,6 +21,7 @@ class CreateAVDTaskSpec extends Specification {
         def projectDir = new File('testProjects/android/android-basic')
         def project = builder().withProjectDir(projectDir).build()
 
+
         and:
         def fileLinker = Mock(FileLinker) {
             fileLink(_) >> ''
@@ -45,7 +46,7 @@ class CreateAVDTaskSpec extends Specification {
         atc.emulatorName >> 'sampleEmulatorName'
         atc.emulatorTarget >> new StringProperty(value: 'android-7')
         atc.emulatorSkin >> new StringProperty(value: 'WVGA800')
-        atc.emulatorCardSize >> new StringProperty(value: '200M')
+        atc.emulatorCardSize >> new StringProperty(value: '9M')
         atc.emulatorSnapshotEnabled >> new BooleanProperty(value: 'true')
 
         and:
@@ -54,13 +55,16 @@ class CreateAVDTaskSpec extends Specification {
         task.androidExecutor = ae
 
         and:
-        new File(projectDir, 'avds').deleteDir()
+        def avdsDir = new File(projectDir, 'avds')
+
+        and:
+        avdsDir.deleteDir()
 
         when:
         task.createAVD()
 
         then:
-        new File(projectDir, 'avds').exists()
+        avdsDir.exists()
 
         and:
         [
@@ -73,5 +77,6 @@ class CreateAVDTaskSpec extends Specification {
         cleanup:
         outLog.delete()
         errLog.delete()
+        avdsDir.deleteDir()
     }
 }

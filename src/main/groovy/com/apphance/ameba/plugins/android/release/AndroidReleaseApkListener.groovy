@@ -1,8 +1,9 @@
 package com.apphance.ameba.plugins.android.release
 
-import com.apphance.ameba.plugins.android.AndroidArtifactBuilder
+import com.apphance.ameba.plugins.android.AndroidArtifactProvider
 import com.apphance.ameba.plugins.android.AndroidBuilderInfo
-import org.gradle.api.Project
+
+import javax.inject.Inject
 
 /**
  * Build listener that provides .apk file in ota dir.
@@ -10,16 +11,13 @@ import org.gradle.api.Project
  */
 class AndroidReleaseApkListener implements AndroidBuildListener {
 
-    private AndroidArtifactBuilder artifactBuilder
-
-    AndroidReleaseApkListener(AndroidArtifactBuilder artifactBuilder) {
-        this.artifactBuilder = artifactBuilder
-    }
+    @Inject
+    AndroidArtifactProvider artifactProvider
+    @Inject
+    AntBuilder ant
 
     @Override
-    void buildDone(Project project, AndroidBuilderInfo bi) {
-        project.ant {
-            copy(file: bi.originalFile, tofile: artifactBuilder.apkArtifact(bi).location)
-        }
+    void buildDone(AndroidBuilderInfo bi) {
+        ant.copy(file: bi.originalFile, tofile: artifactProvider.apkArtifact(bi).location)
     }
 }

@@ -5,7 +5,7 @@ import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.executor.AntExecutor
-import com.apphance.ameba.plugins.android.AndroidArtifactBuilder
+import com.apphance.ameba.plugins.android.AndroidArtifactProvider
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
 import com.apphance.ameba.util.Preconditions
 import groovy.json.JsonSlurper
@@ -35,7 +35,7 @@ class UploadAndroidArtifactTask extends DefaultTask {
     @Inject
     AndroidReleaseConfiguration releaseConf
     @Inject
-    AndroidArtifactBuilder artifactBuilder
+    AndroidArtifactProvider artifactBuilder
     AndroidVariantConfiguration variant
 
     @Inject

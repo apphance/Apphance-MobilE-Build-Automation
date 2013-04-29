@@ -24,10 +24,10 @@ class UpdateVersionTask extends DefaultTask {
     static Pattern WHITESPACE_PATTERN = Pattern.compile('\\s+')
 
     @Inject
-    private AndroidManifestHelper manifestHelper
+    AndroidManifestHelper manifestHelper
 
     @Inject
-    private AndroidReleaseConfiguration releaseConf
+    AndroidReleaseConfiguration releaseConf
 
     @TaskAction
     public void updateVersion() {

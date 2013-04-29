@@ -73,7 +73,7 @@ class AndroidPlugin implements Plugin<Project> {
                         type: SingleVariantTask,
                         dependsOn: [CopySourcesTask.NAME, UpdateProjectTask.NAME]).variant = it
 
-                def buildAllMode = "buildAll${it.mode.name().toLowerCase().capitalize()}"
+                def buildAllMode = "buildAll${it.mode.capitalize()}"
                 project.tasks[buildAllMode].dependsOn buildName
 
                 project.task("install${it.name}", type: InstallTask, dependsOn: buildName).variant = it

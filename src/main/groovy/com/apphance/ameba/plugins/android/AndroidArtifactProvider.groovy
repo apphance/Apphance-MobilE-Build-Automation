@@ -11,7 +11,7 @@ import javax.inject.Inject
 import static com.apphance.ameba.configuration.android.AndroidArchiveType.APK
 import static com.apphance.ameba.configuration.android.AndroidArchiveType.JAR
 
-class AndroidArtifactBuilder {
+class AndroidArtifactProvider {
 
     @Inject
     AndroidConfiguration conf
@@ -30,19 +30,19 @@ class AndroidArtifactBuilder {
 
     AndroidBuilderInfo apkArtifactBuilderInfo(AndroidVariantConfiguration avc) {
         def bi = builderInfo(avc)
-        bi.originalFile = new File(binDir(avc), "${conf.projectName.value}-${avc.mode.name().toLowerCase()}.apk")
+        bi.originalFile = new File(binDir(avc), "${conf.projectName.value}-${avc.mode.lowerCase()}.${APK.lowerCase()}")
         bi
     }
 
     private AndroidBuilderInfo builderInfo(AndroidVariantConfiguration avc) {
-        String mode = avc.mode.name().toLowerCase()
+        String mode = avc.mode.lowerCase()
         String variablePart = "$mode-${avc.name}"
 
         AndroidBuilderInfo bi = new AndroidBuilderInfo(
                 variant: avc.name,
                 mode: avc.mode,
                 tmpDir: avc.tmpDir,
-                buildDirectory: binDir(avc),
+                buildDir: binDir(avc),
                 fullReleaseName: "${conf.projectName.value}-${variablePart}-${conf.fullVersionString}",
                 filePrefix: "${conf.projectName.value}-${variablePart}-${conf.fullVersionString}"
         )
@@ -58,10 +58,11 @@ class AndroidArtifactBuilder {
     }
 
     private AmebaArtifact artifact(AndroidBuilderInfo abi, AndroidArchiveType type) {
+        def name = "${getFolderPrefix()}/${abi.filePrefix}.${type.lowerCase()}"
         new AmebaArtifact(
                 name: "${type.name()} ${abi.mode} file for ${abi.variant}",
-                url: new URL(releaseConf.baseURL, "${getFolderPrefix()}/${abi.filePrefix}.${type.extension}"),
-                location: new File(releaseConf.otaDir, "${getFolderPrefix()}/${abi.filePrefix}.${type.extension}")
+                url: new URL(releaseConf.baseURL, name),
+                location: new File(releaseConf.otaDir, name)
         )
     }
 

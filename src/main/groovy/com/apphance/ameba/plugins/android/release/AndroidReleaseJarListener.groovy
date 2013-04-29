@@ -1,8 +1,9 @@
 package com.apphance.ameba.plugins.android.release
 
-import com.apphance.ameba.plugins.android.AndroidArtifactBuilder
+import com.apphance.ameba.plugins.android.AndroidArtifactProvider
 import com.apphance.ameba.plugins.android.AndroidBuilderInfo
-import org.gradle.api.Project
+
+import javax.inject.Inject
 
 /**
  * Listener that builds .jar file for library.
@@ -10,16 +11,13 @@ import org.gradle.api.Project
  */
 class AndroidReleaseJarListener implements AndroidBuildListener {
 
-    private AndroidArtifactBuilder artifactBuilder
-
-    AndroidReleaseJarListener(AndroidArtifactBuilder artifactBuilder) {
-        this.artifactBuilder = artifactBuilder
-    }
+    @Inject
+    AndroidArtifactProvider artifactProvider
+    @Inject
+    AntBuilder ant
 
     @Override
-    void buildDone(Project project, AndroidBuilderInfo bi) {
-        project.ant {
-            copy(file: bi.originalFile, tofile: artifactBuilder.jarArtifact(bi).location)
-        }
+    void buildDone(AndroidBuilderInfo bi) {
+        ant.copy(file: bi.originalFile, tofile: artifactProvider.jarArtifact(bi).location)
     }
 }

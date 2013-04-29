@@ -1,6 +1,8 @@
 package com.apphance.ameba.plugins.android.release
 
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
+import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
+import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.ameba.plugins.android.release.tasks.MailMessageTask
 import com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
@@ -19,6 +21,8 @@ class AndroidReleasePluginSpec extends Specification {
 
         and:
         def arp = new AndroidReleasePlugin()
+        arp.apkBuilder = Mock(AndroidSingleVariantApkBuilder)
+        arp.jarBuilder = Mock(AndroidSingleVariantJarBuilder)
 
         and: 'create mock android release configuration and set it'
         def arc = Mock(AndroidReleaseConfiguration)

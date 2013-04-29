@@ -4,7 +4,7 @@ import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
 import com.apphance.ameba.executor.AntExecutor
-import com.apphance.ameba.plugins.android.AndroidArtifactBuilder
+import com.apphance.ameba.plugins.android.AndroidArtifactProvider
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.google.inject.Inject
 import groovy.text.SimpleTemplateEngine
@@ -31,7 +31,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     @Inject
     AndroidVariantsConfiguration variantsConf
     @Inject
-    AndroidArtifactBuilder artifactBuilder
+    AndroidArtifactProvider artifactBuilder
     @Inject
     AntExecutor antExecutor
 

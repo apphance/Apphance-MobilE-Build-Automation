@@ -133,23 +133,6 @@ class ExecuteAndroidBuildsTest {
                 "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
     }
 
-    @Ignore('using old configuration, to be rewritten')
-    void testUpdateVersion() {
-        AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
-        ProjectConfiguration projectConf = new ProjectConfiguration()
-        try {
-            Properties p = new Properties()
-            p.put('release.string', 'TEST_UPDATE')
-            p.put('release.code', 43)
-            runGradleWithProperties(p, 'updateProject', 'updateVersion')
-            projectConf.updateVersionDetails(manifestHelper.readVersion(new File("testProjects/android/android-basic")))
-            assertEquals(43, projectConf.versionCode)
-            assertEquals('TEST_UPDATE', projectConf.versionString)
-        } finally {
-            manifestHelper.restoreOriginalManifest(new File("testProjects/android/android-basic"))
-        }
-    }
-
     @Test
     void testAnalysis() {
         File baseDir = new File(testProject, "build/analysis/")
@@ -227,8 +210,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildAndPrepareVariantedMailMessage() {
-        runGradle('cleanRelease', 'updateProject', 'buildAll')
-        runGradle('prepareImageMontage', 'prepareMailMessage')
+        runGradle('cleanRelease', 'updateProject', 'buildAll', 'prepareImageMontage', 'prepareMailMessage')
         assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/file_index.html").exists())
         assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/icon.png").exists())
         assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/index.html").exists())
@@ -240,8 +222,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildAndPrepareNonVariantedMailMessage() {
-        runGradleNoVariants('cleanRelease', 'updateProject', 'buildAll')
-        runGradleNoVariants('prepareImageMontage', 'prepareMailMessage')
+        runGradleNoVariants('cleanRelease', 'updateProject', 'buildAll', 'prepareImageMontage', 'prepareMailMessage')
         assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/file_index.html").exists())
         assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/icon.png").exists())
         assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/index.html").exists())
