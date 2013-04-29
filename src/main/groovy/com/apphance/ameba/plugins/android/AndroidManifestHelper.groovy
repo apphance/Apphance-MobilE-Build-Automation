@@ -41,6 +41,12 @@ apphance:only="true">
         [versionCode: versionCode, versionString: versionString]
     }
 
+    String readIcon(File projectDir) {
+        def manifest = new XmlSlurper().parse(new File(projectDir, ANDROID_MANIFEST))
+        def icon = manifest.application.'@android:icon'?.text()
+        icon ? icon.substring(icon.lastIndexOf('/') + 1, icon.length()) : ''
+    }
+
     void updateVersion(File projectDir, String versionString, String versionCode) {
         def file = new File(projectDir, ANDROID_MANIFEST)
         saveOriginalFile(projectDir, file)

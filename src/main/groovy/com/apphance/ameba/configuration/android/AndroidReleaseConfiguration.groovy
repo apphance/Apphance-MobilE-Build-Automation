@@ -7,10 +7,11 @@ import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.properties.URLProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
+import com.apphance.ameba.plugins.android.AndroidManifestHelper
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import com.google.inject.Inject
 
 import javax.imageio.ImageIO
+import javax.inject.Inject
 import java.text.SimpleDateFormat
 
 /**
@@ -22,42 +23,43 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     final String configurationName = 'Android Release Configuration'
 
     static final MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
+    static final ICON_PATTERN = /icon.*\.(png|jpg|jpeg|bmp)/
+    public final DRAWABLE_DIR = /(drawable-ldpi|drawable-mdpi|drawable-hdpi|drawable-xhdpi|drawable)/
 
     static final ALL_EMAIL_FLAGS = [
             'installableSimulator',
             'qrCode',
             'imageMontage'
     ]
-
     private boolean enabledInternal
 
     Map<String, AmebaArtifact> apkFiles = [:]
     Map<String, AmebaArtifact> jarFiles = [:]
-
     AmebaArtifact otaIndexFile
+
     AmebaArtifact fileIndexFile
     AmebaArtifact plainFileIndexFile
-
     AmebaArtifact sourcesZip
     AmebaArtifact documentationZip
     AmebaArtifact imageMontageFile
+
     AmebaArtifact mailMessageFile
     AmebaArtifact QRCodeFile
-
     AmebaArtifact galleryCSS
+
+
     AmebaArtifact galleryJS
+
     AmebaArtifact galleryTrans
-
-
     String releaseMailSubject
-    private AndroidConfiguration androidConfiguration
-    private PropertyReader reader
+    @Inject
+    AndroidConfiguration conf
 
     @Inject
-    AndroidReleaseConfiguration(AndroidConfiguration androidConfiguration, PropertyReader reader) {
-        this.androidConfiguration = androidConfiguration
-        this.reader = reader
-    }
+    AndroidManifestHelper manifestHelper
+
+    @Inject
+    PropertyReader reader
 
     Collection<String> getReleaseNotes() {
         (reader.systemProperty('release.notes') ?: reader.envVariable('RELEASE_NOTES') ?: '').split('\n')
@@ -95,18 +97,40 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
 
     @Override
     File getOtaDir() {
-        new File(androidConfiguration.rootDir, 'ameba-ota')
+        new File(conf.rootDir, 'ameba-ota')
     }
 
     FileProperty iconFile = new FileProperty(
             name: 'android.release.project.icon.file',
             message: 'Path to project\'s icon file, must be relative to the root dir of project',
             required: { true },
+            defaultValue: { defaultIcon() },
+            possibleValues: { possibleIcons() },
             validator: {
-                def file = new File(androidConfiguration.rootDir, it as String)
+                def file = new File(conf.rootDir, it as String)
                 file?.absolutePath?.trim() ? (file.exists() && ImageIO.read(file)) : false
             }
     )
+
+    File defaultIcon() {
+        def icon = manifestHelper.readIcon(conf.rootDir)?.trim()
+        def icons = []
+        if (icon) {
+            conf.resDir.eachDirMatch(~DRAWABLE_DIR) { dir ->
+                icons.addAll(dir.listFiles([accept: { it.name.startsWith(icon) }] as FileFilter)*.canonicalFile)
+            }
+        }
+        icons.size() > 0 ? icons.sort()[1] as File : null
+    }
+
+    @groovy.transform.PackageScope
+    List<String> possibleIcons() {
+        def icons = []
+        conf.resDir.eachDirMatch(~DRAWABLE_DIR) { dir ->
+            icons.addAll(dir.listFiles([accept: { (it.name =~ ICON_PATTERN).matches() }] as FileFilter)*.canonicalPath)
+        }
+        icons.collect { it.replaceAll("${conf.rootDir.absolutePath}/", '') }
+    }
 
     URLProperty projectURL = new URLProperty(
             name: 'android.release.project.url',
@@ -146,7 +170,7 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             name: 'android.release.project.country',
             message: 'Project country',
             defaultValue: { 'US' },
-            validator: {it?.length() == 2 && it?.every { (it as Character).isUpperCase() }}
+            validator: { it?.length() == 2 && it?.every { (it as Character).isUpperCase() } }
     )
 
     StringProperty releaseMailFrom = new StringProperty(
@@ -191,17 +215,17 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
 
     @Override
     File getTargetDirectory() {
-        new File(new File(otaDir, projectDirName), androidConfiguration.fullVersionString)
+        new File(new File(otaDir, projectDirName), conf.fullVersionString)
     }
 
     @Override
     URL getVersionedApplicationUrl() {
-        new URL(baseURL, "${projectDirName}/${androidConfiguration.fullVersionString}/")
+        new URL(baseURL, "${projectDirName}/${conf.fullVersionString}/")
     }
 
     @Override
     boolean isEnabled() {
-        enabledInternal && androidConfiguration.isEnabled()
+        enabledInternal && conf.isEnabled()
     }
 
     @Override

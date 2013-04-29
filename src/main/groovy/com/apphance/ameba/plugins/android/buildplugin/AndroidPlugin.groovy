@@ -10,6 +10,7 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
 
 /**
@@ -65,7 +66,7 @@ class AndroidPlugin implements Plugin<Project> {
 
             project.task(BUILD_ALL_DEBUG_TASK_NAME)
             project.task(BUILD_ALL_RELEASE_TASK_NAME)
-            project.task('buildAll', dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME])
+            project.task('buildAll', dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME], group: AMEBA_BUILD)
 
             variantsConf.variants.each {
                 def buildName = "build${it.name}"

@@ -15,19 +15,30 @@ class AndroidBuildXmlHelperSpec extends Specification {
     }
 
     def cleanup() {
-        tmpDir.delete()
+        tmpDir.deleteDir()
     }
 
-    def 'test read name from build.xml'() {
+    def 'read name from build.xml'() {
         expect:
         'TestAndroidProject' == helper.projectName(tmpDir)
     }
 
-    def 'test replace project name in build.xml'() {
+    def 'replace project name in build.xml'() {
         when:
         helper.replaceProjectName(tmpDir, 'NewName')
 
         then:
         'NewName' == helper.projectName(tmpDir)
+    }
+
+    def 'empty project nam returned when no build.xml file'() {
+        when:
+        def tmpDir2 = createTempDir()
+
+        then:
+        '' == helper.projectName(tmpDir2)
+
+        cleanup:
+        tmpDir2.deleteDir()
     }
 }

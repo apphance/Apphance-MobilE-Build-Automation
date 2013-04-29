@@ -1,6 +1,5 @@
 package com.apphance.ameba.plugins.android.apphance.tasks
 
-import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
@@ -24,13 +23,11 @@ class AddApphanceToAndroid {
     private static final JAR_PATTERN = ~/.*android\.(pre\-)?production\-(\d+\.)+\d+\.jar/
 
     @Inject
-    private Project project
+    Project project
     @Inject
-    private AndroidConfiguration androidConf
+    AndroidManifestHelper manifestHelper
     @Inject
-    private AndroidManifestHelper manifestHelper
-    @Inject
-    private AntBuilder ant
+    AntBuilder ant
 
     public void addApphance(AndroidVariantConfiguration avc) {
         File variantDir = avc.tmpDir

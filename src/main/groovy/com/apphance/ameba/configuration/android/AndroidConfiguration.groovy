@@ -86,6 +86,10 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
         project.file('ameba-log')
     }
 
+    File getResDir() {
+        project.file('res')
+    }
+
     @Override
     File getRootDir() {
         project.rootDir
