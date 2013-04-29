@@ -19,7 +19,7 @@ class AndroidExecutor {
     }
 
     def updateProject(File directory, String target, String name) {
-        run(directory, "update project -p . -t $target -n $name -s")
+        run(directory, "update project -p . -t '$target' -n $name -s")
     }
 
     def listAvd(File directory) {

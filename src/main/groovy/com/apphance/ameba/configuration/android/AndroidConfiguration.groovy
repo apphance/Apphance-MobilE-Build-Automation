@@ -242,7 +242,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
         check !isNullOrEmpty(projectName.value), "Property ${projectName.name} must be set!"
         check versionCode?.matches('[0-9]+'), "Property 'versionCode' must have numerical value! Check AndroidManifest.xml file!"
         check !WHITESPACE_PATTERN.matcher(versionString ?: '').find(), "Property 'versionName' must not have whitespace characters! Check AndroidManifest.xml file!"
-        check !isNullOrEmpty(target.value), "Property ${target.name} must be set!"
+        check target.validator(target.value), "Property ${target.name} must be set!"
         check !isNullOrEmpty(mainPackage), "Property 'package' must be set! Check AndroidManifest.xml file!"
     }
 }

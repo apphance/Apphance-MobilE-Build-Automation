@@ -11,7 +11,7 @@ class AndroidExecutorSpec extends Specification {
 
     def 'test updateProject method'() {
         when: androidExecutor.updateProject(file, 'android-8', 'sample-name')
-        then: 1 * commandExecutor.executeCommand({ it.commandForExecution.join(' ') == 'android update project -p . -t android-8 -n sample-name -s' })
+        then: 1 * commandExecutor.executeCommand({ it.commandForExecution.join(' ') == "android update project -p . -t 'android-8' -n sample-name -s" })
     }
 
     def 'test listAvd'() {
