@@ -24,7 +24,7 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
 
     static final MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
     static final ICON_PATTERN = /icon.*\.(png|jpg|jpeg|bmp)/
-    public final DRAWABLE_DIR = /(drawable-ldpi|drawable-mdpi|drawable-hdpi|drawable-xhdpi|drawable)/
+    static final DRAWABLE_DIR = /(drawable-ldpi|drawable-mdpi|drawable-hdpi|drawable-xhdpi|drawable)/
 
     static final ALL_EMAIL_FLAGS = [
             'installableSimulator',
