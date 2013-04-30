@@ -7,7 +7,6 @@
     <body>
         ${rb.getString('Application')} <b>${title}</b> - Android<br/>
         ${rb.getString('Version')} <b>${version}</b>
-
         <p>
             <b>${rb.getString('Installation')}</b>
             <ul>
@@ -24,18 +23,14 @@
                 </ul>
             <% } %>
         </p>
-
         <b>${rb.getString('Released')}</b> ${currentDate} <br/>
         <b>${rb.getString('Size')}</b> ${fileSize} <br/>
-
         <p>
-
             <b>${rb.getString('Extras')}</b>
             <ul>
                 <li><a href="${fileIndexUrl}">${rb.getString('More_information_and_files_to_download')}</a></li>
             </ul>
         </p>
-
         ${rb.getString('Have_fun')}<br/><br/>
         ${rb.getString('Your_Jenkins')}
     </body>
