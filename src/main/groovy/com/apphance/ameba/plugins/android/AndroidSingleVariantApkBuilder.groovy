@@ -19,7 +19,7 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
                         includes: '*', excludes: 'market_variant.txt')
             }
         }
-        antExecutor.executeTarget bi.tmpDir, bi.mode.name().toLowerCase()
+        antExecutor.executeTarget bi.tmpDir, bi.mode.lowerCase()
         logger.lifecycle("File created: ${bi.originalFile}")
         buildListeners.each {
             it.buildDone(bi)

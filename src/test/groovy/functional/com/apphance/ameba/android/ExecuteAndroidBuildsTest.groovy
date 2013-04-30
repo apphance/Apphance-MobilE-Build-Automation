@@ -88,7 +88,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildDebug() {
-        runGradle('clean', 'buildAllDebug')
+        runGradle('clean', 'buildTestDebug')
         assertTrue(new File(testProject,
                 "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
@@ -99,7 +99,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildRelease() {
-        runGradle('buildAllRelease')
+        runGradle('clean', 'buildMarketRelease')
 
         assertTrue(new File(testProject,
                 "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
@@ -111,7 +111,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildDebugNoVariant() {
-        runGradleNoVariants('clean', 'buildAllDebug')
+        runGradleNoVariants('clean', 'buildMarketDebug')
 
         assertTrue(new File(testNoVariantsProject,
                 "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-${fullVersion}.apk").exists())
@@ -123,7 +123,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testBuildReleaseNoVariant() {
-        runGradleNoVariants('clean', 'buildAllRelease')
+        runGradleNoVariants('clean', 'buildMarketRelease')
 
         assertTrue(new File(testNoVariantsProject,
                 "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
