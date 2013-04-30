@@ -12,7 +12,7 @@ class ConfigurationSpec extends Specification {
     @Shared
     def androidConf = new AndroidConfiguration(ProjectBuilder.builder().build(), * [null] * 5)
 
-    def 'return list of fields annotated with @AmebaProp'() {
+    def 'return list of fields subclassed from AbstractProperty'() {
         when:
         def fields = androidConf.propertyFields
 

@@ -51,7 +51,9 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     AmebaArtifact galleryJS
 
     AmebaArtifact galleryTrans
+
     String releaseMailSubject
+
     @Inject
     AndroidConfiguration conf
 

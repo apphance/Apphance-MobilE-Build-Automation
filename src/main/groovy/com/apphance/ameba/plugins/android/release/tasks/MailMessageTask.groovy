@@ -24,11 +24,11 @@ class MailMessageTask extends DefaultTask {
     String description = 'Prepares mail message which summarises the release'
 
     @Inject
-    private AndroidConfiguration androidConfiguration
+    AndroidConfiguration conf
     @Inject
-    private AndroidReleaseConfiguration releaseConf
+    AndroidReleaseConfiguration releaseConf
     @Inject
-    private AndroidVariantsConfiguration variantsConf
+    AndroidVariantsConfiguration variantsConf
 
     @TaskAction
     public void mailMessage() {
@@ -39,17 +39,15 @@ class MailMessageTask extends DefaultTask {
         releaseConf.mailMessageFile.location.parentFile.mkdirs()
         releaseConf.mailMessageFile.location.delete()
 
-        l.lifecycle("Variants: ${variantsConf.variants*.name}")
         def mainBuild = variantsConf.mainVariant
-        l.lifecycle("Main build used for size calculation: ${mainBuild}")
 
         def fileSize = releaseConf.apkFiles[mainBuild].location.size()
         def rb = getBundle("${getClass().package.name}.mail_message", releaseConf.locale, getClass().classLoader)
         releaseConf.releaseMailSubject = fillMailSubject(rb)
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         def binding = [
-                title: androidConfiguration.projectName.value,
-                version: androidConfiguration.versionString,
+                title: conf.projectName.value,
+                version: conf.versionString,
                 currentDate: releaseConf.buildDate,
                 otaUrl: releaseConf.otaIndexFile?.url,
                 fileIndexUrl: releaseConf.fileIndexFile?.url,
@@ -73,8 +71,8 @@ class MailMessageTask extends DefaultTask {
         }
     }
 
-    private void fillMailSubject(ResourceBundle rb) {
+    private String fillMailSubject(ResourceBundle rb) {
         String subject = rb.getString('Subject')
-        Eval.me("conf", androidConfiguration, /"$subject"/)
+        Eval.me("conf", conf, /"$subject"/)
     }
 }
