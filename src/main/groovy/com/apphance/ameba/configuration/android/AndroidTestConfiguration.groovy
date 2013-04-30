@@ -191,10 +191,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         new File(androidConf.SDKDir, "platform${separator}tools")
     }
 
-    File getAndroidBinary() {
-        new File(androidConf.SDKDir, "tools${separator}android")
-    }
-
     String getEmmaDumpFilePath() {
         "/data/data/${androidConf.mainPackage}/coverage.ec"
     }

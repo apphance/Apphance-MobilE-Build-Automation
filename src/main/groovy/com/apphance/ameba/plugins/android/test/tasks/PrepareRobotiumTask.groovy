@@ -1,7 +1,6 @@
 package com.apphance.ameba.plugins.android.test.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
-import com.apphance.ameba.configuration.android.AndroidTestConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
@@ -29,8 +28,6 @@ class PrepareRobotiumTask extends DefaultTask {
     @Inject
     private AndroidConfiguration androidConf
     @Inject
-    private AndroidTestConfiguration testConf
-    @Inject
     private AndroidManifestHelper manifestHelper
 
     @TaskAction
@@ -47,9 +44,9 @@ class PrepareRobotiumTask extends DefaultTask {
     private void setUpAndroidRobotiumProject(File path) {
         String[] command
         if (path.exists()) {
-            println "Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
+            l.info("Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)")
             command = [
-                    testConf.androidBinary.canonicalPath,
+                    'android',
                     '-v',
                     'update',
                     'test-project',
@@ -59,10 +56,10 @@ class PrepareRobotiumTask extends DefaultTask {
                     '../..'
             ]
         } else {
-            println "No Robotium project detected, new one is going to be created"
+            l.info("No Robotium project detected, new one is going to be created")
             path.mkdirs()
             command = [
-                    testConf.androidBinary.canonicalPath,
+                    'android',
                     '-v',
                     'create',
                     'test-project',
@@ -78,14 +75,14 @@ class PrepareRobotiumTask extends DefaultTask {
     }
 
     private void replaceInstrumentationLibrary(File path) {
-        println "Changing Android Manifest file: PolideaInstrumentationTestRunner will be in use"
+        l.info("Changing Android Manifest file: PolideaInstrumentationTestRunner will be in use")
         File manifest = new File(path.path, 'AndroidManifest.xml')
         String input = manifest.text.replace('android.test.InstrumentationTestRunner', 'pl.polidea.instrumentation.PolideaInstrumentationTestRunner');
         manifest.write(input)
     }
 
     private void addApphanceInstrumentation(File path) {
-        println "Downloading PolideaInstrumentationTestRunner library"
+        l.info("Downloading PolideaInstrumentationTestRunner library")
         def libs = new File(path.path + '/libs/')
         libs.mkdirs()
         copyFromResources(libs, 'the-missing-android-xml-junit-test-runner-release-1.3_2.jar');
@@ -106,7 +103,7 @@ class PrepareRobotiumTask extends DefaultTask {
     }
 
     private void addRobotiumLibrary(File path) {
-        println "Downloading Robotium library"
+        l.info("Downloading Robotium library")
         def libs = new File(path.path + '/libs/')
         libs.mkdirs()
         project.configurations.robotium.each {
