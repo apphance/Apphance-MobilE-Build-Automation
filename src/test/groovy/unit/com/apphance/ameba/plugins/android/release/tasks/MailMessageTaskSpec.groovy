@@ -10,6 +10,7 @@ import org.gradle.api.GradleException
 import spock.lang.Specification
 
 import static com.google.common.io.Files.createTempDir
+import static java.io.File.separator
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class MailMessageTaskSpec extends Specification {
@@ -65,6 +66,8 @@ class MailMessageTaskSpec extends Specification {
                 url: new URL(projectUrl, 'message_file.html'),
                 location: new File(new File(new File(otaDir, projectName), fullVersionString), 'message_file.html'))
         arc.apkFiles = [(mainVariant): new AmebaArtifact(location: apkDir, url: projectUrl, name: "${mainVariant}.apk")]
+        arc.fileIndexFile = new AmebaArtifact(url: new URL(projectUrl, 'fileIndexFile.html'))
+        arc.otaIndexFile = new AmebaArtifact(url: new URL(projectUrl, 'otaIndexFile.html'))
         arc.reader = reader
 
         and:
@@ -75,6 +78,7 @@ class MailMessageTaskSpec extends Specification {
         def ac = GroovyMock(AndroidConfiguration)
         ac.projectName >> new StringProperty(value: projectName)
         ac.fullVersionString >> fullVersionString
+        ac.versionString >> '42'
 
         and:
         def task = p.task(MailMessageTask.NAME, type: MailMessageTask) as MailMessageTask
@@ -87,6 +91,22 @@ class MailMessageTaskSpec extends Specification {
 
         then:
         arc.releaseMailSubject == 'Android TestAndroidProject 1.0.1_42 is ready to install'
+        def mailMsgDir = new File(otaDir, "${projectName}${separator}${fullVersionString}")
+        def mailMsgFile = new File(mailMsgDir, 'message_file.html')
+        mailMsgDir.exists()
+        mailMsgDir.list().size() == 1
+        mailMsgFile.exists()
+        mailMsgFile.size() > 0
+
+        and:
+        def html = new XmlSlurper().parse(mailMsgFile)
+        html.head.title.text() == 'TestAndroidProject - Android'
+        html.body.b[0].text() == 'TestAndroidProject'
+        html.body.b[1].text() == '42'
+        html.body.p[0].ul.li.a.@href.text() == 'http://ota.polidea.pl/otaIndexFile.html'
+        html.body.p[1].ul.li[0].text() == 'release'
+        html.body.p[1].ul.li[1].text() == 'notes'
+        html.body.p[2].ul.li.a.@href.text() == 'http://ota.polidea.pl/fileIndexFile.html'
 
         cleanup:
         otaDir.deleteDir()
