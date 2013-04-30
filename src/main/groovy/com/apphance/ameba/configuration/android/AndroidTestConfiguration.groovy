@@ -60,8 +60,8 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             name: 'android.test.emulator.target',
             message: 'Target of the emulator',
             defaultValue: { androidConf.target.value },
-            possibleValues: { androidExecutor.listTarget(androidConf.rootDir) },
-            validator: { it in androidExecutor.listTarget(androidConf.rootDir) }
+            possibleValues: { possibleTargets() },
+            validator: { it in possibleTargets() }
     )
 
     def emulatorSkin = new StringProperty(
@@ -72,8 +72,12 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             validator: { it in possibleSkins() }
     )
 
+    private List<String> possibleTargets() {
+        androidExecutor.listTarget(androidConf.rootDir).findAll { !it?.trim()?.empty }
+    }
+
     private List<String> possibleSkins() {
-        androidExecutor.listSkinsForTarget(androidConf.rootDir, emulatorTarget.value)
+        androidExecutor.listSkinsForTarget(androidConf.rootDir, emulatorTarget.value).findAll { !it?.trim()?.empty }
     }
 
     def emulatorCardSize = new StringProperty(

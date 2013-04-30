@@ -125,11 +125,11 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
 
     @groovy.transform.PackageScope
     List<String> possibleIcons() {
-        def icons = []
+        List<String> icons = []
         conf.resDir.eachDirMatch(~DRAWABLE_DIR_PATTERN) { dir ->
             icons.addAll(dir.listFiles([accept: { (it.name =~ ICON_PATTERN).matches() }] as FileFilter)*.canonicalPath)
         }
-        icons.collect { it.replaceAll("${conf.rootDir.absolutePath}/", '') }
+        icons.collect { it.replaceAll("${conf.rootDir.absolutePath}/", '') }.findAll { !it?.trim()?.empty }
     }
 
     URLProperty projectURL = new URLProperty(

@@ -208,11 +208,11 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     }
 
     private List<String> possibleNames() {
-        [rootDir.name, defaultName()]
+        [rootDir.name, defaultName()].findAll { !it?.trim()?.empty }
     }
 
     private List<String> possibleTargets() {
-        androidExecutor.listTarget(rootDir)
+        androidExecutor.listTarget(rootDir).findAll { !it?.trim()?.empty }
     }
 
     def readProperties() {
