@@ -24,17 +24,18 @@ import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
  */
 class AndroidPlugin implements Plugin<Project> {
 
-    public static final String BUILD_ALL_DEBUG_TASK_NAME = 'buildAllDebug'
-    public static final String BUILD_ALL_RELEASE_TASK_NAME = 'buildAllRelease'
+    static final String BUILD_ALL_TASK_NAME = 'buildAll'
+    static final String BUILD_ALL_DEBUG_TASK_NAME = 'buildAllDebug'
+    static final String BUILD_ALL_RELEASE_TASK_NAME = 'buildAllRelease'
     @Inject
-    private AndroidConfiguration androidConfiguration
+    AndroidConfiguration conf
     @Inject
-    private AndroidVariantsConfiguration variantsConf
+    AndroidVariantsConfiguration variantsConf
 
     @Override
     void apply(Project project) {
 
-        if (androidConfiguration.isEnabled()) {
+        if (conf.isEnabled()) {
 
             project.task(UpdateProjectTask.NAME, type: UpdateProjectTask)
 
@@ -55,7 +56,7 @@ class AndroidPlugin implements Plugin<Project> {
                     dependsOn: [CleanConfTask.NAME, UpdateProjectTask.NAME])
 
             project.task(CLEAN_TASK_NAME) << {
-                androidConfiguration.buildDir.deleteDir()
+                conf.buildDir.deleteDir()
             }
 
             project.tasks[CLEAN_TASK_NAME].dependsOn(CleanAndroidTask.NAME)
@@ -64,8 +65,8 @@ class AndroidPlugin implements Plugin<Project> {
                     type: CompileAndroidTask,
                     dependsOn: UpdateProjectTask.NAME)
 
-            project.task(BUILD_ALL_DEBUG_TASK_NAME)
-            project.task(BUILD_ALL_RELEASE_TASK_NAME)
+            project.task(BUILD_ALL_DEBUG_TASK_NAME, group: AMEBA_BUILD)
+            project.task(BUILD_ALL_RELEASE_TASK_NAME, group: AMEBA_BUILD)
             project.task('buildAll', dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME], group: AMEBA_BUILD)
 
             variantsConf.variants.each {

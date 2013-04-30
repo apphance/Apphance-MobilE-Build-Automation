@@ -24,7 +24,7 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
 
     static final MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
     static final ICON_PATTERN = /icon.*\.(png|jpg|jpeg|bmp)/
-    static final DRAWABLE_DIR = /(drawable-ldpi|drawable-mdpi|drawable-hdpi|drawable-xhdpi|drawable)/
+    static final DRAWABLE_DIR_PATTERN = /(drawable-ldpi|drawable-mdpi|drawable-hdpi|drawable-xhdpi|drawable)/
 
     static final ALL_EMAIL_FLAGS = [
             'installableSimulator',
@@ -116,7 +116,7 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
         def icon = manifestHelper.readIcon(conf.rootDir)?.trim()
         def icons = []
         if (icon) {
-            conf.resDir.eachDirMatch(~DRAWABLE_DIR) { dir ->
+            conf.resDir.eachDirMatch(~DRAWABLE_DIR_PATTERN) { dir ->
                 icons.addAll(dir.listFiles([accept: { it.name.startsWith(icon) }] as FileFilter)*.canonicalFile)
             }
         }
@@ -126,7 +126,7 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     @groovy.transform.PackageScope
     List<String> possibleIcons() {
         def icons = []
-        conf.resDir.eachDirMatch(~DRAWABLE_DIR) { dir ->
+        conf.resDir.eachDirMatch(~DRAWABLE_DIR_PATTERN) { dir ->
             icons.addAll(dir.listFiles([accept: { (it.name =~ ICON_PATTERN).matches() }] as FileFilter)*.canonicalPath)
         }
         icons.collect { it.replaceAll("${conf.rootDir.absolutePath}/", '') }

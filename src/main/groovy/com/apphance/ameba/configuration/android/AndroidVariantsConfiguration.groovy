@@ -71,13 +71,13 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     private List<AndroidVariantConfiguration> extractVariantsFromDir() {
         getVariantsDir().listFiles()*.name.collect { String dirName ->
             AndroidBuildMode.values().collect { it ->
-                createVariant(dirName.toLowerCase().capitalize() + it.lowerCase().capitalize())
+                createVariant(dirName.toLowerCase().capitalize() + it.capitalize())
             }
         }.flatten()
     }
 
     private List<AndroidVariantConfiguration> extractDefaultVariants() {
-        AndroidBuildMode.values().collect { createVariant(it.lowerCase().capitalize()) }
+        AndroidBuildMode.values().collect { createVariant(it.capitalize()) }
     }
 
     private AndroidVariantConfiguration createVariant(String name) {

@@ -8,6 +8,6 @@ public enum AndroidBuildMode {
     }
 
     String capitalize() {
-        name().toLowerCase().capitalize()
+        lowerCase().capitalize()
     }
 }

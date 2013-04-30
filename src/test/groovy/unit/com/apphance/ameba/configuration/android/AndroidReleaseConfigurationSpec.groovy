@@ -123,7 +123,6 @@ class AndroidReleaseConfigurationSpec extends Specification {
         expect:
         def icons = arc.possibleIcons()
         icons.size() == 2
-        !icons.contains('res/layout/icon.png')
         icons.contains('res/drawable-hdpi/icon.png')
         icons.contains('res/drawable/icon.png')
     }

@@ -12,9 +12,8 @@ import spock.lang.Specification
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin.*
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
-import static org.gradle.api.plugins.JavaPlugin.COMPILE_JAVA_TASK_NAME
-import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidPluginSpec extends Specification {
@@ -32,7 +31,7 @@ class AndroidPluginSpec extends Specification {
         ac.sdkJars >> ['sdk.jar']
         ac.jarLibraries >> ['lib.jar']
         ac.linkedJarLibraries >> ['linkedLib.jar']
-        ap.androidConfiguration = ac
+        ap.conf = ac
 
         and:
         def avc = Mock(AndroidVariantsConfiguration)
@@ -49,6 +48,9 @@ class AndroidPluginSpec extends Specification {
         project.tasks[UpdateProjectTask.NAME].group == AMEBA_BUILD
         project.tasks[CleanAndroidTask.NAME].group == AMEBA_BUILD
         project.tasks[CompileAndroidTask.NAME].group == AMEBA_BUILD
+        project.tasks[BUILD_ALL_TASK_NAME].group == AMEBA_BUILD
+        project.tasks[BUILD_ALL_DEBUG_TASK_NAME].group == AMEBA_BUILD
+        project.tasks[BUILD_ALL_RELEASE_TASK_NAME].group == AMEBA_BUILD
 
         and:
         project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME, UpdateProjectTask.NAME)
@@ -57,6 +59,7 @@ class AndroidPluginSpec extends Specification {
         project.tasks[CopySourcesTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
         project.tasks[ReplacePackageTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
         project.tasks[CompileAndroidTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
+        project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_RELEASE_TASK_NAME, BUILD_ALL_DEBUG_TASK_NAME)
     }
 
     def 'no tasks available when configuration is inactive'() {
@@ -69,7 +72,7 @@ class AndroidPluginSpec extends Specification {
         and: 'prepare mock configuration'
         def ac = Mock(AndroidConfiguration)
         ac.isEnabled() >> false
-        ap.androidConfiguration = ac
+        ap.conf = ac
 
         when:
         ap.apply(project)
@@ -99,7 +102,7 @@ class AndroidPluginSpec extends Specification {
         ac.sdkJars >> ['sdk.jar']
         ac.jarLibraries >> ['lib.jar']
         ac.linkedJarLibraries >> ['linkedLib.jar']
-        ap.androidConfiguration = ac
+        ap.conf = ac
 
         and:
         def avc = GroovyMock(AndroidVariantsConfiguration)

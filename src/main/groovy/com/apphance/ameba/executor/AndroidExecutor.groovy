@@ -7,9 +7,12 @@ import org.gradle.api.GradleException
 
 class AndroidExecutor {
 
+    static final TARGET_HEADER_PATTERN = /id: ([0-9]+) or "([A-Za-z:\-\. 0-9]+)"/
+
     private List<String> targets
     private Map<String, List<String>> skinsForTarget = [:]
     private Map<String, String> defaultSkinForTarget = [:]
+    private Map<String, String> idForTarget = [:]
 
     private CommandExecutor executor
 
@@ -18,8 +21,21 @@ class AndroidExecutor {
         this.executor = executor
     }
 
-    def updateProject(File directory, String target, String name) {
-        run(directory, "update project -p . -t '$target' -n $name -s")
+    def updateProject(File dir, String target, String name) {
+        def targetId = idForTarget(dir, target)
+        run(dir, "update project -p . -t ${targetId ?: target} -n $name -s")
+    }
+
+    String idForTarget(File dir, String target) {
+        if (!idForTarget[target]) {
+            List<String> output = run(dir, 'list target')
+            output.collect {
+                def header = (it =~ TARGET_HEADER_PATTERN)
+                if (header.matches())
+                    idForTarget[header[0][2]] = header[0][1]
+            }
+        }
+        idForTarget[target]
     }
 
     def listAvd(File directory) {
@@ -29,18 +45,18 @@ class AndroidExecutor {
     def listTarget(File directory) {
         if (!targets) {
             List<String> output = run(directory, 'list target')
-            targets = parseResult(output, 'id:', /id:.*"(.*)"/).sort()
+            targets = parseResult(output, TARGET_HEADER_PATTERN).sort()
         }
         targets
     }
 
-    private List<String> parseResult(input, prefix, regex) {
+    private List<String> parseResult(input, regex) {
         def result = []
         input.each {
             it = it?.trim()
-            def targetMatcher = (it =~ regex)
-            if (it.startsWith(prefix) && targetMatcher.matches()) {
-                result << targetMatcher[0][1]
+            def matcher = (it =~ regex)
+            if (matcher.matches()) {
+                result << matcher[0][2]
             }
         }
         result
