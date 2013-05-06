@@ -68,16 +68,6 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     }
 
     @Override
-    String getReleaseCode() {
-        reader.systemProperty('release.code') ?: reader.envVariable('RELEASE_CODE') ?: ''
-    }
-
-    @Override
-    String getReleaseString() {
-        reader.systemProperty('release.string') ?: reader.envVariable('RELEASE_STRING') ?: ''
-    }
-
-    @Override
     Locale getLocale() {
         def lang = language.value?.trim()
         def country = country.value?.trim()

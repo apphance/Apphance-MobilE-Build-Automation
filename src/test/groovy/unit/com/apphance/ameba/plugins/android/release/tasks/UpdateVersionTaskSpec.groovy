@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.android.release.tasks
 
-import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
 import org.gradle.api.GradleException
 import spock.lang.Specification
@@ -16,21 +16,21 @@ class UpdateVersionTaskSpec extends Specification {
     def p = builder().withProjectDir(projectDir).build()
     def uvt = p.task(UpdateVersionTask.NAME, type: UpdateVersionTask) as UpdateVersionTask
 
-    def 'release code is validated correctly when empty'() {
+    def 'version code is validated correctly when empty'() {
         when:
-        uvt.validateReleaseCode(code)
+        uvt.validateVersionCode(code)
 
         then:
         def e = thrown(GradleException)
-        e.message =~ 'Property \'release.code\' has invalid value!'
+        e.message =~ 'Property \'version.code\' has invalid value!'
 
         where:
         code << [null, '', '  \t', 'with letter', 'withletter', '123-123']
     }
 
-    def 'release code is validated correctly when set'() {
+    def 'version code is validated correctly when set'() {
         when:
-        uvt.validateReleaseCode(code)
+        uvt.validateVersionCode(code)
 
         then:
         noExceptionThrown()
@@ -39,40 +39,40 @@ class UpdateVersionTaskSpec extends Specification {
         code << ['121', '1']
     }
 
-    def 'release string is validated correctly when empty'() {
+    def 'version string is validated correctly when empty'() {
         when:
-        uvt.validateReleaseString(code)
+        uvt.validateVersionString(code)
 
         then:
         def e = thrown(GradleException)
-        e.message =~ 'Property \'release.string\' has invalid value!'
+        e.message =~ 'Property \'version.string\' has invalid value!'
 
         where:
         code << [null, '  ', '  \t', 'with\tletter', 'with space']
     }
 
-    def 'release string is validated correctly when set'() {
+    def 'version string is validated correctly when set'() {
         when:
-        uvt.validateReleaseString(code)
+        uvt.validateVersionString(code)
 
         then:
         noExceptionThrown()
 
         where:
-        code << ['releaseString', 'release_String', 'relase_String_123_4']
+        code << ['versionString', 'version_String', 'version_String_123_4']
     }
 
     def 'version is updated correctly'() {
         given:
-        def arc = GroovyMock(AndroidReleaseConfiguration)
-        arc.releaseCode >> '3145'
-        arc.releaseString >> '31.4.5'
+        def ac = GroovyMock(AndroidConfiguration)
+        ac.externalVersionCode >> '3145'
+        ac.externalVersionString >> '31.4.5'
 
         and:
         def amh = new AndroidManifestHelper()
 
         and:
-        uvt.releaseConf = arc
+        uvt.conf = ac
         uvt.manifestHelper = amh
 
         and:

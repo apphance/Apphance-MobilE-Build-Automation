@@ -112,7 +112,7 @@ class ImageMontageTaskSpec extends Specification {
     }
 
     @Unroll
-    def '#file convertion'() {
+    def '#file conversion'() {
         given:
         def dir = 'src/test/resources/com/apphance/ameba/plugins/release/tasks/montageFiles/montageFilesSubdir/'
         def source = new File(dir + '1.' + file)
