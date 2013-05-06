@@ -10,10 +10,6 @@ interface ReleaseConfiguration extends Configuration {
 
     Collection<String> getReleaseNotes()
 
-    String getReleaseCode()
-
-    String getReleaseString()
-
     URLProperty getProjectURL()
 
     String getProjectDirName()
@@ -25,10 +21,6 @@ interface ReleaseConfiguration extends Configuration {
     AmebaArtifact getSourcesZip()
 
     void setSourcesZip(AmebaArtifact aa)
-
-    AmebaArtifact getDocumentationZip()
-
-    void setDocumentationZip(AmebaArtifact aa)
 
     AmebaArtifact getImageMontageFile()
 

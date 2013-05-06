@@ -55,7 +55,8 @@ class PrepareRobolectricTask extends DefaultTask {
         return path.path + File.separator + 'src' + File.separator + 'test' + File.separator + 'java' + File.separator + _path + File.separator + 'test'
     }
 
-    private void downloadFile(URL url, File file) {
+    @groovy.transform.PackageScope
+    void downloadFile(URL url, File file) {
         l.info("Downloading file from ${url} to ${file}")
         def stream = new FileOutputStream(file)
         def out = new BufferedOutputStream(stream)

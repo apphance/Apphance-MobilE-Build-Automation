@@ -11,7 +11,7 @@ class AndroidExecutorSpec extends Specification {
 
     def 'test updateProject method'() {
         when: androidExecutor.updateProject(file, 'android-8', 'sample-name')
-        then: 1 * commandExecutor.executeCommand({ it.commandForExecution.join(' ') == 'android update project -p . -t android-8 -n sample-name -s' })
+        then: 1 * commandExecutor.executeCommand({ it.commandForExecution.join(' ') == "android update project -p . -t android-8 -n sample-name -s" })
     }
 
     def 'test listAvd'() {
@@ -70,6 +70,25 @@ class AndroidExecutorSpec extends Specification {
         'HVGA'    | 'android-3'
         'WVGA800' | 'android-4'
         'WVGA800' | 'Google Inc.:Google APIs:4'
+    }
+
+    def 'id for target'() {
+        given:
+        def ce = Mock(CommandExecutor)
+        ce.executeCommand(_) >> targets.split('\n')
+
+        and:
+        def ae = new AndroidExecutor(ce)
+
+        expect:
+        idForTarget == ae.idForTarget(Mock(File), target)
+
+        where:
+        idForTarget | target
+        '1'         | 'android-3'
+        '3'         | 'android-4'
+        '24'        | 'android-17'
+        '4'         | 'Google Inc.:Google APIs:4'
     }
 
     def targets = "Available Android targets:\n" +

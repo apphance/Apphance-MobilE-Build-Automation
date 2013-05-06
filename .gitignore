@@ -1,4 +1,5 @@
 testProjects/android/android-*/build
+testProjects/android/android-*/ameba-*
 testProjects/android/android*/gen
 testProjects/android/android*/avds
 testProjects/android/android*/srcTmp

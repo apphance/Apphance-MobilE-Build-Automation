@@ -15,11 +15,12 @@ class ListStringPropertySpec extends Specification {
         lsp.value == expectedValue
 
         where:
-        value   | expectedValue
-        null    | null
-        ''      | null
-        '\n'    | null
-        'a,b,c' | ['a', 'b', 'c']
+        value       | expectedValue
+        null        | null
+        ''          | null
+        '\n'        | null
+        'a,b,c'     | ['a', 'b', 'c']
+        '[a,b  ,c]' | ['a', 'b', 'c']
     }
 
     def 'persistent form is correct'() {
@@ -33,10 +34,11 @@ class ListStringPropertySpec extends Specification {
         lsp.persistentForm() == expectedPersitentForm
 
         where:
-        value   | expectedPersitentForm
-        null    | ''
-        ''      | ''
-        '\n'    | ''
-        'a,b,c' | 'a,b,c'
+        value     | expectedPersitentForm
+        null      | ''
+        ''        | ''
+        '\n'      | ''
+        '[a,b,c]' | 'a,b,c'
+        'a,b,c'   | 'a,b,c'
     }
 }

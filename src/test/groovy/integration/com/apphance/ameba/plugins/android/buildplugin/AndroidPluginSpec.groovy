@@ -12,9 +12,8 @@ import spock.lang.Specification
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin.*
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
-import static org.gradle.api.plugins.JavaPlugin.COMPILE_JAVA_TASK_NAME
-import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidPluginSpec extends Specification {
@@ -32,7 +31,7 @@ class AndroidPluginSpec extends Specification {
         ac.sdkJars >> ['sdk.jar']
         ac.jarLibraries >> ['lib.jar']
         ac.linkedJarLibraries >> ['linkedLib.jar']
-        ap.androidConfiguration = ac
+        ap.conf = ac
 
         and:
         def avc = Mock(AndroidVariantsConfiguration)
@@ -46,23 +45,21 @@ class AndroidPluginSpec extends Specification {
         project.tasks[CleanClassesTask.NAME].group == AMEBA_BUILD
         project.tasks[CopySourcesTask.NAME].group == AMEBA_BUILD
         project.tasks[ReplacePackageTask.NAME].group == AMEBA_BUILD
-        project.tasks[RunUpdateProjectTask.NAME].group == AMEBA_BUILD
+        project.tasks[UpdateProjectTask.NAME].group == AMEBA_BUILD
         project.tasks[CleanAndroidTask.NAME].group == AMEBA_BUILD
         project.tasks[CompileAndroidTask.NAME].group == AMEBA_BUILD
+        project.tasks[BUILD_ALL_TASK_NAME].group == AMEBA_BUILD
+        project.tasks[BUILD_ALL_DEBUG_TASK_NAME].group == AMEBA_BUILD
+        project.tasks[BUILD_ALL_RELEASE_TASK_NAME].group == AMEBA_BUILD
 
         and:
-        project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME, RunUpdateProjectTask.NAME)
+        project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME, UpdateProjectTask.NAME)
         project.tasks[CLEAN_TASK_NAME].dependsOn.flatten().containsAll(CleanAndroidTask.NAME)
-        project.tasks[JAVADOC_TASK_NAME].dependsOn.flatten().containsAll(CompileAndroidTask.NAME)
-        project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn.flatten().containsAll(CompileAndroidTask.NAME)
-        project.tasks[CleanClassesTask.NAME].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
-        project.tasks[CopySourcesTask.NAME].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
-        project.tasks[ReplacePackageTask.NAME].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
-        project.tasks[CompileAndroidTask.NAME].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
-
-
-        and:
-        project.plugins.findPlugin(JavaPlugin)
+        project.tasks[CleanClassesTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
+        project.tasks[CopySourcesTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
+        project.tasks[ReplacePackageTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
+        project.tasks[CompileAndroidTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
+        project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_RELEASE_TASK_NAME, BUILD_ALL_DEBUG_TASK_NAME)
     }
 
     def 'no tasks available when configuration is inactive'() {
@@ -75,7 +72,7 @@ class AndroidPluginSpec extends Specification {
         and: 'prepare mock configuration'
         def ac = Mock(AndroidConfiguration)
         ac.isEnabled() >> false
-        ap.androidConfiguration = ac
+        ap.conf = ac
 
         when:
         ap.apply(project)
@@ -87,7 +84,7 @@ class AndroidPluginSpec extends Specification {
         !project.getTasksByName(CleanClassesTask.NAME, false)
         !project.getTasksByName(CopySourcesTask.NAME, false)
         !project.getTasksByName(ReplacePackageTask.NAME, false)
-        !project.getTasksByName(RunUpdateProjectTask.NAME, false)
+        !project.getTasksByName(UpdateProjectTask.NAME, false)
         !project.getTasksByName(CleanAndroidTask.NAME, false)
         !project.getTasksByName(CompileAndroidTask.NAME, false)
     }
@@ -105,7 +102,7 @@ class AndroidPluginSpec extends Specification {
         ac.sdkJars >> ['sdk.jar']
         ac.jarLibraries >> ['lib.jar']
         ac.linkedJarLibraries >> ['linkedLib.jar']
-        ap.androidConfiguration = ac
+        ap.conf = ac
 
         and:
         def avc = GroovyMock(AndroidVariantsConfiguration)
@@ -122,7 +119,7 @@ class AndroidPluginSpec extends Specification {
         project.tasks[CleanClassesTask.NAME].group == AMEBA_BUILD
         project.tasks[CopySourcesTask.NAME].group == AMEBA_BUILD
         project.tasks[ReplacePackageTask.NAME].group == AMEBA_BUILD
-        project.tasks[RunUpdateProjectTask.NAME].group == AMEBA_BUILD
+        project.tasks[UpdateProjectTask.NAME].group == AMEBA_BUILD
         project.tasks[CleanAndroidTask.NAME].group == AMEBA_BUILD
         project.tasks[CompileAndroidTask.NAME].group == AMEBA_BUILD
 
@@ -133,8 +130,8 @@ class AndroidPluginSpec extends Specification {
         project.tasks['installv2']
 
         and:
-        project.tasks['buildv1'].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
-        project.tasks['buildv2'].dependsOn.flatten().containsAll(RunUpdateProjectTask.NAME)
+        project.tasks['buildv1'].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
+        project.tasks['buildv2'].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
         project.tasks['installv1'].dependsOn.flatten()*.toString().containsAll('buildv1')
         project.tasks['installv2'].dependsOn.flatten()*.toString().containsAll('buildv2')
 
@@ -142,11 +139,6 @@ class AndroidPluginSpec extends Specification {
         and:
         project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME)
         project.tasks[CLEAN_TASK_NAME].dependsOn.flatten().containsAll(CleanAndroidTask.NAME)
-        project.tasks[JAVADOC_TASK_NAME].dependsOn.flatten().containsAll(CompileAndroidTask.NAME)
-        project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn.flatten().containsAll(CompileAndroidTask.NAME)
-
-        and:
-        project.plugins.findPlugin(JavaPlugin)
     }
 
     private AndroidVariantConfiguration createVariant(String name, AndroidBuildMode mode) {

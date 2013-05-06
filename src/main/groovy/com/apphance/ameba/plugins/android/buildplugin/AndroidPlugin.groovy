@@ -10,9 +10,8 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
-import static org.gradle.api.plugins.JavaPlugin.COMPILE_JAVA_TASK_NAME
-import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
 
 /**
  * This is the main android build plugin.
@@ -25,58 +24,59 @@ import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
  */
 class AndroidPlugin implements Plugin<Project> {
 
-    public static final String BUILD_ALL_DEBUG_TASK_NAME = 'buildAllDebug'
-    public static final String BUILD_ALL_RELEASE_TASK_NAME = 'buildAllRelease'
+    static final String BUILD_ALL_TASK_NAME = 'buildAll'
+    static final String BUILD_ALL_DEBUG_TASK_NAME = 'buildAllDebug'
+    static final String BUILD_ALL_RELEASE_TASK_NAME = 'buildAllRelease'
     @Inject
-    private AndroidConfiguration androidConfiguration
+    AndroidConfiguration conf
     @Inject
-    private AndroidVariantsConfiguration variantsConf
+    AndroidVariantsConfiguration variantsConf
 
     @Override
     void apply(Project project) {
 
-        if (androidConfiguration.isEnabled()) {
-            prepareJavaEnvironment(project)
+        if (conf.isEnabled()) {
 
-            project.task(RunUpdateProjectTask.NAME, type: RunUpdateProjectTask)
+            project.task(UpdateProjectTask.NAME, type: UpdateProjectTask)
 
             project.task(CleanClassesTask.NAME,
                     type: CleanClassesTask,
-                    dependsOn: RunUpdateProjectTask.NAME)
+                    dependsOn: UpdateProjectTask.NAME)
 
             project.task(CopySourcesTask.NAME,
                     type: CopySourcesTask,
-                    dependsOn: RunUpdateProjectTask.NAME)
+                    dependsOn: UpdateProjectTask.NAME)
 
             project.task(ReplacePackageTask.NAME,
                     type: ReplacePackageTask,
-                    dependsOn: RunUpdateProjectTask.NAME)
+                    dependsOn: UpdateProjectTask.NAME)
 
             project.task(CleanAndroidTask.NAME,
                     type: CleanAndroidTask,
-                    dependsOn: [CleanConfTask.NAME, RunUpdateProjectTask.NAME])
+                    dependsOn: [CleanConfTask.NAME, UpdateProjectTask.NAME])
+
+            project.task(CLEAN_TASK_NAME) << {
+                conf.buildDir.deleteDir()
+            }
 
             project.tasks[CLEAN_TASK_NAME].dependsOn(CleanAndroidTask.NAME)
 
             project.task(CompileAndroidTask.NAME,
                     type: CompileAndroidTask,
-                    dependsOn: RunUpdateProjectTask.NAME)
+                    dependsOn: UpdateProjectTask.NAME)
 
-            project.tasks[JAVADOC_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
-            project.tasks[COMPILE_JAVA_TASK_NAME].dependsOn(CompileAndroidTask.NAME)
-
-            project.task(BUILD_ALL_DEBUG_TASK_NAME)
-            project.task(BUILD_ALL_RELEASE_TASK_NAME)
-            project.task('buildAll', dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME])
+            project.task(BUILD_ALL_DEBUG_TASK_NAME, group: AMEBA_BUILD)
+            project.task(BUILD_ALL_RELEASE_TASK_NAME, group: AMEBA_BUILD)
+            project.task('buildAll', dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME], group: AMEBA_BUILD)
 
             variantsConf.variants.each {
                 def buildName = "build${it.name}"
                 project.task(buildName,
                         type: SingleVariantTask,
-                        dependsOn: [CopySourcesTask.NAME, RunUpdateProjectTask.NAME]).variant = it
+                        dependsOn: [CopySourcesTask.NAME, UpdateProjectTask.NAME]).variant = it
 
-                def debugRelaseBuild = "buildAll${it.mode.name().toLowerCase().capitalize()}"
-                project.tasks[debugRelaseBuild].dependsOn buildName
+                def buildAllMode = "buildAll${it.mode.capitalize()}"
+                project.tasks[buildAllMode].dependsOn buildName
 
                 project.task("install${it.name}", type: InstallTask, dependsOn: buildName).variant = it
             }
@@ -85,34 +85,6 @@ class AndroidPlugin implements Plugin<Project> {
                 if (!(it.name in [VerifySetupTask.NAME, 'prepareSetup2'])) {
                     it.dependsOn VerifySetupTask.NAME
                 }
-            }
-        }
-    }
-
-    private void prepareJavaEnvironment(Project project) {
-        project.plugins.apply('java')
-        def javaConventions = project.convention.plugins.java
-        javaConventions.sourceSets {
-            main {
-                output.classesDir = project.file('bin')
-                output.resourcesDir = project.file('bin')
-                java { srcDir project.file('src') }
-                java { srcDir project.file('gen') }
-            }
-        }
-        project.compileJava.options.encoding = 'UTF-8'
-        project.javadoc.options.encoding = 'UTF-8'
-        project.compileTestJava.options.encoding = 'UTF-8'
-        project.dependencies {
-            add('compile', project.files('ext-classes'))
-            if (androidConfiguration.sdkJars) {
-                add('compile', project.files(androidConfiguration.sdkJars))
-            }
-            if (androidConfiguration.jarLibraries) {
-                add('compile', project.files(androidConfiguration.jarLibraries))
-            }
-            if (androidConfiguration.linkedJarLibraries) {
-                add('compile', project.files(androidConfiguration.linkedJarLibraries))
             }
         }
     }

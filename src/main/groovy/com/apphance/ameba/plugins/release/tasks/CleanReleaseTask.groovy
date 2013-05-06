@@ -16,9 +16,9 @@ class CleanReleaseTask extends DefaultTask {
     String group = AMEBA_RELEASE
 
     @Inject
-    private ProjectConfiguration conf
+    ProjectConfiguration conf
     @Inject
-    private ReleaseConfiguration releaseConf
+    ReleaseConfiguration releaseConf
 
     @TaskAction
     void clean() {

@@ -5,12 +5,12 @@ import com.apphance.ameba.plugins.android.analysis.tasks.CPDTask
 import com.apphance.ameba.plugins.android.analysis.tasks.CheckstyleTask
 import com.apphance.ameba.plugins.android.analysis.tasks.FindBugsTask
 import com.apphance.ameba.plugins.android.analysis.tasks.PMDTask
+import com.apphance.ameba.plugins.android.buildplugin.tasks.CompileAndroidTask
 import com.google.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
-import static org.gradle.api.plugins.JavaPlugin.CLASSES_TASK_NAME
 
 /**
  * Provides static code analysis.
@@ -38,14 +38,14 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
             project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs-ant:2.0.1')
             project.task(FindBugsTask.NAME,
                     type: FindBugsTask,
-                    dependsOn: CLASSES_TASK_NAME)
+                    dependsOn: CompileAndroidTask.NAME)
 
 
             project.configurations.add('checkstyleConf')
             project.dependencies.add('checkstyleConf', 'com.puppycrawl.tools:checkstyle:5.6')
             project.task(CheckstyleTask.NAME,
                     type: CheckstyleTask,
-                    dependsOn: CLASSES_TASK_NAME)
+                    dependsOn: CompileAndroidTask.NAME)
 
             project.task('analysis',
                     description: 'Runs all analysis on project',

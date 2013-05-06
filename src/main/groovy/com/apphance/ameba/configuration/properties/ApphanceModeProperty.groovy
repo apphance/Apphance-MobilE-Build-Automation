@@ -6,7 +6,7 @@ class ApphanceModeProperty extends AbstractProperty<ApphanceMode> {
 
     @Override
     void setValue(String value) {
-        if (value)
+        if (value?.trim())
             this.@value = ApphanceMode.valueOf(value)
     }
 }

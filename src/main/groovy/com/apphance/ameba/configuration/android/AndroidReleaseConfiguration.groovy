@@ -7,10 +7,11 @@ import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.properties.URLProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
+import com.apphance.ameba.plugins.android.AndroidManifestHelper
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import com.google.inject.Inject
 
 import javax.imageio.ImageIO
+import javax.inject.Inject
 import java.text.SimpleDateFormat
 
 /**
@@ -22,55 +23,48 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     final String configurationName = 'Android Release Configuration'
 
     static final MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
+    static final ICON_PATTERN = /icon.*\.(png|jpg|jpeg|bmp)/
+    static final DRAWABLE_DIR_PATTERN = /(drawable-ldpi|drawable-mdpi|drawable-hdpi|drawable-xhdpi|drawable)/
 
     static final ALL_EMAIL_FLAGS = [
             'installableSimulator',
             'qrCode',
             'imageMontage'
     ]
-
     private boolean enabledInternal
 
     Map<String, AmebaArtifact> apkFiles = [:]
     Map<String, AmebaArtifact> jarFiles = [:]
-
     AmebaArtifact otaIndexFile
+
     AmebaArtifact fileIndexFile
     AmebaArtifact plainFileIndexFile
-
     AmebaArtifact sourcesZip
     AmebaArtifact documentationZip
     AmebaArtifact imageMontageFile
+
     AmebaArtifact mailMessageFile
     AmebaArtifact QRCodeFile
-
     AmebaArtifact galleryCSS
+
+
     AmebaArtifact galleryJS
+
     AmebaArtifact galleryTrans
 
-
     String releaseMailSubject
-    private AndroidConfiguration androidConfiguration
-    private PropertyReader reader
 
     @Inject
-    AndroidReleaseConfiguration(AndroidConfiguration androidConfiguration, PropertyReader reader) {
-        this.androidConfiguration = androidConfiguration
-        this.reader = reader
-    }
+    AndroidConfiguration conf
+
+    @Inject
+    AndroidManifestHelper manifestHelper
+
+    @Inject
+    PropertyReader reader
 
     Collection<String> getReleaseNotes() {
         (reader.systemProperty('release.notes') ?: reader.envVariable('RELEASE_NOTES') ?: '').split('\n')
-    }
-
-    @Override
-    String getReleaseCode() {
-        reader.systemProperty('release.code') ?: reader.envVariable('RELEASE_CODE') ?: ''
-    }
-
-    @Override
-    String getReleaseString() {
-        reader.systemProperty('release.string') ?: reader.envVariable('RELEASE_STRING') ?: ''
     }
 
     @Override
@@ -95,15 +89,40 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
 
     @Override
     File getOtaDir() {
-        new File(androidConfiguration.rootDir, 'ameba-ota')
+        new File(conf.rootDir, 'ameba-ota')
     }
 
     FileProperty iconFile = new FileProperty(
             name: 'android.release.project.icon.file',
-            message: 'Path to project\'s icon file',
+            message: 'Path to project\'s icon file, must be relative to the root dir of project',
             required: { true },
-            validator: { it?.absolutePath?.trim() ? (new File(it as String).exists() && ImageIO.read(new File(it as String))) : false }
+            defaultValue: { defaultIcon() },
+            possibleValues: { possibleIcons() },
+            validator: {
+                def file = new File(conf.rootDir, it as String)
+                file?.absolutePath?.trim() ? (file.exists() && ImageIO.read(file)) : false
+            }
     )
+
+    File defaultIcon() {
+        def icon = manifestHelper.readIcon(conf.rootDir)?.trim()
+        def icons = []
+        if (icon) {
+            conf.resDir.eachDirMatch(~DRAWABLE_DIR_PATTERN) { dir ->
+                icons.addAll(dir.listFiles([accept: { it.name.startsWith(icon) }] as FileFilter)*.canonicalFile)
+            }
+        }
+        icons.size() > 0 ? icons.sort()[1] as File : null
+    }
+
+    @groovy.transform.PackageScope
+    List<String> possibleIcons() {
+        List<String> icons = []
+        conf.resDir.eachDirMatch(~DRAWABLE_DIR_PATTERN) { dir ->
+            icons.addAll(dir.listFiles([accept: { (it.name =~ ICON_PATTERN).matches() }] as FileFilter)*.canonicalPath)
+        }
+        icons.collect { it.replaceAll("${conf.rootDir.absolutePath}/", '') }.findAll { !it?.trim()?.empty }
+    }
 
     URLProperty projectURL = new URLProperty(
             name: 'android.release.project.url',
@@ -149,13 +168,13 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     StringProperty releaseMailFrom = new StringProperty(
             name: 'android.release.mail.from',
             message: 'Sender email address',
-            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : false }
+            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : true }
     )
 
     StringProperty releaseMailTo = new StringProperty(
             name: 'android.release.mail.to',
             message: 'Recipient of release email',
-            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : false }
+            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : true }
     )
 
     ListStringProperty releaseMailFlags = new ListStringProperty(
@@ -188,17 +207,17 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
 
     @Override
     File getTargetDirectory() {
-        new File(new File(otaDir, projectDirName), androidConfiguration.fullVersionString)
+        new File(new File(otaDir, projectDirName), conf.fullVersionString)
     }
 
     @Override
     URL getVersionedApplicationUrl() {
-        new URL(baseURL, "${projectDirName}/${androidConfiguration.fullVersionString}/")
+        new URL(baseURL, "${projectDirName}/${conf.fullVersionString}/")
     }
 
     @Override
     boolean isEnabled() {
-        enabledInternal && androidConfiguration.isEnabled()
+        enabledInternal && conf.isEnabled()
     }
 
     @Override
@@ -211,9 +230,11 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
         check !checkException { baseURL }, "Property '${projectURL.name}' is not valid! Should be valid URL address!"
         check language.validator(language.value), "Property '${language.name}' is not valid! Should be two letter lowercase!"
         check country.validator(country.value), "Property '${country.name}' is not valid! Should be two letter uppercase!"
-        check !(releaseMailFrom.validator(releaseMailFrom.value)), "Property '${releaseMailFrom.name} is not valid! Should be valid email address!"
-        check !(releaseMailTo.validator(releaseMailTo.value)), "Property '${releaseMailTo.name} is not valid! Should be valid email address!"
-        check !(releaseMailFlags.value ? releaseMailFlags.value.every { it in ALL_EMAIL_FLAGS } : true), "Property '${releaseMailFlags.name}' is not valid! Possible values: ${ALL_EMAIL_FLAGS}"
-        check !(iconFile.validator(iconFile.value)), "Property '${iconFile.name}' is not valid! Should be existing file!"
+        check releaseMailFrom.validator(releaseMailFrom.value), "Property '${releaseMailFrom.name}' is not valid! Should be valid " +
+                "email address! Current value: ${releaseMailFrom.value}"
+        check releaseMailTo.validator(releaseMailTo.value), "Property '${releaseMailTo.name}' is not valid! Should be valid email address!  Current value: ${releaseMailTo.value}"
+        check releaseMailFlags.validator(releaseMailFlags.persistentForm()), "Property '${releaseMailFlags.name}' is not valid! Possible values: " +
+                "${ALL_EMAIL_FLAGS} Current value: ${releaseMailFlags.value}"
+        check iconFile.validator(iconFile.value), "Property '${iconFile.name}' (${iconFile.value}) is not valid! Should be existing image file!"
     }
 }

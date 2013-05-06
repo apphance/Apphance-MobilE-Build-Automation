@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.android.release.tasks
 
-import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
 import com.google.inject.Inject
 import org.gradle.api.DefaultTask
@@ -24,41 +24,40 @@ class UpdateVersionTask extends DefaultTask {
     static Pattern WHITESPACE_PATTERN = Pattern.compile('\\s+')
 
     @Inject
-    private AndroidManifestHelper manifestHelper
-
+    AndroidConfiguration conf
     @Inject
-    private AndroidReleaseConfiguration releaseConf
+    AndroidManifestHelper manifestHelper
 
     @TaskAction
     public void updateVersion() {
-        def releaseString = releaseConf.releaseString
-        def releaseCode = releaseConf.releaseCode
+        def versionString = conf.externalVersionString
+        def versionCode = conf.externalVersionCode
 
-        validateReleaseString(releaseString)
-        validateReleaseCode(releaseCode)
+        validateVersionString(versionString)
+        validateVersionCode(versionCode)
 
-        manifestHelper.updateVersion(project.rootDir, releaseString, releaseCode)
+        manifestHelper.updateVersion(project.rootDir, versionString, versionCode)
 
-        l.debug("New version code: $releaseCode")
-        l.debug("Updated version string to: $releaseString")
+        l.debug("New version code: $versionCode")
+        l.debug("Updated version string to: $versionString")
     }
 
     @groovy.transform.PackageScope
-    void validateReleaseString(String releaseString) {
-        releaseString = releaseString?.trim()
-        if (!releaseString || releaseString?.empty || WHITESPACE_PATTERN.matcher(releaseString ?: '').find()) {
-            throw new GradleException("""|Property 'release.string' has invalid value!
-                                         |Set it either by 'release.string' system property or 'RELEASE_STRING' environment variable!
+    void validateVersionString(String versionString) {
+        versionString = versionString?.trim()
+        if (!versionString || versionString?.empty || WHITESPACE_PATTERN.matcher(versionString ?: '').find()) {
+            throw new GradleException("""|Property 'version.string' has invalid value!
+                                         |Set it either by 'release.string' system property or 'VERSION_STRING' environment variable!
                                          |This property must not contain white space characters!""".stripMargin())
         }
     }
 
     @groovy.transform.PackageScope
-    void validateReleaseCode(String releaseCode) {
-        releaseCode = releaseCode?.trim()
-        if (releaseCode?.empty || !releaseCode?.matches('[0-9]+')) {
-            throw new GradleException("""|Property 'release.code' has invalid value!
-                                         |Set it either by 'release.code' system property or 'RELEASE_CODE' environment variable!
+    void validateVersionCode(String versionCode) {
+        versionCode = versionCode?.trim()
+        if (versionCode?.empty || !versionCode?.matches('[0-9]+')) {
+            throw new GradleException("""|Property 'version.code' has invalid value!
+                                         |Set it either by 'version.code' system property or 'VERSION_CODE' environment variable!
                                          |This property must have numeric value!""".stripMargin())
         }
     }

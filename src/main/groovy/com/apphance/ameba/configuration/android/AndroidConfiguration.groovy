@@ -63,12 +63,22 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     @Override
     String getVersionCode() {
-        manifestHelper.readVersion(rootDir).versionCode
+        externalVersionCode ?: manifestHelper.readVersion(rootDir).versionCode ?: ''
+    }
+
+    @groovy.transform.PackageScope
+    String getExternalVersionCode() {
+        reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
     }
 
     @Override
     String getVersionString() {
-        manifestHelper.readVersion(rootDir).versionString
+        externalVersionString ?: manifestHelper.readVersion(rootDir).versionString ?: ''
+    }
+
+    @groovy.transform.PackageScope
+    String getExternalVersionString() {
+        reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
     }
 
     @Override
@@ -84,6 +94,10 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     @Override
     File getLogDir() {
         project.file('ameba-log')
+    }
+
+    File getResDir() {
+        project.file('res')
     }
 
     @Override
@@ -106,7 +120,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     File getSDKDir() {
         def androidHome = reader.envVariable('ANDROID_HOME')
-        androidHome ? new File(androidHome, 'sdk') : null
+        androidHome ? new File(androidHome) : null
     }
 
     final Collection<String> sourceExcludes = ['**/*.class', '**/bin/**', '**/build/*', '**/ameba-tmp/**/*', '**/ameba-ota/**/*']
@@ -204,11 +218,11 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
     }
 
     private List<String> possibleNames() {
-        [rootDir.name, defaultName()]
+        [rootDir.name, defaultName()].findAll { !it?.trim()?.empty }
     }
 
     private List<String> possibleTargets() {
-        androidExecutor.listTarget(rootDir)
+        androidExecutor.listTarget(rootDir).findAll { !it?.trim()?.empty }
     }
 
     def readProperties() {
@@ -240,9 +254,15 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
         check !isNullOrEmpty(reader.envVariable('ANDROID_HOME')), "Environment variable 'ANDROID_HOME' must be set!"
         check rootDir.canWrite(), "No write access to project root dir ${rootDir.absolutePath}, check file system permissions!"
         check !isNullOrEmpty(projectName.value), "Property ${projectName.name} must be set!"
-        check versionCode?.matches('[0-9]+'), "Property 'versionCode' must have numerical value! Check AndroidManifest.xml file!"
-        check !WHITESPACE_PATTERN.matcher(versionString ?: '').find(), "Property 'versionName' must not have whitespace characters! Check AndroidManifest.xml file!"
-        check !isNullOrEmpty(target.value), "Property ${target.name} must be set!"
+        check versionCode?.matches('[0-9]+'), """|Property 'versionCode' must have numerical value! Check 'version.code'
+                                                 |system property or 'VERSION_STRING' env variable
+                                                 |or AndroidManifest.xml file!""".stripMargin()
+        check !WHITESPACE_PATTERN.matcher(versionString ?: '').find(), """|Property 'versionString' must not have
+                                                                          |whitespace characters! Check 'version.string'
+                                                                          |system property or 'VERSION_STRING' env
+                                                                          |variable or AndroidManifest.xml file!"""
+                .stripMargin()
+        check target.validator(target.value), "Property ${target.name} must be set!"
         check !isNullOrEmpty(mainPackage), "Property 'package' must be set! Check AndroidManifest.xml file!"
     }
 }

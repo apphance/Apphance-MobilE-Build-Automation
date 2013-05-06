@@ -1,37 +1,49 @@
 package com.apphance.ameba.plugins.ios.framework
 
 import com.apphance.ameba.executor.command.CommandExecutor
+import com.apphance.ameba.plugins.ios.framework.tasks.BuildFrameworkTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.COPY_MOBILE_PROVISION_TASK_NAME
+import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Plugin for preparing reports after successful IOS build.
  *
  */
 class IOSFrameworkPlugin implements Plugin<Project> {
-    static Logger logger = Logging.getLogger(IOSFrameworkPlugin.class)
+
+    public static final String BUILD_FRAMEWORK_TASK_NAME = 'buildFramework'
+
+    private l = getLogger(getClass())
 
     @Inject
-    CommandExecutor executor
+    private CommandExecutor executor
 
-    def void apply(Project project) {
+    private Project project
 
-        def task = project.task('buildFramework',
-                group: AMEBA_BUILD,
-                description: 'Builds iOS framework project',
-                dependsOn: [project.readProjectConfiguration, project.copyMobileProvision]
-        )
-        task.doLast { new IOSFrameworkBuilder(project, executor).buildIOSFramework() }
+    @Override
+    void apply(Project project) {
+        this.project = project
 
-        project.prepareSetup.prepareSetupOperations << new PrepareFrameworkSetupOperation()
-        project.verifySetup.verifySetupOperations << new VerifyFrameworkSetupOperation()
-        project.showSetup.showSetupOperations << new ShowFrameworkSetupOperation()
+        prepareBuildFrameworkTask()
+
+//        project.prepareSetup.prepareSetupOperations << new PrepareFrameworkSetupOperation()
+//        project.verifySetup.verifySetupOperations << new VerifyFrameworkSetupOperation()
+//        project.showSetup.showSetupOperations << new ShowFrameworkSetupOperation()
+    }
+
+    private void prepareBuildFrameworkTask() {
+        def task = project.task(BUILD_FRAMEWORK_TASK_NAME)
+        task.group = AMEBA_BUILD
+        task.description = 'Builds iOS framework project'
+        task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME, COPY_MOBILE_PROVISION_TASK_NAME)
+        task << { new BuildFrameworkTask(project, executor).buildIOSFramework() }
     }
 
     static public final String DESCRIPTION =

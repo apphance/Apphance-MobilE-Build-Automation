@@ -64,20 +64,20 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
         (variantsDir && variantsDir.isDirectory() && variantsDir.list().size() > 0)
     }
 
-    private File getVariantsDir() {
+    File getVariantsDir() {
         project.file('variants')
     }
 
     private List<AndroidVariantConfiguration> extractVariantsFromDir() {
         getVariantsDir().listFiles()*.name.collect { String dirName ->
-            AndroidBuildMode.values()*.name().collect { String modeName ->
-                createVariant(dirName.toLowerCase().capitalize() + modeName.toLowerCase().capitalize())
+            AndroidBuildMode.values().collect { it ->
+                createVariant(dirName.toLowerCase().capitalize() + it.capitalize())
             }
         }.flatten()
     }
 
     private List<AndroidVariantConfiguration> extractDefaultVariants() {
-        AndroidBuildMode.values().collect { createVariant(it.name().toLowerCase().capitalize()) }
+        AndroidBuildMode.values().collect { createVariant(it.capitalize()) }
     }
 
     private AndroidVariantConfiguration createVariant(String name) {

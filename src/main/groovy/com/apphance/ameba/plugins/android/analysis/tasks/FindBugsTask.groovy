@@ -2,14 +2,14 @@ package com.apphance.ameba.plugins.android.analysis.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.util.Preconditions
-import com.google.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
+import javax.inject.Inject
+
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
 
-@Mixin(AndroidAnalysisMixin)
 @Mixin(Preconditions)
 class FindBugsTask extends DefaultTask {
 
@@ -22,10 +22,12 @@ class FindBugsTask extends DefaultTask {
 
     @Inject
     AndroidConfiguration androidConfiguration
+    @Inject
+    AndroidAnalysisResourceLocator resourceLocator
 
     @TaskAction
     public void runFindbugs() {
-        URL findbugsXml = getResourceUrl(project, 'findbugs-exclude.xml')
+        URL findbugsXml = resourceLocator.getResourceUrl(project, 'findbugs-exclude.xml')
         File analysisDir = project.file('build/analysis')
         File findbugsFile = new File(analysisDir, "findbugs-exclude.xml")
 

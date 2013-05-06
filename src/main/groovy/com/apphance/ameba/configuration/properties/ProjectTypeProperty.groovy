@@ -6,7 +6,7 @@ class ProjectTypeProperty extends AbstractProperty<ProjectType> {
 
     @Override
     void setValue(String value) {
-        if (value != null) {
+        if (value?.trim()) {
             this.@value = ProjectType.valueOf(value)
         }
     }

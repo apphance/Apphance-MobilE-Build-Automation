@@ -1,12 +1,9 @@
 package com.apphance.ameba.plugins.android.release
 
-import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTask
-import com.apphance.ameba.plugins.android.release.tasks.BuildDocZipTask
 import com.apphance.ameba.plugins.android.release.tasks.MailMessageTask
 import com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
 import com.apphance.ameba.plugins.release.tasks.PrepareForReleaseTask
@@ -14,8 +11,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
-
-import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
 
 /**
  * Plugin that provides release functionality for android.<br><br>
@@ -29,11 +24,15 @@ import static org.gradle.api.plugins.JavaPlugin.JAVADOC_TASK_NAME
 class AndroidReleasePlugin implements Plugin<Project> {
 
     @Inject
-    private AndroidConfiguration conf
+    AndroidReleaseConfiguration releaseConf
     @Inject
-    private AndroidReleaseConfiguration releaseConf
+    AndroidSingleVariantApkBuilder apkBuilder
     @Inject
-    private AntExecutor antExecutor
+    AndroidReleaseApkListener apkListener
+    @Inject
+    AndroidSingleVariantJarBuilder jarBuilder
+    @Inject
+    AndroidReleaseJarListener jarListener
 
     @Override
     void apply(Project project) {
@@ -46,17 +45,12 @@ class AndroidReleasePlugin implements Plugin<Project> {
                     AvailableArtifactsInfoTask.NAME,
                     type: AvailableArtifactsInfoTask)
             project.task(
-                    BuildDocZipTask.NAME,
-                    type: BuildDocZipTask,
-                    dependsOn: [JAVADOC_TASK_NAME, PrepareForReleaseTask.NAME])
-            project.task(
                     MailMessageTask.NAME,
                     type: MailMessageTask,
                     dependsOn: [AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME])
 
-            //TODO to be separated, refactored, redesigned :/
-            AndroidSingleVariantApkBuilder.buildListeners << new AndroidReleaseApkListener(project, conf, releaseConf, antExecutor)
-            AndroidSingleVariantJarBuilder.buildListeners << new AndroidReleaseJarListener(project, conf, releaseConf, antExecutor)
+            apkBuilder.registerListener(apkListener)
+            jarBuilder.registerListener(jarListener)
         }
     }
 }

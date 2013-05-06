@@ -44,20 +44,20 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     }
 
     AndroidBuildMode getMode() {
-        this.@name.toLowerCase().contains(DEBUG.name().toLowerCase()) ? DEBUG : RELEASE
+        this.@name.toLowerCase().contains(DEBUG.lowerCase()) ? DEBUG : RELEASE
     }
-
-    def apphanceAppKey = new StringProperty(
-            interactive: { androidApphanceConf.enabled },
-            required: { androidApphanceConf.enabled },
-            validator: { it?.matches('[a-z0-9]+') }
-    )
 
     def apphanceMode = new ApphanceModeProperty(
             interactive: { androidApphanceConf.enabled },
             required: { androidApphanceConf.enabled },
             possibleValues: { possibleApphanceModes() },
             validator: { it in possibleApphanceModes() }
+    )
+
+    def apphanceAppKey = new StringProperty(
+            interactive: { androidApphanceConf.enabled && !(DISABLED == apphanceMode.value) },
+            required: { androidApphanceConf.enabled },
+            validator: { it?.matches('[a-z0-9]+') }
     )
 
     private List<String> possibleApphanceModes() {
@@ -76,7 +76,7 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
 
     @Override
     String getConfigurationName() {
-        "Android configuration variant ${this.@name}"
+        "Android Variant ${this.@name}"
     }
 
     File getTmpDir() {

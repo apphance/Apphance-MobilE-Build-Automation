@@ -9,6 +9,7 @@ import org.junit.*
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
+@Ignore('Ignored in M2')
 class RunVerifyIosErrorsSetupTest {
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',

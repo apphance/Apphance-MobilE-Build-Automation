@@ -2,10 +2,11 @@ package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
+import com.apphance.ameba.plugins.android.AndroidManifestHelper
 import spock.lang.Specification
 
 class AndroidReleaseConfigurationSpec extends Specification {
-    def arc = new AndroidReleaseConfiguration(Mock(AndroidConfiguration), null)
+    def arc = new AndroidReleaseConfiguration()
 
     def setup() {
         arc.projectURL.value = 'http://ota.polidea.pl/SATGuruAndroid-32DRDK64'
@@ -49,7 +50,8 @@ class AndroidReleaseConfigurationSpec extends Specification {
         reader.envVariable('MAIL_PORT') >> mailPortEnv
 
         and:
-        def arc = new AndroidReleaseConfiguration(null, reader)
+        def arc = new AndroidReleaseConfiguration()
+        arc.reader = reader
         arc.mailPortInternal = new StringProperty(value: mailPortProperty)
 
         expect:
@@ -74,7 +76,8 @@ class AndroidReleaseConfigurationSpec extends Specification {
         reader.envVariable('MAIL_SERVER') >> mailServerEnv
 
         and:
-        def arc = new AndroidReleaseConfiguration(null, reader)
+        def arc = new AndroidReleaseConfiguration()
+        arc.reader = reader
         arc.mailServerInternal = new StringProperty(value: mailServerProperty)
 
         expect:
@@ -92,5 +95,53 @@ class AndroidReleaseConfigurationSpec extends Specification {
         null             | null          | 'imap.prop.pl'     | 'imap.prop.pl'
     }
 
+    def 'mail validators'() {
+        expect:
+        arc.releaseMailFlags.validator('qrCode,imageMontage')
+        arc.releaseMailFrom.validator('')
+        arc.releaseMailFrom.validator(null)
+        arc.releaseMailFrom.validator('Jenkins <no-reply@polidea.pl>')
+        arc.releaseMailTo.validator('qwilt-team@polidea.pl')
+        arc.releaseMailTo.validator('')
+        arc.releaseMailTo.validator(null)
+    }
 
+    def 'possible icons are found'() {
+        given:
+        def projectDir = 'testProjects/android/android-basic'
+
+        and:
+        def ac = GroovyMock(AndroidConfiguration)
+        ac.resDir >> new File(projectDir, 'res')
+        ac.rootDir >> new File(projectDir)
+
+        and:
+        def arc = new AndroidReleaseConfiguration()
+        arc.conf = ac
+        arc.manifestHelper = new AndroidManifestHelper()
+
+        expect:
+        def icons = arc.possibleIcons()
+        icons.size() == 2
+        icons.contains('res/drawable-hdpi/icon.png')
+        icons.contains('res/drawable/icon.png')
+    }
+
+    def 'default icon are found'() {
+        given:
+        def projectDir = 'testProjects/android/android-basic'
+
+        and:
+        def ac = GroovyMock(AndroidConfiguration)
+        ac.resDir >> new File(projectDir, 'res')
+        ac.rootDir >> new File(projectDir)
+
+        and:
+        def arc = new AndroidReleaseConfiguration()
+        arc.conf = ac
+        arc.manifestHelper = new AndroidManifestHelper()
+
+        expect:
+        arc.defaultIcon().absolutePath.endsWith('drawable/icon.png')
+    }
 }

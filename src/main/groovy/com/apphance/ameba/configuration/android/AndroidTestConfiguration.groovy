@@ -13,7 +13,7 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static java.io.File.separator
-import static java.net.InetAddress.getByAddress
+import static java.net.InetAddress.getByName
 
 @com.google.inject.Singleton
 class AndroidTestConfiguration extends AbstractConfiguration {
@@ -60,8 +60,8 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             name: 'android.test.emulator.target',
             message: 'Target of the emulator',
             defaultValue: { androidConf.target.value },
-            possibleValues: { androidExecutor.listTarget(androidConf.rootDir) },
-            validator: { it in androidExecutor.listTarget(androidConf.rootDir) }
+            possibleValues: { possibleTargets() },
+            validator: { it in possibleTargets() }
     )
 
     def emulatorSkin = new StringProperty(
@@ -72,8 +72,12 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             validator: { it in possibleSkins() }
     )
 
+    private List<String> possibleTargets() {
+        androidExecutor.listTarget(androidConf.rootDir).findAll { !it?.trim()?.empty }
+    }
+
     private List<String> possibleSkins() {
-        androidExecutor.listSkinsForTarget(androidConf.rootDir, emulatorTarget.value)
+        androidExecutor.listSkinsForTarget(androidConf.rootDir, emulatorTarget.value).findAll { !it?.trim()?.empty }
     }
 
     def emulatorCardSize = new StringProperty(
@@ -155,29 +159,24 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         emulatorPort
     }
 
-    //TODO refactor
     private int findFreeEmulatorPort() {
         int startPort = 5554
         int endPort = 5584
+        InetAddress localhost = getByName('localhost')
         for (int port = startPort; port <= endPort; port += 2) {
+            def ss1 = null, ss2 = null
             try {
-                ServerSocket ss1 = new ServerSocket(port, 0, getByAddress([127, 0, 0, 1] as byte[]))
-                try {
-                    ss1.setReuseAddress(true)
-                    ServerSocket ss2 = new ServerSocket(port + 1, 0, getByAddress([127, 0, 0, 1] as byte[]))
-                    try {
-                        ss2.setReuseAddress(true)
-                        return port
-                    } finally {
-                        ss2.close()
-                    }
-                } finally {
-                    ss1.close()
-                }
-            } catch (IOException e) {
+                ss1 = new ServerSocket(port, 0, localhost)
+                ss1.reuseAddress = true
+                ss2 = new ServerSocket(port + 1, 0, localhost)
+                ss1.reuseAddress = true
+                return port
+            } catch (e) {
+            } finally {
+                [ss1, ss2].collect { it?.close() }
             }
         }
-        throw new GradleException("Could not find free emulator port (tried all from ${startPort} to ${endPort}!... ")
+        throw new GradleException("Could not find free emulator port (tried all from ${startPort} to ${endPort}!")
     }
 
     def emmaEnabled = new BooleanProperty(
@@ -190,10 +189,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
 
     File getADBBinary() {
         new File(androidConf.SDKDir, "platform${separator}tools")
-    }
-
-    File getAndroidBinary() {
-        new File(androidConf.SDKDir, "tools${separator}android")
     }
 
     String getEmmaDumpFilePath() {

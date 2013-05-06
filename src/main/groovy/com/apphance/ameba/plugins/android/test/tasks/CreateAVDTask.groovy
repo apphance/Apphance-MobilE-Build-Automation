@@ -19,9 +19,9 @@ class CreateAVDTask extends DefaultTask {
     private l = getLogger(getClass())
 
     @Inject
-    private AndroidTestConfiguration testConf
+    AndroidTestConfiguration testConf
     @Inject
-    private AndroidExecutor androidExecutor
+    AndroidExecutor androidExecutor
 
     @TaskAction
     void createAVD() {

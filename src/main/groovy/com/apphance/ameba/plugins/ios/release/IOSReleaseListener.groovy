@@ -1,6 +1,5 @@
 package com.apphance.ameba.plugins.ios.release
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.Command
@@ -11,8 +10,9 @@ import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import com.apphance.ameba.plugins.ios.MPParser
 import com.apphance.ameba.plugins.ios.buildplugin.IOSBuildListener
-import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
+import com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
@@ -44,7 +44,7 @@ class IOSReleaseListener implements IOSBuildListener {
             this.iosExecutor = iosExecutor
             this.conf = project.getProjectConfiguration()
             this.releaseConf = ProjectReleaseCategory.getProjectReleaseConfiguration(project)
-            this.iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
+            this.iosConf = IOSConfigurationRetriever.getIosProjectConfiguration(project)
             this.iosReleaseConf = IOSReleaseConfigurationRetriever.getIosReleaseConfiguration(project)
             this.ant = project.ant
         }

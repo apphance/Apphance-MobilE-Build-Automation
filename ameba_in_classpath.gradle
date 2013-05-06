@@ -30,5 +30,7 @@ rootProject.buildscript {
         classpath 'com.google.guava:guava:14.0.1'
         classpath 'org.apache.directory.studio:org.apache.commons.lang:2.6'
 
+        classpath 'gov.nih.imagej:imagej:1.46'
+        classpath 'org.imgscalr:imgscalr-lib:4.2'
     }
 }
