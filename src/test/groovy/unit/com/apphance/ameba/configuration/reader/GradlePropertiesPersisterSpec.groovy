@@ -69,19 +69,19 @@ class GradlePropertiesPersisterSpec extends Specification {
             detectProjectType(_) >> ANDROID
         }, null)
 
-        def iOSConfiguration = new IOSConfiguration()
+        def iOSConfiguration = new IOSConfiguration(* [null] * 3)
         iOSConfiguration.projectTypeDetector = Mock(ProjectTypeDetector) {
             detectProjectType(_) >> IOS
         }
         iOSConfiguration.project = project
-        iOSConfiguration.name.value = 'Project name'
+        iOSConfiguration.projectName.value = 'Project name'
 
         when:
         persister.save([androidConfiguration, iOSConfiguration])
         persister.init(project)
 
         then:
-        persister.get(iOSConfiguration.name.name) == 'Project name'
+        persister.get(iOSConfiguration.projectName.name) == 'Project name'
         persister.get('nonexisting') == null
 
         cleanup:

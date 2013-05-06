@@ -5,7 +5,7 @@ import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import com.apphance.ameba.plugins.ios.MPParser
-import com.apphance.ameba.plugins.ios.release.IOSReleaseConfiguration
+import com.apphance.ameba.plugins.ios.release.IOSReleaseConfigurationOLD
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
@@ -30,7 +30,7 @@ class PrepareAvailableArtifactsInfoTask {
     private ProjectConfiguration conf
     private ProjectReleaseConfiguration releaseConf
     private IOSProjectConfiguration iosConf
-    private IOSReleaseConfiguration iosReleaseConf
+    private IOSReleaseConfigurationOLD iosReleaseConf
 
     PrepareAvailableArtifactsInfoTask(Project project, CommandExecutor executor, IOSExecutor iosExecutor) {
         this.project = project

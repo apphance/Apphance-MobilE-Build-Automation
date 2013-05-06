@@ -67,6 +67,7 @@ class UpdateVersionTaskSpec extends Specification {
         def ac = GroovyMock(AndroidConfiguration)
         ac.externalVersionCode >> '3145'
         ac.externalVersionString >> '31.4.5'
+        ac.rootDir >> projectDir
 
         and:
         def amh = new AndroidManifestHelper()

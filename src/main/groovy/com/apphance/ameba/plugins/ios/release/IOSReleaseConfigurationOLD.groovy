@@ -6,7 +6,7 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
  * Keeps configuration of iOS project release.
  *
  */
-class IOSReleaseConfiguration {
+class IOSReleaseConfigurationOLD {
 
     Map<String, AmebaArtifact> distributionZipFiles = [:]
     Map<String, AmebaArtifact> dSYMZipFiles = [:]

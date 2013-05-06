@@ -35,7 +35,7 @@ class IOSReleaseListener implements IOSBuildListener {
     ProjectConfiguration conf
     ProjectReleaseConfiguration releaseConf
     IOSProjectConfiguration iosConf
-    IOSReleaseConfiguration iosReleaseConf
+    IOSReleaseConfigurationOLD iosReleaseConf
     AntBuilder ant
 
     IOSReleaseListener(Project project, CommandExecutor executor, IOSExecutor iosExecutor) {

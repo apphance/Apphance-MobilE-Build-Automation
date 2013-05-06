@@ -66,7 +66,6 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
         externalVersionCode ?: manifestHelper.readVersion(rootDir).versionCode ?: ''
     }
 
-    @groovy.transform.PackageScope
     String getExternalVersionCode() {
         reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
     }
@@ -76,7 +75,6 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
         externalVersionString ?: manifestHelper.readVersion(rootDir).versionString ?: ''
     }
 
-    @groovy.transform.PackageScope
     String getExternalVersionString() {
         reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
     }

@@ -2,7 +2,9 @@ package com.apphance.ameba.configuration.ios
 
 import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ProjectConfiguration
+import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.detection.ProjectTypeDetector
 import org.gradle.api.Project
 
@@ -17,16 +19,13 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     Project project
     ProjectTypeDetector projectTypeDetector
+    PropertyReader reader
 
     @Inject
-    IOSConfiguration(Project project, ProjectTypeDetector projectTypeDetector) {
+    IOSConfiguration(Project project, ProjectTypeDetector projectTypeDetector, PropertyReader reader) {
         this.project = project
         this.projectTypeDetector = projectTypeDetector
-    }
-
-    @Override
-    String getConfigurationName() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        this.reader = reader
     }
 
     @Override
@@ -34,9 +33,17 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
         return null  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    String getExternalVersionCode() {
+        reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
+    }
+
     @Override
     String getVersionString() {
         return null  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    String getExternalVersionString() {
+        reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
     }
 
     @Override
@@ -49,14 +56,33 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
         return null  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
-    StringProperty getProjectName() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+    StringProperty projectName = new StringProperty(
+            name: 'ios.project.name',
+            message: 'iOS project name',
+            defaultValue: { defaultName() },
+            possibleValues: { possibleNames() },
+            required: { true }
+    )
+
+    private String defaultName() {
+        ''
     }
+
+    private List<String> possibleNames() {
+        [rootDir.name, defaultName()].findAll { !it?.trim()?.empty }
+    }
+
+    def plist = new FileProperty(
+            name: 'ios.plist.file',
+            message: 'iOS project plist file',
+            required: { true },
+            defaultValue: { null },
+            possibleValues: { null },
+    )
 
     @Override
     File getTmpDir() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        project.file('ameba-tmp')
     }
 
     @Override
@@ -66,12 +92,12 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     @Override
     File getLogDir() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        project.file('ameba-log')
     }
 
     @Override
     File getRootDir() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        project.rootDir
     }
 
     @Override

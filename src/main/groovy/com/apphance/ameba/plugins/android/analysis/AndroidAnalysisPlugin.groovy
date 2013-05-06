@@ -19,7 +19,7 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYS
 class AndroidAnalysisPlugin implements Plugin<Project> {
 
     @Inject
-    private AndroidAnalysisConfiguration analysisConf
+    AndroidAnalysisConfiguration analysisConf
 
     @Override
     void apply(Project project) {

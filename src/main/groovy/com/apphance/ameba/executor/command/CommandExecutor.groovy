@@ -95,6 +95,7 @@ class CommandExecutor {
         if (input) {
             input.each { inputFile << "${it.trim()}\n" }
         }
+        inputFile.deleteOnExit()
         inputFile
     }
 

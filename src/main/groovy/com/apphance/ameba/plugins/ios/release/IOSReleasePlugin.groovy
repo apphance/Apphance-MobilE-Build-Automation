@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.ios.release
 
+import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.release.tasks.BuildDocZipTask
@@ -31,28 +32,25 @@ class IOSReleasePlugin implements Plugin<Project> {
     public static final String PREPARE_MAIL_MESSAGE_TASK_NAME = 'prepareMailMessage'
 
     @Inject
-    private CommandExecutor executor
+    CommandExecutor executor
     @Inject
-    private IOSExecutor iosExecutor
+    IOSExecutor iosExecutor
+    @Inject
+    IOSReleaseConfiguration releaseConf
+
     private Project project
 
     @Override
     void apply(Project project) {
-        this.project = project
-
-        prepareUpdateVersionTask()
-        prepareBuildDocumentationZipTask()
-        prepareAvailableArtifactsInfoTask()
-        prepareMailMessageTask()
-    }
-
-    private void prepareUpdateVersionTask() {
-        def task = project.task(UPDATE_VERSION_TASK_NAME)
-        task.group = AMEBA_RELEASE
-        task.description = """Updates version stored in plist file of the project.
-           Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
-        task << { new UpdateVersionTask(project).updateVersion() }
-        task.dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME)
+        if (releaseConf.isEnabled()) {
+            project.task(UpdateVersionTask.NAME, type: UpdateVersionTask)
+        }
+//        this.project = project
+//
+//        prepareUpdateVersionTask()
+//        prepareBuildDocumentationZipTask()
+//        prepareAvailableArtifactsInfoTask()
+//        prepareMailMessageTask()
     }
 
     private void prepareBuildDocumentationZipTask() {

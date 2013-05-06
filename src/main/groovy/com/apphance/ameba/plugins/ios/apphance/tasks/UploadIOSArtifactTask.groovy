@@ -4,7 +4,7 @@ import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
 import com.apphance.ameba.plugins.apphance.ApphanceProperty
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
-import com.apphance.ameba.plugins.ios.release.IOSReleaseConfiguration
+import com.apphance.ameba.plugins.ios.release.IOSReleaseConfigurationOLD
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.apphance.ameba.util.Preconditions
@@ -27,7 +27,7 @@ class UploadIOSArtifactTask {
     private IOSExecutor iosExecutor
     private ProjectConfiguration conf
     private ProjectReleaseConfiguration releaseConf
-    private IOSReleaseConfiguration iOSReleaseConf
+    private IOSReleaseConfigurationOLD iOSReleaseConf
     private String target
     private String configuration
 

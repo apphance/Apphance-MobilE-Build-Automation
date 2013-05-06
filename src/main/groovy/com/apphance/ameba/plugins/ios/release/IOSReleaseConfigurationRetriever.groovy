@@ -10,9 +10,9 @@ class IOSReleaseConfigurationRetriever {
 
     public static final String IOS_RELEASE_CONFIGURATION_KEY = 'ios.release.configuration'
 
-    public static IOSReleaseConfiguration getIosReleaseConfiguration(Project project) {
+    public static IOSReleaseConfigurationOLD getIosReleaseConfiguration(Project project) {
         if (!project.ext.has(IOS_RELEASE_CONFIGURATION_KEY)) {
-            project.ext.set(IOS_RELEASE_CONFIGURATION_KEY, new IOSReleaseConfiguration())
+            project.ext.set(IOS_RELEASE_CONFIGURATION_KEY, new IOSReleaseConfigurationOLD())
         }
         return project.ext.get(IOS_RELEASE_CONFIGURATION_KEY)
     }

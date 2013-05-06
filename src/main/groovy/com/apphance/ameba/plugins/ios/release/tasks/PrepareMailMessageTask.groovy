@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.ios.release.tasks
 
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import com.apphance.ameba.plugins.ios.release.IOSReleaseConfiguration
+import com.apphance.ameba.plugins.ios.release.IOSReleaseConfigurationOLD
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.release.ProjectReleaseCategory
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
@@ -21,7 +21,7 @@ class PrepareMailMessageTask {
     private ProjectConfiguration conf
     private ProjectReleaseConfiguration releaseConf
     private IOSProjectConfiguration iosConf
-    private IOSReleaseConfiguration iosReleaseConf
+    private IOSReleaseConfigurationOLD iosReleaseConf
 
     private l = getLogger(getClass())
 
