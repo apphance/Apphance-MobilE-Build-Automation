@@ -29,10 +29,6 @@ class IOSFrameworkPlugin implements Plugin<Project> {
         this.project = project
 
         prepareBuildFrameworkTask()
-
-//        project.prepareSetup.prepareSetupOperations << new PrepareFrameworkSetupOperation()
-//        project.verifySetup.verifySetupOperations << new VerifyFrameworkSetupOperation()
-//        project.showSetup.showSetupOperations << new ShowFrameworkSetupOperation()
     }
 
     private void prepareBuildFrameworkTask() {

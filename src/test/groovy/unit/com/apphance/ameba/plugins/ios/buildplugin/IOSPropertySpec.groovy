@@ -1,13 +1,11 @@
 package com.apphance.ameba.plugins.ios.buildplugin
 
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.plugins.ios.framework.IOSFrameworkProperty
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Shared
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.ios.buildplugin.IOSProjectProperty.*
-import static com.apphance.ameba.plugins.ios.framework.IOSFrameworkProperty.*
 
 class IOSPropertySpec extends Specification {
 
@@ -86,57 +84,6 @@ ios.mainConfiguration=MainConfiguration
 ios.sdk=iphoneos
 # SDK used to build simulator targets (-sdk option of xcodebuild) [optional] default: <iphonesimulator>
 ios.simulator.sdk=iphonesimulator
-''' == properties
-    }
-
-    def 'lists ios framework property without comments'() {
-        when:
-        project[FRAMEWORK_TARGET.propertyName] = "Target"
-        project[FRAMEWORK_CONFIGURATION.propertyName] = "Debug"
-        project[FRAMEWORK_VERSION.propertyName] = "A"
-        project[FRAMEWORK_HEADERS.propertyName] = "Headers/test.h, Headers/test2.h"
-        project[FRAMEWORK_RESOURCES.propertyName] = "Resources/x.png"
-
-        and:
-        def properties = PropertyCategory.listPropertiesAsString(project, IOSFrameworkProperty, false)
-
-        then:
-        '''###########################################################
-# iOS Framework properties
-###########################################################
-ios.framework.target=Target
-ios.framework.configuration=Debug
-ios.framework.version=A
-ios.framework.headers=Headers/test.h, Headers/test2.h
-ios.framework.resources=Resources/x.png
-''' == properties
-    }
-
-    def 'lists ios framework property with comments'() {
-        when:
-        project[FRAMEWORK_TARGET.propertyName] = "Target"
-        project[FRAMEWORK_CONFIGURATION.propertyName] = "Debug"
-        project[FRAMEWORK_VERSION.propertyName] = "A"
-        project[FRAMEWORK_HEADERS.propertyName] = "Headers/test.h, Headers/test2.h"
-        project[FRAMEWORK_RESOURCES.propertyName] = "Resources/x.png"
-
-        and:
-        def properties = PropertyCategory.listPropertiesAsString(project, IOSFrameworkProperty, true)
-
-        then:
-        '''###########################################################
-# iOS Framework properties
-###########################################################
-# Target to build framework project with
-ios.framework.target=Target
-# Configuration to build framework project with [optional] default: <Debug>
-ios.framework.configuration=Debug
-# Version of framework (usually single alphabet letter A) [optional] default: <A>
-ios.framework.version=A
-# List of headers (coma separated) that should be copied to the framework
-ios.framework.headers=Headers/test.h, Headers/test2.h
-# List of resources (coma separated) that should be copied to the framework
-ios.framework.resources=Resources/x.png
 ''' == properties
     }
 }

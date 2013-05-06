@@ -1,12 +1,13 @@
 package com.apphance.ameba.plugins.ios.framework.tasks
 
-import com.apphance.ameba.plugins.ios.framework.IOSFrameworkProperty
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.configuration.ios.IOSFrameworkConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
+import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
+import com.google.inject.Inject
 import org.gradle.api.Project
 
 import static org.gradle.api.logging.Logging.getLogger
@@ -24,12 +25,6 @@ class BuildFrameworkTask {
     private ProjectConfiguration conf
     private IOSProjectConfiguration iosConf
 
-    private String frameworkTarget
-    private String frameworkConfiguration
-    private String frameworkVersion
-    private List<String> frameworkHeaders
-    private List<String> frameworkResources
-
     private File frameworkAppDir
     private File frameworkMainDir
     private File frameworkVersionsDir
@@ -43,6 +38,9 @@ class BuildFrameworkTask {
 
     private CommandExecutor executor
 
+    @Inject
+    IOSFrameworkConfiguration iosFrameworkConf
+
     BuildFrameworkTask(Project project, CommandExecutor executor) {
         this.project = project
         this.executor = executor
@@ -54,11 +52,6 @@ class BuildFrameworkTask {
     void buildIOSFramework() {
         use(PropertyCategory) {
             iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
-            frameworkTarget = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
-            frameworkConfiguration = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_CONFIGURATION)
-            frameworkVersion = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_VERSION)
-            frameworkHeaders = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_HEADERS).split(',')
-            frameworkResources = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_RESOURCES).split(',')
         }
         xcodeBuilds()
         cleanFrameworkDir()
@@ -96,7 +89,7 @@ class BuildFrameworkTask {
 
     private copyingResources() {
         l.lifecycle('Copying resources')
-        frameworkResources.each {
+        iosFrameworkConf.resources.value.each {
             if (it != '') {
                 project.ant.copy(file: it, toDir: frameworkVersionsVersionResourcesDir)
             }
@@ -105,7 +98,7 @@ class BuildFrameworkTask {
 
     private copyingHeaders() {
         l.lifecycle('Copying headers')
-        frameworkHeaders.each {
+        iosFrameworkConf.headers.value.each {
             if (it != '') {
                 project.ant.copy(file: it, toDir: frameworkVersionsVersionHeadersDir)
             }
@@ -114,8 +107,8 @@ class BuildFrameworkTask {
 
     private setLinkLibraries() {
         l.lifecycle('Set link libraries')
-        iphoneosLibrary = new File(project.buildDir, "${frameworkConfiguration}-iphoneos/lib${frameworkTarget}.a")
-        iphoneosSimulatorLibrary = new File(project.buildDir, "${frameworkConfiguration}-iphonesimulator/lib${frameworkTarget}.a")
+        iphoneosLibrary = new File(project.buildDir, "${iosFrameworkConf.configuration.value}-iphoneos/lib${iosFrameworkConf.target.value}.a")
+        iphoneosSimulatorLibrary = new File(project.buildDir, "${iosFrameworkConf.configuration.value}-iphonesimulator/lib${iosFrameworkConf.target.value}.a")
     }
 
     private createSymlinks() {
@@ -123,7 +116,7 @@ class BuildFrameworkTask {
         executor.executeCommand(new Command(runDir: frameworkVersionsDir, cmd: [
                 'ln',
                 '-s',
-                frameworkVersion,
+                iosFrameworkConf.version.value,
                 'Current'
         ]))
         executor.executeCommand(new Command(runDir: frameworkAppDir, cmd: [
@@ -160,7 +153,7 @@ class BuildFrameworkTask {
         frameworkAppDir.mkdirs()
         frameworkVersionsDir = new File(frameworkAppDir, 'Versions')
         frameworkVersionsDir.mkdirs()
-        frameworkVersionsVersionDir = new File(frameworkVersionsDir, frameworkVersion)
+        frameworkVersionsVersionDir = new File(frameworkVersionsDir, iosFrameworkConf.version.value)
         frameworkVersionsVersionDir.mkdirs()
         frameworkVersionsVersionResourcesDir = new File(frameworkVersionsVersionDir, 'Resources')
         frameworkVersionsVersionResourcesDir.mkdirs()
@@ -171,9 +164,9 @@ class BuildFrameworkTask {
     private xcodeBuilds() {
         executor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.getXCodeBuildExecutionPath() + [
                 '-target',
-                frameworkTarget,
+                iosFrameworkConf.target.value,
                 '-configuration',
-                frameworkConfiguration,
+                iosFrameworkConf.configuration.value,
                 '-sdk',
                 iosConf.simulatorSDK,
                 '-arch',
@@ -183,9 +176,9 @@ class BuildFrameworkTask {
         ]))
         executor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.getXCodeBuildExecutionPath() + [
                 '-target',
-                frameworkTarget,
+                iosFrameworkConf.target.value,
                 '-configuration',
-                frameworkConfiguration,
+                iosFrameworkConf.configuration.value,
                 '-sdk',
                 iosConf.sdk,
                 'clean',
