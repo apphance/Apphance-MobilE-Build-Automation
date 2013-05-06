@@ -1,9 +1,10 @@
 package com.apphance.ameba.di
 
-import com.apphance.ameba.configuration.*
+import com.apphance.ameba.configuration.AbstractConfiguration
+import com.apphance.ameba.configuration.ProjectConfiguration
+import com.apphance.ameba.configuration.ReleaseConfiguration
 import com.apphance.ameba.configuration.android.*
-import com.apphance.ameba.configuration.ios.IOSConfiguration
-import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.configuration.ios.*
 import com.apphance.ameba.configuration.reader.GradlePropertiesPersister
 import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.detection.ProjectTypeDetector
@@ -28,7 +29,11 @@ class ConfigurationModule extends AbstractModule {
             ],
             (IOS): [
                     IOSConfiguration,
-
+                    IOSApphanceConfiguration,
+                    IOSVariantsConfiguration,
+                    IOSReleaseConfiguration,
+                    IOSFrameworkConfiguration,
+                    IOSUnitTestConfiguration,
             ],
     ]
 

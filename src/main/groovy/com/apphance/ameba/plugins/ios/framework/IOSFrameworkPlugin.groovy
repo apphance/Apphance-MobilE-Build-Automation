@@ -10,7 +10,6 @@ import javax.inject.Inject
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.COPY_MOBILE_PROVISION_TASK_NAME
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
-import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Plugin for preparing reports after successful IOS build.
@@ -19,8 +18,6 @@ import static org.gradle.api.logging.Logging.getLogger
 class IOSFrameworkPlugin implements Plugin<Project> {
 
     public static final String BUILD_FRAMEWORK_TASK_NAME = 'buildFramework'
-
-    private l = getLogger(getClass())
 
     @Inject
     private CommandExecutor executor

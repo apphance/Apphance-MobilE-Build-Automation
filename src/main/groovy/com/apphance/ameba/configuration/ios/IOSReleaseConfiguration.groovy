@@ -8,9 +8,15 @@ import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.properties.URLProperty
 import com.apphance.ameba.plugins.release.AmebaArtifact
 
+import javax.inject.Inject
+
 class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseConfiguration {
 
     String configurationName = 'iOS Release Configuration'
+    private boolean enabledInternal = false
+
+    @Inject
+    IOSConfiguration conf
 
     @Override
     Collection<String> getReleaseNotes() {
@@ -143,11 +149,6 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
     }
 
     @Override
-    boolean isEnabled() {
-        return false  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     URL getBaseURL() {
         return null  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -160,5 +161,15 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
     @Override
     String getMailServer() {
         return null  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    boolean isEnabled() {
+        conf.enabled && enabledInternal
+    }
+
+    @Override
+    void setEnabled(boolean enabled) {
+        enabledInternal = enabled
     }
 }

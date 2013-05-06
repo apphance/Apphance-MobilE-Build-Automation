@@ -1,6 +1,6 @@
 package com.apphance.ameba.configuration
 
-public interface Configuration {
+interface Configuration {
 
     boolean isEnabled()
 

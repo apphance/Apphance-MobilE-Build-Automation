@@ -38,11 +38,12 @@ class BuildSourcesZipTask extends DefaultTask {
         ant.zip(destfile: destZip) {
             fileset(dir: project.rootDir) {
                 exclude(name: 'build/**')
-                exclude(name: 'ota/**')
-                exclude(name: 'tmp/**')
+                exclude(name: 'ameba-ota/**')
+                exclude(name: 'ameba-tmp/**')
                 exclude(name: '**/buildSrc/build/**')
                 exclude(name: '**/build.gradle')
                 exclude(name: '**/gradle.properties')
+                exclude(name: '**/ameba.properties')
                 exclude(name: '**/.gradle/**')
                 conf.sourceExcludes.each { exclude(name: it) }
             }
