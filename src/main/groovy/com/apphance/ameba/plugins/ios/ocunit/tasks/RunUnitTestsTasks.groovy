@@ -1,9 +1,8 @@
 package com.apphance.ameba.plugins.ios.ocunit.tasks
 
+import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSUnitTestConfiguration
 import com.apphance.ameba.executor.IOSExecutor
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.google.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -11,7 +10,7 @@ import org.gradle.api.tasks.TaskAction
 import static com.apphance.ameba.plugins.ios.ocunit.IOSUnitTestPlugin.AMEBA_IOS_UNIT
 import static org.gradle.api.logging.Logging.getLogger
 
-class RunUnitTestsTasks extends DefaultTask{
+class RunUnitTestsTasks extends DefaultTask {
 
     private l = getLogger(getClass())
 
@@ -21,28 +20,23 @@ class RunUnitTestsTasks extends DefaultTask{
 
     @Inject
     IOSExecutor iosExecutor
-
     @Inject
-    ProjectConfiguration conf
-
+    IOSConfiguration conf
     @Inject
-    IOSProjectConfiguration iosProjectConf
-
-    @Inject
-    IOSUnitTestConfiguration iosUnitTestConf
+    IOSUnitTestConfiguration unitTestConf
 
     @TaskAction
     void runUnitTests() {
-        def configuration = iosUnitTestConf.configuration.value
-        def target = iosUnitTestConf.target.value
-        conf.tmpDirectory.mkdirs()
-        def testResults = new File(conf.tmpDirectory, "test-${target}-${configuration}.txt")
+        def configuration = unitTestConf.configuration.value
+        def target = unitTestConf.target.value
+        conf.tmpDir.mkdirs()
+        def testResults = new File(conf.tmpDir, "test-${target}-${configuration}.txt")
         l.lifecycle("Trying to create file: ${testResults.canonicalPath}")
         testResults.createNewFile()
         iosExecutor.buildTestTarget(project.rootDir, target, configuration, "${testResults.canonicalPath}".toString())
         OCUnitParser parser = new OCUnitParser()
         parser.parse(testResults.text.split('\n') as List)
-        File unitTestFile = new File(conf.tmpDirectory, "TEST-all.xml")
+        File unitTestFile = new File(conf.tmpDir, "TEST-all.xml")
         new XMLJunitExporter(unitTestFile, parser.testSuites).export()
     }
 }

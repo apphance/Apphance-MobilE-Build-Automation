@@ -5,27 +5,45 @@ import com.apphance.ameba.plugins.ios.ocunit.tasks.RunUnitTestsTasks
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.ios.ocunit.IOSUnitTestPlugin.AMEBA_IOS_UNIT
-import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSUnitTestPluginSpec extends Specification {
 
-    def "plugin tasks' graph configured correctly"() {
+    def 'tasks defined in plugin available when configuration is active'() {
         given:
         def project = builder().build()
 
-        when:
+        and:
         def conf = Stub(IOSUnitTestConfiguration)
         conf.isEnabled() >> true
+
+        and:
         def plugin = new IOSUnitTestPlugin()
         plugin.iosUnitTestConf = conf
+
+        when:
         plugin.apply(project)
 
-        then: 'every single task is in correct group'
+        then:
         project.tasks[RunUnitTestsTasks.NAME].group == AMEBA_IOS_UNIT
+    }
 
-        and: 'task dependencies configured correctly'
-        project.tasks[RunUnitTestsTasks.NAME].dependsOn(READ_PROJECT_CONFIGURATION_TASK_NAME)
+    def 'no tasks available when configuration is inactive'() {
+        given:
+        def project = builder().build()
 
+        and:
+        def conf = Stub(IOSUnitTestConfiguration)
+        conf.isEnabled() >> false
+
+        and:
+        def plugin = new IOSUnitTestPlugin()
+        plugin.iosUnitTestConf = conf
+
+        when:
+        plugin.apply(project)
+
+        then:
+        !project.getTasksByName(RunUnitTestsTasks.NAME, false)
     }
 }

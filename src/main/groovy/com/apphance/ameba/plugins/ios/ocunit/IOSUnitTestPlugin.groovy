@@ -6,8 +6,6 @@ import com.google.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
-
 /**
  * Unit test plugin - all unit tests are run here.
  *
@@ -26,7 +24,7 @@ class IOSUnitTestPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         if (iosUnitTestConf.isEnabled()) {
-            project.task(RunUnitTestsTasks.NAME, type: RunUnitTestsTasks, dependsOn: READ_PROJECT_CONFIGURATION_TASK_NAME)
+            project.task(RunUnitTestsTasks.NAME, type: RunUnitTestsTasks)
         }
     }
 }

@@ -24,13 +24,15 @@ class IOSUnitTestConfiguration extends AbstractConfiguration {
         enabledInternal = enabled
     }
 
+    //TODO possible values, validator (after ios conf is done)
     def configuration = new StringProperty(
-            name:'ios.unitTests.configuration',
+            name: 'ios.unitTests.configuration',
             message: 'IOS unit test configuration'
     )
 
+    //TODO possible values, validator (after ios conf is done)
     def target = new StringProperty(
-            name:'ios.unitTests.target',
+            name: 'ios.unitTests.target',
             message: 'IOS unit test target'
     )
 }
