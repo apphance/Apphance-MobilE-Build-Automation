@@ -8,15 +8,21 @@ import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.google.inject.Inject
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Builds iOS framework.
  */
 //TODO is this class/task really used?
-class BuildFrameworkTask {
+class BuildFrameworkTask extends DefaultTask {
+
+    static String NAME = 'buildFramework'
+    String group = AMEBA_BUILD
+    String description = 'Builds iOS framework project'
 
     static final String FRAMEWORK_BUILD_PATH = 'Development-Framework'
 
@@ -34,21 +40,14 @@ class BuildFrameworkTask {
     private File iphoneosLibrary
     private File iphoneosSimulatorLibrary
     private File destinationZipFile
-    private Project project
 
-    private CommandExecutor executor
+    @Inject
+    CommandExecutor executor
 
     @Inject
     IOSFrameworkConfiguration iosFrameworkConf
 
-    BuildFrameworkTask(Project project, CommandExecutor executor) {
-        this.project = project
-        this.executor = executor
-        use(PropertyCategory) {
-            this.conf = project.getProjectConfiguration()
-        }
-    }
-
+    @TaskAction
     void buildIOSFramework() {
         use(PropertyCategory) {
             iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
