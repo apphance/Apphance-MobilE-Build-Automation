@@ -15,7 +15,7 @@ class AndroidManifestHelper {
 
     def l = Logging.getLogger(getClass())
 
-    public static final String ANDROID_MANIFEST = 'AndroidManifest.xml'
+    static final String ANDROID_MANIFEST = 'AndroidManifest.xml'
 
     private final String APPHANCE_ALIAS =
         '''
@@ -57,7 +57,7 @@ apphance:only="true">
         file << XmlUtil.serialize(manifest)
     }
 
-    void replacePackage(File projectDir, String oldPkg, String newPkg, String newLbl) {
+    void replacePackage(File projectDir, String oldPkg, String newPkg, String newLbl = null) {
         def file = new File(projectDir, ANDROID_MANIFEST)
         saveOriginalFile(projectDir, file)
 
@@ -82,41 +82,6 @@ apphance:only="true">
         manifest.application.each {
             it.@'android:label' = newLbl
         }
-    }
-
-    //TODO to remove this method, there's no need to remove apphance
-    //TODO to remove apphance namespace, use comments instead
-    void removeApphance(File projectDir) {
-        def file = new File(projectDir, ANDROID_MANIFEST)
-        saveOriginalFile(projectDir, file)
-
-        def manifest = new XmlSlurper().parse(file).declareNamespace(apphance: 'http://apphance.com/android')
-
-        def apphanceNamespace = manifest.lookupNamespace('apphance')
-        if (!apphanceNamespace) {
-            l.lifecycle("There is no xmlns:apphance namespace defined in manifest. Skipping apphance removal.")
-            return
-        }
-
-        def findClosure = { it.@'apphance:only'.text().toBoolean() }
-        def removeClosure = { it.replaceNode {} }
-
-        manifest.application.activity.findAll(findClosure).each(removeClosure)
-        manifest.application.'activity-alias'.findAll(findClosure).each(removeClosure)
-        manifest.'uses-permission'.findAll(findClosure).each(removeClosure)
-        manifest.instrumentation.findAll(findClosure).each(removeClosure)
-
-        def intent = manifest.application.activity.'intent-filter'.find {
-            'com.apphance.android.LAUNCH' in it.action.@'android:name'*.text()
-        }
-        if (!intent.isEmpty()) {
-            intent.action.@'name' = 'android.intent.action.MAIN'
-            intent.category.@'name' = 'android.intent.category.LAUNCHER'
-        }
-
-        String result = xmlToString(manifest)
-        file.delete()
-        file.write(replaceTag0(result))
     }
 
     void addPermissions(File projectDir, String... permissions) {

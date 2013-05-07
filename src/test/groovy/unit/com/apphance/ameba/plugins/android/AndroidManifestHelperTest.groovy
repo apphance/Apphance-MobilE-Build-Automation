@@ -1,11 +1,9 @@
 package com.apphance.ameba.plugins.android
 
-import com.apphance.ameba.plugins.project.ProjectConfiguration
 import com.sun.org.apache.xpath.internal.XPathAPI
 import org.junit.Before
 import org.junit.Test
 import org.w3c.dom.Element
-import spock.lang.Ignore
 
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -26,54 +24,6 @@ class AndroidManifestHelperTest {
         def originalAndroidManifest = new File("testProjects/android/android-basic/AndroidManifest.xml")
         androidManifest.delete()
         androidManifest << originalAndroidManifest.text
-    }
-
-
-    @Ignore('rewrite after configuration is finished')
-    void testUpdateVersion() {
-        def newVersionCode = '1234'
-        def newVersionString = '2.0.3'
-
-        ProjectConfiguration projectConfiguration = new ProjectConfiguration()
-        manifestHelper.restoreOriginalManifest(tmpDir)
-        projectConfiguration.updateVersionDetails(manifestHelper.readVersion(tmpDir))
-        projectConfiguration.setVersionString('2.0.3')
-        manifestHelper.updateVersion(tmpDir, newVersionString, newVersionCode)
-        try {
-            ProjectConfiguration projectConfiguration2 = new ProjectConfiguration()
-            projectConfiguration2.updateVersionDetails(manifestHelper.readVersion(tmpDir))
-            assertEquals(newVersionCode.toLong(), projectConfiguration2.versionCode)
-            assertEquals(newVersionString, projectConfiguration2.versionString)
-        } finally {
-            manifestHelper.restoreOriginalManifest(tmpDir)
-        }
-    }
-
-    @Ignore('rewrite after configuration is finished')
-    void testReadingVersion() {
-        ProjectConfiguration projectConfiguration = new ProjectConfiguration()
-        projectConfiguration.updateVersionDetails(manifestHelper.readVersion(tmpDir))
-        assertEquals('42', projectConfiguration.versionCode.toString())
-        assertEquals('1.0.1', projectConfiguration.versionString)
-    }
-
-    @Test
-    void testRemoveApphanceOnlyAndRestore() {
-        manifestHelper.restoreOriginalManifest(tmpDir)
-        def file = new File(tmpDir, "AndroidManifest.xml")
-        String originalText = file.text
-        verifyApphanceIsPresent()
-        manifestHelper.removeApphance(tmpDir)
-        def origFile = new File(tmpDir, "AndroidManifest.xml.orig")
-        try {
-            verifyApphanceIsRemoved()
-            assertTrue(origFile.exists())
-        } finally {
-            manifestHelper.restoreOriginalManifest(tmpDir)
-        }
-        assertFalse(origFile.exists())
-        def fileAgain = new File(tmpDir, "AndroidManifest.xml")
-        assertEquals(originalText, fileAgain.text)
     }
 
     private verifyApphanceIsPresent() {
@@ -109,28 +59,6 @@ class AndroidManifestHelperTest {
     }
 
     @Test
-    void testReplacePackageOnly() {
-        manifestHelper.restoreOriginalManifest(tmpDir)
-        def file = new File(tmpDir, "AndroidManifest.xml")
-        String originalText = file.text
-        manifestHelper.replacePackage(tmpDir, 'com.apphance.amebaTest.android',
-                'com.apphance.amebaTest.android.new', null)
-        def origFile = new File(tmpDir, "AndroidManifest.xml.orig")
-        try {
-            def root = getParsedManifest(tmpDir)
-            assertEquals(1, XPathAPI.selectNodeList(root, '/manifest[@package="com.apphance.amebaTest.android.new"]').length)
-            assertEquals(0, XPathAPI.selectNodeList(root, '/manifest/application[@label="newLabel"]').length)
-            assertEquals(1, XPathAPI.selectNodeList(root, '/manifest/application[@label="@string/app_name"]').length)
-            assertTrue(origFile.exists())
-        } finally {
-            manifestHelper.restoreOriginalManifest(tmpDir)
-        }
-        assertFalse(origFile.exists())
-        def fileAgain = new File(tmpDir, "AndroidManifest.xml")
-        assertEquals(originalText, fileAgain.text)
-    }
-
-    @Test
     void testAddPermissions() {
         manifestHelper.restoreOriginalManifest(tmpDir)
         def file = new File(tmpDir, "AndroidManifest.xml")
@@ -147,43 +75,6 @@ class AndroidManifestHelperTest {
         assertFalse(origFile.exists())
         def fileAgain = new File(tmpDir, "AndroidManifest.xml")
         assertEquals(originalText, fileAgain.text)
-    }
-
-
-    @Test
-    void testReplacePackageAndLabel() {
-        manifestHelper.restoreOriginalManifest(tmpDir)
-        def file = new File(tmpDir, "AndroidManifest.xml")
-        String originalText = file.text
-        manifestHelper.replacePackage(tmpDir, 'com.apphance.amebaTest.android',
-                'com.apphance.amebaTest.android.new', 'newLabel')
-        def origFile = new File(tmpDir, "AndroidManifest.xml.orig")
-        try {
-            def root = getParsedManifest(tmpDir)
-            assertEquals(1, XPathAPI.selectNodeList(root, '/manifest[@package="com.apphance.amebaTest.android.new"]').length)
-            assertEquals(1, XPathAPI.selectNodeList(root, '/manifest/application[@label="newLabel"]').length)
-            assertTrue(origFile.exists())
-        } finally {
-            manifestHelper.restoreOriginalManifest(tmpDir)
-        }
-        assertFalse(origFile.exists())
-        def fileAgain = new File(tmpDir, "AndroidManifest.xml")
-        assertEquals(originalText, fileAgain.text)
-    }
-
-
-    @Test
-    void testReadMainActivityFromManifest() {
-        def file = new File("testProjects/apphance-updates/")
-        String mainActivity = manifestHelper.getMainActivityName(file)
-        assertEquals(mainActivity, 'pl.morizon.client.ui.HomeActivity')
-    }
-
-    @Test
-    void testPackage() {
-        manifestHelper.restoreOriginalManifest(tmpDir)
-        String pkg = manifestHelper.androidPackage(tmpDir)
-        assertEquals('com.apphance.amebaTest.android', pkg)
     }
 
     private Element getParsedManifest(File projectDir) {

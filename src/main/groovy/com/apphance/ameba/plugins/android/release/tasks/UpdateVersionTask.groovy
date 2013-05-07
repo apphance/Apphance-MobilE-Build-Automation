@@ -12,7 +12,6 @@ class UpdateVersionTask extends AbstractUpdateVersionTask {
 
     @Override
     void updateDescriptor(String versionCode, String versionString) {
-        manifestHelper?.hashCode()
         manifestHelper.updateVersion(project.rootDir, versionString, versionCode)
     }
 }
