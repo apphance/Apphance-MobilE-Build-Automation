@@ -12,7 +12,7 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEAS
 
 class PrepareForReleaseTask extends DefaultTask {
 
-    static String NAME = 'prepareForRelease'
+    static final String NAME = 'prepareForRelease'
     String group = AMEBA_RELEASE
     String description = 'Prepares project for release'
 

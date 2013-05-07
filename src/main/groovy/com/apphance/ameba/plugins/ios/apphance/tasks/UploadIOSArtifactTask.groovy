@@ -1,10 +1,10 @@
 package com.apphance.ameba.plugins.ios.apphance.tasks
 
+import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
 import com.apphance.ameba.plugins.apphance.ApphanceProperty
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
-import com.apphance.ameba.plugins.ios.release.IOSReleaseConfigurationOLD
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.apphance.ameba.util.Preconditions
@@ -14,7 +14,6 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.ios.release.IOSReleaseConfigurationRetriever.getIosReleaseConfiguration
 import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.getProjectReleaseConfiguration
 import static org.gradle.api.logging.Logging.getLogger
 
@@ -27,7 +26,7 @@ class UploadIOSArtifactTask {
     private IOSExecutor iosExecutor
     private ProjectConfiguration conf
     private ProjectReleaseConfiguration releaseConf
-    private IOSReleaseConfigurationOLD iOSReleaseConf
+    private IOSReleaseConfiguration iOSReleaseConf
     private String target
     private String configuration
 
@@ -38,7 +37,7 @@ class UploadIOSArtifactTask {
         this.configuration = details.configuration
         this.conf = getProjectConfiguration(project)
         this.releaseConf = getProjectReleaseConfiguration(project)
-        this.iOSReleaseConf = getIosReleaseConfiguration(project)
+//        this.iOSReleaseConf = getIosReleaseConfiguration(project)//TODO
     }
 
     void uploadIOSArtifact() {

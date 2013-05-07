@@ -1,45 +1,39 @@
 package com.apphance.ameba.plugins.ios.release.tasks
 
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import com.apphance.ameba.plugins.ios.release.IOSReleaseConfigurationOLD
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.plugins.release.ProjectReleaseCategory
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
+import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.util.file.FileManager
 import groovy.text.SimpleTemplateEngine
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.Project
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
-import static com.apphance.ameba.plugins.ios.release.IOSReleaseConfigurationRetriever.getIosReleaseConfiguration
-import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.getProjectReleaseConfiguration
+import javax.inject.Inject
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static org.gradle.api.logging.Logging.getLogger
 
-class PrepareMailMessageTask {
+//TODO common super class with same Android's task
+class PrepareMailMessageTask extends DefaultTask {
 
-    private ProjectConfiguration conf
-    private ProjectReleaseConfiguration releaseConf
-    private IOSProjectConfiguration iosConf
-    private IOSReleaseConfigurationOLD iosReleaseConf
+    static final String NAME = 'prepareMailMessage'
+    String description = 'Prepares mail message which summarises the release'
+    String group = AMEBA_RELEASE
+
+    @Inject
+    IOSConfiguration conf
+    @Inject
+    IOSReleaseConfiguration releaseConf
 
     private l = getLogger(getClass())
 
-    PrepareMailMessageTask(Project project) {
-        this.conf = getProjectConfiguration(project)
-        this.releaseConf = getProjectReleaseConfiguration(project)
-        this.iosConf = getIosProjectConfiguration(project)
-        this.iosReleaseConf = getIosReleaseConfiguration(project)
-    }
-
+    @TaskAction
     void prepareMailMessage() {
         releaseConf.mailMessageFile.location.parentFile.mkdirs()
         releaseConf.mailMessageFile.location.delete()
-        l.lifecycle("Targets: ${iosConf.targets}")
-        l.lifecycle("Configurations: ${iosConf.configurations}")
         URL mailTemplate = this.class.getResource('mail_message.html')
         def fileSize = 0
-        def existingBuild = iosReleaseConf.distributionZipFiles.find {
+        def existingBuild = releaseConf.distributionZipFiles.find {
             it.value.location != null
         }
         if (existingBuild) {
@@ -49,32 +43,36 @@ class PrepareMailMessageTask {
         ResourceBundle rb = ResourceBundle.getBundle(\
                 this.class.package.name + ".mail_message",
                 releaseConf.locale, this.class.classLoader)
-        ProjectReleaseCategory.fillMailSubject(conf, releaseConf, rb)
+        releaseConf.releaseMailSubject = fillMailSubject(rb)
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         def binding = [
                 title: conf.projectName,
                 version: conf.fullVersionString,
                 currentDate: releaseConf.buildDate,
-                otaUrl: iosReleaseConf.otaIndexFile?.url,
-                fileIndexUrl: iosReleaseConf.fileIndexFile?.url,
+                otaUrl: releaseConf.otaIndexFile?.url,
+                fileIndexUrl: releaseConf.fileIndexFile?.url,
                 releaseNotes: releaseConf.releaseNotes,
-                installable: iosReleaseConf.dmgImageFiles,
-                mainTarget: iosConf.mainTarget,
-                families: iosConf.families,
+                installable: releaseConf.dmgImageFiles,
+                mainTarget: conf.mainTarget,
+                families: conf.families,
                 fileSize: FileManager.getHumanReadableSize(fileSize),
                 releaseMailFlags: releaseConf.releaseMailFlags,
                 rb: rb
         ]
-        l.lifecycle("Runnning template with $binding")
-        if (iosReleaseConf.dmgImageFiles.size() > 0) {
-            iosConf.families.each { family ->
-                if (iosReleaseConf.dmgImageFiles["${family}-${iosConf.mainTarget}"] == null) {
-                    throw new GradleException("Wrongly configured family or target: ${family}-${iosConf.mainTarget} missing")
+        if (releaseConf.dmgImageFiles.size() > 0) {
+            conf.families.each { family ->
+                if (releaseConf.dmgImageFiles["${family}-${conf.mainTarget}"] == null) {
+                    throw new GradleException("Wrongly configured family or target: ${family}-${conf.mainTarget} missing")
                 }
             }
         }
         def result = engine.createTemplate(mailTemplate).make(binding)
         releaseConf.mailMessageFile.location.write(result.toString(), "utf-8")
         l.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")
+    }
+
+    private String fillMailSubject(ResourceBundle bundle) {
+        String subject = bundle.getString('Subject')
+        Eval.me("conf", conf, /"$subject"/)
     }
 }

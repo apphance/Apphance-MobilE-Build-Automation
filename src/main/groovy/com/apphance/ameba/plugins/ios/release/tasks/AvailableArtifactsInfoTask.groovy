@@ -1,54 +1,48 @@
 package com.apphance.ameba.plugins.ios.release.tasks
 
+import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import com.apphance.ameba.plugins.ios.MPParser
-import com.apphance.ameba.plugins.ios.release.IOSReleaseConfigurationOLD
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import groovy.text.SimpleTemplateEngine
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
-import static com.apphance.ameba.plugins.ios.release.IOSReleaseConfigurationRetriever.getIosReleaseConfiguration
-import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.getProjectReleaseConfiguration
+import javax.inject.Inject
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileDownloader.downloadFile
 import static org.gradle.api.logging.Logging.getLogger
 
-class PrepareAvailableArtifactsInfoTask {
+class AvailableArtifactsInfoTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    private Project project
-    private CommandExecutor executor
-    private IOSExecutor iosExecutor
-    private ProjectConfiguration conf
-    private ProjectReleaseConfiguration releaseConf
-    private IOSProjectConfiguration iosConf
-    private IOSReleaseConfigurationOLD iosReleaseConf
+    static final NAME = 'prepareAvailableArtifactsInfo'
+    String description = 'Prepares information about available artifacts for mail message to include'
+    String group = AMEBA_RELEASE
 
-    PrepareAvailableArtifactsInfoTask(Project project, CommandExecutor executor, IOSExecutor iosExecutor) {
-        this.project = project
-        this.executor = executor
-        this.iosExecutor = iosExecutor
-        this.conf = getProjectConfiguration(project)
-        this.releaseConf = getProjectReleaseConfiguration(project)
-        this.iosConf = getIosProjectConfiguration(project)
-        this.iosReleaseConf = getIosReleaseConfiguration(project)
-    }
+    @Inject
+    CommandExecutor executor
+    @Inject
+    IOSExecutor iosExecutor
+    @Inject
+    IOSConfiguration conf
+    @Inject
+    IOSReleaseConfiguration releaseConf
 
+    @TaskAction
     void prepareAvailableArtifactsInfo() {
         def udids = [:]
-        def iosReleaseListener = new IOSReleaseListener(project, executor, iosExecutor)
-        iosConf.allBuildableVariants.each { v ->
+        def iosReleaseListener = new IOSReleaseListener(project, conf, releaseConf, executor, iosExecutor)
+        conf.allBuildableVariants.each { v ->
             l.lifecycle("Preparing artifact for ${v.id}")
             iosReleaseListener.buildArtifactsOnly(project, v.target, v.configuration)
-            File mobileProvisionFile = IOSXCodeOutputParser.findMobileProvisionFile(project, v.target, iosConf.configurations[0], true)
+            File mobileProvisionFile = IOSXCodeOutputParser.findMobileProvisionFile(project, v.target, conf.configurations[0], true)
             if (conf.versionString != null) {
                 udids.put(v.target, MPParser.readUdids(mobileProvisionFile.toURI().toURL()))
             } else {
@@ -56,10 +50,10 @@ class PrepareAvailableArtifactsInfoTask {
             }
         }
         if (conf.versionString != null) {
-            String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
+            String otaFolderPrefix = "${releaseConf.projectDirName}/${conf.fullVersionString}"
             prepareFileIndexArtifact(otaFolderPrefix)
             preparePlainFileIndexArtifact(otaFolderPrefix)
-            prepareOtaIndexFile(iosConf.targets, iosConf.configurations, project.ant)
+            prepareOtaIndexFile()
             prepareFileIndexFile(udids)
             preparePlainFileIndexFile()
         } else {
@@ -70,37 +64,37 @@ class PrepareAvailableArtifactsInfoTask {
     private prepareFileIndexArtifact(String otaFolderPrefix) {
         AmebaArtifact fileIndexFile = new AmebaArtifact(
                 name: "The file index file: ${conf.projectName}",
-                url: new URL(releaseConf.baseUrl, "${otaFolderPrefix}/file_index.html"),
-                location: new File(releaseConf.otaDirectory, "${otaFolderPrefix}/file_index.html"))
+                url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/file_index.html"),
+                location: new File(releaseConf.otaDir, "${otaFolderPrefix}/file_index.html"))
         fileIndexFile.location.parentFile.mkdirs()
         fileIndexFile.location.delete()
-        iosReleaseConf.fileIndexFile = fileIndexFile
+        releaseConf.fileIndexFile = fileIndexFile
     }
 
     private preparePlainFileIndexArtifact(String otaFolderPrefix) {
         AmebaArtifact plainFileIndexFile = new AmebaArtifact(
                 name: "The plain file index file: ${conf.projectName}",
-                url: new URL(releaseConf.baseUrl, "${otaFolderPrefix}/plain_file_index.html"),
-                location: new File(releaseConf.otaDirectory, "${otaFolderPrefix}/plain_file_index.html"))
+                url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/plain_file_index.html"),
+                location: new File(releaseConf.otaDir, "${otaFolderPrefix}/plain_file_index.html"))
         plainFileIndexFile.location.parentFile.mkdirs()
         plainFileIndexFile.location.delete()
-        iosReleaseConf.plainFileIndexFile = plainFileIndexFile
+        releaseConf.plainFileIndexFile = plainFileIndexFile
     }
 
-    private void prepareOtaIndexFile(Collection<String> targets, Collection<String> configurations, org.gradle.api.AntBuilder ant) {
-        String otaFolderPrefix = "${releaseConf.projectDirectoryName}/${conf.fullVersionString}"
+    private void prepareOtaIndexFile() {
+        String otaFolderPrefix = "${releaseConf.projectDirName}/${conf.fullVersionString}"
         AmebaArtifact otaIndexFile = new AmebaArtifact(
                 name: "The ota index file: ${conf.projectName}",
-                url: new URL(releaseConf.baseUrl, "${otaFolderPrefix}/index.html"),
-                location: new File(releaseConf.otaDirectory, "${otaFolderPrefix}/index.html"))
+                url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/index.html"),
+                location: new File(releaseConf.otaDir, "${otaFolderPrefix}/index.html"))
         otaIndexFile.location.mkdirs()
         otaIndexFile.location.delete()
         def urlMap = [:]
-        l.lifecycle("Skipping preparing OTA configuration for excluded builds: ${iosConf.excludedBuilds}")
-        iosConf.allBuildableVariants.each { v ->
-            if (iosReleaseConf.manifestFiles[v.id]) {
+        l.lifecycle("Skipping preparing OTA configuration for excluded builds: ${conf.excludedBuilds}")
+        conf.allBuildableVariants.each { v ->
+            if (releaseConf.manifestFiles[v.id]) {
                 l.lifecycle("Preparing OTA configuration for ${v.id}")
-                def encodedUrl = URLEncoder.encode(iosReleaseConf.manifestFiles[v.id].url.toString(), "utf-8")
+                def encodedUrl = URLEncoder.encode(releaseConf.manifestFiles[v.id].url.toString(), "utf-8")
                 urlMap.put(v.id, "itms-services://?action=download-manifest&url=${encodedUrl}")
             } else {
                 l.warn("Skipping preparing OTA configuration for ${v.id} -> missing manifest")
@@ -115,20 +109,20 @@ class PrepareAvailableArtifactsInfoTask {
         def binding = [
                 baseUrl: otaIndexFile.url,
                 title: conf.projectName,
-                targets: targets,
-                configurations: configurations,
+                targets: conf.targets,
+                configurations: conf.configurations,
                 version: conf.fullVersionString,
                 releaseNotes: releaseConf.releaseNotes,
                 currentDate: releaseConf.buildDate,
                 iconFileName: releaseConf.iconFile.name,
                 urlMap: urlMap,
-                iosConf: iosConf,
+                conf: conf,
                 rb: rb
         ]
         URL otaIndexTemplate = this.class.getResource("index.html")
         def result = engine.createTemplate(otaIndexTemplate).make(binding)
         otaIndexFile.location.write(result.toString(), "utf-8")
-        iosReleaseConf.otaIndexFile = otaIndexFile
+        releaseConf.otaIndexFile = otaIndexFile
         l.lifecycle("Ota index created: ${otaIndexFile}")
         ant.copy(file: releaseConf.iconFile, tofile: new File(otaIndexFile.location.parentFile, releaseConf.iconFile.name))
         String urlEncoded = URLEncoder.encode(otaIndexFile.url.toString(), "utf-8")
@@ -138,7 +132,7 @@ class PrepareAvailableArtifactsInfoTask {
                 name: "QR Code",
                 url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName}-${conf.fullVersionString}.png"),
                 location: outputFile)
-        releaseConf.qrCodeFile = qrCodeArtifact
+        releaseConf.QRCodeFile = qrCodeArtifact
         l.lifecycle("QRCode created: ${qrCodeArtifact.location}")
     }
 
@@ -150,21 +144,20 @@ class PrepareAvailableArtifactsInfoTask {
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         engine.verbose = l.debugEnabled
         def binding = [
-                baseUrl: iosReleaseConf.fileIndexFile.url,
+                baseUrl: releaseConf.fileIndexFile.url,
                 title: conf.projectName,
-                targets: iosConf.targets,
-                configurations: iosConf.configurations,
+                targets: conf.targets,
+                configurations: conf.configurations,
                 version: conf.fullVersionString,
                 currentDate: releaseConf.buildDate,
-                iosConf: iosConf,
+                conf: conf,
                 releaseConf: releaseConf,
-                iosReleaseConf: iosReleaseConf,
                 udids: udids,
                 rb: rb
         ]
         def result = engine.createTemplate(fileIndexTemplate).make(binding)
-        iosReleaseConf.fileIndexFile.location.write(result.toString(), "utf-8")
-        l.lifecycle("File index created: ${iosReleaseConf.fileIndexFile}")
+        releaseConf.fileIndexFile.location.write(result.toString(), "utf-8")
+        l.lifecycle("File index created: ${releaseConf.fileIndexFile}")
     }
 
     private void preparePlainFileIndexFile() {
@@ -175,20 +168,18 @@ class PrepareAvailableArtifactsInfoTask {
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         engine.verbose = l.debugEnabled
         def binding = [
-                baseUrl: iosReleaseConf.plainFileIndexFile.url,
+                baseUrl: releaseConf.plainFileIndexFile.url,
                 title: conf.projectName,
-                targets: iosConf.targets,
-                configurations: iosConf.configurations,
+                targets: conf.targets,
+                configurations: conf.configurations,
                 version: conf.fullVersionString,
                 currentDate: releaseConf.buildDate,
-                iosConf: iosConf,
+                conf: conf,
                 releaseConf: releaseConf,
-                iosReleaseConf: iosReleaseConf,
                 rb: rb
         ]
         def result = engine.createTemplate(plainFileIndexTemplate).make(binding)
-        iosReleaseConf.plainFileIndexFile.location.write(result.toString(), "utf-8")
-        l.lifecycle("Plain file index created: ${iosReleaseConf.plainFileIndexFile}")
+        releaseConf.plainFileIndexFile.location.write(result.toString(), "utf-8")
+        l.lifecycle("Plain file index created: ${releaseConf.plainFileIndexFile}")
     }
-
 }

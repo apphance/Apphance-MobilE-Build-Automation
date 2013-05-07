@@ -17,6 +17,18 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     String configurationName = 'iOS Configuration'
 
+    //from old conf
+    List<String> targets = []
+    List<String> configurations = []
+    List<String> families = []
+    List<String> excludedBuilds = []
+    Collection<Expando> allBuildableVariants = []
+    String mainTarget
+    File distributionDirectory
+    File plistFile
+    String sdk
+    //from old conf
+
     Project project
     ProjectTypeDetector projectTypeDetector
     PropertyReader reader

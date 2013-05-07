@@ -4,7 +4,7 @@ import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
 import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTask
-import com.apphance.ameba.plugins.android.release.tasks.MailMessageTask
+import com.apphance.ameba.plugins.android.release.tasks.PrepareMailMessageTask
 import com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
 import com.apphance.ameba.plugins.release.tasks.PrepareForReleaseTask
 import spock.lang.Specification
@@ -35,11 +35,11 @@ class AndroidReleasePluginSpec extends Specification {
         then: 'every single task is in correct group'
         project.tasks[UpdateVersionTask.NAME].group == AMEBA_RELEASE
         project.tasks[AvailableArtifactsInfoTask.NAME].group == AMEBA_RELEASE
-        project.tasks[MailMessageTask.NAME].group == AMEBA_RELEASE
+        project.tasks[PrepareMailMessageTask.NAME].group == AMEBA_RELEASE
 
         then: 'every task has correct dependencies'
 
-        project.tasks[MailMessageTask.NAME].dependsOn.flatten().containsAll(
+        project.tasks[PrepareMailMessageTask.NAME].dependsOn.flatten().containsAll(
                 AvailableArtifactsInfoTask.NAME,
                 PrepareForReleaseTask.NAME)
     }
@@ -62,6 +62,6 @@ class AndroidReleasePluginSpec extends Specification {
         then:
         !project.getTasksByName(UpdateVersionTask.NAME, false)
         !project.getTasksByName(AvailableArtifactsInfoTask.NAME, false)
-        !project.getTasksByName(MailMessageTask.NAME, false)
+        !project.getTasksByName(PrepareMailMessageTask.NAME, false)
     }
 }

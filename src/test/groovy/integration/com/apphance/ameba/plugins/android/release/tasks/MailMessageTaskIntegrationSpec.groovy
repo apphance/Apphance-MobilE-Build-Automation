@@ -53,7 +53,7 @@ class MailMessageTaskIntegrationSpec extends Specification {
         ac.versionString >> '42'
 
         and:
-        def task = p.task(MailMessageTask.NAME, type: MailMessageTask) as MailMessageTask
+        def task = p.task(PrepareMailMessageTask.NAME, type: PrepareMailMessageTask) as PrepareMailMessageTask
         task.conf = ac
         task.releaseConf = arc
         task.variantsConf = avc

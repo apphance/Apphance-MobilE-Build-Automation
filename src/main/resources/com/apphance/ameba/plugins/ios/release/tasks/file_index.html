@@ -59,8 +59,8 @@
                     <li><a href="${releaseConf.QRCodeFile.getRelativeUrl(baseUrl)}" rel="external">
                         <h3>${rb.getString('QR_Code')}</h3></a></li>
                     <% } %>
-                    <% if (iosReleaseConf.plainFileIndexFile != null) { %>
-                    <li><a href="${iosReleaseConf.plainFileIndexFile.getRelativeUrl(baseUrl)}" rel="external">
+                    <% if (releaseConf.plainFileIndexFile != null) { %>
+                    <li><a href="${releaseConf.plainFileIndexFile.getRelativeUrl(baseUrl)}" rel="external">
                         <h3>${rb.getString('Plain_file_index')}</h3></a></li>
                     <% } %>
                     <li><a href="#provprofiles"><h3>${rb.getString('Valid_UDIDs')}</h3></a></li>
@@ -79,7 +79,7 @@
     <div data-role="content">
         <% configurations.each { configuration -> %>
         <% def id = "${target}-${configuration}".toString() %>
-        <% if (!iosConf.isBuildExcluded(id)) {%>
+        <% if (!conf.isBuildExcluded(id)) {%>
         <section id="${configuration}">
             <header style="text-align:center;">
                 <h3>
@@ -88,24 +88,24 @@
             </header>
             <p>
             <ul data-role="listview" data-inset="true" data-theme="a">
-                <% if (iosReleaseConf.distributionZipFiles[id] != null) { %>
-                <li><a href="${iosReleaseConf.distributionZipFiles[id].getRelativeUrl(baseUrl)}" rel="external">
+                <% if (releaseConf.distributionZipFiles[id] != null) { %>
+                <li><a href="${releaseConf.distributionZipFiles[id].getRelativeUrl(baseUrl)}" rel="external">
                     <h3>${rb.getString('Zip_file')}</h3></a></li>
                 <% } %>
-                <% if (iosReleaseConf.dSYMZipFiles[id] != null) { %>
-                <li><a href="${iosReleaseConf.dSYMZipFiles[id].getRelativeUrl(baseUrl)}" rel="external">
+                <% if (releaseConf.dSYMZipFiles[id] != null) { %>
+                <li><a href="${releaseConf.dSYMZipFiles[id].getRelativeUrl(baseUrl)}" rel="external">
                     <h3>${rb.getString('dSYM_file')}</h3></a></li>
                 <% } %>
-                <% if (iosReleaseConf.ipaFiles[id] != null) { %>
-                <li><a href="${iosReleaseConf.ipaFiles[id].getRelativeUrl(baseUrl)}" rel="external">
+                <% if (releaseConf.ipaFiles[id] != null) { %>
+                <li><a href="${releaseConf.ipaFiles[id].getRelativeUrl(baseUrl)}" rel="external">
                     <h3>${rb.getString('Ipa_file')}</h3></a></li>
                 <% } %>
-                <% if (iosReleaseConf.manifestFiles[id] != null) { %>
-                <li><a href="${iosReleaseConf.manifestFiles[id].getRelativeUrl(baseUrl)}" rel="external">
+                <% if (releaseConf.manifestFiles[id] != null) { %>
+                <li><a href="${releaseConf.manifestFiles[id].getRelativeUrl(baseUrl)}" rel="external">
                     <h3>${rb.getString('Manifest_file')}</h3></a></li>
                 <% } %>
-                <% if (iosReleaseConf.mobileProvisionFiles[id] != null) { %>
-                <li><a href="${iosReleaseConf.mobileProvisionFiles[id].getRelativeUrl(baseUrl)}" rel="external">
+                <% if (releaseConf.mobileProvisionFiles[id] != null) { %>
+                <li><a href="${releaseConf.mobileProvisionFiles[id].getRelativeUrl(baseUrl)}" rel="external">
                     <h3>${rb.getString('Mobileprovision_file')}</h3></a></li>
                 <% } %>
             </ul>
@@ -114,7 +114,7 @@
         <% } %>
         <% } %>
 
-        <% if (!iosReleaseConf.dmgImageFiles.empty) { %>
+        <% if (!releaseConf.dmgImageFiles.empty) { %>
         <section id="simulatorImages">
             <header style="text-align:center;">
                 <h3>
@@ -123,9 +123,9 @@
             </header>
             <p>
             <ul data-role="listview" data-inset="true" data-theme="a">
-                <% iosConf.families.each { family -> %>
-                <% if (iosReleaseConf.dmgImageFiles[family + '-' + target] != null) { %>
-                <li><a href="${iosReleaseConf.dmgImageFiles[family + '-' + target].getRelativeUrl(baseUrl)}"
+                <% conf.families.each { family -> %>
+                <% if (releaseConf.dmgImageFiles[family + '-' + target] != null) { %>
+                <li><a href="${releaseConf.dmgImageFiles[family + '-' + target].getRelativeUrl(baseUrl)}"
                        rel="external"><h3>
                     ${java.text.MessageFormat.format(rb.getString('Family_simulator'),family)}</h3></a></li>
                 <% } %>

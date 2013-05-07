@@ -15,7 +15,7 @@ abstract class AbstractUpdateVersionTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    static String NAME = 'updateVersion'
+    static final String NAME = 'updateVersion'
     String group = AMEBA_RELEASE
     String description = """Updates version stored in manifest file of the project.
            Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""

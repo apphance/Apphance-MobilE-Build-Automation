@@ -22,34 +22,23 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
 
     final String configurationName = 'Android Release Configuration'
 
-    static final MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
     static final ICON_PATTERN = /icon.*\.(png|jpg|jpeg|bmp)/
     static final DRAWABLE_DIR_PATTERN = /(drawable-ldpi|drawable-mdpi|drawable-hdpi|drawable-xhdpi|drawable)/
 
-    static final ALL_EMAIL_FLAGS = [
-            'installableSimulator',
-            'qrCode',
-            'imageMontage'
-    ]
     private boolean enabledInternal
 
     Map<String, AmebaArtifact> apkFiles = [:]
     Map<String, AmebaArtifact> jarFiles = [:]
-    AmebaArtifact otaIndexFile
 
+    AmebaArtifact otaIndexFile
     AmebaArtifact fileIndexFile
     AmebaArtifact plainFileIndexFile
     AmebaArtifact sourcesZip
-    AmebaArtifact documentationZip
     AmebaArtifact imageMontageFile
-
     AmebaArtifact mailMessageFile
     AmebaArtifact QRCodeFile
     AmebaArtifact galleryCSS
-
-
     AmebaArtifact galleryJS
-
     AmebaArtifact galleryTrans
 
     String releaseMailSubject
@@ -63,6 +52,7 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
     @Inject
     PropertyReader reader
 
+    @Override
     Collection<String> getReleaseNotes() {
         (reader.systemProperty('release.notes') ?: reader.envVariable('RELEASE_NOTES') ?: '').split('\n')
     }
@@ -184,6 +174,16 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             validator: { it?.split(',')?.every { it?.trim() in ALL_EMAIL_FLAGS } }
     )
 
+    @Override
+    String getMailPort() {
+        reader.systemProperty('mail.port') ?: reader.envVariable('MAIL_PORT') ?: mailPortInternal.value ?: ''
+    }
+
+    @Override
+    String getMailServer() {
+        reader.systemProperty('mail.server') ?: reader.envVariable('MAIL_SERVER') ?: mailServerInternal.value ?: ''
+    }
+
     private StringProperty mailPortInternal = new StringProperty(
             name: 'mail.port',
             message: 'Mail port',
@@ -195,15 +195,6 @@ class AndroidReleaseConfiguration extends AbstractConfiguration implements Relea
             message: 'Mail server'
     )
 
-    @Override
-    String getMailPort() {
-        reader.systemProperty('mail.port') ?: reader.envVariable('MAIL_PORT') ?: mailPortInternal.value ?: ''
-    }
-
-    @Override
-    String getMailServer() {
-        reader.systemProperty('mail.server') ?: reader.envVariable('MAIL_SERVER') ?: mailServerInternal.value ?: ''
-    }
 
     @Override
     File getTargetDirectory() {

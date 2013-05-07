@@ -15,7 +15,7 @@ import static com.google.common.base.Preconditions.checkNotNull
 import static java.util.ResourceBundle.getBundle
 import static org.gradle.api.logging.Logging.getLogger
 
-class MailMessageTask extends DefaultTask {
+class PrepareMailMessageTask extends DefaultTask {
 
     private l = getLogger(getClass())
 

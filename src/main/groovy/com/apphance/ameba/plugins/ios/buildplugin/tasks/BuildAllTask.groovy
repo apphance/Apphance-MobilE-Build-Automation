@@ -1,5 +1,7 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
+import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
@@ -33,7 +35,8 @@ class BuildAllTask {
             task.group = AMEBA_BUILD
             task.description = "Builds target: ${v.target}, configuration: ${v.configuration}"
             task << {
-                def builder = new IOSSingleVariantBuilder(project, iosExecutor, new IOSReleaseListener(project, executor, iosExecutor))
+                //TODO
+                def builder = new IOSSingleVariantBuilder(project, iosExecutor, new IOSReleaseListener(project, new IOSConfiguration(* [null] * 3), new IOSReleaseConfiguration(), executor, iosExecutor))
                 builder.buildNormalVariant(project, v.target, v.configuration)
             }
             task.dependsOn(

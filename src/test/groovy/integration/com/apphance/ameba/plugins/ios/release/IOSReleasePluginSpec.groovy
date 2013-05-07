@@ -1,10 +1,13 @@
 package com.apphance.ameba.plugins.ios.release
 
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.plugins.ios.release.tasks.AvailableArtifactsInfoTask
+import com.apphance.ameba.plugins.ios.release.tasks.PrepareMailMessageTask
+import com.apphance.ameba.plugins.release.tasks.AbstractUpdateVersionTask
+import com.apphance.ameba.plugins.release.tasks.PrepareForReleaseTask
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
-import static com.apphance.ameba.plugins.ios.release.IOSReleasePlugin.UPDATE_VERSION_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSReleasePluginSpec extends Specification {
@@ -26,7 +29,12 @@ class IOSReleasePluginSpec extends Specification {
         irp.apply(project)
 
         then:
-        project.tasks[UPDATE_VERSION_TASK_NAME].group == AMEBA_RELEASE
+        project.tasks[AbstractUpdateVersionTask.NAME].group == AMEBA_RELEASE
+        project.tasks[PrepareMailMessageTask.NAME].group == AMEBA_RELEASE
+        project.tasks[AvailableArtifactsInfoTask.NAME].group == AMEBA_RELEASE
+
+        and:
+        project.tasks[PrepareMailMessageTask.NAME].dependsOn.flatten().containsAll(AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME)
     }
 
     def 'no tasks available when configuration is inactive'() {
@@ -45,6 +53,8 @@ class IOSReleasePluginSpec extends Specification {
         irp.apply(project)
 
         then:
-        !project.getTasksByName(UPDATE_VERSION_TASK_NAME, false)
+        !project.getTasksByName(AbstractUpdateVersionTask.NAME, false)
+        !project.getTasksByName(PrepareMailMessageTask.NAME, false)
+        !project.getTasksByName(AvailableArtifactsInfoTask.NAME, false)
     }
 }
