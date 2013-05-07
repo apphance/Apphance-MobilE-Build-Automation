@@ -1,9 +1,9 @@
 package com.apphance.ameba.plugins.android.apphance
 
-import com.apphance.ameba.configuration.android.AndroidApphanceConfiguration
 import com.apphance.ameba.configuration.android.AndroidBuildMode
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.plugins.android.apphance.tasks.AndroidLogsConversionTask
 import com.apphance.ameba.plugins.android.apphance.tasks.ApphanceLogsConversionTask
 import spock.lang.Specification
@@ -25,7 +25,7 @@ class AndroidApphancePluginSpec extends Specification {
         def aap = new AndroidApphancePlugin()
 
         and: 'create mock android apphance configuration and set it'
-        def aac = Mock(AndroidApphanceConfiguration)
+        def aac = Mock(ApphanceConfiguration)
         aac.isEnabled() >> true
         aap.apphanceConf = aac
 
@@ -51,7 +51,7 @@ class AndroidApphancePluginSpec extends Specification {
         def aap = new AndroidApphancePlugin()
 
         and: 'create mock android apphance configuration and set it'
-        def aac = Mock(AndroidApphanceConfiguration)
+        def aac = Mock(ApphanceConfiguration)
         aac.isEnabled() >> false
         aap.apphanceConf = aac
 
@@ -75,7 +75,7 @@ class AndroidApphancePluginSpec extends Specification {
         def aap = new AndroidApphancePlugin()
 
         and: 'create mock android apphance configuration and set it'
-        def aac = Mock(AndroidApphanceConfiguration)
+        def aac = Mock(ApphanceConfiguration)
         aac.isEnabled() >> true
         aap.apphanceConf = aac
 

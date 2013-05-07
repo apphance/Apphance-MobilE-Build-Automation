@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.android.apphance.tasks
 
-import com.apphance.ameba.configuration.android.AndroidApphanceConfiguration
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
@@ -29,7 +29,7 @@ class UploadAndroidArtifactTask extends DefaultTask {
     String group = AMEBA_APPHANCE_SERVICE
 
     @Inject
-    AndroidApphanceConfiguration androidApphanceConfiguration
+    ApphanceConfiguration androidApphanceConfiguration
     @Inject
     AndroidConfiguration conf
     @Inject

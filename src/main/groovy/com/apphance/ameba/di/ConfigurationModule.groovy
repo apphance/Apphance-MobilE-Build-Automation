@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.ReleaseConfiguration
 import com.apphance.ameba.configuration.android.*
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.ios.*
 import com.apphance.ameba.configuration.reader.GradlePropertiesPersister
 import com.apphance.ameba.configuration.reader.PropertyPersister
@@ -20,7 +21,7 @@ class ConfigurationModule extends AbstractModule {
     def configurations = [
             (ANDROID): [
                     AndroidConfiguration,
-                    AndroidApphanceConfiguration,
+                    ApphanceConfiguration,
                     AndroidVariantsConfiguration,
                     AndroidReleaseConfiguration,
                     AndroidAnalysisConfiguration,
@@ -29,7 +30,7 @@ class ConfigurationModule extends AbstractModule {
             ],
             (IOS): [
                     IOSConfiguration,
-                    IOSApphanceConfiguration,
+                    ApphanceConfiguration,
                     IOSVariantsConfiguration,
                     IOSReleaseConfiguration,
                     IOSFrameworkConfiguration,

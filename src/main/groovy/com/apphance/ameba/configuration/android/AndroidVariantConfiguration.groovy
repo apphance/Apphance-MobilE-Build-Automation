@@ -1,6 +1,7 @@
 package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.AbstractConfiguration
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
@@ -14,12 +15,12 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
 
     final String name
     private AndroidConfiguration androidConf
-    private AndroidApphanceConfiguration androidApphanceConf
+    private ApphanceConfiguration androidApphanceConf
 
     AndroidVariantConfiguration(String name,
                                 PropertyPersister persister,
                                 AndroidConfiguration androidConf,
-                                AndroidApphanceConfiguration androidApphanceConf) {
+                                ApphanceConfiguration androidApphanceConf) {
         this.propertyPersister = persister
         this.name = name
         this.androidConf = androidConf

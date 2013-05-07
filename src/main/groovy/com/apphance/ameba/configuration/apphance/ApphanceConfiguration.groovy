@@ -1,26 +1,23 @@
-package com.apphance.ameba.configuration.android
+package com.apphance.ameba.configuration.apphance
 
 import com.apphance.ameba.configuration.AbstractConfiguration
+import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
 
 import javax.inject.Inject
 
 @com.google.inject.Singleton
-class AndroidApphanceConfiguration extends AbstractConfiguration {
+class ApphanceConfiguration extends AbstractConfiguration {
 
-    String configurationName = 'Android Apphance Configuration'
+    String configurationName = 'Apphance Configuration'
     private boolean enabledInternal = false
 
-    private AndroidConfiguration androidConf
-
     @Inject
-    AndroidApphanceConfiguration(AndroidConfiguration androidConf) {
-        this.androidConf = androidConf
-    }
+    ProjectConfiguration conf
 
     @Override
     boolean isEnabled() {
-        enabledInternal && androidConf.isEnabled()
+        enabledInternal && conf.isEnabled()
     }
 
     @Override
@@ -29,12 +26,12 @@ class AndroidApphanceConfiguration extends AbstractConfiguration {
     }
 
     def user = new StringProperty(
-            name: 'android.apphance.user',
+            name: 'apphance.user',
             message: 'Apphance user'
     )
 
     def pass = new StringProperty(
-            name: 'android.apphance.pass',
+            name: 'apphance.pass',
             message: 'Apphance pass'
     )
 }
