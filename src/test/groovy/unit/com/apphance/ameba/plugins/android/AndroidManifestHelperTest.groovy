@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.android
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
+import com.apphance.ameba.plugins.project.ProjectConfiguration
 import com.sun.org.apache.xpath.internal.XPathAPI
 import org.junit.Before
 import org.junit.Test

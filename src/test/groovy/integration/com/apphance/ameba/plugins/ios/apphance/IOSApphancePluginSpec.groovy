@@ -2,7 +2,7 @@ package com.apphance.ameba.plugins.ios.apphance
 
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.IOSAllSimulatorsBuilder
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
+import com.apphance.ameba.plugins.project.ProjectPlugin
 import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
 import spock.lang.Specification
 
@@ -16,7 +16,7 @@ class IOSApphancePluginSpec extends Specification {
         def project = builder().build()
 
         and:
-        project.plugins.apply(ProjectConfigurationPlugin)
+        project.plugins.apply(ProjectPlugin)
 
         when:
         project.plugins.apply(IOSApphancePlugin)
@@ -47,7 +47,7 @@ class IOSApphancePluginSpec extends Specification {
         project.task('build-id2')
 
         and:
-        project.plugins.apply(ProjectConfigurationPlugin)
+        project.plugins.apply(ProjectPlugin)
 
         when:
         project.plugins.apply(IOSApphancePlugin)
@@ -78,7 +78,7 @@ class IOSApphancePluginSpec extends Specification {
         def project = builder().build()
 
         and:
-        project.plugins.apply(ProjectConfigurationPlugin)
+        project.plugins.apply(ProjectPlugin)
 
         and: 'add buildAllSimulators task'
         project.task(IOSAllSimulatorsBuilder.NAME)

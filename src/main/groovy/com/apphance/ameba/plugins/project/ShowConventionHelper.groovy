@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.projectconfiguration
+package com.apphance.ameba.plugins.project
 
 import org.gradle.api.internal.DynamicObjectHelper
 import org.gradle.api.tasks.SourceSet

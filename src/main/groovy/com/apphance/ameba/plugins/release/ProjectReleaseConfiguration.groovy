@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.release
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
+import com.apphance.ameba.plugins.project.ProjectConfiguration
 
 /**
  * Configuration for project release.

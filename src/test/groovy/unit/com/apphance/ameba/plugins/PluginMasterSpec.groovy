@@ -15,7 +15,7 @@ import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
 import com.apphance.ameba.plugins.ios.framework.IOSFrameworkPlugin
 import com.apphance.ameba.plugins.ios.ocunit.IOSUnitTestPlugin
 import com.apphance.ameba.plugins.ios.release.IOSReleasePlugin
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
+import com.apphance.ameba.plugins.project.ProjectPlugin
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
@@ -88,7 +88,7 @@ class PluginMasterSpec extends Specification {
 
         where:
         before                     | after
-        ProjectConfigurationPlugin | AndroidPlugin
+        ProjectPlugin | AndroidPlugin
         AndroidPlugin              | ProjectReleasePlugin
         ProjectReleasePlugin       | AndroidReleasePlugin
     }
@@ -119,7 +119,7 @@ class PluginMasterSpec extends Specification {
 
         where:
         before                     | after
-        ProjectConfigurationPlugin | IOSPlugin
+        ProjectPlugin | IOSPlugin
         IOSPlugin                  | ProjectReleasePlugin
         ProjectReleasePlugin       | IOSReleasePlugin
     }
@@ -128,7 +128,7 @@ class PluginMasterSpec extends Specification {
 
     def mockToMap = { [(it): Mock(it)] }
 
-    static commonPlugins = [ProjectConfigurationPlugin, ProjectReleasePlugin]
+    static commonPlugins = [ProjectPlugin, ProjectReleasePlugin]
 
     static androidPlugins = [
             AndroidPlugin,

@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.projectconfiguration
+package com.apphance.ameba.plugins.project
 /**
  * Keeps basic configuration of the project.
  */

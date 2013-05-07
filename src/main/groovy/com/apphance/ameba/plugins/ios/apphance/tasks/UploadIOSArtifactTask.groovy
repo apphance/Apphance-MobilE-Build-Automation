@@ -5,7 +5,7 @@ import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
 import com.apphance.ameba.plugins.apphance.ApphanceProperty
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
+import com.apphance.ameba.plugins.project.ProjectConfiguration
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.apphance.ameba.util.Preconditions
 import groovy.json.JsonSlurper

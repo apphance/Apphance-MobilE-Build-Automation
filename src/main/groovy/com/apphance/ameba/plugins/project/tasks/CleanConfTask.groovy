@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.projectconfiguration.tasks
+package com.apphance.ameba.plugins.project.tasks
 
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.google.inject.Inject

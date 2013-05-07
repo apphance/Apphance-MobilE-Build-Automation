@@ -6,13 +6,13 @@ import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
+import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
-import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.VERIFY_SETUP_TASK_NAME
 
 //TODO
 class BuildAllTask extends DefaultTask {
@@ -38,7 +38,7 @@ class BuildAllTask extends DefaultTask {
             }
             task.dependsOn(
                     CopyMobileProvisionTask.NAME,
-                    VERIFY_SETUP_TASK_NAME, CopySourcesTask.NAME
+                    VerifySetupTask.NAME, CopySourcesTask.NAME
             )
             tasks << task.name
         }

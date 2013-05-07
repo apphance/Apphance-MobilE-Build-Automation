@@ -1,5 +1,6 @@
-package com.apphance.ameba.configuration.android
+package com.apphance.ameba.configuration.apphance
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.detection.ProjectTypeDetector
 import org.gradle.api.Project
 import spock.lang.Specification
@@ -19,7 +20,8 @@ class AndroidApphanceConfigurationSpec extends Specification {
         when:
         ptd.detectProjectType(_) >> type
         def ac = new AndroidConfiguration(p, * [null] * 3, ptd, null)
-        def aac = new AndroidApphanceConfiguration(ac)
+        def aac = new ApphanceConfiguration()
+        aac.conf = ac
         aac.enabled = internalField
 
         then:

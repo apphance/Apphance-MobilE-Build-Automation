@@ -1,12 +1,12 @@
 package com.apphance.ameba
 
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
+import com.apphance.ameba.plugins.project.ProjectConfiguration
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY
+import static com.apphance.ameba.plugins.project.ProjectPlugin.PROJECT_NAME_PROPERTY
 
 /**
  * Helper property-related class. Can be used as Groovy category.
@@ -14,7 +14,7 @@ import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurati
  */
 class PropertyCategory {
 
-
+    public final static String PROJECT_NAME_PROPERTY = 'project.name'
     public static final String PROJECT_CONFIGURATION_KEY = 'project.configuration'
 
     static Logger logger = Logging.getLogger(PropertyCategory.class)

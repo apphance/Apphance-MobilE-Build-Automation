@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.release
 
 import com.apphance.ameba.PropertyCategory
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
+import com.apphance.ameba.plugins.project.ProjectConfiguration
 import org.gradle.api.Project
 
 import java.text.SimpleDateFormat
