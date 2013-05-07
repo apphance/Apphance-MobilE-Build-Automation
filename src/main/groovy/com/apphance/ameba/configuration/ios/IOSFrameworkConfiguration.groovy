@@ -11,6 +11,7 @@ import javax.inject.Inject
 import static com.apphance.ameba.plugins.ios.IOSXCodeOutputParser.readBaseConfigurations
 import static com.apphance.ameba.plugins.ios.IOSXCodeOutputParser.readBaseTargets
 
+@com.google.inject.Singleton
 class IOSFrameworkConfiguration extends AbstractConfiguration {
 
     String configurationName = 'iOS Framework Configuration'
