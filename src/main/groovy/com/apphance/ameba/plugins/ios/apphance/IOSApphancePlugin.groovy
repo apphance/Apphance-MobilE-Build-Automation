@@ -6,6 +6,7 @@ import com.apphance.ameba.plugins.apphance.ApphancePluginCommons
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.apphance.tasks.AddIOSApphanceTask
 import com.apphance.ameba.plugins.ios.apphance.tasks.UploadIOSArtifactTask
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.IOSAllSimulatorsBuilder
 import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
 import com.apphance.ameba.util.Preconditions
 import org.gradle.api.Plugin
@@ -16,7 +17,6 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.BUILD_ALL_SIMULATORS_TASK_NAME
 import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_IMAGE_MONTAGE_TASK_NAME
 
 /**
@@ -67,8 +67,8 @@ class IOSApphancePlugin implements Plugin<Project> {
     }
 
     private void preProcessBuildAllSimulatorsTask() {
-        if (project.tasks.findByName(BUILD_ALL_SIMULATORS_TASK_NAME)) {
-            project.tasks[BUILD_ALL_SIMULATORS_TASK_NAME].doFirst {
+        if (project.tasks.findByName(IOSAllSimulatorsBuilder.NAME)) {
+            project.tasks[IOSAllSimulatorsBuilder.NAME].doFirst {
                 new AddIOSApphanceTask(project, executor, iosExecutor).addIOSApphance()
             }
         }

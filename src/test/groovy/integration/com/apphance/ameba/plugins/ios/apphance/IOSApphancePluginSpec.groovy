@@ -1,12 +1,12 @@
 package com.apphance.ameba.plugins.ios.apphance
 
 import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.IOSAllSimulatorsBuilder
 import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.IOS_PROJECT_CONFIGURATION
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.BUILD_ALL_SIMULATORS_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSApphancePluginSpec extends Specification {
@@ -66,7 +66,7 @@ class IOSApphancePluginSpec extends Specification {
         project.tasks['upload-id2'].actions
 
         then: 'no buildAllSimulators task is present'
-        !project.tasks.findByName(BUILD_ALL_SIMULATORS_TASK_NAME)
+        !project.tasks.findByName(IOSAllSimulatorsBuilder.NAME)
 
         then: 'each tasks has correct dependency'
         project.tasks['upload-id1'].dependsOn.containsAll('build-id1', ImageMontageTask.NAME)
@@ -81,10 +81,10 @@ class IOSApphancePluginSpec extends Specification {
         project.plugins.apply(ProjectConfigurationPlugin)
 
         and: 'add buildAllSimulators task'
-        project.task(BUILD_ALL_SIMULATORS_TASK_NAME)
+        project.task(IOSAllSimulatorsBuilder.NAME)
 
         expect:
-        !project.tasks[BUILD_ALL_SIMULATORS_TASK_NAME].actions
+        !project.tasks[IOSAllSimulatorsBuilder.NAME].actions
 
         when:
         project.plugins.apply(IOSApphancePlugin)
@@ -93,10 +93,10 @@ class IOSApphancePluginSpec extends Specification {
         project.configurations.apphance
 
         then: 'tasks added'
-        project.tasks[BUILD_ALL_SIMULATORS_TASK_NAME]
+        project.tasks[IOSAllSimulatorsBuilder.NAME]
 
         then: 'buildAllSmulators has actions'
-        project.tasks[BUILD_ALL_SIMULATORS_TASK_NAME].actions
+        project.tasks[IOSAllSimulatorsBuilder.NAME].actions
 
         then: 'tasks not added'
         !project.tasks.findByName('build-id1')

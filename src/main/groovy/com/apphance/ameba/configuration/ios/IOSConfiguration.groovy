@@ -23,10 +23,18 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     List<String> families = []
     List<String> excludedBuilds = []
     Collection<Expando> allBuildableVariants = []
+    List<String> allTargets = []
+    List<String> allConfigurations = []
     String mainTarget
-    File distributionDirectory
+    File distributionDir
     File plistFile
     String sdk
+
+    Boolean isBuildExcluded(String buildName) {
+        false
+    }
+
+    public static final List<String> FAMILIES = ['iPad', 'iPhone']
     //from old conf
 
     Project project
@@ -112,10 +120,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
         project.rootDir
     }
 
-    @Override
-    Collection<String> getSourceExcludes() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
+    Collection<String> sourceExcludes = []
 
     @Override
     boolean isEnabled() {

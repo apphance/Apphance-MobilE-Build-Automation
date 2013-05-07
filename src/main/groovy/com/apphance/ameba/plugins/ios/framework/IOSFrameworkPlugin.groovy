@@ -1,13 +1,12 @@
 package com.apphance.ameba.plugins.ios.framework
 
 import com.apphance.ameba.configuration.ios.IOSFrameworkConfiguration
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
 import com.apphance.ameba.plugins.ios.framework.tasks.BuildFrameworkTask
 import com.google.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.COPY_MOBILE_PROVISION_TASK_NAME
-import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.READ_PROJECT_CONFIGURATION_TASK_NAME
 
 /**
  * Plugin for preparing reports after successful IOS build.
@@ -28,7 +27,7 @@ class IOSFrameworkPlugin implements Plugin<Project> {
         if (iosFrameworkConf.isEnabled()) {
             project.task(BuildFrameworkTask.NAME,
                     type: BuildFrameworkTask,
-                    dependsOn: [READ_PROJECT_CONFIGURATION_TASK_NAME, COPY_MOBILE_PROVISION_TASK_NAME])
+                    dependsOn: [CopyMobileProvisionTask.NAME])
         }
     }
 }

@@ -4,29 +4,26 @@ import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
+import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 
+import javax.inject.Inject
+
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.*
 import static com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin.VERIFY_SETUP_TASK_NAME
 
-class BuildAllTask {
+//TODO
+class BuildAllTask extends DefaultTask {
 
     private Project project
-    private IOSProjectConfiguration iosConf
-    private CommandExecutor executor
-    private IOSExecutor iosExecutor
-
-    BuildAllTask(Project project, CommandExecutor executor, IOSExecutor iosExecutor) {
-        this.project = project
-        this.iosConf = getIosProjectConfiguration(project)
-        this.executor = executor
-        this.iosExecutor = iosExecutor
-    }
+    @Inject
+    IOSConfiguration iosConf
+    @Inject
+    CommandExecutor executor
+    @Inject
+    IOSExecutor iosExecutor
 
     List<String> prepareAllTasks() {
         List<String> tasks = []
@@ -40,9 +37,8 @@ class BuildAllTask {
                 builder.buildNormalVariant(project, v.target, v.configuration)
             }
             task.dependsOn(
-                    READ_IOS_PROJECT_CONFIGURATION_TASK_NAME,
-                    COPY_MOBILE_PROVISION_TASK_NAME,
-                    VERIFY_SETUP_TASK_NAME, COPY_SOURCES_TASK_NAME
+                    CopyMobileProvisionTask.NAME,
+                    VERIFY_SETUP_TASK_NAME, CopySourcesTask.NAME
             )
             tasks << task.name
         }

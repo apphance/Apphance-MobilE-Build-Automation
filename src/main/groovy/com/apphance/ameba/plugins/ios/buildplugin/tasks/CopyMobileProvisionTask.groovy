@@ -1,26 +1,29 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import org.gradle.api.Project
+import com.apphance.ameba.configuration.ios.IOSConfiguration
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
+import javax.inject.Inject
 
-class CopyMobileProvisionTask {
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
-    private AntBuilder ant
-    private IOSProjectConfiguration iosConf
+class CopyMobileProvisionTask extends DefaultTask {
 
-    CopyMobileProvisionTask(Project project) {
-        this.ant = project.ant
-        this.iosConf = getIosProjectConfiguration(project)
-    }
+    static final NAME = 'copyMobileProvision'
+    String description = 'Copies mobile provision file to the user library'
+    String group = AMEBA_BUILD
 
+    @Inject
+    IOSConfiguration conf
+
+    @TaskAction
     void copyMobileProvision() {
-        def userHome = System.getProperty("user.home")
-        def mobileProvisionDirectory = userHome + "/Library/MobileDevice/Provisioning Profiles/"
+        def userHome = System.getProperty('user.home')
+        def mobileProvisionDirectory = "$userHome/Library/MobileDevice/Provisioning Profiles/"
         new File(mobileProvisionDirectory).mkdirs()
         ant.copy(todir: mobileProvisionDirectory, overwrite: true) {
-            fileset(dir: iosConf.distributionDirectory) { include(name: "*.mobileprovision") }
+            fileset(dir: conf.distributionDir) { include(name: "*.mobileprovision") }
         }
     }
 }

@@ -65,7 +65,7 @@ class IOSReleaseListener implements IOSBuildListener {
         distributionZipArtifact.location.parentFile.mkdirs()
         distributionZipArtifact.location.delete()
         ant.zip(destfile: distributionZipArtifact.location) {
-            zipfileset(dir: conf.distributionDirectory,
+            zipfileset(dir: conf.distributionDir,
                     includes: IOSXCodeOutputParser.findMobileProvisionFile(project, bi.target, bi.configuration).name)
             zipfileset(dir: bi.buildDirectory, includes: "${bi.target}.app/**")
         }
