@@ -1,12 +1,9 @@
 package com.apphance.ameba.plugins.ios.framework.tasks
 
-import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSFrameworkConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
-import com.apphance.ameba.plugins.project.ProjectConfiguration
 import com.google.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -17,7 +14,6 @@ import static org.gradle.api.logging.Logging.getLogger
 /**
  * Builds iOS framework.
  */
-//TODO is this class/task really used?
 class BuildFrameworkTask extends DefaultTask {
 
     static String NAME = 'buildFramework'
@@ -27,9 +23,6 @@ class BuildFrameworkTask extends DefaultTask {
     static final String FRAMEWORK_BUILD_PATH = 'Development-Framework'
 
     def l = getLogger(getClass())
-
-    private ProjectConfiguration conf
-    private IOSProjectConfiguration iosConf
 
     private File frameworkAppDir
     private File frameworkMainDir
@@ -43,15 +36,13 @@ class BuildFrameworkTask extends DefaultTask {
 
     @Inject
     CommandExecutor executor
-
+    @Inject
+    IOSConfiguration conf
     @Inject
     IOSFrameworkConfiguration iosFrameworkConf
 
     @TaskAction
     void buildIOSFramework() {
-        use(PropertyCategory) {
-            iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
-        }
         xcodeBuilds()
         cleanFrameworkDir()
         createDirectoryStructure()
@@ -64,7 +55,7 @@ class BuildFrameworkTask extends DefaultTask {
     }
 
     private createZipFile() {
-        destinationZipFile = new File(project.buildDir, conf.projectName + '_' + conf.versionString + '.zip')
+        destinationZipFile = new File(project.buildDir, conf.projectName.value + '_' + conf.versionString + '.zip')
         destinationZipFile.delete()
         executor.executeCommand(new Command(runDir: frameworkMainDir, cmd: [
                 'zip',
@@ -75,7 +66,7 @@ class BuildFrameworkTask extends DefaultTask {
 
     private createLibrary() {
         l.lifecycle('Create library')
-        def outputFile = new File(frameworkVersionsVersionDir, conf.projectName)
+        def outputFile = new File(frameworkVersionsVersionDir, conf.projectName.value)
         outputFile.parentFile.mkdirs()
         executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
                 'lipo',
@@ -133,8 +124,8 @@ class BuildFrameworkTask extends DefaultTask {
         executor.executeCommand(new Command(runDir: frameworkAppDir, cmd: [
                 'ln',
                 '-s',
-                "Versions/Current/${conf.projectName}",
-                conf.projectName
+                "Versions/Current/${conf.projectName.value}",
+                conf.projectName.value
         ]))
     }
 
@@ -148,7 +139,7 @@ class BuildFrameworkTask extends DefaultTask {
     private createDirectoryStructure() {
         l.lifecycle('Creating directory structure')
         frameworkMainDir.mkdirs()
-        frameworkAppDir = new File(frameworkMainDir, "${conf.projectName}.framework")
+        frameworkAppDir = new File(frameworkMainDir, "${conf.projectName.value}.framework")
         frameworkAppDir.mkdirs()
         frameworkVersionsDir = new File(frameworkAppDir, 'Versions')
         frameworkVersionsDir.mkdirs()
@@ -161,25 +152,25 @@ class BuildFrameworkTask extends DefaultTask {
     }
 
     private xcodeBuilds() {
-        executor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.getXCodeBuildExecutionPath() + [
+        executor.executeCommand(new Command(runDir: project.rootDir, cmd: conf.xcodebuildExecutionPath() + [
                 '-target',
                 iosFrameworkConf.target.value,
                 '-configuration',
                 iosFrameworkConf.configuration.value,
                 '-sdk',
-                iosConf.simulatorSDK,
+                conf.simulatorSdk.value,
                 '-arch',
                 'i386',
                 'clean',
                 'build'
         ]))
-        executor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.getXCodeBuildExecutionPath() + [
+        executor.executeCommand(new Command(runDir: project.rootDir, cmd: conf.xcodebuildExecutionPath() + [
                 '-target',
                 iosFrameworkConf.target.value,
                 '-configuration',
                 iosFrameworkConf.configuration.value,
                 '-sdk',
-                iosConf.sdk,
+                conf.sdk.value,
                 'clean',
                 'build'
         ]))

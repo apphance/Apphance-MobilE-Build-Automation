@@ -51,8 +51,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     @Override
     String getVersionCode() {
-        //TODO
-        null
+        throw new UnsupportedOperationException('not yet implemented')
     }
 
     String getExternalVersionCode() {
@@ -61,8 +60,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     @Override
     String getVersionString() {
-        //TODO
-        null
+        throw new UnsupportedOperationException('not yet implemented')
     }
 
     String getExternalVersionString() {
@@ -79,11 +77,9 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
         "${projectName.value}-$fullVersionString"
     }
 
-    StringProperty projectName = new StringProperty(
-            name: 'ios.project.name',
-            message: 'iOS project name',
-            interactive: { false },
-    )
+    StringProperty getProjectName() {
+        throw new UnsupportedOperationException('not yet implemented')
+    }
 
     @Override
     File getTmpDir() {
