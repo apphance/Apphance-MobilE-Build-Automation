@@ -6,6 +6,7 @@ import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.detection.ProjectTypeDetector
+import com.apphance.ameba.executor.IOSExecutor
 import org.gradle.api.Project
 
 import javax.inject.Inject
@@ -32,6 +33,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     File distributionDir
     File plistFile
     String sdk
+    String simulatorSdk
 
     Boolean isBuildExcluded(String buildName) {
         false
@@ -40,16 +42,14 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     public static final List<String> FAMILIES = ['iPad', 'iPhone']
     //from old conf
 
-    Project project
-    ProjectTypeDetector projectTypeDetector
-    PropertyReader reader
-
     @Inject
-    IOSConfiguration(Project project, ProjectTypeDetector projectTypeDetector, PropertyReader reader) {
-        this.project = project
-        this.projectTypeDetector = projectTypeDetector
-        this.reader = reader
-    }
+    Project project
+    @Inject
+    ProjectTypeDetector projectTypeDetector
+    @Inject
+    PropertyReader reader
+    @Inject
+    IOSExecutor executor
 
     @Override
     String getVersionCode() {
@@ -124,6 +124,10 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
             dirs << it.absolutePath.replaceAll("${rootDir.absolutePath}${separator}", '')
         }
         dirs
+    }
+
+    List<String> xcodebuildExecutionPath() {
+        ['xcodebuild', '-project', xcodeDir.value as String]
     }
 
     Collection<String> sourceExcludes = ['**/build/**']

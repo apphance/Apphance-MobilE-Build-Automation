@@ -14,12 +14,8 @@ class AndroidExecutor {
     private Map<String, String> defaultSkinForTarget = [:]
     private Map<String, String> idForTarget = [:]
 
-    private CommandExecutor executor
-
     @Inject
-    AndroidExecutor(CommandExecutor executor) {
-        this.executor = executor
-    }
+    CommandExecutor executor
 
     def updateProject(File dir, String target, String name) {
         def targetId = idForTarget(dir, target)
