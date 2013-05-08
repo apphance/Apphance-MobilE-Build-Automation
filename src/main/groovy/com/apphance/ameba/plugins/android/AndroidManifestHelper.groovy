@@ -111,7 +111,7 @@ class AndroidManifestHelper {
         replaceAction(mainActivityActions)
         replaceCategory(mainActivityActions)
 
-        String result = xmlToString(manifest, [apphance: 'http://apphance.com/android'])
+        String result = xmlToString(manifest)
         f.delete()
         f.write(replaceTag0(result))
     }
@@ -209,16 +209,13 @@ class AndroidManifestHelper {
         }
     }
 
-    private String xmlToString(GPathResult manifest, Map namespaces = null) {
+    private String xmlToString(GPathResult manifest) {
         def smb = new StreamingMarkupBuilder()
         smb.encoding = 'UTF-8'
         smb.useDoubleQuotes = true
 
         String result = smb.bind {
             mkp.xmlDeclaration()
-            if (namespaces) {
-                namespaces.each { n -> mkp.declareNamespace("${n.key}": "${n.value}") }
-            }
             mkp.yield manifest
         }
         result
