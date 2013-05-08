@@ -19,8 +19,7 @@ class AndroidManifestHelper {
 
     private final String APPHANCE_ALIAS =
         '''
-<activity-alias android:name=".ApphanceLauncherActivity" android:targetActivity="com.apphance.android.LauncherActivity"
-apphance:only="true">
+<activity-alias android:name=".ApphanceLauncherActivity" android:targetActivity="com.apphance.android.LauncherActivity">
     <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
@@ -127,8 +126,7 @@ apphance:only="true">
         manifest.appendNode({
             instrumentation(
                     'android:name': 'com.apphance.android.ApphanceInstrumentation',
-                    'android:targetPackage': manifest.@package,
-                    'apphance:only': 'true')
+                    'android:targetPackage': manifest.@package)
         })
     }
 
@@ -144,14 +142,14 @@ apphance:only="true">
 
     private void addActivities(GPathResult manifest) {
         [
-                { activity('android:name': 'com.apphance.android.ui.LoginActivity', 'apphance:only': 'true') },
+                { activity('android:name': 'com.apphance.android.ui.LoginActivity') },
                 {
                     activity('android:name': 'com.apphance.android.ui.ProblemActivity',
-                            'configChanges': 'orientation', 'launchMode': 'singleInstance', 'apphance:only': 'true')
+                            'configChanges': 'orientation', 'launchMode': 'singleInstance')
                 },
                 {
                     activity('android:name': 'com.apphance.android.LauncherActivity',
-                            'theme': '@android:style/Theme.Translucent.NoTitleBar', 'apphance:only': 'true')
+                            'theme': '@android:style/Theme.Translucent.NoTitleBar')
                 }
         ].each {
             manifest.application.appendNode(it)
@@ -235,8 +233,11 @@ apphance:only="true">
         def file = new File(projectDir, ANDROID_MANIFEST)
         def manifest = new XmlSlurper().parse(file)
 
-        String packageName = manifest.@package
+        String packageName = manifest.@package.text()
         String applicationName = manifest.application.@'android:name'.text()
+
+        if (!(packageName?.trim() && applicationName?.trim()))
+            return ''
 
         packageName = applicationName.startsWith('.') ? packageName : packageName + '.'
         packageName = applicationName.contains(packageName) ? '' : packageName
@@ -248,7 +249,7 @@ apphance:only="true">
         def file = new File(projectDir, ANDROID_MANIFEST)
         def manifest = new XmlSlurper().parse(file)
 
-        return manifest.activity.find {
+        return manifest.application.activity.find {
             def activityName = it.@'android:name'.text().toLowerCase()
             activityName.equals('com.apphance.android.ui.loginactivity') ||
                     activityName.equals('com.apphance.android.ui.problemactivity')

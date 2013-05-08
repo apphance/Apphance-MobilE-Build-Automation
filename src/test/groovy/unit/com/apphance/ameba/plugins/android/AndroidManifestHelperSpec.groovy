@@ -1,32 +1,56 @@
 package com.apphance.ameba.plugins.android
 
-import com.google.common.io.Files
+import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.GradleException
+import spock.lang.Shared
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.android.AndroidManifestHelper.ANDROID_MANIFEST
 import static com.google.common.io.Files.copy
+import static com.google.common.io.Files.createTempDir
 
 class AndroidManifestHelperSpec extends Specification {
 
-    def projectDir = new File('testProjects/android/android-basic')
+    @Shared
+    def basic = new File('testProjects/android/android-basic')
+    @Shared
+    def noApphanceApplication = new File('testProjects/android/android-no-apphance-application')
+    @Shared
     def amh = new AndroidManifestHelper()
+
+    def 'package is read correctly'() {
+        expect:
+        amh.androidPackage(basic) == 'com.apphance.amebaTest.android'
+    }
+
+    def 'version is read correctly'() {
+        given:
+        def versionDetails = amh.readVersion(basic)
+
+        expect:
+        versionDetails.versionString == '1.0.1'
+        versionDetails.versionCode == '42'
+    }
 
     def 'project icon is found'() {
         expect:
-        'icon' == amh.readIcon(projectDir)
+        'icon' == amh.readIcon(basic)
     }
 
     def 'version is updated and read correctly'() {
         given:
-        def tmpDir = Files.createTempDir()
+        def tmpDir = createTempDir()
 
         and:
-        copy(new File(projectDir, ANDROID_MANIFEST), new File(tmpDir, ANDROID_MANIFEST))
+        copy(new File(basic, ANDROID_MANIFEST), new File(tmpDir, ANDROID_MANIFEST))
 
         and:
         def versionString = '123_456_789'
         def versionCode = '3145'
+
+        expect:
+        !(amh.readVersion(basic).versionString == versionString)
+        !(amh.readVersion(basic).versionCode == versionCode)
 
         when:
         amh.updateVersion(tmpDir, versionString, versionCode)
@@ -40,34 +64,19 @@ class AndroidManifestHelperSpec extends Specification {
         tmpDir.deleteDir()
     }
 
-    def 'version is read correctly'() {
-        given:
-        def versionDetails = amh.readVersion(projectDir)
-
-        expect:
-        versionDetails.versionString == '1.0.1'
-        versionDetails.versionCode == '42'
-    }
-
-    def 'package is read correctly'() {
-        expect:
-        amh.androidPackage(projectDir) == 'com.apphance.amebaTest.android'
-    }
-
-    def 'main activity is read correctly'() {
-        expect:
-        amh.getMainActivityName(new File('testProjects/apphance-updates/')) == 'pl.morizon.client.ui.HomeActivity'
-    }
-
     def 'package and label is replaced correctly'() {
         given:
-        def tmpDir = Files.createTempDir()
+        def tmpDir = createTempDir()
 
         and:
         def tmpManifest = new File(tmpDir, ANDROID_MANIFEST)
 
         and:
-        copy(new File(projectDir, ANDROID_MANIFEST), tmpManifest)
+        copy(new File(basic, ANDROID_MANIFEST), tmpManifest)
+
+        expect:
+        !(parsedManifest(tmpManifest).@package == newPkg)
+        !(getLabel(tmpManifest) == newLbl)
 
         when:
         amh.replacePackage(tmpDir, 'com.apphance.amebaTest.android', newPkg, newLbl)
@@ -86,16 +95,125 @@ class AndroidManifestHelperSpec extends Specification {
     }
 
     private String getLabel(File manifest) {
-        new XmlSlurper().parse(manifest).application.@'android:label'.text()
+        parsedManifest(manifest).application.@'android:label'.text()
     }
 
     def 'exception is thrown on bad package'() {
         when:
-        amh.replacePackage(projectDir, 'sample1', 'sample2')
+        amh.replacePackage(basic, 'sample1', 'sample2')
 
         then:
         def e = thrown(GradleException)
         e.message == "Package to replace in manifest is: 'com.apphance.amebaTest.android' and not expected: 'sample1' (neither target: 'sample2'). This must be wrong."
     }
 
+    def 'permissions are added correctly'() {
+        given:
+        def tmpDir = createTempDir()
+
+        and:
+        def tmpManifest = new File(tmpDir, ANDROID_MANIFEST)
+
+        and:
+        copy(new File(basic, ANDROID_MANIFEST), tmpManifest)
+
+        expect:
+        !(parsedManifest(tmpManifest).'uses-permission'.@'android:name'.find {
+            it.text() == 'android.permission.ACCESS_MOCK_LOCATION'
+        })
+
+        when:
+        amh.addPermissions(tmpDir, 'android.permission.ACCESS_MOCK_LOCATION')
+
+        then:
+        parsedManifest(tmpManifest).'uses-permission'.@'android:name'.find {
+            it.text() == 'android.permission.ACCESS_MOCK_LOCATION'
+        }
+
+        cleanup:
+        tmpDir.deleteDir()
+    }
+
+    def 'apphance is added correctly'() {
+        //TODO
+    }
+
+    def 'main activity name is read correctly'() {
+        expect:
+        amh.getMainActivityName(new File('testProjects/apphance-updates/')) == 'pl.morizon.client.ui.HomeActivity'
+    }
+
+    def 'exception thrown when no main activity can be found'() {
+        when:
+        amh.getMainActivityName(basic)
+
+        then:
+        def e = thrown(GradleException)
+        e.message == 'Main activity could not be found!'
+    }
+
+    def 'application name is read correctly'() {
+        expect:
+        amh.getApplicationName(dir) == expectedName
+
+        where:
+        dir                   | expectedName
+        basic                 | ''
+        noApphanceApplication | 'com.apphance.amebaTest.android.MainApplication'
+    }
+
+    def 'apphance activity is not found'() {
+        expect:
+        !amh.isApphanceActivityPresent(basic)
+    }
+
+    def 'apphance activity is found'() {
+        given:
+        def tmpDir = createTempDir()
+
+        and:
+        def tmpManifest = new File(tmpDir, ANDROID_MANIFEST)
+
+        and:
+        copy(new File(noApphanceApplication, ANDROID_MANIFEST), tmpManifest)
+
+        expect:
+        !amh.isApphanceActivityPresent(tmpDir)
+
+        when:
+        amh.addApphance(tmpDir)
+
+        then:
+        amh.isApphanceActivityPresent(tmpDir)
+
+        cleanup:
+        tmpDir.deleteDir()
+    }
+
+    def 'apphance instrumentation is found'() {
+        given:
+        def tmpDir = createTempDir()
+
+        and:
+        def tmpManifest = new File(tmpDir, ANDROID_MANIFEST)
+
+        and:
+        copy(new File(noApphanceApplication, ANDROID_MANIFEST), tmpManifest)
+
+        expect:
+        !amh.isApphanceInstrumentationPresent(tmpDir)
+
+        when:
+        amh.addApphance(tmpDir)
+
+        then:
+        amh.isApphanceInstrumentationPresent(tmpDir)
+
+        cleanup:
+        tmpDir.deleteDir()
+    }
+
+    private GPathResult parsedManifest(File manifest) {
+        new XmlSlurper().parse(manifest)
+    }
 }
