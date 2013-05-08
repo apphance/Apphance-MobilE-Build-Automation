@@ -17,7 +17,7 @@ class AndroidManifestHelper {
 
     static final String ANDROID_MANIFEST = 'AndroidManifest.xml'
 
-    private final String APPHANCE_ALIAS =
+    static final String APPHANCE_ALIAS =
         '''
 <activity-alias android:name=".ApphanceLauncherActivity" android:targetActivity="com.apphance.android.LauncherActivity">
     <intent-filter>
