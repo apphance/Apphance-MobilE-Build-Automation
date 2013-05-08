@@ -1,14 +1,17 @@
 package com.apphance.ameba.configuration.ios
 
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
+import com.apphance.ameba.configuration.reader.PropertyPersister
+
 class IOSSchemeVariant extends AbstractIOSVariant {
 
-    @Override
-    String getConfigurationName() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+    IOSSchemeVariant(String name, IOSConfiguration conf, ApphanceConfiguration apphanceConf, PropertyPersister persister) {
+        super(name, conf, apphanceConf, persister)
     }
 
     @Override
-    boolean isEnabled() {
-        conf.enabled
+    List<String> buildCmd() {
+        //TODO
+        null
     }
 }

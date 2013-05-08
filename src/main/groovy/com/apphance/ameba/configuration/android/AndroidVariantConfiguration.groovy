@@ -14,8 +14,8 @@ import static com.apphance.ameba.configuration.apphance.ApphanceMode.DISABLED
 class AndroidVariantConfiguration extends AbstractConfiguration {
 
     final String name
-    private AndroidConfiguration androidConf
-    private ApphanceConfiguration androidApphanceConf
+    private AndroidConfiguration conf
+    private ApphanceConfiguration apphanceConf
 
     AndroidVariantConfiguration(String name,
                                 PropertyPersister persister,
@@ -23,8 +23,8 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
                                 ApphanceConfiguration androidApphanceConf) {
         this.propertyPersister = persister
         this.name = name
-        this.androidConf = androidConf
-        this.androidApphanceConf = androidApphanceConf
+        this.conf = androidConf
+        this.apphanceConf = androidApphanceConf
 
         initFields()
     }
@@ -49,15 +49,15 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     }
 
     def apphanceMode = new ApphanceModeProperty(
-            interactive: { androidApphanceConf.enabled },
-            required: { androidApphanceConf.enabled },
+            interactive: { apphanceConf.enabled },
+            required: { apphanceConf.enabled },
             possibleValues: { possibleApphanceModes() },
             validator: { it in possibleApphanceModes() }
     )
 
     def apphanceAppKey = new StringProperty(
-            interactive: { androidApphanceConf.enabled && !(DISABLED == apphanceMode.value) },
-            required: { androidApphanceConf.enabled },
+            interactive: { apphanceConf.enabled && !(DISABLED == apphanceMode.value) },
+            required: { apphanceConf.enabled },
             validator: { it?.matches('[a-z0-9]+') }
     )
 
@@ -66,13 +66,13 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     }
 
     def apphanceLibVersion = new StringProperty(
-            interactive: { androidApphanceConf.enabled && !(DISABLED == apphanceMode.value) },
+            interactive: { apphanceConf.enabled && !(DISABLED == apphanceMode.value) },
             validator: { it?.matches('([0-9]+\\.)*[0-9]+') }
     )
 
     @Override
     boolean isEnabled() {
-        androidConf.enabled
+        conf.enabled
     }
 
     @Override
@@ -81,7 +81,7 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     }
 
     File getTmpDir() {
-        new File(androidConf.tmpDir, name)
+        new File(conf.tmpDir, name)
     }
 
 }

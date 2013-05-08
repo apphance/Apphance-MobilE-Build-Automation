@@ -47,11 +47,6 @@ abstract class AbstractConfiguration implements Configuration {
 
     abstract String getConfigurationName()
 
-    @Override
-    public String toString() {
-        "Configuration $configurationName: \n${join(amebaProperties, '\n')}\n";
-    }
-
     Collection<? extends AbstractConfiguration> getSubConfigurations() {
         []
     }
@@ -71,6 +66,8 @@ abstract class AbstractConfiguration implements Configuration {
         errors
     }
 
+    void checkProperties() {}
+
     protected String checkException(Closure cl) {
         try {
             cl.call()
@@ -80,5 +77,8 @@ abstract class AbstractConfiguration implements Configuration {
         ''
     }
 
-    void checkProperties() {}
+    @Override
+    public String toString() {
+        "Configuration $configurationName: \n${join(amebaProperties, '\n')}\n";
+    }
 }
