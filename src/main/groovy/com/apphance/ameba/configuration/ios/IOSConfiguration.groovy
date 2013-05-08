@@ -11,6 +11,9 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.ameba.detection.ProjectType.IOS
+import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
+import static groovy.io.FileType.DIRECTORIES
+import static java.io.File.separator
 
 @com.google.inject.Singleton
 class IOSConfiguration extends AbstractConfiguration implements ProjectConfiguration {
@@ -50,7 +53,8 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     @Override
     String getVersionCode() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        //TODO
+        null
     }
 
     String getExternalVersionCode() {
@@ -59,7 +63,8 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     @Override
     String getVersionString() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        //TODO
+        null
     }
 
     String getExternalVersionString() {
@@ -68,36 +73,18 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     @Override
     String getFullVersionString() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        "${versionString}_${versionCode}"
     }
 
     @Override
     String getProjectVersionedName() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        "${projectName.value}-$fullVersionString"
     }
 
     StringProperty projectName = new StringProperty(
             name: 'ios.project.name',
             message: 'iOS project name',
-            defaultValue: { defaultName() },
-            possibleValues: { possibleNames() },
-            required: { true }
-    )
-
-    private String defaultName() {
-        ''
-    }
-
-    private List<String> possibleNames() {
-        [rootDir.name, defaultName()].findAll { !it?.trim()?.empty }
-    }
-
-    def plist = new FileProperty(
-            name: 'ios.plist.file',
-            message: 'iOS project plist file',
-            required: { true },
-            defaultValue: { null },
-            possibleValues: { null },
+            interactive: { false },
     )
 
     @Override
@@ -107,7 +94,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     @Override
     File getBuildDir() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        project.file('build')
     }
 
     @Override
@@ -120,7 +107,26 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
         project.rootDir
     }
 
-    Collection<String> sourceExcludes = []
+    def xcodeDir = new FileProperty(
+            name: 'ios.dir.xcode',
+            message: 'iOS xcodeproj directory',
+            possibleValues: { possibleXCodeDirs() as List<String> },
+            validator: {
+                def file = new File(rootDir, (it?.trim() ?: '') as String)
+                file?.absolutePath?.trim() ? (file.exists() && file.isDirectory() && file.name.endsWith('.xcodeproj')) : false
+            },
+            required: { true }
+    )
+
+    private List<String> possibleXCodeDirs() {
+        def dirs = []
+        rootDir.traverse(type: DIRECTORIES, nameFilter: ~/.*\.xcodeproj/, maxDepth: MAX_RECURSION_LEVEL) {
+            dirs << it.absolutePath.replaceAll("${rootDir.absolutePath}${separator}", '')
+        }
+        dirs
+    }
+
+    Collection<String> sourceExcludes = ['**/build/**']
 
     @Override
     boolean isEnabled() {

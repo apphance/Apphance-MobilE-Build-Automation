@@ -36,7 +36,7 @@ class IOSPlugin implements Plugin<Project> {
                     CopyMobileProvisionTask.NAME,
                     CopyDebugSourcesTask.NAME])
 
-            conf.sourceExcludes << '**/build/**'
+
         }
     }
 

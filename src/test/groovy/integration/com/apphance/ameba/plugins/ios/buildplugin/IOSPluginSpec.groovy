@@ -16,8 +16,6 @@ class IOSPluginSpec extends Specification {
         and:
         def conf = GroovyMock(IOSConfiguration)
         conf.isEnabled() >> true
-        def sourceExcludes = []
-        conf.sourceExcludes >> sourceExcludes
 
         and:
         def plugin = new IOSPlugin()
@@ -39,9 +37,6 @@ class IOSPluginSpec extends Specification {
         project.tasks[BuildSingleVariantTask.NAME].dependsOn.flatten().contains(CopySourcesTask.NAME)
         project.tasks[IOSAllSimulatorsBuilder.NAME].dependsOn.flatten().containsAll(CopyDebugSourcesTask.NAME,
                 CopyMobileProvisionTask.NAME)
-
-        and:
-        !sourceExcludes.empty
     }
 
     def 'no tasks available when configuration is inactive'() {
