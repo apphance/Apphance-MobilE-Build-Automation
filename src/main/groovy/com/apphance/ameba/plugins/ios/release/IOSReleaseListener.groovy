@@ -31,6 +31,7 @@ class IOSReleaseListener implements IOSBuildListener {
     IOSConfiguration conf
     IOSReleaseConfiguration releaseConf
     AntBuilder ant
+    IOSXCodeOutputParser parser = new IOSXCodeOutputParser()
 
     IOSReleaseListener(Project project, IOSConfiguration conf, IOSReleaseConfiguration releaseConf, CommandExecutor executor, IOSExecutor iosExecutor) {
         this.conf = conf
@@ -66,7 +67,7 @@ class IOSReleaseListener implements IOSBuildListener {
         distributionZipArtifact.location.delete()
         ant.zip(destfile: distributionZipArtifact.location) {
             zipfileset(dir: conf.distributionDir,
-                    includes: IOSXCodeOutputParser.findMobileProvisionFile(project, bi.target, bi.configuration).name)
+                    includes: parser.findMobileProvisionFile(project, bi.target, bi.configuration).name)
             zipfileset(dir: bi.buildDirectory, includes: "${bi.target}.app/**")
         }
         l.lifecycle("Distribution zip file created: ${distributionZipArtifact}")

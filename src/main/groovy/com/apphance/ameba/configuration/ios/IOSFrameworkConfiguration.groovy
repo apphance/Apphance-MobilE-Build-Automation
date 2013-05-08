@@ -4,12 +4,10 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.executor.IOSExecutor
+import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import org.gradle.api.GradleException
 
 import javax.inject.Inject
-
-import static com.apphance.ameba.plugins.ios.IOSXCodeOutputParser.readBaseConfigurations
-import static com.apphance.ameba.plugins.ios.IOSXCodeOutputParser.readBaseTargets
 
 @com.google.inject.Singleton
 class IOSFrameworkConfiguration extends AbstractConfiguration {
@@ -19,9 +17,10 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
 
     @Inject
     IOSConfiguration conf
-
     @Inject
     IOSExecutor iosExecutor
+    @Inject
+    IOSXCodeOutputParser parser
 
     @Override
     boolean isEnabled() {
@@ -36,14 +35,14 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
     def target = new StringProperty(
             name: 'ios.framework.target',
             message: 'Target to build framework project with',
-            possibleValues: { readBaseTargets(trimmedListOutput(), { true }) as List<String> }
+            possibleValues: { parser.readBaseTargets(trimmedListOutput(), { true }) as List<String> }
     )
 
     def configuration = new StringProperty(
             name: 'ios.framework.configuration',
             message: 'Configuration to build framework project with',
             defaultValue: { 'Debug' },
-            possibleValues: { readBaseConfigurations(trimmedListOutput(), { true }) as List<String> }
+            possibleValues: { parser.readBaseConfigurations(trimmedListOutput(), { true }) as List<String> }
     )
 
     def version = new StringProperty(

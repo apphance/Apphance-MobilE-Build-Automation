@@ -31,6 +31,7 @@ class IOSSingleVariantBuilder {
     AntBuilder ant
     Project project
     IOSExecutor iosExecutor
+    IOSXCodeOutputParser parser = new IOSXCodeOutputParser()
 
     IOSSingleVariantBuilder(Project project, IOSExecutor iosExecutor, IOSBuildListener... buildListeners) {
         use(PropertyCategory) {
@@ -131,7 +132,7 @@ class IOSSingleVariantBuilder {
         if (project.hasProperty('ios.bundleId.' + configuration)) {
             String newBundleId = project['ios.bundleId.' + configuration]
             String oldBundleId = MPParser.readBundleIdFromProvisionFile(
-                    IOSXCodeOutputParser.findMobileProvisionFile(project, target, configuration, false).toURI().toURL());
+                    parser.findMobileProvisionFile(project, target, configuration, false).toURI().toURL());
             replaceBundleId(tmpDir(target, configuration), oldBundleId, newBundleId, configuration)
         }
         l.lifecycle("\n\n\n=== Building target ${target}, configuration ${configuration}  ===")
@@ -169,7 +170,7 @@ class IOSSingleVariantBuilder {
                 buildDirectory: new File(tmpDir(target, configuration), "/build/${configuration}-${outputDirPostfix}"),
                 fullReleaseName: "${target}-${configuration}-${conf.fullVersionString}",
                 filePrefix: "${target}-${configuration}-${conf.fullVersionString}",
-                mobileProvisionFile: IOSXCodeOutputParser.findMobileProvisionFile(project, target, configuration, true),
+                mobileProvisionFile: parser.findMobileProvisionFile(project, target, configuration, true),
                 plistFile: new File(tmpDir(target, configuration), PropertyCategory.readProperty(project, IOSProjectProperty.PLIST_FILE))
         )
         bi

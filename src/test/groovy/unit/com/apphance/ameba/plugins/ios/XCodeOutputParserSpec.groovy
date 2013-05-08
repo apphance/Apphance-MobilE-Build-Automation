@@ -9,6 +9,8 @@ class XCodeOutputParserSpec extends Specification {
     def trimmedXCodeList
     @Shared
     def trimmedShowSdkList
+    @Shared
+    def parser = new IOSXCodeOutputParser()
 
     def setupSpec() {
         trimmedXCodeList = """Information about project "Project name0":
@@ -55,42 +57,42 @@ iOS Simulator SDKs:
 
     def 'reads buildable targets'() {
         given:
-        def targets = IOSXCodeOutputParser.readBuildableTargets(trimmedXCodeList)
+        def targets = parser.readBuildableTargets(trimmedXCodeList)
         expect:
         ['Some', 'SomeWithMonkey'] == targets
     }
 
     def 'reads buildable configurations'() {
         given:
-        def configurations = IOSXCodeOutputParser.readBuildableConfigurations(trimmedXCodeList)
+        def configurations = parser.readBuildableConfigurations(trimmedXCodeList)
         expect:
         ['QAWithApphance', 'QAWithoutApphance'] == configurations
     }
 
     def 'reads project name'() {
         given:
-        def projectName = IOSXCodeOutputParser.readProjectName(trimmedXCodeList)
+        def projectName = parser.readProjectName(trimmedXCodeList)
         expect:
         'Project name0' == projectName
     }
 
     def 'reads iphone sdks'() {
         given:
-        def sdks = IOSXCodeOutputParser.readIphoneSdks(trimmedShowSdkList)
+        def sdks = parser.readIphoneSdks(trimmedShowSdkList)
         expect:
         ['iphoneos', 'iphoneos4.3', 'iphoneos5.0'] == sdks
     }
 
     def 'reads iphone simulator sdks'() {
         given:
-        def simulatorSdks = IOSXCodeOutputParser.readIphoneSimulatorSdks(trimmedShowSdkList)
+        def simulatorSdks = parser.readIphoneSimulatorSdks(trimmedShowSdkList)
         expect:
         ['iphonesimulator', 'iphonesimulator4.3', 'iphonesimulator5.0'] == simulatorSdks
     }
 
     def 'reads schemes'() {
         given:
-        def schemes = IOSXCodeOutputParser.readSchemes(trimmedXCodeList)
+        def schemes = parser.readSchemes(trimmedXCodeList)
         expect:
         ['Some', 'SomeWithMonkey', 'SomeSpecs', 'OtherSomeSpecs', 'RunMonkeyTests'] == schemes
     }

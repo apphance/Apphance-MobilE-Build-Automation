@@ -3,8 +3,8 @@ package com.apphance.ameba.plugins.ios
 import com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Parses xcodebuild output.
@@ -12,38 +12,38 @@ import org.gradle.api.logging.Logging
  */
 class IOSXCodeOutputParser {
 
-    static Logger logger = Logging.getLogger(IOSXCodeOutputParser.class)
+    def l = getLogger(getClass())
 
-    static Collection readBuildableConfigurations(List trimmedOutput) {
+    Collection readBuildableConfigurations(List trimmedOutput) {
         return readBaseConfigurations(trimmedOutput, { it != "Debug" && it != "Release" })
     }
 
-    static Collection readBuildableTargets(List trimmedOutput) {
+    Collection readBuildableTargets(List trimmedOutput) {
         return readBaseTargets(trimmedOutput, { !it.endsWith('Tests') && !it.endsWith('Specs') })
     }
 
-    static Collection readBaseConfigurations(List trimmed, Closure filter) {
+    Collection readBaseConfigurations(List trimmed, Closure filter) {
         def startConfigurations = trimmed.indexOf('Build Configurations:')
         def configurations = trimmed[startConfigurations + 1..-1]
         def onlyConfigurations = configurations[0..configurations.indexOf('') - 1]
         return onlyConfigurations.findAll(filter)
     }
 
-    static Collection readBaseTargets(List trimmed, Closure filter) {
+    Collection readBaseTargets(List trimmed, Closure filter) {
         def startTargets = trimmed.indexOf('Targets:')
         def targets = trimmed[startTargets + 1..-1]
         def onlyTargets = targets[0..targets.indexOf('') - 1]
         return onlyTargets.findAll(filter)
     }
 
-    static Collection readSchemes(List trimmed) {
+    Collection readSchemes(List trimmed) {
         def startSchemes = trimmed.indexOf('Schemes:')
         def schemes = trimmed[startSchemes + 1..-1]
         schemes.indexOf('') != -1 ? schemes[0..schemes.indexOf('') - 1] : schemes
     }
 
 
-    static Collection readIphoneSdks(List trimmed) {
+    Collection readIphoneSdks(List trimmed) {
         def startConfigurations = trimmed.indexOf('iOS SDKs:')
         def configurations = trimmed[startConfigurations + 1..-1]
         def onlyConfigurations = configurations[0..configurations.indexOf('') - 1]
@@ -54,7 +54,7 @@ class IOSXCodeOutputParser {
         return output
     }
 
-    static Collection readIphoneSimulatorSdks(List trimmed) {
+    Collection readIphoneSimulatorSdks(List trimmed) {
         def startConfigurations = trimmed.indexOf('iOS Simulator SDKs:')
         def configurations = trimmed[startConfigurations + 1..-1]
         def lastIndex = configurations.indexOf('')
@@ -69,14 +69,14 @@ class IOSXCodeOutputParser {
         return output
     }
 
-    static String readProjectName(List trimmed) {
+    String readProjectName(List trimmed) {
         String firstLine = trimmed[0]
         def matcher = firstLine =~ /.*"(.*)"/
         return matcher[0][1]
     }
 
-    static File findMobileProvisionFile(Project project, String target, String configuration,
-                                        boolean checkForNewBundleId = true) {
+    File findMobileProvisionFile(Project project, String target, String configuration,
+                                 boolean checkForNewBundleId = true) {
         IOSProjectConfiguration iosConf = IOSConfigurationRetriever.getIosProjectConfiguration(project)
 
         File distributionDirectory = iosConf.distributionDirectory
@@ -89,17 +89,17 @@ class IOSXCodeOutputParser {
         }
         File f = new File(distributionDirectory, "${target}-${configuration}.mobileprovision")
         if (f.exists()) {
-            logger.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
+            l.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
             return f
         }
         f = new File(distributionDirectory, "${target}.mobileprovision")
         if (f.exists()) {
-            logger.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
+            l.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
             return f
         }
         f = new File(distributionDirectory, "${iosConf.mainTarget}.mobileprovision")
         if (f.exists()) {
-            logger.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
+            l.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
             return f
         }
         distributionDirectory.eachFile {
@@ -111,7 +111,7 @@ class IOSXCodeOutputParser {
             throw new GradleException("The mobileprovision file cannot be found in ${iosConf.distributionDirectory}.\
  Please add one and name it ${iosConf.mainTarget}.mobileprovision")
         }
-        logger.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
+        l.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
         return f
     }
 

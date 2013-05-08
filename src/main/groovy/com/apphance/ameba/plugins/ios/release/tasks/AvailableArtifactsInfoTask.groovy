@@ -34,6 +34,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     IOSConfiguration conf
     @Inject
     IOSReleaseConfiguration releaseConf
+    @Inject
+    IOSXCodeOutputParser parser
 
     @TaskAction
     void prepareAvailableArtifactsInfo() {
@@ -42,7 +44,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         conf.allBuildableVariants.each { v ->
             l.lifecycle("Preparing artifact for ${v.id}")
             iosReleaseListener.buildArtifactsOnly(project, v.target, v.configuration)
-            File mobileProvisionFile = IOSXCodeOutputParser.findMobileProvisionFile(project, v.target, conf.configurations[0], true)
+            File mobileProvisionFile = parser.findMobileProvisionFile(project, v.target, conf.configurations[0], true)
             if (conf.versionString != null) {
                 udids.put(v.target, MPParser.readUdids(mobileProvisionFile.toURI().toURL()))
             } else {
