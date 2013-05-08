@@ -32,8 +32,6 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     String mainTarget
     File distributionDir
     File plistFile
-    String sdk
-    String simulatorSdk
 
     Boolean isBuildExcluded(String buildName) {
         false
@@ -129,6 +127,22 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     List<String> xcodebuildExecutionPath() {
         ['xcodebuild', '-project', xcodeDir.value as String]
     }
+
+    def sdk = new StringProperty(
+            name: 'ios.sdk',
+            message: 'iOS SDK',
+            possibleValues: { executor.sdks() },
+            validator: { it in executor.sdks() },
+            required: { true }
+    )
+
+    def simulatorSdk = new StringProperty(
+            name: 'ios.sdk.simulator',
+            message: 'iOS simulator SDK',
+            possibleValues: { executor.simulatorSdks() },
+            validator: { it in executor.simulatorSdks() },
+            required: { true }
+    )
 
     Collection<String> sourceExcludes = ['**/build/**']
 

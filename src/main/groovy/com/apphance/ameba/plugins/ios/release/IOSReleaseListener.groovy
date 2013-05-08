@@ -142,7 +142,7 @@ class IOSReleaseListener implements IOSBuildListener {
         def cmd = [
                 '/usr/bin/xcrun',
                 '-sdk',
-                conf.sdk,
+                conf.sdk.value,
                 'PackageApplication',
                 '-v',
                 new File(bi.buildDirectory, appList[0]).canonicalPath,
