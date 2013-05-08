@@ -22,22 +22,23 @@ class IOSXCodeOutputParser {
         return readBaseTargets(trimmedOutput, { !it.endsWith('Tests') && !it.endsWith('Specs') })
     }
 
-    Collection readBaseConfigurations(List trimmed, Closure filter) {
+    Collection readBaseConfigurations(List trimmed, Closure filter = { true }) {
         def startConfigurations = trimmed.indexOf('Build Configurations:')
         def configurations = trimmed[startConfigurations + 1..-1]
         def onlyConfigurations = configurations[0..configurations.indexOf('') - 1]
         return onlyConfigurations.findAll(filter)
     }
 
-    Collection readBaseTargets(List trimmed, Closure filter) {
+    Collection readBaseTargets(List trimmed, Closure filter = { true }) {
         def startTargets = trimmed.indexOf('Targets:')
         def targets = trimmed[startTargets + 1..-1]
         def onlyTargets = targets[0..targets.indexOf('') - 1]
         return onlyTargets.findAll(filter)
     }
 
-    Collection readSchemes(List trimmed) {
+    Collection<String> readSchemes(List trimmed) {
         def startSchemes = trimmed.indexOf('Schemes:')
+        if (startSchemes == -1) return []
         def schemes = trimmed[startSchemes + 1..-1]
         schemes.indexOf('') != -1 ? schemes[0..schemes.indexOf('') - 1] : schemes
     }
@@ -83,8 +84,7 @@ class IOSXCodeOutputParser {
         if (checkForNewBundleId && iosConf.distributionDirectories[configuration] != null) {
             distributionDirectory = iosConf.distributionDirectories[configuration];
             if (!distributionDirectory.exists()) {
-                throw new GradleException("The directory ${distributionDirectory} must exist\
- and mobile provision files must be placed there")
+                throw new GradleException("The directory ${distributionDirectory} must exist and mobile provision files must be placed there")
             }
         }
         File f = new File(distributionDirectory, "${target}-${configuration}.mobileprovision")
@@ -108,8 +108,8 @@ class IOSXCodeOutputParser {
             }
         }
         if (f == null) {
-            throw new GradleException("The mobileprovision file cannot be found in ${iosConf.distributionDirectory}.\
- Please add one and name it ${iosConf.mainTarget}.mobileprovision")
+            throw new GradleException("The mobileprovision file cannot be found in ${iosConf.distributionDirectory}." +
+                    "Please add one and name it ${iosConf.mainTarget}.mobileprovision")
         }
         l.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
         return f

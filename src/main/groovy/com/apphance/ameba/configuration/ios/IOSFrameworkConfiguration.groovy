@@ -35,14 +35,14 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
     def target = new StringProperty(
             name: 'ios.framework.target',
             message: 'Target to build framework project with',
-            possibleValues: { parser.readBaseTargets(trimmedListOutput(), { true }) as List<String> }
+            possibleValues: { parser.readBaseTargets(iosExecutor.list())}
     )
 
     def configuration = new StringProperty(
             name: 'ios.framework.configuration',
             message: 'Configuration to build framework project with',
             defaultValue: { 'Debug' },
-            possibleValues: { parser.readBaseConfigurations(trimmedListOutput(), { true }) as List<String> }
+            possibleValues: { parser.readBaseConfigurations(iosExecutor.list())}
     )
 
     def version = new StringProperty(
@@ -60,12 +60,4 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
             name: 'ios.framework.resources',
             message: 'List of resources (coma separated) that should be copied to the framework'
     )
-
-    List<String> trimmedListOutput() { //TODO cache output
-        List<String> trimmedListOutput = iosExecutor.list()*.trim()
-        if (trimmedListOutput.empty || trimmedListOutput[0] == '') {
-            throw new GradleException("Error while running iosExecutor.list")
-        }
-        trimmedListOutput
-    }
 }

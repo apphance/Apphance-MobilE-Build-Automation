@@ -27,8 +27,8 @@ class IOSExecutor {
         run('-showsdks')
     }
 
-    def list() {
-        run('-list')
+    List<String> list() {
+        run('-list')*.trim()
     }
 
     def buildTarget(File dir, String target, String configuration, String sdk = conf.sdk.value, String params = "") {
