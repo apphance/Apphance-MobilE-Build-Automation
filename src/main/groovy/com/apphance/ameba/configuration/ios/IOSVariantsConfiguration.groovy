@@ -5,7 +5,6 @@ import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
-import com.apphance.ameba.configuration.reader.PropertyPersister
 
 import javax.inject.Inject
 

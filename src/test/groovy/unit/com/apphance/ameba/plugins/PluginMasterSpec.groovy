@@ -11,6 +11,7 @@ import com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin
 import com.apphance.ameba.plugins.android.jarlibrary.AndroidJarLibraryPlugin
 import com.apphance.ameba.plugins.android.release.AndroidReleasePlugin
 import com.apphance.ameba.plugins.android.test.AndroidTestPlugin
+import com.apphance.ameba.plugins.ios.XCodeOutputParserSpec
 import com.apphance.ameba.plugins.ios.apphance.IOSApphancePlugin
 import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
 import com.apphance.ameba.plugins.ios.framework.IOSFrameworkPlugin
@@ -28,7 +29,6 @@ import spock.lang.Unroll
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static com.apphance.ameba.detection.ProjectType.IOS
-import static com.apphance.ameba.plugins.ios.XCodeOutputParserSpec.getXCODE_LIST
 
 class PluginMasterSpec extends Specification {
 
@@ -155,7 +155,7 @@ class PluginMasterSpec extends Specification {
         def project = GroovyMock(Project)
         project.ext >> new DefaultExtraPropertiesExtension()
 
-        def iosExecutorMock = Stub(IOSExecutor, { list() >> XCODE_LIST })
+        def iosExecutorMock = Stub(IOSExecutor, { list() >> XCodeOutputParserSpec.XCODE_LIST })
 
         project.rootDir >> rootDir
         project.file('log') >> new File(System.properties['java.io.tmpdir'])

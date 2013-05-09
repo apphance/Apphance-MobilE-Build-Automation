@@ -17,7 +17,7 @@ class IOSVariantsConfigurationSpec extends Specification {
         and:
         def variantsConf = new IOSVariantsConfiguration()
         variantsConf.conf = conf
-        variantsConf.persister = Stub(PropertyPersister, { get(_) >> '' })
+        variantsConf.propertyPersister = Stub(PropertyPersister, { get(_) >> '' })
 
         when:
         def variants = variantsConf.buildVariantsList()
