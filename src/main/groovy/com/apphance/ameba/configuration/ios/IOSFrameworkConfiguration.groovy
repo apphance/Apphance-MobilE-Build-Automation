@@ -5,7 +5,6 @@ import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
-import org.gradle.api.GradleException
 
 import javax.inject.Inject
 
@@ -21,6 +20,8 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
     IOSExecutor iosExecutor
     @Inject
     IOSXCodeOutputParser parser
+    @Inject
+    IOSVariantsConfiguration iosVariantsConfiguration
 
     @Override
     boolean isEnabled() {
@@ -32,17 +33,10 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
         enabledInternal = enabled
     }
 
-    def target = new StringProperty(
-            name: 'ios.framework.target',
-            message: 'Target to build framework project with',
-            possibleValues: { parser.readBaseTargets(iosExecutor.list())}
-    )
-
-    def configuration = new StringProperty(
-            name: 'ios.framework.configuration',
-            message: 'Configuration to build framework project with',
-            defaultValue: { 'Debug' },
-            possibleValues: { parser.readBaseConfigurations(iosExecutor.list())}
+    def variantName = new StringProperty(
+            name: 'ios.framework.variantName',
+            message: 'Variant to build framework project with',
+            possibleValues: { iosVariantsConfiguration.variantsNames.value }
     )
 
     def version = new StringProperty(
