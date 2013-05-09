@@ -92,7 +92,6 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         otaIndexFile.location.mkdirs()
         otaIndexFile.location.delete()
         def urlMap = [:]
-        l.lifecycle("Skipping preparing OTA configuration for excluded builds: ${conf.excludedBuilds}")
         conf.allBuildableVariants.each { v ->
             if (releaseConf.manifestFiles[v.id]) {
                 l.lifecycle("Preparing OTA configuration for ${v.id}")

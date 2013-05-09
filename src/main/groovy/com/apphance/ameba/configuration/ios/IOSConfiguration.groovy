@@ -23,10 +23,8 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     //from old conf
     List<String> families = []
-    List<String> excludedBuilds = []
     Collection<Expando> allBuildableVariants = []
     List<String> allTargets = []
-    List<String> allConfigurations = []
     String mainTarget
     File distributionDir
     File plistFile

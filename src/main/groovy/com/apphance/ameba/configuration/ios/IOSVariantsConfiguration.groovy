@@ -1,7 +1,6 @@
 package com.apphance.ameba.configuration.ios
 
 import com.apphance.ameba.configuration.AbstractConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
@@ -80,7 +79,11 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    Collection<AndroidVariantConfiguration> getSubConfigurations() {
+    Collection<AbstractIOSVariant> getSubConfigurations() {
+        this.@variants
+    }
+
+    Collection<AbstractIOSVariant> getVariants() {
         this.@variants
     }
 

@@ -1,6 +1,7 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.configuration.ios.IOSVariantsConfiguration
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -16,25 +17,20 @@ class CopySourcesTask extends DefaultTask {
 
     @Inject
     IOSConfiguration conf
+    @Inject
+    IOSVariantsConfiguration variantsConf
 
     @TaskAction
     void copySources() {
-        conf.allTargets.each { target ->
-            conf.allConfigurations.each { configuration ->
-                if (!conf.isBuildExcluded(target + "-" + configuration)) {
-                    ant.sync(toDir: tmpDir(target, configuration),
-                            failonerror: false, overwrite: true, verbose: false) {
-                        fileset(dir: "${project.rootDir}/") {
-                            exclude(name: tmpDir(target, configuration).absolutePath + '/**/*')
-                            conf.sourceExcludes.each { exclude(name: it) }
-                        }
+        variantsConf.variants.each { v ->
+            ant.sync(toDir: v.tmpDir, failonerror: false, overwrite: true, verbose: false) {
+                fileset(dir: "${conf.rootDir}/") {
+                    exclude(name: v.tmpDir.absolutePath + '/**/*')
+                    conf.sourceExcludes.each { e ->
+                        exclude(name: e)
                     }
                 }
             }
         }
-    }
-
-    private File tmpDir(String target, String configuration) {
-        new File(conf.tmpDir, "${conf.projectName.value}-$target-$configuration")
     }
 }
