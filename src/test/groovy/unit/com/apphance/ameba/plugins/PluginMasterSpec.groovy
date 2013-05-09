@@ -4,6 +4,7 @@ import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.di.CommandExecutorModule
 import com.apphance.ameba.di.ConfigurationModule
 import com.apphance.ameba.di.EnvironmentModule
+import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.android.analysis.AndroidAnalysisPlugin
 import com.apphance.ameba.plugins.android.apphance.AndroidApphancePlugin
 import com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin
@@ -27,6 +28,7 @@ import spock.lang.Unroll
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static com.apphance.ameba.detection.ProjectType.IOS
+import static com.apphance.ameba.plugins.ios.XCodeOutputParserSpec.getXCODE_LIST
 
 class PluginMasterSpec extends Specification {
 
@@ -87,10 +89,10 @@ class PluginMasterSpec extends Specification {
         1 * mocks[after].apply(project)
 
         where:
-        before                     | after
-        ProjectPlugin | AndroidPlugin
-        AndroidPlugin              | ProjectReleasePlugin
-        ProjectReleasePlugin       | AndroidReleasePlugin
+        before               | after
+        ProjectPlugin        | AndroidPlugin
+        AndroidPlugin        | ProjectReleasePlugin
+        ProjectReleasePlugin | AndroidReleasePlugin
     }
 
     def 'test iOS plugins order'() {
@@ -118,10 +120,10 @@ class PluginMasterSpec extends Specification {
         1 * mocks[after].apply(project)
 
         where:
-        before                     | after
-        ProjectPlugin | IOSPlugin
-        IOSPlugin                  | ProjectReleasePlugin
-        ProjectReleasePlugin       | IOSReleasePlugin
+        before               | after
+        ProjectPlugin        | IOSPlugin
+        IOSPlugin            | ProjectReleasePlugin
+        ProjectReleasePlugin | IOSReleasePlugin
     }
 
     final projectTypeDetectorMock = Mock(ProjectTypeDetector)
@@ -153,6 +155,8 @@ class PluginMasterSpec extends Specification {
         def project = GroovyMock(Project)
         project.ext >> new DefaultExtraPropertiesExtension()
 
+        def iosExecutorMock = Stub(IOSExecutor, { list() >> XCODE_LIST })
+
         project.rootDir >> rootDir
         project.file('log') >> new File(System.properties['java.io.tmpdir'])
 
@@ -170,6 +174,7 @@ class PluginMasterSpec extends Specification {
                         mocks.each { type, instance ->
                             bind(type).toInstance(instance)
                         }
+                        bind(IOSExecutor).toInstance(iosExecutorMock)
                     }
                 })
     }
