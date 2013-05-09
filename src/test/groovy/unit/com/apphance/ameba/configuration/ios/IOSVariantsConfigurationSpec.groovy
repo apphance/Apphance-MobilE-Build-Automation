@@ -1,11 +1,13 @@
 package com.apphance.ameba.configuration.ios
 
+import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.executor.IOSExecutor
+import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import static com.apphance.ameba.plugins.ios.XCodeOutputParserSpec.LIST_WITHOUT_SCHEME
-import static com.apphance.ameba.plugins.ios.XCodeOutputParserSpec.getXCODE_LIST
+import static com.apphance.ameba.plugins.ios.XCodeOutputParserSpec.XCODE_LIST
 
 class IOSVariantsConfigurationSpec extends Specification {
 
@@ -14,6 +16,8 @@ class IOSVariantsConfigurationSpec extends Specification {
         given:
         def configuration = new IOSVariantsConfiguration()
         configuration.iosExecutor = Stub(IOSExecutor, { list() >> output })
+        configuration.parser = new IOSXCodeOutputParser()
+        configuration.persister = Stub(PropertyPersister, { get(_) >> '' })
 
         when:
         def variants = configuration.buildVariantsList()

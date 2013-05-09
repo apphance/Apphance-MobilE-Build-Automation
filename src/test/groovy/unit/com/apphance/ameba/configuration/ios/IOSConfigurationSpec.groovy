@@ -10,7 +10,7 @@ class IOSConfigurationSpec extends Specification {
     @Shared
     def p = builder().withProjectDir(new File('testProjects/ios/GradleXCode')).build()
     @Shared
-    def ic = new IOSConfiguration(p, * [null] * 2)
+    def ic = new IOSConfiguration(project: p)
 
     def 'possible xcodeproj dirs found'() {
         expect:

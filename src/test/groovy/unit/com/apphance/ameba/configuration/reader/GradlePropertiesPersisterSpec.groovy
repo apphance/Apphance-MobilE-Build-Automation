@@ -70,7 +70,9 @@ class GradlePropertiesPersisterSpec extends Specification {
         }, null)
         androidConfiguration.target.value = 'test target'
 
-        def iOSConfiguration = new IOSConfiguration(project, Mock(ProjectTypeDetector) { detectProjectType(_) >> IOS }, null)
+        def iOSConfiguration = new IOSConfiguration()
+        iOSConfiguration.project = project
+        iOSConfiguration.projectTypeDetector = Mock(ProjectTypeDetector) { detectProjectType(_) >> IOS }
         // TODO add some property and assertion to iOSConfiguration
 
         when:

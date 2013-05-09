@@ -2,12 +2,13 @@ package com.apphance.ameba.configuration.ios
 
 import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.executor.IOSExecutor
+import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import com.google.inject.Inject
-
-import static com.apphance.ameba.plugins.ios.IOSXCodeOutputParser.*
 
 @com.google.inject.Singleton
 class IOSVariantsConfiguration extends AbstractConfiguration {
@@ -20,6 +21,15 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Inject
     IOSConfiguration iosConf
+
+    @Inject
+    ApphanceConfiguration apphanceConf
+
+    @Inject
+    IOSXCodeOutputParser parser
+
+    @Inject
+    PropertyPersister persister
 
     enum IOSVariantType { SCHEME, TC}
 
@@ -47,20 +57,21 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @groovy.transform.PackageScope
     List<AbstractIOSVariant> readFromConfiguration() {
-        variantsNames.value.collect {variantType.value == 'Scheme' ? new IOSSchemeVariant(it) : new IOSTCVariant(it)}
+        variantsNames.value.collect {variantType.value == SCHEME.toString() ?
+            new IOSSchemeVariant(it, iosConf, apphanceConf, persister) : new IOSTCVariant(it, iosConf, apphanceConf, persister)}
     }
 
     @groovy.transform.PackageScope
     List<AbstractIOSVariant> extractDefaultVariants() {
         def list = iosExecutor.list()
-        def schemes = readSchemes(list)
+        def schemes = parser.readSchemes(list)
         if (schemes) {
-            schemes.collect { new IOSSchemeVariant(it) }
+            schemes.collect { new IOSSchemeVariant(it, iosConf, apphanceConf, persister) }
         } else {
-            def targets = readBaseTargets(list) // TODO replace with iosConf.allTargets
-            def configurations = readBaseConfigurations(list) // TODO replace with iosConf.allConfigurations
+            def targets = parser.readBaseTargets(list) // TODO replace with iosConf.allTargets
+            def configurations = parser.readBaseConfigurations(list) // TODO replace with iosConf.allConfigurations
 
-            [targets, configurations].combinations().sort().collect { target, conf -> new IOSTCVariant(target, conf) }
+            [targets, configurations].combinations().sort().collect { target, conf -> new IOSTCVariant(target + conf, iosConf, apphanceConf, persister) }
         }
     }
 
