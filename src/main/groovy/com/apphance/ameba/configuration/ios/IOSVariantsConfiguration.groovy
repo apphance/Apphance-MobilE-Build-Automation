@@ -22,8 +22,6 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     IOSConfiguration conf
     @Inject
     ApphanceConfiguration apphanceConf
-    @Inject
-    PropertyPersister persister
 
     enum IOSVariantType {
         SCHEME, TC
@@ -61,7 +59,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     List<AbstractIOSVariant> readFromConfiguration() {
         variantsNames.value.collect {
             variantType.value == SCHEME.name() ?
-                new IOSSchemeVariant(it, conf, apphanceConf, persister) : new IOSTCVariant(it, conf, apphanceConf, persister)
+                new IOSSchemeVariant(it, conf, apphanceConf, propertyPersister) : new IOSTCVariant(it, conf, apphanceConf, propertyPersister)
         }
     }
 
@@ -69,10 +67,10 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     List<AbstractIOSVariant> extractDefaultVariants() {
         def schemes = conf.schemes
         if (schemes) {
-            schemes.collect { new IOSSchemeVariant(it, conf, apphanceConf, persister) }
+            schemes.collect { new IOSSchemeVariant(it, conf, apphanceConf, propertyPersister) }
         } else {
             [conf.targets, conf.configurations].combinations().sort().collect {
-                t, c -> new IOSTCVariant("$t$c", this.conf, apphanceConf, persister)
+                t, c -> new IOSTCVariant("$t$c", this.conf, apphanceConf, propertyPersister)
             }
         }
     }
