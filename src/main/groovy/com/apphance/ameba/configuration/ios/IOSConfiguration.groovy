@@ -119,7 +119,11 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     }
 
     List<String> xcodebuildExecutionPath() {
-        ['xcodebuild', '-project', xcodeDir.value as String]
+        if (xcodeDir.value) {
+            ['xcodebuild', '-project', xcodeDir.value as String]
+        } else {
+            ['xcodebuild']
+        }
     }
 
     def sdk = new StringProperty(
