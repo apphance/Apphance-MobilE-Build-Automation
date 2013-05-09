@@ -6,49 +6,49 @@ import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyPersister
-import com.apphance.ameba.executor.IOSExecutor
-import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import com.google.inject.Inject
+
+import static com.apphance.ameba.configuration.ios.IOSVariantsConfiguration.IOSVariantType.SCHEME
+import static com.apphance.ameba.configuration.ios.IOSVariantsConfiguration.IOSVariantType.TC
 
 @com.google.inject.Singleton
 class IOSVariantsConfiguration extends AbstractConfiguration {
 
     String configurationName = 'IOS variants configuration'
-    List<AbstractIOSVariant> variants
+    private List<AbstractIOSVariant> variants
 
     @Inject
-    IOSExecutor iosExecutor
-
-    @Inject
-    IOSConfiguration iosConf
-
+    IOSConfiguration conf
     @Inject
     ApphanceConfiguration apphanceConf
-
-    @Inject
-    IOSXCodeOutputParser parser
-
     @Inject
     PropertyPersister persister
 
-    enum IOSVariantType { SCHEME, TC}
+    enum IOSVariantType {
+        SCHEME, TC
+
+        static List<String> names() {
+            values()*.name()
+        }
+    }
 
     @Override
     def init() {
         super.init()
         this.variants = buildVariantsList()
+        variantType.value = (conf.schemes ? SCHEME : TC).name()
     }
+
+    def variantType = new StringProperty(
+            name: 'ios.variants.type',
+            interactive: { false },
+            validator: { it in IOSVariantType.names() }
+    )
 
     def variantsNames = new ListStringProperty(
             name: 'ios.variants',
             message: 'Variants',
             possibleValues: { variantsNames.value ?: [] }
-    )
-
-    def variantType = new StringProperty(
-            name: 'ios.variants.type',
-            message: 'Variant type. [Scheme|TC]',
-            possibleValues: { IOSVariantType.values()*.toString() }
     )
 
     List<AbstractIOSVariant> buildVariantsList() {
@@ -57,32 +57,32 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @groovy.transform.PackageScope
     List<AbstractIOSVariant> readFromConfiguration() {
-        variantsNames.value.collect {variantType.value == SCHEME.toString() ?
-            new IOSSchemeVariant(it, iosConf, apphanceConf, persister) : new IOSTCVariant(it, iosConf, apphanceConf, persister)}
+        variantsNames.value.collect {
+            variantType.value == SCHEME.name() ?
+                new IOSSchemeVariant(it, conf, apphanceConf, persister) : new IOSTCVariant(it, conf, apphanceConf, persister)
+        }
     }
 
     @groovy.transform.PackageScope
     List<AbstractIOSVariant> extractDefaultVariants() {
-        def list = iosExecutor.list()
-        def schemes = parser.readSchemes(list)
+        def schemes = conf.schemes
         if (schemes) {
-            schemes.collect { new IOSSchemeVariant(it, iosConf, apphanceConf, persister) }
+            schemes.collect { new IOSSchemeVariant(it, conf, apphanceConf, persister) }
         } else {
-            def targets = parser.readBaseTargets(list) // TODO replace with iosConf.allTargets
-            def configurations = parser.readBaseConfigurations(list) // TODO replace with iosConf.allConfigurations
-
-            [targets, configurations].combinations().sort().collect { target, conf -> new IOSTCVariant(target + conf, iosConf, apphanceConf, persister) }
+            [conf.targets, conf.configurations].combinations().sort().collect {
+                t, c -> new IOSTCVariant("$t$c", this.conf, apphanceConf, persister)
+            }
         }
     }
 
     @Override
     boolean isEnabled() {
-        iosConf.enabled
+        conf.enabled
     }
 
     @Override
     Collection<AndroidVariantConfiguration> getSubConfigurations() {
-        variants
+        this.@variants
     }
 
     @Override

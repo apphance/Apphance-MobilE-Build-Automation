@@ -22,18 +22,18 @@ class IOSXCodeOutputParser {
         return readBaseTargets(trimmedOutput, { !it.endsWith('Tests') && !it.endsWith('Specs') })
     }
 
-    Collection readBaseConfigurations(List trimmed, Closure filter = { true }) {
+    Collection<String> readBaseConfigurations(List trimmed, Closure filter = { true }) {
         def startConfigurations = trimmed.indexOf('Build Configurations:')
         def configurations = trimmed[startConfigurations + 1..-1]
         def onlyConfigurations = configurations[0..configurations.indexOf('') - 1]
-        return onlyConfigurations.findAll(filter)
+        return onlyConfigurations.findAll(filter) as Collection<String>
     }
 
-    Collection readBaseTargets(List trimmed, Closure filter = { true }) {
+    Collection<String> readBaseTargets(List trimmed, Closure filter = { true }) {
         def startTargets = trimmed.indexOf('Targets:')
         def targets = trimmed[startTargets + 1..-1]
         def onlyTargets = targets[0..targets.indexOf('') - 1]
-        return onlyTargets.findAll(filter)
+        return onlyTargets.findAll(filter) as Collection<String>
     }
 
     Collection<String> readSchemes(List trimmed) {

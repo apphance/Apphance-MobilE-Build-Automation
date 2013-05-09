@@ -27,6 +27,18 @@ class IOSExecutor {
         run('-showsdks')
     }
 
+    List<String> targets() {
+        parser.readBaseTargets(list())
+    }
+
+    List<String> configurations() {
+        parser.readBaseConfigurations(list())
+    }
+
+    List<String> schemes() {
+        parser.readSchemes(list())
+    }
+
     List<String> list() {
         run('-list')*.trim()
     }

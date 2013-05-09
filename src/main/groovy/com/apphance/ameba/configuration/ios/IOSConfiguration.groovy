@@ -22,8 +22,6 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     String configurationName = 'iOS Configuration'
 
     //from old conf
-    List<String> targets = []
-    List<String> configurations = []
     List<String> families = []
     List<String> excludedBuilds = []
     Collection<Expando> allBuildableVariants = []
@@ -139,6 +137,18 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
             validator: { it in executor.simulatorSdks() },
             required: { true }
     )
+
+    List<String> getTargets() {
+        executor.targets()
+    }
+
+    List<String> getConfigurations() {
+        executor.configurations()
+    }
+
+    List<String> getSchemes() {
+        executor.schemes()
+    }
 
     Collection<String> sourceExcludes = ['**/build/**']
 

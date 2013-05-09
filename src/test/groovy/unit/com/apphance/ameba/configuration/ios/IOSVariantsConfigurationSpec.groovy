@@ -1,34 +1,34 @@
 package com.apphance.ameba.configuration.ios
 
 import com.apphance.ameba.configuration.reader.PropertyPersister
-import com.apphance.ameba.executor.IOSExecutor
-import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import spock.lang.Specification
 import spock.lang.Unroll
-
-import static com.apphance.ameba.plugins.ios.XCodeOutputParserSpec.LIST_WITHOUT_SCHEME
-import static com.apphance.ameba.plugins.ios.XCodeOutputParserSpec.XCODE_LIST
 
 class IOSVariantsConfigurationSpec extends Specification {
 
     @Unroll
     def 'test buildVariantsList #variantClass variant'() {
         given:
-        def configuration = new IOSVariantsConfiguration()
-        configuration.iosExecutor = Stub(IOSExecutor, { list() >> output })
-        configuration.parser = new IOSXCodeOutputParser()
-        configuration.persister = Stub(PropertyPersister, { get(_) >> '' })
+        def conf = GroovyMock(IOSConfiguration)
+        conf.configurations >> ['Debug', 'Release', 'QAWithApphance', 'QAWithoutApphance']
+        conf.targets >> ['Some', 'UnitTests', 'SomeWithMonkey', 'RunMonkeyTests', 'SomeSpecs', 'OtherSomeSpecs']
+        conf.schemes >> schemes
+
+        and:
+        def variantsConf = new IOSVariantsConfiguration()
+        variantsConf.conf = conf
+        variantsConf.persister = Stub(PropertyPersister, { get(_) >> '' })
 
         when:
-        def variants = configuration.buildVariantsList()
+        def variants = variantsConf.buildVariantsList()
 
         then:
         variants.size() == expectedSize
         variants.every { it.class == variantClass }
 
         where:
-        expectedSize | variantClass     | output
-        5            | IOSSchemeVariant | XCODE_LIST
-        24           | IOSTCVariant     | LIST_WITHOUT_SCHEME
+        expectedSize | variantClass     | schemes
+        5            | IOSSchemeVariant | ['Some', 'SomeWithMonkey', 'SomeSpecs', 'OtherSomeSpecs', 'RunMonkeyTests']
+        24           | IOSTCVariant     | []
     }
 }
