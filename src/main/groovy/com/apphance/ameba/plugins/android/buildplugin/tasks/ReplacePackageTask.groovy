@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 

@@ -2,7 +2,7 @@ package com.apphance.ameba.plugins.ios.ocunit
 
 import com.apphance.ameba.configuration.ios.IOSUnitTestConfiguration
 import com.apphance.ameba.plugins.ios.ocunit.tasks.RunUnitTestsTasks
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

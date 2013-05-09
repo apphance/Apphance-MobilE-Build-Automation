@@ -14,26 +14,20 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Android variants configuration'
 
-    private Project project
-    private AndroidConfiguration androidConf
-    private ApphanceConfiguration androidApphanceConf
+    @Inject
+    Project project
+    @Inject
+    AndroidConfiguration conf
+    @Inject
+    ApphanceConfiguration apphanceConf
 
     private List<AndroidVariantConfiguration> variants
 
-    @Inject
-    AndroidVariantsConfiguration(Project project,
-                                 AndroidConfiguration androidConf,
-                                 ApphanceConfiguration androidApphanceConf) {
-        this.project = project
-        this.androidConf = androidConf
-        this.androidApphanceConf = androidApphanceConf
-    }
-
     @Override
+    @Inject
     def init() {
         super.init()
         this.variants = buildVariantsList()
-
     }
 
     def variantsNames = new ListStringProperty(
@@ -82,7 +76,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     }
 
     private AndroidVariantConfiguration createVariant(String name) {
-        def avc = new AndroidVariantConfiguration(name, propertyPersister, androidConf, androidApphanceConf)
+        def avc = new AndroidVariantConfiguration(name, propertyPersister, conf, apphanceConf)
         avc.init()
         avc
     }
@@ -102,7 +96,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     boolean isEnabled() {
-        androidConf.enabled
+        conf.enabled
     }
 
     @Override

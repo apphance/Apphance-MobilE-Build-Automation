@@ -6,7 +6,8 @@ import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyPersister
-import com.google.inject.Inject
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.ios.IOSVariantsConfiguration.IOSVariantType.SCHEME
 import static com.apphance.ameba.configuration.ios.IOSVariantsConfiguration.IOSVariantType.TC
@@ -33,6 +34,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }
 
     @Override
+    @Inject
     def init() {
         super.init()
         this.variants = buildVariantsList()

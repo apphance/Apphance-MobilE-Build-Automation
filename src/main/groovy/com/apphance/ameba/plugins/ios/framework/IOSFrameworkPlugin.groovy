@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.ios.framework
 import com.apphance.ameba.configuration.ios.IOSFrameworkConfiguration
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
 import com.apphance.ameba.plugins.ios.framework.tasks.BuildFrameworkTask
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

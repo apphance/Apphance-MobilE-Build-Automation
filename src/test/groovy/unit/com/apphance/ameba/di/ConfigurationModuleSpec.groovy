@@ -10,7 +10,7 @@ import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.gradle.api.Project
 import spock.lang.Specification
 

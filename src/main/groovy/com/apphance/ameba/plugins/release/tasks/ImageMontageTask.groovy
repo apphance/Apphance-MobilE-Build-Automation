@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.release.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import com.google.inject.Inject
+import javax.inject.Inject
 import ij.ImagePlus
 import ij.ImageStack
 import ij.plugin.MontageMaker

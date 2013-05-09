@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.android.release.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
-import com.google.inject.Inject
+import javax.inject.Inject
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException

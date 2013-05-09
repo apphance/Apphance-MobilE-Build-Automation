@@ -6,7 +6,7 @@ import com.apphance.ameba.plugins.android.analysis.tasks.CheckstyleTask
 import com.apphance.ameba.plugins.android.analysis.tasks.FindBugsTask
 import com.apphance.ameba.plugins.android.analysis.tasks.PMDTask
 import com.apphance.ameba.plugins.android.buildplugin.tasks.CompileAndroidTask
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

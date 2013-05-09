@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.ios.ocunit.tasks
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSUnitTestConfiguration
 import com.apphance.ameba.executor.IOSExecutor
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 

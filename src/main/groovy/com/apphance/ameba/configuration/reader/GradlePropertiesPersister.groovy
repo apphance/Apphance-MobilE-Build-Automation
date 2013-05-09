@@ -4,7 +4,7 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.AbstractProperty
 import com.apphance.ameba.util.SortedProperties
 import com.google.common.io.Files
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.gradle.api.Project
 
 import java.text.SimpleDateFormat

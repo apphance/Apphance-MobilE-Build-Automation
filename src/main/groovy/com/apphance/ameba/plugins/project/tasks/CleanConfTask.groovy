@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.project.tasks
 
 import com.apphance.ameba.configuration.ProjectConfiguration
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 

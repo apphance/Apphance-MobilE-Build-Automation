@@ -26,9 +26,10 @@ class PluginMaster {
 
     def log = Logging.getLogger(getClass())
 
-    @Inject ProjectTypeDetector projectTypeDetector
-
-    @Inject Injector injector
+    @Inject
+    ProjectTypeDetector projectTypeDetector
+    @Inject
+    Injector injector
 
     static plugins = [
             COMMON: [

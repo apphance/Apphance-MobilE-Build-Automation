@@ -5,7 +5,7 @@ import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
 import com.apphance.ameba.plugins.android.AndroidArtifactProvider
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import com.google.inject.Inject
+import javax.inject.Inject
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction

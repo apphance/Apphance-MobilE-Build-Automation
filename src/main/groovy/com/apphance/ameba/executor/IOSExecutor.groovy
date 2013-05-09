@@ -4,7 +4,7 @@ import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
-import com.google.inject.Inject
+import javax.inject.Inject
 
 class IOSExecutor {
 
