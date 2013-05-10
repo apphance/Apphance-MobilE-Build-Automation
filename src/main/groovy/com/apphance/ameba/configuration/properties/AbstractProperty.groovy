@@ -9,9 +9,9 @@ abstract class AbstractProperty<T> {
 
     Closure<T> defaultValue = { null as T }
 
-    Closure<List<String>> possibleValues
+    Closure<List<String>> possibleValues = { [] as List<String>}
 
-    Closure<Boolean> validator = null
+    Closure<Boolean> validator = { true }
 
     Closure<Boolean> interactive = { true }
 

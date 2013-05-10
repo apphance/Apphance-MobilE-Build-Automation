@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.AbstractProperty
 
 import static java.lang.System.out
+import static org.apache.commons.lang.StringUtils.isBlank
 import static org.gradle.api.logging.Logging.getLogger
 
 class ConversationManager {
@@ -77,23 +78,17 @@ class ConversationManager {
 
     @groovy.transform.PackageScope
     String defaultValueString(AbstractProperty ap) {
-        ap.value ?: ap?.defaultValue() ?: ''
+        ap.value ?: ap?.defaultValue() ?: ap.possibleValues() ? ap.possibleValues().get(0) : ''
     }
 
     @groovy.transform.PackageScope
     String possibleValuesString(AbstractProperty ap) {
-        ap.possibleValues ? ", possible: ${ap.possibleValues()}" : ''
+        ap.possibleValues() ? ", possible: ${ap.possibleValues()}" : ''
     }
 
     @groovy.transform.PackageScope
     boolean validateInput(String input, AbstractProperty ap) {
-        input?.trim()?.empty ?
-            ap.value || ap.defaultValue() || !ap.required()
-        :
-            (ap.possibleValues || ap.validator) ?
-                (ap.possibleValues && input in ap.possibleValues()) || (ap.validator && ap.validator(input))
-            :
-                true
+        isBlank(input) && (defaultValueString(ap) || !ap.required()) || input in ap.possibleValues() || ap.validator(input)
     }
 
     @groovy.transform.PackageScope

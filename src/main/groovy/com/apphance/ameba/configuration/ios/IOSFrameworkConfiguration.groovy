@@ -64,6 +64,6 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
 
     @Override
     String getMessage() {
-        "'$configurationName' cannot be enabled because '${iosReleaseConfiguration.configurationName}' is enabled and those plugins are mutually exclusive"
+        "'$configurationName' cannot be enabled because '${iosReleaseConfiguration.configurationName}' is enabled and those plugins are mutually exclusive.\n"
     }
 }
