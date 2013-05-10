@@ -82,7 +82,7 @@ class AndroidPlugin implements Plugin<Project> {
             }
 
             project.tasks.each {
-                if (!(it.name in [VerifySetupTask.NAME, 'prepareSetup2'])) {
+                if (!(it.name in [VerifySetupTask.NAME, 'prepareSetup'])) {
                     it.dependsOn VerifySetupTask.NAME
                 }
             }
