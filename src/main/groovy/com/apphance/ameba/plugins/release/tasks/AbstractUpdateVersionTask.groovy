@@ -27,8 +27,8 @@ abstract class AbstractUpdateVersionTask extends DefaultTask {
 
     @TaskAction
     void updateVersion() {
-        def versionString = conf.externalVersionString
-        def versionCode = conf.externalVersionCode
+        def versionString = conf.extVersionString
+        def versionCode = conf.extVersionCode
 
         validateVersionString(versionString)
         validateVersionCode(versionCode)

@@ -50,7 +50,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
         throw new UnsupportedOperationException('not yet implemented')
     }
 
-    String getExternalVersionCode() {
+    String getExtVersionCode() {
         reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
     }
 
@@ -59,7 +59,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
         throw new UnsupportedOperationException('not yet implemented')
     }
 
-    String getExternalVersionString() {
+    String getExtVersionString() {
         reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
     }
 
@@ -117,11 +117,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     }
 
     List<String> xcodebuildExecutionPath() {
-        if (xcodeDir.value) {
-            ['xcodebuild', '-project', xcodeDir.value as String]
-        } else {
-            ['xcodebuild']
-        }
+        xcodeDir.value ? ['xcodebuild', '-project', xcodeDir.value as String] : ['xcodebuild']
     }
 
     def sdk = new StringProperty(

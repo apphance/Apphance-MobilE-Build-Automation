@@ -65,8 +65,8 @@ class UpdateVersionTaskSpec extends Specification {
     def 'version is updated correctly'() {
         given:
         def ac = GroovyMock(AndroidConfiguration)
-        ac.externalVersionCode >> '3145'
-        ac.externalVersionString >> '31.4.5'
+        ac.extVersionCode >> '3145'
+        ac.extVersionString >> '31.4.5'
         ac.rootDir >> projectDir
 
         and:

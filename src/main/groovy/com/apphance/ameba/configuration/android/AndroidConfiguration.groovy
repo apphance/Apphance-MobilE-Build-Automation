@@ -63,19 +63,19 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     @Override
     String getVersionCode() {
-        externalVersionCode ?: manifestHelper.readVersion(rootDir).versionCode ?: ''
+        extVersionCode ?: manifestHelper.readVersion(rootDir).versionCode ?: ''
     }
 
-    String getExternalVersionCode() {
+    String getExtVersionCode() {
         reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
     }
 
     @Override
     String getVersionString() {
-        externalVersionString ?: manifestHelper.readVersion(rootDir).versionString ?: ''
+        extVersionString ?: manifestHelper.readVersion(rootDir).versionString ?: ''
     }
 
-    String getExternalVersionString() {
+    String getExtVersionString() {
         reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
     }
 
