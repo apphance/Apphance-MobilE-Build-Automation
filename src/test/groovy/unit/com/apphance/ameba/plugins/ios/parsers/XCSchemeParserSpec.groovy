@@ -23,8 +23,6 @@ class XCSchemeParserSpec extends Specification {
 
         parser = new XCSchemeParser()
         parser.conf = conf
-
-
     }
 
     def cleanup() {
@@ -49,7 +47,6 @@ class XCSchemeParserSpec extends Specification {
         def id = parser.blueprintIdentifier(schemeName)
 
         then:
-        id.matches('[A-Z0-9]+')
         id == 'D382B71014703FE500E9CC9B'
     }
 

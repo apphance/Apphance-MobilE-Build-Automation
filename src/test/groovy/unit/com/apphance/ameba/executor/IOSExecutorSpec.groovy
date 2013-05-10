@@ -62,6 +62,10 @@ class IOSExecutorSpec extends Specification {
         and:
         xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')
 
+        and:
+        def slurped = new XmlSlurper().parse(new ByteArrayInputStream(xml.bytes))
+        slurped.dict.dict[1].key[0].text() == '6799F9CB151CA7A700178017'
+
         cleanup:
         tmpDir.deleteDir()
     }
