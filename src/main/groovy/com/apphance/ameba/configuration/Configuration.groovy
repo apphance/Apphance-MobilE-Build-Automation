@@ -7,4 +7,8 @@ interface Configuration {
     void setEnabled(boolean enabled)
 
     List<String> verify()
+
+    boolean canBeEnabled()
+
+    String getMessage()
 }

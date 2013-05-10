@@ -25,10 +25,15 @@ class ConversationManager {
     @groovy.transform.PackageScope
     void enablePlugin(AbstractConfiguration conf) {
         if (!conf.enabled) {
-            print "Enable plugin ${conf.configurationName}? [y/n] "
-            out.flush()
-            if (reader.readLine()?.equalsIgnoreCase('y')) {
-                conf.enabled = true
+            if (conf.canBeEnabled()) {
+                print "Enable plugin ${conf.configurationName}? [y/n] "
+                out.flush()
+                if (reader.readLine()?.equalsIgnoreCase('y')) {
+                    conf.enabled = true
+                }
+            } else {
+                print conf.message
+                out.flush()
             }
         }
     }

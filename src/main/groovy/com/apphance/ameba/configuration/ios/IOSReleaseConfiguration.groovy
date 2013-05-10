@@ -8,6 +8,7 @@ import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.properties.URLProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.plugins.release.AmebaArtifact
+import groovy.io.FileType
 
 import javax.inject.Inject
 import java.text.SimpleDateFormat
@@ -19,7 +20,7 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
     private boolean enabledInternal = false
 
     @Inject
-    IOSConfiguration conf
+    IOSConfiguration iosConf
 
     Map<String, AmebaArtifact> distributionZipFiles = [:]
     Map<String, AmebaArtifact> dSYMZipFiles = [:]
@@ -77,7 +78,7 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
 
     @Override
     File getOtaDir() {
-        new File(conf.rootDir, 'ameba-ota')
+        new File(iosConf.rootDir, 'ameba-ota')
     }
 
     @Override
@@ -143,12 +144,12 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
 
     @Override
     File getTargetDirectory() {
-        new File(new File(otaDir, projectDirName), conf.fullVersionString)
+        new File(new File(otaDir, projectDirName), iosConf.fullVersionString)
     }
 
     @Override
     URL getVersionedApplicationUrl() {
-        new URL(baseURL, "${projectDirName}/${conf.fullVersionString}/")
+        new URL(baseURL, "${projectDirName}/${iosConf.fullVersionString}/")
     }
 
     @Override
@@ -174,11 +175,28 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
 
     @Override
     boolean isEnabled() {
-        conf.enabled && enabledInternal
+        iosConf.enabled && enabledInternal
+    }
+
+    def findMobileProvisionFiles() {
+        def files = []
+        iosConf.project.rootDir.eachFileRecurse(FileType.FILES) {files << it}
+        files
     }
 
     @Override
     void setEnabled(boolean enabled) {
         enabledInternal = enabled
+    }
+
+    @Override
+    boolean canBeEnabled() {
+        !findMobileProvisionFiles().empty
+    }
+
+    @Override
+    String getMessage() {
+        "To enable configuration you need to provide mobile provision file somewhere in project directory.\n" +
+                "File must match *.mobileprovision. Can be placed anywhere in project source."
     }
 }

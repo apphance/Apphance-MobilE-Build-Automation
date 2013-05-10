@@ -10,8 +10,6 @@ import static org.apache.commons.lang.StringUtils.join
 
 abstract class AbstractConfiguration implements Configuration {
 
-    public static final String ACCESS_DENIED = 'Access denied to property. Configuration disabled.'
-
     @Inject
     PropertyPersister propertyPersister
 
@@ -81,4 +79,14 @@ abstract class AbstractConfiguration implements Configuration {
     }
 
     void checkProperties() {}
+
+    @Override
+    boolean canBeEnabled() {
+        return true
+    }
+
+    @Override
+    String getMessage() {
+        ""
+    }
 }
