@@ -22,6 +22,8 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
     IOSXCodeOutputParser parser
     @Inject
     IOSVariantsConfiguration iosVariantsConfiguration
+    @Inject
+    IOSReleaseConfiguration iosReleaseConfiguration
 
     @Override
     boolean isEnabled() {
@@ -54,4 +56,14 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
             name: 'ios.framework.resources',
             message: 'List of resources (coma separated) that should be copied to the framework'
     )
+
+    @Override
+    boolean canBeEnabled() {
+        !iosReleaseConfiguration.enabled
+    }
+
+    @Override
+    String getMessage() {
+        "'$configurationName' cannot be enabled because '${iosReleaseConfiguration.configurationName}' is enabled and those plugins are mutually exclusive"
+    }
 }
