@@ -4,7 +4,10 @@ import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
+
 import javax.inject.Inject
+
+import static com.apphance.ameba.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 
 class IOSExecutor {
 
@@ -41,6 +44,13 @@ class IOSExecutor {
 
     List<String> list() {
         run('-list')*.trim()
+    }
+
+    List<String> pbxProjToXml() {
+        commandExecutor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: "plutil -convert xml1 -o - ${conf.xcodeDir.value}/$PROJECT_PBXPROJ".split()))
+
     }
 
     def buildTarget(File dir, String target, String configuration, String sdk = conf.sdk.value, String params = "") {

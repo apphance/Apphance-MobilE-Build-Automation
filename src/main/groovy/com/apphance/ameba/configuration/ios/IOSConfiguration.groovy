@@ -36,6 +36,8 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     public static final List<String> FAMILIES = ['iPad', 'iPhone']
     //from old conf
 
+    public static final PROJECT_PBXPROJ = 'project.pbxproj'
+
     @Inject
     Project project
     @Inject
@@ -95,6 +97,10 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     @Override
     File getRootDir() {
         project.rootDir
+    }
+
+    File getSchemesDir() {
+        new File(xcodeDir.value, "xcshareddata${separator}xcschemes")
     }
 
     def xcodeDir = new FileProperty(
