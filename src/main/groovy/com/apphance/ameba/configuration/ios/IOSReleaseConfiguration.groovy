@@ -180,9 +180,14 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
 
     def findMobileProvisionFiles() {
         def files = []
-        iosConf.project.rootDir.eachFileRecurse(FileType.FILES) {files << it}
+        iosConf.rootDir.eachFileRecurse(FileType.FILES) {
+            if (it.name.endsWith('.mobileprovision')) {
+                files << it
+            }
+        }
         files
     }
+
 
     @Override
     void setEnabled(boolean enabled) {
