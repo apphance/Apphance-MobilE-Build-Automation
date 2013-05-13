@@ -4,6 +4,8 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.plugins.ios.parsers.PbxJsonParser
+import com.apphance.ameba.plugins.ios.parsers.XCSchemeParser
 
 import javax.inject.Inject
 
@@ -22,6 +24,10 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     IOSReleaseConfiguration releaseConf
     @Inject
     ApphanceConfiguration apphanceConf
+    @Inject
+    XCSchemeParser schemeParser
+    @Inject
+    PbxJsonParser pbxJsonParser
 
     enum IOSVariantType {
         SCHEME, TC
@@ -59,7 +65,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     List<AbstractIOSVariant> readFromConfiguration() {
         variantsNames.value.collect {
             variantType.value == SCHEME.name() ?
-                new IOSSchemeVariant(it, conf, releaseConf, apphanceConf, propertyPersister)
+                new IOSSchemeVariant(it, conf, releaseConf, apphanceConf, schemeParser, pbxJsonParser, propertyPersister)
             :
                 new IOSTCVariant(it, conf, releaseConf, apphanceConf, propertyPersister)
         }
@@ -69,7 +75,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     List<AbstractIOSVariant> extractDefaultVariants() {
         def schemes = conf.schemes
         if (schemes) {
-            schemes.collect { new IOSSchemeVariant(it, conf, releaseConf, apphanceConf, propertyPersister) }
+            schemes.collect { new IOSSchemeVariant(it, conf, releaseConf, apphanceConf, schemeParser, pbxJsonParser, propertyPersister) }
         } else {
             [conf.targets, conf.configurations].combinations().sort().collect {
                 t, c -> new IOSTCVariant("$t$c", this.conf, releaseConf, apphanceConf, propertyPersister)
