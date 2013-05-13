@@ -5,10 +5,9 @@ import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
-import com.google.common.io.Files
+import groovy.json.JsonSlurper
 import spock.lang.Specification
 
-import static com.apphance.ameba.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
@@ -22,9 +21,20 @@ class IOSExecutorSpec extends Specification {
 
     def logFiles = [(STD): createTempFile('tmp', 'file-out'), (ERR): createTempFile('tmp', 'file-err')]
 
+    def conf
+
+    def iosExecutor = new IOSExecutor()
+
     def setup() {
         fileLinker.fileLink(_) >> ''
         logFileGenerator.commandLogFiles() >> logFiles
+
+        conf = GroovyMock(IOSConfiguration)
+        conf.rootDir >> new File('testProjects/ios/GradleXCode')
+        conf.xcodeDir >> new FileProperty(value: new File('GradleXCode.xcodeproj'))
+
+        iosExecutor.commandExecutor = executor
+        iosExecutor.conf = conf
     }
 
     def cleanup() {
@@ -34,24 +44,6 @@ class IOSExecutorSpec extends Specification {
     }
 
     def 'pbxproj is converted to xml format well'() {
-        given:
-        def tmpDir = Files.createTempDir()
-
-        and:
-        Files.copy(
-                new File("testProjects/ios/GradleXCode/GradleXCode.xcodeproj/$PROJECT_PBXPROJ"),
-                new File(tmpDir, PROJECT_PBXPROJ))
-
-        and:
-        def conf = GroovyMock(IOSConfiguration)
-        conf.xcodeDir >> new FileProperty(value: tmpDir)
-        conf.rootDir >> tmpDir
-
-        and:
-        def iosExecutor = new IOSExecutor()
-        iosExecutor.commandExecutor = executor
-        iosExecutor.conf = conf
-
         when:
         def xml = iosExecutor.pbxProjToXml()
         xml = xml.join('\n')
@@ -65,8 +57,33 @@ class IOSExecutorSpec extends Specification {
         and:
         def slurped = new XmlSlurper().parse(new ByteArrayInputStream(xml.bytes))
         slurped.dict.dict[1].key[0].text() == '6799F9CB151CA7A700178017'
+    }
 
-        cleanup:
-        tmpDir.deleteDir()
+    def 'pbxproj is converted to json format well'() {
+        when:
+        def json = iosExecutor.pbxProjToJSON()
+        json = json.join('\n')
+
+        then:
+        noExceptionThrown()
+
+        and:
+        def slurped = new JsonSlurper().parseText(json)
+        slurped.objectVersion == '46'
+        slurped.archiveVersion == '1'
+    }
+
+    def 'plist is converted to json format well'() {
+        when:
+        def json = iosExecutor.plistToJSON(new File(conf.rootDir, "GradleXCode/GradleXCode-Info.plist"))
+        json = json.join('\n')
+
+        then:
+        noExceptionThrown()
+
+        and:
+        def slurped = new JsonSlurper().parseText(json)
+        slurped.CFBundleName == '${PRODUCT_NAME}'
+        slurped.CFBundleIdentifier == 'com.apphance.ameba'
     }
 }

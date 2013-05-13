@@ -49,13 +49,20 @@ class IOSExecutor {
     List<String> pbxProjToXml() {
         commandExecutor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: "plutil -convert xml1 -o - ${conf.xcodeDir.value}/$PROJECT_PBXPROJ".split()))
+                cmd: "plutil -convert xml1 ${conf.xcodeDir.value}/$PROJECT_PBXPROJ -o -".split()))
     }
 
     List<String> pbxProjToJSON() {
         commandExecutor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: "plutil -convert json -o - ${conf.xcodeDir.value}/$PROJECT_PBXPROJ".split()))
+                cmd: "plutil -convert json ${conf.xcodeDir.value}/$PROJECT_PBXPROJ -o -".split()))
+    }
+
+    List<String> plistToJSON(File plist) {
+        commandExecutor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: "plutil -convert json ${plist.absolutePath} -o -".split()
+        ))
     }
 
     def buildTarget(File dir, String target, String configuration, String sdk = conf.sdk.value, String params = "") {
