@@ -6,6 +6,7 @@ import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.google.inject.assistedinject.Assisted
+import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
@@ -14,6 +15,8 @@ import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
 import static com.apphance.ameba.configuration.apphance.ApphanceMode.DISABLED
 
 class AndroidVariantConfiguration extends AbstractConfiguration {
+
+    def log = Logging.getLogger(this.class)
 
     final String name
 
@@ -30,6 +33,7 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
     @Inject
     @Override
     void init() {
+        log.info("Initializing $name")
         apphanceAppKey.name = "android.variant.${name}.apphance.appKey"
         apphanceAppKey.message = "Apphance key for '$name'"
         apphanceMode.name = "android.variant.${name}.apphance.mode"
