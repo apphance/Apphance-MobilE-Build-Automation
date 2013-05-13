@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import org.gradle.api.Project
+import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
@@ -11,6 +12,8 @@ import static com.apphance.ameba.configuration.properties.ListStringProperty.get
 
 @com.google.inject.Singleton
 class AndroidVariantsConfiguration extends AbstractConfiguration {
+
+    def log = Logging.getLogger(this.class)
 
     String configurationName = 'Android variants configuration'
 
@@ -20,12 +23,14 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     AndroidConfiguration conf
     @Inject
     ApphanceConfiguration apphanceConf
+    @Inject
+    AndroidVariantFactory variantFactory
 
     private List<AndroidVariantConfiguration> variants
 
     @Override
     @Inject
-    def init() {
+    void init() {
         super.init()
         this.variants = buildVariantsList()
     }
@@ -37,6 +42,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     )
 
     private List<AndroidVariantConfiguration> buildVariantsList() {
+        log.info "Building variant list"
         List<AndroidVariantConfiguration> result = []
         if (variantsNames.value) {
             result.addAll(extractVariantsFromProperties())
@@ -47,11 +53,12 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
             result.addAll(extractDefaultVariants())
             variantsNames.value = result*.name.join(SEPARATOR)
         }
+        log.info "Created following variants: $variantsNames"
         result
     }
 
     private List<AndroidVariantConfiguration> extractVariantsFromProperties() {
-        variantsNames.value.collect { createVariant(it) }
+        variantsNames.value.collect { variantFactory.create(it) }
     }
 
     private boolean variantsDirExistsAndIsNotEmpty() {
@@ -66,20 +73,15 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     private List<AndroidVariantConfiguration> extractVariantsFromDir() {
         getVariantsDir().listFiles()*.name.collect { String dirName ->
             AndroidBuildMode.values().collect { it ->
-                createVariant(dirName.toLowerCase().capitalize() + it.capitalize())
+                variantFactory.create(dirName.toLowerCase().capitalize() + it.capitalize())
             }
         }.flatten()
     }
 
     private List<AndroidVariantConfiguration> extractDefaultVariants() {
-        AndroidBuildMode.values().collect { createVariant(it.capitalize()) }
+        AndroidBuildMode.values().collect { variantFactory.create(it.capitalize()) }
     }
 
-    private AndroidVariantConfiguration createVariant(String name) {
-        def avc = new AndroidVariantConfiguration(name, propertyPersister, conf, apphanceConf)
-        avc.init()
-        avc
-    }
 
     @Override
     Collection<AndroidVariantConfiguration> getSubConfigurations() {

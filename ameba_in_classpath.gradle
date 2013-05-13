@@ -12,8 +12,8 @@ rootProject.buildscript {
         file("$amebaProjectPath/plugins")
                 .listFiles()
                 .findAll { it.isDirectory() }
-        .collect { it.path }
-        .each { classpathDir ->
+                .collect { it.path }
+                .each { classpathDir ->
 
             classpath files(
                     classpathDir + "/build/resources/main",
@@ -27,6 +27,7 @@ rootProject.buildscript {
         classpath 'org.python:jython-standalone:2.7-b1'
         classpath 'com.google.inject:guice:3.0'
         classpath 'com.google.inject.extensions:guice-multibindings:3.0'
+        classpath 'com.google.inject.extensions:guice-assistedinject:3.0'
         classpath 'com.google.guava:guava:14.0.1'
         classpath 'org.apache.directory.studio:org.apache.commons.lang:2.6'
 

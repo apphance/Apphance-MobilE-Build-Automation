@@ -10,6 +10,7 @@ import com.apphance.ameba.configuration.reader.GradlePropertiesPersister
 import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.google.inject.AbstractModule
+import com.google.inject.assistedinject.FactoryModuleBuilder
 import com.google.inject.multibindings.MapBinder
 import org.gradle.api.Project
 
@@ -73,5 +74,7 @@ class ConfigurationModule extends AbstractModule {
         }
 
         bind(PropertyPersister).to(GradlePropertiesPersister)
+
+        install(new FactoryModuleBuilder().build(AndroidVariantFactory))
     }
 }

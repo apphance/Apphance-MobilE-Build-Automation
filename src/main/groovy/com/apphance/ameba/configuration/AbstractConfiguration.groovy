@@ -2,8 +2,8 @@ package com.apphance.ameba.configuration
 
 import com.apphance.ameba.configuration.properties.AbstractProperty
 import com.apphance.ameba.configuration.reader.PropertyPersister
-import javax.inject.Inject
 
+import javax.inject.Inject
 import java.lang.reflect.Field
 
 import static org.apache.commons.lang.StringUtils.join
@@ -16,7 +16,7 @@ abstract class AbstractConfiguration implements Configuration {
     List<String> errors = []
 
     @Inject
-    def init() {
+    void init() {
         amebaProperties.each {
             it.value = propertyPersister.get(it.name)
         }

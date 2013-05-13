@@ -5,7 +5,10 @@ import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
-import com.apphance.ameba.configuration.reader.PropertyPersister
+import com.google.inject.assistedinject.Assisted
+import org.gradle.api.logging.Logging
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
@@ -13,23 +16,24 @@ import static com.apphance.ameba.configuration.apphance.ApphanceMode.DISABLED
 
 class AndroidVariantConfiguration extends AbstractConfiguration {
 
+    def log = Logging.getLogger(this.class)
+
     final String name
-    private AndroidConfiguration conf
-    private ApphanceConfiguration apphanceConf
 
-    AndroidVariantConfiguration(String name,
-                                PropertyPersister persister,
-                                AndroidConfiguration androidConf,
-                                ApphanceConfiguration androidApphanceConf) {
-        this.propertyPersister = persister
+    @Inject
+    AndroidConfiguration conf
+    @Inject
+    ApphanceConfiguration apphanceConf
+
+    @Inject
+    AndroidVariantConfiguration(@Assisted String name) {
         this.name = name
-        this.conf = androidConf
-        this.apphanceConf = androidApphanceConf
-
-        initFields()
     }
 
-    private void initFields() {
+    @Inject
+    @Override
+    void init() {
+        log.info("Initializing $name")
         apphanceAppKey.name = "android.variant.${name}.apphance.appKey"
         apphanceAppKey.message = "Apphance key for '$name'"
         apphanceMode.name = "android.variant.${name}.apphance.mode"

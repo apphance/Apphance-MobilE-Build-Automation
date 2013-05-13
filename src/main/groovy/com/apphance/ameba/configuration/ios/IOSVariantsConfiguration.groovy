@@ -33,7 +33,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     @Inject
-    def init() {
+    void init() {
         super.init()
         this.variants = buildVariantsList()
         variantType.value = (conf.schemes ? SCHEME : TC).name()
