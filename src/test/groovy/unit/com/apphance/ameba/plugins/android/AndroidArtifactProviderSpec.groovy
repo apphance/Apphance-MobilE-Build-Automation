@@ -2,7 +2,7 @@ package com.apphance.ameba.plugins.android
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
 import spock.lang.Specification
 

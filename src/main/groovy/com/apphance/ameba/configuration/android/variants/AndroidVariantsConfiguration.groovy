@@ -1,19 +1,20 @@
-package com.apphance.ameba.configuration.android
+package com.apphance.ameba.configuration.android.variants
 
 import com.apphance.ameba.configuration.AbstractConfiguration
-import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
+import com.apphance.ameba.configuration.android.AndroidBuildMode
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import org.gradle.api.Project
-import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.properties.ListStringProperty.getSEPARATOR
+import static org.gradle.api.logging.Logging.getLogger
 
 @com.google.inject.Singleton
 class AndroidVariantsConfiguration extends AbstractConfiguration {
 
-    def log = Logging.getLogger(this.class)
+    def log = getLogger(getClass())
 
     String configurationName = 'Android variants configuration'
 
@@ -21,8 +22,6 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     Project project
     @Inject
     AndroidConfiguration conf
-    @Inject
-    ApphanceConfiguration apphanceConf
     @Inject
     AndroidVariantFactory variantFactory
 

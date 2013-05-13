@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.google.common.base.Preconditions
 import javax.inject.Inject
 import org.gradle.api.DefaultTask

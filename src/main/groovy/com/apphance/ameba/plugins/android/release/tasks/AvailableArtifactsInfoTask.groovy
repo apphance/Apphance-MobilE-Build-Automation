@@ -2,7 +2,7 @@ package com.apphance.ameba.plugins.android.release.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.plugins.android.AndroidArtifactProvider
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import javax.inject.Inject

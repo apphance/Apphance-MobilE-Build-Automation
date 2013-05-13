@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
-import com.apphance.ameba.configuration.ios.IOSVariantsConfiguration
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 

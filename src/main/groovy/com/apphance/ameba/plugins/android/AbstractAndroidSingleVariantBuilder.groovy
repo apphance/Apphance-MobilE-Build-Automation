@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.android
 
-import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.release.AndroidBuildListener
 import org.gradle.api.logging.Logger

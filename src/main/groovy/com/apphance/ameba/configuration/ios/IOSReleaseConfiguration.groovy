@@ -178,7 +178,8 @@ class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseCo
         iosConf.enabled && enabledInternal
     }
 
-    def findMobileProvisionFiles() {
+
+    List<File> findMobileProvisionFiles() {
         def files = []
         iosConf.rootDir.eachFileRecurse(FileType.FILES) {
             if (it.name.endsWith('.mobileprovision')) {

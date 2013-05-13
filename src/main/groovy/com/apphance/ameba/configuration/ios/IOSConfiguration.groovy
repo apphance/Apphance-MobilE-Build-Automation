@@ -38,6 +38,8 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     public static final PROJECT_PBXPROJ = 'project.pbxproj'
 
+    private List tcMatrix = []
+
     @Inject
     Project project
     @Inject
@@ -152,6 +154,13 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     List<String> getSchemes() {
         executor.schemes()
+    }
+
+    List<List<String>> getTargetConfigurationMatrix() {
+        if (!tcMatrix) {
+            tcMatrix = [targets, configurations].combinations().sort()
+        }
+        tcMatrix
     }
 
     Collection<String> sourceExcludes = ['**/build/**']

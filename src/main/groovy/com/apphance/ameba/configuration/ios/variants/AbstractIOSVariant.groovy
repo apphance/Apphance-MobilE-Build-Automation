@@ -1,47 +1,48 @@
-package com.apphance.ameba.configuration.ios
+package com.apphance.ameba.configuration.ios.variants
 
 import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceMode
+import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
-import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.plugins.ios.parsers.PbxJsonParser
 import com.apphance.ameba.plugins.ios.parsers.PlistParser
+import com.google.inject.assistedinject.Assisted
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.apphance.ApphanceMode.DISABLED
 
 abstract class AbstractIOSVariant extends AbstractConfiguration {
 
-    final String name
+    @Inject
     IOSConfiguration conf
+    @Inject
     IOSReleaseConfiguration releaseConf
+    @Inject
     ApphanceConfiguration apphanceConf
+    @Inject
     PlistParser plistParser
+    @Inject
     PbxJsonParser pbxJsonParser
+    @Inject
     PropertyReader reader
 
-    AbstractIOSVariant(String name,
-                       IOSConfiguration conf,
-                       IOSReleaseConfiguration releaseConf,
-                       ApphanceConfiguration apphanceConf,
-                       PbxJsonParser pbxJsonParser,
-                       PlistParser plistParser,
-                       PropertyPersister persister) {
-        this.name = name
-        this.conf = conf
-        this.releaseConf = releaseConf
-        this.apphanceConf = apphanceConf
-        this.plistParser = plistParser
-        this.pbxJsonParser = pbxJsonParser
-        this.propertyPersister = persister
+    final String name
 
-        initFields()
+    @Inject
+    AbstractIOSVariant(@Assisted String name) {
+        this.name = name
     }
 
-    private void initFields() {
+    @Override
+    @Inject
+    void init() {
+
         apphanceAppKey.name = "ios.variant.${name}.apphance.appKey"
         apphanceAppKey.message = "Apphance key for '$name'"
         apphanceMode.name = "ios.variant.${name}.apphance.mode"
@@ -77,8 +78,8 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
     def mobileprovision = new FileProperty(
             interactive: { releaseConf.enabled },
             required: { releaseConf.enabled },
-            possibleValues: { [] as List<String> }, //TODO
-            validator: { true } //TODO
+            possibleValues: { releaseConf.findMobileProvisionFiles()*.name as List<String> },
+            validator: { it in releaseConf.findMobileProvisionFiles()*.name }
     )
 
     File getTmpDir() {
@@ -116,4 +117,8 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
     abstract String getBuildableName()
 
     abstract List<String> buildCmd()
+
+    protected String sdkCmd() {
+        conf.sdk.value ? "-sdk ${conf.sdk.value}" : ''
+    }
 }

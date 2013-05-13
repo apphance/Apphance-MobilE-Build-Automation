@@ -4,8 +4,12 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.ReleaseConfiguration
 import com.apphance.ameba.configuration.android.*
+import com.apphance.ameba.configuration.android.variants.AndroidVariantFactory
+import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.ios.*
+import com.apphance.ameba.configuration.ios.variants.IOSVariantFactory
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.reader.GradlePropertiesPersister
 import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.detection.ProjectTypeDetector
@@ -32,8 +36,8 @@ class ConfigurationModule extends AbstractModule {
             (IOS): [
                     IOSConfiguration,
                     ApphanceConfiguration,
-                    IOSVariantsConfiguration,
                     IOSReleaseConfiguration,
+                    IOSVariantsConfiguration,
                     IOSFrameworkConfiguration,
                     IOSUnitTestConfiguration,
             ],
@@ -50,6 +54,15 @@ class ConfigurationModule extends AbstractModule {
             ],
     ]
 
+    def variantFactories = [
+            (ANDROID): [
+                    new FactoryModuleBuilder().build(AndroidVariantFactory)
+            ],
+            (IOS): [
+                    new FactoryModuleBuilder().build(IOSVariantFactory)
+            ],
+    ]
+
     private Project project
 
     @groovy.transform.PackageScope
@@ -63,18 +76,21 @@ class ConfigurationModule extends AbstractModule {
     protected void configure() {
         MapBinder<Integer, AbstractConfiguration> m = MapBinder.newMapBinder(binder(), Integer, AbstractConfiguration)
 
-        int index = 0
+        def pt = typeDetector.detectProjectType(project.rootDir)
 
-        configurations[typeDetector.detectProjectType(project.rootDir)].each {
+        def index = 0
+
+        configurations[pt].each {
             m.addBinding(index++).to(it)
         }
 
-        interfaces[typeDetector.detectProjectType(project.rootDir)].each {
+        interfaces[pt].each {
             bind(it.key).to(it.value)
         }
 
+        install(variantFactories[pt])
+
         bind(PropertyPersister).to(GradlePropertiesPersister)
 
-        install(new FactoryModuleBuilder().build(AndroidVariantFactory))
     }
 }

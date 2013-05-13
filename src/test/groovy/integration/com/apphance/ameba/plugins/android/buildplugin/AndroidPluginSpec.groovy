@@ -2,8 +2,8 @@ package com.apphance.ameba.plugins.android.buildplugin
 
 import com.apphance.ameba.configuration.android.AndroidBuildMode
 import com.apphance.ameba.configuration.android.AndroidConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.plugins.android.buildplugin.tasks.*
 import com.apphance.ameba.plugins.project.tasks.CleanConfTask
 import org.gradle.api.plugins.JavaPlugin

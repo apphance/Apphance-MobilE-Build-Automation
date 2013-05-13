@@ -1,22 +1,24 @@
-package com.apphance.ameba.configuration.android
+package com.apphance.ameba.configuration.android.variants
 
 import com.apphance.ameba.configuration.AbstractConfiguration
+import com.apphance.ameba.configuration.android.AndroidBuildMode
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.google.inject.assistedinject.Assisted
-import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
 import static com.apphance.ameba.configuration.apphance.ApphanceMode.DISABLED
+import static org.gradle.api.logging.Logging.getLogger
 
 class AndroidVariantConfiguration extends AbstractConfiguration {
 
-    def log = Logging.getLogger(this.class)
+    def log = getLogger(getClass())
 
     final String name
 

@@ -2,7 +2,7 @@ package com.apphance.ameba.plugins.android.release.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.plugins.release.AmebaArtifact

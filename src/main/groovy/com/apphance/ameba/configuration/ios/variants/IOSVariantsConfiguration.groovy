@@ -1,51 +1,36 @@
-package com.apphance.ameba.configuration.ios
+package com.apphance.ameba.configuration.ios.variants
 
 import com.apphance.ameba.configuration.AbstractConfiguration
-import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
+import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
-import com.apphance.ameba.plugins.ios.parsers.PbxJsonParser
-import com.apphance.ameba.plugins.ios.parsers.PlistParser
-import com.apphance.ameba.plugins.ios.parsers.XCSchemeParser
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.configuration.ios.IOSVariantsConfiguration.IOSVariantType.SCHEME
-import static com.apphance.ameba.configuration.ios.IOSVariantsConfiguration.IOSVariantType.TC
+import static IOSVariantType.SCHEME
+import static IOSVariantType.TC
 
 @com.google.inject.Singleton
 class IOSVariantsConfiguration extends AbstractConfiguration {
 
     String configurationName = 'IOS variants configuration'
+
     private List<AbstractIOSVariant> variants
 
     @Inject
     IOSConfiguration conf
-    @Inject
-    IOSReleaseConfiguration releaseConf
-    @Inject
-    ApphanceConfiguration apphanceConf
-    @Inject
-    XCSchemeParser schemeParser
-    @Inject
-    PbxJsonParser pbxJsonParser
-    @Inject
-    PlistParser plistParser
 
-    enum IOSVariantType {
-        SCHEME, TC
-
-        static List<String> names() {
-            values()*.name()
-        }
-    }
+    @Inject
+    IOSVariantFactory variantFactory
 
     @Override
     @Inject
     void init() {
-        super.init()
+
         this.variants = buildVariantsList()
         variantType.value = (conf.schemes ? SCHEME : TC).name()
+
+        super.init()
     }
 
     def variantType = new StringProperty(
@@ -60,6 +45,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
             possibleValues: { variantsNames.value ?: [] }
     )
 
+    @groovy.transform.PackageScope
     List<AbstractIOSVariant> buildVariantsList() {
         readFromConfiguration() ?: extractDefaultVariants()
     }
@@ -68,9 +54,9 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     List<AbstractIOSVariant> readFromConfiguration() {
         variantsNames.value.collect {
             variantType.value == SCHEME.name() ?
-                new IOSSchemeVariant(it, conf, releaseConf, apphanceConf, schemeParser, pbxJsonParser, plistParser, propertyPersister)
+                variantFactory.createSchemeVariant(it)
             :
-                new IOSTCVariant(it, conf, releaseConf, apphanceConf, pbxJsonParser, plistParser, propertyPersister)
+                variantFactory.createTCVariant(it)
         }
     }
 
@@ -78,10 +64,12 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     List<AbstractIOSVariant> extractDefaultVariants() {
         def schemes = conf.schemes
         if (schemes) {
-            schemes.collect { new IOSSchemeVariant(it, conf, releaseConf, apphanceConf, schemeParser, pbxJsonParser, plistParser, propertyPersister) }
+            variantsNames.value = schemes
+            variantsNames.value.collect { variantFactory.createSchemeVariant(it) }
         } else {
-            [conf.targets, conf.configurations].combinations().sort().collect {
-                t, c -> new IOSTCVariant("$t$c", this.conf, releaseConf, apphanceConf, pbxJsonParser, plistParser, propertyPersister)
+            variantsNames.value = conf.targetConfigurationMatrix.collect { t, c -> "$t$c" }
+            variantsNames.value.collect {
+                variantFactory.createTCVariant(it)
             }
         }
     }

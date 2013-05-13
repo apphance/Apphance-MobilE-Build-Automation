@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.android.apphance.tasks
 
-import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.plugins.android.AndroidManifestHelper
 import com.apphance.ameba.plugins.apphance.ApphancePluginCommons

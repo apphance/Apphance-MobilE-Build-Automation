@@ -1,6 +1,7 @@
 package com.apphance.ameba.configuration.ios
 
 import com.apphance.ameba.configuration.AbstractConfiguration
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.executor.IOSExecutor

@@ -5,7 +5,7 @@ import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.ReleaseConfiguration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker

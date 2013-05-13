@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.android.apphance.tasks
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.AndroidArtifactProvider
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper

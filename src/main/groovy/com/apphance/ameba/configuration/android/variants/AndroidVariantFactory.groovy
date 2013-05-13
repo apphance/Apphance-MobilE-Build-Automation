@@ -1,4 +1,4 @@
-package com.apphance.ameba.configuration.android
+package com.apphance.ameba.configuration.android.variants
 
 interface AndroidVariantFactory {
 

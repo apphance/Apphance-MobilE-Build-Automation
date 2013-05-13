@@ -1,5 +1,8 @@
 package com.apphance.ameba.configuration.ios
 
+import com.apphance.ameba.configuration.ios.variants.IOSSchemeVariant
+import com.apphance.ameba.configuration.ios.variants.IOSTCVariant
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.reader.PropertyPersister
 import spock.lang.Specification
 import spock.lang.Unroll
