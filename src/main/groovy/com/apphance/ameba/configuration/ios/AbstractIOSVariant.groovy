@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.configuration.properties.ApphanceModeProperty
+import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyPersister
 
@@ -13,14 +14,18 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
 
     final String name
     IOSConfiguration conf
+    IOSReleaseConfiguration releaseConf
     ApphanceConfiguration apphanceConf
+
 
     AbstractIOSVariant(String name,
                        IOSConfiguration conf,
+                       IOSReleaseConfiguration releaseConf,
                        ApphanceConfiguration apphanceConf,
                        PropertyPersister persister) {
         this.name = name
         this.conf = conf
+        this.releaseConf = releaseConf
         this.apphanceConf = apphanceConf
         this.propertyPersister = persister
 
@@ -60,6 +65,13 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
             validator: { it?.matches('([0-9]+\\.)*[0-9]+') }
     )
 
+    def mobileprovision = new FileProperty(
+            interactive: { releaseConf.enabled },
+            required: { releaseConf.enabled },
+            possibleValues: { [] as List<String> }, //TODO
+            validator: { true } //TODO
+    )
+
     File getTmpDir() {
         new File(conf.tmpDir, name)
     }
@@ -73,6 +85,14 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
     boolean isEnabled() {
         conf.enabled
     }
+
+    abstract File getPlist()
+
+    abstract String getVersionCode()
+
+    abstract String getVersionString()
+
+    abstract String getBuildableName()
 
     abstract List<String> buildCmd()
 }
