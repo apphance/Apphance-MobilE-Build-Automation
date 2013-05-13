@@ -20,12 +20,14 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     AndroidConfiguration conf
     @Inject
     ApphanceConfiguration apphanceConf
+    @Inject
+    AndroidVariantFactory variantFactory
 
     private List<AndroidVariantConfiguration> variants
 
     @Override
     @Inject
-    def init() {
+    void init() {
         super.init()
         this.variants = buildVariantsList()
     }
@@ -76,7 +78,8 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     }
 
     private AndroidVariantConfiguration createVariant(String name) {
-        def avc = new AndroidVariantConfiguration(name, propertyPersister, conf, apphanceConf)
+        def avc = variantFactory.create(name)
+//        def avc = new AndroidVariantConfiguration(name, propertyPersister, conf, apphanceConf)
         avc.init()
         avc
     }

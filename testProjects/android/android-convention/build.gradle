@@ -9,6 +9,3 @@ ext {
     apphanceUserName = "maciej.opala@polidea.pl"
     apphancePassword = "apphancetest"
 }
-amebaPropertyDefaults {
-    defaults = "['project.url.base':'http://www.example.com']"
-}
