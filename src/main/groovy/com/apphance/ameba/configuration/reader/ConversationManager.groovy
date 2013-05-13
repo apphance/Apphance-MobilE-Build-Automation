@@ -11,12 +11,11 @@ class ConversationManager {
 
     private log = getLogger(getClass())
 
-    def reader = buildReader()
+    def reader = new BufferedReader(new InputStreamReader(System.in))
 
     def resolveConfigurations(Collection<? extends AbstractConfiguration> configurations) {
         configurations.each { AbstractConfiguration c ->
-            enablePlugin(c)
-            readValues(c)
+            c.enabled ? readValues(c) : enablePlugin(c)
         }
 
         log.info('All configurations resolved')
@@ -25,79 +24,68 @@ class ConversationManager {
 
     @groovy.transform.PackageScope
     void enablePlugin(AbstractConfiguration conf) {
-        if (!conf.enabled) {
-            if (conf.canBeEnabled()) {
-                print "Enable plugin ${conf.configurationName}? [y/n] "
-                out.flush()
-                if (reader.readLine()?.equalsIgnoreCase('y')) {
-                    conf.enabled = true
-                }
-            } else {
-                print conf.message
-                out.flush()
+        if (conf.canBeEnabled()) {
+            print "Enable plugin ${conf.configurationName}? [y/n] "
+            out.flush()
+            if (reader.readLine()?.equalsIgnoreCase('y')) {
+                conf.enabled = true
             }
+        } else {
+            print conf.message
+            out.flush()
         }
     }
 
     @groovy.transform.PackageScope
-    void readValues(AbstractConfiguration c) {
-        if (c.enabled) {
-            readProperties(c.amebaProperties)
-            if (!c.subConfigurations?.empty) {
-                resolveConfigurations(c.subConfigurations)
-            }
-        }
-    }
-
-    private void readProperties(List<AbstractProperty> properties) {
-        properties.each {
+    void readValues(AbstractConfiguration conf) {
+        conf.amebaProperties.findAll { it.interactive() }.each {
             readProperty(it)
+        }
+        if (!conf.subConfigurations?.empty) {
+            resolveConfigurations(conf.subConfigurations)
         }
     }
 
     private void readProperty(AbstractProperty ap) {
-        if (ap.interactive()) {
-            String input
-
-            while (true) {
-                print prompt(ap)
-                out.flush()
-                input = reader.readLine()
-                if (validateInput(input, ap))
-                    break
+        while (true) {
+            print prompt(ap)
+            out.flush()
+            def input = reader.readLine()
+            if (validateInput(input, ap)) {
+                setPropertyValue(ap, input)
+                break
             }
-
-            setPropertyValue(ap, input)
         }
     }
 
     @groovy.transform.PackageScope
-    String prompt(AbstractProperty ap) {
-        "${ap.message}, default: '${defaultValueString(ap)}'${possibleValuesString(ap)}: "
+    boolean validateInput(String input, AbstractProperty ap) {
+        if (isBlank(input)) {
+            effectiveDefaultValue(ap) || !ap.required()
+        } else {
+            ap.validator(input)
+        }
     }
 
     @groovy.transform.PackageScope
-    String defaultValueString(AbstractProperty ap) {
+    void setPropertyValue(AbstractProperty ap, String input) {
+        ap.value = isBlank(input) ? effectiveDefaultValue(ap) : input
+
+        log.info("Property '${ap.name}' value set to: ${ap.value}")
+    }
+
+    @groovy.transform.PackageScope
+    String effectiveDefaultValue(AbstractProperty ap) {
         ap.value ?: ap?.defaultValue() ?: ap.possibleValues() ? ap.possibleValues().get(0) : ''
+    }
+
+    @groovy.transform.PackageScope
+    String prompt(AbstractProperty ap) {
+        "${ap.message}, default: '${effectiveDefaultValue(ap)}'${possibleValuesString(ap)}: "
     }
 
     @groovy.transform.PackageScope
     String possibleValuesString(AbstractProperty ap) {
         ap.possibleValues() ? ", possible: ${ap.possibleValues()}" : ''
-    }
-
-    @groovy.transform.PackageScope
-    boolean validateInput(String input, AbstractProperty ap) {
-        isBlank(input) && (defaultValueString(ap) || !ap.required()) || input in ap.possibleValues() || ap.validator(input)
-    }
-
-    @groovy.transform.PackageScope
-    void setPropertyValue(AbstractProperty ap, String input) {
-        ap.value = input?.empty ? ap.value ?: ap?.defaultValue() ?: null : input
-        log.info("Property '${ap.name}' value set to: ${ap.value}")
-    }
-
-    private Reader buildReader() {
-        new BufferedReader(new InputStreamReader(System.in))
     }
 }

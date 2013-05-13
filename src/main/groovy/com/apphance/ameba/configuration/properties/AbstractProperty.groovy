@@ -11,7 +11,7 @@ abstract class AbstractProperty<T> {
 
     Closure<List<String>> possibleValues = { [] as List<String>}
 
-    Closure<Boolean> validator = { true }
+    Closure<Boolean> validator = { possibleValues().empty || it in possibleValues() }
 
     Closure<Boolean> interactive = { true }
 
