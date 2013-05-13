@@ -7,6 +7,9 @@ import com.apphance.ameba.configuration.properties.ApphanceModeProperty
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyPersister
+import com.apphance.ameba.configuration.reader.PropertyReader
+import com.apphance.ameba.plugins.ios.parsers.PbxJsonParser
+import com.apphance.ameba.plugins.ios.parsers.PlistParser
 
 import static com.apphance.ameba.configuration.apphance.ApphanceMode.DISABLED
 
@@ -16,17 +19,23 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
     IOSConfiguration conf
     IOSReleaseConfiguration releaseConf
     ApphanceConfiguration apphanceConf
-
+    PlistParser plistParser
+    PbxJsonParser pbxJsonParser
+    PropertyReader reader
 
     AbstractIOSVariant(String name,
                        IOSConfiguration conf,
                        IOSReleaseConfiguration releaseConf,
                        ApphanceConfiguration apphanceConf,
+                       PbxJsonParser pbxJsonParser,
+                       PlistParser plistParser,
                        PropertyPersister persister) {
         this.name = name
         this.conf = conf
         this.releaseConf = releaseConf
         this.apphanceConf = apphanceConf
+        this.plistParser = plistParser
+        this.pbxJsonParser = pbxJsonParser
         this.propertyPersister = persister
 
         initFields()
@@ -88,9 +97,21 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
 
     abstract File getPlist()
 
-    abstract String getVersionCode()
+    String getVersionCode() {
+        extVersionCode ?: plistParser.getVersionCode(plist) ?: ''
+    }
 
-    abstract String getVersionString()
+    String getExtVersionCode() {
+        reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
+    }
+
+    String getVersionString() {
+        extVersionString ?: plistParser.getVersionString(plist) ?: ''
+    }
+
+    String getExtVersionString() {
+        reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
+    }
 
     abstract String getBuildableName()
 
