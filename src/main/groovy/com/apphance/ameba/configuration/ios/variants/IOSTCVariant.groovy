@@ -35,10 +35,12 @@ class IOSTCVariant extends AbstractIOSVariant {
         throw new UnsupportedOperationException('to be done')
     }
 
+    @Override
     String getTarget() {
         this.@target
     }
 
+    @Override
     String getConfiguration() {
         this.@configuration
     }

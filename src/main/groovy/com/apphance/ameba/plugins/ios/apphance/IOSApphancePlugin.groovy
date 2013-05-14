@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.ios.apphance
 
-import com.apphance.ameba.configuration.ios.AbstractIOSVariant
-import com.apphance.ameba.configuration.ios.IOSVariantsConfiguration
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.apphance.ApphancePluginCommons
@@ -36,8 +36,8 @@ class IOSApphancePlugin implements Plugin<Project> {
         addApphanceConfiguration(project)
 
         variantsConf.variants.each { AbstractIOSVariant variant ->
-            if (variant.apphanceMode.value in [QA, PROD, SILENT]*.name()) {
-                def addApphance = { new AddIOSApphanceTask(project, executor, iosExecutor, it).addIOSApphance() }
+            if (variant.apphanceMode.value in [QA, PROD, SILENT]*.toString()) {
+                def addApphance = { new AddIOSApphanceTask(it).addIOSApphance() }
 
                 project.tasks[variant.buildTaskName()].doFirst(addApphance)
                 project.tasks[IOSAllSimulatorsBuilder.NAME]?.doFirst(addApphance)

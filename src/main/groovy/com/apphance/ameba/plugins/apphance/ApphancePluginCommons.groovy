@@ -5,7 +5,7 @@ import org.gradle.api.Project
 
 class ApphancePluginCommons {
 
-    def prepareApphanceLibDependency(Project p, String defaultDependency) {
+    String prepareApphanceLibDependency(Project p, String defaultDependency) {
         boolean apphanceDependencyNotPresent = p.configurations.apphance.dependencies.isEmpty()
         if (apphanceDependencyNotPresent) {
             String apphanceLibDependency = ''

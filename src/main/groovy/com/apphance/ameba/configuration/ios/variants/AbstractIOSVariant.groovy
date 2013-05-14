@@ -122,6 +122,10 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
 
     abstract List<String> buildCmd()
 
+    abstract String getConfiguration()
+
+    abstract String getTarget()
+
     protected String sdkCmd() {
         conf.sdk.value ? "-sdk ${conf.sdk.value}" : ''
     }

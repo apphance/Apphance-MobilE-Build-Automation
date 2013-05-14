@@ -31,4 +31,15 @@ class IOSSchemeVariant extends AbstractIOSVariant {
     List<String> buildCmd() {
         conf.xcodebuildExecutionPath() + "-scheme $name ${sdkCmd()}".split()
     }
+
+    @Override
+    String getConfiguration() {
+        schemeParser.configurationName(name)
+    }
+
+    @Override
+    String getTarget() {
+        // FIXME implement
+        return null
+    }
 }
