@@ -19,7 +19,7 @@ import static java.io.File.separator
 import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(ApphancePluginCommons)
-class AddIOSApphanceTask extends DefaultTask {
+class AddIOSApphanceTask {
 
     static final FRAMEWORK_PATTERN = ~/.*[aA]pphance.*\.framework/
 
@@ -30,11 +30,10 @@ class AddIOSApphanceTask extends DefaultTask {
     @Inject ApphanceConfiguration apphanceConf
     @Inject IOSConfiguration iosConfiguration
 
-    //TODO PbxProjectHelper should be injected
     //TODO remove unused fields
     //TODO this class should be written as a service
 
-    private PbxProjectHelper pbxProjectHelper
+    @Inject PbxProjectHelper pbxProjectHelper
     private AbstractIOSVariant variant
     private String target
     private String configuration
