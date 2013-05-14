@@ -50,7 +50,7 @@ class MailMessageTaskIntegrationSpec extends Specification {
         def ac = GroovyMock(AndroidConfiguration)
         ac.projectName >> new StringProperty(value: projectName)
         ac.fullVersionString >> fullVersionString
-        ac.versionString >> '42'
+        ac.versionString >> '1.0.1'
 
         and:
         def task = p.task(MailMessageTask.NAME, type: MailMessageTask) as MailMessageTask
@@ -74,7 +74,7 @@ class MailMessageTaskIntegrationSpec extends Specification {
         def html = new XmlSlurper().parse(mailMsgFile)
         html.head.title.text() == 'TestAndroidProject - Android'
         html.body.b[0].text() == 'TestAndroidProject'
-        html.body.b[1].text() == '42'
+        html.body.b[1].text() == '1.0.1'
         html.body.p[0].ul.li.a.@href.text() == 'http://ota.polidea.pl/otaIndexFile.html'
         html.body.p[1].ul.li[0].text() == 'release'
         html.body.p[1].ul.li[1].text() == 'notes'

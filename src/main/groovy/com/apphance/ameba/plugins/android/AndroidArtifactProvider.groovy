@@ -18,7 +18,7 @@ class AndroidArtifactProvider {
     @Inject
     AndroidReleaseConfiguration releaseConf
 
-    AndroidBuilderInfo jarArtifactBuilderInfo(AndroidVariantConfiguration avc) {
+    AndroidBuilderInfo jarBuilderInfo(AndroidVariantConfiguration avc) {
         def bi = builderInfo(avc)
         bi.originalFile = new File(binDir(avc), 'classes.jar')
         bi
@@ -28,7 +28,7 @@ class AndroidArtifactProvider {
         artifact(bi, JAR)
     }
 
-    AndroidBuilderInfo apkArtifactBuilderInfo(AndroidVariantConfiguration avc) {
+    AndroidBuilderInfo apkBuilderInfo(AndroidVariantConfiguration avc) {
         def bi = builderInfo(avc)
         bi.originalFile = new File(binDir(avc), "${conf.projectName.value}-${avc.mode.lowerCase()}.${APK.lowerCase()}")
         bi
