@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import com.apphance.ameba.configuration.ReleaseConfiguration
+import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction

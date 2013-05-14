@@ -78,7 +78,7 @@ class AndroidReleaseConfigurationSpec extends Specification {
         and:
         def arc = new AndroidReleaseConfiguration()
         arc.reader = reader
-        arc.mailServerInternal = new StringProperty(value: mailServerProperty)
+        arc.mailServerInternal.value = mailServerProperty
 
         expect:
         arc.mailServer == mailPortExpected
@@ -127,7 +127,7 @@ class AndroidReleaseConfigurationSpec extends Specification {
         icons.contains('res/drawable/icon.png')
     }
 
-    def 'default icon are found'() {
+    def 'default icons are found'() {
         given:
         def projectDir = 'testProjects/android/android-basic'
 
@@ -143,5 +143,16 @@ class AndroidReleaseConfigurationSpec extends Specification {
 
         expect:
         arc.defaultIcon().absolutePath.endsWith('drawable/icon.png')
+    }
+
+    def 'fields from superclass are also accessible'() {
+        given:
+        def fields = new AndroidReleaseConfiguration().propertyFields
+
+        expect:
+        fields.size() > 0
+
+        and:
+        fields*.name.containsAll('iconFile','projectURL')
     }
 }

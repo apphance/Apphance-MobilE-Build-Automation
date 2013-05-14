@@ -29,6 +29,6 @@ class ConfigurationSpec extends Specification {
     }
 
     def 'configuration name'() {
-        expect: new AndroidReleaseConfiguration().enabledPropKey == 'android.release.configuration.enabled'
+        expect: new AndroidReleaseConfiguration().enabledPropKey == 'release.configuration.enabled'
     }
 }

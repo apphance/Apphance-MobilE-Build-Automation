@@ -1,13 +1,13 @@
 package com.apphance.ameba.plugins.release
 
-import com.apphance.ameba.configuration.ReleaseConfiguration
+import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import com.apphance.ameba.plugins.release.tasks.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
+import static org.gradle.api.logging.Logging.getLogger
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
 
 /**
@@ -22,10 +22,10 @@ import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
  */
 class ProjectReleasePlugin implements Plugin<Project> {
 
-    def l = Logging.getLogger(getClass())
+    def l = getLogger(getClass())
 
     @Inject
-    private ReleaseConfiguration releaseConf
+    ReleaseConfiguration releaseConf
 
     @Override
     void apply(Project project) {

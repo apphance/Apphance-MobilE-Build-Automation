@@ -33,7 +33,10 @@ abstract class AbstractConfiguration implements Configuration {
     }
 
     List<Field> getPropertyFields() {
-        getClass().declaredFields.findAll {
+        List<Field> fields = []
+        fields.addAll(this.getClass().declaredFields)
+        fields.addAll(this.getClass()?.superclass?.declaredFields)
+        fields.findAll {
             it.accessible = true
             it.get(this)?.class?.superclass == AbstractProperty
         }
