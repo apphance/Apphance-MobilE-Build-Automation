@@ -1,9 +1,5 @@
 package com.apphance.ameba.plugins.ios
 
-import com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever
-import org.gradle.api.GradleException
-import org.gradle.api.Project
-
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -75,44 +71,4 @@ class IOSXCodeOutputParser {
         def matcher = firstLine =~ /.*"(.*)"/
         return matcher[0][1]
     }
-
-    File findMobileProvisionFile(Project project, String target, String configuration,
-                                 boolean checkForNewBundleId = true) {
-        IOSProjectConfiguration iosConf = IOSConfigurationRetriever.getIosProjectConfiguration(project)
-
-        File distributionDirectory = iosConf.distributionDirectory
-        if (checkForNewBundleId && iosConf.distributionDirectories[configuration] != null) {
-            distributionDirectory = iosConf.distributionDirectories[configuration];
-            if (!distributionDirectory.exists()) {
-                throw new GradleException("The directory ${distributionDirectory} must exist and mobile provision files must be placed there")
-            }
-        }
-        File f = new File(distributionDirectory, "${target}-${configuration}.mobileprovision")
-        if (f.exists()) {
-            l.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
-            return f
-        }
-        f = new File(distributionDirectory, "${target}.mobileprovision")
-        if (f.exists()) {
-            l.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
-            return f
-        }
-        f = new File(distributionDirectory, "${iosConf.mainTarget}.mobileprovision")
-        if (f.exists()) {
-            l.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
-            return f
-        }
-        distributionDirectory.eachFile {
-            if (it.name.endsWith('.mobileprovision')) {
-                f = it
-            }
-        }
-        if (f == null) {
-            throw new GradleException("The mobileprovision file cannot be found in ${iosConf.distributionDirectory}." +
-                    "Please add one and name it ${iosConf.mainTarget}.mobileprovision")
-        }
-        l.lifecycle("Mobile provision file found in ${iosConf.distributionDirectory}: ${f}")
-        return f
-    }
-
 }
