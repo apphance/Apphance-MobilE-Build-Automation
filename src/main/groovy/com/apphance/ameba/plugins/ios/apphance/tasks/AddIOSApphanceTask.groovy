@@ -1,16 +1,18 @@
 package com.apphance.ameba.plugins.ios.apphance.tasks
 
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
+import com.apphance.ameba.configuration.ios.AbstractIOSVariant
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.apphance.ApphancePluginCommons
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
+import com.google.inject.Inject
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 import static com.apphance.ameba.plugins.apphance.ApphanceProperty.APPLICATION_KEY
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
 import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
@@ -18,43 +20,35 @@ import static java.io.File.separator
 import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(ApphancePluginCommons)
-class AddIOSApphanceTask {
+class AddIOSApphanceTask extends DefaultTask{
 
     static final FRAMEWORK_PATTERN = ~/.*[aA]pphance.*\.framework/
 
     private l = getLogger(getClass())
 
     private Project project
-    private CommandExecutor executor
-    private IOSExecutor iosExecutor
-    private IOSProjectConfiguration iosConf
+    @Inject CommandExecutor executor
+    @Inject IOSExecutor iosExecutor
+//    private IOSProjectConfiguration iosConf
     private PbxProjectHelper pbxProjectHelper
+
+    @Inject ApphanceConfiguration apphanceConf
 
     private String variant
     private String target
     private String configuration
 
-    AddIOSApphanceTask(Project project, CommandExecutor executor, IOSExecutor iosExecutor) {
+    AddIOSApphanceTask(Project project, CommandExecutor executor, IOSExecutor iosExecutor, AbstractIOSVariant variantConf) {
         this.project = project
         this.executor = executor
         this.iosExecutor = iosExecutor
-        this.iosConf = getIosProjectConfiguration(project)
         this.pbxProjectHelper = new PbxProjectHelper(project.properties['apphance.lib']?.toString(),
                 project.properties['apphance.mode']?.toString())
 
-        this.variant = "${iosConf.mainTarget}-Debug"
-        this.target = iosConf.mainTarget
+        this.variant = variantConf.name
+        // FIXME this.target = variantConf.
         this.configuration = 'Debug'
     }
-
-    AddIOSApphanceTask(Project project, CommandExecutor executor, IOSExecutor iosExecutor, Expando details) {
-        this(project, executor, iosExecutor)
-        this.variant = details.id
-        this.target = details.target
-        this.configuration = details.configuration
-    }
-
-
 
     void addIOSApphance() {
         def builder = new IOSSingleVariantBuilder(project, iosExecutor)
@@ -77,9 +71,7 @@ class AddIOSApphanceTask {
             }
         }
 
-        apphancePresent ?
-            l.lifecycle("Apphance already in project") :
-            l.lifecycle("Apphance not in project")
+        l.lifecycle("Apphance ${apphancePresent ? 'already' : 'not'} in project")
 
         apphancePresent
     }

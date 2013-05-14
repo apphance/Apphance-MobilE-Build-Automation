@@ -1,79 +1,51 @@
 package com.apphance.ameba.plugins.ios.apphance
 
+import com.apphance.ameba.configuration.ios.AbstractIOSVariant
+import com.apphance.ameba.configuration.ios.IOSVariantsConfiguration
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.apphance.ApphancePluginCommons
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.apphance.tasks.AddIOSApphanceTask
 import com.apphance.ameba.plugins.ios.apphance.tasks.UploadIOSArtifactTask
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.IOSAllSimulatorsBuilder
 import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
-import com.apphance.ameba.util.Preconditions
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
-import static com.apphance.ameba.plugins.release.ProjectReleasePlugin.PREPARE_IMAGE_MONTAGE_TASK_NAME
+import static com.apphance.ameba.configuration.apphance.ApphanceMode.*
 
 /**
  * Plugin for all apphance-relate IOS tasks.
  *
+ * This plugins provides automated adding of Apphance libraries to the project
  */
-@Mixin(Preconditions)
 @Mixin(ApphancePluginCommons)
 class IOSApphancePlugin implements Plugin<Project> {
 
     @Inject
-    private CommandExecutor executor
+    CommandExecutor executor
     @Inject
-    private IOSExecutor iosExecutor
-
-    private Project project
-    private IOSProjectConfiguration iosConf
+    IOSExecutor iosExecutor
+    @Inject
+    IOSVariantsConfiguration variantsConf
 
     @Override
     void apply(Project project) {
-        this.project = project
-        this.iosConf = getIosProjectConfiguration(project)
-
         addApphanceConfiguration(project)
-        preProcessBuildsWithApphance()
-        preProcessBuildAllSimulatorsTask()
 
-//        project.prepareSetup.prepareSetupOperations << new PrepareApphanceSetupOperation()
-//        project.verifySetup.verifySetupOperations << new VerifyApphanceSetupOperation()
-//        project.showSetup.showSetupOperations << new ShowApphancePropertiesOperation()
-    }
+        variantsConf.variants.each { AbstractIOSVariant variant ->
+            if (variant.apphanceMode.value in [QA, PROD, SILENT]*.name()) {
+                def addApphance = { new AddIOSApphanceTask(project, executor, iosExecutor, it).addIOSApphance() }
 
-    private void preProcessBuildsWithApphance() {
-        iosConf.allBuildableVariants.each { v ->
-            def buildTask = project.tasks["build-${v.id}"]
-            buildTask.doFirst { new AddIOSApphanceTask(project, executor, iosExecutor, v).addIOSApphance() }
-            prepareSingleBuildUpload(buildTask, v)
-        }
-    }
+                project.tasks[variant.buildTaskName()].doFirst(addApphance)
+                project.tasks[IOSAllSimulatorsBuilder.NAME]?.doFirst(addApphance)
 
-    private void prepareSingleBuildUpload(Task buildTask, Expando e) {
-        def task = project.task("upload-${e.noSpaceId}")
-        task.description = 'Uploads ipa, dsym & image_montage to Apphance server'
-        task.group = AMEBA_APPHANCE_SERVICE
-        task << { new UploadIOSArtifactTask(project, iosExecutor, e).uploadIOSArtifact() }
-        task.dependsOn(buildTask.name)
-        task.dependsOn(ImageMontageTask.NAME)
-    }
-
-    private void preProcessBuildAllSimulatorsTask() {
-        if (project.tasks.findByName(IOSAllSimulatorsBuilder.NAME)) {
-            project.tasks[IOSAllSimulatorsBuilder.NAME].doFirst {
-                new AddIOSApphanceTask(project, executor, iosExecutor).addIOSApphance()
+                project.task("upload${variant.name}",
+                        type: UploadIOSArtifactTask,
+                        dependsOn: [variant.buildTaskName(), ImageMontageTask.NAME]).variant = variant
             }
         }
     }
-
-    static public final String DESCRIPTION =
-        "This plugins provides automated adding of Apphance libraries to the project.\n"
 }
