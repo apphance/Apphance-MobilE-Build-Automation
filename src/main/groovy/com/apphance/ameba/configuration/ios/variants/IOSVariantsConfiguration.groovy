@@ -9,6 +9,7 @@ import javax.inject.Inject
 
 import static IOSVariantType.SCHEME
 import static IOSVariantType.TC
+import static com.apphance.ameba.configuration.properties.ListStringProperty.getSEPARATOR
 
 @com.google.inject.Singleton
 class IOSVariantsConfiguration extends AbstractConfiguration {
@@ -26,11 +27,9 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     @Override
     @Inject
     void init() {
-
-        this.variants = buildVariantsList()
-        variantType.value = (conf.schemes ? SCHEME : TC).name()
-
         super.init()
+        variantType.value ?: (conf.schemes ? SCHEME : TC).name()
+        this.variants = buildVariantsList()
     }
 
     def variantType = new StringProperty(
@@ -47,11 +46,21 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @groovy.transform.PackageScope
     List<AbstractIOSVariant> buildVariantsList() {
-        readFromConfiguration() ?: extractDefaultVariants()
+        List<AbstractIOSVariant> result = []
+        if (variantsNames.value) {
+            result.addAll(extractVariantsFromProperties())
+        } else if (hasSchemes()) {
+            result.addAll(createVariantsFromSchemes())
+            variantsNames.value = result*.name.join(SEPARATOR)
+        } else {
+            result.addAll(createVariantsFromTargetsAndConfigurations())
+            variantsNames.value = result*.name.join(SEPARATOR)
+        }
+        result
     }
 
     @groovy.transform.PackageScope
-    List<AbstractIOSVariant> readFromConfiguration() {
+    List<AbstractIOSVariant> extractVariantsFromProperties() {
         variantsNames.value.collect {
             variantType.value == SCHEME.name() ?
                 variantFactory.createSchemeVariant(it)
@@ -60,18 +69,16 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         }
     }
 
-    @groovy.transform.PackageScope
-    List<AbstractIOSVariant> extractDefaultVariants() {
-        def schemes = conf.schemes
-        if (schemes) {
-            variantsNames.value = schemes
-            variantsNames.value.collect { variantFactory.createSchemeVariant(it) }
-        } else {
-            variantsNames.value = conf.targetConfigurationMatrix.collect { t, c -> "$t$c" }
-            variantsNames.value.collect {
-                variantFactory.createTCVariant(it)
-            }
-        }
+    private boolean hasSchemes() {
+        !(conf.schemes.findAll { it != null && !it?.trim()?.empty }).empty
+    }
+
+    private List<AbstractIOSVariant> createVariantsFromSchemes() {
+        conf.schemes.collect { variantFactory.createSchemeVariant(it) }
+    }
+
+    private List<AbstractIOSVariant> createVariantsFromTargetsAndConfigurations() {
+        conf.targetConfigurationMatrix.collect { t, c -> "$t$c" }.collect { variantFactory.createTCVariant(it.toString()) }
     }
 
     @Override
@@ -95,4 +102,5 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     @Override
     void checkProperties() {
     }
+
 }

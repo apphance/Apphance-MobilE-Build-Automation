@@ -7,7 +7,10 @@ import com.apphance.ameba.configuration.android.*
 import com.apphance.ameba.configuration.android.variants.AndroidVariantFactory
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
-import com.apphance.ameba.configuration.ios.*
+import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.configuration.ios.IOSFrameworkConfiguration
+import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.configuration.ios.IOSUnitTestConfiguration
 import com.apphance.ameba.configuration.ios.variants.IOSVariantFactory
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.reader.GradlePropertiesPersister
@@ -87,7 +90,6 @@ class ConfigurationModule extends AbstractModule {
         interfaces[pt].each {
             bind(it.key).to(it.value)
         }
-
         install(variantFactories[pt])
 
         bind(PropertyPersister).to(GradlePropertiesPersister)

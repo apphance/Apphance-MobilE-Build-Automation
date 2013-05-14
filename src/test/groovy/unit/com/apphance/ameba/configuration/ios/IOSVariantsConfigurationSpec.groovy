@@ -2,6 +2,7 @@ package com.apphance.ameba.configuration.ios
 
 import com.apphance.ameba.configuration.ios.variants.IOSSchemeVariant
 import com.apphance.ameba.configuration.ios.variants.IOSTCVariant
+import com.apphance.ameba.configuration.ios.variants.IOSVariantFactory
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.reader.PropertyPersister
 import spock.lang.Specification
@@ -13,14 +14,21 @@ class IOSVariantsConfigurationSpec extends Specification {
     def 'test buildVariantsList #variantClass variant'() {
         given:
         def conf = GroovyMock(IOSConfiguration)
-        conf.configurations >> ['Debug', 'Release', 'QAWithApphance', 'QAWithoutApphance']
-        conf.targets >> ['Some', 'UnitTests', 'SomeWithMonkey', 'RunMonkeyTests', 'SomeSpecs', 'OtherSomeSpecs']
+        def targets = ['Debug', 'Release', 'QAWithApphance', 'QAWithoutApphance']
+        def configurations = ['Some', 'UnitTests', 'SomeWithMonkey', 'RunMonkeyTests', 'SomeSpecs', 'OtherSomeSpecs']
         conf.schemes >> schemes
+        conf.targetConfigurationMatrix >> [targets, configurations].combinations()
+
+        and:
+        def vf = GroovyMock(IOSVariantFactory)
+        vf.createSchemeVariant(_) >> new IOSSchemeVariant('scheme')
+        vf.createTCVariant(_) >> new IOSTCVariant('tc')
 
         and:
         def variantsConf = new IOSVariantsConfiguration()
         variantsConf.conf = conf
         variantsConf.propertyPersister = Stub(PropertyPersister, { get(_) >> '' })
+        variantsConf.variantFactory = vf
 
         when:
         def variants = variantsConf.buildVariantsList()

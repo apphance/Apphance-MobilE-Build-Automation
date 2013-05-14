@@ -21,7 +21,6 @@ import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import org.gradle.api.Project
-import org.gradle.api.internal.plugins.DefaultExtraPropertiesExtension
 import org.gradle.api.plugins.PluginContainer
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -36,7 +35,7 @@ class PluginMasterSpec extends Specification {
     def 'test if all #type plugins are applied'() {
         given:
         def mocks = (plugins + commonPlugins).collect(mockToMap).sum()
-        def master = createInjectorForPluginsMocks(mocks).getInstance(PluginMaster)
+        def master = createInjectorForPluginsMocks(mocks, file).getInstance(PluginMaster)
 
         and:
         def project = Mock(Project)
@@ -59,15 +58,15 @@ class PluginMasterSpec extends Specification {
         }
 
         where:
-        type    | plugins
-        ANDROID | androidPlugins
-        IOS     | iosPlugins
+        type    | plugins        | file
+        ANDROID | androidPlugins | 'AndroidManifest.xml'
+        IOS     | iosPlugins     | 'GradleXCode.xcodeproj'
     }
 
     def 'test Android plugins order'() {
         given:
         def mocks = (commonPlugins + androidPlugins).collect(mockToMap).sum()
-        def master = createInjectorForPluginsMocks(mocks).getInstance(PluginMaster)
+        def master = createInjectorForPluginsMocks(mocks, 'AndroidManifest.xml').getInstance(PluginMaster)
 
         and:
         def project = Mock(Project)
@@ -98,7 +97,7 @@ class PluginMasterSpec extends Specification {
     def 'test iOS plugins order'() {
         given:
         def mocks = (commonPlugins + iosPlugins).collect(mockToMap).sum()
-        def master = createInjectorForPluginsMocks(mocks).getInstance(PluginMaster)
+        def master = createInjectorForPluginsMocks(mocks, 'GradleXCode.xcodeproj').getInstance(PluginMaster)
 
         and:
         def project = Mock(Project)
@@ -149,11 +148,10 @@ class PluginMasterSpec extends Specification {
             IOSUnitTestPlugin
     ]
 
-    def createInjectorForPluginsMocks(mocks) {
+    def createInjectorForPluginsMocks(mocks, file) {
         def rootDir = Mock(File)
-        rootDir.list() >> ['AndroidManifest.xml']
+        rootDir.list() >> [file]
         def project = GroovyMock(Project)
-        project.ext >> new DefaultExtraPropertiesExtension()
 
         def iosExecutorMock = Stub(IOSExecutor, { list() >> XCODE_LIST })
 

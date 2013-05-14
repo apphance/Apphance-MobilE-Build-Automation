@@ -41,7 +41,6 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     )
 
     private List<AndroidVariantConfiguration> buildVariantsList() {
-        log.info "Building variant list"
         List<AndroidVariantConfiguration> result = []
         if (variantsNames.value) {
             result.addAll(extractVariantsFromProperties())
@@ -52,7 +51,6 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
             result.addAll(extractDefaultVariants())
             variantsNames.value = result*.name.join(SEPARATOR)
         }
-        log.info "Created following variants: $variantsNames"
         result
     }
 
