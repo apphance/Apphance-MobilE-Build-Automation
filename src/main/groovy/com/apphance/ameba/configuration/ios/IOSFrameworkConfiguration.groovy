@@ -5,7 +5,7 @@ import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.executor.IOSExecutor
-import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
+import com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParser
 
 import javax.inject.Inject
 

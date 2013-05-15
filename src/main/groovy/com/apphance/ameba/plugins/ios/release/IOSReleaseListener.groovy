@@ -7,15 +7,15 @@ import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.IOSArtifactProvider
 import com.apphance.ameba.plugins.ios.IOSBuilderInfo
-import com.apphance.ameba.plugins.ios.MPParser
 import com.apphance.ameba.plugins.ios.buildplugin.IOSBuildListener
+import com.apphance.ameba.plugins.ios.parsers.MPParser
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.AntBuilder
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.configuration.ios.IOSConfiguration.getFAMILIES
+import static com.apphance.ameba.configuration.ios.IOSConfiguration.FAMILIES
 import static org.gradle.api.logging.Logging.getLogger
 
 /**

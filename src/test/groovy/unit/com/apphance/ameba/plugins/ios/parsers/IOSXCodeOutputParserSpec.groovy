@@ -1,9 +1,10 @@
-package com.apphance.ameba.plugins.ios
+package com.apphance.ameba.plugins.ios.parsers
 
+import com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParser
 import spock.lang.Shared
 import spock.lang.Specification
 
-class XCodeOutputParserSpec extends Specification {
+class IOSXCodeOutputParserSpec extends Specification {
 
     @Shared
     def parser = new IOSXCodeOutputParser()

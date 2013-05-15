@@ -3,8 +3,8 @@ package com.apphance.ameba.plugins.ios.release.tasks
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
-import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
-import com.apphance.ameba.plugins.ios.MPParser
+import com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParser
+import com.apphance.ameba.plugins.ios.parsers.MPParser
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import groovy.text.SimpleTemplateEngine

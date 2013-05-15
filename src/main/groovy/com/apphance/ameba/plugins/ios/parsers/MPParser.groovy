@@ -1,13 +1,13 @@
-package com.apphance.ameba.plugins.ios
+package com.apphance.ameba.plugins.ios.parsers
 
 import com.sun.org.apache.xpath.internal.XPathAPI
 import org.gradle.api.GradleException
-import org.gradle.api.Project
 import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 import org.w3c.dom.Element
 
 import javax.xml.parsers.DocumentBuilderFactory
+
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Parses plist file.
@@ -15,7 +15,7 @@ import javax.xml.parsers.DocumentBuilderFactory
  */
 class MPParser {
 
-    static Logger logger = Logging.getLogger(MPParser.class)
+    static Logger logger = getLogger(MPParser.class)
 
     static String readBundleIdFromProvisionFile(URL mobileprovisionUrl) {
         String xml = extractXML(mobileprovisionUrl)
@@ -75,21 +75,6 @@ class MPParser {
         def rest = lines[startPlist..-1]
         def xml = rest[0..rest.findIndexOf { it.startsWith('</plist') }]
         return xml.join("\n")
-    }
-
-    static Element getParsedPlist(String pListFileName, Project project) {
-
-        if (pListFileName == null) {
-            return null
-        }
-
-        File pListFile = new File("${project.rootDir}/${pListFileName}")
-
-        if (!pListFile.exists() || !pListFile.isFile()) {
-            return null
-        }
-
-        return new XMLBomAwareFileReader().readXMLFileIncludingBom(pListFile)
     }
 
     static Element getParsedPlist(File file) {

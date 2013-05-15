@@ -20,8 +20,8 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     String configurationName = 'iOS Configuration'
 
-    static final List<String> FAMILIES = ['iPad', 'iPhone']
-    static final PROJECT_PBXPROJ = 'project.pbxproj'
+    public static final List<String> FAMILIES = ['iPad', 'iPhone']
+    public static final PROJECT_PBXPROJ = 'project.pbxproj'
 
     private List tcMatrix = []
 

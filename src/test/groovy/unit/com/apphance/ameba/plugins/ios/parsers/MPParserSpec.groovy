@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.ios
+package com.apphance.ameba.plugins.ios.parsers
 
 import groovy.xml.DOMBuilder
 import spock.lang.Shared

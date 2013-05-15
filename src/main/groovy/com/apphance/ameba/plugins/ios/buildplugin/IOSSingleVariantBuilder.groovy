@@ -7,8 +7,8 @@ import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.IOSArtifactProvider
 import com.apphance.ameba.plugins.ios.IOSBuilderInfo
-import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
-import com.apphance.ameba.plugins.ios.MPParser
+import com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParser
+import com.apphance.ameba.plugins.ios.parsers.MPParser
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import com.sun.org.apache.xpath.internal.XPathAPI
 import org.gradle.api.Project

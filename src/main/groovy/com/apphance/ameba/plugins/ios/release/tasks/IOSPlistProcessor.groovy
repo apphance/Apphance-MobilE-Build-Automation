@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.ios.release.tasks
 
-import com.apphance.ameba.plugins.ios.XMLBomAwareFileReader
+import com.apphance.ameba.plugins.ios.parsers.XMLBomAwareFileReader
 import com.sun.org.apache.xpath.internal.XPathAPI
 import org.w3c.dom.Element
 

@@ -27,7 +27,7 @@ import spock.lang.Unroll
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static com.apphance.ameba.detection.ProjectType.IOS
-import static com.apphance.ameba.plugins.ios.XCodeOutputParserSpec.XCODE_LIST
+import static com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParserSpec.XCODE_LIST
 
 class PluginMasterSpec extends Specification {
 
