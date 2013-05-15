@@ -95,10 +95,6 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         this.@variants
     }
 
-    String getMainVariantName() {
-        variantsNames.value?.empty ? null : variantsNames.value[0]
-    }
-
     AbstractIOSVariant getMainVariant() {
         variants[0]
     }
@@ -106,5 +102,4 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     @Override
     void checkProperties() {
     }
-
 }

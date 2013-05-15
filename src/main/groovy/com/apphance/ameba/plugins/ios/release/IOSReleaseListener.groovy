@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.ios.release
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
@@ -40,7 +41,7 @@ class IOSReleaseListener implements IOSBuildListener {
     IOSVariantsConfiguration variantsConf
 
     @Override
-    public void buildDone(IOSBuilderInfo bi) {
+    void buildDone(IOSBuilderInfo bi) {
         if (conf.versionString != null) {
             if (bi.configuration != 'Debug') {
                 prepareDistributionZipFile(bi)
@@ -60,53 +61,46 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
     private void prepareDistributionZipFile(IOSBuilderInfo bi) {
-        AmebaArtifact distributionZipArtifact = prepareDistributionZipArtifact(bi)
-        distributionZipArtifact.location.parentFile.mkdirs()
-        distributionZipArtifact.location.delete()
+        AmebaArtifact aa = prepareDistributionZipArtifact(bi)
+        aa.location.parentFile.mkdirs()
+        aa.location.delete()
         //TODO how to zip the file with new configuration?
 //        ant.zip(destfile: distributionZipArtifact.location) {
 //            zipfileset(dir: conf.distributionDir,
 //                    includes: parser.findMobileProvisionFile(project, bi.target, bi.configuration).name)
 //            zipfileset(dir: bi.buildDir, includes: "${bi.target}.app/**")
 //        }
-        l.lifecycle("Distribution zip file created: ${distributionZipArtifact}")
+        l.lifecycle("Distribution zip file created: $aa")
     }
 
     private AmebaArtifact prepareDistributionZipArtifact(IOSBuilderInfo bi, boolean checkIfExists = false) {
-        AmebaArtifact distributionZipArtifact = new AmebaArtifact(
-                name: 'Distribution zip',
-                url: new URL(releaseConf.baseURL, "${getFolderPrefix(bi)}/${bi.filePrefix}.zip"),
-                location: new File(releaseConf.otaDir, "${getFolderPrefix(bi)}/${bi.filePrefix}.zip"))
-        if (!checkIfExists || distributionZipArtifact.location.exists()) {
-            releaseConf.distributionZipFiles.put(bi.id, distributionZipArtifact)
+        AmebaArtifact aa = artifactProvider.zipDistribution(bi)
+        if (!checkIfExists || aa.location.exists()) {
+            releaseConf.distributionZipFiles.put(bi.id, aa)
         } else {
             l.lifecycle("Skipping preparing distribution zip for ${bi} -> missing")
         }
-        return distributionZipArtifact
+        aa
     }
 
     private void prepareDSYMZipFile(IOSBuilderInfo bi) {
-        AmebaArtifact dSYMZipArtifact = prepareDSYMZipArtifact(bi)
-        dSYMZipArtifact.location.parentFile.mkdirs()
-        dSYMZipArtifact.location.delete()
-        ant.zip(destfile: dSYMZipArtifact.location) {
+        AmebaArtifact aa = prepareDSYMZipArtifact(bi)
+        aa.location.parentFile.mkdirs()
+        aa.location.delete()
+        ant.zip(destfile: aa.location) {
             zipfileset(dir: bi.buildDir, includes: "${bi.target}.app.dSYM/**")
         }
-        l.lifecycle("dSYM zip file created: ${dSYMZipArtifact}")
+        l.lifecycle("dSYM zip file created: ${aa}")
     }
 
-
     private AmebaArtifact prepareDSYMZipArtifact(IOSBuilderInfo bi, boolean checkIfExists = false) {
-        AmebaArtifact dSYMZipArtifact = new AmebaArtifact(
-                name: "dSYM zip",
-                url: new URL(releaseConf.baseURL, "${getFolderPrefix(bi)}/${bi.filePrefix}_dSYM.zip"),
-                location: new File(releaseConf.otaDir, "${getFolderPrefix(bi)}/${bi.filePrefix}_dSYM.zip"))
-        if (!checkIfExists || dSYMZipArtifact.location.exists()) {
-            releaseConf.dSYMZipFiles.put(bi.id, dSYMZipArtifact)
+        AmebaArtifact aa = artifactProvider.dSYMZip(bi)
+        if (!checkIfExists || aa.location.exists()) {
+            releaseConf.dSYMZipFiles.put(bi.id, aa)
         } else {
-            l.lifecycle("Skipping preparing dSYM artifact for ${bi.id} : ${dSYMZipArtifact.location} -> missing")
+            l.lifecycle("Skipping preparing dSYM artifact for ${bi.id} : ${aa.location} -> missing")
         }
-        return dSYMZipArtifact
+        aa
     }
 
     private void prepareAhSYMFiles(IOSBuilderInfo bi, boolean checkIfExists = false) {
@@ -120,11 +114,7 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
     private AmebaArtifact prepareAhSymArtifacts(IOSBuilderInfo bi, boolean checkIfExists = false) {
-        AmebaArtifact aa = new AmebaArtifact(
-                name: "ahSYM dir",
-                url: new URL(releaseConf.baseURL, "${getFolderPrefix(bi)}/${bi.filePrefix}_ahSYM"),
-                location: new File(releaseConf.otaDir, "${getFolderPrefix(bi)}/${bi.filePrefix}_ahSYM")
-        )
+        AmebaArtifact aa = artifactProvider.ahSYM(bi)
         if (!checkIfExists || aa.location.exists()) {
             releaseConf.ahSYMDirs.put(bi.id, aa)
         } else {
@@ -134,9 +124,9 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
     private void prepareIpaFile(IOSBuilderInfo bi) {
-        AmebaArtifact ipaArtifact = prepareIpaArtifact(bi)
-        ipaArtifact.location.parentFile.mkdirs()
-        ipaArtifact.location.delete()
+        AmebaArtifact aa = prepareIpaArtifact(bi)
+        aa.location.parentFile.mkdirs()
+        aa.location.delete()
         def appList = bi.buildDir.list([accept: { d, f -> f ==~ /.*\.app/ }] as FilenameFilter)
         def cmd = [
                 '/usr/bin/xcrun',
@@ -146,32 +136,28 @@ class IOSReleaseListener implements IOSBuildListener {
                 '-v',
                 new File(bi.buildDir, appList[0]).canonicalPath,
                 '-o',
-                ipaArtifact.location.canonicalPath,
+                aa.location.canonicalPath,
                 '--embed',
                 bi.mobileProvisionFile.canonicalPath
         ]
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: cmd))
-        l.lifecycle("ipa file created: ${ipaArtifact}")
+        l.lifecycle("ipa file created: $aa")
     }
 
     private AmebaArtifact prepareIpaArtifact(IOSBuilderInfo bi, boolean checkIfExists = false) {
-        AmebaArtifact ipaArtifact = new AmebaArtifact(
-                name: "The ipa file",
-                url: new URL(releaseConf.baseURL, "${getFolderPrefix(bi)}/${bi.filePrefix}.ipa"),
-                location: new File(releaseConf.otaDir, "${getFolderPrefix(bi)}/${bi.filePrefix}.ipa"))
-        if (!checkIfExists || ipaArtifact.location.exists()) {
-            releaseConf.ipaFiles.put(bi.id, ipaArtifact)
+        AmebaArtifact aa = artifactProvider.ipa(bi)
+        if (!checkIfExists || aa.location.exists()) {
+            releaseConf.ipaFiles.put(bi.id, aa)
         } else {
-            l.lifecycle("Skipping preparing ipa artifact for ${bi.id} : ${ipaArtifact.location} -> missing")
+            l.lifecycle("Skipping preparing ipa artifact for ${bi.id} : ${aa.location} -> missing")
         }
-        return ipaArtifact
+        aa
     }
 
-
     private void prepareManifestFile(IOSBuilderInfo bi) {
-        AmebaArtifact manifestArtifact = prepareManifestArtifact(bi)
-        manifestArtifact.location.parentFile.mkdirs()
-        manifestArtifact.location.delete()
+        AmebaArtifact aa = prepareManifestArtifact(bi)
+        aa.location.parentFile.mkdirs()
+        aa.location.delete()
 
         URL manifestTemplate = this.class.getResource("manifest.plist")
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
@@ -183,61 +169,49 @@ class IOSReleaseListener implements IOSBuildListener {
         ]
         l.lifecycle("Building manifest from ${bi.plistFile}, bundleId: ${bundleId}")
         def result = engine.createTemplate(manifestTemplate).make(binding)
-        manifestArtifact.location << (result.toString())
-        l.lifecycle("Manifest file created: ${manifestArtifact}")
+        aa.location << (result.toString())
+        l.lifecycle("Manifest file created: ${aa}")
     }
-
 
     private AmebaArtifact prepareManifestArtifact(IOSBuilderInfo bi, boolean checkIfExists = false) {
-        AmebaArtifact manifestArtifact = new AmebaArtifact(
-                name: "The manifest file",
-                url: new URL(releaseConf.baseURL, "${getFolderPrefix(bi)}/manifest.plist"),
-                location: new File(releaseConf.otaDir, "${getFolderPrefix(bi)}/manifest.plist"))
-        if (!checkIfExists || manifestArtifact.location.exists()) {
-            releaseConf.manifestFiles.put(bi.id, manifestArtifact)
+        AmebaArtifact aa = artifactProvider.manifest(bi)
+        if (!checkIfExists || aa.location.exists()) {
+            releaseConf.manifestFiles.put(bi.id, aa)
         } else {
-            l.lifecycle("Skipping preparing manifest artifact for ${bi.id} : ${manifestArtifact.location} -> missing")
+            l.lifecycle("Skipping preparing manifest artifact for ${bi.id} : ${aa.location} -> missing")
         }
-        return manifestArtifact
+        aa
     }
 
-
     private void prepareMobileProvisionFile(IOSBuilderInfo bi) {
-        AmebaArtifact mobileProvisionArtifact = prepareMobileProvisionArtifact(bi)
-        mobileProvisionArtifact.location.parentFile.mkdirs()
-        mobileProvisionArtifact.location.delete()
-        mobileProvisionArtifact.location << bi.mobileProvisionFile.text
-        l.lifecycle("Mobile provision file created: ${mobileProvisionArtifact}")
+        AmebaArtifact aa = prepareMobileProvisionArtifact(bi)
+        aa.location.parentFile.mkdirs()
+        aa.location.delete()
+        aa.location << bi.mobileProvisionFile.text
+        l.lifecycle("Mobile provision file created: ${aa}")
     }
 
     private AmebaArtifact prepareMobileProvisionArtifact(IOSBuilderInfo bi, boolean checkIfExists = false) {
-        AmebaArtifact mobileProvisionArtifact = new AmebaArtifact(
-                name: "The mobile provision file",
-                url: new URL(releaseConf.baseURL, "${getFolderPrefix(bi)}/${bi.filePrefix}.mobileprovision"),
-                location: new File(releaseConf.otaDir, "${getFolderPrefix(bi)}/${bi.filePrefix}.mobileprovision"))
-        if (!checkIfExists || mobileProvisionArtifact.location.exists()) {
-            releaseConf.mobileProvisionFiles.put(bi.id, mobileProvisionArtifact)
+        AmebaArtifact aa = artifactProvider.mobileprovision(bi)
+        if (!checkIfExists || aa.location.exists()) {
+            releaseConf.mobileProvisionFiles.put(bi.id, aa)
         } else {
-            l.lifecycle("Skipping preparing mobileProvision artifact for ${bi.id} : ${mobileProvisionArtifact.location} -> missing")
+            l.lifecycle("Skipping preparing mobileProvision artifact for ${bi.id} : ${aa.location} -> missing")
         }
-        return mobileProvisionArtifact
+        aa
     }
 
-    void buildArtifactsOnly(String target, String configuration) {
-        if (conf.versionString != null) {
-            IOSBuilderInfo bi = artifactProvider.builderInfo(null)//TODO pass the variant here!!
-            prepareDistributionZipArtifact(bi, true)
-            prepareDSYMZipArtifact(bi, true)
+    void buildArtifactsOnly(AbstractIOSVariant variant) {
+        def bi = artifactProvider.builderInfo(variant)
+        prepareDistributionZipArtifact(bi, true)
+        prepareDSYMZipArtifact(bi, true)
 //            prepareAhSYMFiles(bi, true)//TODO turn on after DI is implemented
-            prepareIpaArtifact(bi, true)
-            prepareManifestArtifact(bi, true)
-            prepareMobileProvisionArtifact(bi, true)
-        } else {
-            l.lifecycle("Skipping building artifacts -> the build is not versioned")
-        }
+        prepareIpaArtifact(bi, true)
+        prepareManifestArtifact(bi, true)
+        prepareMobileProvisionArtifact(bi, true)
     }
 
-    void prepareSimulatorBundleFile(IOSBuilderInfo bi, String family) {
+    private void prepareSimulatorBundleFile(IOSBuilderInfo bi, String family) {
 
         AmebaArtifact file = new AmebaArtifact()
         file.name = "Simulator build for ${family}"

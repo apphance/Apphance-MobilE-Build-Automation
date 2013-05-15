@@ -41,7 +41,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         def udids = [:]
         variantsConf.variants.each { v ->
             l.lifecycle("Preparing artifact for ${v.name}")
-            releaseListener.buildArtifactsOnly(v.target, v.configuration)
+            releaseListener.buildArtifactsOnly(v)
             File mobileProvisionFile = v.mobileprovision.value
             if (conf.versionString != null) {
                 udids.put(v.target, MPParser.readUdids(mobileProvisionFile.toURI().toURL()))
