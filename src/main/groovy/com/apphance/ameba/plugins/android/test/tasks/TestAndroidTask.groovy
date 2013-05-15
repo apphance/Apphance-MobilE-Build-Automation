@@ -14,7 +14,6 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.PropertyCategory.readProperty
 import static com.apphance.ameba.executor.AntExecutor.CLEAN
 import static com.apphance.ameba.executor.AntExecutor.INSTRUMENT
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
@@ -31,7 +30,7 @@ class TestAndroidTask extends DefaultTask {
     String description = 'Runs android tests on the project'
 
     @Inject
-    private AndroidConfiguration androidConf
+    private AndroidConfiguration conf
     @Inject
     private AndroidTestConfiguration testConf
     @Inject
@@ -79,7 +78,7 @@ class TestAndroidTask extends DefaultTask {
                 '../../'
         ]
         executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: commandAndroid))
-        boolean useMockLocation = readProperty(project, testConf.mockLocation.value).toString().toBoolean()
+        boolean useMockLocation = testConf.mockLocation.value
         if (useMockLocation) {
             manifestHelper.addPermissions(project.rootDir, 'android.permission.ACCESS_MOCK_LOCATION')
         }
@@ -178,7 +177,7 @@ class TestAndroidTask extends DefaultTask {
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'uninstall',
-                androidConf.mainPackage
+                conf.mainPackage
         ], failOnError: false))
         executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
                 testConf.getADBBinary(),
@@ -192,7 +191,7 @@ class TestAndroidTask extends DefaultTask {
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'install',
-                "bin/${androidConf.projectName.value}-debug.apk"
+                "bin/${conf.projectName.value}-debug.apk"
         ]))
         executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
                 testConf.getADBBinary(),

@@ -2,10 +2,7 @@ package com.apphance.ameba.plugins.ios.apphance.tasks
 
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
-import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
-import com.apphance.ameba.plugins.project.ProjectConfiguration
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.apphance.ameba.util.Preconditions
 import com.google.inject.Inject
 import groovy.json.JsonSlurper
@@ -26,10 +23,7 @@ class UploadIOSArtifactTask extends DefaultTask {
     String group = AMEBA_APPHANCE_SERVICE
 
     @Inject
-    IOSExecutor iosExecutor
-    private ProjectConfiguration conf
-    private ProjectReleaseConfiguration releaseConf
-    private IOSReleaseConfiguration iOSReleaseConf
+    IOSReleaseConfiguration iOSReleaseConf
 
     //TODO remove old configurations
     //TODO inject new configurations
@@ -62,7 +56,7 @@ class UploadIOSArtifactTask extends DefaultTask {
             l.lifecycle("Upload ipa response: ${response.statusLine}")
             EntityUtils.consume(response.entity)
 
-            response = networkHelper.uploadResource(releaseConf.imageMontageFile.location, responseJSON.update_urls.image_montage, 'image_montage')
+            response = networkHelper.uploadResource(iOSReleaseConf.imageMontageFile.location, responseJSON.update_urls.image_montage, 'image_montage')
             l.lifecycle("Upload image_montage response: ${response.statusLine}")
             EntityUtils.consume(response.entity)
 
