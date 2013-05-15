@@ -31,6 +31,10 @@ class UploadIOSArtifactTask extends DefaultTask{
     private ProjectReleaseConfiguration releaseConf
     private IOSReleaseConfiguration iOSReleaseConf
 
+    //TODO remove old configurations
+    //TODO inject new configurations
+    //TODO inject network helper
+
     AbstractIOSVariant variant
 
     @TaskAction

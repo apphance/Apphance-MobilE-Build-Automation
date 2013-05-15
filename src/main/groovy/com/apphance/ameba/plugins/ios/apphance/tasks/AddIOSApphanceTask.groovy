@@ -30,6 +30,10 @@ class AddIOSApphanceTask extends DefaultTask {
     @Inject ApphanceConfiguration apphanceConf
     @Inject IOSConfiguration iosConfiguration
 
+    //TODO PbxProjectHelper should be injected
+    //TODO remove unused fields
+    //TODO this class should be written as a service
+
     private PbxProjectHelper pbxProjectHelper
     private AbstractIOSVariant variant
     private String target

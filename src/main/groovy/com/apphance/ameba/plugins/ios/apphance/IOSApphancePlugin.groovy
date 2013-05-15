@@ -31,6 +31,13 @@ class IOSApphancePlugin implements Plugin<Project> {
     @Inject
     IOSVariantsConfiguration variantsConf
 
+    //TODO sorry for 'TODOS' but have no time to correct it, and will forget later :( - Opal
+    //TODO remove unused injected fields (executors)
+    //TODO inject apphance conf and add tasks and initialize plugin if this conf is enabled
+    //TODO write a spec for this class that will be checking if tasks are added or not (apphance conf - enabled/disabled)
+    //TODO com.apphance.ameba.plugins.ios.apphance.tasks.AddIOSApphanceTask class has injected fields, they won't be initialized when 'new' operator is used
+    //TODO minor: variant.apphanceMode.value in [QA, PROD, SILENT]*.toString() == variant.apphanceMode.value != DISABLED
+
     @Override
     void apply(Project project) {
         addApphanceConfiguration(project)
