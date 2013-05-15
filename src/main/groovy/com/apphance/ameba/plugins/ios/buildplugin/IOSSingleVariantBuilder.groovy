@@ -2,10 +2,7 @@ package com.apphance.ameba.plugins.ios.buildplugin
 
 import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.executor.IOSExecutor
-import com.apphance.ameba.plugins.ios.IOSBuilderInfo
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
-import com.apphance.ameba.plugins.ios.MPParser
+import com.apphance.ameba.plugins.ios.*
 import com.apphance.ameba.plugins.project.ProjectConfiguration
 import com.apphance.ameba.util.file.FileManager
 import com.sun.org.apache.xpath.internal.XPathAPI
@@ -32,6 +29,7 @@ class IOSSingleVariantBuilder {
     Project project
     IOSExecutor iosExecutor
     IOSXCodeOutputParser parser = new IOSXCodeOutputParser()
+    IOSArtifactProvider artifactProvider = new IOSArtifactProvider()
 
     IOSSingleVariantBuilder(Project project, IOSExecutor iosExecutor, IOSBuildListener... buildListeners) {
         use(PropertyCategory) {
@@ -138,7 +136,8 @@ class IOSSingleVariantBuilder {
         l.lifecycle("\n\n\n=== Building target ${target}, configuration ${configuration}  ===")
         if (target != "Frankified") {
             iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration)
-            IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
+//            IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
+            IOSBuilderInfo bi = artifactProvider.builderInfo(null)//TODO pass variant here
             buildListeners.each {
                 it.buildDone(project, bi)
             }
@@ -153,27 +152,14 @@ class IOSSingleVariantBuilder {
         l.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
         if (conf.versionString != null) {
             iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration, iosConf.simulatorSDK)
-            IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphonesimulator', project)
+//            IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphonesimulator', project)
+            IOSBuilderInfo bi = artifactProvider.builderInfo(null)//TODO pass variant here
             buildListeners.each {
                 it.buildDone(project, bi)
             }
         } else {
             l.lifecycle("Skipping building debug artifacts -> the build is not versioned")
         }
-    }
-
-    IOSBuilderInfo buildSingleBuilderInfo(String target, String configuration, String outputDirPostfix, Project project) {
-        IOSBuilderInfo bi = new IOSBuilderInfo(
-                id: "${target}-${configuration}",
-                target: target,
-                configuration: configuration,
-                buildDir: new File(tmpDir(target, configuration), "/build/${configuration}-${outputDirPostfix}"),
-                fullReleaseName: "${target}-${configuration}-${conf.fullVersionString}",
-                filePrefix: "${target}-${configuration}-${conf.fullVersionString}",
-                mobileProvisionFile: parser.findMobileProvisionFile(project, target, configuration, true),
-                plistFile: new File(tmpDir(target, configuration), PropertyCategory.readProperty(project, IOSProjectProperty.PLIST_FILE))
-        )
-        bi
     }
 
     public File tmpDir(String target, String configuration) {

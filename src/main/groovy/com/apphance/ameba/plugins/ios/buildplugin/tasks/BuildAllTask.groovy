@@ -1,9 +1,7 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
-import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.executor.IOSExecutor
-import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
@@ -21,9 +19,9 @@ class BuildAllTask extends DefaultTask {
     @Inject
     IOSConfiguration iosConf
     @Inject
-    CommandExecutor executor
-    @Inject
     IOSExecutor iosExecutor
+    @Inject
+    IOSReleaseListener releaseListener
 
     List<String> prepareAllTasks() {
         List<String> tasks = []
@@ -33,7 +31,7 @@ class BuildAllTask extends DefaultTask {
             task.description = "Builds target: ${v.target}, configuration: ${v.configuration}"
             task << {
                 //TODO
-                def builder = new IOSSingleVariantBuilder(project, iosExecutor, new IOSReleaseListener(project, new IOSConfiguration(* [null] * 3), new IOSReleaseConfiguration(), executor, iosExecutor))
+                def builder = new IOSSingleVariantBuilder(project, iosExecutor, releaseListener)
                 builder.buildNormalVariant(project, v.target, v.configuration)
             }
             task.dependsOn(

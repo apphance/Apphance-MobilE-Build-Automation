@@ -4,7 +4,6 @@ import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
-import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.project.ProjectConfiguration
 import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.apphance.ameba.util.Preconditions
@@ -19,14 +18,15 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHAN
 import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(Preconditions)
-class UploadIOSArtifactTask extends DefaultTask{
+class UploadIOSArtifactTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
     String description = 'Uploads ipa, dsym & image_montage to Apphance server'
     String group = AMEBA_APPHANCE_SERVICE
 
-    @Inject IOSExecutor iosExecutor
+    @Inject
+    IOSExecutor iosExecutor
     private ProjectConfiguration conf
     private ProjectReleaseConfiguration releaseConf
     private IOSReleaseConfiguration iOSReleaseConf
@@ -39,9 +39,6 @@ class UploadIOSArtifactTask extends DefaultTask{
 
     @TaskAction
     void uploadIOSArtifact() {
-
-        def builder = new IOSSingleVariantBuilder(project, iosExecutor)
-        builder.buildSingleBuilderInfo(variant.target, variant.configuration, 'iphoneos', project)
 
         //TODO gradle.properties
         String user = project['apphanceUserName']

@@ -2,8 +2,6 @@ package com.apphance.ameba.plugins.ios.release.tasks
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
-import com.apphance.ameba.executor.IOSExecutor
-import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import com.apphance.ameba.plugins.ios.MPParser
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
@@ -27,23 +25,20 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     String group = AMEBA_RELEASE
 
     @Inject
-    CommandExecutor executor
-    @Inject
-    IOSExecutor iosExecutor
-    @Inject
     IOSConfiguration conf
     @Inject
     IOSReleaseConfiguration releaseConf
     @Inject
     IOSXCodeOutputParser parser
+    @Inject
+    IOSReleaseListener releaseListener
 
     @TaskAction
     void prepareAvailableArtifactsInfo() {
         def udids = [:]
-        def iosReleaseListener = new IOSReleaseListener(project, conf, releaseConf, executor, iosExecutor)
         conf.allBuildableVariants.each { v ->
             l.lifecycle("Preparing artifact for ${v.id}")
-            iosReleaseListener.buildArtifactsOnly(project, v.target, v.configuration)
+            releaseListener.buildArtifactsOnly(project, v.target, v.configuration)
             File mobileProvisionFile = parser.findMobileProvisionFile(project, v.target, conf.configurations[0], true)
             if (conf.versionString != null) {
                 udids.put(v.target, MPParser.readUdids(mobileProvisionFile.toURI().toURL()))

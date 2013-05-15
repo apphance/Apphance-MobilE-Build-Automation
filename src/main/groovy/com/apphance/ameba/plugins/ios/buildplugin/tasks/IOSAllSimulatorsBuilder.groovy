@@ -1,9 +1,7 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
-import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.executor.IOSExecutor
-import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import org.gradle.api.DefaultTask
@@ -25,17 +23,14 @@ class IOSAllSimulatorsBuilder extends DefaultTask {
     @Inject
     IOSConfiguration conf
     @Inject
-    IOSReleaseConfiguration releaseConf
-    @Inject
-    CommandExecutor executor
-    @Inject
     IOSExecutor iosExecutor
+    @Inject
+    IOSReleaseListener releaseListener
     private IOSSingleVariantBuilder iosSingleVariantBuilder
 
     @TaskAction
     void buildAllSimulators() {
-        this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, iosExecutor,
-                new IOSReleaseListener(project, conf, releaseConf, executor, iosExecutor))
+        this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, iosExecutor, releaseListener)
         conf.targets.each { target ->
             iosSingleVariantBuilder.buildDebugVariant(project, target)
         }

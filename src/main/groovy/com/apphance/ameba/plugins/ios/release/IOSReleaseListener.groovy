@@ -6,6 +6,7 @@ import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.jython.JythonExecutor
+import com.apphance.ameba.plugins.ios.IOSArtifactProvider
 import com.apphance.ameba.plugins.ios.IOSBuilderInfo
 import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import com.apphance.ameba.plugins.ios.MPParser
@@ -15,6 +16,8 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.AntBuilder
 import org.gradle.api.Project
+
+import javax.inject.Inject
 
 import static org.gradle.api.logging.Logging.getLogger
 
@@ -26,20 +29,20 @@ class IOSReleaseListener implements IOSBuildListener {
 
     def l = getLogger(getClass())
 
+    @Inject
     CommandExecutor executor
+    @Inject
     IOSExecutor iosExecutor
+    @Inject
     IOSConfiguration conf
+    @Inject
     IOSReleaseConfiguration releaseConf
+    @Inject
     AntBuilder ant
-    IOSXCodeOutputParser parser = new IOSXCodeOutputParser()
-
-    IOSReleaseListener(Project project, IOSConfiguration conf, IOSReleaseConfiguration releaseConf, CommandExecutor executor, IOSExecutor iosExecutor) {
-        this.conf = conf
-        this.releaseConf = releaseConf
-        this.executor = executor
-        this.iosExecutor = iosExecutor
-        this.ant = project.ant
-    }
+    @Inject
+    IOSXCodeOutputParser parser
+    @Inject
+    IOSArtifactProvider artifactProvider
 
     @Override
     public void buildDone(Project project, IOSBuilderInfo bi) {
@@ -227,7 +230,7 @@ class IOSReleaseListener implements IOSBuildListener {
     void buildArtifactsOnly(Project project, String target, String configuration) {
         if (conf.versionString != null) {
             IOSSingleVariantBuilder builder = new IOSSingleVariantBuilder(project, iosExecutor)
-            IOSBuilderInfo bi = builder.buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
+            IOSBuilderInfo bi = artifactProvider.builderInfo(null)//TODO pass the variant here!!
             prepareDistributionZipArtifact(bi, true)
             prepareDSYMZipArtifact(bi, true)
 //            prepareAhSYMFiles(bi, true)//TODO turn on after DI is implemented
