@@ -1,14 +1,16 @@
 package com.apphance.ameba.plugins.ios.buildplugin
 
+import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.ios.*
+import com.apphance.ameba.plugins.ios.IOSArtifactProvider
+import com.apphance.ameba.plugins.ios.IOSBuilderInfo
+import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
+import com.apphance.ameba.plugins.ios.MPParser
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
-import com.apphance.ameba.plugins.project.ProjectConfiguration
 import com.sun.org.apache.xpath.internal.XPathAPI
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.xml.sax.SAXParseException
 
@@ -27,10 +29,9 @@ class IOSSingleVariantBuilder {
     def l = getLogger(getClass())
 
     Collection<IOSBuildListener> buildListeners = []
+
     @Inject
-    ProjectConfiguration conf
-    @Inject
-    IOSProjectConfiguration iosConf
+    IOSConfiguration conf
     @Inject
     AntBuilder ant
     @Inject
@@ -49,8 +50,8 @@ class IOSSingleVariantBuilder {
     private void replaceBundleId(File dir, String oldBundleId, String newBundleId, String configuration) {
         replaceBundleInAllPlists(dir, newBundleId, oldBundleId)
         replaceBundleInAllSourceFiles(dir, newBundleId, oldBundleId)
-        iosConf.distributionDirectories[configuration] = new File(iosConf.distributionDirectory, newBundleId)
-        l.lifecycle("New distribution directory: ${iosConf.distributionDirectories[configuration]}")
+//        iosConf.distributionDirectories[configuration] = new File(iosConf.distributionDirectory, newBundleId)
+//        l.lifecycle("New distribution directory: ${iosConf.distributionDirectories[configuration]}")
         l.lifecycle("Replaced the bundleIdprefix everywhere")
     }
 
@@ -81,7 +82,7 @@ class IOSSingleVariantBuilder {
         l.lifecycle("Finished processing all plists")
     }
 
-    Collection<File> findAllPlistFiles(File dir) {
+    private Collection<File> findAllPlistFiles(File dir) {
         def result = []
         dir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
             if (it.name.endsWith(".plist") && !it.path.contains("/External/") && !it.path.contains('/build/')) {
@@ -107,7 +108,7 @@ class IOSSingleVariantBuilder {
         l.lifecycle("Finished processing all source files")
     }
 
-    Collection<File> findAllSourceFiles(File dir) {
+    private Collection<File> findAllSourceFiles(File dir) {
         def result = []
         dir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
             if ((it.name.endsWith(".m") || it.name.endsWith(".h")) && !it.path.contains("/External/")) {
@@ -118,6 +119,7 @@ class IOSSingleVariantBuilder {
         result
     }
 
+    //TODO to remove when buildVariant is fully implemented
     void buildNormalVariant(Project project, String target, String configuration) {
         checkVersions()
         if (project.hasProperty('ios.bundleId.' + configuration)) {
@@ -135,10 +137,11 @@ class IOSSingleVariantBuilder {
                 it.buildDone(bi)
             }
         } else {
-            iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration, iosConf.simulatorSDK, "-arch i386")
+            iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration, conf.simulatorSdk.value, "-arch i386")
         }
     }
 
+    //this method is replacement for buildNormalVariant method above
     void buildVariant(AbstractIOSVariant variant) {
         //TODO replace ios bundleId - how? when?
         //TODO target frankified - what's going on?
@@ -152,26 +155,26 @@ class IOSSingleVariantBuilder {
         checkVersions()
         def configuration = "Debug"
         l.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
-        if (conf.versionString != null) {
-            iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration, iosConf.simulatorSDK)
+//        if (conf.versionString != null) {
+        iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration, conf.simulatorSdk.value)
 //            IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphonesimulator', project)
-            IOSBuilderInfo bi = artifactProvider.builderInfo(null)//TODO pass variant here
-            buildListeners.each {
-                it.buildDone(bi)
-            }
-        } else {
-            l.lifecycle("Skipping building debug artifacts -> the build is not versioned")
+        IOSBuilderInfo bi = artifactProvider.builderInfo(null)//TODO pass variant here
+        buildListeners.each {
+            it.buildDone(bi)
         }
+//        } else {
+//            l.lifecycle("Skipping building debug artifacts -> the build is not versioned")
+//        }
     }
 
     private void checkVersions() {
-        l.info("Application version: ${conf.versionCode} string: ${conf.versionString}")
-        if (conf.versionCode == 0) {
-            throw new GradleException("The CFBundleVersion key is missing from ${iosConf.plistFile} or its value is 0. Please add it or increase the value. Integers are only valid values")
-        }
-        if (conf.versionString.startsWith('NOVERSION')) {
-            throw new GradleException("The CFBundleShortVersionString key is missing from ${iosConf.plistFile}. Please add it.")
-        }
+//        l.info("Application version: ${conf.versionCode} string: ${conf.versionString}")
+//        if (conf.versionCode == 0) {
+//            throw new GradleException("The CFBundleVersion key is missing from ${iosConf.plistFile} or its value is 0. Please add it or increase the value. Integers are only valid values")
+//    }
+//        if (conf.versionString.startsWith('NOVERSION')) {
+//            throw new GradleException("The CFBundleShortVersionString key is missing from ${iosConf.plistFile}. Please add it.")
+//}
     }
 
     public File tmpDir(String target, String configuration) {
@@ -179,4 +182,5 @@ class IOSSingleVariantBuilder {
         //TODO
         null
     }
+
 }

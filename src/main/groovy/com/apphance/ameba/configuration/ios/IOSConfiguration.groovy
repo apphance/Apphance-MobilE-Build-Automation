@@ -27,7 +27,6 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     List<String> allTargets = []
     String mainTarget
     File distributionDir
-    File plistFile
 
     Boolean isBuildExcluded(String buildName) {
         false

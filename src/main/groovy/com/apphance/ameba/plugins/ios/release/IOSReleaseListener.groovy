@@ -5,7 +5,6 @@ import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.executor.jython.JythonExecutor
 import com.apphance.ameba.plugins.ios.IOSArtifactProvider
 import com.apphance.ameba.plugins.ios.IOSBuilderInfo
 import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
@@ -112,13 +111,13 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
     private void prepareAhSYMFiles(IOSBuilderInfo bi, boolean checkIfExists = false) {
-        AmebaArtifact ahSYM = prepareAhSymArtifacts(bi, checkIfExists)
-        ahSYM.location.delete()
-        ahSYM.location.mkdirs()
-        def je = new JythonExecutor()
-        def args = ['-p', conf.plistFile.canonicalPath, '-d', new File(bi.buildDir, "${bi.target}.app.dSYM").canonicalPath, '-o', new File(ahSYM.location.canonicalPath, bi.target).canonicalPath]
-        je.executeScript('jython/dump_reduce3_ameba.py', args)
-        l.lifecycle("ahSYM files created: ${ahSYM.location.list()}")
+//        AmebaArtifact ahSYM = prepareAhSymArtifacts(bi, checkIfExists)
+//        ahSYM.location.delete()
+//        ahSYM.location.mkdirs()
+//        def je = new JythonExecutor()
+//        def args = ['-p', conf.plistFile.canonicalPath, '-d', new File(bi.buildDir, "${bi.target}.app.dSYM").canonicalPath, '-o', new File(ahSYM.location.canonicalPath, bi.target).canonicalPath]
+//        je.executeScript('jython/dump_reduce3_ameba.py', args)
+//        l.lifecycle("ahSYM files created: ${ahSYM.location.list()}")
     }
 
     private AmebaArtifact prepareAhSymArtifacts(IOSBuilderInfo bi, boolean checkIfExists = false) {

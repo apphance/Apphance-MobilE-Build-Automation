@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
+import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -16,11 +17,14 @@ class SingleVariantTask extends DefaultTask {
 
     @Inject
     IOSSingleVariantBuilder builder
+    @Inject
+    IOSReleaseListener releaseListener
 
     AbstractIOSVariant variant
 
     @TaskAction
     void buildSingleVariant() {
+        builder.registerListener(releaseListener)
         builder.buildVariant(variant)
     }
 }

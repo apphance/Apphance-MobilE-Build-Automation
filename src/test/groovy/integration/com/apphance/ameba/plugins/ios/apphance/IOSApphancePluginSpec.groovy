@@ -1,12 +1,10 @@
 package com.apphance.ameba.plugins.ios.apphance
 
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.IOSAllSimulatorsBuilder
 import com.apphance.ameba.plugins.project.ProjectPlugin
 import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
 import spock.lang.Specification
 
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.IOS_PROJECT_CONFIGURATION
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSApphancePluginSpec extends Specification {
@@ -32,15 +30,6 @@ class IOSApphancePluginSpec extends Specification {
     def "plugin tasks' graph configured correctly when buildable variants exists"() {
         given:
         def project = builder().build()
-
-        and: 'prepare mock ios configuration'
-        def iosConf = Mock(IOSProjectConfiguration)
-        iosConf.allBuildableVariants >>
-                [
-                        new Expando(target: 't1', configuration: 'c1', id: 'id1', noSpaceId: 'id1'),
-                        new Expando(target: 't2', configuration: 'c2', id: 'id2', noSpaceId: 'id2')
-                ]
-        project.ext.set(IOS_PROJECT_CONFIGURATION, iosConf)
 
         and: 'add fake tasks'
         project.task('build-id1')
