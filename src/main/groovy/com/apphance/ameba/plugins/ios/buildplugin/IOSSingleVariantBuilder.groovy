@@ -1,6 +1,9 @@
 package com.apphance.ameba.plugins.ios.buildplugin
 
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.executor.IOSExecutor
+import com.apphance.ameba.executor.command.Command
+import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.*
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import com.apphance.ameba.plugins.project.ProjectConfiguration
@@ -33,6 +36,8 @@ class IOSSingleVariantBuilder {
     @Inject
     IOSExecutor iosExecutor
     @Inject
+    CommandExecutor executor
+    @Inject
     IOSXCodeOutputParser parser
     @Inject
     IOSArtifactProvider artifactProvider
@@ -41,7 +46,7 @@ class IOSSingleVariantBuilder {
         buildListeners << listener
     }
 
-    void replaceBundleId(File dir, String oldBundleId, String newBundleId, String configuration) {
+    private void replaceBundleId(File dir, String oldBundleId, String newBundleId, String configuration) {
         replaceBundleInAllPlists(dir, newBundleId, oldBundleId)
         replaceBundleInAllSourceFiles(dir, newBundleId, oldBundleId)
         iosConf.distributionDirectories[configuration] = new File(iosConf.distributionDirectory, newBundleId)
@@ -134,7 +139,16 @@ class IOSSingleVariantBuilder {
         }
     }
 
-    void buildDebugVariant(Project project, String target) {
+    void buildVariant(AbstractIOSVariant variant) {
+        //TODO replace ios bundleId - how? when?
+        //TODO target frankified - what's going on?
+        executor.executeCommand(new Command(runDir: variant.tmpDir, cmd: variant.buildCmd()))
+        buildListeners.each {
+            it.buildDone(artifactProvider.builderInfo(variant))
+        }
+    }
+
+    void buildDebugVariant(String target) {
         checkVersions()
         def configuration = "Debug"
         l.lifecycle("\n\n\n=== Building DEBUG target ${target}, configuration ${configuration}  ===")
@@ -150,7 +164,7 @@ class IOSSingleVariantBuilder {
         }
     }
 
-    private checkVersions() {
+    private void checkVersions() {
         l.info("Application version: ${conf.versionCode} string: ${conf.versionString}")
         if (conf.versionCode == 0) {
             throw new GradleException("The CFBundleVersion key is missing from ${iosConf.plistFile} or its value is 0. Please add it or increase the value. Integers are only valid values")

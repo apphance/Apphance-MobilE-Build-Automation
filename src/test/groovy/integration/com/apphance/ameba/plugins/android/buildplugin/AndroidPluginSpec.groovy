@@ -145,6 +145,7 @@ class AndroidPluginSpec extends Specification {
         def avc = GroovyMock(AndroidVariantConfiguration)
         avc.name >> name
         avc.mode >> mode
+        avc.buildTaskName >> "build$name"
         avc
     }
 }

@@ -46,12 +46,12 @@ class IOSApphancePlugin implements Plugin<Project> {
             if (variant.apphanceMode.value in [QA, PROD, SILENT]*.toString()) {
                 def addApphance = { new AddIOSApphanceTask(it).addIOSApphance() }
 
-                project.tasks[variant.buildTaskName()].doFirst(addApphance)
+                project.tasks[variant.getBuildTaskName()].doFirst(addApphance)
                 project.tasks[IOSAllSimulatorsBuilder.NAME]?.doFirst(addApphance)
 
                 project.task("upload${variant.name}",
                         type: UploadIOSArtifactTask,
-                        dependsOn: [variant.buildTaskName(), ImageMontageTask.NAME]).variant = variant
+                        dependsOn: [variant.getBuildTaskName(), ImageMontageTask.NAME]).variant = variant
             }
         }
     }

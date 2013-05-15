@@ -33,7 +33,7 @@ class IOSAllSimulatorsBuilder extends DefaultTask {
     void buildAllSimulators() {
         builder.registerListener(releaseListener)
         conf.targets.each { target ->
-            builder.buildDebugVariant(project, target)
+            builder.buildDebugVariant(target)
         }
     }
 }

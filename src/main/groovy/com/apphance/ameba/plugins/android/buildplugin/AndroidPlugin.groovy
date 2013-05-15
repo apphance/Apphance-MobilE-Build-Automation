@@ -71,15 +71,14 @@ class AndroidPlugin implements Plugin<Project> {
             project.task('buildAll', dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME], group: AMEBA_BUILD)
 
             variantsConf.variants.each {
-                def buildName = "build${it.name}"
-                project.task(buildName,
+                project.task(it.buildTaskName,
                         type: SingleVariantTask,
                         dependsOn: [CopySourcesTask.NAME, UpdateProjectTask.NAME]).variant = it
 
                 def buildAllMode = "buildAll${it.mode.capitalize()}"
-                project.tasks[buildAllMode].dependsOn buildName
+                project.tasks[buildAllMode].dependsOn it.buildTaskName
 
-                project.task("install${it.name}", type: InstallTask, dependsOn: buildName).variant = it
+                project.task("install${it.name}", type: InstallTask, dependsOn: it.buildTaskName).variant = it
             }
 
             project.tasks.each {

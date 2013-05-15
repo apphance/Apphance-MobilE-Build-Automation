@@ -6,7 +6,6 @@ import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.DefaultTask
-import org.gradle.api.Project
 
 import javax.inject.Inject
 
@@ -15,7 +14,6 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 //TODO
 class BuildAllTask extends DefaultTask {
 
-    private Project project
     @Inject
     IOSConfiguration iosConf
     @Inject

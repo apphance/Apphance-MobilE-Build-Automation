@@ -96,8 +96,8 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
         conf.enabled
     }
 
-    String buildTaskName() {
-        "build${name}"
+    String getBuildTaskName() {
+        "build$name"
     }
 
     String getVersionCode() {

@@ -1,11 +1,16 @@
 package com.apphance.ameba.plugins.ios.buildplugin
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.*
+import com.apphance.ameba.plugins.project.PrepareSetupTask
+import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
 /*
  * Plugin for various X-Code related tasks.
@@ -20,32 +25,43 @@ import javax.inject.Inject
  */
 class IOSPlugin implements Plugin<Project> {
 
+    static final String BUILD_ALL_TASK_NAME = 'buildAll'
+
     @Inject
     IOSConfiguration conf
+    @Inject
+    IOSVariantsConfiguration variantsConf
 
     @Override
-    def void apply(Project project) {
+    void apply(Project project) {
         if (conf.isEnabled()) {
+
             project.task(CopySourcesTask.NAME, type: CopySourcesTask)
             project.task(CopyDebugSourcesTask.NAME, type: CopyDebugSourcesTask)
             project.task(CleanTask.NAME, type: CleanTask)
             project.task(UnlockKeyChainTask.NAME, type: UnlockKeyChainTask)
             project.task(CopyMobileProvisionTask.NAME, type: CopyMobileProvisionTask)
-            project.task(BuildSingleVariantTask.NAME, type: BuildSingleVariantTask, dependsOn: [CopySourcesTask.NAME])
             project.task(IOSAllSimulatorsBuilder.NAME, type: IOSAllSimulatorsBuilder, dependsOn: [
                     CopyMobileProvisionTask.NAME,
                     CopyDebugSourcesTask.NAME])
 
+            project.task(BUILD_ALL_TASK_NAME, group: AMEBA_BUILD, description: 'Builds all variants and produces all artifacts (zip, ipa, messages, etc)')
 
+            variantsConf.variants.each {
+                def buildTask = project.task(it.buildTaskName,
+                        type: SingleVariantTask,
+                        dependsOn: [CopySourcesTask.NAME, CopyMobileProvisionTask.NAME]
+                ) as SingleVariantTask
+                buildTask.variant = it
+
+                project.tasks[BUILD_ALL_TASK_NAME].dependsOn it.buildTaskName
+            }
+
+            project.tasks.each {
+                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME])) {
+                    it.dependsOn VerifySetupTask.NAME
+                }
+            }
         }
     }
-
-    //TODO - buildAll task
-//    private void prepareBuildAllTask() {
-//        def task = project.task(BUILD_ALL_TASK_NAME)
-//        task.group = AMEBA_BUILD
-//        task.description = 'Builds all target/configuration combinations and produces all artifacts (zip, ipa, messages, etc)'
-//        List<String> dependsOn = new BuildAllTask(project, executor, iosExecutor).prepareAllTasks()
-//        task.dependsOn(dependsOn)
-//    }
 }

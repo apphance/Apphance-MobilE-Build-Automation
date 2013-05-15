@@ -76,6 +76,10 @@ class AndroidVariantConfiguration extends AbstractConfiguration {
             validator: { it?.matches('([0-9]+\\.)*[0-9]+') }
     )
 
+    String getBuildTaskName() {
+        "build$name"
+    }
+
     @Override
     boolean isEnabled() {
         conf.enabled

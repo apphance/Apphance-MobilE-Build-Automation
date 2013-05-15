@@ -1,6 +1,7 @@
 package com.apphance.ameba.plugins.ios.framework
 
 import com.apphance.ameba.configuration.ios.IOSFrameworkConfiguration
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
 import com.apphance.ameba.plugins.ios.framework.tasks.BuildFrameworkTask
 import spock.lang.Specification
@@ -16,7 +17,8 @@ class IOSFrameworkPluginSpec extends Specification {
 
         and:
         def plugin = new IOSFrameworkPlugin()
-        plugin.frameworkConf = Stub(IOSFrameworkConfiguration, { isEnabled() >> true })
+        plugin.frameworkConf = GroovyMock(IOSFrameworkConfiguration, { isEnabled() >> true })
+        plugin.variantsConf = GroovyMock(IOSVariantsConfiguration, { getVariants() >> [] })
 
         when:
         plugin.apply(project)

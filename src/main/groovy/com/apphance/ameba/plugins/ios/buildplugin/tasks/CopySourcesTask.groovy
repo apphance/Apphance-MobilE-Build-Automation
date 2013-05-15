@@ -23,9 +23,10 @@ class CopySourcesTask extends DefaultTask {
     @TaskAction
     void copySources() {
         variantsConf.variants.each { v ->
+            v.tmpDir.deleteDir()
             ant.sync(toDir: v.tmpDir, failonerror: false, overwrite: true, verbose: false) {
                 fileset(dir: "${conf.rootDir}/") {
-                    exclude(name: v.tmpDir.absolutePath + '/**/*')
+//                    exclude(name: v.tmpDir.absolutePath + '/**/*')
                     conf.sourceExcludes.each { e ->
                         exclude(name: e)
                     }

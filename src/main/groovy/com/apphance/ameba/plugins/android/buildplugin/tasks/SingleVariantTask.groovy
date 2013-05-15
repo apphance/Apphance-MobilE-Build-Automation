@@ -28,7 +28,7 @@ class SingleVariantTask extends DefaultTask {
     AndroidVariantConfiguration variant
 
     @TaskAction
-    void singleVariant() {
+    void buildSingleVariant() {
         if (androidConfiguration.isLibrary()) {
             jarBuilder.buildSingle(artifactBuilder.jarArtifactBuilderInfo(variant))
         } else {
