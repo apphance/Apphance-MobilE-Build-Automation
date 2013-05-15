@@ -22,6 +22,8 @@ class BuildAllTask extends DefaultTask {
     IOSExecutor iosExecutor
     @Inject
     IOSReleaseListener releaseListener
+    @Inject
+    IOSSingleVariantBuilder builder
 
     List<String> prepareAllTasks() {
         List<String> tasks = []
@@ -30,8 +32,7 @@ class BuildAllTask extends DefaultTask {
             task.group = AMEBA_BUILD
             task.description = "Builds target: ${v.target}, configuration: ${v.configuration}"
             task << {
-                //TODO
-                def builder = new IOSSingleVariantBuilder(project, iosExecutor, releaseListener)
+                builder.registerListener(releaseListener)
                 builder.buildNormalVariant(project, v.target, v.configuration)
             }
             task.dependsOn(

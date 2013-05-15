@@ -22,12 +22,13 @@ class BuildSingleVariantTask extends DefaultTask {
 
     @Inject
     IOSExecutor iosExecutor
+    @Inject
+    IOSSingleVariantBuilder builder
 
     @TaskAction
     void buildSingleVariant() {
-        def singleVariantBuilder = new IOSSingleVariantBuilder(project, iosExecutor)
         String target = PropertyCategory.readExpectedProperty(IOS_TARGET_LOCAL_PROPERTY)
         String configuration = PropertyCategory.readExpectedProperty(IOS_CONFIGURATION_LOCAL_PROPERTY)
-        singleVariantBuilder.buildNormalVariant(project, target, configuration)
+        builder.buildNormalVariant(project, target, configuration)
     }
 }

@@ -26,13 +26,14 @@ class IOSAllSimulatorsBuilder extends DefaultTask {
     IOSExecutor iosExecutor
     @Inject
     IOSReleaseListener releaseListener
-    private IOSSingleVariantBuilder iosSingleVariantBuilder
+    @Inject
+    IOSSingleVariantBuilder builder
 
     @TaskAction
     void buildAllSimulators() {
-        this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, iosExecutor, releaseListener)
+        builder.registerListener(releaseListener)
         conf.targets.each { target ->
-            iosSingleVariantBuilder.buildDebugVariant(project, target)
+            builder.buildDebugVariant(project, target)
         }
     }
 }

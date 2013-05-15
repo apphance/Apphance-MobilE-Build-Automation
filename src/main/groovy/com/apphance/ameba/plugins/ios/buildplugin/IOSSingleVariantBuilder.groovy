@@ -1,17 +1,18 @@
 package com.apphance.ameba.plugins.ios.buildplugin
 
-import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.ios.*
+import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import com.apphance.ameba.plugins.project.ProjectConfiguration
-import com.apphance.ameba.util.file.FileManager
 import com.sun.org.apache.xpath.internal.XPathAPI
-import groovy.io.FileType
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.xml.sax.SAXParseException
 
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
+import javax.inject.Inject
+
+import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
+import static groovy.io.FileType.FILES
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -23,57 +24,32 @@ class IOSSingleVariantBuilder {
     def l = getLogger(getClass())
 
     Collection<IOSBuildListener> buildListeners = []
+    @Inject
     ProjectConfiguration conf
+    @Inject
     IOSProjectConfiguration iosConf
+    @Inject
     AntBuilder ant
+    @Inject
     Project project
+    @Inject
     IOSExecutor iosExecutor
-    IOSXCodeOutputParser parser = new IOSXCodeOutputParser()
-    IOSArtifactProvider artifactProvider = new IOSArtifactProvider()
+    @Inject
+    IOSXCodeOutputParser parser
+    @Inject
+    IOSArtifactProvider artifactProvider
 
-    IOSSingleVariantBuilder(Project project, IOSExecutor iosExecutor, IOSBuildListener... buildListeners) {
-        use(PropertyCategory) {
-            this.project = project
-            this.conf = project.getProjectConfiguration()
-            this.iosConf = getIosProjectConfiguration(project)
-            this.ant = project.ant
-            this.iosExecutor = iosExecutor
-            this.buildListeners.addAll(buildListeners)
-        }
+    void registerListener(IOSReleaseListener listener) {
+        buildListeners << listener
     }
 
-    private checkVersions() {
-        l.info("Application version: ${conf.versionCode} string: ${conf.versionString}")
-        if (conf.versionCode == 0) {
-            throw new GradleException("The CFBundleVersion key is missing from ${iosConf.plistFile} or its value is 0. Please add it or increase the value. Integers are only valid values")
-        }
-        if (conf.versionString.startsWith('NOVERSION')) {
-            throw new GradleException("The CFBundleShortVersionString key is missing from ${iosConf.plistFile}. Please add it.")
-        }
+    void replaceBundleId(File dir, String oldBundleId, String newBundleId, String configuration) {
+        replaceBundleInAllPlists(dir, newBundleId, oldBundleId)
+        replaceBundleInAllSourceFiles(dir, newBundleId, oldBundleId)
+        iosConf.distributionDirectories[configuration] = new File(iosConf.distributionDirectory, newBundleId)
+        l.lifecycle("New distribution directory: ${iosConf.distributionDirectories[configuration]}")
+        l.lifecycle("Replaced the bundleIdprefix everywhere")
     }
-
-    Collection<File> findAllPlistFiles(File dir) {
-        def result = []
-        dir.traverse([type: FileType.FILES, maxDepth: FileManager.MAX_RECURSION_LEVEL]) {
-            if (it.name.endsWith(".plist") && !it.path.contains("/External/") && !it.path.contains('/build/')) {
-                l.lifecycle("Adding plist file ${it} to processing list")
-                result << it
-            }
-        }
-        result
-    }
-
-    Collection<File> findAllSourceFiles(File dir) {
-        def result = []
-        dir.traverse([type: FileType.FILES, maxDepth: FileManager.MAX_RECURSION_LEVEL]) {
-            if ((it.name.endsWith(".m") || it.name.endsWith(".h")) && !it.path.contains("/External/")) {
-                l.lifecycle("Adding source file ${it} to processing list")
-                result << it
-            }
-        }
-        result
-    }
-
 
     private void replaceBundleInAllPlists(File dir, String newBundleIdPrefix, String oldBundleIdPrefix) {
         l.lifecycle("Finding all plists and replacing ${oldBundleIdPrefix} with ${newBundleIdPrefix}")
@@ -102,6 +78,17 @@ class IOSSingleVariantBuilder {
         l.lifecycle("Finished processing all plists")
     }
 
+    Collection<File> findAllPlistFiles(File dir) {
+        def result = []
+        dir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
+            if (it.name.endsWith(".plist") && !it.path.contains("/External/") && !it.path.contains('/build/')) {
+                l.lifecycle("Adding plist file ${it} to processing list")
+                result << it
+            }
+        }
+        result
+    }
+
     private void replaceBundleInAllSourceFiles(File dir, String newBundleIdPrefix, String oldBundleIdPrefix) {
         l.lifecycle("Finding all source files")
         def sourceFiles = findAllSourceFiles(dir)
@@ -117,12 +104,15 @@ class IOSSingleVariantBuilder {
         l.lifecycle("Finished processing all source files")
     }
 
-    void replaceBundleId(File dir, String oldBundleId, String newBundleId, String configuration) {
-        replaceBundleInAllPlists(dir, newBundleId, oldBundleId)
-        replaceBundleInAllSourceFiles(dir, newBundleId, oldBundleId)
-        iosConf.distributionDirectories[configuration] = new File(iosConf.distributionDirectory, newBundleId)
-        l.lifecycle("New distribution directory: ${iosConf.distributionDirectories[configuration]}")
-        l.lifecycle("Replaced the bundleIdprefix everywhere")
+    Collection<File> findAllSourceFiles(File dir) {
+        def result = []
+        dir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
+            if ((it.name.endsWith(".m") || it.name.endsWith(".h")) && !it.path.contains("/External/")) {
+                l.lifecycle("Adding source file ${it} to processing list")
+                result << it
+            }
+        }
+        result
     }
 
     void buildNormalVariant(Project project, String target, String configuration) {
@@ -159,6 +149,16 @@ class IOSSingleVariantBuilder {
             }
         } else {
             l.lifecycle("Skipping building debug artifacts -> the build is not versioned")
+        }
+    }
+
+    private checkVersions() {
+        l.info("Application version: ${conf.versionCode} string: ${conf.versionString}")
+        if (conf.versionCode == 0) {
+            throw new GradleException("The CFBundleVersion key is missing from ${iosConf.plistFile} or its value is 0. Please add it or increase the value. Integers are only valid values")
+        }
+        if (conf.versionString.startsWith('NOVERSION')) {
+            throw new GradleException("The CFBundleShortVersionString key is missing from ${iosConf.plistFile}. Please add it.")
         }
     }
 
