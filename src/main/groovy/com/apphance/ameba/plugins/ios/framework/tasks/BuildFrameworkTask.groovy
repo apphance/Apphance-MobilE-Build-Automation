@@ -2,11 +2,13 @@ package com.apphance.ameba.plugins.ios.framework.tasks
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSFrameworkConfiguration
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static org.gradle.api.logging.Logging.getLogger
@@ -39,7 +41,9 @@ class BuildFrameworkTask extends DefaultTask {
     @Inject
     IOSConfiguration conf
     @Inject
-    IOSFrameworkConfiguration iosFrameworkConf
+    IOSFrameworkConfiguration frameworkConf
+
+    AbstractIOSVariant variant
 
     @TaskAction
     void buildIOSFramework() {
@@ -55,7 +59,7 @@ class BuildFrameworkTask extends DefaultTask {
     }
 
     private createZipFile() {
-        destinationZipFile = new File(project.buildDir, conf.projectName.value + '_' + conf.versionString + '.zip')
+        destinationZipFile = new File(project.buildDir, variant.projectName + '_' + variant.versionString + '.zip')
         destinationZipFile.delete()
         executor.executeCommand(new Command(runDir: frameworkMainDir, cmd: [
                 'zip',
@@ -66,7 +70,7 @@ class BuildFrameworkTask extends DefaultTask {
 
     private createLibrary() {
         l.lifecycle('Create library')
-        def outputFile = new File(frameworkVersionsVersionDir, conf.projectName.value)
+        def outputFile = new File(frameworkVersionsVersionDir, variant.projectName)
         outputFile.parentFile.mkdirs()
         executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
                 'lipo',
@@ -79,7 +83,7 @@ class BuildFrameworkTask extends DefaultTask {
 
     private copyingResources() {
         l.lifecycle('Copying resources')
-        iosFrameworkConf.resources.value.each {
+        frameworkConf.resources.value.each {
             if (it != '') {
                 project.ant.copy(file: it, toDir: frameworkVersionsVersionResourcesDir)
             }
@@ -88,7 +92,7 @@ class BuildFrameworkTask extends DefaultTask {
 
     private copyingHeaders() {
         l.lifecycle('Copying headers')
-        iosFrameworkConf.headers.value.each {
+        frameworkConf.headers.value.each {
             if (it != '') {
                 project.ant.copy(file: it, toDir: frameworkVersionsVersionHeadersDir)
             }
@@ -97,8 +101,8 @@ class BuildFrameworkTask extends DefaultTask {
 
     private setLinkLibraries() {
         l.lifecycle('Set link libraries')
-        iphoneosLibrary = new File(project.buildDir, "${iosFrameworkConf.configuration.value}-iphoneos/lib${iosFrameworkConf.target.value}.a")
-        iphoneosSimulatorLibrary = new File(project.buildDir, "${iosFrameworkConf.configuration.value}-iphonesimulator/lib${iosFrameworkConf.target.value}.a")
+        iphoneosLibrary = new File(project.buildDir, "${variant.configuration}-iphoneos/lib${variant.target}.a")
+        iphoneosSimulatorLibrary = new File(project.buildDir, "${variant.configuration}-iphonesimulator/lib${variant.target}.a")
     }
 
     private createSymlinks() {
@@ -106,7 +110,7 @@ class BuildFrameworkTask extends DefaultTask {
         executor.executeCommand(new Command(runDir: frameworkVersionsDir, cmd: [
                 'ln',
                 '-s',
-                iosFrameworkConf.version.value,
+                frameworkConf.version.value,
                 'Current'
         ]))
         executor.executeCommand(new Command(runDir: frameworkAppDir, cmd: [
@@ -124,8 +128,8 @@ class BuildFrameworkTask extends DefaultTask {
         executor.executeCommand(new Command(runDir: frameworkAppDir, cmd: [
                 'ln',
                 '-s',
-                "Versions/Current/${conf.projectName.value}",
-                conf.projectName.value
+                "Versions/Current/${variant.projectName}",
+                variant.projectName
         ]))
     }
 
@@ -139,11 +143,11 @@ class BuildFrameworkTask extends DefaultTask {
     private createDirectoryStructure() {
         l.lifecycle('Creating directory structure')
         frameworkMainDir.mkdirs()
-        frameworkAppDir = new File(frameworkMainDir, "${conf.projectName.value}.framework")
+        frameworkAppDir = new File(frameworkMainDir, "${variant.projectName}.framework")
         frameworkAppDir.mkdirs()
         frameworkVersionsDir = new File(frameworkAppDir, 'Versions')
         frameworkVersionsDir.mkdirs()
-        frameworkVersionsVersionDir = new File(frameworkVersionsDir, iosFrameworkConf.version.value)
+        frameworkVersionsVersionDir = new File(frameworkVersionsDir, frameworkConf.version.value)
         frameworkVersionsVersionDir.mkdirs()
         frameworkVersionsVersionResourcesDir = new File(frameworkVersionsVersionDir, 'Resources')
         frameworkVersionsVersionResourcesDir.mkdirs()
@@ -154,9 +158,9 @@ class BuildFrameworkTask extends DefaultTask {
     private xcodeBuilds() {
         executor.executeCommand(new Command(runDir: project.rootDir, cmd: conf.xcodebuildExecutionPath() + [
                 '-target',
-                iosFrameworkConf.target.value,
+                variant.target,
                 '-configuration',
-                iosFrameworkConf.configuration.value,
+                variant.configuration,
                 '-sdk',
                 conf.simulatorSdk.value,
                 '-arch',
@@ -166,9 +170,9 @@ class BuildFrameworkTask extends DefaultTask {
         ]))
         executor.executeCommand(new Command(runDir: project.rootDir, cmd: conf.xcodebuildExecutionPath() + [
                 '-target',
-                iosFrameworkConf.target.value,
+                variant.target,
                 '-configuration',
-                iosFrameworkConf.configuration.value,
+                variant.configuration,
                 '-sdk',
                 conf.sdk.value,
                 'clean',

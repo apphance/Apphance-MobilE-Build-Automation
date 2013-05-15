@@ -124,6 +124,12 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
         "${versionString}_${versionCode}"
     }
 
+    String getProjectName() {
+        //TODO this value should be taken from plist - CFBundleDisplayName
+        //TODO the value of the mentioned key may refer to pbxjproj file
+        null
+    }
+
     abstract File getPlist()
 
     abstract String getBuildableName()

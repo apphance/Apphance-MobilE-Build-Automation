@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
-import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -15,15 +15,15 @@ class CopyMobileProvisionTask extends DefaultTask {
     String group = AMEBA_BUILD
 
     @Inject
-    IOSConfiguration conf
+    IOSVariantsConfiguration variantsConf
 
     @TaskAction
     void copyMobileProvision() {
         def userHome = System.getProperty('user.home')
-        def mobileProvisionDirectory = "$userHome/Library/MobileDevice/Provisioning Profiles/"
-        new File(mobileProvisionDirectory).mkdirs()
-        ant.copy(todir: mobileProvisionDirectory, overwrite: true) {
-            fileset(dir: conf.distributionDir) { include(name: "*.mobileprovision") }
+        def mobileProvisionDir = "$userHome/Library/MobileDevice/Provisioning Profiles/"
+        new File(mobileProvisionDir).mkdirs()
+        variantsConf.variants.each { v ->
+            ant.copy(file: v.plist, todir: mobileProvisionDir, overwrite: true)
         }
     }
 }

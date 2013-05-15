@@ -1,12 +1,14 @@
 package com.apphance.ameba.plugins.ios.framework
 
 import com.apphance.ameba.configuration.ios.IOSFrameworkConfiguration
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
 import com.apphance.ameba.plugins.ios.framework.tasks.BuildFrameworkTask
-import javax.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+import javax.inject.Inject
 
 /**
  * Plugin for preparing reports after successful IOS build.
@@ -20,14 +22,25 @@ import org.gradle.api.Project
 class IOSFrameworkPlugin implements Plugin<Project> {
 
     @Inject
-    IOSFrameworkConfiguration iosFrameworkConf
+    IOSFrameworkConfiguration frameworkConf
+    @Inject
+    IOSVariantsConfiguration variantsConf
 
     @Override
     void apply(Project project) {
-        if (iosFrameworkConf.isEnabled()) {
-            project.task(BuildFrameworkTask.NAME,
+        if (frameworkConf.isEnabled()) {
+
+            def task = project.task(BuildFrameworkTask.NAME,
                     type: BuildFrameworkTask,
-                    dependsOn: [CopyMobileProvisionTask.NAME])
+                    dependsOn: [CopyMobileProvisionTask.NAME]) as BuildFrameworkTask
+
+            task.variant = frameworkVariant()
+        }
+    }
+
+    private AbstractIOSVariant frameworkVariant() {
+        variantsConf.variants.find {
+            it.name == frameworkConf.variantName.value
         }
     }
 }

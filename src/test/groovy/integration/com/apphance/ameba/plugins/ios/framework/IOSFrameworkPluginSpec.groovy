@@ -16,7 +16,7 @@ class IOSFrameworkPluginSpec extends Specification {
 
         and:
         def plugin = new IOSFrameworkPlugin()
-        plugin.iosFrameworkConf = Stub(IOSFrameworkConfiguration, { isEnabled() >> true })
+        plugin.frameworkConf = Stub(IOSFrameworkConfiguration, { isEnabled() >> true })
 
         when:
         plugin.apply(project)
@@ -34,7 +34,7 @@ class IOSFrameworkPluginSpec extends Specification {
 
         and:
         def plugin = new IOSFrameworkPlugin()
-        plugin.iosFrameworkConf = Stub(IOSFrameworkConfiguration, { isEnabled() >> false })
+        plugin.frameworkConf = Stub(IOSFrameworkConfiguration, { isEnabled() >> false })
 
         when:
         plugin.apply(project)

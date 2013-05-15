@@ -22,9 +22,9 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
     @Inject
     IOSXCodeOutputParser parser
     @Inject
-    IOSVariantsConfiguration iosVariantsConfiguration
+    IOSVariantsConfiguration variantsConf
     @Inject
-    IOSReleaseConfiguration iosReleaseConfiguration
+    IOSReleaseConfiguration releaseConf
 
     @Override
     boolean isEnabled() {
@@ -37,9 +37,11 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
     }
 
     def variantName = new StringProperty(
-            name: 'ios.framework.variantName',
+            name: 'ios.framework.variant',
             message: 'Variant to build framework project with',
-            possibleValues: { iosVariantsConfiguration.variantsNames.value }
+            possibleValues: { variantsConf.variantsNames.value },
+            validator: { it in variantsConf.variantsNames.value },
+            required: { true }
     )
 
     def version = new StringProperty(
@@ -60,11 +62,11 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
 
     @Override
     boolean canBeEnabled() {
-        !iosReleaseConfiguration.enabled
+        !releaseConf.enabled
     }
 
     @Override
     String getMessage() {
-        "'$configurationName' cannot be enabled because '${iosReleaseConfiguration.configurationName}' is enabled and those plugins are mutually exclusive.\n"
+        "'$configurationName' cannot be enabled because '${releaseConf.configurationName}' is enabled and those plugins are mutually exclusive.\n"
     }
 }
