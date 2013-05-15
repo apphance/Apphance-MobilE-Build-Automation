@@ -167,7 +167,7 @@ class IOSSingleVariantBuilder {
                 id: "${target}-${configuration}",
                 target: target,
                 configuration: configuration,
-                buildDirectory: new File(tmpDir(target, configuration), "/build/${configuration}-${outputDirPostfix}"),
+                buildDir: new File(tmpDir(target, configuration), "/build/${configuration}-${outputDirPostfix}"),
                 fullReleaseName: "${target}-${configuration}-${conf.fullVersionString}",
                 filePrefix: "${target}-${configuration}-${conf.fullVersionString}",
                 mobileProvisionFile: parser.findMobileProvisionFile(project, target, configuration, true),

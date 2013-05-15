@@ -39,7 +39,6 @@ class IOSSchemeVariant extends AbstractIOSVariant {
 
     @Override
     String getTarget() {
-        // FIXME implement
-        return null
+        pbxJsonParser.targetForBlueprintId(schemeParser.blueprintIdentifier(name:q))
     }
 }

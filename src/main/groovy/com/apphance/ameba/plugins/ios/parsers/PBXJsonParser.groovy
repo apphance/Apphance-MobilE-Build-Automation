@@ -46,6 +46,15 @@ class PbxJsonParser {
         conf
     }
 
+    String targetForBlueprintId(String blueprintId) {
+        def json = parsedPBX()
+        def objects = json.objects
+
+        def targetObject = objects.find { it.value.isa == 'PBXNativeTarget' && it.key == blueprintId }
+
+        targetObject.value.name
+    }
+
     private Object parsedPBX() {
         new JsonSlurper().parseText(executor.pbxProjToJSON().join('\n'))
     }

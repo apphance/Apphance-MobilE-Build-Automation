@@ -8,7 +8,7 @@ class IOSBuilderInfo {
     String id
     String target
     String configuration
-    File buildDirectory
+    File buildDir
     String fullReleaseName
     String filePrefix
     File mobileProvisionFile

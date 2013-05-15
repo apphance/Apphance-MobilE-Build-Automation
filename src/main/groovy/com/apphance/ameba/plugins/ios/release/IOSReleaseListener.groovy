@@ -68,7 +68,7 @@ class IOSReleaseListener implements IOSBuildListener {
         ant.zip(destfile: distributionZipArtifact.location) {
             zipfileset(dir: conf.distributionDir,
                     includes: parser.findMobileProvisionFile(project, bi.target, bi.configuration).name)
-            zipfileset(dir: bi.buildDirectory, includes: "${bi.target}.app/**")
+            zipfileset(dir: bi.buildDir, includes: "${bi.target}.app/**")
         }
         l.lifecycle("Distribution zip file created: ${distributionZipArtifact}")
     }
@@ -91,7 +91,7 @@ class IOSReleaseListener implements IOSBuildListener {
         dSYMZipArtifact.location.parentFile.mkdirs()
         dSYMZipArtifact.location.delete()
         ant.zip(destfile: dSYMZipArtifact.location) {
-            zipfileset(dir: bi.buildDirectory, includes: "${bi.target}.app.dSYM/**")
+            zipfileset(dir: bi.buildDir, includes: "${bi.target}.app.dSYM/**")
         }
         l.lifecycle("dSYM zip file created: ${dSYMZipArtifact}")
     }
@@ -115,7 +115,7 @@ class IOSReleaseListener implements IOSBuildListener {
         ahSYM.location.delete()
         ahSYM.location.mkdirs()
         def je = new JythonExecutor()
-        def args = ['-p', conf.plistFile.canonicalPath, '-d', new File(bi.buildDirectory, "${bi.target}.app.dSYM").canonicalPath, '-o', new File(ahSYM.location.canonicalPath, bi.target).canonicalPath]
+        def args = ['-p', conf.plistFile.canonicalPath, '-d', new File(bi.buildDir, "${bi.target}.app.dSYM").canonicalPath, '-o', new File(ahSYM.location.canonicalPath, bi.target).canonicalPath]
         je.executeScript('jython/dump_reduce3_ameba.py', args)
         l.lifecycle("ahSYM files created: ${ahSYM.location.list()}")
     }
@@ -138,14 +138,14 @@ class IOSReleaseListener implements IOSBuildListener {
         AmebaArtifact ipaArtifact = prepareIpaArtifact(bi)
         ipaArtifact.location.parentFile.mkdirs()
         ipaArtifact.location.delete()
-        def appList = bi.buildDirectory.list([accept: { d, f -> f ==~ /.*\.app/ }] as FilenameFilter)
+        def appList = bi.buildDir.list([accept: { d, f -> f ==~ /.*\.app/ }] as FilenameFilter)
         def cmd = [
                 '/usr/bin/xcrun',
                 '-sdk',
                 conf.sdk.value,
                 'PackageApplication',
                 '-v',
-                new File(bi.buildDirectory, appList[0]).canonicalPath,
+                new File(bi.buildDir, appList[0]).canonicalPath,
                 '-o',
                 ipaArtifact.location.canonicalPath,
                 '--embed',
@@ -254,7 +254,7 @@ class IOSReleaseListener implements IOSBuildListener {
         rsyncTemplatePreservingExecutableFlag(project, destDir)
         File embedDir = new File(destDir, "Contents/Resources/EmbeddedApp")
         embedDir.mkdirs()
-        File sourceApp = new File(bi.buildDirectory, "${bi.target}.app")
+        File sourceApp = new File(bi.buildDir, "${bi.target}.app")
         rsyncEmbeddedAppPreservingExecutableFlag(project, sourceApp, embedDir)
         updateBundleId(project, bi, destDir)
         resampleIcon(project, destDir)

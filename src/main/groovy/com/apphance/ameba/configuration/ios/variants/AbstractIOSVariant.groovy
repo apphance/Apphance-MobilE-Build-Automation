@@ -100,8 +100,6 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
         "build${name}"
     }
 
-    abstract File getPlist()
-
     String getVersionCode() {
         extVersionCode ?: plistParser.getVersionCode(plist) ?: ''
     }
@@ -118,6 +116,16 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
         reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
     }
 
+    protected String sdkCmd() {
+        conf.sdk.value ? "-sdk ${conf.sdk.value}" : ''
+    }
+
+    String getFullVersionString() {
+        "${versionString}_${versionCode}"
+    }
+
+    abstract File getPlist()
+
     abstract String getBuildableName()
 
     abstract List<String> buildCmd()
@@ -125,8 +133,4 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
     abstract String getConfiguration()
 
     abstract String getTarget()
-
-    protected String sdkCmd() {
-        conf.sdk.value ? "-sdk ${conf.sdk.value}" : ''
-    }
 }
