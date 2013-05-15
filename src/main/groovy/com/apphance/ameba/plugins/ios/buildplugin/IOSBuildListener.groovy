@@ -1,7 +1,6 @@
 package com.apphance.ameba.plugins.ios.buildplugin
 
 import com.apphance.ameba.plugins.ios.IOSBuilderInfo
-import org.gradle.api.Project
 
 /**
  * Listens for finishing particular builds. You can register listeners to receive notifications
@@ -9,5 +8,5 @@ import org.gradle.api.Project
  *
  */
 interface IOSBuildListener {
-    void buildDone(Project project, IOSBuilderInfo bi)
+    void buildDone(IOSBuilderInfo bi)
 }

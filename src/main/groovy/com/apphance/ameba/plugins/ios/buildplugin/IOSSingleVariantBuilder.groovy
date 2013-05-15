@@ -31,8 +31,6 @@ class IOSSingleVariantBuilder {
     @Inject
     AntBuilder ant
     @Inject
-    Project project
-    @Inject
     IOSExecutor iosExecutor
     @Inject
     IOSXCodeOutputParser parser
@@ -129,7 +127,7 @@ class IOSSingleVariantBuilder {
 //            IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
             IOSBuilderInfo bi = artifactProvider.builderInfo(null)//TODO pass variant here
             buildListeners.each {
-                it.buildDone(project, bi)
+                it.buildDone(bi)
             }
         } else {
             iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration, iosConf.simulatorSDK, "-arch i386")
@@ -145,7 +143,7 @@ class IOSSingleVariantBuilder {
 //            IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphonesimulator', project)
             IOSBuilderInfo bi = artifactProvider.builderInfo(null)//TODO pass variant here
             buildListeners.each {
-                it.buildDone(project, bi)
+                it.buildDone(bi)
             }
         } else {
             l.lifecycle("Skipping building debug artifacts -> the build is not versioned")
@@ -163,6 +161,8 @@ class IOSSingleVariantBuilder {
     }
 
     public File tmpDir(String target, String configuration) {
-        project.file("../tmp-${project.rootDir.name}-${target}-${configuration}")
+//        project.file("../tmp-${project.rootDir.name}-${target}-${configuration}")
+        //TODO
+        null
     }
 }
