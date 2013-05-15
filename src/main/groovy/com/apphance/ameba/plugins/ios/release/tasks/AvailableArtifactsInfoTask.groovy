@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.ios.release.tasks
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import com.apphance.ameba.plugins.ios.MPParser
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
@@ -27,6 +28,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     @Inject
     IOSConfiguration conf
     @Inject
+    IOSVariantsConfiguration variantsConf
+    @Inject
     IOSReleaseConfiguration releaseConf
     @Inject
     IOSXCodeOutputParser parser
@@ -36,10 +39,10 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     @TaskAction
     void prepareAvailableArtifactsInfo() {
         def udids = [:]
-        conf.allBuildableVariants.each { v ->
-            l.lifecycle("Preparing artifact for ${v.id}")
+        variantsConf.variants.each { v ->
+            l.lifecycle("Preparing artifact for ${v.name}")
             releaseListener.buildArtifactsOnly(v.target, v.configuration)
-            File mobileProvisionFile = parser.findMobileProvisionFile(project, v.target, conf.configurations[0], true)
+            File mobileProvisionFile = v.mobileprovision.value
             if (conf.versionString != null) {
                 udids.put(v.target, MPParser.readUdids(mobileProvisionFile.toURI().toURL()))
             } else {
@@ -87,11 +90,12 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         otaIndexFile.location.mkdirs()
         otaIndexFile.location.delete()
         def urlMap = [:]
-        conf.allBuildableVariants.each { v ->
-            if (releaseConf.manifestFiles[v.id]) {
-                l.lifecycle("Preparing OTA configuration for ${v.id}")
-                def encodedUrl = URLEncoder.encode(releaseConf.manifestFiles[v.id].url.toString(), "utf-8")
-                urlMap.put(v.id, "itms-services://?action=download-manifest&url=${encodedUrl}")
+
+        variantsConf.variants.each { v ->
+            if (releaseConf.manifestFiles[v.name]) {
+                l.lifecycle("Preparing OTA configuration for ${v.name}")
+                def encodedUrl = URLEncoder.encode(releaseConf.manifestFiles[v.name].url.toString(), "utf-8")
+                urlMap.put(v.name, "itms-services://?action=download-manifest&url=${encodedUrl}")
             } else {
                 l.warn("Skipping preparing OTA configuration for ${v.id} -> missing manifest")
             }

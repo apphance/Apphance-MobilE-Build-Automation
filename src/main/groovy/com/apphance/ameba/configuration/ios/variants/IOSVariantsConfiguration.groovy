@@ -40,7 +40,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     def variantsNames = new ListStringProperty(
             name: 'ios.variants',
-            message: 'Variants',
+            message: "Variants (first variant on the list will be considered as a 'main'",
             possibleValues: { variantsNames.value ?: [] }
     )
 
@@ -95,8 +95,12 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         this.@variants
     }
 
-    String getMainVariant() {
+    String getMainVariantName() {
         variantsNames.value?.empty ? null : variantsNames.value[0]
+    }
+
+    AbstractIOSVariant getMainVariant() {
+        variants[0]
     }
 
     @Override

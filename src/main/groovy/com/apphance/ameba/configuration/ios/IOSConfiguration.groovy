@@ -4,7 +4,6 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
-import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.IOSExecutor
 import org.gradle.api.Project
@@ -21,21 +20,8 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     String configurationName = 'iOS Configuration'
 
-    //from old conf
-    List<String> families = []
-    Collection<Expando> allBuildableVariants = []
-    List<String> allTargets = []
-    String mainTarget
-    File distributionDir
-
-    Boolean isBuildExcluded(String buildName) {
-        false
-    }
-
-    public static final List<String> FAMILIES = ['iPad', 'iPhone']
-    //from old conf
-
-    public static final PROJECT_PBXPROJ = 'project.pbxproj'
+    static final List<String> FAMILIES = ['iPad', 'iPhone']
+    static final PROJECT_PBXPROJ = 'project.pbxproj'
 
     private List tcMatrix = []
 
@@ -44,8 +30,6 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     @Inject
     ProjectTypeDetector projectTypeDetector
     @Inject
-    PropertyReader reader
-    @Inject
     IOSExecutor executor
 
     @Override
@@ -53,8 +37,9 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
         throw new UnsupportedOperationException('not yet implemented')
     }
 
+    @Override
     String getExtVersionCode() {
-        reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
+        throw new UnsupportedOperationException('not yet implemented')
     }
 
     @Override
@@ -62,8 +47,9 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
         throw new UnsupportedOperationException('not yet implemented')
     }
 
+    @Override
     String getExtVersionString() {
-        reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
+        throw new UnsupportedOperationException('not yet implemented')
     }
 
     @Override

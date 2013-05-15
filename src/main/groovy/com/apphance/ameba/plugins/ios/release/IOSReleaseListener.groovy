@@ -2,12 +2,11 @@ package com.apphance.ameba.plugins.ios.release
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
-import com.apphance.ameba.executor.IOSExecutor
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.IOSArtifactProvider
 import com.apphance.ameba.plugins.ios.IOSBuilderInfo
-import com.apphance.ameba.plugins.ios.IOSXCodeOutputParser
 import com.apphance.ameba.plugins.ios.MPParser
 import com.apphance.ameba.plugins.ios.buildplugin.IOSBuildListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
@@ -16,6 +15,7 @@ import org.gradle.api.AntBuilder
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.ios.IOSConfiguration.getFAMILIES
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -29,17 +29,15 @@ class IOSReleaseListener implements IOSBuildListener {
     @Inject
     CommandExecutor executor
     @Inject
-    IOSExecutor iosExecutor
-    @Inject
     IOSConfiguration conf
     @Inject
     IOSReleaseConfiguration releaseConf
     @Inject
     AntBuilder ant
     @Inject
-    IOSXCodeOutputParser parser
-    @Inject
     IOSArtifactProvider artifactProvider
+    @Inject
+    IOSVariantsConfiguration variantsConf
 
     @Override
     public void buildDone(IOSBuilderInfo bi) {
@@ -52,7 +50,7 @@ class IOSReleaseListener implements IOSBuildListener {
                 prepareManifestFile(bi)
                 prepareMobileProvisionFile(bi)
             } else {
-                conf.families.each { family ->
+                FAMILIES.each { family ->
                     prepareSimulatorBundleFile(bi, family)
                 }
             }
@@ -65,11 +63,12 @@ class IOSReleaseListener implements IOSBuildListener {
         AmebaArtifact distributionZipArtifact = prepareDistributionZipArtifact(bi)
         distributionZipArtifact.location.parentFile.mkdirs()
         distributionZipArtifact.location.delete()
-        ant.zip(destfile: distributionZipArtifact.location) {
-            zipfileset(dir: conf.distributionDir,
-                    includes: parser.findMobileProvisionFile(project, bi.target, bi.configuration).name)
-            zipfileset(dir: bi.buildDir, includes: "${bi.target}.app/**")
-        }
+        //TODO how to zip the file with new configuration?
+//        ant.zip(destfile: distributionZipArtifact.location) {
+//            zipfileset(dir: conf.distributionDir,
+//                    includes: parser.findMobileProvisionFile(project, bi.target, bi.configuration).name)
+//            zipfileset(dir: bi.buildDir, includes: "${bi.target}.app/**")
+//        }
         l.lifecycle("Distribution zip file created: ${distributionZipArtifact}")
     }
 
@@ -239,6 +238,7 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
     void prepareSimulatorBundleFile(IOSBuilderInfo bi, String family) {
+
         AmebaArtifact file = new AmebaArtifact()
         file.name = "Simulator build for ${family}"
         file.url = new URL(releaseConf.baseURL, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
@@ -269,8 +269,8 @@ class IOSReleaseListener implements IOSBuildListener {
                 "${conf.projectName}-${bi.target}-${family}"
         ]
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: cmd))
-        releaseConf.dmgImageFiles.put("${family}-${conf.mainTarget}" as String, file)
-        l.lifecycle("Simulator zip file created: ${file} for ${family}-${conf.mainTarget}")
+        releaseConf.dmgImageFiles.put("${family}-${variantsConf.mainVariant.target}" as String, file)
+        l.lifecycle("Simulator zip file created: ${file} for ${family}-${variantsConf.mainVariant.target}")
     }
 
     String getFolderPrefix(IOSBuilderInfo bi) {

@@ -19,7 +19,7 @@ class CopyDebugSourcesTask extends DefaultTask {
     @TaskAction
     void copyDebugSources() {
         String debugConfiguration = 'Debug'
-        conf.allTargets.each { target ->
+        conf.targets.each { target ->
             ant.sync(toDir: tmpDir(target, debugConfiguration),
                     failonerror: false, overwrite: true, verbose: false) {
                 fileset(dir: "${project.rootDir}/") {
