@@ -2,7 +2,7 @@ package com.apphance.ameba.plugins.android.apphance.tasks
 
 import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceMode
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import com.apphance.ameba.plugins.apphance.ApphancePluginCommons
 import org.gradle.api.GradleException
 import org.gradle.api.Project

@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.ios.buildplugin
 
-import com.apphance.ameba.plugins.ios.IOSBuilderInfo
+import com.apphance.ameba.plugins.ios.builder.IOSBuilderInfo
 
 /**
  * Listens for finishing particular builds. You can register listeners to receive notifications

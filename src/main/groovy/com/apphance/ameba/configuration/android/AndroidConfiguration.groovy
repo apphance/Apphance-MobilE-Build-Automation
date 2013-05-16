@@ -6,8 +6,8 @@ import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.AndroidExecutor
-import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidBuildXmlHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import org.gradle.api.Project
 
 import javax.inject.Inject

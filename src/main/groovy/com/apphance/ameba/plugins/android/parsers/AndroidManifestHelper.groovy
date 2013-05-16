@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.android
+package com.apphance.ameba.plugins.android.parsers
 
 import com.apphance.ameba.util.Preconditions
 import groovy.util.slurpersupport.GPathResult

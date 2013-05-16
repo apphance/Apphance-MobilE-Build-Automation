@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.android.release.tasks
 
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import com.apphance.ameba.plugins.release.tasks.AbstractUpdateVersionTask
 
 import javax.inject.Inject

@@ -2,8 +2,8 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.reader.PropertyReader
-import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidBuildXmlHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 

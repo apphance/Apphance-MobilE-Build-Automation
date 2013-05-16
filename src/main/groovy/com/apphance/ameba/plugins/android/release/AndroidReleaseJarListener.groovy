@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.android.release
 
-import com.apphance.ameba.plugins.android.AndroidArtifactProvider
-import com.apphance.ameba.plugins.android.AndroidBuilderInfo
+import com.apphance.ameba.plugins.android.builder.AndroidArtifactProvider
+import com.apphance.ameba.plugins.android.builder.AndroidBuilderInfo
 
 import javax.inject.Inject
 

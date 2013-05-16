@@ -1,11 +1,11 @@
 package com.apphance.ameba.plugins.android.release.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import org.gradle.api.GradleException
 import spock.lang.Specification
 
-import static com.apphance.ameba.plugins.android.AndroidManifestHelper.ANDROID_MANIFEST
+import static AndroidManifestHelper.ANDROID_MANIFEST
 import static com.google.common.io.Files.copy
 import static com.google.common.io.Files.createTempDir
 import static org.gradle.testfixtures.ProjectBuilder.builder

@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.ios
+package com.apphance.ameba.plugins.ios.builder
 
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant

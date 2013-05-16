@@ -1,6 +1,6 @@
 package com.apphance.ameba.android
 
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import com.apphance.ameba.plugins.project.ProjectConfiguration
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass

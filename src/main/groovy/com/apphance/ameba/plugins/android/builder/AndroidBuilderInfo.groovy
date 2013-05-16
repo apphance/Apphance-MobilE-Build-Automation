@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.android
+package com.apphance.ameba.plugins.android.builder
 
 import com.apphance.ameba.configuration.android.AndroidBuildMode
 

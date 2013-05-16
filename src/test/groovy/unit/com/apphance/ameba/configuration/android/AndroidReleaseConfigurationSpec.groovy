@@ -2,7 +2,7 @@ package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import spock.lang.Specification
 
 class AndroidReleaseConfigurationSpec extends Specification {

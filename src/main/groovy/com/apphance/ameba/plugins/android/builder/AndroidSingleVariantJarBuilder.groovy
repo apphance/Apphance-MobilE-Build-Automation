@@ -1,26 +1,25 @@
-package com.apphance.ameba.plugins.android
+package com.apphance.ameba.plugins.android.builder
 
 import static com.apphance.ameba.executor.AntExecutor.CLEAN
 
 /**
- * Builds APK from the project - one per variant.
+ * Builds Jar for the project - one per variant.
  *
  */
 @com.google.inject.Singleton
-class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder {
+class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder {
 
     @Override
     void buildSingle(AndroidBuilderInfo bi) {
         antExecutor.executeTarget bi.tmpDir, CLEAN
-        def variantPropertiesDir = new File(variantsConfiguration.variantsDir, bi.variant)
-        if (bi.variant && variantPropertiesDir.exists()) {
+        if (bi.variant) {
             ant.copy(todir: new File(bi.tmpDir, 'res/raw'), failonerror: false, overwrite: 'true', verbose: 'true') {
-                fileset(dir: variantPropertiesDir,
+                fileset(dir: new File(variantsConfiguration.variantsDir, bi.variant),
                         includes: '*', excludes: 'market_variant.txt')
             }
         }
         antExecutor.executeTarget bi.tmpDir, bi.mode.lowerCase()
-        logger.lifecycle("File created: ${bi.originalFile}")
+        logger.lifecycle("Jar file created: ${bi.originalFile}")
         buildListeners.each {
             it.buildDone(bi)
         }

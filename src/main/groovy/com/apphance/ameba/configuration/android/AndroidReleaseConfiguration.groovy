@@ -1,7 +1,7 @@
 package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import com.apphance.ameba.plugins.release.AmebaArtifact
 
 import javax.inject.Inject

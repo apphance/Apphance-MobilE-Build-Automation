@@ -1,11 +1,10 @@
-package com.apphance.ameba.plugins.android
+package com.apphance.ameba.plugins.android.parsers
 
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
 
-import static com.apphance.ameba.plugins.android.AndroidManifestHelper.ANDROID_MANIFEST
 import static com.google.common.io.Files.copy
 import static com.google.common.io.Files.createTempDir
 
@@ -42,7 +41,7 @@ class AndroidManifestHelperSpec extends Specification {
         def tmpDir = createTempDir()
 
         and:
-        copy(new File(basic, ANDROID_MANIFEST), new File(tmpDir, ANDROID_MANIFEST))
+        copy(new File(basic, com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), new File(tmpDir, com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST))
 
         and:
         def versionString = '123_456_789'
@@ -69,10 +68,10 @@ class AndroidManifestHelperSpec extends Specification {
         def tmpDir = createTempDir()
 
         and:
-        def tmpManifest = new File(tmpDir, ANDROID_MANIFEST)
+        def tmpManifest = new File(tmpDir, com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
 
         and:
-        copy(new File(basic, ANDROID_MANIFEST), tmpManifest)
+        copy(new File(basic, com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), tmpManifest)
 
         expect:
         !(parsedManifest(tmpManifest).@package == newPkg)
@@ -112,10 +111,10 @@ class AndroidManifestHelperSpec extends Specification {
         def tmpDir = createTempDir()
 
         and:
-        def tmpManifest = new File(tmpDir, ANDROID_MANIFEST)
+        def tmpManifest = new File(tmpDir, com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
 
         and:
-        copy(new File(basic, ANDROID_MANIFEST), tmpManifest)
+        copy(new File(basic, com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), tmpManifest)
 
         expect:
         !(parsedManifest(tmpManifest).'uses-permission'.@'android:name'.find {
@@ -139,10 +138,10 @@ class AndroidManifestHelperSpec extends Specification {
         def tmpDir = createTempDir()
 
         and:
-        def tmpManifest = new File(tmpDir, ANDROID_MANIFEST)
+        def tmpManifest = new File(tmpDir, com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
 
         and:
-        copy(new File(noApphanceApplication, ANDROID_MANIFEST), tmpManifest)
+        copy(new File(noApphanceApplication, com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), tmpManifest)
 
         expect:
         !amh.isApphanceActivityPresent(tmpDir)
@@ -226,10 +225,10 @@ class AndroidManifestHelperSpec extends Specification {
         def tmpDir = createTempDir()
 
         and:
-        def tmpManifest = new File(tmpDir, ANDROID_MANIFEST)
+        def tmpManifest = new File(tmpDir, com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
 
         and:
-        copy(new File(noApphanceApplication, ANDROID_MANIFEST), tmpManifest)
+        copy(new File(noApphanceApplication, com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), tmpManifest)
 
         expect:
         !amh.isApphanceActivityPresent(tmpDir)
@@ -249,10 +248,10 @@ class AndroidManifestHelperSpec extends Specification {
         def tmpDir = createTempDir()
 
         and:
-        def tmpManifest = new File(tmpDir, ANDROID_MANIFEST)
+        def tmpManifest = new File(tmpDir, com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
 
         and:
-        copy(new File(noApphanceApplication, ANDROID_MANIFEST), tmpManifest)
+        copy(new File(noApphanceApplication, com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), tmpManifest)
 
         expect:
         !amh.isApphanceInstrumentationPresent(tmpDir)

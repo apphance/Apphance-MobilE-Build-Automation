@@ -6,8 +6,8 @@ import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.ios.IOSArtifactProvider
-import com.apphance.ameba.plugins.ios.IOSBuilderInfo
+import com.apphance.ameba.plugins.ios.builder.IOSArtifactProvider
+import com.apphance.ameba.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.ameba.plugins.ios.buildplugin.IOSBuildListener
 import com.apphance.ameba.plugins.ios.parsers.MobileProvisionParser
 import com.apphance.ameba.plugins.ios.parsers.PlistParser
