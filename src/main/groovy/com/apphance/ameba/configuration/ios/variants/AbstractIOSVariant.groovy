@@ -101,7 +101,7 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
     }
 
     String getVersionCode() {
-        extVersionCode ?: plistParser.getVersionCode(plist) ?: ''
+        extVersionCode ?: plistParser.versionCode(plist) ?: ''
     }
 
     String getExtVersionCode() {
@@ -109,7 +109,7 @@ abstract class AbstractIOSVariant extends AbstractConfiguration {
     }
 
     String getVersionString() {
-        extVersionString ?: plistParser.getVersionString(plist) ?: ''
+        extVersionString ?: plistParser.versionString(plist) ?: ''
     }
 
     String getExtVersionString() {

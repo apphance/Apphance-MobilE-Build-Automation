@@ -17,11 +17,54 @@ class PlistParserSpec extends Specification {
 
     def 'version code is read correctly'() {
         expect:
-        parser.getVersionCode(Mock(File)) == '32'
+        parser.versionCode(Mock(File)) == '32'
     }
 
     def 'version string is read correctly'() {
         expect:
-        parser.getVersionString(Mock(File)) == '1.0'
+        parser.versionString(Mock(File)) == '1.0'
+    }
+
+    def 'bundle id is read correctly'() {
+        expect:
+        parser.bundleId(Mock(File)) == 'com.apphance.ameba'
+    }
+
+    def 'bundleId is replaced correctly'() {
+        given:
+        def plist = new File('testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist')
+
+        when:
+        def replaced = parser.replaceBundledId(plist, oldBundle, newBundle)
+
+        then:
+        replaced.contains(expected)
+        def xml = new XmlSlurper().parseText(replaced)
+        def keyNode = xml.dict.key.find { it.text() == 'CFBundleIdentifier' }
+        def siblings = keyNode.parent().children()
+        siblings[siblings.findIndexOf { it == keyNode } + 1].text() == expected
+
+        where:
+        newBundle                 | oldBundle            | expected
+        'com.apphance.ameba2'     | 'com.apphance.ameba' | 'com.apphance.ameba2'
+        'com.apphance.ameba.test' | 'com.apphance.ameba' | 'com.apphance.ameba.test'
+        'com.app.ameba'           | 'com.apphance.ameba' | 'com.apphance.ameba'
+        'pl.apphance.ameba'       | 'com.apphance.ameba' | 'com.apphance.ameba'
+    }
+
+    def 'versionCode and versionString are replaced correctly'() {
+        given:
+        def plist = new File('testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist')
+
+        when:
+        def replaced = parser.replaceVersion(plist, '46', '2.0')
+
+        then:
+        def xml = new XmlSlurper().parseText(replaced)
+        ['CFBundleVersion': '46', 'CFBundleShortVersionString': '2.0'].every { m ->
+            def keyNode = xml.dict.key.find { it.text() == m.key }
+            def siblings = keyNode.parent().children()
+            siblings[siblings.findIndexOf { it == keyNode } + 1].text() == m.value
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.ios.release.tasks
 
+import com.apphance.ameba.plugins.ios.parsers.PlistParser
 import com.apphance.ameba.plugins.release.tasks.AbstractUpdateVersionTask
 
 import javax.inject.Inject
@@ -7,7 +8,7 @@ import javax.inject.Inject
 class UpdateVersionTask extends AbstractUpdateVersionTask {
 
     @Inject
-    IOSPlistProcessor plistProcessor
+    PlistParser parser
 
     @Override
     void updateDescriptor(String versionCode, String versionString) {

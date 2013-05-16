@@ -9,7 +9,8 @@ import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.IOSArtifactProvider
 import com.apphance.ameba.plugins.ios.IOSBuilderInfo
 import com.apphance.ameba.plugins.ios.buildplugin.IOSBuildListener
-import com.apphance.ameba.plugins.ios.parsers.MPParser
+import com.apphance.ameba.plugins.ios.parsers.MobileProvisionParser
+import com.apphance.ameba.plugins.ios.parsers.PlistParser
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.AntBuilder
@@ -39,6 +40,10 @@ class IOSReleaseListener implements IOSBuildListener {
     IOSArtifactProvider artifactProvider
     @Inject
     IOSVariantsConfiguration variantsConf
+    @Inject
+    PlistParser plistParser
+    @Inject
+    MobileProvisionParser mpParser
 
     @Override
     void buildDone(IOSBuilderInfo bi) {
@@ -138,7 +143,7 @@ class IOSReleaseListener implements IOSBuildListener {
                 '-o',
                 aa.location.canonicalPath,
                 '--embed',
-                bi.mobileProvisionFile.canonicalPath
+                bi.mobileprovision.canonicalPath
         ]
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: cmd))
         l.lifecycle("ipa file created: $aa")
@@ -161,13 +166,13 @@ class IOSReleaseListener implements IOSBuildListener {
 
         URL manifestTemplate = this.class.getResource("manifest.plist")
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        def bundleId = MPParser.readBundleIdFromPlist(bi.plistFile.toURI().toURL())
+        def bundleId = plistParser.bundleId(bi.plist)
         def binding = [
                 ipaUrl: releaseConf.ipaFiles.get(bi.id).url,
                 title: bi.target,
                 bundleId: bundleId
         ]
-        l.lifecycle("Building manifest from ${bi.plistFile}, bundleId: ${bundleId}")
+        l.lifecycle("Building manifest from ${bi.plist}, bundleId: ${bundleId}")
         def result = engine.createTemplate(manifestTemplate).make(binding)
         aa.location << (result.toString())
         l.lifecycle("Manifest file created: ${aa}")
@@ -187,7 +192,7 @@ class IOSReleaseListener implements IOSBuildListener {
         AmebaArtifact aa = prepareMobileProvisionArtifact(bi)
         aa.location.parentFile.mkdirs()
         aa.location.delete()
-        aa.location << bi.mobileProvisionFile.text
+        aa.location << bi.mobileprovision.text
         l.lifecycle("Mobile provision file created: ${aa}")
     }
 
@@ -274,7 +279,7 @@ class IOSReleaseListener implements IOSBuildListener {
     }
 
     private updateBundleId(IOSBuilderInfo bi, File tmpDir) {
-        def bundleId = MPParser.readBundleIdFromProvisionFile(bi.mobileProvisionFile.toURI().toURL())
+        def bundleId = mpParser.bundleId(bi.mobileprovision)
         File contentsPlist = new File(tmpDir, "Contents/Info.plist")
         runPlistBuddy("Set :CFBundleIdentifier ${bundleId}.launchsim", contentsPlist)
     }

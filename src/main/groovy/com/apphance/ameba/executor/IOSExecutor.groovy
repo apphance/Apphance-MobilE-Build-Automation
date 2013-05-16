@@ -65,6 +65,13 @@ class IOSExecutor {
         ))
     }
 
+    List<String> mobileprovisionToXml(File mobileprovision) {
+        commandExecutor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: "security cms -D -i ${mobileprovision.absolutePath}".split()
+        ))
+    }
+
     def buildTarget(File dir, String target, String configuration, String sdk = conf.sdk.value, String params = "") {
         commandExecutor.executeCommand(new Command(runDir: dir, cmd:
                 conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -sdk $sdk $params".split().flatten()))

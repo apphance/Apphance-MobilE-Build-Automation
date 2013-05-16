@@ -74,8 +74,8 @@ class IOSArtifactProviderSpec extends Specification {
         bi.filePrefix == 'GradleXCode-BasicConfiguration-1.0.1_42'
         bi.fullReleaseName == 'GradleXCode-BasicConfiguration-1.0.1_42'
         bi.id == 'GradleXCode-BasicConfiguration'
-        bi.plistFile.name == 'GradleXCode-Info.plist'
-        bi.mobileProvisionFile.name == 'sample.mobileprovision'
+        bi.plist.name == 'GradleXCode-Info.plist'
+        bi.mobileprovision.name == 'sample.mobileprovision'
     }
 
     def 'zip distribution artifact is built well'() {

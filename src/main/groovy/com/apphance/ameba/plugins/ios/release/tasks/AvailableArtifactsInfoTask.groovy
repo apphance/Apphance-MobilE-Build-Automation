@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.ios.release.tasks
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
-import com.apphance.ameba.plugins.ios.parsers.MPParser
+import com.apphance.ameba.plugins.ios.parsers.MobileProvisionParser
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import groovy.text.SimpleTemplateEngine
@@ -34,6 +34,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     IOSReleaseConfiguration releaseConf
     @Inject
     IOSReleaseListener releaseListener
+    @Inject
+    MobileProvisionParser mpParser
 
     SimpleTemplateEngine templateEngine = new SimpleTemplateEngine()
 
@@ -43,8 +45,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         variantsConf.variants.each { v ->
             l.lifecycle("Preparing artifact for ${v.name}")
             releaseListener.buildArtifactsOnly(v)
-            File mobileProvisionFile = v.mobileprovision.value
-            udids.put(v.target, MPParser.readUdids(mobileProvisionFile.toURI().toURL()))
+            udids.put(v.target, mpParser.udids(v.mobileprovision.value))
         }
         String otaFolderPrefix = "${releaseConf.projectDirName}/${conf.fullVersionString}"
         fileIndexArtifact(otaFolderPrefix)

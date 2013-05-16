@@ -11,8 +11,8 @@ class IOSBuilderInfo {
     File buildDir
     String fullReleaseName
     String filePrefix
-    File mobileProvisionFile
-    File plistFile
+    File mobileprovision
+    File plist
 
     @Override
     public String toString() {

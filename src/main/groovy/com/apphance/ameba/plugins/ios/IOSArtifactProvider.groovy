@@ -22,8 +22,8 @@ class IOSArtifactProvider {
                 buildDir: new File(variant.tmpDir, 'build'),
                 fullReleaseName: "${variant.target}-${variant.configuration}-${variant.fullVersionString}",
                 filePrefix: "${variant.target}-${variant.configuration}-${variant.fullVersionString}",
-                mobileProvisionFile: variant.mobileprovision.value,
-                plistFile: variant.plist
+                mobileprovision: variant.mobileprovision.value,
+                plist: variant.plist
         )
         bi
     }

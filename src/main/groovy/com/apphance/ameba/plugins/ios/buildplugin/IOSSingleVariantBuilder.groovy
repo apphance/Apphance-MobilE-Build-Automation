@@ -7,12 +7,10 @@ import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.IOSArtifactProvider
 import com.apphance.ameba.plugins.ios.IOSBuilderInfo
-import com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParser
-import com.apphance.ameba.plugins.ios.parsers.MPParser
+import com.apphance.ameba.plugins.ios.parsers.MobileProvisionParser
+import com.apphance.ameba.plugins.ios.parsers.PlistParser
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
-import com.sun.org.apache.xpath.internal.XPathAPI
 import org.gradle.api.Project
-import org.xml.sax.SAXParseException
 
 import javax.inject.Inject
 
@@ -33,15 +31,15 @@ class IOSSingleVariantBuilder {
     @Inject
     IOSConfiguration conf
     @Inject
-    AntBuilder ant
-    @Inject
     IOSExecutor iosExecutor
     @Inject
     CommandExecutor executor
     @Inject
-    IOSXCodeOutputParser parser
-    @Inject
     IOSArtifactProvider artifactProvider
+    @Inject
+    MobileProvisionParser mpParser
+    @Inject
+    PlistParser plistParser
 
     void registerListener(IOSReleaseListener listener) {
         buildListeners << listener
@@ -61,21 +59,8 @@ class IOSSingleVariantBuilder {
         plistFiles.each { file ->
             l.lifecycle("Parsing ${file}")
             try {
-                def root = MPParser.getParsedPlist(file)
-                XPathAPI.selectNodeList(root, '/plist/dict/key[text()="CFBundleIdentifier"]').each {
-                    String bundleToReplace = it.nextSibling.nextSibling.textContent
-                    if (bundleToReplace.startsWith(oldBundleIdPrefix)) {
-                        String newResult = newBundleIdPrefix + bundleToReplace.substring(oldBundleIdPrefix.length())
-                        it.nextSibling.nextSibling.textContent = newResult
-                        file.write(root as String)
-                        l.lifecycle("Replaced the bundleId to ${newResult} from ${bundleToReplace} in ${file}")
-                    } else if (bundleToReplace.startsWith(newBundleIdPrefix)) {
-                        l.lifecycle("Already replaced the bundleId to ${bundleToReplace} in ${file}")
-                    } else {
-                        l.warn("The bundle to replace ${bundleToReplace} does not start with expected ${oldBundleIdPrefix} in ${file}. Not replacing !!!!!!!.")
-                    }
-                }
-            } catch (SAXParseException e) {
+                plistParser.replaceBundledId(file, oldBundleIdPrefix, newBundleIdPrefix)
+            } catch (Exception e) {
                 l.warn("Error when parsing ${file}: ${e}. Skipping.")
             }
         }
@@ -124,8 +109,7 @@ class IOSSingleVariantBuilder {
         checkVersions()
         if (project.hasProperty('ios.bundleId.' + configuration)) {
             String newBundleId = project['ios.bundleId.' + configuration]
-            String oldBundleId = MPParser.readBundleIdFromProvisionFile(
-                    parser.findMobileProvisionFile(project, target, configuration, false).toURI().toURL());
+            String oldBundleId = mpParser.bundleId(null)//TODO mobileprovision from variant
             replaceBundleId(tmpDir(target, configuration), oldBundleId, newBundleId, configuration)
         }
         l.lifecycle("\n\n\n=== Building target ${target}, configuration ${configuration}  ===")
