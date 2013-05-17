@@ -42,7 +42,7 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
     def task = p.task(AvailableArtifactsInfoTask.NAME, type: AvailableArtifactsInfoTask) as AvailableArtifactsInfoTask
 
     def setup() {
-        properties['release.notes'] = 'release\nnotes'
+        System.setProperty('release.notes', 'release\nnotes')
 
         conf = GroovyMock(AndroidConfiguration)
         conf.isLibrary() >> false

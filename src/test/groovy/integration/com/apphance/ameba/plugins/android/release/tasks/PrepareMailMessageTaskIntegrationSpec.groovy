@@ -28,7 +28,7 @@ class PrepareMailMessageTaskIntegrationSpec extends Specification {
         def projectUrl = "http://ota.polidea.pl/$projectName".toURL()
         def fullVersionString = '1.0.1_42'
         def mainVariant = 'MainVariant'
-        properties['release.notes'] = 'release\nnotes'
+        System.setProperty('release.notes', 'release\nnotes')
 
         and:
         def reader = new PropertyReader()
