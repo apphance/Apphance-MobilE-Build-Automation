@@ -10,9 +10,10 @@ import spock.lang.Specification
 
 import static com.google.common.io.Files.createTempDir
 import static java.io.File.separator
+import static java.lang.System.getProperties
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
-class MailMessageTaskIntegrationSpec extends Specification {
+class PrepareMailMessageTaskIntegrationSpec extends Specification {
 
     def 'prepares mail message'() {
         given:
@@ -27,7 +28,7 @@ class MailMessageTaskIntegrationSpec extends Specification {
         def projectUrl = "http://ota.polidea.pl/$projectName".toURL()
         def fullVersionString = '1.0.1_42'
         def mainVariant = 'MainVariant'
-        System.setProperty('release.notes', 'release\nnotes')
+        properties['release.notes'] = 'release\nnotes'
 
         and:
         def reader = new PropertyReader()
@@ -83,6 +84,6 @@ class MailMessageTaskIntegrationSpec extends Specification {
         cleanup:
         otaDir.deleteDir()
         apkDir.deleteDir()
-        System.properties.remove('release.notes')
+        properties.remove('release.notes')
     }
 }

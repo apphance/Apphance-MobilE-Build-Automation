@@ -5,7 +5,7 @@ import spock.lang.Specification
 
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
-class MailMessageTaskSpec extends Specification {
+class PrepareMailMessageTaskSpec extends Specification {
 
     def p = builder().build()
     def mmt = p.task(PrepareMailMessageTask.NAME, type: PrepareMailMessageTask) as PrepareMailMessageTask
