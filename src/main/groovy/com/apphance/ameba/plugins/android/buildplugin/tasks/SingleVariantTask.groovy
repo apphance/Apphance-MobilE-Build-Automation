@@ -17,7 +17,7 @@ class SingleVariantTask extends DefaultTask {
     String group = AMEBA_BUILD
 
     @Inject
-    AndroidConfiguration androidConfiguration
+    AndroidConfiguration conf
     @Inject
     AndroidArtifactProvider artifactBuilder
     @Inject
@@ -28,12 +28,10 @@ class SingleVariantTask extends DefaultTask {
     AndroidVariantConfiguration variant
 
     @TaskAction
-    void buildSingleVariant() {
-        if (androidConfiguration.isLibrary()) {
-            jarBuilder.buildSingle(artifactBuilder.jarArtifactBuilderInfo(variant))
-        } else {
-            apkBuilder.buildSingle(artifactBuilder.apkArtifactBuilderInfo(variant))
-        }
+    void singleVariant() {
+        conf.isLibrary() ?
+            jarBuilder.buildSingle(artifactBuilder.jarBuilderInfo(variant)) :
+            apkBuilder.buildSingle(artifactBuilder.apkBuilderInfo(variant))
     }
 
     @Override

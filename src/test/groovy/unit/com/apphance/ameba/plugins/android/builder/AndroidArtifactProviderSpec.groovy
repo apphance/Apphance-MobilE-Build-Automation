@@ -49,7 +49,7 @@ class AndroidArtifactProviderSpec extends Specification {
 
     def 'jar artifact builder info'() {
         when:
-        def abi = aab.jarArtifactBuilderInfo(avc)
+        def abi = aab.jarBuilderInfo(avc)
 
         then:
         abi.mode == DEBUG
@@ -63,7 +63,7 @@ class AndroidArtifactProviderSpec extends Specification {
 
     def 'jar artifact'() {
         when:
-        def ja = aab.jarArtifact(aab.jarArtifactBuilderInfo(avc))
+        def ja = aab.jarArtifact(aab.jarBuilderInfo(avc))
 
         then:
         ja.name == 'JAR DEBUG file for V1'
@@ -73,7 +73,7 @@ class AndroidArtifactProviderSpec extends Specification {
 
     def 'apk artifact builder info'() {
         when:
-        def abi = aab.apkArtifactBuilderInfo(avc)
+        def abi = aab.apkBuilderInfo(avc)
 
         then:
         abi.mode == DEBUG
@@ -87,7 +87,7 @@ class AndroidArtifactProviderSpec extends Specification {
 
     def 'apk artifact'() {
         when:
-        def ja = aab.apkArtifact(aab.apkArtifactBuilderInfo(avc))
+        def ja = aab.apkArtifact(aab.apkBuilderInfo(avc))
 
         then:
         ja.name == 'APK DEBUG file for V1'
