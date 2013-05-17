@@ -208,31 +208,6 @@ class ExecuteAndroidBuildsTest {
         assertTrue(new File(testProject, "build/analysis/pmd-result.xml").exists())
     }
 
-    @Test
-    void testBuildAndPrepareVariantedMailMessage() {
-        runGradle('cleanRelease', 'updateProject', 'buildAll', 'prepareImageMontage', 'prepareMailMessage')
-        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/file_index.html").exists())
-        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/icon.png").exists())
-        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/index.html").exists())
-        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/plain_file_index.html").exists())
-        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/qrcode-TestAndroidProject-${fullVersion}.png").exists())
-        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-${fullVersion}.apk").exists())
-        assertTrue(new File(testProject, "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
-    }
-
-    @Test
-    void testBuildAndPrepareNonVariantedMailMessage() {
-        runGradleNoVariants('cleanRelease', 'updateProject', 'buildAll', 'prepareImageMontage', 'prepareMailMessage')
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/file_index.html").exists())
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/icon.png").exists())
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/index.html").exists())
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/plain_file_index.html").exists())
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/qrcode-TestAndroidProject-${fullVersion}.png").exists())
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-${fullVersion}.apk").exists())
-        assertTrue(new File(testNoVariantsProject, "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk")
-                .exists())
-    }
-
     @Ignore('to be used after apphance rewritten')
     void testDefaultApphanceDependency() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()

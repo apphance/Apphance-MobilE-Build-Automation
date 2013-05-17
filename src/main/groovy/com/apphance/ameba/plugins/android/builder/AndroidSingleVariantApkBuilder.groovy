@@ -15,8 +15,7 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
         def variantPropertiesDir = new File(variantsConfiguration.variantsDir, bi.variant)
         if (bi.variant && variantPropertiesDir.exists()) {
             ant.copy(todir: new File(bi.tmpDir, 'res/raw'), failonerror: false, overwrite: 'true', verbose: 'true') {
-                fileset(dir: variantPropertiesDir,
-                        includes: '*', excludes: 'market_variant.txt')
+                fileset(dir: variantPropertiesDir, includes: '*', excludes: 'market_variant.txt')
             }
         }
         antExecutor.executeTarget bi.tmpDir, bi.mode.lowerCase()

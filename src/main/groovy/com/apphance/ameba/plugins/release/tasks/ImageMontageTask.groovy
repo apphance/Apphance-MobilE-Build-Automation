@@ -3,7 +3,6 @@ package com.apphance.ameba.plugins.release.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import javax.inject.Inject
 import ij.ImagePlus
 import ij.ImageStack
 import ij.plugin.MontageMaker
@@ -12,6 +11,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 import javax.imageio.ImageIO
+import javax.inject.Inject
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.util.List
@@ -31,25 +31,28 @@ class ImageMontageTask extends DefaultTask {
     String group = AMEBA_RELEASE
     String description = 'Builds montage of images found in the project'
 
-    @Inject AndroidConfiguration androidConf
-    @Inject AndroidReleaseConfiguration androidReleaseConf
+    @Inject
+    AndroidConfiguration conf
+    @Inject
+    AndroidReleaseConfiguration releaseConf
 
     public static int TILE_PX_SIZE = 120
     public static int MAX_NUMBER_OF_TILES_IN_ROW = 10
     public static int DESCRIPTION_FONT_SIZE = 10
 
     @TaskAction
-    AmebaArtifact imageMontage() {
+    void imageMontage() {
         def filesToMontage = getFilesToMontage(project.rootDir)
         File imageMontageFile = outputMontageFile()
         createMontage(imageMontageFile, filesToMontage)
-        addDescription(imageMontageFile, "${androidConf.projectName.value} Version: ${androidConf.fullVersionString} Generated: ${androidReleaseConf.buildDate}")
+        addDescription(imageMontageFile, "${conf.projectName.value} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}")
 
         def imageMontageFileArtifact = new AmebaArtifact(
-                name: "Image Montage", url: new URL(androidReleaseConf.projectURL.value, "${imageMontageFile.name}"), location: imageMontageFile)
-        androidReleaseConf.imageMontageFile = imageMontageFileArtifact
+                name: "Image Montage", url: new URL(releaseConf.projectURL.value, "${imageMontageFile.name}"), location: imageMontageFile)
+        releaseConf.imageMontageFile = imageMontageFileArtifact
     }
 
+    @groovy.transform.PackageScope
     void addDescription(File image, String description) {
         BufferedImage img = ImageIO.read(image)
 
@@ -62,26 +65,29 @@ class ImageMontageTask extends DefaultTask {
         ImageIO.write(img, "png", image)
     }
 
+    @groovy.transform.PackageScope
     File outputMontageFile() {
-        def imageMontageFile = new File(androidReleaseConf.targetDirectory, "${androidConf.projectName.value}-${androidConf.fullVersionString}-image-montage.png")
+        def imageMontageFile = new File(releaseConf.targetDirectory, "${conf.projectName.value}-${conf.fullVersionString}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
         imageMontageFile
     }
 
+    @groovy.transform.PackageScope
     List<File> getFilesToMontage(File rootDir) {
         List<File> filesToMontage = []
 
         rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL, excludeFilter: '**/ameba-*/**']) { File file ->
             //FIXME apply better filter
-            if (isValid(rootDir, file) && ['ameba-ota', 'ameba-tmp'].every {!file.absolutePath.contains(it)}) {
+            if (isValid(rootDir, file) && [conf.tmpDir, releaseConf.otaDir]*.name.every { !file.absolutePath.contains(it) }) {
                 filesToMontage << file
             }
         }
         filesToMontage
     }
 
-    def createMontage(File ouput, List<File> inputs) {
+    @groovy.transform.PackageScope
+    void createMontage(File ouput, List<File> inputs) {
         Collection<Image> images = resizeImages(inputs)
 
         def processors = images.collect { new ColorProcessor(it) }
@@ -91,13 +97,13 @@ class ImageMontageTask extends DefaultTask {
 
         def imgPlus = new ImagePlus("stack", imageStack)
         int columns, rows
-        (columns, rows) = computeWidhtHeight(images.size())
+        (columns, rows) = computeWidthHeight(images.size())
 
         ImagePlus montage = new MontageMaker().makeMontage2(imgPlus, columns, rows, getScale(images.size()), 1, images.size(), 1, 0, false)
         ImageIO.write(montage.bufferedImage, "png", ouput);
     }
 
-    double getScale(int size) {
+    private double getScale(int size) {
         switch (size) {
             case 0..200: 1.0D; break
             case 201..800: 0.5D; break
@@ -105,12 +111,14 @@ class ImageMontageTask extends DefaultTask {
         }
     }
 
-    List<Integer> computeWidhtHeight(int numberOfTiles) {
+    @groovy.transform.PackageScope
+    List<Integer> computeWidthHeight(int numberOfTiles) {
         int columns = Math.min(numberOfTiles, MAX_NUMBER_OF_TILES_IN_ROW)
         int rows = Math.ceil(numberOfTiles / columns)
         [columns, rows]
     }
 
+    @groovy.transform.PackageScope
     Collection<Image> resizeImages(List<File> inputs) {
         Collection<Image> images = inputs.collect {
 
@@ -128,12 +136,13 @@ class ImageMontageTask extends DefaultTask {
         images
     }
 
+    @groovy.transform.PackageScope
     BufferedImage getImageFrom(File file) {
         log.info("Reading file: $file.absolutePath")
         getConverter(file.name)(file)
     }
 
-    def getConverter(String filename) {
+    private Closure<BufferedImage> getConverter(String filename) {
         switch (filename) {
             case ~/.*\.svg/: this.&svgConverter; break
             default: ImageIO.&read

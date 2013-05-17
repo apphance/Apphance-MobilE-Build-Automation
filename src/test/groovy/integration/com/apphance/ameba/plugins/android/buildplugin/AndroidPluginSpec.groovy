@@ -134,11 +134,15 @@ class AndroidPluginSpec extends Specification {
         project.tasks['buildv2'].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
         project.tasks['installv1'].dependsOn.flatten()*.toString().containsAll('buildv1')
         project.tasks['installv2'].dependsOn.flatten()*.toString().containsAll('buildv2')
-
+        project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_RELEASE_TASK_NAME, BUILD_ALL_DEBUG_TASK_NAME)
+        project.tasks[BUILD_ALL_DEBUG_TASK_NAME].dependsOn.flatten().contains('buildv1')
+        project.tasks[BUILD_ALL_RELEASE_TASK_NAME].dependsOn.flatten().contains('buildv2')
 
         and:
         project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME)
         project.tasks[CLEAN_TASK_NAME].dependsOn.flatten().containsAll(CleanAndroidTask.NAME)
+
+
     }
 
     private AndroidVariantConfiguration createVariant(String name, AndroidBuildMode mode) {

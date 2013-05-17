@@ -35,13 +35,14 @@ class ImageMontageTaskSpec extends Specification {
         def testDir = Files.createTempDir()
         testDir.deleteOnExit()
         releaseConf.getTargetDirectory() >> testDir
+        releaseConf.otaDir >> new File('ameba-ota')
         conf.getProjectName() >> new StringProperty(value: 'testProjectName')
         conf.fullVersionString >> 'fullVersionString'
+        conf.tmpDir >> new File('ameba-tmp')
         logFileGenerator.commandLogFiles() >> [(ERR): createTempFile('err', 'log'), (STD): createTempFile('std', 'log')]
-
         imageMontageTask.project >> project
-        imageMontageTask.androidConf = conf
-        imageMontageTask.androidReleaseConf = releaseConf
+        imageMontageTask.conf = conf
+        imageMontageTask.releaseConf = releaseConf
     }
 
     def "test outputMontageFile"() {
@@ -86,7 +87,7 @@ class ImageMontageTaskSpec extends Specification {
     }
 
     @Ignore('batik:batik-transcoder:1.6-1 causes xercesImpl version conflict')
-    def 'svg convertion'() {
+    def 'svg conversion'() {
         given:
         def svgFile = new File('src/test/resources/com/apphance/ameba/plugins/release/tasks/montageFiles/montageFilesSubdir/1.svg')
         def images = imageMontageTask.resizeImages([svgFile])
@@ -98,7 +99,7 @@ class ImageMontageTaskSpec extends Specification {
 
     def 'compute width and height'() {
         expect:
-        imageMontageTask.computeWidhtHeight(numberOfImages) == [width, height]
+        imageMontageTask.computeWidthHeight(numberOfImages) == [width, height]
 
         where:
         numberOfImages | width | height
