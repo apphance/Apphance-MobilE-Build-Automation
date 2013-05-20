@@ -11,12 +11,15 @@ class AndroidSingleVariantApkBuilder extends AbstractAndroidSingleVariantBuilder
 
     @Override
     void buildSingle(AndroidBuilderInfo bi) {
+        logger.lifecycle("Building single apk for variant ${bi.variant}. Variant directory: ${bi.variantDir}")
+
         antExecutor.executeTarget bi.tmpDir, CLEAN
-        def variantPropertiesDir = new File(variantsConfiguration.variantsDir, bi.variant)
-        if (bi.variant && variantPropertiesDir.exists()) {
+        if (bi.variantDir?.exists()) {
             ant.copy(todir: new File(bi.tmpDir, 'res/raw'), failonerror: false, overwrite: 'true', verbose: 'true') {
-                fileset(dir: variantPropertiesDir, includes: '*', excludes: 'market_variant.txt')
+                fileset(dir: bi.variantDir, includes: '*', excludes: 'market_variant.txt')
             }
+        } else {
+            logger.lifecycle("No files copied because directory ${bi.variantDir} does not exists")
         }
         antExecutor.executeTarget bi.tmpDir, bi.mode.lowerCase()
         logger.lifecycle("File created: ${bi.originalFile}")

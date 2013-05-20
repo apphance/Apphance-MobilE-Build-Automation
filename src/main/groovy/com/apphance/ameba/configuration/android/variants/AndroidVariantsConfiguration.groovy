@@ -55,7 +55,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     }
 
     private List<AndroidVariantConfiguration> extractVariantsFromProperties() {
-        variantsNames.value.collect { variantFactory.create(it) }
+        variantsNames.value.collect { variantFactory.create(it, null) } // FIXME
     }
 
     private boolean variantsDirExistsAndIsNotEmpty() {
@@ -70,13 +70,13 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     private List<AndroidVariantConfiguration> extractVariantsFromDir() {
         getVariantsDir().listFiles()*.name.collect { String dirName ->
             AndroidBuildMode.values().collect { it ->
-                variantFactory.create(dirName.toLowerCase().capitalize() + it.capitalize())
+                variantFactory.create(dirName.toLowerCase().capitalize() + it.capitalize(), new File(conf.rootDir, dirName))
             }
         }.flatten()
     }
 
     private List<AndroidVariantConfiguration> extractDefaultVariants() {
-        AndroidBuildMode.values().collect { variantFactory.create(it.capitalize()) }
+        AndroidBuildMode.values().collect { variantFactory.create(it.capitalize(), null) } // FIXME
     }
 
 
