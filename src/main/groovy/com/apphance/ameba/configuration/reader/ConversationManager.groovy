@@ -18,7 +18,9 @@ class ConversationManager {
             if (!c.enabled) {
                 enablePlugin(c)
             }
-            readValues(c)
+            if (c.enabled) {
+                readValues(c)
+            }
         }
 
         log.info('All configurations resolved')
@@ -32,6 +34,8 @@ class ConversationManager {
             out.flush()
             if (reader.readLine()?.equalsIgnoreCase('y')) {
                 conf.enabled = true
+            } else {
+                conf.enabled = false
             }
         } else {
             print conf.message

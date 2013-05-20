@@ -11,6 +11,7 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 
 import javax.imageio.ImageIO
 import javax.inject.Inject
+import java.nio.file.Paths
 import java.text.SimpleDateFormat
 
 abstract class ReleaseConfiguration extends AbstractConfiguration {
@@ -74,7 +75,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             name: 'release.icon',
             message: 'Path to project\'s icon file, must be relative to the root dir of project',
             required: { true },
-            defaultValue: { defaultIcon() },
+            defaultValue: { Paths.get(conf.rootDir.absolutePath).relativize(Paths.get(defaultIcon().absolutePath)).toFile() },
             possibleValues: { possibleIcons() },
             validator: {
                 def file = new File(conf.rootDir, it as String)
@@ -93,7 +94,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             required: { true },
             validator: {
                 try {
-                    projectURL.value
+                    (it as String).toURL()
                     return true
                 } catch (Exception e) { return false }
             }
