@@ -1,11 +1,11 @@
 package com.apphance.ameba.plugins.android.apphance.tasks
 
-import com.apphance.ameba.configuration.android.AndroidApphanceConfiguration
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.executor.AntExecutor
-import com.apphance.ameba.plugins.android.AndroidArtifactProvider
+import com.apphance.ameba.plugins.android.builder.AndroidArtifactProvider
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
 import com.apphance.ameba.util.Preconditions
 import groovy.json.JsonSlurper
@@ -29,7 +29,7 @@ class UploadAndroidArtifactTask extends DefaultTask {
     String group = AMEBA_APPHANCE_SERVICE
 
     @Inject
-    AndroidApphanceConfiguration androidApphanceConfiguration
+    ApphanceConfiguration androidApphanceConfiguration
     @Inject
     AndroidConfiguration conf
     @Inject

@@ -1,164 +1,52 @@
 package com.apphance.ameba.configuration.ios
 
-import com.apphance.ameba.configuration.AbstractConfiguration
-import com.apphance.ameba.configuration.ReleaseConfiguration
-import com.apphance.ameba.configuration.properties.FileProperty
-import com.apphance.ameba.configuration.properties.ListStringProperty
-import com.apphance.ameba.configuration.properties.StringProperty
-import com.apphance.ameba.configuration.properties.URLProperty
+import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
+import groovy.io.FileType
 
-class IOSReleaseConfiguration extends AbstractConfiguration implements ReleaseConfiguration {
+@com.google.inject.Singleton
+class IOSReleaseConfiguration extends ReleaseConfiguration {
 
-    String configurationName = 'iOS Release Configuration'
+    Map<String, AmebaArtifact> distributionZipFiles = [:]
+    Map<String, AmebaArtifact> dSYMZipFiles = [:]
+    Map<String, AmebaArtifact> ipaFiles = [:]
+    Map<String, AmebaArtifact> manifestFiles = [:]
+    Map<String, AmebaArtifact> mobileProvisionFiles = [:]
+    Map<String, AmebaArtifact> ahSYMDirs = [:]
+    Map<String, AmebaArtifact> dmgImageFiles = [:]
 
     @Override
-    Collection<String> getReleaseNotes() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+    File defaultIcon() {
+        throw new UnsupportedOperationException('not implemented yet')
     }
 
     @Override
-    URLProperty getProjectURL() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+    List<String> possibleIcons() {
+        throw new UnsupportedOperationException('not implemented yet')
+    }
+
+    List<File> findMobileProvisionFiles() {
+        def files = []
+        conf().rootDir.eachFileRecurse(FileType.FILES) {
+            if (it.name.endsWith('.mobileprovision')) {
+                files << it
+            }
+        }
+        files
+    }
+
+    private IOSConfiguration conf() {
+        super.conf as IOSConfiguration
     }
 
     @Override
-    String getProjectDirName() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+    boolean canBeEnabled() {
+        !findMobileProvisionFiles().empty
     }
 
     @Override
-    File getOtaDir() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    String getBuildDate() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    AmebaArtifact getSourcesZip() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    void setSourcesZip(AmebaArtifact aa) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    AmebaArtifact getImageMontageFile() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    void setImageMontageFile(AmebaArtifact aa) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    AmebaArtifact getMailMessageFile() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    void setMailMessageFile(AmebaArtifact aa) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    AmebaArtifact getQRCodeFile() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    ListStringProperty getReleaseMailFlags() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    String getReleaseMailSubject() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    StringProperty getReleaseMailFrom() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    StringProperty getReleaseMailTo() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    FileProperty getIconFile() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    AmebaArtifact getGalleryCSS() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    void setGalleryCSS(AmebaArtifact aa) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    AmebaArtifact getGalleryJS() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    void setGalleryJS(AmebaArtifact aa) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    AmebaArtifact getGalleryTrans() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    void setGalleryTrans(AmebaArtifact aa) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    Locale getLocale() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    File getTargetDirectory() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    URL getVersionedApplicationUrl() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    boolean isEnabled() {
-        return false  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    URL getBaseURL() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    String getMailPort() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    String getMailServer() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+    String getMessage() {
+        "To enable configuration you need to provide mobile provision file somewhere in project directory.\n" +
+                "File must match *.mobileprovision. Can be placed anywhere in project source."
     }
 }

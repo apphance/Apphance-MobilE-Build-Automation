@@ -1,32 +1,39 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
+import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.executor.IOSExecutor
-import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
+
+import javax.inject.Inject
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
 /**
  * Task to build iOS simulators - executable images that can be run on OSX.
  */
-class IOSAllSimulatorsBuilder {
+class IOSAllSimulatorsBuilder extends DefaultTask {
 
-    private Project project
-    private IOSProjectConfiguration iosConf
-    private IOSSingleVariantBuilder iosSingleVariantBuilder
+    static final NAME = 'buildAllSimulators'
+    String group = AMEBA_BUILD
+    String description = 'Builds all simulators for the project'
 
-    IOSAllSimulatorsBuilder(Project project, CommandExecutor executor, IOSExecutor iosExecutor) {
-        this.project = project
-        this.iosSingleVariantBuilder = new IOSSingleVariantBuilder(project, iosExecutor,
-                new IOSReleaseListener(project, executor, iosExecutor))
-        this.iosConf = IOSConfigurationRetriever.getIosProjectConfiguration(project)
-    }
+    @Inject
+    IOSConfiguration conf
+    @Inject
+    IOSExecutor iosExecutor
+    @Inject
+    IOSReleaseListener releaseListener
+    @Inject
+    IOSSingleVariantBuilder builder
 
+    @TaskAction
     void buildAllSimulators() {
-        iosConf.targets.each { target ->
-            iosSingleVariantBuilder.buildDebugVariant(project, target)
+        builder.registerListener(releaseListener)
+        conf.targets.each { target ->
+            builder.buildDebugVariant(target)
         }
     }
 }

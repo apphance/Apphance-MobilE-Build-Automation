@@ -2,10 +2,10 @@ package com.apphance.ameba.plugins.android.buildplugin
 
 import com.apphance.ameba.configuration.android.AndroidBuildMode
 import com.apphance.ameba.configuration.android.AndroidConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.plugins.android.buildplugin.tasks.*
-import com.apphance.ameba.plugins.projectconfiguration.tasks.CleanConfTask
+import com.apphance.ameba.plugins.project.tasks.CleanConfTask
 import org.gradle.api.plugins.JavaPlugin
 import spock.lang.Specification
 
@@ -134,17 +134,22 @@ class AndroidPluginSpec extends Specification {
         project.tasks['buildv2'].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
         project.tasks['installv1'].dependsOn.flatten()*.toString().containsAll('buildv1')
         project.tasks['installv2'].dependsOn.flatten()*.toString().containsAll('buildv2')
-
+        project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_RELEASE_TASK_NAME, BUILD_ALL_DEBUG_TASK_NAME)
+        project.tasks[BUILD_ALL_DEBUG_TASK_NAME].dependsOn.flatten().contains('buildv1')
+        project.tasks[BUILD_ALL_RELEASE_TASK_NAME].dependsOn.flatten().contains('buildv2')
 
         and:
         project.tasks[CleanAndroidTask.NAME].dependsOn.flatten().containsAll(CleanConfTask.NAME)
         project.tasks[CLEAN_TASK_NAME].dependsOn.flatten().containsAll(CleanAndroidTask.NAME)
+
+
     }
 
     private AndroidVariantConfiguration createVariant(String name, AndroidBuildMode mode) {
         def avc = GroovyMock(AndroidVariantConfiguration)
         avc.name >> name
         avc.mode >> mode
+        avc.buildTaskName >> "build$name"
         avc
     }
 }

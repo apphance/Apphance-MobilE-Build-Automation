@@ -158,7 +158,9 @@ dependencies {
     compile('com.google.inject.extensions:guice-multibindings:3.0') {
         exclude group: 'org.sonatype.sisu.inject'
     }
-
+    compile('com.google.inject.extensions:guice-assistedinject:3.0') {
+        exclude group: 'org.sonatype.sisu.inject'
+    }
     compile('org.apache.httpcomponents:httpmime:4.2.2') {
         exclude group: 'org.apache.httpcomponents', module: 'httpcore'
     }

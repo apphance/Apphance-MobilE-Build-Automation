@@ -6,7 +6,11 @@ public interface ProjectConfiguration extends Configuration {
 
     String getVersionCode()
 
+    String getExtVersionCode()
+
     String getVersionString()
+
+    String getExtVersionString()
 
     String getFullVersionString()
 

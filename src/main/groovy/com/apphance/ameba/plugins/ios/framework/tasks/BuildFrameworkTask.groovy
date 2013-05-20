@@ -1,34 +1,30 @@
 package com.apphance.ameba.plugins.ios.framework.tasks
 
-import com.apphance.ameba.plugins.ios.framework.IOSFrameworkProperty
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.PropertyCategory
+import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.configuration.ios.IOSFrameworkConfiguration
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
+import javax.inject.Inject
+
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Builds iOS framework.
  */
-//TODO is this class/task really used?
-class BuildFrameworkTask {
+class BuildFrameworkTask extends DefaultTask {
+
+    static String NAME = 'buildFramework'
+    String group = AMEBA_BUILD
+    String description = 'Builds iOS framework project'
 
     static final String FRAMEWORK_BUILD_PATH = 'Development-Framework'
 
     def l = getLogger(getClass())
-
-    private ProjectConfiguration conf
-    private IOSProjectConfiguration iosConf
-
-    private String frameworkTarget
-    private String frameworkConfiguration
-    private String frameworkVersion
-    private List<String> frameworkHeaders
-    private List<String> frameworkResources
 
     private File frameworkAppDir
     private File frameworkMainDir
@@ -39,27 +35,18 @@ class BuildFrameworkTask {
     private File iphoneosLibrary
     private File iphoneosSimulatorLibrary
     private File destinationZipFile
-    private Project project
 
-    private CommandExecutor executor
+    @Inject
+    CommandExecutor executor
+    @Inject
+    IOSConfiguration conf
+    @Inject
+    IOSFrameworkConfiguration frameworkConf
 
-    BuildFrameworkTask(Project project, CommandExecutor executor) {
-        this.project = project
-        this.executor = executor
-        use(PropertyCategory) {
-            this.conf = project.getProjectConfiguration()
-        }
-    }
+    AbstractIOSVariant variant
 
+    @TaskAction
     void buildIOSFramework() {
-        use(PropertyCategory) {
-            iosConf = project.ext.get(IOSPlugin.IOS_PROJECT_CONFIGURATION)
-            frameworkTarget = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_TARGET)
-            frameworkConfiguration = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_CONFIGURATION)
-            frameworkVersion = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_VERSION)
-            frameworkHeaders = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_HEADERS).split(',')
-            frameworkResources = project.readExpectedProperty(IOSFrameworkProperty.FRAMEWORK_RESOURCES).split(',')
-        }
         xcodeBuilds()
         cleanFrameworkDir()
         createDirectoryStructure()
@@ -72,7 +59,7 @@ class BuildFrameworkTask {
     }
 
     private createZipFile() {
-        destinationZipFile = new File(project.buildDir, conf.projectName + '_' + conf.versionString + '.zip')
+        destinationZipFile = new File(project.buildDir, variant.projectName + '_' + variant.versionString + '.zip')
         destinationZipFile.delete()
         executor.executeCommand(new Command(runDir: frameworkMainDir, cmd: [
                 'zip',
@@ -83,7 +70,7 @@ class BuildFrameworkTask {
 
     private createLibrary() {
         l.lifecycle('Create library')
-        def outputFile = new File(frameworkVersionsVersionDir, conf.projectName)
+        def outputFile = new File(frameworkVersionsVersionDir, variant.projectName)
         outputFile.parentFile.mkdirs()
         executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
                 'lipo',
@@ -96,7 +83,7 @@ class BuildFrameworkTask {
 
     private copyingResources() {
         l.lifecycle('Copying resources')
-        frameworkResources.each {
+        frameworkConf.resources.value.each {
             if (it != '') {
                 project.ant.copy(file: it, toDir: frameworkVersionsVersionResourcesDir)
             }
@@ -105,7 +92,7 @@ class BuildFrameworkTask {
 
     private copyingHeaders() {
         l.lifecycle('Copying headers')
-        frameworkHeaders.each {
+        frameworkConf.headers.value.each {
             if (it != '') {
                 project.ant.copy(file: it, toDir: frameworkVersionsVersionHeadersDir)
             }
@@ -114,8 +101,8 @@ class BuildFrameworkTask {
 
     private setLinkLibraries() {
         l.lifecycle('Set link libraries')
-        iphoneosLibrary = new File(project.buildDir, "${frameworkConfiguration}-iphoneos/lib${frameworkTarget}.a")
-        iphoneosSimulatorLibrary = new File(project.buildDir, "${frameworkConfiguration}-iphonesimulator/lib${frameworkTarget}.a")
+        iphoneosLibrary = new File(project.buildDir, "${variant.configuration}-iphoneos/lib${variant.target}.a")
+        iphoneosSimulatorLibrary = new File(project.buildDir, "${variant.configuration}-iphonesimulator/lib${variant.target}.a")
     }
 
     private createSymlinks() {
@@ -123,7 +110,7 @@ class BuildFrameworkTask {
         executor.executeCommand(new Command(runDir: frameworkVersionsDir, cmd: [
                 'ln',
                 '-s',
-                frameworkVersion,
+                frameworkConf.version.value,
                 'Current'
         ]))
         executor.executeCommand(new Command(runDir: frameworkAppDir, cmd: [
@@ -141,8 +128,8 @@ class BuildFrameworkTask {
         executor.executeCommand(new Command(runDir: frameworkAppDir, cmd: [
                 'ln',
                 '-s',
-                "Versions/Current/${conf.projectName}",
-                conf.projectName
+                "Versions/Current/${variant.projectName}",
+                variant.projectName
         ]))
     }
 
@@ -156,11 +143,11 @@ class BuildFrameworkTask {
     private createDirectoryStructure() {
         l.lifecycle('Creating directory structure')
         frameworkMainDir.mkdirs()
-        frameworkAppDir = new File(frameworkMainDir, "${conf.projectName}.framework")
+        frameworkAppDir = new File(frameworkMainDir, "${variant.projectName}.framework")
         frameworkAppDir.mkdirs()
         frameworkVersionsDir = new File(frameworkAppDir, 'Versions')
         frameworkVersionsDir.mkdirs()
-        frameworkVersionsVersionDir = new File(frameworkVersionsDir, frameworkVersion)
+        frameworkVersionsVersionDir = new File(frameworkVersionsDir, frameworkConf.version.value)
         frameworkVersionsVersionDir.mkdirs()
         frameworkVersionsVersionResourcesDir = new File(frameworkVersionsVersionDir, 'Resources')
         frameworkVersionsVersionResourcesDir.mkdirs()
@@ -169,25 +156,25 @@ class BuildFrameworkTask {
     }
 
     private xcodeBuilds() {
-        executor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.getXCodeBuildExecutionPath() + [
+        executor.executeCommand(new Command(runDir: project.rootDir, cmd: conf.xcodebuildExecutionPath() + [
                 '-target',
-                frameworkTarget,
+                variant.target,
                 '-configuration',
-                frameworkConfiguration,
+                variant.configuration,
                 '-sdk',
-                iosConf.simulatorSDK,
+                conf.simulatorSdk.value,
                 '-arch',
                 'i386',
                 'clean',
                 'build'
         ]))
-        executor.executeCommand(new Command(runDir: project.rootDir, cmd: iosConf.getXCodeBuildExecutionPath() + [
+        executor.executeCommand(new Command(runDir: project.rootDir, cmd: conf.xcodebuildExecutionPath() + [
                 '-target',
-                frameworkTarget,
+                variant.target,
                 '-configuration',
-                frameworkConfiguration,
+                variant.configuration,
                 '-sdk',
-                iosConf.sdk,
+                conf.sdk.value,
                 'clean',
                 'build'
         ]))

@@ -1,10 +1,10 @@
 package com.apphance.ameba.plugins.android.release
 
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
-import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
+import com.apphance.ameba.plugins.android.builder.AndroidSingleVariantApkBuilder
+import com.apphance.ameba.plugins.android.builder.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTask
-import com.apphance.ameba.plugins.android.release.tasks.MailMessageTask
+import com.apphance.ameba.plugins.android.release.tasks.PrepareMailMessageTask
 import com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
 import com.apphance.ameba.plugins.release.tasks.PrepareForReleaseTask
 import org.gradle.api.Plugin
@@ -41,12 +41,14 @@ class AndroidReleasePlugin implements Plugin<Project> {
             project.task(
                     UpdateVersionTask.NAME,
                     type: UpdateVersionTask)
+
             project.task(
                     AvailableArtifactsInfoTask.NAME,
                     type: AvailableArtifactsInfoTask)
+
             project.task(
-                    MailMessageTask.NAME,
-                    type: MailMessageTask,
+                    PrepareMailMessageTask.NAME,
+                    type: PrepareMailMessageTask,
                     dependsOn: [AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME])
 
             apkBuilder.registerListener(apkListener)

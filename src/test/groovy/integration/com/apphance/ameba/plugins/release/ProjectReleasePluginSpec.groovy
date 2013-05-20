@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.release
 
-import com.apphance.ameba.configuration.ReleaseConfiguration
+import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import com.apphance.ameba.plugins.release.tasks.*
 import spock.lang.Specification
 

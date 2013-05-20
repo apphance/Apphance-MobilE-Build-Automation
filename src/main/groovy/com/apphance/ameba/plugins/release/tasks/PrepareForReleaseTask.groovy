@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.release.tasks
 
 import com.apphance.ameba.configuration.ProjectConfiguration
-import com.apphance.ameba.configuration.ReleaseConfiguration
+import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -12,7 +12,7 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEAS
 
 class PrepareForReleaseTask extends DefaultTask {
 
-    static String NAME = 'prepareForRelease'
+    static final String NAME = 'prepareForRelease'
     String group = AMEBA_RELEASE
     String description = 'Prepares project for release'
 

@@ -41,13 +41,13 @@
         </div>
         <div>
             <ul data-role="listview" data-theme="b">
-                <% def main_id = "${iosConf.mainTarget}-${iosConf.mainConfiguration}".toString() %>
+                <% def main_id = "${conf.mainTarget}-${conf.mainConfiguration}".toString() %>
                 <li>
                     <div class="ui-grid-a">
                         <div class="ui-block-a">
-                            <div style="font-size:1.5em">${iosConf.mainTarget.replaceAll('_',' ')}</div>
+                            <div style="font-size:1.5em">${conf.mainTarget.replaceAll('_',' ')}</div>
                             </br>
-                            ${iosConf.mainConfiguration.replaceAll('_',' ')}
+                            ${conf.mainConfiguration.replaceAll('_',' ')}
                         </div>
                         <div class="ui-block-b" style="text-align:right"><a href="${urlMap[main_id]}"
                                                                             data-role="button" data-inline="true"
@@ -74,7 +74,7 @@
         <% configurations.each { configuration -> %>
         <% def id = "${target}-${configuration}".toString() %>
         <% def map = [ 'target': target, 'configuration': configuration, 'id': id] %>
-        <% if (!iosConf.isBuildExcluded(id) && main_id != id && target != "Frankified") { other_installs << map } %>
+        <% if (!conf.isBuildExcluded(id) && main_id != id && target != "Frankified") { other_installs << map } %>
         <% } %>
         <% } %>
         <% if (other_installs.size > 0) { %>

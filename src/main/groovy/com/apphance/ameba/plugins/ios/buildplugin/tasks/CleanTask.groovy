@@ -1,25 +1,34 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
+import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import org.gradle.api.Project
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-class CleanTask {
+import javax.inject.Inject
 
-    private Project project
-    private CommandExecutor executor
-    private AntBuilder ant
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
-    CleanTask(Project project, CommandExecutor executor) {
-        this.project = project
-        this.executor = executor
-        this.ant = project.ant
-    }
+class CleanTask extends DefaultTask {
 
+    static final NAME = 'clean'
+    String description = 'Cleans the project'
+    String group = AMEBA_BUILD
+
+    @Inject
+    CommandExecutor executor
+    @Inject
+    IOSConfiguration conf
+
+    @TaskAction
     void clean() {
         executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['dot_clean', './']))
-        ant.delete(dir: project.file('build'), verbose: true)
-        ant.delete(dir: project.file('bin'), verbose: true)
-        ant.delete(dir: project.file('tmp'), verbose: true)
+        conf.buildDir.deleteDir()
+        conf.tmpDir.deleteDir()
+        conf.logDir.deleteDir()
+        conf.buildDir.mkdirs()
+        conf.tmpDir.mkdirs()
+        conf.logDir.mkdirs()
     }
 }

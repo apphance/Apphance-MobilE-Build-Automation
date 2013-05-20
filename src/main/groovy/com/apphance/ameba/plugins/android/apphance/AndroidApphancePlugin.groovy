@@ -1,8 +1,8 @@
 package com.apphance.ameba.plugins.android.apphance
 
-import com.apphance.ameba.configuration.android.AndroidApphanceConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.plugins.android.apphance.tasks.AddApphanceToAndroid
 import com.apphance.ameba.plugins.android.apphance.tasks.AndroidLogsConversionTask
 import com.apphance.ameba.plugins.android.apphance.tasks.ApphanceLogsConversionTask
@@ -40,7 +40,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     @Inject
     AndroidVariantsConfiguration variantsConf
     @Inject
-    AndroidApphanceConfiguration apphanceConf
+    ApphanceConfiguration apphanceConf
     @Inject
     AddApphanceToAndroid addAndroidApphance
 

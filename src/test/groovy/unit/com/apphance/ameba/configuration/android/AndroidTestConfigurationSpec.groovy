@@ -1,8 +1,8 @@
 package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.detection.ProjectTypeDetector
-import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidBuildXmlHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import com.google.common.io.Files
 import org.gradle.api.Project
 import spock.lang.Specification

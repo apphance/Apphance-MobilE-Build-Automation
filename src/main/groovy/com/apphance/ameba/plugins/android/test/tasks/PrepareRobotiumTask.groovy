@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.android.test.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction

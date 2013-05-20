@@ -1,6 +1,6 @@
 package com.apphance.ameba.plugins.android.release
 
-import com.apphance.ameba.plugins.android.AndroidBuilderInfo
+import com.apphance.ameba.plugins.android.builder.AndroidBuilderInfo
 
 /**
  * Listener that can be plugged in android build. It will be fired after every variant is built.

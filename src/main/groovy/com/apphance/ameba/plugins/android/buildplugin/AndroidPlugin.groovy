@@ -1,10 +1,11 @@
 package com.apphance.ameba.plugins.android.buildplugin
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.plugins.android.buildplugin.tasks.*
-import com.apphance.ameba.plugins.projectconfiguration.tasks.CleanConfTask
-import com.apphance.ameba.plugins.projectconfiguration.tasks.VerifySetupTask
+import com.apphance.ameba.plugins.project.PrepareSetupTask
+import com.apphance.ameba.plugins.project.tasks.CleanConfTask
+import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -70,19 +71,18 @@ class AndroidPlugin implements Plugin<Project> {
             project.task('buildAll', dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME], group: AMEBA_BUILD)
 
             variantsConf.variants.each {
-                def buildName = "build${it.name}"
-                project.task(buildName,
+                project.task(it.buildTaskName,
                         type: SingleVariantTask,
                         dependsOn: [CopySourcesTask.NAME, UpdateProjectTask.NAME]).variant = it
 
                 def buildAllMode = "buildAll${it.mode.capitalize()}"
-                project.tasks[buildAllMode].dependsOn buildName
+                project.tasks[buildAllMode].dependsOn it.buildTaskName
 
-                project.task("install${it.name}", type: InstallTask, dependsOn: buildName).variant = it
+                project.task("install${it.name}", type: InstallTask, dependsOn: it.buildTaskName).variant = it
             }
 
             project.tasks.each {
-                if (!(it.name in [VerifySetupTask.NAME, 'prepareSetup2'])) {
+                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME])) {
                     it.dependsOn VerifySetupTask.NAME
                 }
             }

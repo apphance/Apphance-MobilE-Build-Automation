@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import com.apphance.ameba.configuration.ReleaseConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import org.apache.tools.ant.Project
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException

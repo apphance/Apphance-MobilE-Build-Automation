@@ -4,6 +4,7 @@ import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.di.CommandExecutorModule
 import com.apphance.ameba.di.ConfigurationModule
 import com.apphance.ameba.di.EnvironmentModule
+import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.android.analysis.AndroidAnalysisPlugin
 import com.apphance.ameba.plugins.android.apphance.AndroidApphancePlugin
 import com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin
@@ -15,18 +16,18 @@ import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
 import com.apphance.ameba.plugins.ios.framework.IOSFrameworkPlugin
 import com.apphance.ameba.plugins.ios.ocunit.IOSUnitTestPlugin
 import com.apphance.ameba.plugins.ios.release.IOSReleasePlugin
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
+import com.apphance.ameba.plugins.project.ProjectPlugin
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import org.gradle.api.Project
-import org.gradle.api.internal.plugins.DefaultExtraPropertiesExtension
 import org.gradle.api.plugins.PluginContainer
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static com.apphance.ameba.detection.ProjectType.IOS
+import static com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParserSpec.XCODE_LIST
 
 class PluginMasterSpec extends Specification {
 
@@ -34,7 +35,7 @@ class PluginMasterSpec extends Specification {
     def 'test if all #type plugins are applied'() {
         given:
         def mocks = (plugins + commonPlugins).collect(mockToMap).sum()
-        def master = createInjectorForPluginsMocks(mocks).getInstance(PluginMaster)
+        def master = createInjectorForPluginsMocks(mocks, file).getInstance(PluginMaster)
 
         and:
         def project = Mock(Project)
@@ -57,15 +58,15 @@ class PluginMasterSpec extends Specification {
         }
 
         where:
-        type    | plugins
-        ANDROID | androidPlugins
-        IOS     | iosPlugins
+        type    | plugins        | file
+        ANDROID | androidPlugins | 'AndroidManifest.xml'
+        IOS     | iosPlugins     | 'GradleXCode.xcodeproj'
     }
 
     def 'test Android plugins order'() {
         given:
         def mocks = (commonPlugins + androidPlugins).collect(mockToMap).sum()
-        def master = createInjectorForPluginsMocks(mocks).getInstance(PluginMaster)
+        def master = createInjectorForPluginsMocks(mocks, 'AndroidManifest.xml').getInstance(PluginMaster)
 
         and:
         def project = Mock(Project)
@@ -87,16 +88,16 @@ class PluginMasterSpec extends Specification {
         1 * mocks[after].apply(project)
 
         where:
-        before                     | after
-        ProjectConfigurationPlugin | AndroidPlugin
-        AndroidPlugin              | ProjectReleasePlugin
-        ProjectReleasePlugin       | AndroidReleasePlugin
+        before               | after
+        ProjectPlugin        | AndroidPlugin
+        AndroidPlugin        | ProjectReleasePlugin
+        ProjectReleasePlugin | AndroidReleasePlugin
     }
 
     def 'test iOS plugins order'() {
         given:
         def mocks = (commonPlugins + iosPlugins).collect(mockToMap).sum()
-        def master = createInjectorForPluginsMocks(mocks).getInstance(PluginMaster)
+        def master = createInjectorForPluginsMocks(mocks, 'GradleXCode.xcodeproj').getInstance(PluginMaster)
 
         and:
         def project = Mock(Project)
@@ -118,17 +119,17 @@ class PluginMasterSpec extends Specification {
         1 * mocks[after].apply(project)
 
         where:
-        before                     | after
-        ProjectConfigurationPlugin | IOSPlugin
-        IOSPlugin                  | ProjectReleasePlugin
-        ProjectReleasePlugin       | IOSReleasePlugin
+        before               | after
+        ProjectPlugin        | IOSPlugin
+        IOSPlugin            | ProjectReleasePlugin
+        ProjectReleasePlugin | IOSReleasePlugin
     }
 
     final projectTypeDetectorMock = Mock(ProjectTypeDetector)
 
     def mockToMap = { [(it): Mock(it)] }
 
-    static commonPlugins = [ProjectConfigurationPlugin, ProjectReleasePlugin]
+    static commonPlugins = [ProjectPlugin, ProjectReleasePlugin]
 
     static androidPlugins = [
             AndroidPlugin,
@@ -147,11 +148,12 @@ class PluginMasterSpec extends Specification {
             IOSUnitTestPlugin
     ]
 
-    def createInjectorForPluginsMocks(mocks) {
+    def createInjectorForPluginsMocks(mocks, file) {
         def rootDir = Mock(File)
-        rootDir.list() >> ['AndroidManifest.xml']
+        rootDir.list() >> [file]
         def project = GroovyMock(Project)
-        project.ext >> new DefaultExtraPropertiesExtension()
+
+        def iosExecutorMock = Stub(IOSExecutor, { list() >> XCODE_LIST })
 
         project.rootDir >> rootDir
         project.file('log') >> new File(System.properties['java.io.tmpdir'])
@@ -170,6 +172,7 @@ class PluginMasterSpec extends Specification {
                         mocks.each { type, instance ->
                             bind(type).toInstance(instance)
                         }
+                        bind(IOSExecutor).toInstance(iosExecutorMock)
                     }
                 })
     }

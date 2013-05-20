@@ -5,8 +5,8 @@ import com.apphance.ameba.configuration.properties.BooleanProperty
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.executor.AndroidExecutor
-import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidBuildXmlHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
@@ -27,7 +27,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     private Integer emulatorPort
 
     private Project project
-    private AndroidConfiguration androidConf
+    private AndroidConfiguration conf
     private AndroidManifestHelper manifestHelper
     private AndroidBuildXmlHelper buildXmlHelper
     private AndroidExecutor androidExecutor
@@ -40,7 +40,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             AndroidBuildXmlHelper buildXmlHelper,
             AndroidExecutor androidExecutor) {
         this.project = project
-        this.androidConf = androidConf
+        this.conf = androidConf
         this.manifestHelper = manifestHelper
         this.buildXmlHelper = buildXmlHelper
         this.androidExecutor = androidExecutor
@@ -48,7 +48,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
 
     @Override
     boolean isEnabled() {
-        enabledInternal && androidConf.isEnabled()
+        enabledInternal && conf.isEnabled()
     }
 
     @Override
@@ -59,7 +59,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     def emulatorTarget = new StringProperty(
             name: 'android.test.emulator.target',
             message: 'Target of the emulator',
-            defaultValue: { androidConf.target.value },
+            defaultValue: { conf.target.value },
             possibleValues: { possibleTargets() },
             validator: { it in possibleTargets() }
     )
@@ -67,17 +67,17 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     def emulatorSkin = new StringProperty(
             name: 'android.test.emulator.skin',
             message: 'Android emulator skin',
-            defaultValue: { androidExecutor.defaultSkinForTarget(androidConf.rootDir, emulatorTarget.value) },
+            defaultValue: { androidExecutor.defaultSkinForTarget(conf.rootDir, emulatorTarget.value) },
             possibleValues: { possibleSkins() },
             validator: { it in possibleSkins() }
     )
 
     private List<String> possibleTargets() {
-        androidExecutor.listTarget(androidConf.rootDir).findAll { !it?.trim()?.empty }
+        androidExecutor.listTarget(conf.rootDir).findAll { !it?.trim()?.empty }
     }
 
     private List<String> possibleSkins() {
-        androidExecutor.listSkinsForTarget(androidConf.rootDir, emulatorTarget.value).findAll { !it?.trim()?.empty }
+        androidExecutor.listSkinsForTarget(conf.rootDir, emulatorTarget.value).findAll { !it?.trim()?.empty }
     }
 
     def emulatorCardSize = new StringProperty(
@@ -107,7 +107,10 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             name: 'android.dir.test',
             message: 'Directory where Robotium test project is located',
             defaultValue: { project.file("android${separator}test".toString()) },
-            validator: { try { return new File(it).mkdirs() } catch (Exception e) { return false } }
+            validator: {
+                def file = new File(conf.rootDir, it as String)
+                file?.absolutePath?.trim() ? (file.exists() && file.isDirectory() && file.canWrite()) : false
+            }
     )
 
     String getTestProjectPackage() {
@@ -188,11 +191,11 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     )
 
     File getADBBinary() {
-        new File(androidConf.SDKDir, "platform${separator}tools")
+        new File(conf.SDKDir, "platform${separator}tools")
     }
 
     String getEmmaDumpFilePath() {
-        "/data/data/${androidConf.mainPackage}/coverage.ec"
+        "/data/data/${conf.mainPackage}/coverage.ec"
     }
 
     File getCoverageDir() {
@@ -208,7 +211,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     }
 
     String getXMLJUnitDirPath() {
-        "/data/data/${androidConf.mainPackage}/files/"
+        "/data/data/${conf.mainPackage}/files/"
     }
 
     @Override

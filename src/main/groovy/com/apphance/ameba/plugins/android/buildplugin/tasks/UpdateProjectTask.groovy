@@ -2,7 +2,7 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.executor.AndroidExecutor
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction

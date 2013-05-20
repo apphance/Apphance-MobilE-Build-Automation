@@ -2,15 +2,13 @@ package com.apphance.ameba.configuration
 
 import com.apphance.ameba.configuration.properties.AbstractProperty
 import com.apphance.ameba.configuration.reader.PropertyPersister
-import com.google.inject.Inject
 
+import javax.inject.Inject
 import java.lang.reflect.Field
 
 import static org.apache.commons.lang.StringUtils.join
 
 abstract class AbstractConfiguration implements Configuration {
-
-    public static final String ACCESS_DENIED = 'Access denied to property. Configuration disabled.'
 
     @Inject
     PropertyPersister propertyPersister
@@ -18,7 +16,7 @@ abstract class AbstractConfiguration implements Configuration {
     List<String> errors = []
 
     @Inject
-    def init() {
+    void init() {
         amebaProperties.each {
             it.value = propertyPersister.get(it.name)
         }
@@ -35,7 +33,15 @@ abstract class AbstractConfiguration implements Configuration {
     }
 
     List<Field> getPropertyFields() {
-        getClass().declaredFields.findAll {
+        List<Field> fields = []
+        def findDeclaredFields
+        findDeclaredFields = { Class c ->
+            fields.addAll(c.declaredFields)
+            if (c.superclass)
+                findDeclaredFields(c.superclass)
+        }
+        findDeclaredFields(getClass())
+        fields.findAll {
             it.accessible = true
             it.get(this)?.class?.superclass == AbstractProperty
         }
@@ -49,7 +55,7 @@ abstract class AbstractConfiguration implements Configuration {
 
     @Override
     public String toString() {
-        "Configuration $configurationName: \n${join(amebaProperties, '\n')}\n";
+        "Configuration '$configurationName'" + (amebaProperties ? " \n${join(amebaProperties, '\n')}\n" : '');
     }
 
     Collection<? extends AbstractConfiguration> getSubConfigurations() {
@@ -81,4 +87,14 @@ abstract class AbstractConfiguration implements Configuration {
     }
 
     void checkProperties() {}
+
+    @Override
+    boolean canBeEnabled() {
+        return true
+    }
+
+    @Override
+    String getMessage() {
+        ""
+    }
 }

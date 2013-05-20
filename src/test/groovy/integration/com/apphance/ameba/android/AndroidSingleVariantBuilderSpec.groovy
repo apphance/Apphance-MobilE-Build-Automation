@@ -1,14 +1,9 @@
 package com.apphance.ameba.android
 
-import com.apphance.ameba.PropertyCategory
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.SimpleFileLinker
 import com.apphance.ameba.plugins.AmebaPlugin
-import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
-import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Ignore
@@ -52,20 +47,21 @@ class AndroidSingleVariantBuilderSpec extends Specification {
     }
 
     def createBuilder(Project project) {
-        use(PropertyCategory) {
-            def manifestHelper = new AndroidManifestHelper()
-            project.getProjectConfiguration().updateVersionDetails(manifestHelper.readVersion(project.rootDir))
-            def buildXmlHelper = new AndroidBuildXmlHelper()
-            def props = new Properties()
-            props.load(new FileInputStream(project.file('gradle.properties')))
-            props.keys().each { key ->
-                project[key] = props.getProperty(key)
-            }
-            project.ext[ProjectConfigurationPlugin.PROJECT_NAME_PROPERTY] = buildXmlHelper.projectName(project.rootDir)
-            project.retrieveBasicProjectData()
-            def builder = new AndroidSingleVariantApkBuilder(* [null] * 2)
-            return builder
-        }
+//        use(PropertyCategory) {
+//            def manifestHelper = new AndroidManifestHelper()
+//            project.getProjectConfiguration().updateVersionDetails(manifestHelper.readVersion(project.rootDir))
+//            def buildXmlHelper = new AndroidBuildXmlHelper()
+//            def props = new Properties()
+//            props.load(new FileInputStream(project.file('gradle.properties')))
+//            props.keys().each { key ->
+//                project[key] = props.getProperty(key)
+//            }
+//            project.ext[PropertyCategory.PROJECT_NAME_PROPERTY] = buildXmlHelper.projectName(project.rootDir)
+//            project.retrieveBasicProjectData()
+//            def builder = new AndroidSingleVariantApkBuilder(* [null] * 2)
+//            return builder
+//        }
+        null
     }
 
     def 'builds varianted debug'() {

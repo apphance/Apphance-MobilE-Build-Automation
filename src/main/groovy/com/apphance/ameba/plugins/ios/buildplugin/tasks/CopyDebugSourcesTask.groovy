@@ -1,28 +1,26 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import org.gradle.api.Project
+import com.apphance.ameba.configuration.ios.IOSConfiguration
+import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.getIosProjectConfiguration
+import javax.inject.Inject
 
-class CopyDebugSourcesTask {
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
-    private Project project
-    private ProjectConfiguration conf
-    private IOSProjectConfiguration iosConf
+class CopyDebugSourcesTask extends DefaultTask {
 
-    CopyDebugSourcesTask(Project project) {
-        this.project = project
-        this.conf = getProjectConfiguration(project)
-        this.iosConf = getIosProjectConfiguration(project)
-    }
+    static final NAME = 'copyDebugSources'
+    String description = 'Copies all debug sources to tmp directories for build'
+    String group = AMEBA_BUILD
+    @Inject
+    IOSConfiguration conf
 
+    @TaskAction
     void copyDebugSources() {
         String debugConfiguration = 'Debug'
-        iosConf.allTargets.each { target ->
-            project.ant.sync(toDir: tmpDir(target, debugConfiguration),
+        conf.targets.each { target ->
+            ant.sync(toDir: tmpDir(target, debugConfiguration),
                     failonerror: false, overwrite: true, verbose: false) {
                 fileset(dir: "${project.rootDir}/") {
                     exclude(name: tmpDir(target, debugConfiguration).absolutePath + '/**/*')
@@ -33,6 +31,6 @@ class CopyDebugSourcesTask {
     }
 
     private File tmpDir(String target, String configuration) {
-        project.file("../tmp-${project.rootDir.name}-${target}-${configuration}")
+        new File(conf.tmpDir, "${conf.projectName.value}-$target-$configuration")
     }
 }

@@ -1,20 +1,14 @@
 package com.apphance.ameba.plugins.apphance
 
-import com.apphance.ameba.PropertyCategory
 import org.gradle.api.Project
 
 class ApphancePluginCommons {
 
-    def prepareApphanceLibDependency(Project p, String defaultDependency) {
+    String prepareApphanceLibDependency(Project p, String defaultDependency) {
         boolean apphanceDependencyNotPresent = p.configurations.apphance.dependencies.isEmpty()
         if (apphanceDependencyNotPresent) {
-            String apphanceLibDependency = ''
-            use(PropertyCategory) {
-                apphanceLibDependency = p.readPropertyOrEnvironmentVariable('apphance.lib', true)?.trim()
-                apphanceLibDependency = apphanceLibDependency ?: defaultDependency
-                p.dependencies {
-                    apphance apphanceLibDependency
-                }
+            p.dependencies {
+                apphance defaultDependency
             }
         }
         def dependency = (p.configurations.apphance.dependencies as List)[0]

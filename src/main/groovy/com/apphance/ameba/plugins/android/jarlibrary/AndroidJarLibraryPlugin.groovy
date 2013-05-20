@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.android.jarlibrary
 import com.apphance.ameba.configuration.android.AndroidJarLibraryConfiguration
 import com.apphance.ameba.plugins.android.jarlibrary.tasks.DeployJarLibraryTask
 import com.apphance.ameba.plugins.android.jarlibrary.tasks.JarLibraryTask
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

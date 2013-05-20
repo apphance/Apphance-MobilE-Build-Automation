@@ -2,13 +2,14 @@ package com.apphance.ameba.plugins.android.release.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantsConfiguration
-import com.apphance.ameba.plugins.android.AndroidArtifactProvider
+import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
+import com.apphance.ameba.plugins.android.builder.AndroidArtifactProvider
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import com.google.inject.Inject
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileDownloader.downloadFile
@@ -36,7 +37,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     SimpleTemplateEngine templateEngine = new SimpleTemplateEngine()
 
     @TaskAction
-    public void availableArtifactsInfo() {
+    void availableArtifactsInfo() {
 
         conf.isLibrary() ? buildJarArtifacts() : buildAPKArtifacts()
 
@@ -53,21 +54,24 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         prepareOTAIndexFile()
     }
 
-    private void buildJarArtifacts() {
+    @groovy.transform.PackageScope
+    void buildJarArtifacts() {
         variantsConf.variants.each {
             def bi = artifactBuilder.jarBuilderInfo(it)
             releaseConf.jarFiles.put(bi.id, artifactBuilder.jarArtifact(bi))
         }
     }
 
-    private void buildAPKArtifacts() {
+    @groovy.transform.PackageScope
+    void buildAPKArtifacts() {
         variantsConf.variants.each {
             def bi = artifactBuilder.apkBuilderInfo(it)
             releaseConf.apkFiles.put(bi.id, artifactBuilder.apkArtifact(bi))
         }
     }
 
-    private void prepareFileIndexArtifact(String otaFolderPrefix) {
+    @groovy.transform.PackageScope
+    void prepareFileIndexArtifact(String otaFolderPrefix) {
         def artifact = new AmebaArtifact(
                 name: "The file index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/file_index.html"),
@@ -78,7 +82,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         releaseConf.fileIndexFile = artifact
     }
 
-    private void preparePlainFileIndexArtifact(String otaFolderPrefix) {
+    @groovy.transform.PackageScope
+    void preparePlainFileIndexArtifact(String otaFolderPrefix) {
         def artifact = new AmebaArtifact(
                 name: "The plain file index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/plain_file_index.html"),
@@ -88,7 +93,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         releaseConf.plainFileIndexFile = artifact
     }
 
-    private prepareOTAIndexFileArtifact(String otaFolderPrefix) {
+    @groovy.transform.PackageScope
+    void prepareOTAIndexFileArtifact(String otaFolderPrefix) {
         def artifact = new AmebaArtifact(
                 name: "The ota index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/index.html"),
@@ -98,10 +104,13 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         releaseConf.otaIndexFile = artifact
     }
 
-    private void prepareQRCodeArtifact() {
+    @groovy.transform.PackageScope
+    void prepareQRCodeArtifact() {
         def urlEncoded = encode(releaseConf.otaIndexFile.url.toString(), 'utf-8')
         def qrCodeFileName = "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"
         def qrCodeFile = new File(releaseConf.targetDirectory, qrCodeFileName)
+        qrCodeFile.parentFile.mkdirs()
+        qrCodeFile.delete()
 
         downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), qrCodeFile)
 
@@ -118,7 +127,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         ant.copy(file: new File(project.rootDir, icon.path), tofile: new File(releaseConf.otaIndexFile.location.parentFile, icon.name))
     }
 
-    private void prepareFileIndexFile() {
+    @groovy.transform.PackageScope
+    void prepareFileIndexFile() {
         def tmpl = loadTemplate('file_index.html')
         def rb = bundle('file_index')
         def binding = [
@@ -128,8 +138,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 apkFiles: releaseConf.apkFiles,
                 version: conf.versionString,
                 currentDate: releaseConf.buildDate,
-                androidVariantsConf: variantsConf,
-                androidReleaseConf: releaseConf,
+                variantsConf: variantsConf,
+                releaseConf: releaseConf,
                 rb: rb
         ]
         def result = fillTemplate(tmpl, binding)
@@ -137,7 +147,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         l.lifecycle("File index created: ${releaseConf.fileIndexFile}")
     }
 
-    private void preparePlainFileIndexFile() {
+    @groovy.transform.PackageScope
+    void preparePlainFileIndexFile() {
         def rb = bundle('plain_file_index')
         def binding = [
                 baseUrl: releaseConf.plainFileIndexFile.url,
@@ -145,8 +156,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 apkFiles: releaseConf.apkFiles,
                 version: conf.versionString,
                 currentDate: releaseConf.buildDate,
-                androidVariantsConf: variantsConf,
-                androidReleaseConf: releaseConf,
+                variantsConf: variantsConf,
+                releaseConf: releaseConf,
                 rb: rb
         ]
         def tmpl = loadTemplate('plain_file_index.html')
@@ -155,7 +166,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         l.lifecycle("Plain file index created: ${releaseConf.plainFileIndexFile}")
     }
 
-    private void prepareOTAIndexFile() {
+    @groovy.transform.PackageScope
+    void prepareOTAIndexFile() {
         def otaIndexTemplate = loadTemplate('index.html')
         def rb = bundle('index')
         def binding = [
@@ -166,7 +178,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 currentDate: releaseConf.buildDate,
                 iconFileName: releaseConf.iconFile.value.name,
                 variantsConf: variantsConf,
-                androidReleaseConf: releaseConf,
+                releaseConf: releaseConf,
                 rb: rb
         ]
         def result = fillTemplate(otaIndexTemplate, binding)

@@ -1,63 +1,60 @@
 package com.apphance.ameba.plugins.ios.apphance.tasks
 
+import com.apphance.ameba.configuration.ProjectConfiguration
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
+import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
-import com.apphance.ameba.plugins.apphance.ApphanceProperty
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
-import com.apphance.ameba.plugins.ios.release.IOSReleaseConfiguration
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfiguration
-import com.apphance.ameba.plugins.release.ProjectReleaseConfiguration
 import com.apphance.ameba.util.Preconditions
+import com.google.inject.Inject
 import groovy.json.JsonSlurper
 import org.apache.http.util.EntityUtils
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.Project
+import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.PropertyCategory.getProjectConfiguration
-import static com.apphance.ameba.plugins.ios.release.IOSReleaseConfigurationRetriever.getIosReleaseConfiguration
-import static com.apphance.ameba.plugins.release.ProjectReleaseCategory.getProjectReleaseConfiguration
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(Preconditions)
-class UploadIOSArtifactTask {
+class UploadIOSArtifactTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    private Project project
-    private IOSExecutor iosExecutor
+    String description = 'Uploads ipa, dsym & image_montage to Apphance server'
+    String group = AMEBA_APPHANCE_SERVICE
+
+    @Inject IOSExecutor iosExecutor
+    @Inject ApphanceConfiguration apphanceConf
     private ProjectConfiguration conf
-    private ProjectReleaseConfiguration releaseConf
     private IOSReleaseConfiguration iOSReleaseConf
-    private String target
-    private String configuration
+    @Inject
+    IOSReleaseConfiguration iOSReleaseConf
 
-    UploadIOSArtifactTask(Project project, IOSExecutor iosExecutor, Expando details) {
-        this.project = project
-        this.iosExecutor = iosExecutor
-        this.target = details.target
-        this.configuration = details.configuration
-        this.conf = getProjectConfiguration(project)
-        this.releaseConf = getProjectReleaseConfiguration(project)
-        this.iOSReleaseConf = getIosReleaseConfiguration(project)
-    }
+    //TODO remove old configurations
+    //TODO inject new configurations
+    //TODO inject network helper
 
+    AbstractIOSVariant variant
+
+    @TaskAction
     void uploadIOSArtifact() {
 
         def builder = new IOSSingleVariantBuilder(project, iosExecutor)
-        builder.buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
+        builder.buildSingleBuilderInfo(variant.target, variant.configuration, 'iphoneos', project)
 
-        //TODO gradle.properties
-        String user = project['apphanceUserName']
-        String pass = project['apphancePassword']
-        //TODO gradle.properties
-        String key = project[ApphanceProperty.APPLICATION_KEY.propertyName]
+        String user = apphanceConf.user.value
+        String pass = apphanceConf.pass.value
+        String key = variant.apphanceAppKey.value
 
         def networkHelper = null
 
         try {
             networkHelper = new ApphanceNetworkHelper(user, pass)
 
-            def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false, ['ipa', 'dsym', 'image_montage'])
+            def response = networkHelper.updateArtifactQuery(key, variant.versionString, variant.versionCode, false, ['ipa', 'dsym', 'image_montage'])
             l.lifecycle("Upload version query response: ${response.statusLine}")
 
             validate(response.entity != null, { throw new GradleException("Error while uploading version query, empty response received") })
@@ -68,7 +65,7 @@ class UploadIOSArtifactTask {
             l.lifecycle("Upload ipa response: ${response.statusLine}")
             EntityUtils.consume(response.entity)
 
-            response = networkHelper.uploadResource(releaseConf.imageMontageFile.location, responseJSON.update_urls.image_montage, 'image_montage')
+            response = networkHelper.uploadResource(iOSReleaseConf.imageMontageFile.location, responseJSON.update_urls.image_montage, 'image_montage')
             l.lifecycle("Upload image_montage response: ${response.statusLine}")
             EntityUtils.consume(response.entity)
 

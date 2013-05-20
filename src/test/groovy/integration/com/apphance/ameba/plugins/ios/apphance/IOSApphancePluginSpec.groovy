@@ -1,12 +1,15 @@
 package com.apphance.ameba.plugins.ios.apphance
 
-import com.apphance.ameba.plugins.ios.IOSProjectConfiguration
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
+import com.apphance.ameba.configuration.apphance.ApphanceMode
+import com.apphance.ameba.configuration.ios.variants.IOSTCVariant
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.IOSAllSimulatorsBuilder
+import com.apphance.ameba.plugins.project.ProjectPlugin
 import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
+import spock.lang.Ignore
 import spock.lang.Specification
 
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSConfigurationRetriever.IOS_PROJECT_CONFIGURATION
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.BUILD_ALL_SIMULATORS_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSApphancePluginSpec extends Specification {
@@ -15,88 +18,94 @@ class IOSApphancePluginSpec extends Specification {
         given:
         def project = builder().build()
 
-        and:
-        project.plugins.apply(ProjectConfigurationPlugin)
-
         when:
-        project.plugins.apply(IOSApphancePlugin)
+        def plugin = new IOSApphancePlugin()
+        plugin.apphanceConf = GroovyStub(ApphanceConfiguration, { isEnabled() >> true })
+        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration, { getVariants() >> [] })
+        plugin.apply(project)
 
         then: 'apphance configuration is added'
         project.configurations.apphance
 
         then: 'no build & upload tasks added'
-        !project.tasks.any { it.name.startsWith('upload-') }
-        !project.tasks.any { it.name.startsWith('build-') }
+        !project.tasks.any { it.name ==~ '(upload|build)-' }
     }
 
     def "plugin tasks' graph configured correctly when buildable variants exists"() {
         given:
         def project = builder().build()
 
-        and: 'prepare mock ios configuration'
-        def iosConf = Mock(IOSProjectConfiguration)
-        iosConf.allBuildableVariants >>
-                [
-                        new Expando(target: 't1', configuration: 'c1', id: 'id1', noSpaceId: 'id1'),
-                        new Expando(target: 't2', configuration: 'c2', id: 'id2', noSpaceId: 'id2')
-                ]
-        project.ext.set(IOS_PROJECT_CONFIGURATION, iosConf)
-
         and: 'add fake tasks'
-        project.task('build-id1')
-        project.task('build-id2')
-
-        and:
-        project.plugins.apply(ProjectConfigurationPlugin)
+        project.task('buildid1')
+        project.task('buildid2')
 
         when:
-        project.plugins.apply(IOSApphancePlugin)
+        def plugin = new IOSApphancePlugin()
+        plugin.apphanceConf = GroovyStub(ApphanceConfiguration, { isEnabled() >> true })
+
+        def id1 = new IOSTCVariant('id1')
+        id1.configuration = 'c1'
+        id1.target = 't1'
+        id1.apphanceMode.value = ApphanceMode.QA.toString()
+
+        def id2 = new IOSTCVariant('id2')
+        id2.configuration = 'c2'
+        id2.target = 't2'
+        id2.apphanceMode.value = ApphanceMode.QA.toString()
+
+
+        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration, { getVariants() >> [id1, id2] })
+        plugin.apply(project)
 
         then: 'apphance configuration is added'
         project.configurations.apphance
 
         then: 'tasks for buildable variants added'
-        project.tasks['upload-id1']
-        project.tasks['upload-id2']
+        project.tasks['uploadid1']
+        project.tasks['uploadid2']
 
         then: 'tasks also have actions declared'
-        project.tasks['build-id1'].actions
-        project.tasks['build-id2'].actions
-        project.tasks['upload-id1'].actions
-        project.tasks['upload-id2'].actions
+        project.tasks['buildid1'].actions
+        project.tasks['buildid2'].actions
+        project.tasks['uploadid1'].actions
+        project.tasks['uploadid2'].actions
 
         then: 'no buildAllSimulators task is present'
-        !project.tasks.findByName(BUILD_ALL_SIMULATORS_TASK_NAME)
+        !project.tasks.findByName(IOSAllSimulatorsBuilder.NAME)
 
         then: 'each tasks has correct dependency'
-        project.tasks['upload-id1'].dependsOn.containsAll('build-id1', ImageMontageTask.NAME)
-        project.tasks['upload-id2'].dependsOn.containsAll('build-id2', ImageMontageTask.NAME)
+        project.tasks['uploadid1'].dependsOn.flatten().containsAll('buildid1', ImageMontageTask.NAME)
+        project.tasks['uploadid2'].dependsOn.flatten().containsAll('buildid2', ImageMontageTask.NAME)
     }
 
+    @Ignore('Verify if this specification is still up-to-date. Do we create buildAllSimulators task independently of variant configuration?')
     def "plugin tasks' graph configured correctly when buildAllSimulators tasks exists"() {
         given:
         def project = builder().build()
 
         and:
-        project.plugins.apply(ProjectConfigurationPlugin)
+        project.plugins.apply(ProjectPlugin)
 
         and: 'add buildAllSimulators task'
-        project.task(BUILD_ALL_SIMULATORS_TASK_NAME)
+        project.task(IOSAllSimulatorsBuilder.NAME)
 
         expect:
-        !project.tasks[BUILD_ALL_SIMULATORS_TASK_NAME].actions
+        !project.tasks[IOSAllSimulatorsBuilder.NAME].actions
 
         when:
-        project.plugins.apply(IOSApphancePlugin)
+        def plugin = new IOSApphancePlugin()
+        plugin.apphanceConf = GroovyStub(ApphanceConfiguration, { isEnabled() >> true })
+        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration, { getVariants() >> [] })
+        plugin.apply(project)
 
         then: 'apphance configuration is added'
         project.configurations.apphance
 
         then: 'tasks added'
-        project.tasks[BUILD_ALL_SIMULATORS_TASK_NAME]
+        project.tasks[IOSAllSimulatorsBuilder.NAME]
 
         then: 'buildAllSmulators has actions'
-        project.tasks[BUILD_ALL_SIMULATORS_TASK_NAME].actions
+        project.tasks[IOSAllSimulatorsBuilder.NAME].actions
 
         then: 'tasks not added'
         !project.tasks.findByName('build-id1')

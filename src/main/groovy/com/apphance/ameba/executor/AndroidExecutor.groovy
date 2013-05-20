@@ -2,7 +2,7 @@ package com.apphance.ameba.executor
 
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.gradle.api.GradleException
 
 class AndroidExecutor {
@@ -14,12 +14,8 @@ class AndroidExecutor {
     private Map<String, String> defaultSkinForTarget = [:]
     private Map<String, String> idForTarget = [:]
 
-    private CommandExecutor executor
-
     @Inject
-    AndroidExecutor(CommandExecutor executor) {
-        this.executor = executor
-    }
+    CommandExecutor executor
 
     def updateProject(File dir, String target, String name) {
         def targetId = idForTarget(dir, target)

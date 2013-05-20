@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.release.tasks
 
 import com.apphance.ameba.configuration.ProjectConfiguration
-import com.apphance.ameba.configuration.ReleaseConfiguration
+import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import spock.lang.Specification
 
 import static org.gradle.testfixtures.ProjectBuilder.builder

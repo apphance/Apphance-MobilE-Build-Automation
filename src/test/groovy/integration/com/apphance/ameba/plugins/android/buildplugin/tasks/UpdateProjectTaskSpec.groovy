@@ -45,7 +45,7 @@ class UpdateProjectTaskSpec extends Specification {
         def ce = new CommandExecutor(fileLinker, logFileGenerator)
 
         and:
-        def ae = new AndroidExecutor(ce)
+        def ae = new AndroidExecutor(executor: ce)
 
         and:
         def ac = GroovyMock(AndroidConfiguration)

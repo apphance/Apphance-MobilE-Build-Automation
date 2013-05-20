@@ -7,7 +7,7 @@ class AndroidExecutorSpec extends Specification {
 
     CommandExecutor commandExecutor = Mock()
     File file = Mock()
-    AndroidExecutor androidExecutor = new AndroidExecutor(commandExecutor)
+    def androidExecutor = new AndroidExecutor(executor: commandExecutor)
 
     def 'test updateProject method'() {
         when: androidExecutor.updateProject(file, 'android-8', 'sample-name')
@@ -30,7 +30,7 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand(_) >> targets.split('\n')
 
         and:
-        def ae = new AndroidExecutor(ce)
+        def ae = new AndroidExecutor(executor: ce)
 
         when:
         def output = ae.listTarget(Mock(File))
@@ -45,7 +45,7 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand(_) >> targets.split('\n')
 
         and:
-        def ae = new AndroidExecutor(ce)
+        def ae = new AndroidExecutor(executor: ce)
 
         when:
         def output = ae.listSkinsForTarget(Mock(File), 'android-3')
@@ -60,7 +60,7 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand(_) >> targets.split('\n')
 
         and:
-        def ae = new AndroidExecutor(ce)
+        def ae = new AndroidExecutor(executor: ce)
 
         expect:
         skin == ae.defaultSkinForTarget(Mock(File), target)
@@ -78,7 +78,7 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand(_) >> targets.split('\n')
 
         and:
-        def ae = new AndroidExecutor(ce)
+        def ae = new AndroidExecutor(executor: ce)
 
         expect:
         idForTarget == ae.idForTarget(Mock(File), target)

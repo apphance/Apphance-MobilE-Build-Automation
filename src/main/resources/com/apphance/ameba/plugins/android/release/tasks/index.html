@@ -1,105 +1,106 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${title} - Android</title>
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.css"/>
-    <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
-    <script src="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.js"></script>
-</head>
-<body>
-<div data-role="page" id="home">
-    <div data-role="header">
-        <h1>${rb.getString('OTA_installation')} - Android</h1>
-    </div>
-    <div data-role="content">
-        <div>
-            <ul data-role="listview" data-inset="true" data-theme="b" data-split-theme="a">
-                <li>
-                    <img src="${iconFileName}" width="81px" height="81px">
-                    <header style="text-align:left;">
-                        <h3>
-                            <div>${title}</div>
-                        </h3>
-                    </header>
-                </li>
-                <li>
-                    ${rb.getString('Version')} ${version}<br>
-                    ${rb.getString('Date')} ${currentDate}
-                </li>
-            </ul>
-        </div>
-        <div>
-            <section id="instalation">
-                <header style="text-align:center;">
-                    <h3>
-                        <div>${rb.getString('Installation')}</div>
-                    </h3>
-                </header>
-            </section>
-        </div>
-        <div>
-            <ul data-role="listview" data-theme="b">
-                <li>
-                    <div class="ui-grid-a">
-                        <div class="ui-block-a">
-                            <div style="font-size:1.5em">${variantsConf.mainVariant.replaceAll('_',' ')}</div>
-                        </div>
-                        <div class="ui-block-b" style="text-align:right"><a
-                                href="${androidReleaseConf.apkFiles[variantsConf.mainVariant].url}"
-                                data-role="button" data-inline="true" rel="external" data-theme="a">${rb.getString('Install')}</a>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <% if (releaseNotes != null && releaseNotes.size >0) { %>
-        <p>
-            <section id="instalation">
-                <header style="text-align:center;">
-                    <h3>${rb.getString('What_s_new')}</h3>
-                </header>
-            </section>
-        <ul>
-            <% releaseNotes.each { %>
-            <li>${it}</li>
-            <% } %>
-        </ul>
-        <% } %>
-        <% def other_installs = [] %>
-        <% variantsConf.variants.each { variant -> %>
-        <% if (variantsConf.mainVariant != variant.name) { other_installs << variant.name } %>
-        <% } %>
-        <% if (other_installs.size > 0) { %>
-        <div>
-            <section id="other_instalation">
-                <header style="text-align:center;">
-                    <h3>
-                        <div>${rb.getString('Other_Installations')}</div>
-                    </h3>
-                </header>
-            </section>
-        </div>
-        <div>
-            <ul data-role="listview" data-theme="b" data-split-theme="a">
-                <% other_installs.each { variant -> %>
-                <li>
-                    <div class="ui-grid-a">
-                        <div class="ui-block-a">
-                            <div style="font-size:1.5em">${variant.replaceAll('_',' ')}</div>
-                        </div>
-                        <div class="ui-block-b" style="text-align:right">
-                            <a href="${androidReleaseConf.apkFiles[variant].url}" data-role="button" data-inline="true"
-                               rel="external" data-theme="a">${rb.getString('Install')}</a>
-                        </div>
-                    </div>
-                </li>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>${title} - Android</title>
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.css"/>
+        <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.js"></script>
+    </head>
+    <body>
+        <div data-role="page" id="home">
+            <div data-role="header">
+                <h1>${rb.getString('OTA_installation')} - Android</h1>
+            </div>
+            <div data-role="content">
+                <div>
+                    <ul data-role="listview" data-inset="true" data-theme="b" data-split-theme="a">
+                        <li>
+                            <img src="${iconFileName}" width="81px" height="81px"/>
+                            <header style="text-align:left;">
+                                <h3>
+                                    <div>${title}</div>
+                                </h3>
+                            </header>
+                        </li>
+                        <li>
+                            ${rb.getString('Version')} ${version}<br/>
+                            ${rb.getString('Date')} ${currentDate}
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <section id="installation">
+                        <header style="text-align:center;">
+                            <h3>
+                                <div>${rb.getString('Installation')}</div>
+                            </h3>
+                        </header>
+                    </section>
+                </div>
+                <div>
+                    <ul data-role="listview" data-theme="b">
+                        <li>
+                            <div class="ui-grid-a">
+                                <div class="ui-block-a">
+                                    <div style="font-size:1.5em">${variantsConf.mainVariant.replaceAll('_',' ')}</div>
+                                </div>
+                                <div class="ui-block-b" style="text-align:right"><a
+                                    href="${releaseConf.apkFiles[variantsConf.mainVariant].url}"
+                                    data-role="button" data-inline="true" rel="external" data-theme="a">${rb.getString('Install')}</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <% if (releaseNotes != null && releaseNotes.size > 0) { %>
+                    <p>
+                        <section id="release_notes">
+                            <header style="text-align:center;">
+                                <h3>${rb.getString('What_s_new')}</h3>
+                            </header>
+                        </section>
+                         <ul>
+                            <% releaseNotes.each { %>
+                                <li>${it}</li>
+                            <% } %>
+                        </ul>
+                    </p>
                 <% } %>
-            </ul>
+                <% def other_installs = [] %>
+                <% variantsConf.variants.each { variant -> %>
+                    <% if (variantsConf.mainVariant != variant.name) { other_installs << variant.name } %>
+                <% } %>
+                <% if (other_installs.size > 0) { %>
+                    <div>
+                        <section id="other_installation">
+                            <header style="text-align:center;">
+                                <h3>
+                                    <div>${rb.getString('Other_Installations')}</div>
+                                </h3>
+                            </header>
+                        </section>
+                    </div>
+                    <div>
+                        <ul data-role="listview" data-theme="b" data-split-theme="a">
+                            <% other_installs.each { variant -> %>
+                            <li>
+                                <div class="ui-grid-a">
+                                    <div class="ui-block-a">
+                                        <div style="font-size:1.5em">${variant.replaceAll('_',' ')}</div>
+                                    </div>
+                                    <div class="ui-block-b" style="text-align:right">
+                                        <a href="${releaseConf.apkFiles[variant].url}" data-role="button" data-inline="true"
+                                        rel="external" data-theme="a">${rb.getString('Install')}</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <% } %>
+                        </ul>
+                    </div>
+                <% } %>
+            </div>
         </div>
-        <% } %>
-    </div>
-</div>
-</body>
+    </body>
 </html>

@@ -1,10 +1,10 @@
 package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
-import com.apphance.ameba.configuration.android.AndroidVariantConfiguration
-import com.apphance.ameba.plugins.android.AndroidArtifactProvider
-import com.apphance.ameba.plugins.android.AndroidSingleVariantApkBuilder
-import com.apphance.ameba.plugins.android.AndroidSingleVariantJarBuilder
+import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
+import com.apphance.ameba.plugins.android.builder.AndroidArtifactProvider
+import com.apphance.ameba.plugins.android.builder.AndroidSingleVariantApkBuilder
+import com.apphance.ameba.plugins.android.builder.AndroidSingleVariantJarBuilder
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 

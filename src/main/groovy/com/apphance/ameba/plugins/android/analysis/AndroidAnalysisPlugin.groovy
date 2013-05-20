@@ -6,7 +6,7 @@ import com.apphance.ameba.plugins.android.analysis.tasks.CheckstyleTask
 import com.apphance.ameba.plugins.android.analysis.tasks.FindBugsTask
 import com.apphance.ameba.plugins.android.analysis.tasks.PMDTask
 import com.apphance.ameba.plugins.android.buildplugin.tasks.CompileAndroidTask
-import com.google.inject.Inject
+import javax.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -19,7 +19,7 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYS
 class AndroidAnalysisPlugin implements Plugin<Project> {
 
     @Inject
-    private AndroidAnalysisConfiguration analysisConf
+    AndroidAnalysisConfiguration analysisConf
 
     @Override
     void apply(Project project) {

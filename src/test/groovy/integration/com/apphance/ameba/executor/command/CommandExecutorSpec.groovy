@@ -21,6 +21,12 @@ class CommandExecutorSpec extends Specification {
         logFileGenerator.commandLogFiles() >> logFiles
     }
 
+    def cleanup() {
+        logFiles.each {
+            it.value.delete()
+        }
+    }
+
     def "executor invokes 'ls' command"() {
 
         given:

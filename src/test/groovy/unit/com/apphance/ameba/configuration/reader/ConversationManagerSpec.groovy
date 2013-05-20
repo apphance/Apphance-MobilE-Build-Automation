@@ -3,7 +3,9 @@ package com.apphance.ameba.configuration.reader
 import com.apphance.ameba.configuration.properties.ProjectTypeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.detection.ProjectType
+import spock.lang.IgnoreRest
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 
@@ -24,7 +26,7 @@ class ConversationManagerSpec extends Specification {
 
     def 'default value string is formatted correctly'() {
         expect:
-        cm.defaultValueString(p) == expectedString
+        cm.effectiveDefaultValue(p) == expectedString
 
         where:
         p                                                  | expectedString
@@ -43,11 +45,13 @@ class ConversationManagerSpec extends Specification {
         p                                                                                                                  | expectedString
         new StringProperty(message: 'Project name')                                                                        | "Project name, default: '': "
         new StringProperty(message: 'Project name', defaultValue: { 'a' })                                                 | "Project name, default: 'a': "
-        new StringProperty(message: 'Project name', defaultValue: { 'a' }, possibleValues: { ['a', 'b'] as List<String> }) | "Project name, default: 'a', possible: [a, b]: "
-        new StringProperty(message: 'Project name', possibleValues: { ['a', 'b'] as List<String> })                        | "Project name, default: '', possible: [a, b]: "
+        new StringProperty(message: 'Project name', defaultValue: { 'b' }, possibleValues: { ['a', 'b'] as List<String> }) | "Project name, default: 'b', " +
+                "possible: [a, b]: "
+        new StringProperty(message: 'Project name', possibleValues: { ['a', 'b'] as List<String> })                        | "Project name, default: 'a', " +
+                "possible: [a, b]: "
     }
 
-    def 'empty input validation works well'() {
+    def 'empty input validation works well.'() {
         expect:
         cm.validateInput(input, p) == validationResult
 
@@ -69,13 +73,13 @@ class ConversationManagerSpec extends Specification {
 
         where:
         p                                                                                   | input | validationResult
-        new StringProperty(possibleValues: null, validator: null)                           | 'aaa' | true
+        new StringProperty()                                                                | 'aaa' | true
         new StringProperty(possibleValues: { ['aaa'] })                                     | 'aaa' | true
         new StringProperty(possibleValues: { ['bbb'] })                                     | 'aaa' | false
         new StringProperty(possibleValues: { ['bbb'] }, validator: { it.matches('[a]+') })  | 'aaa' | true
         new StringProperty(possibleValues: { ['bbb'] }, validator: { !it.matches('[a]+') }) | 'aaa' | false
         new StringProperty(validator: { it.matches('[a]+') })                               | 'aaa' | true
-        new StringProperty(validator: { !it.matches('[a]+') }, possibleValues: { ['aaa'] }) | 'aaa' | true
+        new StringProperty(validator: { !it.matches('[a]+') }, possibleValues: { ['aaa'] }) | 'aaa' | false
         new StringProperty(validator: { !it.matches('[a]+') })                              | 'aaa' | false
     }
 

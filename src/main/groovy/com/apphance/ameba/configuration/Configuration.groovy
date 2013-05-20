@@ -1,10 +1,14 @@
 package com.apphance.ameba.configuration
 
-public interface Configuration {
+interface Configuration {
 
     boolean isEnabled()
 
     void setEnabled(boolean enabled)
 
     List<String> verify()
+
+    boolean canBeEnabled()
+
+    String getMessage()
 }

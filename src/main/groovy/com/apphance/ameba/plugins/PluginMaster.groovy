@@ -13,7 +13,7 @@ import com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin
 import com.apphance.ameba.plugins.ios.framework.IOSFrameworkPlugin
 import com.apphance.ameba.plugins.ios.ocunit.IOSUnitTestPlugin
 import com.apphance.ameba.plugins.ios.release.IOSReleasePlugin
-import com.apphance.ameba.plugins.projectconfiguration.ProjectConfigurationPlugin
+import com.apphance.ameba.plugins.project.ProjectPlugin
 import com.apphance.ameba.plugins.release.ProjectReleasePlugin
 import com.google.inject.Injector
 import org.gradle.api.Plugin
@@ -26,13 +26,14 @@ class PluginMaster {
 
     def log = Logging.getLogger(getClass())
 
-    @Inject ProjectTypeDetector projectTypeDetector
-
-    @Inject Injector injector
+    @Inject
+    ProjectTypeDetector projectTypeDetector
+    @Inject
+    Injector injector
 
     static plugins = [
             COMMON: [
-                    ProjectConfigurationPlugin,
+                    ProjectPlugin,
             ],
 
             IOS: [

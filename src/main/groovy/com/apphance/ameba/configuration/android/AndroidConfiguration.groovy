@@ -6,8 +6,8 @@ import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.AndroidExecutor
-import com.apphance.ameba.plugins.android.AndroidBuildXmlHelper
-import com.apphance.ameba.plugins.android.AndroidManifestHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidBuildXmlHelper
+import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import org.gradle.api.Project
 
 import javax.inject.Inject
@@ -63,21 +63,19 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     @Override
     String getVersionCode() {
-        externalVersionCode ?: manifestHelper.readVersion(rootDir).versionCode ?: ''
+        extVersionCode ?: manifestHelper.readVersion(rootDir).versionCode ?: ''
     }
 
-    @groovy.transform.PackageScope
-    String getExternalVersionCode() {
+    String getExtVersionCode() {
         reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
     }
 
     @Override
     String getVersionString() {
-        externalVersionString ?: manifestHelper.readVersion(rootDir).versionString ?: ''
+        extVersionString ?: manifestHelper.readVersion(rootDir).versionString ?: ''
     }
 
-    @groovy.transform.PackageScope
-    String getExternalVersionString() {
+    String getExtVersionString() {
         reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
     }
 
