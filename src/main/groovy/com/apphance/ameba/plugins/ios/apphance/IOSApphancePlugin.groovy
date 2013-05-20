@@ -29,7 +29,6 @@ class IOSApphancePlugin implements Plugin<Project> {
     IOSVariantsConfiguration variantsConf
     @Inject
     ApphanceConfiguration apphanceConf
-    @Inject
     AddIOSApphanceTaskFactory addIOSApphanceTaskFactory
 
     //TODO write a spec for this class that will be checking if tasks are added or not (apphance conf - enabled/disabled)

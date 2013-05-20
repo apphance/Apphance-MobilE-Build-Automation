@@ -16,7 +16,6 @@ import com.apphance.ameba.configuration.reader.GradlePropertiesPersister
 import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import com.apphance.ameba.detection.ProjectTypeDetector
-import com.apphance.ameba.plugins.ios.apphance.tasks.AddIOSApphanceTaskFactory
 import com.google.inject.AbstractModule
 import com.google.inject.assistedinject.FactoryModuleBuilder
 import com.google.inject.multibindings.MapBinder
@@ -64,7 +63,6 @@ class ConfigurationModule extends AbstractModule {
             ],
             (IOS): [
                     new FactoryModuleBuilder().build(IOSVariantFactory),
-                    new FactoryModuleBuilder().build(AddIOSApphanceTaskFactory)
             ],
     ]
 
