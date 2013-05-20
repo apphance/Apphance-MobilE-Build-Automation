@@ -32,7 +32,6 @@ class IOSApphancePlugin implements Plugin<Project> {
     AddIOSApphanceTaskFactory addIOSApphanceTaskFactory
 
     //TODO write a spec for this class that will be checking if tasks are added or not (apphance conf - enabled/disabled)
-    //TODO minor: variant.apphanceMode.value in [QA, PROD, SILENT]*.toString() == variant.apphanceMode.value != DISABLED
 
     @Override
     void apply(Project project) {

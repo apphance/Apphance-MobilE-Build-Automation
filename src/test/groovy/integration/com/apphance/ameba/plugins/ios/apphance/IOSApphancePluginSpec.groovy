@@ -31,6 +31,29 @@ class IOSApphancePluginSpec extends Specification {
         !project.tasks.any { it.name ==~ '(upload|build)-' }
     }
 
+    def 'no tasks added when configuration distabled'() {
+        given:
+        def project = builder().build()
+
+        when:
+        def plugin = new IOSApphancePlugin()
+        plugin.apphanceConf = GroovyMock(ApphanceConfiguration)
+        plugin.apphanceConf.isEnabled() >> false
+
+        def id1 = new IOSTCVariant('id1')
+        id1.configuration = 'c1'
+        id1.target = 't1'
+        id1.apphanceMode.value = ApphanceMode.QA.toString()
+        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration, { getVariants() >> [id1] })
+        plugin.apply(project)
+
+        then: 'apphance configuration is added'
+        !project.configurations.apphance
+
+        then: 'no build & upload tasks added'
+        !project.tasks.any { it.name ==~ '(upload|build)-' }
+    }
+
     def "plugin tasks' graph configured correctly when buildable variants exists"() {
         given:
         def project = builder().build()
