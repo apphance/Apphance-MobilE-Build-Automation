@@ -1,6 +1,5 @@
 package com.apphance.ameba.plugins.ios.apphance.tasks
 
-import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
@@ -28,13 +27,8 @@ class UploadIOSArtifactTask extends DefaultTask {
 
     @Inject IOSExecutor iosExecutor
     @Inject ApphanceConfiguration apphanceConf
-    private ProjectConfiguration conf
-    private IOSReleaseConfiguration iOSReleaseConf
-    @Inject
-    IOSReleaseConfiguration iOSReleaseConf
+    @Inject IOSReleaseConfiguration iOSReleaseConf
 
-    //TODO remove old configurations
-    //TODO inject new configurations
     //TODO inject network helper
 
     AbstractIOSVariant variant
@@ -42,7 +36,7 @@ class UploadIOSArtifactTask extends DefaultTask {
     @TaskAction
     void uploadIOSArtifact() {
 
-        def builder = new IOSSingleVariantBuilder(project, iosExecutor)
+        def builder = new IOSSingleVariantBuilder(iosExecutor: iosExecutor)
         builder.buildSingleBuilderInfo(variant.target, variant.configuration, 'iphoneos', project)
 
         String user = apphanceConf.user.value

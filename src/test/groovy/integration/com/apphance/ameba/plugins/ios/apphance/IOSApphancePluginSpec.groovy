@@ -38,7 +38,7 @@ class IOSApphancePluginSpec extends Specification {
         when:
         def plugin = new IOSApphancePlugin()
         plugin.apphanceConf = GroovyMock(ApphanceConfiguration)
-        plugin.apphanceConf.isEnabled() >> false
+        plugin.apphanceConf.enabled >> false
 
         def id1 = new IOSTCVariant('id1')
         id1.configuration = 'c1'
@@ -48,7 +48,7 @@ class IOSApphancePluginSpec extends Specification {
         plugin.apply(project)
 
         then: 'apphance configuration is added'
-        !project.configurations.apphance
+        !project.configurations.contains('apphance')
 
         then: 'no build & upload tasks added'
         !project.tasks.any { it.name ==~ '(upload|build)-' }

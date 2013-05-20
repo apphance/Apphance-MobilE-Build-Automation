@@ -31,8 +31,6 @@ class IOSApphancePlugin implements Plugin<Project> {
     ApphanceConfiguration apphanceConf
     AddIOSApphanceTaskFactory addIOSApphanceTaskFactory
 
-    //TODO write a spec for this class that will be checking if tasks are added or not (apphance conf - enabled/disabled)
-
     @Override
     void apply(Project project) {
         if (apphanceConf.enabled) {

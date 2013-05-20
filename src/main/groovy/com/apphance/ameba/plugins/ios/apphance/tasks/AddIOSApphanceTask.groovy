@@ -27,13 +27,9 @@ class AddIOSApphanceTask {
 
     @Inject CommandExecutor executor
     @Inject IOSExecutor iosExecutor
-    @Inject ApphanceConfiguration apphanceConf
     @Inject IOSConfiguration iosConfiguration
-
-    //TODO remove unused fields
-    //TODO this class should be written as a service
-
     @Inject PbxProjectHelper pbxProjectHelper
+
     private AbstractIOSVariant variant
     private String target
     private String configuration
@@ -47,7 +43,7 @@ class AddIOSApphanceTask {
     }
 
     void addIOSApphance() {
-        def builder = new IOSSingleVariantBuilder(project, iosExecutor)
+        def builder = new IOSSingleVariantBuilder(iosExecutor: iosExecutor)
         if (!isApphancePresent(builder.tmpDir(target, configuration))) {
             log.lifecycle("Adding Apphance to ${variant} (${target}, ${configuration}): ${builder.tmpDir(target, configuration)}. Project file = ${variant.tmpDir}")
             pbxProjectHelper.addApphanceToProject(
