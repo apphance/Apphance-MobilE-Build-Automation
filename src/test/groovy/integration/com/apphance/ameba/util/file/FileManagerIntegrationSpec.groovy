@@ -94,4 +94,14 @@ class FileManagerIntegrationSpec extends Specification {
             last = current
         }
     }
+
+    def 'obtains relative path'() {
+        expect:
+        FileManager.relativeTo(root.absolutePath, path.absolutePath).path == expected
+
+        where:
+        root                                           | path                                           | expected
+        new File('testProjects/android')               | new File('testProjects/android/android-basic') | 'android-basic'
+        new File('testProjects/android/android-basic') | new File('testProjects/android')               | '..'
+    }
 }

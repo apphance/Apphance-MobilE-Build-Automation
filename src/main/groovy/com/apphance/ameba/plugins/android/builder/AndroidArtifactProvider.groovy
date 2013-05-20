@@ -43,6 +43,7 @@ class AndroidArtifactProvider {
                 mode: avc.mode,
                 tmpDir: avc.tmpDir,
                 buildDir: binDir(avc),
+                variantDir: avc.variantDir,
                 fullReleaseName: "${conf.projectName.value}-${variablePart}-${conf.fullVersionString}",
                 filePrefix: "${conf.projectName.value}-${variablePart}-${conf.fullVersionString}"
         )

@@ -13,6 +13,8 @@ import javax.imageio.ImageIO
 import javax.inject.Inject
 import java.text.SimpleDateFormat
 
+import static com.apphance.ameba.util.file.FileManager.relativeTo
+
 abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     def MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
@@ -74,7 +76,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             name: 'release.icon',
             message: 'Path to project\'s icon file, must be relative to the root dir of project',
             required: { true },
-            defaultValue: { defaultIcon() },
+            defaultValue: { relativeTo(conf.rootDir.absolutePath, defaultIcon().absolutePath) },
             possibleValues: { possibleIcons() },
             validator: {
                 def file = new File(conf.rootDir, it as String)
@@ -93,7 +95,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             required: { true },
             validator: {
                 try {
-                    projectURL.value
+                    (it as String).toURL()
                     return true
                 } catch (Exception e) { return false }
             }

@@ -3,6 +3,8 @@ package com.apphance.ameba.util.file
 import groovy.io.FileType
 import org.gradle.api.Project
 
+import java.nio.file.Paths
+
 import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
 import static java.lang.String.format
@@ -76,5 +78,9 @@ class FileManager {
     public static void mkdir(File dir) {
         if (!(dir.exists() && dir.isDirectory()))
             dir.mkdirs()
+    }
+
+    public static File relativeTo(String path1, String path2) {
+        Paths.get(path1).relativize(Paths.get(path2)).toFile()
     }
 }

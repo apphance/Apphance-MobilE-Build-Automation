@@ -15,6 +15,7 @@ class AndroidBuilderInfo {
     File originalFile
     File buildDir
     File tmpDir
+    File variantDir
 
     String getId() {
         variant

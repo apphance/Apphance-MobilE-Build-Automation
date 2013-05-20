@@ -1,5 +1,7 @@
 package com.apphance.ameba.configuration.properties
 
+import static org.apache.commons.lang.StringUtils.isNotBlank
+
 class ListStringProperty extends AbstractProperty<List<String>> {
 
     private static String SEPARATOR = ','
@@ -7,9 +9,15 @@ class ListStringProperty extends AbstractProperty<List<String>> {
     @Override
     void setValue(String value) {
         if (value?.trim()) {
-            this.@value = value.trim().replaceAll('[\\[\\]]', '').split(SEPARATOR)*.trim()
+            this.@value = convert(value)
         }
     }
+
+    private List<String> convert(String value) {
+        value.trim().replaceAll('[\\[\\]]', '').split(SEPARATOR)*.trim().findAll { isNotBlank(it) }
+    }
+
+    Closure<Boolean> validator = { possibleValues().empty || possibleValues().containsAll(convert(it)) }
 
     Closure<String> persistentForm = { value?.join(SEPARATOR) ?: '' }
 

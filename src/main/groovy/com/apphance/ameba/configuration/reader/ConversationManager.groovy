@@ -15,7 +15,12 @@ class ConversationManager {
 
     def resolveConfigurations(Collection<? extends AbstractConfiguration> configurations) {
         configurations.each { AbstractConfiguration c ->
-            c.enabled ? readValues(c) : enablePlugin(c)
+            if (!c.enabled) {
+                enablePlugin(c)
+            }
+            if (c.enabled) {
+                readValues(c)
+            }
         }
 
         log.info('All configurations resolved')
@@ -29,6 +34,8 @@ class ConversationManager {
             out.flush()
             if (reader.readLine()?.equalsIgnoreCase('y')) {
                 conf.enabled = true
+            } else {
+                conf.enabled = false
             }
         } else {
             print conf.message

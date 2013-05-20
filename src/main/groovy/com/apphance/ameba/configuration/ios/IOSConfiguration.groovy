@@ -12,6 +12,7 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.detection.ProjectType.IOS
 import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
+import static com.apphance.ameba.util.file.FileManager.relativeTo
 import static groovy.io.FileType.DIRECTORIES
 import static java.io.File.separator
 
@@ -104,7 +105,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     private List<String> possibleXCodeDirs() {
         def dirs = []
         rootDir.traverse(type: DIRECTORIES, nameFilter: ~/.*\.xcodeproj/, maxDepth: MAX_RECURSION_LEVEL) {
-            dirs << it.absolutePath.replaceAll("${rootDir.absolutePath}${separator}", '')
+            dirs << relativeTo(rootDir.absolutePath, it.absolutePath).path
         }
         dirs
     }
