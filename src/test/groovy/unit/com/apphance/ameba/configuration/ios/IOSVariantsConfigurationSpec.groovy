@@ -10,25 +10,30 @@ import spock.lang.Unroll
 
 class IOSVariantsConfigurationSpec extends Specification {
 
-    @Unroll
-    def 'test buildVariantsList #variantClass variant'() {
-        given:
-        def conf = GroovyMock(IOSConfiguration)
+    private IOSConfiguration conf
+    private IOSVariantsConfiguration variantsConf
+
+    def setup() {
+        conf = GroovyMock(IOSConfiguration)
         def targets = ['Debug', 'Release', 'QAWithApphance', 'QAWithoutApphance']
         def configurations = ['Some', 'UnitTests', 'SomeWithMonkey', 'RunMonkeyTests', 'SomeSpecs', 'OtherSomeSpecs']
-        conf.schemes >> schemes
+
         conf.targetConfigurationMatrix >> [targets, configurations].combinations()
 
-        and:
         def vf = GroovyMock(IOSVariantFactory)
         vf.createSchemeVariant(_) >> new IOSSchemeVariant('scheme')
         vf.createTCVariant(_) >> new IOSTCVariant('tc')
 
-        and:
-        def variantsConf = new IOSVariantsConfiguration()
+        variantsConf = new IOSVariantsConfiguration()
         variantsConf.conf = conf
         variantsConf.propertyPersister = Stub(PropertyPersister, { get(_) >> '' })
         variantsConf.variantFactory = vf
+    }
+
+    @Unroll
+    def 'test buildVariantsList #variantClass variant'() {
+        given:
+        conf.schemes >> schemas
 
         when:
         def variants = variantsConf.buildVariantsList()
@@ -38,8 +43,25 @@ class IOSVariantsConfigurationSpec extends Specification {
         variants.every { it.class == variantClass }
 
         where:
-        expectedSize | variantClass     | schemes
+        expectedSize | variantClass     | schemas
         5            | IOSSchemeVariant | ['Some', 'SomeWithMonkey', 'SomeSpecs', 'OtherSomeSpecs', 'RunMonkeyTests']
         24           | IOSTCVariant     | []
+    }
+
+    def 'hasSchemas'() {
+        given:
+        conf.schemes >> schemas
+
+        when:
+        def variants = variantsConf.buildVariantsList()
+
+        then:
+        variantsConf.hasSchemas() == hasSchemas
+
+        where:
+        hasSchemas | schemas
+        true       | ['Some', 'SomeWithMonkey']
+        false      | ['', '  ']
+        false      | []
     }
 }

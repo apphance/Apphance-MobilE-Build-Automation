@@ -4,12 +4,14 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
+import org.apache.commons.lang.StringUtils
 
 import javax.inject.Inject
 
 import static IOSVariantType.SCHEME
 import static IOSVariantType.TC
 import static com.apphance.ameba.configuration.properties.ListStringProperty.getSEPARATOR
+import static org.apache.commons.lang.StringUtils.*
 
 @com.google.inject.Singleton
 class IOSVariantsConfiguration extends AbstractConfiguration {
@@ -49,7 +51,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         List<AbstractIOSVariant> result = []
         if (variantsNames.value) {
             result.addAll(extractVariantsFromProperties())
-        } else if (hasSchemes()) {
+        } else if (hasSchemas()) {
             result.addAll(createVariantsFromSchemes())
             variantsNames.value = result*.name.join(SEPARATOR)
         } else {
@@ -69,8 +71,9 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         }
     }
 
-    private boolean hasSchemes() {
-        !(conf.schemes.findAll { it != null && !it?.trim()?.empty }).empty
+    @groovy.transform.PackageScope
+    boolean hasSchemas() {
+        conf.schemes.any { isNotBlank(it) }
     }
 
     private List<AbstractIOSVariant> createVariantsFromSchemes() {
