@@ -13,12 +13,13 @@ import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
 class AndroidVariantConfiguration extends AbstractVariant {
 
     final String prefix = 'android'
-    final File variantDir
 
     @Inject
-    AndroidVariantConfiguration(@Assisted String name, @Assisted @$Nullable File variantDir = null) {
-        super(name)
-        this.variantDir = variantDir
+    AndroidVariantsConfiguration androidVariantsConf
+
+    @Inject
+    AndroidVariantConfiguration(@Assisted String name) {
+        super(name.capitalize())
     }
 
     AndroidBuildMode getMode() {
@@ -28,5 +29,9 @@ class AndroidVariantConfiguration extends AbstractVariant {
     @Override
     String getConfigurationName() {
         "Android Variant ${name}"
+    }
+
+    File getVariantDir() {
+        new File(androidVariantsConf.variantsDir, name.replaceAll(/(Debug|Release)/, ''))
     }
 }
