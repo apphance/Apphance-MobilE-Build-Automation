@@ -3,6 +3,7 @@ package com.apphance.ameba.configuration.android
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import com.apphance.ameba.plugins.release.AmebaArtifact
+import com.apphance.ameba.util.file.FileManager
 
 import javax.inject.Inject
 
@@ -39,7 +40,7 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
         conf().resDir.eachDirMatch(~DRAWABLE_DIR_PATTERN) { dir ->
             icons.addAll(dir.listFiles([accept: { (it.name =~ ICON_PATTERN).matches() }] as FileFilter)*.canonicalPath)
         }
-        icons.collect { it.replaceAll("${conf.rootDir.absolutePath}/", '') }.findAll { !it?.trim()?.empty }
+        icons.collect { FileManager.relativeTo(conf.rootDir.absolutePath, it).path }.findAll { !it?.trim()?.empty }
     }
 
     private AndroidConfiguration conf() {
