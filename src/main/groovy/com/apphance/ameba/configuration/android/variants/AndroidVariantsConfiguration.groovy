@@ -55,7 +55,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     }
 
     private List<AndroidVariantConfiguration> extractVariantsFromProperties() {
-        variantsNames.value.collect { variantFactory.create(it, null) } // FIXME
+        variantsNames.value.collect { variantFactory.create(it) }
     }
 
     private boolean variantsDirExistsAndIsNotEmpty() {
@@ -69,20 +69,19 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     private List<AndroidVariantConfiguration> extractVariantsFromDir() {
         getVariantsDir().listFiles()*.name.collect { String dirName ->
-            AndroidBuildMode.values().collect { it ->
-                variantFactory.create(dirName.toLowerCase().capitalize() + it.capitalize(), new File(conf.rootDir, dirName))
+            AndroidBuildMode.values().collect { mode ->
+                variantFactory.create(dirName + mode.capitalize(), new File(variantsDir, dirName))
             }
         }.flatten()
     }
 
     private List<AndroidVariantConfiguration> extractDefaultVariants() {
-        AndroidBuildMode.values().collect { variantFactory.create(it.capitalize(), null) } // FIXME
+        AndroidBuildMode.values().collect { variantFactory.create(it.capitalize()) }
     }
-
 
     @Override
     Collection<AndroidVariantConfiguration> getSubConfigurations() {
-        variants
+        this.getVariants()
     }
 
     String getMainVariant() {
@@ -90,7 +89,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     }
 
     Collection<AndroidVariantConfiguration> getVariants() {
-        this.@variants
+        this.@variants.findAll { it.name in variantsNames.value }
     }
 
     @Override

@@ -53,7 +53,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
             validator: { it?.matches('[a-z0-9]+') }
     )
 
-    private List<String> possibleApphanceModes() {
+    List<String> possibleApphanceModes() {
         ApphanceMode.values()*.name() as List<String>
     }
 
