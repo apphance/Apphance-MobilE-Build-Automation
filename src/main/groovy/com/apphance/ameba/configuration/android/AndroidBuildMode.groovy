@@ -1,6 +1,6 @@
 package com.apphance.ameba.configuration.android
 
-public enum AndroidBuildMode {
+enum AndroidBuildMode {
     RELEASE, DEBUG
 
     String lowerCase() {

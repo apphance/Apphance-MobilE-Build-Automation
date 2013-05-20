@@ -34,8 +34,13 @@ abstract class AbstractConfiguration implements Configuration {
 
     List<Field> getPropertyFields() {
         List<Field> fields = []
-        fields.addAll(this.getClass().declaredFields)
-        fields.addAll(this.getClass()?.superclass?.declaredFields)
+        def findDeclaredFields
+        findDeclaredFields = { Class c ->
+            fields.addAll(c.declaredFields)
+            if (c.superclass)
+                findDeclaredFields(c.superclass)
+        }
+        findDeclaredFields(getClass())
         fields.findAll {
             it.accessible = true
             it.get(this)?.class?.superclass == AbstractProperty

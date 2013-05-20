@@ -39,6 +39,6 @@ class IOSSchemeVariant extends AbstractIOSVariant {
 
     @Override
     String getTarget() {
-        pbxJsonParser.targetForBlueprintId(schemeParser.blueprintIdentifier(name:q))
+        pbxJsonParser.targetForBlueprintId(schemeParser.blueprintIdentifier(name))
     }
 }
