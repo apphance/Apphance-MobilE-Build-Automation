@@ -15,7 +15,10 @@ class ConversationManager {
 
     def resolveConfigurations(Collection<? extends AbstractConfiguration> configurations) {
         configurations.each { AbstractConfiguration c ->
-            c.enabled ? readValues(c) : enablePlugin(c)
+            if (!c.enabled) {
+                enablePlugin(c)
+            }
+            readValues(c)
         }
 
         log.info('All configurations resolved')
