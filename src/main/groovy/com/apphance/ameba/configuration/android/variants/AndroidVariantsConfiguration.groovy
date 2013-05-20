@@ -70,7 +70,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     private List<AndroidVariantConfiguration> extractVariantsFromDir() {
         getVariantsDir().listFiles()*.name.collect { String dirName ->
             AndroidBuildMode.values().collect { mode ->
-                variantFactory.create(dirName + mode.capitalize())
+                variantFactory.create(dirName + mode.capitalize(), new File(variantsDir, dirName))
             }
         }.flatten()
     }
@@ -79,10 +79,9 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
         AndroidBuildMode.values().collect { variantFactory.create(it.capitalize()) }
     }
 
-
     @Override
     Collection<AndroidVariantConfiguration> getSubConfigurations() {
-        variants
+        this.getVariants()
     }
 
     String getMainVariant() {
@@ -90,7 +89,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     }
 
     Collection<AndroidVariantConfiguration> getVariants() {
-        this.@variants
+        this.@variants.findAll { it.name in variantsNames.value }
     }
 
     @Override

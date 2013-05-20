@@ -3,6 +3,7 @@ package com.apphance.ameba.plugins.android.builder
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
+import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import spock.lang.Specification
 
@@ -20,6 +21,7 @@ class AndroidArtifactProviderSpec extends Specification {
     def tmpDir = createTempDir()
     def otaDir = createTempDir()
     def vTmpDir = createTempDir()
+    def variantDir = createTempDir()
     def binDir
 
     def aab = new AndroidArtifactProvider(conf: ac, releaseConf: arc)
@@ -36,6 +38,7 @@ class AndroidArtifactProviderSpec extends Specification {
         avc.mode >> DEBUG
         avc.name >> 'V1'
         avc.tmpDir >> vTmpDir
+        avc.variantDir >> new FileProperty(value: variantDir)
 
         binDir = new File(new File(ac.tmpDir, avc.name), 'bin')
     }
@@ -45,6 +48,7 @@ class AndroidArtifactProviderSpec extends Specification {
         otaDir.deleteDir()
         vTmpDir.deleteDir()
         binDir.deleteDir()
+        variantDir.deleteDir()
     }
 
     def 'jar artifact builder info'() {
@@ -56,6 +60,7 @@ class AndroidArtifactProviderSpec extends Specification {
         abi.variant == 'V1'
         abi.tmpDir == vTmpDir
         abi.buildDir == binDir
+        abi.variantDir == variantDir
         abi.filePrefix == 'SampleAndroidProject-debug-V1-1.0.1-42'
         abi.fullReleaseName == 'SampleAndroidProject-debug-V1-1.0.1-42'
         abi.originalFile == new File(binDir, 'classes.jar')
@@ -80,6 +85,7 @@ class AndroidArtifactProviderSpec extends Specification {
         abi.variant == 'V1'
         abi.tmpDir == vTmpDir
         abi.buildDir == new File(new File(ac.tmpDir, avc.name), 'bin')
+        abi.variantDir == variantDir
         abi.filePrefix == 'SampleAndroidProject-debug-V1-1.0.1-42'
         abi.fullReleaseName == 'SampleAndroidProject-debug-V1-1.0.1-42'
         abi.originalFile == new File(binDir, 'SampleAndroidProject-debug.apk')
