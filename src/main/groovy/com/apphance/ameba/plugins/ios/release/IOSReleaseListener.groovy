@@ -224,7 +224,7 @@ class IOSReleaseListener implements IOSBuildListener {
         file.location = new File(releaseConf.otaDir, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
         file.location.parentFile.mkdirs()
         file.location.delete()
-        def File tmpDir = File.createTempFile("${conf.projectName}-${bi.target}-${family}-simulator", ".tmp")
+        def File tmpDir = File.createTempFile("${conf.projectName.value}-${bi.target}-${family}-simulator", ".tmp")
         tmpDir.delete()
         tmpDir.mkdir()
         def destDir = new File(tmpDir, "${bi.target} (${family}_Simulator) ${conf.versionString}_${conf.versionCode}.app")
@@ -245,7 +245,7 @@ class IOSReleaseListener implements IOSBuildListener {
                 '-srcfolder',
                 destDir,
                 '-volname',
-                "${conf.projectName}-${bi.target}-${family}"
+                "${conf.projectName.value}-${bi.target}-${family}"
         ]
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: cmd))
         releaseConf.dmgImageFiles.put("${family}-${variantsConf.mainVariant.target}" as String, file)

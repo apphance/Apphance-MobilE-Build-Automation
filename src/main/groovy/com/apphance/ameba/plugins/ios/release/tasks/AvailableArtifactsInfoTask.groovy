@@ -61,7 +61,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     private void fileIndexArtifact(String otaFolderPrefix) {
         def aa = new AmebaArtifact(
-                name: "The file index file: ${conf.projectName}",
+                name: "The file index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/file_index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/file_index.html"))
         aa.location.parentFile.mkdirs()
@@ -71,7 +71,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     private void plainFileIndexArtifact(String otaFolderPrefix) {
         def aa = new AmebaArtifact(
-                name: "The plain file index file: ${conf.projectName}",
+                name: "The plain file index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/plain_file_index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/plain_file_index.html"))
         aa.location.parentFile.mkdirs()
@@ -81,7 +81,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     private void otaIndexFileArtifact(String otaFolderPrefix) {
         def aa = new AmebaArtifact(
-                name: "The ota index file: ${conf.projectName}",
+                name: "The ota index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/index.html"))
         aa.location.parentFile.mkdirs()
@@ -92,8 +92,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     private void qrCodeArtifact() {
         def aa = new AmebaArtifact(
                 name: 'QR Code',
-                url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName}-${conf.fullVersionString}.png"),
-                location: new File(releaseConf.targetDirectory, "qrcode-${conf.projectName}-${conf.fullVersionString}.png"))
+                url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"),
+                location: new File(releaseConf.targetDirectory, "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"))
         aa.location.parentFile.mkdirs()
         aa.location.delete()
         releaseConf.QRCodeFile = aa
@@ -120,7 +120,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         def rb = bundle('index')
         def binding = [
                 baseUrl: releaseConf.otaIndexFile.url,
-                title: conf.projectName,
+                title: conf.projectName.value,
                 targets: conf.targets,
                 configurations: conf.configurations,
                 version: conf.fullVersionString,
@@ -143,7 +143,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         def rb = bundle('file_index')
         def binding = [
                 baseUrl: releaseConf.fileIndexFile.url,
-                title: conf.projectName,
+                title: conf.projectName.value,
                 targets: conf.targets,
                 configurations: conf.configurations,
                 version: conf.fullVersionString,
@@ -163,7 +163,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         def rb = bundle('plain_file_index')
         def binding = [
                 baseUrl: releaseConf.plainFileIndexFile.url,
-                title: conf.projectName,
+                title: conf.projectName.value,
                 targets: conf.targets,
                 configurations: conf.configurations,
                 version: conf.fullVersionString,
