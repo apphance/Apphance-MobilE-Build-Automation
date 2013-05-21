@@ -34,6 +34,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
     void init() {
         variantDir.name = "android.variant.${name}.dir"
         super.init()
+
         if (!variantDir.value && vDir)
             variantDir.value = relativeTo(conf.rootDir.absolutePath, vDir.absolutePath)
     }
