@@ -20,8 +20,8 @@ class IOSApphancePluginSpec extends Specification {
 
         when:
         def plugin = new IOSApphancePlugin()
-        plugin.apphanceConf = GroovyStub(ApphanceConfiguration, { isEnabled() >> true })
-        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration, { getVariants() >> [] })
+        plugin.apphanceConf = GroovyStub(ApphanceConfiguration) { isEnabled() >> true }
+        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration) { getVariants() >> [] }
         plugin.apply(project)
 
         then: 'apphance configuration is added'
@@ -44,7 +44,7 @@ class IOSApphancePluginSpec extends Specification {
         id1.configuration = 'c1'
         id1.target = 't1'
         id1.apphanceMode.value = ApphanceMode.QA.toString()
-        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration, { getVariants() >> [id1] })
+        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration) { getVariants() >> [id1] }
         plugin.apply(project)
 
         then: 'apphance configuration is added'
@@ -64,7 +64,7 @@ class IOSApphancePluginSpec extends Specification {
 
         when:
         def plugin = new IOSApphancePlugin()
-        plugin.apphanceConf = GroovyStub(ApphanceConfiguration, { isEnabled() >> true })
+        plugin.apphanceConf = GroovyStub(ApphanceConfiguration) { isEnabled() >> true }
 
         def id1 = new IOSTCVariant('id1')
         id1.configuration = 'c1'
@@ -77,7 +77,7 @@ class IOSApphancePluginSpec extends Specification {
         id2.apphanceMode.value = ApphanceMode.QA.toString()
 
 
-        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration, { getVariants() >> [id1, id2] })
+        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration) { getVariants() >> [id1, id2] }
         plugin.apply(project)
 
         then: 'apphance configuration is added'
@@ -117,8 +117,8 @@ class IOSApphancePluginSpec extends Specification {
 
         when:
         def plugin = new IOSApphancePlugin()
-        plugin.apphanceConf = GroovyStub(ApphanceConfiguration, { isEnabled() >> true })
-        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration, { getVariants() >> [] })
+        plugin.apphanceConf = GroovyStub(ApphanceConfiguration) { isEnabled() >> true }
+        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration) { getVariants() >> [] }
         plugin.apply(project)
 
         then: 'apphance configuration is added'
