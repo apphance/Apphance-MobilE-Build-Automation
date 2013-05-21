@@ -4,14 +4,14 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
-import org.apache.commons.lang.StringUtils
 
 import javax.inject.Inject
+import groovy.transform.PackageScope
 
 import static IOSVariantType.SCHEME
 import static IOSVariantType.TC
 import static com.apphance.ameba.configuration.properties.ListStringProperty.getSEPARATOR
-import static org.apache.commons.lang.StringUtils.*
+import static org.apache.commons.lang.StringUtils.isNotBlank
 
 @com.google.inject.Singleton
 class IOSVariantsConfiguration extends AbstractConfiguration {
@@ -46,7 +46,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
             possibleValues: { variantsNames.value ?: [] }
     )
 
-    @groovy.transform.PackageScope
+    @PackageScope
     List<AbstractIOSVariant> buildVariantsList() {
         List<AbstractIOSVariant> result = []
         if (variantsNames.value) {
@@ -61,7 +61,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         result
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     List<AbstractIOSVariant> extractVariantsFromProperties() {
         variantsNames.value.collect {
             variantType.value == SCHEME.name() ?
@@ -71,7 +71,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         }
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     boolean hasSchemas() {
         conf.schemes.any { isNotBlank(it) }
     }

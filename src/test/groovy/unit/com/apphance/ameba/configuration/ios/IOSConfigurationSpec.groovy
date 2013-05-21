@@ -1,5 +1,7 @@
 package com.apphance.ameba.configuration.ios
 
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -36,5 +38,28 @@ class IOSConfigurationSpec extends Specification {
         'GradleXCode.xcodeproj' | true
         'ico.png'               | false
 
+    }
+
+    def 'version code and string are taken from main variant'() {
+        given:
+        def conf = new IOSVariantsConfiguration()
+        def variant = GroovyStub(AbstractIOSVariant)
+        variant.getVersionCode() >> 'version code'
+        variant.getExtVersionCode() >> 'ext version code'
+        variant.getVersionString() >> 'version string'
+        variant.getExtVersionString() >> 'ext version string'
+
+        conf.@variants = [variant]
+
+        def iOSConf = new IOSConfiguration()
+        iOSConf.iosVariantsConf = conf
+
+        expect:
+        with(iOSConf) {
+            versionCode == 'version code'
+            extVersionCode == 'ext version code'
+            versionString == 'version string'
+            extVersionString == 'ext version string'
+        }
     }
 }
