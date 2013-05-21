@@ -25,11 +25,9 @@ class IOSApphancePlugin implements Plugin<Project> {
 
     def log = getLogger(this.class)
 
-    @Inject
-    IOSVariantsConfiguration variantsConf
-    @Inject
-    ApphanceConfiguration apphanceConf
-    AddIOSApphanceTaskFactory addIOSApphanceTaskFactory
+    @Inject IOSVariantsConfiguration variantsConf
+    @Inject ApphanceConfiguration apphanceConf
+    @Inject AddIOSApphanceTaskFactory addIOSApphanceTaskFactory
 
     @Override
     void apply(Project project) {

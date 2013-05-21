@@ -27,6 +27,7 @@ import spock.lang.Unroll
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static com.apphance.ameba.detection.ProjectType.IOS
+import static com.apphance.ameba.di.ConfigurationModule.getVariantFactories
 import static com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParserSpec.XCODE_LIST
 
 class PluginMasterSpec extends Specification {
@@ -35,7 +36,7 @@ class PluginMasterSpec extends Specification {
     def 'test if all #type plugins are applied'() {
         given:
         def mocks = (plugins + commonPlugins).collect(mockToMap).sum()
-        def master = createInjectorForPluginsMocks(mocks, file).getInstance(PluginMaster)
+        def master = createInjectorForPluginsMocks(mocks, file, type).getInstance(PluginMaster)
 
         and:
         def project = Mock(Project)
@@ -66,7 +67,7 @@ class PluginMasterSpec extends Specification {
     def 'test Android plugins order'() {
         given:
         def mocks = (commonPlugins + androidPlugins).collect(mockToMap).sum()
-        def master = createInjectorForPluginsMocks(mocks, 'AndroidManifest.xml').getInstance(PluginMaster)
+        def master = createInjectorForPluginsMocks(mocks, 'AndroidManifest.xml', ANDROID).getInstance(PluginMaster)
 
         and:
         def project = Mock(Project)
@@ -97,7 +98,7 @@ class PluginMasterSpec extends Specification {
     def 'test iOS plugins order'() {
         given:
         def mocks = (commonPlugins + iosPlugins).collect(mockToMap).sum()
-        def master = createInjectorForPluginsMocks(mocks, 'GradleXCode.xcodeproj').getInstance(PluginMaster)
+        def master = createInjectorForPluginsMocks(mocks, 'GradleXCode.xcodeproj', IOS).getInstance(PluginMaster)
 
         and:
         def project = Mock(Project)
@@ -145,10 +146,10 @@ class PluginMasterSpec extends Specification {
             IOSFrameworkPlugin,
             IOSReleasePlugin,
             IOSApphancePlugin,
-            IOSUnitTestPlugin
+            IOSUnitTestPlugin,
     ]
 
-    def createInjectorForPluginsMocks(mocks, file) {
+    def createInjectorForPluginsMocks(mocks, file, projectType) {
         def rootDir = Mock(File)
         rootDir.list() >> [file]
         def project = GroovyMock(Project)
@@ -172,7 +173,10 @@ class PluginMasterSpec extends Specification {
                         mocks.each { type, instance ->
                             bind(type).toInstance(instance)
                         }
-                        bind(IOSExecutor).toInstance(iosExecutorMock)
+                        if (projectType == IOS) {
+                            bind(IOSExecutor).toInstance(iosExecutorMock)
+                        }
+                        variantFactories[projectType].each { install(it) }
                     }
                 })
     }
