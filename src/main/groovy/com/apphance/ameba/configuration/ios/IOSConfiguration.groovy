@@ -2,6 +2,7 @@ package com.apphance.ameba.configuration.ios
 
 import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ProjectConfiguration
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.detection.ProjectTypeDetector
@@ -26,31 +27,29 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     private List tcMatrix = []
 
-    @Inject
-    Project project
-    @Inject
-    ProjectTypeDetector projectTypeDetector
-    @Inject
-    IOSExecutor executor
+    @Inject Project project
+    @Inject ProjectTypeDetector projectTypeDetector
+    @Inject IOSExecutor executor
+    @Inject IOSVariantsConfiguration iosVariantsConf
 
     @Override
     String getVersionCode() {
-        throw new UnsupportedOperationException('not yet implemented')
+        iosVariantsConf.mainVariant.versionCode
     }
 
     @Override
     String getExtVersionCode() {
-        throw new UnsupportedOperationException('not yet implemented')
+        iosVariantsConf.mainVariant.extVersionCode
     }
 
     @Override
     String getVersionString() {
-        throw new UnsupportedOperationException('not yet implemented')
+        iosVariantsConf.mainVariant.versionString
     }
 
     @Override
     String getExtVersionString() {
-        throw new UnsupportedOperationException('not yet implemented')
+        iosVariantsConf.mainVariant.extVersionString
     }
 
     @Override
