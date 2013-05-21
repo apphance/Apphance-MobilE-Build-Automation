@@ -27,6 +27,11 @@ class PlistParser {
         json.CFBundleIdentifier
     }
 
+    String bundleDisplayName(File plist) {
+        def json = parsedJson(plist)
+        json.CFBundleDisplayName
+    }
+
     private Object parsedJson(File plist) {
         def text = executor.plistToJSON(plist).join('\n')
         new JsonSlurper().parseText(text)

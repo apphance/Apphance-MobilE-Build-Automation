@@ -1,6 +1,5 @@
 package com.apphance.ameba.plugins.ios.parsers
 
-import com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParser
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -8,7 +7,7 @@ class IOSXCodeOutputParserSpec extends Specification {
 
     @Shared
     def parser = new IOSXCodeOutputParser()
-    
+
     def static SCHEMES = """
             Schemes:
                 Some
@@ -54,7 +53,7 @@ class IOSXCodeOutputParserSpec extends Specification {
 
             """.split("\n")*.trim()
 
-    def 'checkxcodebuild -list ouput'() {
+    def 'check xcodebuild -list output'() {
         expect:
         XCODE_LIST.size() == 27
     }

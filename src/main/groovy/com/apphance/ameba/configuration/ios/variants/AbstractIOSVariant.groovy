@@ -81,6 +81,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     }
 
     String getProjectName() {
+        String bundleDisplayName = plistParser.bundleDisplayName(plist)
         //TODO this value should be taken from plist - CFBundleDisplayName
         //TODO the value of the mentioned key may refer to pbxjproj file
         null

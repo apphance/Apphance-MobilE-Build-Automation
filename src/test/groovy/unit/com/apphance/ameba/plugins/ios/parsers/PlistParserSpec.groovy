@@ -67,4 +67,9 @@ class PlistParserSpec extends Specification {
             siblings[siblings.findIndexOf { it == keyNode } + 1].text() == m.value
         }
     }
+
+    def 'bundle display name is read correctly'() {
+        expect:
+        parser.bundleDisplayName(Mock(File)) == '${PRODUCT_NAME}'
+    }
 }
