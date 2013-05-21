@@ -1,14 +1,14 @@
 package com.apphance.ameba.configuration.properties
 
-import com.apphance.ameba.configuration.apphance.ApphanceMode
+import com.apphance.ameba.configuration.ios.IOSBuildMode
 
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
-class ApphanceModeProperty extends AbstractProperty<ApphanceMode> {
+class IOSBuildModeProperty extends AbstractProperty<IOSBuildMode> {
 
     @Override
     void setValue(String value) {
         if (isNotBlank(value))
-            this.@value = ApphanceMode.valueOf(value.trim())
+            this.@value = IOSBuildMode.valueOf(value.trim())
     }
 }

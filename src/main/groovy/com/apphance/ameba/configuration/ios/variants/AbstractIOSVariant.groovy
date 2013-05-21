@@ -1,16 +1,22 @@
 package com.apphance.ameba.configuration.ios.variants
 
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
+import com.apphance.ameba.configuration.ios.IOSBuildMode
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
+import com.apphance.ameba.configuration.properties.IOSBuildModeProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.configuration.variants.AbstractVariant
 import com.apphance.ameba.plugins.ios.parsers.PbxJsonParser
 import com.apphance.ameba.plugins.ios.parsers.PlistParser
 import com.google.inject.assistedinject.Assisted
+import groovy.transform.PackageScope
 
 import javax.inject.Inject
+
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
 
 abstract class AbstractIOSVariant extends AbstractVariant {
 
@@ -41,6 +47,9 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         mobileprovision.name = "ios.variant.${name}.mobileprovision"
         mobileprovision.message = "Mobile provision file for '$name'"
 
+        buildMode.name = "ios.variant.${name}.buildMode"
+        buildMode.message = "Build mode for the variant, it describes the environment the artifact is built for: (DEVICE|SIMULATOR)"
+
         super.init()
     }
 
@@ -50,6 +59,18 @@ abstract class AbstractIOSVariant extends AbstractVariant {
             possibleValues: { releaseConf.findMobileProvisionFiles()*.name as List<String> },
             validator: { it in releaseConf.findMobileProvisionFiles()*.name }
     )
+
+    def buildMode = new IOSBuildModeProperty(
+            required: { true },
+            defaultValue: { (configuration.contains('debug') || configuration.contains('dev')) ? SIMULATOR : DEVICE },
+            possibleValues: { possibleBuildModeValues() },
+            validator: { it in possibleBuildModeValues() }
+    )
+
+    @PackageScope
+    List<String> possibleBuildModeValues() {
+        IOSBuildMode.values()*.name() as List<String>
+    }
 
     @Override
     String getConfigurationName() {
@@ -86,8 +107,6 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         //TODO the value of the mentioned key may refer to pbxjproj file
         null
     }
-
-
 
     abstract File getPlist()
 
