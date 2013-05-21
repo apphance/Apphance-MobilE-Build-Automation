@@ -17,24 +17,23 @@ import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidSingleVariantApkBuilderSpec extends Specification {
 
-    def p = builder().withProjectDir(new File('testProjects/android/android-basic')).build()
+    def project = builder().withProjectDir(new File('testProjects/android/android-basic')).build()
 
     def projectName = 'TestAndroidProject'
 
-    def fileLinker = GroovyMock(FileLinker, {
+    def fileLinker = GroovyStub(FileLinker) {
         fileLink(_) >> ''
-    })
+    }
     def logFiles = [(STD): createTempFile('tmp', 'file-out'), (ERR): createTempFile('tmp', 'file-err')]
-    def logFileGenerator = GroovyMock(CommandLogFilesGenerator, {
+    def logFileGenerator = GroovyStub(CommandLogFilesGenerator) {
         commandLogFiles() >> logFiles
-    })
+    }
     def executor = new CommandExecutor(fileLinker, logFileGenerator)
-
     def antExecutor = new AntExecutor()
 
-    def variantsConf = GroovyMock(AndroidVariantsConfiguration, {
-        getVariantsDir() >> p.file('variants')
-    })
+    def variantsConf = GroovyStub(AndroidVariantsConfiguration) {
+        getVariantsDir() >> project.file('variants')
+    }
 
     def variantTmpDir = 'ameba-tmp/test'
 
@@ -44,7 +43,7 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
         antExecutor.executor = executor
 
         builder.antExecutor = antExecutor
-        builder.ant = p.ant
+        builder.ant = project.ant
         builder.variantsConf = variantsConf
     }
 
@@ -52,29 +51,29 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
         logFiles.each {
             it.value.delete()
         }
-        p.file('ameba-tmp').deleteDir()
-        p.file('ameba-ota').deleteDir()
+        project.file('ameba-tmp').deleteDir()
+        project.file('ameba-ota').deleteDir()
     }
 
     def 'artifacts are built according to passed config'() {
         expect:
-        p.file('ameba-tmp').deleteDir()
+        project.file('ameba-tmp').deleteDir()
 
         and:
-        !p.file('ameba-tmp').exists()
+        !project.file('ameba-tmp').exists()
 
         and:
         copyProjectToTmpDir()
 
         when:
-        builder.buildSingle(GroovyMock(AndroidBuilderInfo) {
-            getTmpDir() >> p.file(variantTmpDir)
-            getVariantDir() >> p.file('variants/test')
+        builder.buildSingle(GroovyStub(AndroidBuilderInfo) {
+            getTmpDir() >> project.file(variantTmpDir)
+            getVariantDir() >> project.file('variants/test')
             getMode() >> DEBUG
         })
 
         then:
-        def sampleProperties = p.file('ameba-tmp/test/res/raw/sample.properties')
+        def sampleProperties = project.file('ameba-tmp/test/res/raw/sample.properties')
         sampleProperties.exists() && sampleProperties.isFile() && sampleProperties.size() > 0
 
         and:
@@ -82,14 +81,14 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
                 "${projectName}-debug.apk",
                 "${projectName}-debug-unaligned.apk",
                 "${projectName}-debug-unaligned.apk.d",
-        ].every { p.file("$variantTmpDir/bin/$it").exists() }
+        ].every { project.file("$variantTmpDir/bin/$it").exists() }
     }
 
     def 'artifacts are built according to passed config and copied to ota'() {
         given:
-        def releaseApk = new File(p.rootDir, 'ameba-ota/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.apk')
-        def artifactProvider = GroovyMock(AndroidArtifactProvider, {
-            apkArtifact(_) >> GroovyMock(AmebaArtifact, {
+        def releaseApk = new File(project.rootDir, 'ameba-ota/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.apk')
+        def artifactProvider = GroovyStub(AndroidArtifactProvider, {
+            apkArtifact(_) >> GroovyStub(AmebaArtifact, {
                 getLocation() >> releaseApk
             })
         })
@@ -97,32 +96,32 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
         and:
         def listener = new AndroidReleaseApkListener()
         listener.artifactProvider = artifactProvider
-        listener.ant = p.ant
+        listener.ant = project.ant
 
         and:
         builder.registerListener(listener)
 
         expect:
-        p.file('ameba-tmp').deleteDir()
-        p.file('ameba-ota').deleteDir()
+        project.file('ameba-tmp').deleteDir()
+        project.file('ameba-ota').deleteDir()
 
         and:
-        !p.file('ameba-tmp').exists()
-        !p.file('ameba-ota').exists()
+        !project.file('ameba-tmp').exists()
+        !project.file('ameba-ota').exists()
 
         and:
         copyProjectToTmpDir()
 
         when:
-        builder.buildSingle(GroovyMock(AndroidBuilderInfo) {
-            getTmpDir() >> p.file(variantTmpDir)
-            getVariantDir() >> p.file('variants/test')
+        builder.buildSingle(GroovyStub(AndroidBuilderInfo) {
+            getTmpDir() >> project.file(variantTmpDir)
+            getVariantDir() >> project.file('variants/test')
             getMode() >> DEBUG
-            getOriginalFile() >> p.file('ameba-tmp/test/bin/TestAndroidProject-debug.apk')
+            getOriginalFile() >> project.file('ameba-tmp/test/bin/TestAndroidProject-debug.apk')
         })
 
         then:
-        def sampleProperties = p.file('ameba-tmp/test/res/raw/sample.properties')
+        def sampleProperties = project.file('ameba-tmp/test/res/raw/sample.properties')
         sampleProperties.exists() && sampleProperties.isFile() && sampleProperties.size() > 0
 
         and:
@@ -130,17 +129,17 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
                 "${projectName}-debug.apk",
                 "${projectName}-debug-unaligned.apk",
                 "${projectName}-debug-unaligned.apk.d",
-        ].every { p.file("$variantTmpDir/bin/$it").exists() }
+        ].every { project.file("$variantTmpDir/bin/$it").exists() }
 
         and:
         releaseApk.exists() && releaseApk.isFile()
-        !(new File(p.rootDir, 'ameba-ota/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-unaligned-1.0.1_42.apk')).exists()
-        !(new File(p.rootDir, 'ameba-ota/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-unsigned-1.0.1_42.apk')).exists()
+        !(new File(project.rootDir, 'ameba-ota/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-unaligned-1.0.1_42.apk')).exists()
+        !(new File(project.rootDir, 'ameba-ota/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-unsigned-1.0.1_42.apk')).exists()
     }
 
     def copyProjectToTmpDir() {
-        p.ant.copy(todir: variantTmpDir, failonerror: true, overwrite: true, verbose: true) {
-            fileset(dir: p.rootDir.absolutePath + '/') {
+        project.ant.copy(todir: variantTmpDir, failonerror: true, overwrite: true, verbose: true) {
+            fileset(dir: project.rootDir.absolutePath + '/') {
                 exclude(name: 'variants/**/*')
                 exclude(name: 'log/**/*')
                 exclude(name: 'bin/**/*')
