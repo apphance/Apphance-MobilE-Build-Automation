@@ -6,12 +6,13 @@ import spock.lang.Specification
 
 class IOSTCVariantSpec extends Specification {
 
-    def conf
+    IOSConfiguration iosConf
     def propertyPersister
 
     def setup() {
-        conf = GroovyMock(IOSConfiguration)
-        conf.targetConfigurationMatrix >> [['t1', 't2', 't3'], ['c1', 'c3', 'c4']].combinations().sort()
+        iosConf = GroovySpy(IOSConfiguration)
+        iosConf.getTargets() >> ['t1', 't2', 't3']
+        iosConf.getConfigurations() >> ['c1', 'c3', 'c4']
 
         propertyPersister = GroovyMock(PropertyPersister)
         propertyPersister.get(_) >> ''
@@ -20,7 +21,7 @@ class IOSTCVariantSpec extends Specification {
     def 'target and configuration is found well'() {
         given:
         def tcVariant = new IOSTCVariant(name)
-        tcVariant.conf = this.conf
+        tcVariant.conf = iosConf
         tcVariant.propertyPersister = propertyPersister
 
         when:
@@ -31,7 +32,7 @@ class IOSTCVariantSpec extends Specification {
         tcVariant.configuration == conf
 
         and:
-        this.conf.targetConfigurationMatrix == [
+        iosConf.targetConfigurationMatrix == [
                 ['t1', 'c1'], ['t1', 'c3'], ['t1', 'c4'],
                 ['t2', 'c1'], ['t2', 'c3'], ['t2', 'c4'],
                 ['t3', 'c1'], ['t3', 'c3'], ['t3', 'c4'],
@@ -47,7 +48,7 @@ class IOSTCVariantSpec extends Specification {
     def 'ameba properties fields are found well'() {
         given:
         def tcVariant = new IOSTCVariant('t1c1')
-        tcVariant.conf = conf
+        tcVariant.conf = iosConf
         tcVariant.propertyPersister = propertyPersister
 
         when:

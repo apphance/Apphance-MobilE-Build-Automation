@@ -62,4 +62,16 @@ class IOSConfigurationSpec extends Specification {
             extVersionString == 'ext version string'
         }
     }
+
+    def 'lazy evaluated variables'() {
+        given:
+        def iOSConf = GroovySpy(IOSConfiguration)
+        iOSConf.getRootDir() >> new File('testProjects/ios/GradleXCode')
+        iOSConf.getTargets() >> ['t1', 't2']
+        iOSConf.configurations >> ['c1', 'c2']
+
+        expect:
+        iOSConf.possibleXCodeDirs == ['GradleXCode.xcodeproj']
+        iOSConf.targetConfigurationMatrix.sort() == [['t1', 'c1'], ['t1', 'c2'], ['t2', 'c1'], ['t2', 'c2']]
+    }
 }

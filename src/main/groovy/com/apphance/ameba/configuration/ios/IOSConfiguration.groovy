@@ -25,7 +25,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     public static final List<String> FAMILIES = ['iPad', 'iPhone']
     public static final PROJECT_PBXPROJ = 'project.pbxproj'
 
-    private List tcMatrix = []
+    @Lazy List targetConfigurationMatrix = { [targets, configurations].combinations().sort() }()
 
     @Inject Project project
     @Inject ProjectTypeDetector projectTypeDetector
@@ -93,7 +93,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     def xcodeDir = new FileProperty(
             name: 'ios.dir.xcode',
             message: 'iOS xcodeproj directory',
-            possibleValues: { possibleXCodeDirs() as List<String> },
+            possibleValues: { possibleXCodeDirs },
             validator: {
                 def file = new File(rootDir, (it?.trim() ?: '') as String)
                 file?.absolutePath?.trim() ? (file.exists() && file.isDirectory() && file.name.endsWith('.xcodeproj')) : false
@@ -101,13 +101,13 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
             required: { true }
     )
 
-    private List<String> possibleXCodeDirs() {
+    @Lazy List<String> possibleXCodeDirs = {
         def dirs = []
         rootDir.traverse(type: DIRECTORIES, nameFilter: ~/.*\.xcodeproj/, maxDepth: MAX_RECURSION_LEVEL) {
             dirs << relativeTo(rootDir.absolutePath, it.absolutePath).path
         }
         dirs
-    }
+    }()
 
     List<String> xcodebuildExecutionPath() {
         xcodeDir.value ? ['xcodebuild', '-project', xcodeDir.value as String] : ['xcodebuild']
@@ -139,13 +139,6 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     List<String> getSchemes() {
         executor.schemes()
-    }
-
-    List<List<String>> getTargetConfigurationMatrix() {
-        if (!tcMatrix) {
-            tcMatrix = [targets, configurations].combinations().sort()
-        }
-        tcMatrix
     }
 
     Collection<String> sourceExcludes = ['**/build/**']
