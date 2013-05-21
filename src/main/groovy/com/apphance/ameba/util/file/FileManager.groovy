@@ -80,7 +80,7 @@ class FileManager {
             dir.mkdirs()
     }
 
-    public static File relativeTo(String path1, String path2) {
-        Paths.get(path1).relativize(Paths.get(path2)).toFile()
+    public static File relativeTo(String from, String to) {
+        Paths.get(from).relativize(Paths.get(to)).toFile()
     }
 }
