@@ -7,19 +7,21 @@ import static com.apphance.ameba.executor.AntExecutor.CLEAN
  *
  */
 @com.google.inject.Singleton
+//TODO write spec for this class
 class AndroidSingleVariantJarBuilder extends AbstractAndroidSingleVariantBuilder {
 
     @Override
     void buildSingle(AndroidBuilderInfo bi) {
         antExecutor.executeTarget bi.tmpDir, CLEAN
-        if (bi.variant) {
-            ant.copy(todir: new File(bi.tmpDir, 'res/raw'), failonerror: false, overwrite: 'true', verbose: 'true') {
-                fileset(dir: new File(variantsConfiguration.variantsDir, bi.variant),
-                        includes: '*', excludes: 'market_variant.txt')
+        if (bi.variantDir?.exists()) {
+            ant.copy(todir: bi.tmpDir, failonerror: true, overwrite: true, verbose: true) {
+                fileset(dir: bi.variantDir, includes: '**/*')
             }
+        } else {
+            log.lifecycle("No files copied because directory ${bi.variantDir} does not exists")
         }
         antExecutor.executeTarget bi.tmpDir, bi.mode.lowerCase()
-        logger.lifecycle("Jar file created: ${bi.originalFile}")
+        log.lifecycle("Jar file created: ${bi.originalFile}")
         buildListeners.each {
             it.buildDone(bi)
         }

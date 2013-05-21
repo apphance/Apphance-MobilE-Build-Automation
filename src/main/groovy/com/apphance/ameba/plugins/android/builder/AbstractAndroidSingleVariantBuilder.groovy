@@ -15,7 +15,7 @@ import static org.gradle.api.logging.Logging.getLogger
  */
 abstract class AbstractAndroidSingleVariantBuilder {
 
-    Logger logger = getLogger(getClass())
+    Logger log = getLogger(getClass())
     Collection<AndroidBuildListener> buildListeners = []
 
     @Inject
@@ -23,7 +23,7 @@ abstract class AbstractAndroidSingleVariantBuilder {
     @Inject
     AntExecutor antExecutor
     @Inject
-    AndroidVariantsConfiguration variantsConfiguration
+    AndroidVariantsConfiguration variantsConf
 
     abstract void buildSingle(AndroidBuilderInfo bi)
 

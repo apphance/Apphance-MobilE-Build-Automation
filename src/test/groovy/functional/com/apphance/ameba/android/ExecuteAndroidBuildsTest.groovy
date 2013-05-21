@@ -27,7 +27,6 @@ class ExecuteAndroidBuildsTest {
     static ProjectConnection testAndroidConventionConnection
     static ProjectConnection testAndroidWrongConventionConnection
     static ProjectConnection testAndroidNoApphanceApplicationConnection
-    private static final String fullVersion = '1.0.1_42'
 
     @BeforeClass
     static void beforeClass() {
@@ -84,53 +83,6 @@ class ExecuteAndroidBuildsTest {
         assertFalse(new File(testProject, "gen").exists())
         assertFalse(new File(testProject, "build").exists())
         assertFalse(new File(testProject, "tmp").exists())
-    }
-
-    @Test
-    void testBuildDebug() {
-        runGradle('clean', 'buildTestDebug')
-        assertTrue(new File(testProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-${fullVersion}.apk").exists())
-        assertFalse(new File(testProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-unsigned-${fullVersion}.apk").exists())
-        assertFalse(new File(testProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-degub-TestDebug-unaligned-${fullVersion}.apk").exists())
-    }
-
-    @Test
-    void testBuildRelease() {
-        runGradle('clean', 'buildMarketRelease')
-
-        assertTrue(new File(testProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
-        assertFalse(new File(testProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unsigned-${fullVersion}.apk").exists())
-        assertFalse(new File(testProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
-    }
-
-    @Test
-    void testBuildDebugNoVariant() {
-        runGradleNoVariants('clean', 'buildMarketDebug')
-
-        assertTrue(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-${fullVersion}.apk").exists())
-        assertFalse(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-debug-MarketDebug-unsigned-${fullVersion}.apk").exists())
-        assertFalse(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-unaligned-${fullVersion}.apk").exists())
-    }
-
-    @Test
-    void testBuildReleaseNoVariant() {
-        runGradleNoVariants('clean', 'buildMarketRelease')
-
-        assertTrue(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
-        assertFalse(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-release-MarketRelease-unsigned-${fullVersion}.apk").exists())
-        assertFalse(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
     }
 
     @Test
