@@ -39,7 +39,7 @@ class XCSchemeParser {
     private File schemeFile(String schemeName) {
         def file = new File(conf.schemesDir, "${schemeName}.xcscheme")
         validate(file.exists() && file.isFile(), {
-            throw new GradleException("Invalid scheme file: ${file.absolutePath}")
+            throw new GradleException("Shemas must be shared!. Invalid scheme file: ${file.absolutePath}")
         })
         file
     }

@@ -15,7 +15,7 @@ class PbxJsonParserSpec extends Specification {
 
     def setup() {
         def executor = Mock(IOSExecutor)
-        executor.pbxProjToJSON() >> input.text.split('\n')
+        executor.pbxProjToJSON >> input.text.split('\n')
 
         parser.executor = executor
     }

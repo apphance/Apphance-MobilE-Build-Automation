@@ -181,11 +181,11 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
         enabledInternal = enabled
     }
 
-    protected List<File> getFiles(File searchRootDir, String dirPattern, Closure acceptFilter) {
+    protected List<File> getFiles(File searchRootDir, String dirPattern = '.*', Closure acceptFilter) {
         List<File> icons = []
-            searchRootDir.eachDirMatch(~dirPattern) { dir ->
-                icons.addAll(dir.listFiles([accept: acceptFilter] as FileFilter))
-            }
+        searchRootDir.eachDirMatch(~dirPattern) { dir ->
+            icons.addAll(dir.listFiles([accept: acceptFilter] as FileFilter))
+        }
         icons
     }
 }

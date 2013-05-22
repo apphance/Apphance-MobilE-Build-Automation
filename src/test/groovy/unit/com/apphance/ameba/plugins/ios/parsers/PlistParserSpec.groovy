@@ -9,7 +9,7 @@ class PlistParserSpec extends Specification {
     def executor
 
     def setup() {
-        executor = Mock(IOSExecutor)
+        executor = GroovyMock(IOSExecutor)
         executor.plistToJSON(_) >> new File('testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist.json').text.split('\n')
 
         parser.executor = executor
@@ -66,6 +66,14 @@ class PlistParserSpec extends Specification {
             def siblings = keyNode.parent().children()
             siblings[siblings.findIndexOf { it == keyNode } + 1].text() == m.value
         }
+    }
+
+    def 'get icon files'() {
+        when:
+        def iconFiles = parser.getIconFiles(Mock(File))
+
+        then:
+        iconFiles == ['icon.png', 'icon_retina.png']
     }
 
     def 'bundle display name is read correctly'() {

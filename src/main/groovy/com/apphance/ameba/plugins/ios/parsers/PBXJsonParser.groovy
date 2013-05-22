@@ -58,7 +58,7 @@ class PbxJsonParser {
     }
 
     private Object parsedPBX() {
-        new JsonSlurper().parseText(executor.pbxProjToJSON().join('\n'))
+        new JsonSlurper().parseText(executor.pbxProjToJSON.join('\n'))
     }
 
     static boolean isPlaceholder(String value) {

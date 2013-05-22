@@ -73,4 +73,9 @@ class PlistParser {
     static boolean isPlaceholder(String value) {
         isNotBlank(value) && value.matches('\\$\\{([A-Z]+_)*([A-Z])+\\}')
     }
+
+    List<String> getIconFiles(File plist) {
+        def json = parsedJson(plist)
+        (json.CFBundleIconFiles + json.CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles)?.unique()?.sort()
+    }
 }

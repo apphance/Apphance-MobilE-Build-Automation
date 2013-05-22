@@ -1,8 +1,14 @@
 package com.apphance.ameba.configuration.ios
 
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
+import com.apphance.ameba.plugins.ios.parsers.PlistParser
 import com.apphance.ameba.plugins.release.AmebaArtifact
-import groovy.io.FileType
+
+import javax.inject.Inject
+
+import static com.apphance.ameba.util.file.FileManager.relativeTo
+import static groovy.io.FileType.FILES
 
 @com.google.inject.Singleton
 class IOSReleaseConfiguration extends ReleaseConfiguration {
@@ -15,28 +21,43 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
     Map<String, AmebaArtifact> ahSYMDirs = [:]
     Map<String, AmebaArtifact> dmgImageFiles = [:]
 
+    @Inject IOSConfiguration iosConf
+    @Inject IOSVariantsConfiguration iosVariantsConf
+    @Inject PlistParser plistParser
+
     @Override
     File defaultIcon() {
-        throw new UnsupportedOperationException('not implemented yet')
+        iconFiles.find { it.name.startsWith('Icon') } ?: iconFiles.find()
     }
 
     @Override
     List<String> possibleIcons() {
-        throw new UnsupportedOperationException('not implemented yet')
+        def icons = getIconFiles()
+        icons.collect { relativeTo(iosConf.rootDir.absolutePath, it.absolutePath).path }
+    }
+
+    private List<File> getIconFiles() {
+        def iconNames = iconNamesFromPlist()
+        def icons = []
+        iosConf.rootDir.traverse(type: FILES, filter: { it.name in iconNames }) {
+            icons << it
+        }
+        icons
+    }
+
+    private List<String> iconNamesFromPlist() {
+        def plist = iosVariantsConf.mainVariant.plist
+        plistParser.getIconFiles(plist).sort()
     }
 
     List<File> findMobileProvisionFiles() {
         def files = []
-        conf().rootDir.eachFileRecurse(FileType.FILES) {
+        iosConf.rootDir.eachFileRecurse(FILES) {
             if (it.name.endsWith('.mobileprovision')) {
                 files << it
             }
         }
         files
-    }
-
-    private IOSConfiguration conf() {
-        super.conf as IOSConfiguration
     }
 
     @Override

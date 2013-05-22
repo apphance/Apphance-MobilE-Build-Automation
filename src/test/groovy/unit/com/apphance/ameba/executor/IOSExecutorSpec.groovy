@@ -64,7 +64,7 @@ class IOSExecutorSpec extends Specification {
 
     def 'pbxproj is converted to json format well'() {
         when:
-        def json = iosExecutor.pbxProjToJSON()
+        def json = iosExecutor.pbxProjToJSON
         json = json.join('\n')
 
         then:

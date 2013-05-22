@@ -154,7 +154,8 @@ class PluginMasterSpec extends Specification {
         rootDir.list() >> [file]
         def project = GroovyMock(Project)
 
-        def iosExecutorMock = Stub(IOSExecutor, { list() >> XCODE_LIST })
+        def iosExecutorMock = GroovyStub(IOSExecutor)
+        iosExecutorMock.list >> XCODE_LIST
 
         project.rootDir >> rootDir
         project.file('ameba-log') >> new File(System.properties['java.io.tmpdir'])

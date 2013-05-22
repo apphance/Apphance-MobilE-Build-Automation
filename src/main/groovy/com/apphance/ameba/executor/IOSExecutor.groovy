@@ -18,33 +18,31 @@ class IOSExecutor {
     @Inject
     CommandExecutor commandExecutor
 
-    List<String> sdks() {
+    @Lazy List<String> sdks = {
         parser.readIphoneSdks(showSdks()*.trim())
-    }
+    }()
 
-    List<String> simulatorSdks() {
+    @Lazy List<String> simulatorSdks = {
         parser.readIphoneSimulatorSdks(showSdks()*.trim())
-    }
+    }()
 
     private List<String> showSdks() {
         run('-showsdks')
     }
 
     List<String> targets() {
-        parser.readBaseTargets(list())
+        parser.readBaseTargets(list)
     }
 
     List<String> configurations() {
-        parser.readBaseConfigurations(list())
+        parser.readBaseConfigurations(list)
     }
 
     List<String> schemes() {
-        parser.readSchemes(list())
+        parser.readSchemes(list)
     }
 
-    List<String> list() {
-        run('-list')*.trim()
-    }
+    @Lazy List<String> list = { run('-list')*.trim() }()
 
     List<String> pbxProjToXml() {
         commandExecutor.executeCommand(new Command(
@@ -52,11 +50,11 @@ class IOSExecutor {
                 cmd: "plutil -convert xml1 ${conf.xcodeDir.value}/$PROJECT_PBXPROJ -o -".split()))
     }
 
-    List<String> pbxProjToJSON() {
+    @Lazy List<String> pbxProjToJSON = {
         commandExecutor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: "plutil -convert json ${conf.xcodeDir.value}/$PROJECT_PBXPROJ -o -".split()))
-    }
+    }()
 
     List<String> plistToJSON(File plist) {
         commandExecutor.executeCommand(new Command(
