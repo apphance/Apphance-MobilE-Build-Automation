@@ -99,4 +99,21 @@ class XCodeOutputParserSpec extends Specification {
         expect:
         ['Some', 'SomeWithMonkey', 'SomeSpecs', 'OtherSomeSpecs', 'RunMonkeyTests'] == schemes
     }
+
+    def 'parses build settings'() {
+        when:
+        def buildSettings = parser.parseBuildSettings(input?.split('\n')*.trim())
+
+        then:
+        verify.call(buildSettings)
+
+        where:
+        input                                                           | verify
+        null                                                            | { it.isEmpty() }
+        ''                                                              | { it.isEmpty() }
+        new File(getClass().getResource('build_settings').toURI()).text | {
+            it.size() > 0 && it.keySet().every { it2 ->
+                it2.matches('([A-Z0-9a-z]+_)*([A-Z0-9a-z])+') }
+        }
+    }
 }

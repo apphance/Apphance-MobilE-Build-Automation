@@ -1,5 +1,7 @@
 package com.apphance.ameba.plugins.ios.parsers
 
+import org.apache.commons.collections.CollectionUtils
+
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -70,5 +72,19 @@ class XCodeOutputParser {
         String firstLine = trimmed[0]
         def matcher = firstLine =~ /.*"(.*)"/
         return matcher[0][1]
+    }
+
+    Map<String, String> parseBuildSettings(List<String> trimmed) {
+        if (CollectionUtils.isEmpty(trimmed)) {
+            return [:]
+        }
+        def result = [:]
+        trimmed.each {
+            def splitted = it.split('=')
+            if (splitted.size() == 2) {
+                result[splitted[0].trim()] = splitted[1].trim()
+            }
+        }
+        result
     }
 }

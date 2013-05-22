@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.ios.parsers.PlistParser
+import org.gradle.api.Project
 import spock.lang.Specification
 
 class IOSReleaseConfigurationSpec extends Specification {
@@ -11,8 +12,10 @@ class IOSReleaseConfigurationSpec extends Specification {
     def iosReleaseConf = new IOSReleaseConfiguration()
 
     def setup() {
-        def iosConf = GroovyStub(IOSConfiguration)
-        iosConf.rootDir >> new File('testProjects/ios/GradleXCode/')
+        def iosConf = GroovySpy(IOSConfiguration)
+        iosConf.project = GroovyStub(Project) {
+            getRootDir() >> new File('testProjects/ios/GradleXCode/')
+        }
 
         def variantsConf = GroovyStub(IOSVariantsConfiguration)
         variantsConf.mainVariant >> GroovyStub(AbstractIOSVariant) {

@@ -5,6 +5,7 @@ import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
+import com.apphance.ameba.plugins.ios.parsers.XCodeOutputParser
 import groovy.json.JsonSlurper
 import org.gradle.api.Project
 import spock.lang.Specification
@@ -38,6 +39,7 @@ class IOSExecutorSpec extends Specification {
 
         iosExecutor.commandExecutor = executor
         iosExecutor.conf = conf
+        iosExecutor.parser = new XCodeOutputParser()
     }
 
     def cleanup() {
@@ -88,6 +90,15 @@ class IOSExecutorSpec extends Specification {
         def slurped = new JsonSlurper().parseText(json)
         slurped.CFBundleName == '${PRODUCT_NAME}'
         slurped.CFBundleIdentifier == 'com.apphance.ameba'
+    }
+
+    def 'build settings got for target and configuration'() {
+        when:
+        def settings = iosExecutor.buildSettings('GradleXCode', 'BasicConfiguration')
+
+        then:
+        settings.size() > 0
+        settings.keySet().every{ it.matches('([A-Z0-9a-z]+_)*([A-Z0-9a-z])+')}
     }
 
     def 'mobileprovision is converted to xml well'() {
