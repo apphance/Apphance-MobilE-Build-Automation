@@ -14,6 +14,7 @@ import spock.lang.Unroll
 
 import javax.imageio.ImageIO
 
+import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
@@ -39,7 +40,7 @@ class ImageMontageTaskSpec extends Specification {
         releaseConf.otaDir >> new File(OTA_DIR)
         conf.getProjectName() >> new StringProperty(value: 'testProjectName')
         conf.fullVersionString >> 'fullVersionString'
-        conf.tmpDir >> new File('ameba-tmp')
+        conf.tmpDir >> new File(TMP_DIR)
         logFileGenerator.commandLogFiles() >> [(ERR): createTempFile('err', 'log'), (STD): createTempFile('std', 'log')]
         imageMontageTask.project >> project
         imageMontageTask.conf = conf

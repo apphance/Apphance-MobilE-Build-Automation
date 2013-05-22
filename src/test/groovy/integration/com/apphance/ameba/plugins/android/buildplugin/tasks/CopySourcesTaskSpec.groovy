@@ -6,6 +6,7 @@ import com.apphance.ameba.configuration.android.variants.AndroidVariantConfigura
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
@@ -19,7 +20,7 @@ class CopySourcesTaskSpec extends Specification {
         def conf = GroovyMock(AndroidConfiguration, {
             getSourceExcludes() >> []
             getRootDir() >> p.rootDir
-            getTmpDir() >> p.file('ameba-tmp')
+            getTmpDir() >> p.file(TMP_DIR)
         })
 
         and:
@@ -31,10 +32,10 @@ class CopySourcesTaskSpec extends Specification {
         def variantsConf = GroovyMock(AndroidVariantsConfiguration) {
             getVariants() >> [
                     GroovyMock(AndroidVariantConfiguration) {
-                        getTmpDir() >> p.file('ameba-tmp/market')
+                        getTmpDir() >> p.file("${TMP_DIR}/market")
                     },
                     GroovyMock(AndroidVariantConfiguration) {
-                        getTmpDir() >> p.file('ameba-tmp/test')
+                        getTmpDir() >> p.file("${TMP_DIR}/test")
                     }]
             getVariantsDir() >> p.file('variants')
         }
@@ -46,24 +47,24 @@ class CopySourcesTaskSpec extends Specification {
         task.variantsConf = variantsConf
 
         and:
-        p.file('ameba-tmp').deleteDir()
+        p.file(TMP_DIR).deleteDir()
 
         expect:
-        !p.file('ameba-tmp').exists()
+        !p.file(TMP_DIR).exists()
 
         when:
         task.copySources()
 
         then:
-        def marketDir = p.file('ameba-tmp/market')
-        def testDir = p.file('ameba-tmp/test')
+        def marketDir = p.file("${TMP_DIR}/market")
+        def testDir = p.file("${TMP_DIR}/test")
         marketDir.exists() && marketDir.isDirectory() && marketDir.list().size() > 0
         testDir.exists() && testDir.isDirectory() && testDir.list().size() > 0
 
         !(new File(marketDir, 'variants')).exists()
         !(new File(testDir, 'variants')).exists()
-        !(new File(marketDir, 'ameba-tmp')).exists()
-        !(new File(marketDir, 'ameba-tmp')).exists()
+        !(new File(marketDir, TMP_DIR)).exists()
+        !(new File(marketDir, TMP_DIR)).exists()
         !(new File(marketDir, OTA_DIR)).exists()
         !(new File(marketDir, OTA_DIR)).exists()
         !(new File(testDir, 'log')).exists()

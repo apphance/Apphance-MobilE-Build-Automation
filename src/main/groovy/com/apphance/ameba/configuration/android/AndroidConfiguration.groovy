@@ -87,12 +87,12 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     @Override
     File getTmpDir() {
-        project.file('ameba-tmp')
+        project.file(TMP_DIR)
     }
 
     @Override
     File getLogDir() {
-        project.file('ameba-log')
+        project.file(LOG_DIR)
     }
 
     File getResDir() {
@@ -122,7 +122,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
         androidHome ? new File(androidHome) : null
     }
 
-    final Collection<String> sourceExcludes = ['**/*.class', '**/bin/**', '**/build/*', '**/ameba-tmp/**/*', "**/${OTA_DIR}/**/*"]
+    final Collection<String> sourceExcludes = ['**/*.class', '**/bin/**', '**/build/*', "**/${TMP_DIR}/**/*", "**/${OTA_DIR}/**/*"]
 
     private Collection<File> sdkJarLibs = []
 

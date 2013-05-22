@@ -6,6 +6,7 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
+import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
@@ -26,12 +27,12 @@ class ExecuteApphanceBuildsTest {
     static ProjectConnection tNoApplicationNoOnCreate
 
     File getMainApplicationFile(File directory, String variant) {
-        File tmpDir = new File(new File(directory, 'ameba-tmp'), variant)
+        File tmpDir = new File(new File(directory, TMP_DIR), variant)
         return new File(tmpDir, 'src/com/apphance/amebaTest/android/MainApplication.java')
     }
 
     File getMainActivityFile(File directory, String variant) {
-        File tmpDir = new File(new File(directory, 'ameba-tmp'), variant)
+        File tmpDir = new File(new File(directory, TMP_DIR), variant)
         return new File(tmpDir, 'src/com/apphance/amebaTest/android/TestActivity.java')
     }
 

@@ -77,7 +77,7 @@ class ImageMontageTask extends DefaultTask {
     List<File> getFilesToMontage(File rootDir) {
         List<File> filesToMontage = []
 
-        rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL, excludeFilter: '**/ameba-*/**']) { File file ->
+        rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL, excludeFilter: '**/flow-*/**']) { File file ->
             //FIXME apply better filter
             if (isValid(rootDir, file) && [conf.tmpDir, releaseConf.otaDir]*.name.every { !file.absolutePath.contains(it) }) {
                 filesToMontage << file

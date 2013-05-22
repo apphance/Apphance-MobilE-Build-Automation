@@ -69,7 +69,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     @Override
     File getTmpDir() {
-        project.file('ameba-tmp')
+        project.file(TMP_DIR)
     }
 
     @Override
@@ -79,7 +79,7 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
 
     @Override
     File getLogDir() {
-        project.file('ameba-log')
+        project.file(LOG_DIR)
     }
 
     @Override

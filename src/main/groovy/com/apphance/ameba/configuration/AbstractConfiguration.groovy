@@ -10,6 +10,9 @@ import static org.apache.commons.lang.StringUtils.join
 
 abstract class AbstractConfiguration implements Configuration {
 
+    public static final String TMP_DIR = 'flow-tmp'
+    public static final String LOG_DIR = 'flow-log'
+
     @Inject
     PropertyPersister propertyPersister
 

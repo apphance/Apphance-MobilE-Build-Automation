@@ -7,6 +7,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
@@ -41,7 +42,7 @@ class BuildSourcesZipTask extends DefaultTask {
             fileset(dir: project.rootDir) {
                 exclude(name: 'build/**')
                 exclude(name: "${OTA_DIR}/**")
-                exclude(name: 'ameba-tmp/**')
+                exclude(name: "${TMP_DIR}/**")
                 exclude(name: '**/buildSrc/build/**')
                 exclude(name: '**/build.gradle')
                 exclude(name: '**/gradle.properties')
