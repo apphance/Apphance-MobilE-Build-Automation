@@ -8,6 +8,6 @@ buildscript {
     }
 }
 
-apply plugin: 'ameba'
+apply plugin: 'apphance-flow'
 
 

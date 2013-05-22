@@ -8,7 +8,7 @@ ext {
 	apphancePassword = "apphancetest"
 }
 
-apply plugin: 'ameba'
+apply plugin: 'apphance-flow'
 iosUnitTests {
     configuration = 'Debug'
 }
