@@ -6,6 +6,7 @@ import com.apphance.ameba.configuration.android.variants.AndroidVariantConfigura
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class CopySourcesTaskSpec extends Specification {
@@ -23,7 +24,7 @@ class CopySourcesTaskSpec extends Specification {
 
         and:
         def releaseConf = GroovyMock(AndroidReleaseConfiguration, {
-            getOtaDir() >> p.file('ameba-ota')
+            getOtaDir() >> p.file(OTA_DIR)
         })
 
         and:
@@ -63,8 +64,8 @@ class CopySourcesTaskSpec extends Specification {
         !(new File(testDir, 'variants')).exists()
         !(new File(marketDir, 'ameba-tmp')).exists()
         !(new File(marketDir, 'ameba-tmp')).exists()
-        !(new File(marketDir, 'ameba-ota')).exists()
-        !(new File(marketDir, 'ameba-ota')).exists()
+        !(new File(marketDir, OTA_DIR)).exists()
+        !(new File(marketDir, OTA_DIR)).exists()
         !(new File(testDir, 'log')).exists()
         !(new File(testDir, 'log')).exists()
     }

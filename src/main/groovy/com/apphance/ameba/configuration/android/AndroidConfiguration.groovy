@@ -12,6 +12,7 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask.WHITESPACE_PATTERN
 import static com.google.common.base.Strings.isNullOrEmpty
@@ -121,7 +122,7 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
         androidHome ? new File(androidHome) : null
     }
 
-    final Collection<String> sourceExcludes = ['**/*.class', '**/bin/**', '**/build/*', '**/ameba-tmp/**/*', '**/ameba-ota/**/*']
+    final Collection<String> sourceExcludes = ['**/*.class', '**/bin/**', '**/build/*', '**/ameba-tmp/**/*', "**/${OTA_DIR}/**/*"]
 
     private Collection<File> sdkJarLibs = []
 

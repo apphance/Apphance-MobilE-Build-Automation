@@ -14,6 +14,7 @@ import spock.lang.Specification
 
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
+import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.google.common.io.Files.createTempDir
 import static java.lang.System.getProperties
 import static org.gradle.testfixtures.ProjectBuilder.builder
@@ -97,7 +98,7 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
         task.availableArtifactsInfo()
 
         then:
-        def releaseDir = new File(rootDir.absolutePath, "ameba-ota/$projectName/$fullVersionString")
+        def releaseDir = new File(rootDir.absolutePath, "${OTA_DIR}/$projectName/$fullVersionString")
         releaseDir.exists()
         releaseDir.isDirectory()
         [

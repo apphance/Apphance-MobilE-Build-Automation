@@ -8,6 +8,7 @@ import org.junit.BeforeClass
 import org.junit.Ignore
 import org.junit.Test
 
+import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.*
 
@@ -90,11 +91,11 @@ class ExecuteAndroidBuildsTest {
     void testBuildDebug() {
         runGradle('clean', 'buildTestDebug')
         assertTrue(new File(testProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-${fullVersion}.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-unsigned-${fullVersion}.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-unsigned-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-degub-TestDebug-unaligned-${fullVersion}.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-degub-TestDebug-unaligned-${fullVersion}.apk").exists())
     }
 
     @Test
@@ -102,11 +103,11 @@ class ExecuteAndroidBuildsTest {
         runGradle('clean', 'buildMarketRelease')
 
         assertTrue(new File(testProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unsigned-${fullVersion}.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unsigned-${fullVersion}.apk").exists())
         assertFalse(new File(testProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
     }
 
     @Test
@@ -114,11 +115,11 @@ class ExecuteAndroidBuildsTest {
         runGradleNoVariants('clean', 'buildMarketDebug')
 
         assertTrue(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-${fullVersion}.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-${fullVersion}.apk").exists())
         assertFalse(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-debug-MarketDebug-unsigned-${fullVersion}.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-debug-MarketDebug-unsigned-${fullVersion}.apk").exists())
         assertFalse(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-unaligned-${fullVersion}.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-unaligned-${fullVersion}.apk").exists())
     }
 
     @Test
@@ -126,11 +127,11 @@ class ExecuteAndroidBuildsTest {
         runGradleNoVariants('clean', 'buildMarketRelease')
 
         assertTrue(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
         assertFalse(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-release-MarketRelease-unsigned-${fullVersion}.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-release-MarketRelease-unsigned-${fullVersion}.apk").exists())
         assertFalse(new File(testNoVariantsProject,
-                "ameba-ota/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
     }
 
     @Test
