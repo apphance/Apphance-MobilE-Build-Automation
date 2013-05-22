@@ -6,7 +6,7 @@ import static org.gradle.api.logging.Logging.getLogger
  * Parses xcodebuild output.
  *
  */
-class IOSXCodeOutputParser {
+class XCodeOutputParser {
 
     def l = getLogger(getClass())
 

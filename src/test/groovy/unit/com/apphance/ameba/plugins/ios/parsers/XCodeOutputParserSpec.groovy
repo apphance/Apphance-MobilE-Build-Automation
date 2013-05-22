@@ -3,10 +3,10 @@ package com.apphance.ameba.plugins.ios.parsers
 import spock.lang.Shared
 import spock.lang.Specification
 
-class IOSXCodeOutputParserSpec extends Specification {
+class XCodeOutputParserSpec extends Specification {
 
     @Shared
-    def parser = new IOSXCodeOutputParser()
+    def parser = new XCodeOutputParser()
 
     def static SCHEMES = """
             Schemes:

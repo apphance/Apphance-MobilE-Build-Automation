@@ -4,8 +4,6 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
-import com.apphance.ameba.executor.IOSExecutor
-import com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParser
 
 import javax.inject.Inject
 
@@ -17,10 +15,6 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
 
     @Inject
     IOSConfiguration conf
-    @Inject
-    IOSExecutor iosExecutor
-    @Inject
-    IOSXCodeOutputParser parser
     @Inject
     IOSVariantsConfiguration variantsConf
     @Inject

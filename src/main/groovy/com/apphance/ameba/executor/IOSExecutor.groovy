@@ -3,7 +3,7 @@ package com.apphance.ameba.executor
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParser
+import com.apphance.ameba.plugins.ios.parsers.XCodeOutputParser
 
 import javax.inject.Inject
 
@@ -14,7 +14,7 @@ class IOSExecutor {
     @Inject
     IOSConfiguration conf
     @Inject
-    IOSXCodeOutputParser parser
+    XCodeOutputParser parser
     @Inject
     CommandExecutor commandExecutor
 
