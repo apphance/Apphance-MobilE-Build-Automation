@@ -16,7 +16,7 @@ class AmebaPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        l.lifecycle(AMEBA_ASCII_ART)
+        l.lifecycle(FLOW_ASCII_ART)
 
         def injector = Guice.createInjector(
                 new GradleModule(project),
@@ -29,15 +29,12 @@ class AmebaPlugin implements Plugin<Project> {
         project.tasks.each { injector.injectMembers(it) }
     }
 
-    static String AMEBA_ASCII_ART = '''\
-
-                          _
-                         ( )
-   _ _   ___ ___     __  | |_      _ _
- /'_` )/' _ ` _ `\\ /'__`\\| '_`\\  /'_` )
-( (_| || ( ) ( ) |(  ___/| |_) )( (_| |
-`\\__,_)(_) (_) (_)`\\____)(_,__/'`\\__,_)
-
-'''
-
+    static String FLOW_ASCII_ART ="""
+        |    _             _                       ___ _
+        |   /_\\  _ __ _ __| |_  __ _ _ _  __ ___  | __| |_____ __ __
+        |  / _ \\| '_ \\ '_ \\ ' \\/ _` | ' \\/ _/ -_) | _|| / _ \\ V  V /
+        | /_/ \\_\\ .__/ .__/_||_\\__,_|_||_\\__\\___| |_| |_\\___/\\_/\\_/
+        |       |_|  |_|
+        |
+        |""".stripMargin()
 }
