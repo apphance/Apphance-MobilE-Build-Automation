@@ -23,7 +23,7 @@ class CommandExecutorModule extends AbstractModule {
     }
 
     private File createLogDir() {
-        def logDir = project.file('log')
+        def logDir = project.file('ameba-log')
         if (!logDir.exists())
             logDir.mkdirs()
         logDir
