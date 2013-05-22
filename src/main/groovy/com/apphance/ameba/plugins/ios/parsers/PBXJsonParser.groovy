@@ -5,6 +5,8 @@ import groovy.json.JsonSlurper
 
 import javax.inject.Inject
 
+import static org.apache.commons.lang.StringUtils.isNotBlank
+
 class PbxJsonParser {
 
     static final INFOPLIST_FILE = 'INFOPLIST_FILE'
@@ -57,5 +59,9 @@ class PbxJsonParser {
 
     private Object parsedPBX() {
         new JsonSlurper().parseText(executor.pbxProjToJSON().join('\n'))
+    }
+
+    static boolean isPlaceholder(String value) {
+        isNotBlank(value) && value.matches('\\$\\(([A-Z]+_)*([A-Z])+\\)')
     }
 }

@@ -72,4 +72,23 @@ class PlistParserSpec extends Specification {
         expect:
         parser.bundleDisplayName(Mock(File)) == '${PRODUCT_NAME}'
     }
+
+    def 'placeholder is recognized correctly'() {
+        expect:
+        PlistParser.isPlaceholder(placeholder) == expected
+
+        where:
+        placeholder | expected
+        '${}'       | false
+        ''          | false
+        '  \t'      | false
+        '$${}'      | false
+        '${{}'      | false
+        '${}}'      | false
+        '${_}'      | false
+        '${AA_}'    | false
+        '${AA_D}'   | true
+        '${AA_D_}'  | false
+        '${_AA_D_}' | false
+    }
 }

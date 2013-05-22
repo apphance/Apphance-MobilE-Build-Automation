@@ -7,6 +7,8 @@ import groovy.xml.XmlUtil
 
 import javax.inject.Inject
 
+import static org.apache.commons.lang.StringUtils.isNotBlank
+
 class PlistParser {
 
     @Inject
@@ -66,5 +68,9 @@ class PlistParser {
     private GPathResult nextNode(GPathResult node) {
         def siblings = node.parent().children()
         siblings[siblings.findIndexOf { it == node } + 1]
+    }
+
+    static boolean isPlaceholder(String value) {
+        isNotBlank(value) && value.matches('\\$\\{([A-Z]+_)*([A-Z])+\\}')
     }
 }
