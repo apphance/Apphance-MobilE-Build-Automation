@@ -1,6 +1,7 @@
 package com.apphance.ameba.plugins.android.release.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
 import org.gradle.api.GradleException
 import spock.lang.Specification
@@ -64,10 +65,11 @@ class UpdateVersionTaskSpec extends Specification {
 
     def 'version is updated correctly'() {
         given:
-        def ac = GroovyMock(AndroidConfiguration)
-        ac.extVersionCode >> '3145'
-        ac.extVersionString >> '31.4.5'
-        ac.rootDir >> projectDir
+        def ac = GroovySpy(AndroidConfiguration)
+        ac.reader = GroovyStub(PropertyReader) {
+            systemProperty('version.code') >> '3145'
+            systemProperty('version.string') >> '31.4.5'
+        }
 
         and:
         def amh = new AndroidManifestHelper()

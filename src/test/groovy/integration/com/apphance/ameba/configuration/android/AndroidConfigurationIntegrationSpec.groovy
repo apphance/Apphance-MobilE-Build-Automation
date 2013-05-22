@@ -15,7 +15,9 @@ class AndroidConfigurationIntegrationSpec extends Specification {
         def project = builder().build()
 
         and:
-        def ac = new AndroidConfiguration(project, * [null] * 4, new PropertyReader())
+        def ac = new AndroidConfiguration()
+        ac.project = project
+        ac.reader = new PropertyReader()
         ac.target = new StringProperty(value: target)
 
         expect:

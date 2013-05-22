@@ -2,6 +2,7 @@ package com.apphance.ameba.configuration.ios
 
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
+import org.gradle.api.Project
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -45,9 +46,7 @@ class IOSConfigurationSpec extends Specification {
         def conf = new IOSVariantsConfiguration()
         def variant = GroovyStub(AbstractIOSVariant)
         variant.getVersionCode() >> 'version code'
-        variant.getExtVersionCode() >> 'ext version code'
         variant.getVersionString() >> 'version string'
-        variant.getExtVersionString() >> 'ext version string'
 
         conf.@variants = [variant]
 
@@ -57,21 +56,22 @@ class IOSConfigurationSpec extends Specification {
         expect:
         with(iOSConf) {
             versionCode == 'version code'
-            extVersionCode == 'ext version code'
             versionString == 'version string'
-            extVersionString == 'ext version string'
         }
     }
 
     def 'lazy evaluated variables'() {
         given:
-        def iOSConf = GroovySpy(IOSConfiguration)
-        iOSConf.getRootDir() >> new File('testProjects/ios/GradleXCode')
-        iOSConf.getTargets() >> ['t1', 't2']
-        iOSConf.configurations >> ['c1', 'c2']
+        def iOSConf = GroovySpy(IOSConfiguration) {
+            getTargets() >> ['t1', 't2']
+            getConfigurations() >> ['c1', 'c2']
+        }
+        iOSConf.project = GroovyStub(Project) {
+            getRootDir() >> new File('testProjects/ios/GradleXCode')
+        }
 
         expect:
-        iOSConf.possibleXCodeDirs == ['GradleXCode.xcodeproj']
         iOSConf.targetConfigurationMatrix.sort() == [['t1', 'c1'], ['t1', 'c2'], ['t2', 'c1'], ['t2', 'c2']]
+        iOSConf.possibleXCodeDirs == ['GradleXCode.xcodeproj']
     }
 }

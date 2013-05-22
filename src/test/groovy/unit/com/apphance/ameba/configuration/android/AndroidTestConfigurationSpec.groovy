@@ -14,15 +14,16 @@ class AndroidTestConfigurationSpec extends Specification {
 
     def 'android test configuration is enabled based on project type and internal field'() {
         given:
-        def p = Mock(Project)
-
-        and:
         def ptd = Mock(ProjectTypeDetector)
 
         when:
         ptd.detectProjectType(_) >> type
-        def ac = new AndroidConfiguration(p, * [null] * 3, ptd, null)
-        def atc = new AndroidTestConfiguration(p, ac, * [null] * 3)
+        def ac = new AndroidConfiguration()
+        ac.projectTypeDetector = ptd
+        ac.project = GroovyStub(Project) {
+            getRootDir() >> GroovyStub(File)
+        }
+        def atc = new AndroidTestConfiguration(null, ac, * [null] * 3)
         atc.enabled = internalField
 
         then:
@@ -55,7 +56,8 @@ class AndroidTestConfigurationSpec extends Specification {
         }
 
         and:
-        def ac = new AndroidConfiguration(p, * [null] * 3, ptd, null)
+        def ac = new AndroidConfiguration()
+        ac.projectTypeDetector = ptd
 
         and:
         def amh = Mock(AndroidManifestHelper)

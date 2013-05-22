@@ -1,14 +1,11 @@
 package com.apphance.ameba.configuration.android
 
-import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
-import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.plugins.android.parsers.AndroidBuildXmlHelper
 import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
-import org.gradle.api.Project
 
 import javax.inject.Inject
 
@@ -18,33 +15,24 @@ import static com.google.common.base.Strings.isNullOrEmpty
 import static java.io.File.pathSeparator
 
 @com.google.inject.Singleton
-class AndroidConfiguration extends AbstractConfiguration implements ProjectConfiguration {
+class AndroidConfiguration extends ProjectConfiguration {
 
     String configurationName = 'Android Configuration'
 
-    private Project project
-    private ProjectTypeDetector projectTypeDetector
-    private AndroidBuildXmlHelper buildXmlHelper
-    private AndroidManifestHelper manifestHelper
-    private AndroidExecutor androidExecutor
-    private PropertyReader reader
+    @Inject
+    ProjectTypeDetector projectTypeDetector
+    @Inject
+    AndroidBuildXmlHelper buildXmlHelper
+    @Inject
+    AndroidManifestHelper manifestHelper
+    @Inject
+    AndroidExecutor androidExecutor
     private Properties androidProperties
 
+    @Override
     @Inject
-    AndroidConfiguration(
-            Project project,
-            AndroidExecutor androidExecutor,
-            AndroidManifestHelper manifestHelper,
-            AndroidBuildXmlHelper buildXmlHelper,
-            ProjectTypeDetector projectTypeDetector,
-            PropertyReader reader) {
-        this.project = project
-        this.androidExecutor = androidExecutor
-        this.manifestHelper = manifestHelper
-        this.buildXmlHelper = buildXmlHelper
-        this.projectTypeDetector = projectTypeDetector
-        this.reader = reader
-
+    void init() {
+        super.init()
         readProperties()
     }
 
@@ -66,41 +54,13 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
         extVersionCode ?: manifestHelper.readVersion(rootDir).versionCode ?: ''
     }
 
-    String getExtVersionCode() {
-        reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
-    }
-
     @Override
     String getVersionString() {
         extVersionString ?: manifestHelper.readVersion(rootDir).versionString ?: ''
     }
 
-    String getExtVersionString() {
-        reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
-    }
-
-    @Override
-    File getBuildDir() {
-        project.file('build')
-    }
-
-    @Override
-    File getTmpDir() {
-        project.file('ameba-tmp')
-    }
-
-    @Override
-    File getLogDir() {
-        project.file('ameba-log')
-    }
-
     File getResDir() {
         project.file('res')
-    }
-
-    @Override
-    File getRootDir() {
-        project.rootDir
     }
 
     def target = new StringProperty(
@@ -235,16 +195,6 @@ class AndroidConfiguration extends AbstractConfiguration implements ProjectConfi
 
     boolean isLibrary() {
         androidProperties.get('android.library') == 'true'
-    }
-
-    @Override
-    String getFullVersionString() {
-        "${versionString}_${versionCode}"
-    }
-
-    @Override
-    String getProjectVersionedName() {
-        "${projectName.value}-$fullVersionString"
     }
 
     @Override

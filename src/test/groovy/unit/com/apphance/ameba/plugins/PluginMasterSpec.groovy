@@ -157,7 +157,7 @@ class PluginMasterSpec extends Specification {
         def iosExecutorMock = Stub(IOSExecutor, { list() >> XCODE_LIST })
 
         project.rootDir >> rootDir
-        project.file('log') >> new File(System.properties['java.io.tmpdir'])
+        project.file('ameba-log') >> new File(System.properties['java.io.tmpdir'])
 
         return Guice.createInjector(
                 new EnvironmentModule(),

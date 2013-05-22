@@ -28,7 +28,7 @@ class ImageMontageTaskSpec extends Specification {
 
     def setup() {
         def project = GroovyStub(Project)
-        def conf = GroovyStub(AndroidConfiguration)
+        def conf = GroovySpy(AndroidConfiguration)
         def releaseConf = GroovyStub(AndroidReleaseConfiguration)
         def logFileGenerator = Stub(CommandLogFilesGenerator)
 
@@ -37,8 +37,11 @@ class ImageMontageTaskSpec extends Specification {
         releaseConf.getTargetDirectory() >> testDir
         releaseConf.otaDir >> new File('ameba-ota')
         conf.getProjectName() >> new StringProperty(value: 'testProjectName')
-        conf.fullVersionString >> 'fullVersionString'
-        conf.tmpDir >> new File('ameba-tmp')
+        conf.getVersionString() >> 'vs'
+        conf.getVersionCode() >> 'vc'
+        conf.project = GroovyStub(Project) {
+            file('ameba-tmp') >> new File('ameba-tmp')
+        }
         logFileGenerator.commandLogFiles() >> [(ERR): createTempFile('err', 'log'), (STD): createTempFile('std', 'log')]
         imageMontageTask.project >> project
         imageMontageTask.conf = conf
@@ -51,7 +54,7 @@ class ImageMontageTaskSpec extends Specification {
 
         then:
         !file.exists()
-        file.name == 'testProjectName-fullVersionString-image-montage.png'
+        file.name == 'testProjectName-vs_vc-image-montage.png'
     }
 
     def 'test createMontage'() {

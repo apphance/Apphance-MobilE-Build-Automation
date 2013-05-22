@@ -65,9 +65,11 @@ class GradlePropertiesPersisterSpec extends Specification {
         injector = Guice.createInjector(module, fakeConfModule())
         def persister = injector.getInstance(PropertyPersister)
 
-        def androidConfiguration = new AndroidConfiguration(project, * [null] * 3, Mock(ProjectTypeDetector) {
+        def androidConfiguration = new AndroidConfiguration()
+        androidConfiguration.projectTypeDetector = GroovyStub(ProjectTypeDetector) {
             detectProjectType(_) >> ANDROID
-        }, null)
+        }
+        androidConfiguration.project = project
         androidConfiguration.target.value = 'test target'
 
         def iOSConfiguration = new IOSConfiguration()

@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
+import org.gradle.api.Project
 import spock.lang.Specification
 
 import static org.gradle.testfixtures.ProjectBuilder.builder
@@ -15,11 +16,13 @@ class CopySourcesTaskSpec extends Specification {
         def p = builder().withProjectDir(new File('testProjects/android/android-basic')).build()
 
         and:
-        def conf = GroovyMock(AndroidConfiguration, {
+        def conf = GroovySpy(AndroidConfiguration, {
             getSourceExcludes() >> []
-            getRootDir() >> p.rootDir
-            getTmpDir() >> p.file('ameba-tmp')
         })
+        conf.project = GroovyStub(Project) {
+            getRootDir() >> p.rootDir
+            file('ameba-tmp') >> p.file('ameba-tmp')
+        }
 
         and:
         def releaseConf = GroovyMock(AndroidReleaseConfiguration, {

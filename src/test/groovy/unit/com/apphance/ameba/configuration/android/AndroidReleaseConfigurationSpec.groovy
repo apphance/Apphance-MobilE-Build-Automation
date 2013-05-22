@@ -3,6 +3,7 @@ package com.apphance.ameba.configuration.android
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
+import org.gradle.api.Project
 import spock.lang.Specification
 
 class AndroidReleaseConfigurationSpec extends Specification {
@@ -111,9 +112,11 @@ class AndroidReleaseConfigurationSpec extends Specification {
         def projectDir = 'testProjects/android/android-basic'
 
         and:
-        def ac = GroovyMock(AndroidConfiguration)
-        ac.resDir >> new File(projectDir, 'res')
-        ac.rootDir >> new File(projectDir)
+        def ac = new AndroidConfiguration()
+        ac.project = GroovyStub(Project) {
+            getRootDir() >> new File(projectDir)
+            file('res') >> new File(projectDir, 'res')
+        }
 
         and:
         def arc = new AndroidReleaseConfiguration()
@@ -132,9 +135,11 @@ class AndroidReleaseConfigurationSpec extends Specification {
         def projectDir = 'testProjects/android/android-basic'
 
         and:
-        def ac = GroovyMock(AndroidConfiguration)
-        ac.resDir >> new File(projectDir, 'res')
-        ac.rootDir >> new File(projectDir)
+        def ac = new AndroidConfiguration()
+        ac.project = GroovyStub(Project) {
+            getRootDir() >> new File(projectDir)
+            file('res') >> new File(projectDir, 'res')
+        }
 
         and:
         def arc = new AndroidReleaseConfiguration()
@@ -153,6 +158,6 @@ class AndroidReleaseConfigurationSpec extends Specification {
         fields.size() > 0
 
         and:
-        fields*.name.containsAll('iconFile','projectURL')
+        fields*.name.containsAll('iconFile', 'projectURL')
     }
 }

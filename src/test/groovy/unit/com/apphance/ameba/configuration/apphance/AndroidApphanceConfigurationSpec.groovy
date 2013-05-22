@@ -12,14 +12,15 @@ class AndroidApphanceConfigurationSpec extends Specification {
 
     def 'android apphance configuration is enabled based on project type and internal field'() {
         given:
-        def p = Mock(Project)
-
-        and:
         def ptd = Mock(ProjectTypeDetector)
 
         when:
         ptd.detectProjectType(_) >> type
-        def ac = new AndroidConfiguration(p, * [null] * 3, ptd, null)
+        def ac = new AndroidConfiguration()
+        ac.projectTypeDetector = ptd
+        ac.project = GroovyStub(Project) {
+            getRootDir() >> GroovyStub(File)
+        }
         def aac = new ApphanceConfiguration()
         aac.conf = ac
         aac.enabled = internalField

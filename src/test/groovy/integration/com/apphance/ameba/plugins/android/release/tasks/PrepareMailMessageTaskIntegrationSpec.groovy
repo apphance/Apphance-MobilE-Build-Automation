@@ -52,6 +52,7 @@ class PrepareMailMessageTaskIntegrationSpec extends Specification {
         ac.projectName >> new StringProperty(value: projectName)
         ac.fullVersionString >> fullVersionString
         ac.versionString >> '1.0.1'
+        ac.versionCode >> '42'
 
         and:
         def task = p.task(PrepareMailMessageTask.NAME, type: PrepareMailMessageTask) as PrepareMailMessageTask

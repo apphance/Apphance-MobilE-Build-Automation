@@ -1,13 +1,11 @@
 package com.apphance.ameba.configuration.ios
 
-import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.IOSExecutor
-import org.gradle.api.Project
 
 import javax.inject.Inject
 
@@ -18,16 +16,13 @@ import static groovy.io.FileType.DIRECTORIES
 import static java.io.File.separator
 
 @com.google.inject.Singleton
-class IOSConfiguration extends AbstractConfiguration implements ProjectConfiguration {
+class IOSConfiguration extends ProjectConfiguration {
 
     String configurationName = 'iOS Configuration'
 
     public static final List<String> FAMILIES = ['iPad', 'iPhone']
     public static final PROJECT_PBXPROJ = 'project.pbxproj'
 
-    @Lazy List targetConfigurationMatrix = { [targets, configurations].combinations().sort() }()
-
-    @Inject Project project
     @Inject ProjectTypeDetector projectTypeDetector
     @Inject IOSExecutor executor
     @Inject IOSVariantsConfiguration iosVariantsConf
@@ -38,52 +33,13 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
     }
 
     @Override
-    String getExtVersionCode() {
-        iosVariantsConf.mainVariant.extVersionCode
-    }
-
-    @Override
     String getVersionString() {
         iosVariantsConf.mainVariant.versionString
     }
 
     @Override
-    String getExtVersionString() {
-        iosVariantsConf.mainVariant.extVersionString
-    }
-
-    @Override
-    String getFullVersionString() {
-        "${versionString}_${versionCode}"
-    }
-
-    @Override
-    String getProjectVersionedName() {
-        "${projectName.value}-$fullVersionString"
-    }
-
     StringProperty getProjectName() {
         throw new UnsupportedOperationException('not yet implemented')
-    }
-
-    @Override
-    File getTmpDir() {
-        project.file('ameba-tmp')
-    }
-
-    @Override
-    File getBuildDir() {
-        project.file('build')
-    }
-
-    @Override
-    File getLogDir() {
-        project.file('ameba-log')
-    }
-
-    @Override
-    File getRootDir() {
-        project.rootDir
     }
 
     File getSchemesDir() {
@@ -108,6 +64,8 @@ class IOSConfiguration extends AbstractConfiguration implements ProjectConfigura
         }
         dirs
     }()
+
+    @Lazy List targetConfigurationMatrix = { [targets, configurations].combinations().sort() }()
 
     List<String> xcodebuildExecutionPath() {
         xcodeDir.value ? ['xcodebuild', '-project', xcodeDir.value as String] : ['xcodebuild']

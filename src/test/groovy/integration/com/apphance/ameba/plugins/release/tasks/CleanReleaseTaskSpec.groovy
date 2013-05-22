@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.release.tasks
 
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
+import org.gradle.api.Project
 import spock.lang.Specification
 
 import static org.gradle.testfixtures.ProjectBuilder.builder
@@ -14,10 +15,13 @@ class CleanReleaseTaskSpec extends Specification {
         def project = builder().withProjectDir(projectDir).build()
 
         and:
-        def rc = GroovyMock(ReleaseConfiguration)
+        def rc = GroovySpy(ReleaseConfiguration)
         rc.otaDir >> project.file('ameba-ota')
-        def pc = GroovyMock(ProjectConfiguration)
-        pc.tmpDir >> project.file('ameba-tmp')
+        def pc = GroovySpy(ProjectConfiguration)
+        pc.project = GroovyStub(Project) {
+            file('ameba-tmp') >> project.file('ameba-tmp')
+        }
+
 
         and:
         def task = project.task(CleanReleaseTask.NAME, type: CleanReleaseTask) as CleanReleaseTask

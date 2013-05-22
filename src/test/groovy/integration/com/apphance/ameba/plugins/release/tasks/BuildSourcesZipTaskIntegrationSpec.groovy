@@ -26,7 +26,7 @@ class BuildSourcesZipTaskIntegrationSpec extends Specification {
         and:
         def task = project.task(BuildSourcesZipTask.NAME, type: BuildSourcesZipTask) as BuildSourcesZipTask
         task.releaseConf = rc
-        task.conf = new AndroidConfiguration(project, * [null] * 5)
+        task.conf = new AndroidConfiguration()
 
         when:
         task.buildSourcesZip()

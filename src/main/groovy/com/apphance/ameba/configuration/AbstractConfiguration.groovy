@@ -8,7 +8,7 @@ import java.lang.reflect.Field
 
 import static org.apache.commons.lang.StringUtils.join
 
-abstract class AbstractConfiguration implements Configuration {
+abstract class AbstractConfiguration {
 
     @Inject
     PropertyPersister propertyPersister
@@ -31,6 +31,8 @@ abstract class AbstractConfiguration implements Configuration {
     void setEnabled(boolean enabled) {
         throw new IllegalStateException("Cannot change '$configurationName' enabled status to: $enabled")
     }
+
+    abstract boolean isEnabled()
 
     List<Field> getPropertyFields() {
         List<Field> fields = []
@@ -88,12 +90,10 @@ abstract class AbstractConfiguration implements Configuration {
 
     void checkProperties() {}
 
-    @Override
     boolean canBeEnabled() {
         return true
     }
 
-    @Override
     String getMessage() {
         ""
     }

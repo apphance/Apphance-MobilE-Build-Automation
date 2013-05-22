@@ -56,10 +56,11 @@ class IOSTCVariantSpec extends Specification {
 
         then:
         def fields = tcVariant.amebaProperties
-        fields.size() == 4
+        fields.size() == 5
         fields*.name.containsAll(
                 [
                         'ios.variant.t1c1.mobileprovision',
+                        'ios.variant.t1c1.buildMode',
                         'ios.variant.t1c1.apphance.mode',
                         'ios.variant.t1c1.apphance.appKey',
                         'ios.variant.t1c1.apphance.lib'

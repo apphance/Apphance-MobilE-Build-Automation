@@ -1,30 +1,55 @@
 package com.apphance.ameba.configuration
 
 import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.configuration.reader.PropertyReader
+import org.gradle.api.Project
 
-interface ProjectConfiguration extends Configuration {
+import javax.inject.Inject
 
-    String getVersionCode()
+abstract class ProjectConfiguration extends AbstractConfiguration {
 
-    String getExtVersionCode()
+    @Inject
+    Project project
+    @Inject
+    PropertyReader reader
 
-    String getVersionString()
+    abstract String getVersionCode()
 
-    String getExtVersionString()
+    abstract String getVersionString()
 
-    String getFullVersionString()
+    final String getExtVersionCode() {
+        reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
+    }
 
-    String getProjectVersionedName()
+    final String getExtVersionString() {
+        reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
+    }
 
-    StringProperty getProjectName()
+    final String getFullVersionString() {
+        "${versionString}_${versionCode}"
+    }
 
-    File getTmpDir()
+    final String getProjectVersionedName() {
+        "${projectName.value}-$fullVersionString"
+    }
 
-    File getBuildDir()
+    abstract StringProperty getProjectName()
 
-    File getLogDir()
+    final File getBuildDir() {
+        project.file('build')
+    }
 
-    File getRootDir()
+    final File getTmpDir() {
+        project.file('ameba-tmp')
+    }
 
-    Collection<String> getSourceExcludes()
+    final File getLogDir() {
+        project.file('ameba-log')
+    }
+
+    final File getRootDir() {
+        project.rootDir
+    }
+
+    abstract Collection<String> getSourceExcludes()
 }

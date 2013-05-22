@@ -78,19 +78,11 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     }
 
     String getVersionCode() {
-        extVersionCode ?: plistParser.versionCode(plist) ?: ''
-    }
-
-    String getExtVersionCode() {
-        reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
+        conf.extVersionCode ?: plistParser.versionCode(plist) ?: ''
     }
 
     String getVersionString() {
-        extVersionString ?: plistParser.versionString(plist) ?: ''
-    }
-
-    String getExtVersionString() {
-        reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
+        conf.extVersionString ?: plistParser.versionString(plist) ?: ''
     }
 
     protected String sdkCmd() {

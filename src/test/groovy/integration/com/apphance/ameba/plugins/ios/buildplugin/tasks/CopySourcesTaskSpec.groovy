@@ -28,8 +28,8 @@ class CopySourcesTaskSpec extends Specification {
         variantsConf.variants >> [v1, v2]
 
         and:
-        def conf = GroovyMock(IOSConfiguration)
-        conf.rootDir >> p.rootDir
+        def conf = GroovySpy(IOSConfiguration)
+        conf.project = p
         conf.sourceExcludes >> []
 
         and:

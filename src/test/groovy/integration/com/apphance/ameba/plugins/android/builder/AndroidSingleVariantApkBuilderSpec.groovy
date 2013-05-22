@@ -56,7 +56,7 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
         p.file('ameba-ota').deleteDir()
     }
 
-    def 'artifacts are built according to passed characteristics'() {
+    def 'artifacts are built according to passed config'() {
         expect:
         p.file('ameba-tmp').deleteDir()
 
@@ -85,7 +85,7 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
         ].every { p.file("$variantTmpDir/bin/$it").exists() }
     }
 
-    def 'artifacts are built according to passed characteristics and copied to ota'() {
+    def 'artifacts are built according to passed config and copied to ota'() {
         given:
         def releaseApk = new File(p.rootDir, 'ameba-ota/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.apk')
         def artifactProvider = GroovyMock(AndroidArtifactProvider, {

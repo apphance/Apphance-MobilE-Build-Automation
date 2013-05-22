@@ -6,6 +6,7 @@ import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
 import groovy.json.JsonSlurper
+import org.gradle.api.Project
 import spock.lang.Specification
 
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
@@ -29,8 +30,10 @@ class IOSExecutorSpec extends Specification {
         fileLinker.fileLink(_) >> ''
         logFileGenerator.commandLogFiles() >> logFiles
 
-        conf = GroovyMock(IOSConfiguration)
-        conf.rootDir >> new File('testProjects/ios/GradleXCode')
+        conf = GroovySpy(IOSConfiguration)
+        conf.project = GroovyStub(Project) {
+            getRootDir() >> new File('testProjects/ios/GradleXCode')
+        }
         conf.xcodeDir >> new FileProperty(value: new File('GradleXCode.xcodeproj'))
 
         iosExecutor.commandExecutor = executor
