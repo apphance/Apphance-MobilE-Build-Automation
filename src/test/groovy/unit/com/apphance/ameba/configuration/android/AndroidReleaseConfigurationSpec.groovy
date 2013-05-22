@@ -119,15 +119,10 @@ class AndroidReleaseConfigurationSpec extends Specification {
         }
 
         and:
-        def arc = new AndroidReleaseConfiguration()
-        arc.conf = ac
-        arc.manifestHelper = new AndroidManifestHelper()
+        def arc = new AndroidReleaseConfiguration(androidConf: ac, manifestHelper: new AndroidManifestHelper())
 
         expect:
-        def icons = arc.possibleIcons()
-        icons.size() == 2
-        icons.contains('res/drawable-hdpi/icon.png')
-        icons.contains('res/drawable/icon.png')
+        arc.possibleIcons().sort() == ['res/drawable-hdpi/icon.png', 'res/drawable/icon.png']
     }
 
     def 'default icons are found'() {
@@ -142,9 +137,7 @@ class AndroidReleaseConfigurationSpec extends Specification {
         }
 
         and:
-        def arc = new AndroidReleaseConfiguration()
-        arc.conf = ac
-        arc.manifestHelper = new AndroidManifestHelper()
+        def arc = new AndroidReleaseConfiguration(androidConf: ac, manifestHelper: new AndroidManifestHelper())
 
         expect:
         arc.defaultIcon().absolutePath.endsWith('drawable/icon.png')
