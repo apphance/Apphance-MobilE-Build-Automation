@@ -26,25 +26,16 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     private boolean enabledInternal = false
     private Integer emulatorPort
 
-    private Project project
-    private AndroidConfiguration conf
-    private AndroidManifestHelper manifestHelper
-    private AndroidBuildXmlHelper buildXmlHelper
-    private AndroidExecutor androidExecutor
-
     @Inject
-    AndroidTestConfiguration(
-            Project project,
-            AndroidConfiguration androidConf,
-            AndroidManifestHelper manifestHelper,
-            AndroidBuildXmlHelper buildXmlHelper,
-            AndroidExecutor androidExecutor) {
-        this.project = project
-        this.conf = androidConf
-        this.manifestHelper = manifestHelper
-        this.buildXmlHelper = buildXmlHelper
-        this.androidExecutor = androidExecutor
-    }
+    Project project
+    @Inject
+    AndroidConfiguration conf
+    @Inject
+    AndroidManifestHelper manifestHelper
+    @Inject
+    AndroidBuildXmlHelper buildXmlHelper
+    @Inject
+    AndroidExecutor androidExecutor
 
     @Override
     boolean isEnabled() {

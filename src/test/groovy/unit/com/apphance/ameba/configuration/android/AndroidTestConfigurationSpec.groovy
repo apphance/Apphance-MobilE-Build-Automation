@@ -23,7 +23,8 @@ class AndroidTestConfigurationSpec extends Specification {
         ac.project = GroovyStub(Project) {
             getRootDir() >> GroovyStub(File)
         }
-        def atc = new AndroidTestConfiguration(null, ac, * [null] * 3)
+        def atc = new AndroidTestConfiguration()
+        atc.conf = ac
         atc.enabled = internalField
 
         then:
@@ -39,7 +40,7 @@ class AndroidTestConfigurationSpec extends Specification {
 
     def 'emulator port is found well'() {
         given:
-        def atc = new AndroidTestConfiguration(* [null] * 5)
+        def atc = new AndroidTestConfiguration()
 
         expect:
         atc.emulatorPort
@@ -68,7 +69,11 @@ class AndroidTestConfigurationSpec extends Specification {
         abxh.projectName(_) >> 'androidName'
 
         and:
-        def atc = new AndroidTestConfiguration(p, ac, amh, abxh, null)
+        def atc = new AndroidTestConfiguration()
+        atc.project = p
+        atc.conf = ac
+        atc.manifestHelper = amh
+        atc.buildXmlHelper = abxh
         atc.enabled = true
 
         when:
