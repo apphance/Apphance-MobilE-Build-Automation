@@ -9,6 +9,7 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.properties.ListStringProperty.getSEPARATOR
+import static com.apphance.ameba.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static org.gradle.api.logging.Logging.getLogger
 
 @com.google.inject.Singleton
@@ -99,6 +100,6 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     void checkProperties() {
-        check variantsNames.value.sort() == variants*.name.sort(), "List in '${variantsNames.name}' property is not equal to the list of names of configured variants, check 'ameba.properties' file!"
+        check variantsNames.value.sort() == variants*.name.sort(), "List in '${variantsNames.name}' property is not equal to the list of names of configured variants, check '${FLOW_PROP_FILENAME}' file!"
     }
 }
