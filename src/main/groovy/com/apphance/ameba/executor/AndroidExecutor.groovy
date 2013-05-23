@@ -1,9 +1,12 @@
 package com.apphance.ameba.executor
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import javax.inject.Inject
+import groovy.transform.PackageScope
 import org.gradle.api.GradleException
+
+import javax.inject.Inject
 
 class AndroidExecutor {
 
@@ -16,15 +19,18 @@ class AndroidExecutor {
 
     @Inject
     CommandExecutor executor
+    @Inject
+    AndroidConfiguration conf
 
     def updateProject(File dir, String target, String name) {
-        def targetId = idForTarget(dir, target)
+        def targetId = idForTarget(target)
         run(dir, "update project -p . -t ${targetId ?: target} -n $name -s")
     }
 
-    String idForTarget(File dir, String target) {
+    @PackageScope
+    String idForTarget(String target) {
         if (!idForTarget[target]) {
-            List<String> output = run(dir, 'list target')
+            List<String> output = run(conf.rootDir, 'list target')
             output.collect {
                 def header = (it =~ TARGET_HEADER_PATTERN)
                 if (header.matches())
@@ -34,13 +40,13 @@ class AndroidExecutor {
         idForTarget[target]
     }
 
-    def listAvd(File directory) {
-        run(directory, "list avd -c")
+    def listAvd() {
+        run(conf.rootDir, 'list avd -c')
     }
 
-    def listTarget(File directory) {
+    def targets() {
         if (!targets) {
-            List<String> output = run(directory, 'list target')
+            List<String> output = run(conf.rootDir, 'list target')
             targets = parseResult(output, TARGET_HEADER_PATTERN).sort()
         }
         targets
@@ -58,9 +64,9 @@ class AndroidExecutor {
         result
     }
 
-    List<String> listSkinsForTarget(File dir, String target) {
+    List<String> skinsForTarget(String target) {
         if (!skinsForTarget[target]) {
-            List<String> output = run(dir, 'list target')
+            List<String> output = run(conf.rootDir, 'list target')
             def targetIdx = output.findIndexOf { it?.contains(target) }
             def skinsIdx = output.findIndexOf(targetIdx) { it?.contains('Skins:') }
             def skinsRaw = output[skinsIdx]
@@ -70,9 +76,10 @@ class AndroidExecutor {
         skinsForTarget[target]
     }
 
-    String defaultSkinForTarget(File dir, String target) {
+    @PackageScope
+    String defaultSkinForTarget(String target) {
         if (!defaultSkinForTarget[target]) {
-            List<String> output = run(dir, 'list target')
+            List<String> output = run(conf.rootDir, 'list target')
             def targetIdx = output.findIndexOf { it?.contains(target) }
             def skinsIdx = output.findIndexOf(targetIdx) { it?.contains('Skins:') }
             def skinsRaw = output[skinsIdx]

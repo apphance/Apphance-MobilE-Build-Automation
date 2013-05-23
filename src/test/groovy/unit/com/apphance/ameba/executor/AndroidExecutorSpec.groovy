@@ -1,13 +1,16 @@
 package com.apphance.ameba.executor
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.executor.command.CommandExecutor
+import org.gradle.api.Project
 import spock.lang.Specification
 
 class AndroidExecutorSpec extends Specification {
 
+    AndroidConfiguration conf = new AndroidConfiguration(project: GroovyStub(Project))
     CommandExecutor commandExecutor = Mock()
     File file = Mock()
-    def androidExecutor = new AndroidExecutor(executor: commandExecutor)
+    def androidExecutor = new AndroidExecutor(executor: commandExecutor, conf: conf)
 
     def 'test updateProject method'() {
         when: androidExecutor.updateProject(file, 'android-8', 'sample-name')
@@ -15,7 +18,7 @@ class AndroidExecutorSpec extends Specification {
     }
 
     def 'test listAvd'() {
-        when: androidExecutor.listAvd(file)
+        when: androidExecutor.listAvd()
         then: 1 * commandExecutor.executeCommand({ it.commandForExecution.join(' ') == 'android list avd -c' })
     }
 
@@ -30,10 +33,10 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand(_) >> targets.split('\n')
 
         and:
-        def ae = new AndroidExecutor(executor: ce)
+        def ae = new AndroidExecutor(executor: ce, conf: conf)
 
         when:
-        def output = ae.listTarget(Mock(File))
+        def output = ae.targets()
 
         then:
         ['Google Inc.:Google APIs:3', 'Google Inc.:Google APIs:4', 'android-17', 'android-3', 'android-4'] == output
@@ -45,10 +48,10 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand(_) >> targets.split('\n')
 
         and:
-        def ae = new AndroidExecutor(executor: ce)
+        def ae = new AndroidExecutor(executor: ce, conf: conf)
 
         when:
-        def output = ae.listSkinsForTarget(Mock(File), 'android-3')
+        def output = ae.skinsForTarget('android-3')
 
         then:
         ['HVGA', 'HVGA-L', 'HVGA-P', 'QVGA-L', 'QVGA-P'] == output
@@ -60,10 +63,10 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand(_) >> targets.split('\n')
 
         and:
-        def ae = new AndroidExecutor(executor: ce)
+        def ae = new AndroidExecutor(executor: ce, conf: conf)
 
         expect:
-        skin == ae.defaultSkinForTarget(Mock(File), target)
+        skin == ae.defaultSkinForTarget(target)
 
         where:
         skin      | target
@@ -78,10 +81,10 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand(_) >> targets.split('\n')
 
         and:
-        def ae = new AndroidExecutor(executor: ce)
+        def ae = new AndroidExecutor(executor: ce, conf: conf)
 
         expect:
-        idForTarget == ae.idForTarget(Mock(File), target)
+        idForTarget == ae.idForTarget(target)
 
         where:
         idForTarget | target

@@ -180,7 +180,7 @@ class AndroidConfiguration extends ProjectConfiguration {
     }
 
     private List<String> possibleTargets() {
-        androidExecutor.listTarget(rootDir).findAll { !it?.trim()?.empty }
+        androidExecutor.targets().findAll { !it?.trim()?.empty }
     }
 
     def readProperties() {
