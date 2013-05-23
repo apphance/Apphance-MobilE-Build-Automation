@@ -39,7 +39,14 @@ class IOSConfiguration extends ProjectConfiguration {
 
     @Override
     StringProperty getProjectName() {
-        throw new UnsupportedOperationException('not yet implemented')
+        def sp = new StringProperty() {
+            @Override
+            String toString() {
+                value
+            }
+        }
+        sp.value = iosVariantsConf.mainVariant.projectName
+        sp
     }
 
     File getSchemesDir() {
@@ -74,7 +81,7 @@ class IOSConfiguration extends ProjectConfiguration {
     def sdk = new StringProperty(
             name: 'ios.sdk',
             message: 'iOS SDK',
-            possibleValues: { executor.sdks as List},
+            possibleValues: { executor.sdks as List },
             validator: { it in executor.sdks },
             required: { true }
     )
@@ -82,7 +89,7 @@ class IOSConfiguration extends ProjectConfiguration {
     def simulatorSdk = new StringProperty(
             name: 'ios.sdk.simulator',
             message: 'iOS simulator SDK',
-            possibleValues: { executor.simulatorSdks as List},
+            possibleValues: { executor.simulatorSdks as List },
             validator: { it in executor.simulatorSdks },
             required: { true }
     )

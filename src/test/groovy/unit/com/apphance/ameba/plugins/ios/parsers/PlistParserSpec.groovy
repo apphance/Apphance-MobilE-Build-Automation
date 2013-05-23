@@ -6,13 +6,15 @@ import spock.lang.Specification
 class PlistParserSpec extends Specification {
 
     def parser = new PlistParser()
-    def executor
 
     def setup() {
-        executor = GroovyMock(IOSExecutor)
-        executor.plistToJSON(_) >> new File('testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist.json').text.split('\n')
-
-        parser.executor = executor
+        parser.executor = GroovyMock(IOSExecutor) {
+            plistToJSON(_) >> new File('testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist.json').text.split('\n')
+            buildSettings(_, _) >> [
+                    VALUE: 'value',
+                    VALUE2: 'value_2'
+            ]
+        }
     }
 
     def 'version code is read correctly'() {
@@ -117,5 +119,32 @@ class PlistParserSpec extends Specification {
         '${AA_D}'   | false
         '${AA_D_}'  | true
         '${_AA_D_}' | true
+    }
+
+    def 'placeholders are evaluated correctly'() {
+        expect:
+        expected == parser.evaluate(value, 'target', 'conf')
+
+        where:
+        expected            | value
+        'value'             | '${VALUE}'
+        'value.1'           | '${VALUE}.1'
+        'value.1.value_2.2' | '${VALUE}.1.${VALUE2}.2'
+        'value.1.value2.2'  | '${VALUE}.1.${VALUE2:rfc1034identifier}.2'
+        'value2.1'          | '${VALUE2:rfc1034identifier}.1'
+        'value'             | 'value'
+        '1_42'              | '1_42'
+    }
+
+    def 'rfc1034 identifier works well'() {
+        expect:
+        PlistParser.IDENTIFIERS['rfc1034identifier'](value) == expected
+
+        where:
+        value                | expected
+        'value'              | 'value'
+        'value2 value_3'     | 'value2value3'
+        'value2-value_3'     | 'value2-value3'
+        'value2-value_3.com' | 'value2-value3.com'
     }
 }

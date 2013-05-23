@@ -78,11 +78,11 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     }
 
     String getVersionCode() {
-        conf.extVersionCode ?: plistParser.versionCode(plist) ?: ''
+        conf.extVersionCode ?: plistParser.evaluate(plistParser.versionCode(plist), target, configuration) ?: ''
     }
 
     String getVersionString() {
-        conf.extVersionString ?: plistParser.versionString(plist) ?: ''
+        conf.extVersionString ?: plistParser.evaluate(plistParser.versionString(plist), target, configuration) ?: ''
     }
 
     protected String sdkCmd() {
@@ -95,9 +95,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     String getProjectName() {
         String bundleDisplayName = plistParser.bundleDisplayName(plist)
-        //TODO this value should be taken from plist - CFBundleDisplayName
-        //TODO the value of the mentioned key may refer to pbxjproj file
-        null
+        plistParser.evaluate(bundleDisplayName, target, configuration)
     }
 
     abstract File getPlist()
