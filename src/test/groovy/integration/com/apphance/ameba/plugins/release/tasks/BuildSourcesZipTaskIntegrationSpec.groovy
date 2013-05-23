@@ -5,6 +5,7 @@ import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class BuildSourcesZipTaskIntegrationSpec extends Specification {
@@ -21,7 +22,7 @@ class BuildSourcesZipTaskIntegrationSpec extends Specification {
         def sourceZipName = "TestAndroidProject-1.0.1_42-src.zip"
         rc.sourcesZip >> new AmebaArtifact(
                 name: "TestAndroidProject-src",
-                location: new File('ameba-tmp', sourceZipName))
+                location: new File(TMP_DIR, sourceZipName))
 
         and:
         def task = project.task(BuildSourcesZipTask.NAME, type: BuildSourcesZipTask) as BuildSourcesZipTask
@@ -32,7 +33,7 @@ class BuildSourcesZipTaskIntegrationSpec extends Specification {
         task.buildSourcesZip()
 
         then:
-        def f = new File(projectDir, "ameba-tmp/${sourceZipName}")
+        def f = new File(projectDir, "${TMP_DIR}/${sourceZipName}")
         f.exists()
         f.size() > 30000
     }

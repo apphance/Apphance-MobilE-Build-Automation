@@ -6,6 +6,7 @@ import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
+import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static org.junit.Assert.assertTrue
 
 class ApphanceOTFTest {
@@ -42,7 +43,7 @@ class ApphanceOTFTest {
 
         runGradleNoVariants('updateProject', 'cleanRelease', 'buildAllDebug')
         assertTrue(new File(testNovariantsProject,
-                "ameba-ota/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.apk").exists())
+                "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.apk").exists())
 
         mainActivityFile.delete()
         mainActivityFile << tmpCopy.getText()

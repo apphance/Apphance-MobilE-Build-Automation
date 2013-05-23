@@ -8,6 +8,7 @@ import org.junit.BeforeClass
 import org.junit.Ignore
 import org.junit.Test
 
+import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.*
 
@@ -171,7 +172,7 @@ class ExecuteAndroidBuildsTest {
         } finally {
             manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
         }
-        def androidLib = new File("testProjects/android/android-no-apphance-application/ameba-tmp/TestDebug/libs/android.pre-production-1.8.2.jar")
+        def androidLib = new File("testProjects/android/android-no-apphance-application/${TMP_DIR}/TestDebug/libs/android.pre-production-1.8.2.jar")
         assertTrue(androidLib.exists())
         assertEquals('android.pre-production-1.8.2.jar', androidLib.name)
     }

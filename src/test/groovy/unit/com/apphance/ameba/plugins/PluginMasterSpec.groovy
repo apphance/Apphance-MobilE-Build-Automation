@@ -25,6 +25,7 @@ import org.gradle.api.plugins.PluginContainer
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static com.apphance.ameba.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static com.apphance.ameba.detection.ProjectType.IOS
 import static com.apphance.ameba.di.ConfigurationModule.getVariantFactories
@@ -43,7 +44,7 @@ class PluginMasterSpec extends Specification {
         project.plugins >> Mock(PluginContainer)
         def amebaProperties = Mock(File)
         amebaProperties.exists() >> true
-        project.file('ameba.properties') >> amebaProperties
+        project.file(FLOW_PROP_FILENAME) >> amebaProperties
 
         and:
         projectTypeDetectorMock.detectProjectType(_) >> type
@@ -74,7 +75,7 @@ class PluginMasterSpec extends Specification {
         project.plugins >> Mock(PluginContainer)
         def amebaProperties = Mock(File)
         amebaProperties.exists() >> true
-        project.file('ameba.properties') >> amebaProperties
+        project.file(FLOW_PROP_FILENAME) >> amebaProperties
 
         and: 'tell that project is Android'
         projectTypeDetectorMock.detectProjectType(_) >> ANDROID
@@ -105,7 +106,7 @@ class PluginMasterSpec extends Specification {
         project.plugins >> Mock(PluginContainer)
         def amebaProperties = Mock(File)
         amebaProperties.exists() >> true
-        project.file('ameba.properties') >> amebaProperties
+        project.file(FLOW_PROP_FILENAME) >> amebaProperties
 
         and: 'tell that project is iOS'
         projectTypeDetectorMock.detectProjectType(_) >> IOS

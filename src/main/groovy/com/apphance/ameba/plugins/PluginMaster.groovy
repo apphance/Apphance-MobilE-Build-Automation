@@ -22,6 +22,8 @@ import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
+
 class PluginMaster {
 
     def log = Logging.getLogger(getClass())
@@ -70,7 +72,7 @@ class PluginMaster {
 
         plugins['COMMON'].each installPlugin
 
-        if (project.file('ameba.properties').exists()) {
+        if (project.file(FLOW_PROP_FILENAME).exists()) {
             plugins[projectType.name()].each installPlugin
         }
     }

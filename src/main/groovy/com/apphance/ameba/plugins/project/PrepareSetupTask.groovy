@@ -8,13 +8,14 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
 
 class PrepareSetupTask extends DefaultTask {
 
     static final NAME = 'prepareSetup'
     String group = AMEBA_SETUP
-    String description = 'Prepares configuration (ameba.properties)'
+    String description = "Prepares configuration (${FLOW_PROP_FILENAME})"
 
     @Inject
     Map<Integer, AbstractConfiguration> configurations

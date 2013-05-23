@@ -3,7 +3,7 @@ buildscript {
     apply from: "$amebaProjectPath/ameba_in_classpath.gradle"
 }
 
-apply plugin: 'ameba'
+apply plugin: 'apphance-flow'
 //iosUnitTests {
 //    configuration = 'Debug'
 //}
