@@ -17,6 +17,7 @@ import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFi
 import static java.io.File.createTempFile
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
+//TODO WARNING!! THIS TEST WORKS ON AN UPDATED (build.xml, local.properties) PROJECT!!!
 class AndroidSingleVariantApkBuilderSpec extends Specification {
 
     def project = builder().withProjectDir(new File('testProjects/android/android-basic')).build()
