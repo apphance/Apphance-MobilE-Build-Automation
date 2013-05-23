@@ -44,12 +44,6 @@ class IOSExecutor {
 
     @Lazy List<String> list = { run('-list')*.trim() }()
 
-    List<String> pbxProjToXml() {
-        commandExecutor.executeCommand(new Command(
-                runDir: conf.rootDir,
-                cmd: "plutil -convert xml1 ${conf.xcodeDir.value}/$PROJECT_PBXPROJ -o -".split()))
-    }
-
     @Lazy List<String> pbxProjToJSON = {
         commandExecutor.executeCommand(new Command(
                 runDir: conf.rootDir,
@@ -57,11 +51,15 @@ class IOSExecutor {
     }()
 
     List<String> plistToJSON(File plist) {
+        plistToJSONC(plist)
+    }
+
+    private Closure<List<String>> plistToJSONC = { File plist ->
         commandExecutor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: "plutil -convert json ${plist.absolutePath} -o -".split()
         ))
-    }
+    }.memoize()
 
     List<String> mobileprovisionToXml(File mobileprovision) {
         commandExecutor.executeCommand(new Command(
