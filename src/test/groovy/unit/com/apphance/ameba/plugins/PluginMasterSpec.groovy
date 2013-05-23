@@ -25,6 +25,7 @@ import org.gradle.api.plugins.PluginContainer
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static com.apphance.ameba.configuration.ProjectConfiguration.LOG_DIR
 import static com.apphance.ameba.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static com.apphance.ameba.detection.ProjectType.IOS
@@ -159,7 +160,7 @@ class PluginMasterSpec extends Specification {
         iosExecutorMock.list >> XCODE_LIST
 
         project.rootDir >> rootDir
-        project.file('ameba-log') >> new File(System.properties['java.io.tmpdir'])
+        project.file(LOG_DIR) >> new File(System.properties['java.io.tmpdir'])
 
         return Guice.createInjector(
                 new EnvironmentModule(),

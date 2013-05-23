@@ -8,7 +8,7 @@ import org.junit.BeforeClass
 import org.junit.Ignore
 import org.junit.Test
 
-import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
+import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.*
 

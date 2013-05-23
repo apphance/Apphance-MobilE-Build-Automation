@@ -8,6 +8,7 @@ import com.apphance.ameba.configuration.properties.StringProperty
 import org.gradle.api.Project
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.google.common.io.Files.createTempDir
 
@@ -26,7 +27,7 @@ class AndroidArtifactProviderSpec extends Specification {
     def tmpDir = createTempDir()
 
     def project = GroovyStub(Project) {
-        file('ameba-tmp') >> tmpDir
+        file(TMP_DIR) >> tmpDir
     }
     def otaDir = createTempDir()
     def vTmpDir = createTempDir()

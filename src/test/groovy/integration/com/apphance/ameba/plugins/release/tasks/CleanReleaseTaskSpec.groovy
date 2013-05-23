@@ -2,9 +2,11 @@ package com.apphance.ameba.plugins.release.tasks
 
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
+import org.gradle.api.Project
 import spock.lang.Specification
 
-import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
+import static com.apphance.ameba.configuration.ProjectConfiguration.LOG_DIR
+import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
@@ -23,7 +25,6 @@ class CleanReleaseTaskSpec extends Specification {
             file(TMP_DIR) >> project.file(TMP_DIR)
         }
 
-
         and:
         def task = project.task(CleanReleaseTask.NAME, type: CleanReleaseTask) as CleanReleaseTask
         task.releaseConf = rc
@@ -37,5 +38,7 @@ class CleanReleaseTaskSpec extends Specification {
         project.file(TMP_DIR).list().size() == 0
         project.file(OTA_DIR).exists()
         project.file(OTA_DIR).list().size() == 0
+        project.file(LOG_DIR).exists()
+        project.file(LOG_DIR).list().size() == 0
     }
 }

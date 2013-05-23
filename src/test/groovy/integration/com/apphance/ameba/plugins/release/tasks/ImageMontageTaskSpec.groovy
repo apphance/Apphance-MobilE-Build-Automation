@@ -14,7 +14,7 @@ import spock.lang.Unroll
 
 import javax.imageio.ImageIO
 
-import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
+import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD

@@ -41,7 +41,7 @@ class IOSReleaseConfigurationSpec extends Specification {
 
     def 'test possibleIcons'() {
         expect:
-        // TODO when ota and ameba-ota directory will be excluded can be equals assertion
+        // TODO when OTA_DIR directory will be excluded can be equals assertion
         iosReleaseConf.possibleIcons().containsAll(['icon.png', 'icon_retina.png'])
     }
 
@@ -50,7 +50,7 @@ class IOSReleaseConfigurationSpec extends Specification {
         def files = iosReleaseConf.findMobileProvisionFiles()
 
         then:
-        // TODO when ota and ameba-ota directory will be excluded can be equals assertion
+        // TODO when OTA_DIR directory will be excluded can be equals assertion
         files.size() <= 2
         'Ameba_Test_Project.mobileprovision' in files*.name
 

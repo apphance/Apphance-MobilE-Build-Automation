@@ -5,7 +5,7 @@ import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import spock.lang.Specification
 
-import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
+import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class BuildSourcesZipTaskIntegrationSpec extends Specification {

@@ -13,6 +13,7 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 import org.gradle.api.Project
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
@@ -53,7 +54,7 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
         conf.projectName >> new StringProperty(value: projectName)
         conf.project = GroovyStub(Project) {
             getRootDir() >> rootDir
-            file('ameba-tmp') >> tmpDir
+            file(TMP_DIR) >> tmpDir
         }
         conf.reader = GroovyStub(PropertyReader) {
             systemProperty('version.code') >> '42'

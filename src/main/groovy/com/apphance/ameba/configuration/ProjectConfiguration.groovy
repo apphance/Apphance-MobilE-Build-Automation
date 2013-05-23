@@ -8,6 +8,9 @@ import javax.inject.Inject
 
 abstract class ProjectConfiguration extends AbstractConfiguration {
 
+    public static final String TMP_DIR = 'flow-tmp'
+    public static final String LOG_DIR = 'flow-log'
+
     @Inject
     Project project
     @Inject
@@ -40,11 +43,11 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
     }
 
     final File getTmpDir() {
-        project.file('ameba-tmp')
+        project.file(TMP_DIR)
     }
 
     final File getLogDir() {
-        project.file('ameba-log')
+        project.file(LOG_DIR)
     }
 
     final File getRootDir() {

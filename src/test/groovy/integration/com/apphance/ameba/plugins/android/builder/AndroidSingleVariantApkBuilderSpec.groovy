@@ -9,7 +9,9 @@ import com.apphance.ameba.plugins.android.release.AndroidReleaseApkListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
+import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
@@ -35,7 +37,7 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
         getVariantsDir() >> project.file('variants')
     }
 
-    def variantTmpDir = 'ameba-tmp/test'
+    def variantTmpDir = "${TMP_DIR}/test"
 
     def builder = new AndroidSingleVariantApkBuilder()
 
@@ -51,16 +53,16 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
         logFiles.each {
             it.value.delete()
         }
-        project.file('ameba-tmp').deleteDir()
-        project.file('ameba-ota').deleteDir()
+        project.file(TMP_DIR).deleteDir()
+        project.file(OTA_DIR).deleteDir()
     }
 
     def 'artifacts are built according to passed config'() {
         expect:
-        project.file('ameba-tmp').deleteDir()
+        project.file(TMP_DIR).deleteDir()
 
         and:
-        !project.file('ameba-tmp').exists()
+        !project.file(TMP_DIR).exists()
 
         and:
         copyProjectToTmpDir()
@@ -73,7 +75,7 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
         })
 
         then:
-        def sampleProperties = project.file('ameba-tmp/test/res/raw/sample.properties')
+        def sampleProperties = project.file("${TMP_DIR}/test/res/raw/sample.properties")
         sampleProperties.exists() && sampleProperties.isFile() && sampleProperties.size() > 0
 
         and:
@@ -86,7 +88,7 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
 
     def 'artifacts are built according to passed config and copied to ota'() {
         given:
-        def releaseApk = new File(project.rootDir, 'ameba-ota/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.apk')
+        def releaseApk = new File(project.rootDir, "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.apk")
         def artifactProvider = GroovyStub(AndroidArtifactProvider, {
             apkArtifact(_) >> GroovyStub(AmebaArtifact, {
                 getLocation() >> releaseApk
@@ -102,12 +104,12 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
         builder.registerListener(listener)
 
         expect:
-        project.file('ameba-tmp').deleteDir()
-        project.file('ameba-ota').deleteDir()
+        project.file(TMP_DIR).deleteDir()
+        project.file(OTA_DIR).deleteDir()
 
         and:
-        !project.file('ameba-tmp').exists()
-        !project.file('ameba-ota').exists()
+        !project.file(TMP_DIR).exists()
+        !project.file(OTA_DIR).exists()
 
         and:
         copyProjectToTmpDir()
@@ -117,11 +119,11 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
             getTmpDir() >> project.file(variantTmpDir)
             getVariantDir() >> project.file('variants/test')
             getMode() >> DEBUG
-            getOriginalFile() >> project.file('ameba-tmp/test/bin/TestAndroidProject-debug.apk')
+            getOriginalFile() >> project.file("$TMP_DIR/test/bin/TestAndroidProject-debug.apk")
         })
 
         then:
-        def sampleProperties = project.file('ameba-tmp/test/res/raw/sample.properties')
+        def sampleProperties = project.file("$TMP_DIR/test/res/raw/sample.properties")
         sampleProperties.exists() && sampleProperties.isFile() && sampleProperties.size() > 0
 
         and:
@@ -133,8 +135,8 @@ class AndroidSingleVariantApkBuilderSpec extends Specification {
 
         and:
         releaseApk.exists() && releaseApk.isFile()
-        !(new File(project.rootDir, 'ameba-ota/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-unaligned-1.0.1_42.apk')).exists()
-        !(new File(project.rootDir, 'ameba-ota/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-unsigned-1.0.1_42.apk')).exists()
+        !(new File(project.rootDir, "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-unaligned-1.0.1_42.apk")).exists()
+        !(new File(project.rootDir, "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-unsigned-1.0.1_42.apk")).exists()
     }
 
     def copyProjectToTmpDir() {

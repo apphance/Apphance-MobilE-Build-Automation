@@ -5,6 +5,8 @@ import com.google.inject.AbstractModule
 import com.google.inject.Provides
 import org.gradle.api.Project
 
+import static com.apphance.ameba.configuration.ProjectConfiguration.LOG_DIR
+
 class CommandExecutorModule extends AbstractModule {
 
     private Project project
@@ -23,7 +25,7 @@ class CommandExecutorModule extends AbstractModule {
     }
 
     private File createLogDir() {
-        def logDir = project.file('ameba-log')
+        def logDir = project.file(LOG_DIR)
         if (!logDir.exists())
             logDir.mkdirs()
         logDir
