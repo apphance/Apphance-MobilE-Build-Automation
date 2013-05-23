@@ -38,7 +38,8 @@ class AndroidPlugin implements Plugin<Project> {
 
         if (conf.isEnabled()) {
 
-            project.task(UpdateProjectTask.NAME, type: UpdateProjectTask)
+            project.task(UpdateProjectTask.NAME,
+                    type: UpdateProjectTask)
 
             project.task(CleanClassesTask.NAME,
                     type: CleanClassesTask,
@@ -66,19 +67,28 @@ class AndroidPlugin implements Plugin<Project> {
                     type: CompileAndroidTask,
                     dependsOn: UpdateProjectTask.NAME)
 
-            project.task(BUILD_ALL_DEBUG_TASK_NAME, group: AMEBA_BUILD)
-            project.task(BUILD_ALL_RELEASE_TASK_NAME, group: AMEBA_BUILD)
-            project.task('buildAll', dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME], group: AMEBA_BUILD)
+            project.task(BUILD_ALL_DEBUG_TASK_NAME,
+                    group: AMEBA_BUILD,
+                    description: 'Builds all debug variants')
 
-            variantsConf.variants.each {
-                project.task(it.buildTaskName,
+            project.task(BUILD_ALL_RELEASE_TASK_NAME,
+                    group: AMEBA_BUILD,
+                    description: 'Build all release variants')
+
+            project.task(BUILD_ALL_TASK_NAME,
+                    group: AMEBA_BUILD,
+                    dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME],
+                    description: 'Builds all variants')
+
+            variantsConf.variants.each { variant ->
+                project.task(variant.buildTaskName,
                         type: SingleVariantTask,
-                        dependsOn: [CopySourcesTask.NAME, UpdateProjectTask.NAME]).variant = it
+                        dependsOn: [CopySourcesTask.NAME, UpdateProjectTask.NAME]).variant = variant
 
-                def buildAllMode = "buildAll${it.mode.capitalize()}"
-                project.tasks[buildAllMode].dependsOn it.buildTaskName
+                def buildAllMode = "buildAll${variant.mode.capitalize()}"
+                project.tasks[buildAllMode].dependsOn variant.buildTaskName
 
-                project.task("install${it.name}", type: InstallTask, dependsOn: it.buildTaskName).variant = it
+                project.task("install${variant.name}", type: InstallTask, dependsOn: variant.buildTaskName).variant = variant
             }
 
             project.tasks.each {

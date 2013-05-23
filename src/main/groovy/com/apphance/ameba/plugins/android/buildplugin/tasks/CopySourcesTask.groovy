@@ -3,7 +3,6 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
-import com.google.common.base.Preconditions
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -27,7 +26,6 @@ class CopySourcesTask extends DefaultTask {
 
     @TaskAction
     void copySources() {
-        Preconditions.checkNotNull(variantsConf.variants)
         def absoluteRoot = conf.rootDir.absolutePath
 
         variantsConf.variants.each { variant ->
@@ -37,7 +35,7 @@ class CopySourcesTask extends DefaultTask {
                     exclude(name: relativeTo(absoluteRoot, conf.tmpDir.absolutePath).name + '/**/*')
                     exclude(name: relativeTo(absoluteRoot, variantsConf.variantsDir.absolutePath).name + '/**/*')
                     exclude(name: relativeTo(absoluteRoot, releaseConf.otaDir.absolutePath).name + '/**/*')
-                    exclude(name: 'log/**/*')
+                    exclude(name: relativeTo(absoluteRoot, conf.logDir.absolutePath).name + '/**/*')
                     conf.sourceExcludes.each { exclude(name: it) }
                 }
             }

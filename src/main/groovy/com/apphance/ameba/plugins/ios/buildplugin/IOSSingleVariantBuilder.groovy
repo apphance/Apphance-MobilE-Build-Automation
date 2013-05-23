@@ -113,15 +113,11 @@ class IOSSingleVariantBuilder {
             replaceBundleId(tmpDir(target, configuration), oldBundleId, newBundleId, configuration)
         }
         l.lifecycle("\n\n\n=== Building target ${target}, configuration ${configuration}  ===")
-        if (target != "Frankified") {
-            iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration)
+        iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration)
 //            IOSBuilderInfo bi = buildSingleBuilderInfo(target, configuration, 'iphoneos', project)
-            IOSBuilderInfo bi = artifactProvider.builderInfo(null)//TODO pass variant here
-            buildListeners.each {
-                it.buildDone(bi)
-            }
-        } else {
-            iosExecutor.buildTarget(tmpDir(target, configuration), target, configuration, conf.simulatorSdk.value, "-arch i386")
+        IOSBuilderInfo bi = artifactProvider.builderInfo(null)//TODO pass variant here
+        buildListeners.each {
+            it.buildDone(bi)
         }
     }
 

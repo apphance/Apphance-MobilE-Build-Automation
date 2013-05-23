@@ -4,6 +4,9 @@ import com.apphance.ameba.configuration.ios.variants.IOSTCVariant
 import com.apphance.ameba.configuration.reader.PropertyPersister
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
+
 class IOSTCVariantSpec extends Specification {
 
     IOSConfiguration iosConf
@@ -60,11 +63,35 @@ class IOSTCVariantSpec extends Specification {
         fields*.name.containsAll(
                 [
                         'ios.variant.t1c1.mobileprovision',
-                        'ios.variant.t1c1.buildMode',
+                        'ios.variant.t1c1.mode',
                         'ios.variant.t1c1.apphance.mode',
                         'ios.variant.t1c1.apphance.appKey',
                         'ios.variant.t1c1.apphance.lib'
                 ]
         )
+    }
+
+    def 'build cmd is constructed correctly'() {
+        given:
+        def tcVariant = new IOSTCVariant('t1c1')
+        tcVariant.conf = iosConf
+        tcVariant.propertyPersister = propertyPersister
+
+        when:
+        tcVariant.conf.sdk.value = sdk
+        tcVariant.conf.simulatorSdk.value = simulatorSdk
+        tcVariant.mode.value = mode
+        tcVariant.init()
+
+        then:
+        tcVariant.buildCmd().join(' ') == expected
+
+        where:
+        mode      | sdk           | simulatorSdk         | expected
+        SIMULATOR | ''            | 'iphonesimulator6.1' | 'xcodebuild -target t1 -configuration c1 -sdk iphonesimulator6.1 -arch i386'
+        SIMULATOR | 'iphoneos6.1' | 'iphonesimulator6.1' | 'xcodebuild -target t1 -configuration c1 -sdk iphonesimulator6.1 -arch i386'
+        DEVICE    | ''            | 'iphonesimulator6.1' | 'xcodebuild -target t1 -configuration c1'
+        DEVICE    | 'iphoneos6.1' | 'iphonesimulator6.1' | 'xcodebuild -target t1 -configuration c1 -sdk iphoneos6.1'
+
     }
 }

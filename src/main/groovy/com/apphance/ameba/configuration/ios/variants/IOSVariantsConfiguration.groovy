@@ -4,12 +4,14 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
+import groovy.transform.PackageScope
 
 import javax.inject.Inject
-import groovy.transform.PackageScope
 
 import static IOSVariantType.SCHEME
 import static IOSVariantType.TC
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
 import static com.apphance.ameba.configuration.properties.ListStringProperty.getSEPARATOR
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
@@ -22,7 +24,6 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Inject
     IOSConfiguration conf
-
     @Inject
     IOSVariantFactory variantFactory
 
@@ -51,7 +52,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         List<AbstractIOSVariant> result = []
         if (variantsNames.value) {
             result.addAll(extractVariantsFromProperties())
-        } else if (hasSchemas()) {
+        } else if (hasSchemes()) {
             result.addAll(createVariantsFromSchemes())
             variantsNames.value = result*.name.join(SEPARATOR)
         } else {
@@ -72,7 +73,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }
 
     @PackageScope
-    boolean hasSchemas() {
+    boolean hasSchemes() {
         conf.schemes.any { isNotBlank(it) }
     }
 
@@ -91,12 +92,22 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     Collection<AbstractIOSVariant> getSubConfigurations() {
-        this.@variants
+        this.getVariants()
     }
 
     Collection<AbstractIOSVariant> getVariants() {
-        this.@variants
+        this.@variants.findAll { it.name in variantsNames.value }
     }
+
+    @Lazy
+    Collection<AbstractIOSVariant> deviceVariants = {
+        this.getVariants().findAll { it.mode.value == DEVICE }
+    }()
+
+    @Lazy
+    Collection<AbstractIOSVariant> simulatorVariants = {
+        this.getVariants().findAll { it.mode.value == SIMULATOR }
+    }()
 
     AbstractIOSVariant getMainVariant() {
         variants[0]

@@ -48,7 +48,7 @@ class IOSReleaseListener implements IOSBuildListener {
     @Override
     void buildDone(IOSBuilderInfo bi) {
         if (conf.versionString != null) {
-            if (bi.configuration != 'Debug') {
+            if (bi.configuration != 'Debug') {//DEVICE, SIMUALATOR
                 prepareDistributionZipFile(bi)
                 prepareDSYMZipFile(bi)
 //                prepareAhSYMFiles(bi) //TODO turn on after DI is implemented

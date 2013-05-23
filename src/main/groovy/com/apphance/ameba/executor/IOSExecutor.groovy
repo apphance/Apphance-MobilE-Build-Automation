@@ -86,10 +86,14 @@ class IOSExecutor {
     }
 
     Map<String, String> buildSettings(String target, String configuration) {
+        buildSettingsC(target, configuration)
+    }
+
+    private Closure<Map<String, String>> buildSettingsC = { String target, String configuration ->
         def result = commandExecutor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -showBuildSettings".split().flatten()
         ))
         parser.parseBuildSettings(result)
-    }
+    }.memoize()
 }

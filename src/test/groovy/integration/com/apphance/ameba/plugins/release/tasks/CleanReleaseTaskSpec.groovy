@@ -23,6 +23,7 @@ class CleanReleaseTaskSpec extends Specification {
         def pc = GroovySpy(ProjectConfiguration)
         pc.project = GroovyStub(Project) {
             file(TMP_DIR) >> project.file(TMP_DIR)
+            file(LOG_DIR) >> project.file(LOG_DIR)
         }
 
         and:

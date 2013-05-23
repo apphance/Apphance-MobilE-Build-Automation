@@ -1,12 +1,13 @@
 package com.apphance.ameba.configuration.ios
 
-import com.apphance.ameba.configuration.ios.variants.IOSSchemeVariant
-import com.apphance.ameba.configuration.ios.variants.IOSTCVariant
-import com.apphance.ameba.configuration.ios.variants.IOSVariantFactory
-import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
+import com.apphance.ameba.configuration.ios.variants.*
+import com.apphance.ameba.configuration.properties.IOSBuildModeProperty
 import com.apphance.ameba.configuration.reader.PropertyPersister
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
 
 class IOSVariantsConfigurationSpec extends Specification {
 
@@ -48,20 +49,39 @@ class IOSVariantsConfigurationSpec extends Specification {
         24           | IOSTCVariant     | []
     }
 
-    def 'hasSchemas'() {
+    def 'has schemes'() {
         given:
-        conf.schemes >> schemas
+        conf.schemes >> schemes
 
         when:
         def variants = variantsConf.buildVariantsList()
 
         then:
-        variantsConf.hasSchemas() == hasSchemas
+        variantsConf.hasSchemes() == hasSchemes
 
         where:
-        hasSchemas | schemas
+        hasSchemes | schemes
         true       | ['Some', 'SomeWithMonkey']
         false      | ['', '  ']
         false      | []
+    }
+
+    def 'variants by mode'() {
+        given:
+        def vConf = GroovySpy(IOSVariantsConfiguration)
+        vConf.getVariants() >> [
+                GroovyStub(AbstractIOSVariant, {
+                    getName() >> 'v1'
+                    getMode() >> new IOSBuildModeProperty(value: DEVICE)
+                }),
+                GroovyStub(AbstractIOSVariant, {
+                    getName() >> 'v2'
+                    getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
+                })
+        ]
+
+        expect:
+        vConf.deviceVariants*.name == ['v1']
+        vConf.simulatorVariants*.name == ['v2']
     }
 }

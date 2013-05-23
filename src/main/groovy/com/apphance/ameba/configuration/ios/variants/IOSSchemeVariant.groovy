@@ -23,13 +23,8 @@ class IOSSchemeVariant extends AbstractIOSVariant {
     }
 
     @Override
-    String getBuildableName() {
-        schemeParser.buildableName(name)
-    }
-
-    @Override
     List<String> buildCmd() {
-        conf.xcodebuildExecutionPath() + "-scheme $name ${sdkCmd()}".split()
+        conf.xcodebuildExecutionPath() + "-scheme $name -configuration $configuration ${sdkCmd()} ${buildModeCmd()}".split().flatten()
     }
 
     @Override

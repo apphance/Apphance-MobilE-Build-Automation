@@ -23,7 +23,7 @@ class CopyMobileProvisionTask extends DefaultTask {
         def mobileProvisionDir = "$userHome/Library/MobileDevice/Provisioning Profiles/"
         new File(mobileProvisionDir).mkdirs()
         variantsConf.variants.each { v ->
-            ant.copy(file: v.plist, todir: mobileProvisionDir, overwrite: true)
+            ant.copy(file: v.plist, todir: mobileProvisionDir, overwrite: true, failonerror: true, verbose: true)
         }
     }
 }

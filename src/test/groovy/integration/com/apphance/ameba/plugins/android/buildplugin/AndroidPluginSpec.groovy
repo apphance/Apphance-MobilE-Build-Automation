@@ -26,15 +26,12 @@ class AndroidPluginSpec extends Specification {
         def ap = new AndroidPlugin()
 
         and: 'prepare mock configuration'
-        def ac = Mock(AndroidConfiguration)
+        def ac = GroovyStub(AndroidConfiguration)
         ac.isEnabled() >> true
-        ac.sdkJars >> ['sdk.jar']
-        ac.jarLibraries >> ['lib.jar']
-        ac.linkedJarLibraries >> ['linkedLib.jar']
         ap.conf = ac
 
         and:
-        def avc = Mock(AndroidVariantsConfiguration)
+        def avc = GroovyStub(AndroidVariantsConfiguration)
         avc.variants >> []
         ap.variantsConf = avc
 
@@ -97,15 +94,12 @@ class AndroidPluginSpec extends Specification {
         def ap = new AndroidPlugin()
 
         and: 'prepare mock configuration'
-        def ac = Mock(AndroidConfiguration)
+        def ac = GroovyStub(AndroidConfiguration)
         ac.isEnabled() >> true
-        ac.sdkJars >> ['sdk.jar']
-        ac.jarLibraries >> ['lib.jar']
-        ac.linkedJarLibraries >> ['linkedLib.jar']
         ap.conf = ac
 
         and:
-        def avc = GroovyMock(AndroidVariantsConfiguration)
+        def avc = GroovyStub(AndroidVariantsConfiguration)
         avc.variants >> [
                 createVariant('v1', DEBUG),
                 createVariant('v2', RELEASE)

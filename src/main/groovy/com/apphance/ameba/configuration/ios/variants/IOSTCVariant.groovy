@@ -31,11 +31,6 @@ class IOSTCVariant extends AbstractIOSVariant {
     }
 
     @Override
-    String getBuildableName() {
-        throw new UnsupportedOperationException('to be done')
-    }
-
-    @Override
     String getTarget() {
         this.@target
     }
@@ -47,6 +42,6 @@ class IOSTCVariant extends AbstractIOSVariant {
 
     @Override
     List<String> buildCmd() {
-        conf.xcodebuildExecutionPath() + " -target $target -configuration $configuration ${sdkCmd()}".split()
+        conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration ${sdkCmd()} ${buildModeCmd()}".split().flatten()
     }
 }

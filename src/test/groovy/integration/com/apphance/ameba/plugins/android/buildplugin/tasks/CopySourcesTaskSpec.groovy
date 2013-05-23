@@ -7,6 +7,7 @@ import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfigur
 import org.gradle.api.Project
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.ProjectConfiguration.LOG_DIR
 import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static org.gradle.testfixtures.ProjectBuilder.builder
@@ -24,6 +25,7 @@ class CopySourcesTaskSpec extends Specification {
         conf.project = GroovyStub(Project) {
             getRootDir() >> p.rootDir
             file(TMP_DIR) >> p.file(TMP_DIR)
+            file(LOG_DIR) >> p.file(LOG_DIR)
         }
 
         and:
@@ -70,7 +72,7 @@ class CopySourcesTaskSpec extends Specification {
         !(new File(marketDir, TMP_DIR)).exists()
         !(new File(marketDir, OTA_DIR)).exists()
         !(new File(marketDir, OTA_DIR)).exists()
-        !(new File(testDir, 'log')).exists()
-        !(new File(testDir, 'log')).exists()
+        !(new File(testDir, LOG_DIR)).exists()
+        !(new File(testDir, LOG_DIR)).exists()
     }
 }

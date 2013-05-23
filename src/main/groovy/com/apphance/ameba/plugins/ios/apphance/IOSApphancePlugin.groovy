@@ -6,7 +6,6 @@ import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.plugins.apphance.ApphancePluginCommons
 import com.apphance.ameba.plugins.ios.apphance.tasks.AddIOSApphanceTaskFactory
 import com.apphance.ameba.plugins.ios.apphance.tasks.UploadIOSArtifactTask
-import com.apphance.ameba.plugins.ios.buildplugin.tasks.IOSAllSimulatorsBuilder
 import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
 import com.google.inject.Inject
 import org.gradle.api.Plugin
@@ -40,7 +39,6 @@ class IOSApphancePlugin implements Plugin<Project> {
                     def addApphance = { addIOSApphanceTaskFactory.create(variant).addIOSApphance() }
 
                     project.tasks[variant.getBuildTaskName()].doFirst(addApphance)
-                    project.tasks.findByName(IOSAllSimulatorsBuilder.NAME)?.doFirst(addApphance)
 
                     project.task("upload${variant.name}",
                             type: UploadIOSArtifactTask,

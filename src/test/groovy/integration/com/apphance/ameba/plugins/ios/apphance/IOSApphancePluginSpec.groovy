@@ -4,7 +4,6 @@ import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.configuration.ios.variants.IOSTCVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
-import com.apphance.ameba.plugins.ios.buildplugin.tasks.IOSAllSimulatorsBuilder
 import com.apphance.ameba.plugins.project.ProjectPlugin
 import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
 import spock.lang.Ignore
@@ -93,9 +92,6 @@ class IOSApphancePluginSpec extends Specification {
         project.tasks['uploadid1'].actions
         project.tasks['uploadid2'].actions
 
-        then: 'no buildAllSimulators task is present'
-        !project.tasks.findByName(IOSAllSimulatorsBuilder.NAME)
-
         then: 'each tasks has correct dependency'
         project.tasks['uploadid1'].dependsOn.flatten().containsAll('buildid1', ImageMontageTask.NAME)
         project.tasks['uploadid2'].dependsOn.flatten().containsAll('buildid2', ImageMontageTask.NAME)
@@ -109,12 +105,6 @@ class IOSApphancePluginSpec extends Specification {
         and:
         project.plugins.apply(ProjectPlugin)
 
-        and: 'add buildAllSimulators task'
-        project.task(IOSAllSimulatorsBuilder.NAME)
-
-        expect:
-        !project.tasks[IOSAllSimulatorsBuilder.NAME].actions
-
         when:
         def plugin = new IOSApphancePlugin()
         plugin.apphanceConf = GroovyStub(ApphanceConfiguration) { isEnabled() >> true }
@@ -123,12 +113,6 @@ class IOSApphancePluginSpec extends Specification {
 
         then: 'apphance configuration is added'
         project.configurations.apphance
-
-        then: 'tasks added'
-        project.tasks[IOSAllSimulatorsBuilder.NAME]
-
-        then: 'buildAllSmulators has actions'
-        project.tasks[IOSAllSimulatorsBuilder.NAME].actions
 
         then: 'tasks not added'
         !project.tasks.findByName('build-id1')

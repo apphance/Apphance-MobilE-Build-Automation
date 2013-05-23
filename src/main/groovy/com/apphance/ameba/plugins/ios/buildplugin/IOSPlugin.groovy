@@ -26,6 +26,8 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 class IOSPlugin implements Plugin<Project> {
 
     static final String BUILD_ALL_TASK_NAME = 'buildAll'
+    static final String BUILD_ALL_DEVICE_TASK_NAME = 'buildAllDevice'
+    static final String BUILD_ALL_SIMULATOR_TASK_NAME = 'buildAllSimulator'
 
     @Inject
     IOSConfiguration conf
@@ -36,25 +38,40 @@ class IOSPlugin implements Plugin<Project> {
     void apply(Project project) {
         if (conf.isEnabled()) {
 
-            project.task(CopySourcesTask.NAME, type: CopySourcesTask)
-            project.task(CopyDebugSourcesTask.NAME, type: CopyDebugSourcesTask)
-            project.task(CleanTask.NAME, type: CleanTask)
-            project.task(UnlockKeyChainTask.NAME, type: UnlockKeyChainTask)
-            project.task(CopyMobileProvisionTask.NAME, type: CopyMobileProvisionTask)
-            project.task(IOSAllSimulatorsBuilder.NAME, type: IOSAllSimulatorsBuilder, dependsOn: [
-                    CopyMobileProvisionTask.NAME,
-                    CopyDebugSourcesTask.NAME])
+            project.task(CleanTask.NAME,
+                    type: CleanTask)
 
-            project.task(BUILD_ALL_TASK_NAME, group: AMEBA_BUILD, description: 'Builds all variants and produces all artifacts (zip, ipa, messages, etc)')
+            project.task(CopySourcesTask.NAME,
+                    type: CopySourcesTask)
 
-            variantsConf.variants.each {
-                def buildTask = project.task(it.buildTaskName,
+            project.task(CopyMobileProvisionTask.NAME,
+                    type: CopyMobileProvisionTask)
+
+            project.task(UnlockKeyChainTask.NAME,
+                    type: UnlockKeyChainTask)
+
+            project.task(BUILD_ALL_DEVICE_TASK_NAME,
+                    group: AMEBA_BUILD,
+                    description: 'Builds all device variants')
+
+            project.task(BUILD_ALL_SIMULATOR_TASK_NAME,
+                    group: AMEBA_BUILD,
+                    description: 'Builds all simulator variants')
+
+            project.task(BUILD_ALL_TASK_NAME,
+                    group: AMEBA_BUILD,
+                    dependsOn: [BUILD_ALL_DEVICE_TASK_NAME, BUILD_ALL_SIMULATOR_TASK_NAME],
+                    description: 'Builds all variants and produces all artifacts (zip, ipa, messages, etc)')
+
+            variantsConf.variants.each { variant ->
+                def buildTask = project.task(variant.buildTaskName,
                         type: SingleVariantTask,
                         dependsOn: [CopySourcesTask.NAME, CopyMobileProvisionTask.NAME]
                 ) as SingleVariantTask
-                buildTask.variant = it
+                buildTask.variant = variant
 
-                project.tasks[BUILD_ALL_TASK_NAME].dependsOn it.buildTaskName
+                def buildAllMode = "buildAll${variant.mode.value.capitalize()}"
+                project.tasks[buildAllMode].dependsOn variant.buildTaskName
             }
 
             project.tasks.each {

@@ -3,11 +3,17 @@ package com.apphance.ameba.plugins.ios.buildplugin
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
-import com.apphance.ameba.plugins.ios.buildplugin.tasks.*
+import com.apphance.ameba.configuration.properties.IOSBuildModeProperty
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.CleanTask
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopySourcesTask
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.UnlockKeyChainTask
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
-import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.BUILD_ALL_TASK_NAME
+import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.*
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSPluginSpec extends Specification {
@@ -23,8 +29,15 @@ class IOSPluginSpec extends Specification {
         and:
         def variantsConf = GroovyMock(IOSVariantsConfiguration)
         variantsConf.variants >> [
-                GroovyMock(AbstractIOSVariant, { getBuildTaskName() >> "buildV1" }),
-                GroovyMock(AbstractIOSVariant, { getBuildTaskName() >> "buildV2" }),
+                GroovyMock(AbstractIOSVariant, {
+                    getBuildTaskName() >> 'buildV1'
+                    getMode() >> new IOSBuildModeProperty(value: DEVICE)
+                }
+                ),
+                GroovyMock(AbstractIOSVariant, {
+                    getBuildTaskName() >> 'buildV2'
+                    getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
+                }),
         ]
 
         and:
@@ -36,21 +49,22 @@ class IOSPluginSpec extends Specification {
         plugin.apply(project)
 
         then:
-        project.tasks[CopySourcesTask.NAME].group == AMEBA_BUILD
-        project.tasks[CopyDebugSourcesTask.NAME].group == AMEBA_BUILD
         project.tasks[CleanTask.NAME].group == AMEBA_BUILD
-        project.tasks[UnlockKeyChainTask.NAME].group == AMEBA_BUILD
+        project.tasks[CopySourcesTask.NAME].group == AMEBA_BUILD
         project.tasks[CopyMobileProvisionTask.NAME].group == AMEBA_BUILD
-        project.tasks[IOSAllSimulatorsBuilder.NAME].group == AMEBA_BUILD
+        project.tasks[UnlockKeyChainTask.NAME].group == AMEBA_BUILD
+        project.tasks[BUILD_ALL_DEVICE_TASK_NAME].group == AMEBA_BUILD
+        project.tasks[BUILD_ALL_SIMULATOR_TASK_NAME].group == AMEBA_BUILD
+        project.tasks[BUILD_ALL_TASK_NAME].group == AMEBA_BUILD
         project.tasks['buildV1'].group == AMEBA_BUILD
         project.tasks['buildV2'].group == AMEBA_BUILD
 
         and:
-        project.tasks[IOSAllSimulatorsBuilder.NAME].dependsOn.flatten().containsAll(CopyDebugSourcesTask.NAME,
-                CopyMobileProvisionTask.NAME)
-        project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll('buildV1', 'buildV2')
+        project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_SIMULATOR_TASK_NAME, BUILD_ALL_DEVICE_TASK_NAME)
         project.tasks['buildV1'].dependsOn.flatten().containsAll(CopySourcesTask.NAME, CopyMobileProvisionTask.NAME)
         project.tasks['buildV2'].dependsOn.flatten().containsAll(CopySourcesTask.NAME, CopyMobileProvisionTask.NAME)
+        project.tasks[BUILD_ALL_SIMULATOR_TASK_NAME].dependsOn.flatten().containsAll('buildV2')
+        project.tasks[BUILD_ALL_DEVICE_TASK_NAME].dependsOn.flatten().containsAll('buildV1')
     }
 
     def 'no tasks available when configuration is inactive'() {
@@ -78,12 +92,12 @@ class IOSPluginSpec extends Specification {
 
         then:
         !project.getTasksByName(CopySourcesTask.NAME, false)
-        !project.getTasksByName(CopyDebugSourcesTask.NAME, false)
         !project.getTasksByName(CleanTask.NAME, false)
         !project.getTasksByName(UnlockKeyChainTask.NAME, false)
         !project.getTasksByName(CopyMobileProvisionTask.NAME, false)
-        !project.getTasksByName(IOSAllSimulatorsBuilder.NAME, false)
         !project.getTasksByName(BUILD_ALL_TASK_NAME, false)
+        !project.getTasksByName(BUILD_ALL_SIMULATOR_TASK_NAME, false)
+        !project.getTasksByName(BUILD_ALL_DEVICE_TASK_NAME, false)
         !project.getTasksByName('buildV1', false)
         !project.getTasksByName('buildV2', false)
     }
