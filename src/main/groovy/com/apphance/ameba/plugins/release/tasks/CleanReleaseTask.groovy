@@ -24,7 +24,11 @@ class CleanReleaseTask extends DefaultTask {
     void clean() {
         releaseConf.otaDir.deleteDir()
         releaseConf.otaDir.mkdirs()
+
         conf.tmpDir.deleteDir()
         conf.tmpDir.mkdirs()
+
+        conf.logDir.deleteDir()
+        conf.logDir.mkdirs()
     }
 }
