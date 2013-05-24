@@ -21,7 +21,6 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
     Map<String, AmebaArtifact> ahSYMDirs = [:]
     Map<String, AmebaArtifact> dmgImageFiles = [:]
 
-    @Inject IOSConfiguration iosConf
     @Inject IOSVariantsConfiguration iosVariantsConf
     @Inject PlistParser plistParser
 
@@ -33,13 +32,13 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
     @Override
     List<String> possibleIcons() {
         def icons = getIconFiles()
-        icons.collect { relativeTo(iosConf.rootDir.absolutePath, it.absolutePath).path }
+        icons.collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath).path }
     }
 
     private List<File> getIconFiles() {
         def iconNames = iconNamesFromPlist()
         def icons = []
-        iosConf.rootDir.traverse(type: FILES, filter: { it.name in iconNames }) {
+        conf.rootDir.traverse(type: FILES, filter: { it.name in iconNames }) {
             icons << it
         }
         icons
@@ -52,7 +51,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     List<File> findMobileProvisionFiles() {
         def files = []
-        iosConf.rootDir.eachFileRecurse(FILES) {
+        conf.rootDir.eachFileRecurse(FILES) {
             if (it.name.endsWith('.mobileprovision')) {
                 files << it
             }

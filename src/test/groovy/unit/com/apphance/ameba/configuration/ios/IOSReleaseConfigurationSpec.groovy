@@ -28,7 +28,7 @@ class IOSReleaseConfigurationSpec extends Specification {
             plistToJSON(_) >> new File('testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist.json').text.split('\n')
         }
 
-        iosReleaseConf.iosConf = iosConf
+        iosReleaseConf.conf = iosConf
         iosReleaseConf.iosVariantsConf = variantsConf
         iosReleaseConf.plistParser = parser
     }

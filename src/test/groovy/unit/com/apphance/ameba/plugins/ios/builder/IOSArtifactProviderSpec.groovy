@@ -4,9 +4,11 @@ import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
+import com.apphance.ameba.configuration.properties.IOSBuildModeProperty
 import spock.lang.Shared
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
 import static com.google.common.io.Files.createTempDir
 import static java.lang.System.getProperties
 
@@ -60,6 +62,7 @@ class IOSArtifactProviderSpec extends Specification {
         variant.versionCode >> '42'
         variant.fullVersionString >> '1.0.1_42'
         variant.plist >> new File('GradleXCode-Info.plist')
+        variant.mode >> new IOSBuildModeProperty(value: DEVICE)
 
         and:
         def provider = new IOSArtifactProvider()
@@ -76,6 +79,7 @@ class IOSArtifactProviderSpec extends Specification {
         bi.id == 'GradleXCode-BasicConfiguration'
         bi.plist.name == 'GradleXCode-Info.plist'
         bi.mobileprovision.name == 'sample.mobileprovision'
+        bi.mode == DEVICE
     }
 
     def 'zip distribution artifact is built well'() {

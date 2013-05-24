@@ -19,6 +19,7 @@ class IOSArtifactProvider {
                 id: "${variant.target}-${variant.configuration}",
                 target: variant.target,
                 configuration: variant.configuration,
+                mode: variant.mode.value,
                 buildDir: new File(variant.tmpDir, 'build'),
                 fullReleaseName: "${variant.target}-${variant.configuration}-${variant.fullVersionString}",
                 filePrefix: "${variant.target}-${variant.configuration}-${variant.fullVersionString}",
