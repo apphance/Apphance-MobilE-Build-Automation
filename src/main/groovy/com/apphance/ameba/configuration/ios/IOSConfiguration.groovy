@@ -95,15 +95,15 @@ class IOSConfiguration extends ProjectConfiguration {
     )
 
     List<String> getTargets() {
-        executor.targets()
+        executor.targets
     }
 
     List<String> getConfigurations() {
-        executor.configurations()
+        executor.configurations
     }
 
     List<String> getSchemes() {
-        executor.schemes()
+        executor.schemes
     }
 
     Collection<String> sourceExcludes = ['**/build/**']

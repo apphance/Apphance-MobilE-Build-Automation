@@ -5,6 +5,7 @@ import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.parsers.XCodeOutputParser
+import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
@@ -31,19 +32,21 @@ class IOSExecutor {
         run('-showsdks')
     }
 
-    List<String> targets() {
+    @Lazy List<String> targets = {
         parser.readBaseTargets(list)
-    }
+    }()
 
-    List<String> configurations() {
+    @Lazy List<String> configurations = {
         parser.readBaseConfigurations(list)
-    }
+    }()
 
-    List<String> schemes() {
+    @Lazy List<String> schemes = {
         parser.readSchemes(list)
-    }
+    }()
 
-    @Lazy List<String> list = { run('-list')*.trim() }()
+    @Lazy
+    @PackageScope
+    List<String> list = { run('-list')*.trim() }()
 
     @Lazy List<String> pbxProjToJSON = {
         commandExecutor.executeCommand(new Command(
@@ -63,11 +66,27 @@ class IOSExecutor {
     }.memoize()
 
     List<String> mobileprovisionToXml(File mobileprovision) {
+        mobileProvisionToXmlC(mobileprovision)
+    }
+
+    private Closure<List<String>> mobileProvisionToXmlC = { File mobileprovision ->
         commandExecutor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: "security cms -D -i ${mobileprovision.absolutePath}".split()
         ))
+    }.memoize()
+
+    Map<String, String> buildSettings(String target, String configuration) {
+        buildSettingsC(target, configuration)
     }
+
+    private Closure<Map<String, String>> buildSettingsC = { String target, String configuration ->
+        def result = commandExecutor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -showBuildSettings".split().flatten()
+        ))
+        parser.parseBuildSettings(result)
+    }.memoize()
 
     def buildVariant(File dir, List<String> buildCmd) {
         commandExecutor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
@@ -83,16 +102,4 @@ class IOSExecutor {
     List<String> run(String command) {
         commandExecutor.executeCommand(new Command(runDir: conf.rootDir, cmd: conf.xcodebuildExecutionPath() + command.split().flatten()))
     }
-
-    Map<String, String> buildSettings(String target, String configuration) {
-        buildSettingsC(target, configuration)
-    }
-
-    private Closure<Map<String, String>> buildSettingsC = { String target, String configuration ->
-        def result = commandExecutor.executeCommand(new Command(
-                runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -showBuildSettings".split().flatten()
-        ))
-        parser.parseBuildSettings(result)
-    }.memoize()
 }
