@@ -11,12 +11,15 @@ import java.util.regex.Pattern
 
 import static org.apache.commons.lang.StringUtils.isBlank
 import static org.apache.commons.lang.StringUtils.isNotBlank
+import static org.gradle.api.logging.Logging.getLogger
 
 //TODO may be transformed to stateful parser and keep plist, target, configuration
 class PlistParser {
 
-    def static final PLACEHOLDER = Pattern.compile('\\$\\{([A-Z0-9a-z]+_)*([A-Z0-9a-z])+(:rfc1034identifier)?\\}')
-    def static final IDENTIFIERS = [
+    private l = getLogger(getClass())
+
+    static final PLACEHOLDER = Pattern.compile('\\$\\{([A-Z0-9a-z]+_)*([A-Z0-9a-z])+(:rfc1034identifier)?\\}')
+    static final IDENTIFIERS = [
             'std': { it },
             'rfc1034identifier': { it.replaceAll('[^A-Za-z0-9-.]', '') }
     ]
@@ -57,6 +60,7 @@ class PlistParser {
     }
 
     String replaceBundledId(File plist, String oldBundleId, String newBundleId) {
+        l.info("Attempting to replace oldBundleId ($oldBundleId) with newBundleId ($newBundleId) in file: ${plist.absolutePath}")
         def xml = new XmlSlurper().parse(plist)
         def keyNode = xml.dict.key.find { it.text() == 'CFBundleIdentifier' }
         def valueNode = nextNode(keyNode)
@@ -64,6 +68,8 @@ class PlistParser {
         if (newBundleId.startsWith(oldBundleId)) {
             String newResult = newBundleId + value.substring(oldBundleId.length())
             valueNode.replaceBody(newResult)
+        } else {
+            l.info("Bundle ID will not be replaced: newBundleId ($newBundleId) does not start with oldBundleId ($oldBundleId)")
         }
         XmlUtil.serialize(xml)
     }

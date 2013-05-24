@@ -166,7 +166,7 @@ class IOSReleaseListener implements IOSBuildListener {
 
         URL manifestTemplate = this.class.getResource("manifest.plist")
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        def bundleId = plistParser.evaluate(plistParser(plistParser.bundleId(bi.plist), bi.target, bi.configuration))
+        def bundleId = plistParser.evaluate(plistParser.bundleId(bi.plist), bi.target, bi.configuration)
         def binding = [
                 ipaUrl: releaseConf.ipaFiles.get(bi.id).url,
                 title: bi.target,

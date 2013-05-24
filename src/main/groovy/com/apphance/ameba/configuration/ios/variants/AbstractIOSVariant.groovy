@@ -6,6 +6,7 @@ import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.IOSBuildModeProperty
+import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.configuration.variants.AbstractVariant
 import com.apphance.ameba.executor.IOSExecutor
@@ -48,15 +49,14 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     void init() {
 
         mobileprovision.name = "ios.variant.${name}.mobileprovision"
-        mobileprovision.message = "Mobile provision file for '$name'"
-
         mode.name = "ios.variant.${name}.mode"
-        mode.message = "Build mode for the variant, it describes the environment the artifact is built for: (DEVICE|SIMULATOR)"
+        bundleId.name = "ios.variant.${name}.bundleId"
 
         super.init()
     }
 
     def mobileprovision = new FileProperty(
+            message: "Mobile provision file for variant defined",
             interactive: { releaseConf.enabled },
             required: { releaseConf.enabled },
             possibleValues: { releaseConf.findMobileProvisionFiles()*.name as List<String> },
@@ -64,10 +64,16 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     )
 
     def mode = new IOSBuildModeProperty(
+            message: "Build mode for the variant, it describes the environment the artifact is built for: (DEVICE|SIMULATOR)",
             required: { true },
             defaultValue: { (configuration.contains('debug') || configuration.contains('dev')) ? SIMULATOR : DEVICE },
             possibleValues: { possibleBuildModeValues() },
             validator: { it in possibleBuildModeValues() }
+    )
+
+    def bundleId = new StringProperty(
+            message: "Bundle ID for variant defined. If present will be replaced during build process",
+            //TODO validator (domain name?)
     )
 
     @PackageScope

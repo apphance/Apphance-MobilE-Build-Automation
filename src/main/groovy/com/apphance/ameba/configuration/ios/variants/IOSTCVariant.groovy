@@ -27,7 +27,7 @@ class IOSTCVariant extends AbstractIOSVariant {
 
     @Override
     File getPlist() {
-        new File(conf.rootDir, pbxJsonParser.plistForTC(target, configuration))
+        new File(tmpDir, pbxJsonParser.plistForTC(target, configuration))
     }
 
     @Override

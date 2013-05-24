@@ -69,9 +69,8 @@ class IOSExecutor {
         ))
     }
 
-    def buildTarget(File dir, String target, String configuration, String sdk = conf.sdk.value, String params = "") {
-        commandExecutor.executeCommand(new Command(runDir: dir, cmd:
-                conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -sdk $sdk $params".split().flatten()))
+    def buildVariant(File dir, List<String> buildCmd) {
+        commandExecutor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
     }
 
     def buildTestVariant(File dir, AbstractIOSVariant variant, String outputFilePath) {
