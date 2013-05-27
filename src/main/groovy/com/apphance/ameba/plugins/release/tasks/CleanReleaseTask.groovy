@@ -15,10 +15,8 @@ class CleanReleaseTask extends DefaultTask {
     String description = 'Cleans release related directories'
     String group = AMEBA_RELEASE
 
-    @Inject
-    ProjectConfiguration conf
-    @Inject
-    ReleaseConfiguration releaseConf
+    @Inject ProjectConfiguration conf
+    @Inject ReleaseConfiguration releaseConf
 
     @TaskAction
     void clean() {

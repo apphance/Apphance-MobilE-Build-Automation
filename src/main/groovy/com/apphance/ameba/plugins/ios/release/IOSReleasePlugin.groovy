@@ -26,12 +26,9 @@ import javax.inject.Inject
  */
 class IOSReleasePlugin implements Plugin<Project> {
 
-    @Inject
-    IOSReleaseConfiguration releaseConf
-    @Inject
-    IOSSingleVariantBuilder builder
-    @Inject
-    IOSReleaseListener listener
+    @Inject IOSReleaseConfiguration releaseConf
+    @Inject IOSSingleVariantBuilder builder
+    @Inject IOSReleaseListener listener
 
     @Override
     void apply(Project project) {

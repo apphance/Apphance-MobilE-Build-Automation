@@ -14,8 +14,7 @@ class CleanAVDTask extends DefaultTask {
     String group = AMEBA_TEST
     String description = 'Cleans AVDs for emulators'
 
-    @Inject
-    AndroidTestConfiguration testConf
+    @Inject AndroidTestConfiguration testConf
 
     @TaskAction
     void cleanAVD() {

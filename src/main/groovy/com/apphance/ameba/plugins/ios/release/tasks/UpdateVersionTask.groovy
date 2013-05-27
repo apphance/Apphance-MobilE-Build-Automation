@@ -7,8 +7,7 @@ import javax.inject.Inject
 
 class UpdateVersionTask extends AbstractUpdateVersionTask {
 
-    @Inject
-    PlistParser parser
+    @Inject PlistParser parser
 
     @Override
     void updateDescriptor(String versionCode, String versionString) {

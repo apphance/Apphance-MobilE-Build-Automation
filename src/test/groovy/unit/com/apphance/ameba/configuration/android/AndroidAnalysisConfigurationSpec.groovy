@@ -20,8 +20,9 @@ class AndroidAnalysisConfigurationSpec extends Specification {
         ac.project = GroovyStub(Project) {
             getRootDir() >> GroovyStub(File)
         }
-        def aac = new AndroidAnalysisConfiguration(ac)
+        def aac = new AndroidAnalysisConfiguration()
         aac.enabled = internalField
+        aac.conf = ac
 
         then:
         aac.isEnabled() == enabled
@@ -36,7 +37,7 @@ class AndroidAnalysisConfigurationSpec extends Specification {
 
     def 'configuration is verified properly'() {
         given:
-        def aac = new AndroidAnalysisConfiguration(null)
+        def aac = new AndroidAnalysisConfiguration()
 
         when:
         aac.analysisConfigUrl.value = analysisURL

@@ -42,10 +42,8 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     String releaseMailSubject
 
-    @Inject
-    ProjectConfiguration conf
-    @Inject
-    PropertyReader reader
+    @Inject ProjectConfiguration conf
+    @Inject PropertyReader reader
 
     Collection<String> getReleaseNotes() {
         (reader.systemProperty('release.notes') ?: reader.envVariable('RELEASE_NOTES') ?: '').split('\n')

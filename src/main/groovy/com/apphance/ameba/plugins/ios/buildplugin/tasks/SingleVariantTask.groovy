@@ -14,8 +14,7 @@ class SingleVariantTask extends DefaultTask {
     String group = AMEBA_BUILD
     String description = 'Builds single variant for iOS.'
 
-    @Inject
-    IOSSingleVariantBuilder builder
+    @Inject IOSSingleVariantBuilder builder
 
     AbstractIOSVariant variant
 

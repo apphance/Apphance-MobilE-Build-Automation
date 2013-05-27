@@ -15,8 +15,7 @@ class StopAllEmulatorsTask extends DefaultTask {
     String group = AMEBA_TEST
     String description = 'Stops all emulators and accompanying logcat (includes stopping adb)'
 
-    @Inject
-    private CommandExecutor executor
+    @Inject CommandExecutor executor
 
     @TaskAction
     void stopAllEmulators() {

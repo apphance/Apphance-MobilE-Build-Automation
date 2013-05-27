@@ -10,8 +10,7 @@ import javax.inject.Inject
 @Mixin(Preconditions)
 class XCSchemeParser {
 
-    @Inject
-    IOSConfiguration conf
+    @Inject IOSConfiguration conf
 
     String configurationName(String schemeName) {
         def xml = parseSchemeFile(schemeName)

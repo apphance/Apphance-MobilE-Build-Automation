@@ -17,12 +17,9 @@ class CopySourcesTask extends DefaultTask {
     String description = 'Copies all sources to tmp directory for build'
     String group = AMEBA_BUILD
 
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidVariantsConfiguration variantsConf
-    @Inject
-    AndroidReleaseConfiguration releaseConf
+    @Inject AndroidConfiguration conf
+    @Inject AndroidVariantsConfiguration variantsConf
+    @Inject AndroidReleaseConfiguration releaseConf
 
     @TaskAction
     void copySources() {

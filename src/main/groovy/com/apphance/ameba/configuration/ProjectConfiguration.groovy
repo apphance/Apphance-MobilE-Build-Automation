@@ -11,10 +11,8 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
     public static final String TMP_DIR = 'flow-tmp'
     public static final String LOG_DIR = 'flow-log'
 
-    @Inject
-    Project project
-    @Inject
-    PropertyReader reader
+    @Inject Project project
+    @Inject PropertyReader reader
 
     abstract String getVersionCode()
 

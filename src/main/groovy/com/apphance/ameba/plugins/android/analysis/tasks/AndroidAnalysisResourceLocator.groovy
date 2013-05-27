@@ -10,8 +10,7 @@ class AndroidAnalysisResourceLocator {
 
     private l = Logging.getLogger(getClass())
 
-    @Inject
-    AndroidAnalysisConfiguration analysisConf
+    @Inject AndroidAnalysisConfiguration analysisConf
 
     URL getResourceUrl(Project project, String resourceName) {
         l.info("Reading resource $resourceName")

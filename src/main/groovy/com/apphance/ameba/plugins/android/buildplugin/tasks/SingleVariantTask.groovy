@@ -16,14 +16,10 @@ class SingleVariantTask extends DefaultTask {
 
     String group = AMEBA_BUILD
 
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidArtifactProvider artifactBuilder
-    @Inject
-    AndroidSingleVariantJarBuilder jarBuilder
-    @Inject
-    AndroidSingleVariantApkBuilder apkBuilder
+    @Inject AndroidConfiguration conf
+    @Inject AndroidArtifactProvider artifactBuilder
+    @Inject AndroidSingleVariantJarBuilder jarBuilder
+    @Inject AndroidSingleVariantApkBuilder apkBuilder
 
     AndroidVariantConfiguration variant
 

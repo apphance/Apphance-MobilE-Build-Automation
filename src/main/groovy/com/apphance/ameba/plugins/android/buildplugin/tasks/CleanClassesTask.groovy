@@ -14,8 +14,7 @@ class CleanClassesTask extends DefaultTask {
     String description = 'Cleans only the compiled classes'
     String group = AMEBA_BUILD
 
-    @Inject
-    private AndroidConfiguration conf
+    @Inject AndroidConfiguration conf
 
     @TaskAction
     void cleanClasses() {

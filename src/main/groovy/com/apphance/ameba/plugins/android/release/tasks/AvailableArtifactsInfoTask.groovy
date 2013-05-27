@@ -25,14 +25,10 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     String description = 'Prepares information about available artifacts for mail message to include'
     String group = AMEBA_RELEASE
 
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidReleaseConfiguration releaseConf
-    @Inject
-    AndroidVariantsConfiguration variantsConf
-    @Inject
-    AndroidArtifactProvider artifactBuilder
+    @Inject AndroidConfiguration conf
+    @Inject AndroidReleaseConfiguration releaseConf
+    @Inject AndroidVariantsConfiguration variantsConf
+    @Inject AndroidArtifactProvider artifactBuilder
 
     SimpleTemplateEngine templateEngine = new SimpleTemplateEngine()
 

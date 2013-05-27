@@ -2,8 +2,6 @@ package com.apphance.ameba.plugins.ios.release
 
 import com.apphance.ameba.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.ameba.plugins.ios.buildplugin.IOSBuildListener
-import com.apphance.ameba.plugins.ios.release.tasks.IOSDeviceArtifactsBuilder
-import com.apphance.ameba.plugins.ios.release.tasks.IOSSimulatorArtifactsBuilder
 
 import javax.inject.Inject
 
@@ -20,10 +18,8 @@ class IOSReleaseListener implements IOSBuildListener {
 
     def l = getLogger(getClass())
 
-    @Inject
-    IOSDeviceArtifactsBuilder deviceArtifactsBuilder
-    @Inject
-    IOSSimulatorArtifactsBuilder simulatorArtifactsBuilder
+    @Inject IOSDeviceArtifactsBuilder deviceArtifactsBuilder
+    @Inject IOSSimulatorArtifactsBuilder simulatorArtifactsBuilder
 
     @Override
     void buildDone(IOSBuilderInfo bi) {

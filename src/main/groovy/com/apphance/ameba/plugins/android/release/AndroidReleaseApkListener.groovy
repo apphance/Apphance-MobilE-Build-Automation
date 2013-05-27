@@ -11,10 +11,8 @@ import javax.inject.Inject
  */
 class AndroidReleaseApkListener implements AndroidBuildListener {
 
-    @Inject
-    AndroidArtifactProvider artifactProvider
-    @Inject
-    AntBuilder ant
+    @Inject AndroidArtifactProvider artifactProvider
+    @Inject org.gradle.api.AntBuilder ant
 
     @Override
     void buildDone(AndroidBuilderInfo bi) {

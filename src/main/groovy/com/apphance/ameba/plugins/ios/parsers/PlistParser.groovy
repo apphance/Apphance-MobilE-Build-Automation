@@ -26,8 +26,7 @@ class PlistParser {
 
     private templateEngine = new SimpleTemplateEngine()
 
-    @Inject
-    IOSExecutor executor
+    @Inject IOSExecutor executor
 
     String versionCode(File plist) {
         def json = parsedJson(plist)

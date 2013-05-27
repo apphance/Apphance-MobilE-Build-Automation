@@ -20,14 +20,11 @@ class AndroidConfiguration extends ProjectConfiguration {
 
     String configurationName = 'Android Configuration'
 
-    @Inject
-    ProjectTypeDetector projectTypeDetector
-    @Inject
-    AndroidBuildXmlHelper buildXmlHelper
-    @Inject
-    AndroidManifestHelper manifestHelper
-    @Inject
-    AndroidExecutor androidExecutor
+    @Inject ProjectTypeDetector projectTypeDetector
+    @Inject AndroidBuildXmlHelper buildXmlHelper
+    @Inject AndroidManifestHelper manifestHelper
+    @Inject AndroidExecutor androidExecutor
+
     private Properties androidProperties
 
     @Override

@@ -13,12 +13,9 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
     String configurationName = 'iOS Framework Configuration'
     private boolean enabledInternal = false
 
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSVariantsConfiguration variantsConf
-    @Inject
-    IOSReleaseConfiguration releaseConf
+    @Inject IOSConfiguration conf
+    @Inject IOSVariantsConfiguration variantsConf
+    @Inject IOSReleaseConfiguration releaseConf
 
     @Override
     boolean isEnabled() {

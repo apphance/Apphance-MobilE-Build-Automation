@@ -22,10 +22,8 @@ class UnlockKeyChainTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    @Inject
-    CommandExecutor executor
-    @Inject
-    PropertyReader reader
+    @Inject CommandExecutor executor
+    @Inject PropertyReader reader
 
     @TaskAction
     void unlockKeyChain() {

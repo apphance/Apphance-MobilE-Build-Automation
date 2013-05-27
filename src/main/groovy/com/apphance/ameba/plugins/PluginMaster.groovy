@@ -28,12 +28,10 @@ class PluginMaster {
 
     def log = Logging.getLogger(getClass())
 
-    @Inject
-    ProjectTypeDetector projectTypeDetector
-    @Inject
-    Injector injector
+    @Inject ProjectTypeDetector projectTypeDetector
+    @Inject Injector injector
 
-    static plugins = [
+    final static PLUGINS = [
             COMMON: [
                     ProjectPlugin,
             ],
@@ -70,10 +68,10 @@ class PluginMaster {
             project.plugins.add(plugin)
         }
 
-        plugins['COMMON'].each installPlugin
+        PLUGINS['COMMON'].each installPlugin
 
         if (project.file(FLOW_PROP_FILENAME).exists()) {
-            plugins[projectType.name()].each installPlugin
+            PLUGINS[projectType.name()].each installPlugin
         }
     }
 }

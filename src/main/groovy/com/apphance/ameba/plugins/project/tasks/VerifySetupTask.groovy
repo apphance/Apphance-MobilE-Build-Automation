@@ -19,8 +19,7 @@ class VerifySetupTask extends DefaultTask {
     String description = 'Verifies if the project can be build properly'
     String group = AMEBA_SETUP
 
-    @Inject
-    private Map<Integer, AbstractConfiguration> configurations
+    @Inject Map<Integer, AbstractConfiguration> configurations
 
     @TaskAction
     void verifySetup() {

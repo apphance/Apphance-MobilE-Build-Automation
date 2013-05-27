@@ -16,10 +16,8 @@ abstract class AbstractVariant extends AbstractConfiguration {
 
     final String name
 
-    @Inject
-    ProjectConfiguration conf
-    @Inject
-    ApphanceConfiguration apphanceConf
+    @Inject ProjectConfiguration conf
+    @Inject ApphanceConfiguration apphanceConf
 
     @Inject
     AbstractVariant(@Assisted String name) {

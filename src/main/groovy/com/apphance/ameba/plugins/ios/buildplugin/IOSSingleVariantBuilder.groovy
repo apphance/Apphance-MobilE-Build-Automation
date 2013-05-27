@@ -24,12 +24,9 @@ class IOSSingleVariantBuilder {
 
     final Set<IOSBuildListener> buildListeners = [] as Set<IOSReleaseListener>
 
-    @Inject
-    IOSExecutor executor
-    @Inject
-    IOSArtifactProvider artifactProvider
-    @Inject
-    PlistParser plistParser
+    @Inject IOSExecutor executor
+    @Inject IOSArtifactProvider artifactProvider
+    @Inject PlistParser plistParser
 
     void registerListener(IOSReleaseListener listener) {
         buildListeners << listener

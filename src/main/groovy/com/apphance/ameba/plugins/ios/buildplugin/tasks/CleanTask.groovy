@@ -16,10 +16,8 @@ class CleanTask extends DefaultTask {
     String description = 'Cleans the project'
     String group = AMEBA_BUILD
 
-    @Inject
-    CommandExecutor executor
-    @Inject
-    IOSConfiguration conf
+    @Inject CommandExecutor executor
+    @Inject IOSConfiguration conf
 
     @TaskAction
     void clean() {

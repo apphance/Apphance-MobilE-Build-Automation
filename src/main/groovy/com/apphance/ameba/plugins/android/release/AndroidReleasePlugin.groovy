@@ -23,16 +23,11 @@ import javax.inject.Inject
  */
 class AndroidReleasePlugin implements Plugin<Project> {
 
-    @Inject
-    AndroidReleaseConfiguration releaseConf
-    @Inject
-    AndroidSingleVariantApkBuilder apkBuilder
-    @Inject
-    AndroidReleaseApkListener apkListener
-    @Inject
-    AndroidSingleVariantJarBuilder jarBuilder
-    @Inject
-    AndroidReleaseJarListener jarListener
+    @Inject AndroidReleaseConfiguration releaseConf
+    @Inject AndroidSingleVariantApkBuilder apkBuilder
+    @Inject AndroidReleaseApkListener apkListener
+    @Inject AndroidSingleVariantJarBuilder jarBuilder
+    @Inject AndroidReleaseJarListener jarListener
 
     @Override
     void apply(Project project) {

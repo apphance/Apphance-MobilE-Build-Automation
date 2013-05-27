@@ -23,10 +23,8 @@ class BuildSourcesZipTask extends DefaultTask {
     String description = 'Builds sources .zip file.'
     String group = AMEBA_RELEASE
 
-    @Inject
-    ProjectConfiguration conf
-    @Inject
-    ReleaseConfiguration releaseConf
+    @Inject ProjectConfiguration conf
+    @Inject ReleaseConfiguration releaseConf
 
     @TaskAction
     void buildSourcesZip() {

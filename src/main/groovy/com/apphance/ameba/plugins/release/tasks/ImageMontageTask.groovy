@@ -31,10 +31,8 @@ class ImageMontageTask extends DefaultTask {
     String group = AMEBA_RELEASE
     String description = 'Builds montage of images found in the project'
 
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidReleaseConfiguration releaseConf
+    @Inject AndroidConfiguration conf
+    @Inject AndroidReleaseConfiguration releaseConf
 
     public static int TILE_PX_SIZE = 120
     public static int MAX_NUMBER_OF_TILES_IN_ROW = 10

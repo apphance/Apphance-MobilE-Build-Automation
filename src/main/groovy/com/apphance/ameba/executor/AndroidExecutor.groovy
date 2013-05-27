@@ -17,10 +17,8 @@ class AndroidExecutor {
     private Map<String, String> defaultSkinForTarget = [:]
     private Map<String, String> idForTarget = [:]
 
-    @Inject
-    CommandExecutor executor
-    @Inject
-    AndroidConfiguration conf
+    @Inject CommandExecutor executor
+    @Inject AndroidConfiguration conf
 
     def updateProject(File dir, String target, String name) {
         def targetId = idForTarget(target)

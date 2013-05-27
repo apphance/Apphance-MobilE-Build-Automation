@@ -29,16 +29,12 @@ class TestAndroidTask extends DefaultTask {
     String group = AMEBA_TEST
     String description = 'Runs android tests on the project'
 
-    @Inject
-    private AndroidConfiguration conf
-    @Inject
-    private AndroidTestConfiguration testConf
-    @Inject
-    private CommandExecutor executor
-    @Inject
-    private AntExecutor antExecutor
-    @Inject
-    private AndroidManifestHelper manifestHelper
+    @Inject AndroidConfiguration conf
+    @Inject AndroidTestConfiguration testConf
+    @Inject CommandExecutor executor
+    @Inject AntExecutor antExecutor
+    @Inject AndroidManifestHelper manifestHelper
+
     private Process emulatorProcess
     private Process logcatProcess
 

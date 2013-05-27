@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.ios.release.tasks
+package com.apphance.ameba.plugins.ios.release
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration

@@ -16,10 +16,8 @@ class PrepareForReleaseTask extends DefaultTask {
     String group = AMEBA_RELEASE
     String description = 'Prepares project for release'
 
-    @Inject
-    private ProjectConfiguration projectConf
-    @Inject
-    private ReleaseConfiguration releaseConf
+    @Inject ProjectConfiguration projectConf
+    @Inject ReleaseConfiguration releaseConf
 
     @TaskAction
     void prepare() {

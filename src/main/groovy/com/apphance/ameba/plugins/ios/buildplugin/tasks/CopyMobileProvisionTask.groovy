@@ -19,10 +19,8 @@ class CopyMobileProvisionTask extends DefaultTask {
     String description = 'Copies mobile provision file to the user library'
     String group = AMEBA_BUILD
 
-    @Inject
-    IOSVariantsConfiguration variantsConf
-    @Inject
-    MobileProvisionParser mpParser
+    @Inject IOSVariantsConfiguration variantsConf
+    @Inject MobileProvisionParser mpParser
 
     @TaskAction
     void copyMobileProvision() {

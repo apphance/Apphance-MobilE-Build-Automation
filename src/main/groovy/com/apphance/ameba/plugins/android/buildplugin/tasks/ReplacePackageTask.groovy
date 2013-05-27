@@ -21,14 +21,10 @@ class ReplacePackageTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidManifestHelper manifestHelper
-    @Inject
-    AndroidBuildXmlHelper buildXMLHelper
-    @Inject
-    PropertyReader reader
+    @Inject AndroidConfiguration conf
+    @Inject AndroidManifestHelper manifestHelper
+    @Inject AndroidBuildXmlHelper buildXMLHelper
+    @Inject PropertyReader reader
 
     @TaskAction
     void replacePackage() {

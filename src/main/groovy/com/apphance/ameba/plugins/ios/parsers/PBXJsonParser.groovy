@@ -11,8 +11,7 @@ class PbxJsonParser {
 
     static final INFOPLIST_FILE = 'INFOPLIST_FILE'
 
-    @Inject
-    IOSExecutor executor
+    @Inject IOSExecutor executor
 
     String plistForScheme(String configuration, String blueprintId) {
         def json = parsedPBX()

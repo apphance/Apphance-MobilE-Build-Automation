@@ -36,12 +36,9 @@ class BuildFrameworkTask extends DefaultTask {
     private File iphoneosSimulatorLibrary
     private File destinationZipFile
 
-    @Inject
-    CommandExecutor executor
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSFrameworkConfiguration frameworkConf
+    @Inject CommandExecutor executor
+    @Inject IOSConfiguration conf
+    @Inject IOSFrameworkConfiguration frameworkConf
 
     AbstractIOSVariant variant
 

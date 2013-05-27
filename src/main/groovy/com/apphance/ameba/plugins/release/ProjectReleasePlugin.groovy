@@ -24,8 +24,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
 
     def l = getLogger(getClass())
 
-    @Inject
-    ReleaseConfiguration releaseConf
+    @Inject ReleaseConfiguration releaseConf
 
     @Override
     void apply(Project project) {

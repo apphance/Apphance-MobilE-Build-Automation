@@ -16,11 +16,8 @@ class CleanAndroidTask extends DefaultTask {
     String description = 'Cleans the application'
     String group = AMEBA_BUILD
 
-    @Inject
-    private AndroidConfiguration conf
-
-    @Inject
-    AntExecutor antExecutor
+    @Inject AndroidConfiguration conf
+    @Inject AntExecutor antExecutor
 
     @TaskAction
     void cleanAndroid() {

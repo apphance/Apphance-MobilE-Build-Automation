@@ -15,9 +15,7 @@ class CopyGalleryFilesTask extends DefaultTask {
     String group = AMEBA_CONFIGURATION
     String description = 'Copy files required by swipe jquerymobile gallery'
 
-    @Inject
-    private ReleaseConfiguration releaseConf
-
+    @Inject ReleaseConfiguration releaseConf
 
     @TaskAction
     void copy() {

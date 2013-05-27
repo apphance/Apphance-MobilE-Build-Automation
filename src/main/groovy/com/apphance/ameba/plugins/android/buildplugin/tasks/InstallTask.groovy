@@ -4,9 +4,10 @@ import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.executor.AntExecutor
-import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
@@ -14,13 +15,9 @@ class InstallTask extends DefaultTask {
 
     String group = AMEBA_BUILD
 
-    @Inject
-    private AndroidConfiguration androidConf
-    @Inject
-    private AndroidReleaseConfiguration androidReleaseConf
-
-    @Inject
-    AntExecutor antExecutor
+    @Inject AndroidConfiguration androidConf
+    @Inject AndroidReleaseConfiguration androidReleaseConf
+    @Inject AntExecutor antExecutor
 
     AndroidVariantConfiguration variant
 

@@ -17,12 +17,9 @@ class PrepareSetupTask extends DefaultTask {
     String group = AMEBA_SETUP
     String description = "Prepares configuration (${FLOW_PROP_FILENAME})"
 
-    @Inject
-    Map<Integer, AbstractConfiguration> configurations
-    @Inject
-    PropertyPersister propertyPersister
-    @Inject
-    ConversationManager conversationManager
+    @Inject Map<Integer, AbstractConfiguration> configurations
+    @Inject PropertyPersister propertyPersister
+    @Inject ConversationManager conversationManager
 
 
     @TaskAction

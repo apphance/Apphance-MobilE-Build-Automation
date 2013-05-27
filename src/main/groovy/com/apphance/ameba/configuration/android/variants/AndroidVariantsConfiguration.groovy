@@ -19,12 +19,9 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Android variants configuration'
 
-    @Inject
-    Project project
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidVariantFactory variantFactory
+    @Inject Project project
+    @Inject AndroidConfiguration conf
+    @Inject AndroidVariantFactory variantFactory
 
     private List<AndroidVariantConfiguration> variants
 

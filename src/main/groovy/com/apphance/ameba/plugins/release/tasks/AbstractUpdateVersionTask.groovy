@@ -22,8 +22,7 @@ abstract class AbstractUpdateVersionTask extends DefaultTask {
 
     static Pattern WHITESPACE_PATTERN = Pattern.compile('\\s+')
 
-    @Inject
-    ProjectConfiguration conf
+    @Inject ProjectConfiguration conf
 
     @TaskAction
     void updateVersion() {

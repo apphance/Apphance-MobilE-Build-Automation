@@ -7,8 +7,7 @@ import javax.inject.Inject
 
 class UpdateVersionTask extends AbstractUpdateVersionTask {
 
-    @Inject
-    AndroidManifestHelper manifestHelper
+    @Inject AndroidManifestHelper manifestHelper
 
     @Override
     void updateDescriptor(String versionCode, String versionString) {

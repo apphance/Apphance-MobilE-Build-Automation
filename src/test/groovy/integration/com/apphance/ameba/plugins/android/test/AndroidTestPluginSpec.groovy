@@ -3,13 +3,11 @@ package com.apphance.ameba.plugins.android.test
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidTestConfiguration
 import com.apphance.ameba.configuration.properties.BooleanProperty
-import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.plugins.android.buildplugin.tasks.CompileAndroidTask
 import com.apphance.ameba.plugins.android.test.tasks.*
 import com.google.common.io.Files
 import spock.lang.Specification
 
-import static org.gradle.api.plugins.JavaPlugin.COMPILE_JAVA_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidTestPluginSpec extends Specification {
@@ -30,7 +28,7 @@ class AndroidTestPluginSpec extends Specification {
         and:
         def ac = GroovyStub(AndroidConfiguration)
         ac.SDKDir >> Files.createTempDir()
-        atp.androidConf = ac
+        atp.conf = ac
 
         when:
         atp.apply(project)

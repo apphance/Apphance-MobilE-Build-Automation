@@ -27,16 +27,11 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     String description = 'Prepares information about available artifacts for mail message to include'
     String group = AMEBA_RELEASE
 
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSVariantsConfiguration variantsConf
-    @Inject
-    IOSReleaseConfiguration releaseConf
-    @Inject
-    MobileProvisionParser mpParser
-    @Inject
-    IOSArtifactProvider artifactProvider
+    @Inject IOSConfiguration conf
+    @Inject IOSVariantsConfiguration variantsConf
+    @Inject IOSReleaseConfiguration releaseConf
+    @Inject MobileProvisionParser mpParser
+    @Inject IOSArtifactProvider artifactProvider
 
     SimpleTemplateEngine templateEngine = new SimpleTemplateEngine()
 

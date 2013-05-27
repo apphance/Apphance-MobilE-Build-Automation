@@ -10,8 +10,7 @@ import static org.apache.commons.lang.StringUtils.join
 
 abstract class AbstractConfiguration {
 
-    @Inject
-    PropertyPersister propertyPersister
+    @Inject PropertyPersister propertyPersister
 
     List<String> errors = []
 

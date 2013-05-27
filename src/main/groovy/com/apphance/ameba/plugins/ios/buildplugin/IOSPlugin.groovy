@@ -29,10 +29,8 @@ class IOSPlugin implements Plugin<Project> {
     static final String BUILD_ALL_DEVICE_TASK_NAME = 'buildAllDevice'
     static final String BUILD_ALL_SIMULATOR_TASK_NAME = 'buildAllSimulator'
 
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSVariantsConfiguration variantsConf
+    @Inject IOSConfiguration conf
+    @Inject IOSVariantsConfiguration variantsConf
 
     @Override
     void apply(Project project) {

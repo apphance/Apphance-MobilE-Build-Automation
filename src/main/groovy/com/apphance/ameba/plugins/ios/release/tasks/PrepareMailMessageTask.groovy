@@ -22,12 +22,9 @@ class PrepareMailMessageTask extends DefaultTask {
     String description = 'Prepares mail message which summarises the release'
     String group = AMEBA_RELEASE
 
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSReleaseConfiguration releaseConf
-    @Inject
-    IOSVariantsConfiguration variantsConf
+    @Inject IOSConfiguration conf
+    @Inject IOSReleaseConfiguration releaseConf
+    @Inject IOSVariantsConfiguration variantsConf
 
     private l = getLogger(getClass())
 

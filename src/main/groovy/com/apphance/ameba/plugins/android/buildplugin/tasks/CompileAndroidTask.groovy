@@ -1,24 +1,23 @@
 package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.executor.AntExecutor
-import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.executor.AntExecutor.DEBUG
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
-class CompileAndroidTask extends DefaultTask{
-
-    @Inject
-    AntExecutor antExecutor
+class CompileAndroidTask extends DefaultTask {
+    private l = getLogger(getClass())
 
     static String NAME = 'compileAndroid'
     String description = 'Performs code generation/compile tasks for android (if needed)'
     String group = AMEBA_BUILD
 
-    private l = getLogger(getClass())
+    @Inject AntExecutor antExecutor
 
     @TaskAction
     void compileAndroid() {

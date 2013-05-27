@@ -3,11 +3,12 @@ package com.apphance.ameba.plugins.android.release.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
-import javax.inject.Inject
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileManager.getHumanReadableSize
@@ -23,12 +24,9 @@ class PrepareMailMessageTask extends DefaultTask {
     String group = AMEBA_RELEASE
     String description = 'Prepares mail message which summarises the release'
 
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidReleaseConfiguration releaseConf
-    @Inject
-    AndroidVariantsConfiguration variantsConf
+    @Inject AndroidConfiguration conf
+    @Inject AndroidReleaseConfiguration releaseConf
+    @Inject AndroidVariantsConfiguration variantsConf
 
     @TaskAction
     public void mailMessage() {

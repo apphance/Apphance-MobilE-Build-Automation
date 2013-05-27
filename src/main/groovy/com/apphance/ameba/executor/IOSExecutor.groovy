@@ -13,12 +13,9 @@ import static com.apphance.ameba.configuration.ios.IOSConfiguration.PROJECT_PBXP
 
 class IOSExecutor {
 
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    XCodeOutputParser parser
-    @Inject
-    CommandExecutor commandExecutor
+    @Inject IOSConfiguration conf
+    @Inject XCodeOutputParser parser
+    @Inject CommandExecutor commandExecutor
 
     @Lazy List<String> sdks = {
         parser.readIphoneSdks(showSdks()*.trim())

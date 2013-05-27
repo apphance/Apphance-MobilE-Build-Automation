@@ -11,10 +11,8 @@ import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
 
 class IOSArtifactProvider {
 
-    @Inject
-    IOSReleaseConfiguration releaseConf
-    @Inject
-    IOSVariantsConfiguration variantsConf
+    @Inject IOSReleaseConfiguration releaseConf
+    @Inject IOSVariantsConfiguration variantsConf
 
     IOSBuilderInfo builderInfo(AbstractIOSVariant v) {
         def bi = new IOSBuilderInfo(

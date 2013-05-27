@@ -13,10 +13,8 @@ import static com.apphance.ameba.configuration.android.AndroidArchiveType.JAR
 
 class AndroidArtifactProvider {
 
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidReleaseConfiguration releaseConf
+    @Inject AndroidConfiguration conf
+    @Inject AndroidReleaseConfiguration releaseConf
 
     AndroidBuilderInfo jarBuilderInfo(AndroidVariantConfiguration avc) {
         def bi = builderInfo(avc)

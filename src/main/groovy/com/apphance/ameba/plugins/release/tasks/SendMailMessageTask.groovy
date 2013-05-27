@@ -24,8 +24,7 @@ class SendMailMessageTask extends DefaultTask {
 
     private Pattern WHITESPACE = Pattern.compile('\\s+')
 
-    @Inject
-    ReleaseConfiguration releaseConf
+    @Inject ReleaseConfiguration releaseConf
 
     @TaskAction
     void sendMailMessage() {

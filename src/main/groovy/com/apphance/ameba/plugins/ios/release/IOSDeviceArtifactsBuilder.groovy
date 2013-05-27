@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.ios.release.tasks
+package com.apphance.ameba.plugins.ios.release
 
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.Command
@@ -16,14 +16,10 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
     private l = getLogger(getClass())
 
-    @Inject
-    IOSArtifactProvider artifactProvider
-    @Inject
-    org.gradle.api.AntBuilder ant
-    @Inject
-    IOSExecutor iosExecutor
-    @Inject
-    PlistParser plistParser
+    @Inject IOSArtifactProvider artifactProvider
+    @Inject org.gradle.api.AntBuilder ant
+    @Inject IOSExecutor iosExecutor
+    @Inject PlistParser plistParser
 
     void buildArtifacts(IOSBuilderInfo bi) {
         prepareDistributionZipFile(bi)
@@ -96,7 +92,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         aa.location.parentFile.mkdirs()
         aa.location.delete()
 
-        URL manifestTemplate = this.class.getResource("manifest.plist")
+        URL manifestTemplate = getClass().getResource('manifest.plist')
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         def bundleId = plistParser.evaluate(plistParser.bundleId(bi.plist), bi.target, bi.configuration)
         def binding = [

@@ -11,16 +11,11 @@ class AndroidAnalysisConfiguration extends AbstractConfiguration {
     String configurationName = 'Android Analysis Configuration'
     private boolean enabledInternal = false
 
-    private AndroidConfiguration androidConfiguration
-
-    @Inject
-    AndroidAnalysisConfiguration(AndroidConfiguration androidConfiguration) {
-        this.androidConfiguration = androidConfiguration
-    }
+    @Inject AndroidConfiguration conf
 
     @Override
     boolean isEnabled() {
-        enabledInternal && androidConfiguration.isEnabled()
+        enabledInternal && conf.isEnabled()
     }
 
     @Override

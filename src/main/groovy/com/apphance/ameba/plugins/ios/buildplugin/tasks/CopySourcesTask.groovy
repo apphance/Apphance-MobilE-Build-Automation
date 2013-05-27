@@ -17,12 +17,9 @@ class CopySourcesTask extends DefaultTask {
     String group = AMEBA_BUILD
     String description = 'Copies all sources to tmp directories for build'
 
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSReleaseConfiguration releaseConf
-    @Inject
-    IOSVariantsConfiguration variantsConf
+    @Inject IOSConfiguration conf
+    @Inject IOSReleaseConfiguration releaseConf
+    @Inject IOSVariantsConfiguration variantsConf
 
     @TaskAction
     void copySources() {

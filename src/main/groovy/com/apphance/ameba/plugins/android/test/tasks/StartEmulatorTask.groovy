@@ -20,10 +20,9 @@ class StartEmulatorTask extends DefaultTask {
     String group = AMEBA_TEST
     String description = 'Starts emulator for manual inspection'
 
-    @Inject
-    private CommandExecutor executor
-    @Inject
-    private AndroidTestConfiguration testConf
+    @Inject CommandExecutor executor
+    @Inject AndroidTestConfiguration testConf
+
     private Process emulatorProcess
 
     @TaskAction

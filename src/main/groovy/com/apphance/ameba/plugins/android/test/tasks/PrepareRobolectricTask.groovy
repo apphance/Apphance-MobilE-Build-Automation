@@ -19,8 +19,8 @@ class PrepareRobolectricTask extends DefaultTask {
     String description = 'Prepares file structure for Robolectric test framework'
 
     private String robolectricPath = 'test/robolectric'
-    @Inject
-    private AndroidConfiguration androidConf
+
+    @Inject AndroidConfiguration androidConf
 
     @TaskAction
     void prepareRobolectric() {

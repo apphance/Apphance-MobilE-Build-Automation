@@ -13,8 +13,7 @@ class PMDTask extends DefaultTask {
     String group = AMEBA_ANALYSIS
     String description = 'Runs PMD analysis on project'
 
-    @Inject
-    AndroidAnalysisResourceLocator resourceLocator
+    @Inject AndroidAnalysisResourceLocator resourceLocator
 
     @TaskAction
     public void runPMD() {

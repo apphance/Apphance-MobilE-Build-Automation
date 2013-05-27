@@ -28,10 +28,9 @@ class AndroidPlugin implements Plugin<Project> {
     static final String BUILD_ALL_TASK_NAME = 'buildAll'
     static final String BUILD_ALL_DEBUG_TASK_NAME = 'buildAllDebug'
     static final String BUILD_ALL_RELEASE_TASK_NAME = 'buildAllRelease'
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidVariantsConfiguration variantsConf
+
+    @Inject AndroidConfiguration conf
+    @Inject AndroidVariantsConfiguration variantsConf
 
     @Override
     void apply(Project project) {
