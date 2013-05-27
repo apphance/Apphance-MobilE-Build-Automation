@@ -42,6 +42,6 @@ class IOSUnitTestConfiguration extends AbstractConfiguration {
     void checkProperties() {
         super.checkProperties()
         check conf.tmpDir.exists(), "Tmp directory ${conf.tmpDir.absolutePath} doesn't exist"
-        check variant.validator(variant.value), "Variant value ${variant.value} is incorrect"
+        defaultValidation variant
     }
 }

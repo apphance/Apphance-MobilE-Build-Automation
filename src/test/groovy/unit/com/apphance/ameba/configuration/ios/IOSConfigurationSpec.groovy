@@ -2,6 +2,7 @@ package com.apphance.ameba.configuration.ios
 
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
+import com.apphance.ameba.configuration.properties.StringProperty
 import org.gradle.api.Project
 import spock.lang.Shared
 import spock.lang.Specification
@@ -73,5 +74,19 @@ class IOSConfigurationSpec extends Specification {
         expect:
         iOSConf.targetConfigurationMatrix.sort() == [['t1', 'c1'], ['t1', 'c2'], ['t2', 'c1'], ['t2', 'c2']]
         iOSConf.possibleXCodeDirs == ['GradleXCode.xcodeproj']
+    }
+
+    def 'test get project name'() {
+        given:
+        def iOSConf = new IOSConfiguration(iosVariantsConf:
+                new IOSVariantsConfiguration(
+                        variants: [GroovyStub(AbstractIOSVariant) { getProjectName() >> 'test project name' }]
+                )
+        )
+
+        expect:
+        iOSConf.getProjectName() instanceof StringProperty
+        iOSConf.getProjectName().value == 'test project name'
+        iOSConf.getProjectName().toString() == 'test project name'
     }
 }

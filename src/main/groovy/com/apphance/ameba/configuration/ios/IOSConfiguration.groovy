@@ -112,4 +112,9 @@ class IOSConfiguration extends ProjectConfiguration {
     boolean isEnabled() {
         projectTypeDetector.detectProjectType(project.rootDir) == IOS
     }
+
+    @Override
+    void checkProperties() {
+        defaultValidation xcodeDir, sdk, simulatorSdk
+    }
 }

@@ -97,4 +97,10 @@ abstract class AbstractConfiguration {
     String getMessage() {
         ""
     }
+
+    def defaultValidation(AbstractProperty... properties) {
+        properties.each {
+            check it.validator(it.value), "Incorrect value ${it.value} of ${it.name} property"
+        }
+    }
 }
