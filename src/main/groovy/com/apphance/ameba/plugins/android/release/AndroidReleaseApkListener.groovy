@@ -16,6 +16,6 @@ class AndroidReleaseApkListener implements AndroidBuildListener {
 
     @Override
     void buildDone(AndroidBuilderInfo bi) {
-        ant.copy(file: bi.originalFile, tofile: artifactProvider.apkArtifact(bi).location)
+        ant.copy(file: bi.originalFile, tofile: artifactProvider.artifact(bi).location)
     }
 }

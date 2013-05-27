@@ -91,7 +91,7 @@ class AndroidSingleVariantBuilderSpec extends Specification {
         given:
         def releaseApk = new File(project.rootDir, "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.apk")
         def artifactProvider = GroovyStub(AndroidArtifactProvider, {
-            apkArtifact(_) >> GroovyStub(AmebaArtifact, {
+            artifact(_) >> GroovyStub(AmebaArtifact, {
                 getLocation() >> releaseApk
             })
         })

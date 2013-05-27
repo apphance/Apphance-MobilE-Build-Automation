@@ -33,19 +33,12 @@ class AndroidArtifactProvider {
         bi
     }
 
-    AmebaArtifact jarArtifact(AndroidBuilderInfo bi) {
-        artifact(bi, JAR)
-    }
-
     private File binDir(AndroidVariantConfiguration avc) {
         new File(new File(conf.tmpDir, avc.name), 'bin')
     }
 
-    AmebaArtifact apkArtifact(AndroidBuilderInfo bi) {
-        artifact(bi, APK)
-    }
-
-    private AmebaArtifact artifact(AndroidBuilderInfo abi, AndroidArchiveType type) {
+    AmebaArtifact artifact(AndroidBuilderInfo abi) {
+        AndroidArchiveType type = conf.isLibrary() ? JAR : APK
         def name = "${getFolderPrefix()}/${abi.filePrefix}.${type.lowerCase()}"
         new AmebaArtifact(
                 name: "${type.name()} ${abi.mode} file for ${abi.variant}",

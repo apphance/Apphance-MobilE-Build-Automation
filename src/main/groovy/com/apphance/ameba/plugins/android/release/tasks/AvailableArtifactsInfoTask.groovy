@@ -6,6 +6,7 @@ import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfigur
 import com.apphance.ameba.plugins.android.builder.AndroidArtifactProvider
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import groovy.text.SimpleTemplateEngine
+import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -50,23 +51,23 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         prepareOTAIndexFile()
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void buildJarArtifacts() {
         variantsConf.variants.each {
             def bi = artifactBuilder.builderInfo(it)
-            releaseConf.jarFiles.put(bi.id, artifactBuilder.jarArtifact(bi))
+            releaseConf.jarFiles.put(bi.id, artifactBuilder.artifact(bi))
         }
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void buildAPKArtifacts() {
         variantsConf.variants.each {
             def bi = artifactBuilder.builderInfo(it)
-            releaseConf.apkFiles.put(bi.id, artifactBuilder.apkArtifact(bi))
+            releaseConf.apkFiles.put(bi.id, artifactBuilder.artifact(bi))
         }
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void prepareFileIndexArtifact(String otaFolderPrefix) {
         def artifact = new AmebaArtifact(
                 name: "The file index file: ${conf.projectName.value}",
@@ -78,7 +79,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         releaseConf.fileIndexFile = artifact
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void preparePlainFileIndexArtifact(String otaFolderPrefix) {
         def artifact = new AmebaArtifact(
                 name: "The plain file index file: ${conf.projectName.value}",
@@ -89,7 +90,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         releaseConf.plainFileIndexFile = artifact
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void prepareOTAIndexFileArtifact(String otaFolderPrefix) {
         def artifact = new AmebaArtifact(
                 name: "The ota index file: ${conf.projectName.value}",
@@ -100,7 +101,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         releaseConf.otaIndexFile = artifact
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void prepareQRCodeArtifact() {
         def urlEncoded = encode(releaseConf.otaIndexFile.url.toString(), 'utf-8')
         def qrCodeFileName = "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"
@@ -123,7 +124,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         ant.copy(file: new File(project.rootDir, icon.path), tofile: new File(releaseConf.otaIndexFile.location.parentFile, icon.name))
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void prepareFileIndexFile() {
         def tmpl = loadTemplate('file_index.html')
         def rb = bundle('file_index')
@@ -143,7 +144,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         l.lifecycle("File index created: ${releaseConf.fileIndexFile}")
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void preparePlainFileIndexFile() {
         def rb = bundle('plain_file_index')
         def binding = [
@@ -162,7 +163,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         l.lifecycle("Plain file index created: ${releaseConf.plainFileIndexFile}")
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void prepareOTAIndexFile() {
         def otaIndexTemplate = loadTemplate('index.html')
         def rb = bundle('index')
