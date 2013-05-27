@@ -22,7 +22,7 @@ class IOSSingleVariantBuilder {
 
     def l = getLogger(getClass())
 
-    Collection<IOSBuildListener> buildListeners = []
+    final Set<IOSBuildListener> buildListeners = [] as Set<IOSReleaseListener>
 
     @Inject
     IOSExecutor executor
