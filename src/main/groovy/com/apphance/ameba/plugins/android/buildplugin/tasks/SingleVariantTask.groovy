@@ -3,8 +3,7 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.plugins.android.builder.AndroidArtifactProvider
-import com.apphance.ameba.plugins.android.builder.AndroidSingleVariantApkBuilder
-import com.apphance.ameba.plugins.android.builder.AndroidSingleVariantJarBuilder
+import com.apphance.ameba.plugins.android.builder.AndroidSingleVariantBuilder
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -18,16 +17,13 @@ class SingleVariantTask extends DefaultTask {
 
     @Inject AndroidConfiguration conf
     @Inject AndroidArtifactProvider artifactBuilder
-    @Inject AndroidSingleVariantJarBuilder jarBuilder
-    @Inject AndroidSingleVariantApkBuilder apkBuilder
+    @Inject AndroidSingleVariantBuilder builder
 
     AndroidVariantConfiguration variant
 
     @TaskAction
     void singleVariant() {
-        conf.isLibrary() ?
-            jarBuilder.buildSingle(artifactBuilder.jarBuilderInfo(variant)) :
-            apkBuilder.buildSingle(artifactBuilder.apkBuilderInfo(variant))
+        builder.buildSingle(artifactBuilder.builderInfo(variant))
     }
 
     @Override

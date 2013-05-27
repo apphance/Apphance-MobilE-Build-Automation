@@ -16,23 +16,7 @@ class AndroidArtifactProvider {
     @Inject AndroidConfiguration conf
     @Inject AndroidReleaseConfiguration releaseConf
 
-    AndroidBuilderInfo jarBuilderInfo(AndroidVariantConfiguration avc) {
-        def bi = builderInfo(avc)
-        bi.originalFile = new File(binDir(avc), 'classes.jar')
-        bi
-    }
-
-    AmebaArtifact jarArtifact(AndroidBuilderInfo bi) {
-        artifact(bi, JAR)
-    }
-
-    AndroidBuilderInfo apkBuilderInfo(AndroidVariantConfiguration avc) {
-        def bi = builderInfo(avc)
-        bi.originalFile = new File(binDir(avc), "${conf.projectName.value}-${avc.mode.lowerCase()}.${APK.lowerCase()}")
-        bi
-    }
-
-    private AndroidBuilderInfo builderInfo(AndroidVariantConfiguration avc) {
+    AndroidBuilderInfo builderInfo(AndroidVariantConfiguration avc) {
         String mode = avc.mode.lowerCase()
         String variablePart = "$mode-${avc.name}"
 
@@ -45,7 +29,12 @@ class AndroidArtifactProvider {
                 fullReleaseName: "${conf.projectName.value}-${variablePart}-${conf.fullVersionString}",
                 filePrefix: "${conf.projectName.value}-${variablePart}-${conf.fullVersionString}"
         )
+        bi.originalFile = new File(binDir(avc), conf.isLibrary() ? 'classes.jar': "${conf.projectName.value}-${avc.mode.lowerCase()}.apk")
         bi
+    }
+
+    AmebaArtifact jarArtifact(AndroidBuilderInfo bi) {
+        artifact(bi, JAR)
     }
 
     private File binDir(AndroidVariantConfiguration avc) {

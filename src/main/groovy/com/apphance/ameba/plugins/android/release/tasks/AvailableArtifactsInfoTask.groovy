@@ -53,7 +53,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     @groovy.transform.PackageScope
     void buildJarArtifacts() {
         variantsConf.variants.each {
-            def bi = artifactBuilder.jarBuilderInfo(it)
+            def bi = artifactBuilder.builderInfo(it)
             releaseConf.jarFiles.put(bi.id, artifactBuilder.jarArtifact(bi))
         }
     }
@@ -61,7 +61,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     @groovy.transform.PackageScope
     void buildAPKArtifacts() {
         variantsConf.variants.each {
-            def bi = artifactBuilder.apkBuilderInfo(it)
+            def bi = artifactBuilder.builderInfo(it)
             releaseConf.apkFiles.put(bi.id, artifactBuilder.apkArtifact(bi))
         }
     }
