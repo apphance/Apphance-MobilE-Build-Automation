@@ -1,6 +1,7 @@
 package com.apphance.ameba.plugins.ios.builder
 
 import com.apphance.ameba.configuration.ios.IOSBuildMode
+import org.gradle.api.Project
 
 /**
  * Information for single artifact being built. Useful information grouped together needed

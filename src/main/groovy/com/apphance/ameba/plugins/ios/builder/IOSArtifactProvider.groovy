@@ -7,6 +7,8 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
+
 class IOSArtifactProvider {
 
     @Inject
@@ -14,17 +16,17 @@ class IOSArtifactProvider {
     @Inject
     IOSVariantsConfiguration variantsConf
 
-    IOSBuilderInfo builderInfo(AbstractIOSVariant variant) {
+    IOSBuilderInfo builderInfo(AbstractIOSVariant v) {
         def bi = new IOSBuilderInfo(
-                id: "${variant.target}-${variant.configuration}",
-                target: variant.target,
-                configuration: variant.configuration,
-                mode: variant.mode.value,
-                buildDir: new File(variant.tmpDir, 'build'),
-                fullReleaseName: "${variant.target}-${variant.configuration}-${variant.fullVersionString}",
-                filePrefix: "${variant.target}-${variant.configuration}-${variant.fullVersionString}",
-                mobileprovision: variant.mobileprovision.value,
-                plist: variant.plist
+                id: v.name,
+                target: v.target,
+                configuration: v.configuration,
+                mode: v.mode.value,
+                buildDir: new File(v.tmpDir, "/build/${v.configuration}-${v.mode.value == DEVICE ? 'iphoneos' : 'iphonesimulator'}"),
+                fullReleaseName: "${v.name}-${v.fullVersionString}",
+                filePrefix: "${v.name}-${v.fullVersionString}",
+                mobileprovision: v.mobileprovision.value,
+                plist: v.plist
         )
         bi
     }

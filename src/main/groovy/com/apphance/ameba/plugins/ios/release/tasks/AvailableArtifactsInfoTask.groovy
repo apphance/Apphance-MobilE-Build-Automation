@@ -2,9 +2,10 @@ package com.apphance.ameba.plugins.ios.release.tasks
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
+import com.apphance.ameba.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.ameba.plugins.ios.parsers.MobileProvisionParser
-import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.DefaultTask
@@ -33,9 +34,9 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     @Inject
     IOSReleaseConfiguration releaseConf
     @Inject
-    IOSReleaseListener releaseListener
-    @Inject
     MobileProvisionParser mpParser
+    @Inject
+    IOSArtifactProvider artifactProvider
 
     SimpleTemplateEngine templateEngine = new SimpleTemplateEngine()
 
@@ -44,7 +45,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         def udids = [:]
         variantsConf.variants.each { v ->
             l.lifecycle("Preparing artifact for ${v.name}")
-            releaseListener.buildArtifactsOnly(v)
+            prepareArtifacts(v)
             udids.put(v.target, mpParser.udids(v.mobileprovision.value))
         }
         String otaFolderPrefix = "${releaseConf.projectDirName}/${conf.fullVersionString}"
@@ -57,6 +58,34 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         preparePlainFileIndexFile()
         prepareOtaIndexFile()
         prepareQRCode()
+    }
+
+    private void prepareArtifacts(AbstractIOSVariant variant) {
+        def bi = artifactProvider.builderInfo(variant)
+
+        def zipDist = artifactProvider.zipDistribution(bi)
+        if (zipDist.location.exists())
+            releaseConf.distributionZipFiles.put(bi.id, zipDist)
+
+        def dSym = artifactProvider.dSYMZip(bi)
+        if (dSym.location.exists())
+            releaseConf.dSYMZipFiles.put(bi.id, dSym)
+
+        def ahSym = artifactProvider.ahSYM(bi)
+        if (ahSym.location.exists())
+            releaseConf.ahSYMDirs.put(bi.id, ahSym)
+
+        def ipa = artifactProvider.ipa(bi)
+        if (ipa.location.exists())
+            releaseConf.ipaFiles.put(bi.id, ipa)
+
+        def manifest = artifactProvider.manifest(bi)
+        if (manifest.location.exists())
+            releaseConf.manifestFiles.put(bi.id, manifest)
+
+        def mobileprovision = artifactProvider.mobileprovision(bi)
+        if (mobileprovision.location.exists())
+            releaseConf.mobileProvisionFiles.put(bi.id, mobileprovision)
     }
 
     private void fileIndexArtifact(String otaFolderPrefix) {

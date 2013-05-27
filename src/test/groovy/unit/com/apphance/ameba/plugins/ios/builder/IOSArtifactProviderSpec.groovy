@@ -63,6 +63,7 @@ class IOSArtifactProviderSpec extends Specification {
         variant.fullVersionString >> '1.0.1_42'
         variant.plist >> new File('GradleXCode-Info.plist')
         variant.mode >> new IOSBuildModeProperty(value: DEVICE)
+        variant.name >> 'V1'
 
         and:
         def provider = new IOSArtifactProvider()
@@ -73,10 +74,10 @@ class IOSArtifactProviderSpec extends Specification {
         then:
         bi.target == 'GradleXCode'
         bi.configuration == 'BasicConfiguration'
-        bi.buildDir == new File(properties['java.io.tmpdir'], 'build')
-        bi.filePrefix == 'GradleXCode-BasicConfiguration-1.0.1_42'
-        bi.fullReleaseName == 'GradleXCode-BasicConfiguration-1.0.1_42'
-        bi.id == 'GradleXCode-BasicConfiguration'
+        bi.buildDir == new File(properties['java.io.tmpdir'], 'build/BasicConfiguration-iphoneos')
+        bi.filePrefix == 'V1-1.0.1_42'
+        bi.fullReleaseName == 'V1-1.0.1_42'
+        bi.id == 'V1'
         bi.plist.name == 'GradleXCode-Info.plist'
         bi.mobileprovision.name == 'sample.mobileprovision'
         bi.mode == DEVICE
