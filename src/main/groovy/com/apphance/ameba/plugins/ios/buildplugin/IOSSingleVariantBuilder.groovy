@@ -17,11 +17,12 @@ import static org.gradle.api.logging.Logging.getLogger
  * Builds single variant for iOS projects.
  *
  */
+@Singleton
 class IOSSingleVariantBuilder {
 
     def l = getLogger(getClass())
 
-    Collection<IOSBuildListener> buildListeners = []
+    private Set<IOSBuildListener> buildListeners = []
 
     @Inject
     IOSExecutor executor
@@ -34,9 +35,6 @@ class IOSSingleVariantBuilder {
         buildListeners << listener
     }
 
-    //TODO all is done in variant tmpDir
-    //TODO is that all? what about mobile provision file?
-    //TODO if bundleId from conf has value then replace it in plist, source file, anywhere else?
     void buildVariant(AbstractIOSVariant variant) {
         def newBundleId = variant.bundleId.value
         if (isNotBlank(newBundleId)) {
@@ -57,7 +55,7 @@ class IOSSingleVariantBuilder {
             String t = file.text
             if (t.contains(valueToFind)) {
                 file.write(t.replace(valueToFind, valueToReplace))
-                l.lifecycle("Replaced the ${valueToFind} with ${valueToReplace} in ${file}")
+                l.lifecycle("Replaced the $valueToFind with $valueToReplace in $file")
             }
         }
     }
