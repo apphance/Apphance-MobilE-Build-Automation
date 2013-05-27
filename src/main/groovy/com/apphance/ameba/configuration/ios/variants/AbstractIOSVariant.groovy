@@ -109,7 +109,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         }
     }
 
-    protected String buildModeCmd() {
+    protected String archCmd() {
         mode.value == SIMULATOR ? '-arch i386' : ''
     }
 
