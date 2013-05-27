@@ -71,14 +71,18 @@ abstract class AbstractIOSVariant extends AbstractVariant {
             validator: { it in possibleBuildModeValues() }
     )
 
+    @PackageScope
+    List<String> possibleBuildModeValues() {
+        IOSBuildMode.values()*.name() as List<String>
+    }
+
     def bundleId = new StringProperty(
             message: "Bundle ID for variant defined. If present will be replaced during build process",
             //TODO validator (domain name?)
     )
 
-    @PackageScope
-    List<String> possibleBuildModeValues() {
-        IOSBuildMode.values()*.name() as List<String>
+    String getEffectiveBundleId() {
+        bundleId.value ?: plistParser.evaluate(plistParser.bundleId(plist), target, configuration) ?: ''
     }
 
     @Override
@@ -97,11 +101,9 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     protected String sdkCmd() {
         switch (mode.value) {
             case SIMULATOR:
-                println "sim"
                 conf.simulatorSdk.value ? "-sdk ${conf.simulatorSdk.value}" : ''
                 break
             case DEVICE:
-                println "dev"
                 conf.sdk.value ? "-sdk ${conf.sdk.value}" : ''
                 break
             default:
