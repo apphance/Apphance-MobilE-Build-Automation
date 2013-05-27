@@ -17,12 +17,12 @@ import static org.gradle.api.logging.Logging.getLogger
  * Builds single variant for iOS projects.
  *
  */
-@Singleton
+@com.google.inject.Singleton
 class IOSSingleVariantBuilder {
 
     def l = getLogger(getClass())
 
-    private Set<IOSBuildListener> buildListeners = []
+    Collection<IOSBuildListener> buildListeners = []
 
     @Inject
     IOSExecutor executor

@@ -1,6 +1,7 @@
 package com.apphance.ameba.plugins.ios.release
 
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.ameba.plugins.ios.release.tasks.PrepareMailMessageTask
 import com.apphance.ameba.plugins.ios.release.tasks.UpdateVersionTask
@@ -27,6 +28,10 @@ class IOSReleasePlugin implements Plugin<Project> {
 
     @Inject
     IOSReleaseConfiguration releaseConf
+    @Inject
+    IOSSingleVariantBuilder builder
+    @Inject
+    IOSReleaseListener listener
 
     @Override
     void apply(Project project) {
@@ -42,6 +47,7 @@ class IOSReleasePlugin implements Plugin<Project> {
                     type: PrepareMailMessageTask,
                     dependsOn: [AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME])
 
+            builder.registerListener(listener)
         }
     }
 }

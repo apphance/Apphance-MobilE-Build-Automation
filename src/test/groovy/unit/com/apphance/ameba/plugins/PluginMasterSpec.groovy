@@ -161,6 +161,7 @@ class PluginMasterSpec extends Specification {
 
         project.rootDir >> rootDir
         project.file(LOG_DIR) >> new File(System.properties['java.io.tmpdir'])
+        project.ant >> Mock(org.gradle.api.AntBuilder)
 
         return Guice.createInjector(
                 new EnvironmentModule(),
@@ -171,8 +172,8 @@ class PluginMasterSpec extends Specification {
                     @Override
                     protected void configure() {
                         bind(Project).toInstance(project)
-                        bind(AntBuilder).toInstance(new AntBuilder())
                         bind(ProjectTypeDetector).toInstance(projectTypeDetectorMock)
+                        bind(org.gradle.api.AntBuilder).toInstance(project.ant)
                         mocks.each { type, instance ->
                             bind(type).toInstance(instance)
                         }

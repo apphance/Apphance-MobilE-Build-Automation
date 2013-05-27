@@ -17,6 +17,8 @@ import org.gradle.api.AntBuilder
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
 import static com.apphance.ameba.configuration.ios.IOSConfiguration.FAMILIES
 import static org.gradle.api.logging.Logging.getLogger
 
@@ -24,6 +26,7 @@ import static org.gradle.api.logging.Logging.getLogger
  * Build listener for releases.
  *
  */
+@com.google.inject.Singleton
 class IOSReleaseListener implements IOSBuildListener {
 
     def l = getLogger(getClass())
@@ -47,34 +50,42 @@ class IOSReleaseListener implements IOSBuildListener {
 
     @Override
     void buildDone(IOSBuilderInfo bi) {
-        if (conf.versionString != null) {
-            if (bi.configuration != 'Debug') {//DEVICE, SIMUALATOR
+
+        switch (bi.mode) {
+            case DEVICE:
+
                 prepareDistributionZipFile(bi)
                 prepareDSYMZipFile(bi)
 //                prepareAhSYMFiles(bi) //TODO turn on after DI is implemented
                 prepareIpaFile(bi)
                 prepareManifestFile(bi)
                 prepareMobileProvisionFile(bi)
-            } else {
+                break
+
+            case SIMULATOR:
+
                 FAMILIES.each { family ->
                     prepareSimulatorBundleFile(bi, family)
                 }
-            }
-        } else {
-            l.lifecycle('Skipping building artifacts -> the build is not versioned')
+                break
+
+            default:
+                l.info("Unrecognized mode: ${bi.mode}, builder info: $bi")
         }
     }
 
+    //TODO built *app (dir) file + mobileprovision
+    //TODO where xcodebuild puts the results
     private void prepareDistributionZipFile(IOSBuilderInfo bi) {
         AmebaArtifact aa = prepareDistributionZipArtifact(bi)
         aa.location.parentFile.mkdirs()
         aa.location.delete()
         //TODO how to zip the file with new configuration?
-//        ant.zip(destfile: distributionZipArtifact.location) {
-//            zipfileset(dir: conf.distributionDir,
-//                    includes: parser.findMobileProvisionFile(project, bi.target, bi.configuration).name)
-//            zipfileset(dir: bi.buildDir, includes: "${bi.target}.app/**")
-//        }
+        ant.zip(destfile: distributionZipArtifact.location) {
+            zipfileset(dir: conf.distributionDir,
+                    includes: parser.findMobileProvisionFile(project, bi.target, bi.configuration).name)
+            zipfileset(dir: bi.buildDir, includes: "${bi.target}.app/**")
+        }
         l.lifecycle("Distribution zip file created: $aa")
     }
 
@@ -108,6 +119,7 @@ class IOSReleaseListener implements IOSBuildListener {
         aa
     }
 
+    //TODO jython
     private void prepareAhSYMFiles(IOSBuilderInfo bi, boolean checkIfExists = false) {
 //        AmebaArtifact ahSYM = prepareAhSymArtifacts(bi, checkIfExists)
 //        ahSYM.location.delete()
@@ -128,6 +140,7 @@ class IOSReleaseListener implements IOSBuildListener {
         aa
     }
 
+    //TODO *.app FULL_PRODUCT_NAME
     private void prepareIpaFile(IOSBuilderInfo bi) {
         AmebaArtifact aa = prepareIpaArtifact(bi)
         aa.location.parentFile.mkdirs()
