@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.release.tasks
 
+import com.apphance.ameba.TestUtils
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
@@ -7,7 +8,6 @@ import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.google.common.io.Files
 import ij.ImagePlus
 import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -20,10 +20,10 @@ import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFi
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
 
+@Mixin(TestUtils)
 class ImageMontageTaskSpec extends Specification {
 
-    def p = ProjectBuilder.builder().build()
-    def imageMontageTask = p.task(ImageMontageTask.NAME, type: ImageMontageTask) as ImageMontageTask
+    def imageMontageTask = create ImageMontageTask
 
     private File testMontageFilesDir = new File('src/test/resources/com/apphance/ameba/plugins/release/tasks/montageFiles')
     def fileForDescTest = new File('src/test/resources/com/apphance/ameba/plugins/release/tasks/Blank.jpg')

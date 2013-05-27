@@ -1,6 +1,7 @@
 package com.apphance.ameba.executor
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.ios.parsers.XCodeOutputParser
@@ -73,12 +74,11 @@ class IOSExecutor {
                 conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -sdk $sdk $params".split().flatten()))
     }
 
-    def buildTestTarget(File dir, String target, String configuration, String outputFilePath) {
-        commandExecutor.executeCommand(new Command(runDir: dir, cmd:
-                conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -sdk $conf.simulatorSdk.value".split().flatten(),
+    def buildTestVariant(File dir, AbstractIOSVariant variant, String outputFilePath) {
+        commandExecutor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd() + [" -sdk $conf.simulatorSdk.value"],
                 environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: outputFilePath],
                 failOnError: false
-        ))
+        )
     }
 
     List<String> run(String command) {

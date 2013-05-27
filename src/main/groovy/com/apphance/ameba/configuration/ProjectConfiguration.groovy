@@ -38,19 +38,19 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
 
     abstract StringProperty getProjectName()
 
-    final File getBuildDir() {
+    File getBuildDir() {
         project.file('build')
     }
 
-    final File getTmpDir() {
+    File getTmpDir() {
         project.file(TMP_DIR)
     }
 
-    final File getLogDir() {
+    File getLogDir() {
         project.file(LOG_DIR)
     }
 
-    final File getRootDir() {
+    File getRootDir() {
         project.rootDir
     }
 
