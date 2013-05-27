@@ -23,6 +23,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     @Inject IOSVariantsConfiguration iosVariantsConf
     @Inject PlistParser plistParser
+    static String ICON_PATTERN = /(?i).*icon.*png/
 
     @Override
     File defaultIcon() {
@@ -31,22 +32,15 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     @Override
     List<String> possibleIcons() {
-        def icons = getIconFiles()
-        icons.collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath).path }
+        iconFiles.collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath).path }
     }
 
     private List<File> getIconFiles() {
-        def iconNames = iconNamesFromPlist()
         def icons = []
-        conf.rootDir.traverse(type: FILES, filter: { it.name in iconNames }) {
+        conf.rootDir.traverse(type: FILES, filter: {File it -> it.name ==~ ICON_PATTERN}) {
             icons << it
         }
         icons
-    }
-
-    private List<String> iconNamesFromPlist() {
-        def plist = iosVariantsConf.mainVariant.plist
-        plistParser.getIconFiles(plist).sort()
     }
 
     List<File> findMobileProvisionFiles() {

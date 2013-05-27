@@ -7,6 +7,8 @@ import com.apphance.ameba.plugins.ios.parsers.PlistParser
 import org.gradle.api.Project
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.ios.IOSReleaseConfiguration.getICON_PATTERN
+
 class IOSReleaseConfigurationSpec extends Specification {
 
     def iosReleaseConf = new IOSReleaseConfiguration()
@@ -36,7 +38,6 @@ class IOSReleaseConfigurationSpec extends Specification {
     def 'test defaultIcon'() {
         expect:
         iosReleaseConf.defaultIcon().path == 'testProjects/ios/GradleXCode/icon.png'
-
     }
 
     def 'test possibleIcons'() {
@@ -59,5 +60,21 @@ class IOSReleaseConfigurationSpec extends Specification {
     def 'test canBeEnabled'() {
         expect:
         iosReleaseConf.canBeEnabled()
+    }
+
+    def 'test matching icon pattern' () {
+        expect:
+        ok ==~ ICON_PATTERN
+
+        where:
+        ok << ['Icon.png', 'icon.png', 'Icon@2x.png', 'Icon-72.png', 'icon-small.png', 'abcIcOnaaa.png']
+    }
+
+    def 'test not matching icon pattern' () {
+        expect:
+        !(notMatching ==~ ICON_PATTERN)
+
+        where:
+        notMatching << ['con.png', 'icoan.png', 'icon.jpg', 'icon', 'ico.png']
     }
 }
