@@ -1,10 +1,12 @@
 package com.apphance.ameba.plugins.android.builder
 
-import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
+import com.apphance.ameba.TestUtils
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
+import com.apphance.ameba.plugins.android.buildplugin.tasks.SingleVariantTask
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -18,9 +20,11 @@ import static java.io.File.createTempFile
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 //TODO WARNING!! THIS TEST WORKS ON AN UPDATED (build.xml, local.properties) PROJECT!!!
-class AndroidSingleVariantBuilderSpec extends Specification {
+@Mixin(TestUtils)
+class SingleVariantTaskSpec extends Specification {
 
     def project = builder().withProjectDir(new File('testProjects/android/android-basic')).build()
+    def singleVaraintTask = create SingleVariantTask
 
     def static projectName = 'TestAndroidProject'
     def static variantTmpDir = "${TMP_DIR}/test"
@@ -35,17 +39,11 @@ class AndroidSingleVariantBuilderSpec extends Specification {
     def executor = new CommandExecutor(fileLinker, logFileGenerator)
     def antExecutor = new AntExecutor()
 
-    def variantsConf = GroovyStub(AndroidVariantsConfiguration) {
-        getVariantsDir() >> project.file('variants')
-    }
-
-    def builder = new AndroidSingleVariantBuilder()
-
     def setup() {
         antExecutor.executor = executor
-        builder.antExecutor = antExecutor
-        builder.ant = project.ant
-        builder.variantsConf = variantsConf
+        singleVaraintTask.antExecutor = antExecutor
+        singleVaraintTask.ant = project.ant
+        singleVaraintTask.androidReleaseConf = Stub(AndroidReleaseConfiguration) { isEnabled() >> true }
 
         assert project.file(TMP_DIR).deleteDir()
         assert project.file(OTA_DIR).deleteDir()
@@ -60,26 +58,27 @@ class AndroidSingleVariantBuilderSpec extends Specification {
     }
 
     @Unroll
-    def 'artifacts are built according to passed config. Library = #library'() {
+    def 'artifacts are built according to passed config and copied to ota dir. Library = #library'() {
         given:
         def releaseFile = new File(project.rootDir, "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.$releaseFileExtension")
-        builder.artifactProvider = GroovyStub(AndroidArtifactProvider, {
-            artifact(_) >> GroovyStub(AmebaArtifact, {
-                getLocation() >> releaseFile
-            })
+        singleVaraintTask.artifactProvider = GroovyStub(AndroidArtifactProvider)
+        singleVaraintTask.artifactProvider.artifact(_) >> GroovyStub(AmebaArtifact, {
+            getLocation() >> releaseFile
         })
+
+        singleVaraintTask.artifactProvider.builderInfo(_) >> GroovyStub(AndroidBuilderInfo) {
+            getTmpDir() >> project.file(variantTmpDir)
+            getVariantDir() >> project.file('variants/test')
+            getMode() >> DEBUG
+            getOriginalFile() >> project.file("$variantTmpDir/bin/$mainArtifact")
+        }
 
         and:
         copyProjectToTmpDir()
         new File(project.file(variantTmpDir), 'project.properties') << "android.library=$library\n"
 
         when:
-        builder.buildSingle(GroovyStub(AndroidBuilderInfo) {
-            getTmpDir() >> project.file(variantTmpDir)
-            getVariantDir() >> project.file('variants/test')
-            getMode() >> DEBUG
-            getOriginalFile() >> project.file("$variantTmpDir/bin/$mainArtifact")
-        })
+        singleVaraintTask.singleVariant()
 
         then:
         def sampleProperties = project.file("${TMP_DIR}/test/res/raw/sample.properties")
