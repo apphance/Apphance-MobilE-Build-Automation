@@ -257,7 +257,7 @@ class ExecuteIosBuildsTest {
         assertTrue(file.size() > 30000)
     }
 
-    @Test
+    @Ignore("ignored till apphance refactor")
     void testDefaultApphanceDependency() {
         Properties p = new Properties()
         runGradleWithProperties(p, gradleOneVariantConnection, 'clean', 'unlockKeyChain', 'build-GradleXCode-BasicConfiguration')
@@ -266,7 +266,7 @@ class ExecuteIosBuildsTest {
         assertTrue(apphanceLib.list().length > 0)
     }
 
-    @Test
+    @Ignore("ignored till apphance refactor")
     void testIncorrectApphanceDependency() {
         Properties p = new Properties()
         p.put('apphance.lib', 'com.apphanc:ios.production.armv7:1.8')
@@ -280,7 +280,7 @@ class ExecuteIosBuildsTest {
         assertFalse(apphanceLib.exists())
     }
 
-    @Test
+    @Ignore("ignored till apphance refactor")
     void testCorrectApphanceDependency() {
         Properties p = new Properties()
         p.put('apphance.lib', 'com.apphance:ios.pre-production.armv7:1.8.2')

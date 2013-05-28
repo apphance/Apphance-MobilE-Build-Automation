@@ -11,7 +11,6 @@ import javax.inject.Inject
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
-//TODO conf or system?
 class UnlockKeyChainTask extends DefaultTask {
 
     static final NAME = 'unlockKeyChain'
