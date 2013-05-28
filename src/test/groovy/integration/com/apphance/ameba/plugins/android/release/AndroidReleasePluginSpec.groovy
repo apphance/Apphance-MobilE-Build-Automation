@@ -20,7 +20,6 @@ class AndroidReleasePluginSpec extends Specification {
 
         and:
         def arp = new AndroidReleasePlugin()
-        arp.builder = Mock(AndroidSingleVariantBuilder)
 
         and: 'create mock android release configuration and set it'
         def arc = Mock(AndroidReleaseConfiguration)

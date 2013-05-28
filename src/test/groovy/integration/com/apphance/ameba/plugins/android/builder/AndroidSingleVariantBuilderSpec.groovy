@@ -5,9 +5,9 @@ import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
-import com.apphance.ameba.plugins.android.release.AndroidReleaseApkListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
@@ -22,7 +22,8 @@ class AndroidSingleVariantBuilderSpec extends Specification {
 
     def project = builder().withProjectDir(new File('testProjects/android/android-basic')).build()
 
-    def projectName = 'TestAndroidProject'
+    def static projectName = 'TestAndroidProject'
+    def static variantTmpDir = "${TMP_DIR}/test"
 
     def fileLinker = GroovyStub(FileLinker) {
         fileLink(_) >> ''
@@ -38,16 +39,16 @@ class AndroidSingleVariantBuilderSpec extends Specification {
         getVariantsDir() >> project.file('variants')
     }
 
-    def variantTmpDir = "${TMP_DIR}/test"
-
     def builder = new AndroidSingleVariantBuilder()
 
     def setup() {
         antExecutor.executor = executor
-
         builder.antExecutor = antExecutor
         builder.ant = project.ant
         builder.variantsConf = variantsConf
+
+        assert project.file(TMP_DIR).deleteDir()
+        assert project.file(OTA_DIR).deleteDir()
     }
 
     def cleanup() {
@@ -58,95 +59,52 @@ class AndroidSingleVariantBuilderSpec extends Specification {
         project.file(OTA_DIR).deleteDir()
     }
 
-    def 'artifacts are built according to passed config'() {
-        expect:
-        project.file(TMP_DIR).deleteDir()
-
-        and:
-        !project.file(TMP_DIR).exists()
-
-        and:
-        copyProjectToTmpDir()
-
-        when:
-        builder.buildSingle(GroovyStub(AndroidBuilderInfo) {
-            getTmpDir() >> project.file(variantTmpDir)
-            getVariantDir() >> project.file('variants/test')
-            getMode() >> DEBUG
-        })
-
-        then:
-        def sampleProperties = project.file("${TMP_DIR}/test/res/raw/sample.properties")
-        sampleProperties.exists() && sampleProperties.isFile() && sampleProperties.size() > 0
-
-        and:
-        [
-                "${projectName}-debug.apk",
-                "${projectName}-debug-unaligned.apk",
-                "${projectName}-debug-unaligned.apk.d",
-        ].every { project.file("$variantTmpDir/bin/$it").exists() }
-    }
-
-    def 'artifacts are built according to passed config and copied to ota'() {
+    @Unroll
+    def 'artifacts are built according to passed config. Library = #library'() {
         given:
-        def releaseApk = new File(project.rootDir, "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.apk")
-        def artifactProvider = GroovyStub(AndroidArtifactProvider, {
+        def releaseFile = new File(project.rootDir, "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.$releaseFileExtension")
+        builder.artifactProvider = GroovyStub(AndroidArtifactProvider, {
             artifact(_) >> GroovyStub(AmebaArtifact, {
-                getLocation() >> releaseApk
+                getLocation() >> releaseFile
             })
         })
 
         and:
-        def listener = new AndroidReleaseApkListener()
-        listener.artifactProvider = artifactProvider
-        listener.ant = project.ant
-
-        and:
-        builder.registerListener(listener)
-
-        expect:
-        project.file(TMP_DIR).deleteDir()
-        project.file(OTA_DIR).deleteDir()
-
-        and:
-        !project.file(TMP_DIR).exists()
-        !project.file(OTA_DIR).exists()
-
-        and:
         copyProjectToTmpDir()
+        new File(project.file(variantTmpDir), 'project.properties') << "android.library=$library\n"
 
         when:
         builder.buildSingle(GroovyStub(AndroidBuilderInfo) {
             getTmpDir() >> project.file(variantTmpDir)
             getVariantDir() >> project.file('variants/test')
             getMode() >> DEBUG
-            getOriginalFile() >> project.file("$TMP_DIR/test/bin/TestAndroidProject-debug.apk")
+            getOriginalFile() >> project.file("$variantTmpDir/bin/$mainArtifact")
         })
 
         then:
-        def sampleProperties = project.file("$TMP_DIR/test/res/raw/sample.properties")
-        sampleProperties.exists() && sampleProperties.isFile() && sampleProperties.size() > 0
+        def sampleProperties = project.file("${TMP_DIR}/test/res/raw/sample.properties")
+        sampleProperties.isFile() && sampleProperties.length()
 
-        and:
-        [
-                "${projectName}-debug.apk",
-                "${projectName}-debug-unaligned.apk",
-                "${projectName}-debug-unaligned.apk.d",
-        ].every { project.file("$variantTmpDir/bin/$it").exists() }
+        and: 'bin directory has all required artifacts'
+        (otherOutputs + mainArtifact).every { project.file("$variantTmpDir/bin/$it").exists() }
 
-        and:
-        releaseApk.exists() && releaseApk.isFile()
-        !(new File(project.rootDir, "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-unaligned-1.0.1_42.apk")).exists()
-        !(new File(project.rootDir, "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-unsigned-1.0.1_42.apk")).exists()
+        and: 'ota directory has only one file: generated artifact'
+        releaseFile.isFile()
+        releaseFile.parentFile.listFiles().size() == 1
+
+        where:
+        library | releaseFileExtension | mainArtifact               | otherOutputs
+        false   | 'apk'                | "${projectName}-debug.apk" | ["${projectName}-debug-unaligned.apk", "${projectName}-debug-unaligned.apk.d"]
+        true    | 'jar'                | "classes.jar"              | []
+
     }
 
     def copyProjectToTmpDir() {
         project.ant.copy(todir: variantTmpDir, failonerror: true, overwrite: true, verbose: true) {
             fileset(dir: project.rootDir.absolutePath + '/') {
-                exclude(name: 'variants/**/*')
-                exclude(name: 'log/**/*')
-                exclude(name: 'bin/**/*')
-                exclude(name: 'build/**/*')
+                ['variants', 'log', 'bin', 'build'].each {
+                    exclude(name: "$it/**/*")
+                }
             }
         }
     }
