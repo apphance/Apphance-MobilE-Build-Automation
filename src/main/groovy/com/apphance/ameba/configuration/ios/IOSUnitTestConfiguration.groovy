@@ -16,6 +16,12 @@ class IOSUnitTestConfiguration extends AbstractConfiguration {
     @Inject IOSConfiguration conf
     @Inject IOSVariantsConfiguration iosVariantsConf
 
+    @Inject
+    @Override
+    void init() {
+        super.init()
+    }
+
     @Override
     boolean isEnabled() {
         conf.enabled && enabledInternal

@@ -7,8 +7,6 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
-
 class IOSArtifactProvider {
 
     @Inject IOSReleaseConfiguration releaseConf
@@ -20,7 +18,8 @@ class IOSArtifactProvider {
                 target: v.target,
                 configuration: v.configuration,
                 mode: v.mode.value,
-                buildDir: new File(v.tmpDir, "/build/${v.configuration}-${v.mode.value == DEVICE ? 'iphoneos' : 'iphonesimulator'}"),
+//                buildDir: new File(v.tmpDir, "/build/${v.configuration}-${v.mode.value == DEVICE ? 'iphoneos' : 'iphonesimulator'}"),
+                buildDir: v.buildDir,
                 fullReleaseName: "${v.name}-${v.fullVersionString}",
                 filePrefix: "${v.name}-${v.fullVersionString}",
                 mobileprovision: v.mobileprovision.value,

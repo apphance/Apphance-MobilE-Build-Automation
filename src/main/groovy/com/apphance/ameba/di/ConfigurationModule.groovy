@@ -82,7 +82,6 @@ class ConfigurationModule extends AbstractModule {
         MapBinder<Integer, AbstractConfiguration> m = MapBinder.newMapBinder(binder(), Integer, AbstractConfiguration)
 
         def pt = typeDetector.detectProjectType(project.rootDir)
-
         def index = 0
 
         configurations[pt].each {

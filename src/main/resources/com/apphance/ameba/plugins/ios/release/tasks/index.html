@@ -39,24 +39,7 @@
                 </header>
             </section>
         </div>
-        <div>
-            <ul data-role="listview" data-theme="b">
-                <% def main_id = "${conf.mainTarget}-${conf.mainConfiguration}".toString() %>
-                <li>
-                    <div class="ui-grid-a">
-                        <div class="ui-block-a">
-                            <div style="font-size:1.5em">${conf.mainTarget.replaceAll('_',' ')}</div>
-                            </br>
-                            ${conf.mainConfiguration.replaceAll('_',' ')}
-                        </div>
-                        <div class="ui-block-b" style="text-align:right"><a href="${urlMap[main_id]}"
-                                                                            data-role="button" data-inline="true"
-                                                                            rel="external" data-theme="a">${rb.getString('Install')}</a>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
+        TODO TODO TODO - add removed section
         <% if (releaseNotes != null && releaseNotes.size >0) { %>
         <section id="instalation">
             <header style="text-align:center;">
@@ -74,7 +57,6 @@
         <% configurations.each { configuration -> %>
         <% def id = "${target}-${configuration}".toString() %>
         <% def map = [ 'target': target, 'configuration': configuration, 'id': id] %>
-        <% if (!conf.isBuildExcluded(id) && main_id != id && target != "Frankified") { other_installs << map } %>
         <% } %>
         <% } %>
         <% if (other_installs.size > 0) { %>

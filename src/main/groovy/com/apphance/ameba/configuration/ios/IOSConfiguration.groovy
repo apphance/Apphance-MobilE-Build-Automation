@@ -4,7 +4,6 @@ import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.properties.StringProperty
-import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.IOSExecutor
 
 import javax.inject.Inject
@@ -23,9 +22,14 @@ class IOSConfiguration extends ProjectConfiguration {
     public static final List<String> FAMILIES = ['iPad', 'iPhone']
     public static final PROJECT_PBXPROJ = 'project.pbxproj'
 
-    @Inject ProjectTypeDetector projectTypeDetector
     @Inject IOSExecutor executor
     @Inject IOSVariantsConfiguration iosVariantsConf
+
+    @Inject
+    @Override
+    void init() {
+        super.init()
+    }
 
     @Override
     String getVersionCode() {
@@ -66,7 +70,11 @@ class IOSConfiguration extends ProjectConfiguration {
 
     @Lazy List<String> possibleXCodeDirs = {
         def dirs = []
-        rootDir.traverse(type: DIRECTORIES, nameFilter: ~/.*\.xcodeproj/, maxDepth: MAX_RECURSION_LEVEL) {
+        rootDir.traverse(
+                type: DIRECTORIES,
+                nameFilter: ~/.*\.xcodeproj/,
+                excludeFilter: ~/.*${TMP_DIR}.*/,
+                maxDepth: MAX_RECURSION_LEVEL) {
             dirs << relativeTo(rootDir.absolutePath, it.absolutePath).path
         }
         dirs

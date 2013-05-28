@@ -17,27 +17,19 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.ProjectConfiguration.BUILD_DIR
 import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.ameba.util.file.FileManager.relativeTo
 
 abstract class AbstractIOSVariant extends AbstractVariant {
 
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSReleaseConfiguration releaseConf
-    @Inject
-    ApphanceConfiguration apphanceConf
-    @Inject
-    PlistParser plistParser
-    @Inject
-    PbxJsonParser pbxJsonParser
-    @Inject
-    PropertyReader reader
-    @Inject
-    IOSExecutor executor
-
-    final String prefix = 'ios'
+    @Inject IOSReleaseConfiguration releaseConf
+    @Inject ApphanceConfiguration apphanceConf
+    @Inject PlistParser plistParser
+    @Inject PbxJsonParser pbxJsonParser
+    @Inject PropertyReader reader
+    @Inject IOSExecutor executor
 
     @Inject
     AbstractIOSVariant(@Assisted String name) {
@@ -55,13 +47,25 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         super.init()
     }
 
+    final String prefix = 'ios'
+
+    @PackageScope
+    IOSConfiguration getConf() {
+        super.@conf as IOSConfiguration
+    }
+
     def mobileprovision = new FileProperty(
             message: "Mobile provision file for variant defined",
             interactive: { releaseConf.enabled },
             required: { releaseConf.enabled },
-            possibleValues: { releaseConf.findMobileProvisionFiles()*.name as List<String> },
-            validator: { it in releaseConf.findMobileProvisionFiles()*.name }
+            possibleValues: { possibleMobileProvisionFiles()*.path as List<String> },
+            validator: { it in (possibleMobileProvisionFiles()*.path as List<String>) }
     )
+
+    @PackageScope
+    List<File> possibleMobileProvisionFiles() {
+        releaseConf.findMobileProvisionFiles().collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath) }
+    }
 
     def mode = new IOSBuildModeProperty(
             message: "Build mode for the variant, it describes the environment the artifact is built for: (DEVICE|SIMULATOR)",
@@ -115,6 +119,10 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         mode.value == SIMULATOR ? '-arch i386' : ''
     }
 
+    protected String buildDirCmd() {
+        "CONFIGURATION_BUILD_DIR=${buildDir.absolutePath}"
+    }
+
     String getFullVersionString() {
         "${versionString}_${versionCode}"
     }
@@ -126,6 +134,10 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     String getBuildableName() {
         executor.buildSettings(target, configuration)['FULL_PRODUCT_NAME']
+    }
+
+    File getBuildDir() {
+        new File(tmpDir, BUILD_DIR)
     }
 
     abstract File getPlist()

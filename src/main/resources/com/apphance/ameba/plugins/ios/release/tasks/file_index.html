@@ -79,7 +79,6 @@
     <div data-role="content">
         <% configurations.each { configuration -> %>
         <% def id = "${target}-${configuration}".toString() %>
-        <% if (!conf.isBuildExcluded(id)) {%>
         <section id="${configuration}">
             <header style="text-align:center;">
                 <h3>
@@ -112,7 +111,6 @@
         </section>
         <% } %>
         <% } %>
-        <% } %>
 
         <% if (!releaseConf.dmgImageFiles.empty) { %>
         <section id="simulatorImages">
@@ -123,7 +121,7 @@
             </header>
             <p>
             <ul data-role="listview" data-inset="true" data-theme="a">
-                <% conf.families.each { family -> %>
+                <% conf.FAMILIES.each { family -> %>
                 <% if (releaseConf.dmgImageFiles[family + '-' + target] != null) { %>
                 <li><a href="${releaseConf.dmgImageFiles[family + '-' + target].getRelativeUrl(baseUrl)}"
                        rel="external"><h3>

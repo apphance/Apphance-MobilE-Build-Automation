@@ -27,6 +27,9 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     final String configurationName = 'Release Configuration'
 
+    @Inject ProjectConfiguration conf
+    @Inject PropertyReader reader
+
     private boolean enabledInternal
 
     AmebaArtifact otaIndexFile
@@ -41,9 +44,6 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     AmebaArtifact galleryTrans
 
     String releaseMailSubject
-
-    @Inject ProjectConfiguration conf
-    @Inject PropertyReader reader
 
     Collection<String> getReleaseNotes() {
         (reader.systemProperty('release.notes') ?: reader.envVariable('RELEASE_NOTES') ?: '').split('\n')
@@ -71,7 +71,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
         new File(conf.rootDir, OTA_DIR)
     }
 
-    FileProperty iconFile = new FileProperty(
+    def iconFile = new FileProperty(
             name: 'release.icon',
             message: 'Path to project\'s icon file, must be relative to the root dir of project',
             required: { true },

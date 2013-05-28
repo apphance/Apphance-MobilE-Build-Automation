@@ -42,6 +42,6 @@ class IOSTCVariant extends AbstractIOSVariant {
 
     @Override
     List<String> buildCmd() {
-        conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration ${sdkCmd()} ${archCmd()}".split().flatten()
+        conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration ${sdkCmd()} ${archCmd()} ${buildDirCmd()}".split().flatten()
     }
 }

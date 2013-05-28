@@ -7,6 +7,7 @@ import com.apphance.ameba.plugins.release.AmebaArtifact
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.util.file.FileManager.relativeTo
 import static groovy.io.FileType.FILES
 
@@ -27,7 +28,8 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     @Override
     File defaultIcon() {
-        iconFiles.find { it.name.startsWith('Icon') } ?: iconFiles.find()
+        relativeTo(conf.rootDir.absolutePath,
+                (iconFiles.find { it.name.toLowerCase().startsWith('icon') } ?: iconFiles.find()).absolutePath)
     }
 
     @Override
@@ -37,7 +39,10 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     private List<File> getIconFiles() {
         def icons = []
-        conf.rootDir.traverse(type: FILES, filter: {File it -> it.name ==~ ICON_PATTERN}) {
+        conf.rootDir.traverse(
+                type: FILES,
+                filter: { File it -> it.name ==~ ICON_PATTERN },
+                excludeFilter: ~/.*${TMP_DIR}.*/) {
             icons << it
         }
         icons
@@ -45,10 +50,11 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     List<File> findMobileProvisionFiles() {
         def files = []
-        conf.rootDir.eachFileRecurse(FILES) {
-            if (it.name.endsWith('.mobileprovision')) {
-                files << it
-            }
+        conf.rootDir.traverse(
+                type: FILES,
+                nameFilter: ~/.*\.mobileprovision/,
+                excludeFilter: ~/.*${TMP_DIR}.*/) {
+            files << it
         }
         files
     }

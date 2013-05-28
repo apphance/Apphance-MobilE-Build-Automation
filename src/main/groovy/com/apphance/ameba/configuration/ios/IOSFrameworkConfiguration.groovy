@@ -17,6 +17,12 @@ class IOSFrameworkConfiguration extends AbstractConfiguration {
     @Inject IOSVariantsConfiguration variantsConf
     @Inject IOSReleaseConfiguration releaseConf
 
+    @Inject
+    @Override
+    void init() {
+        super.init()
+    }
+
     @Override
     boolean isEnabled() {
         conf.enabled && enabledInternal

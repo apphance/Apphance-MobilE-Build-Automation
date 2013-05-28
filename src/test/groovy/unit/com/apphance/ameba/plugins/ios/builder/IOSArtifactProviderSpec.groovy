@@ -57,6 +57,7 @@ class IOSArtifactProviderSpec extends Specification {
         variant.target >> 'GradleXCode'
         variant.configuration >> 'BasicConfiguration'
         variant.tmpDir >> new File(properties['java.io.tmpdir'])
+        variant.buildDir >> new File(properties['java.io.tmpdir'], 'build')
         variant.mobileprovision >> new FileProperty(value: new File('sample.mobileprovision'))
         variant.versionString >> '1.0.1'
         variant.versionCode >> '42'
@@ -74,7 +75,7 @@ class IOSArtifactProviderSpec extends Specification {
         then:
         bi.target == 'GradleXCode'
         bi.configuration == 'BasicConfiguration'
-        bi.buildDir == new File(properties['java.io.tmpdir'], 'build/BasicConfiguration-iphoneos')
+        bi.buildDir == new File(properties['java.io.tmpdir'], 'build')
         bi.filePrefix == 'V1-1.0.1_42'
         bi.fullReleaseName == 'V1-1.0.1_42'
         bi.id == 'V1'

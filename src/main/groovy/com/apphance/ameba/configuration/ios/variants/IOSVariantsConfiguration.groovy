@@ -31,7 +31,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     @Inject
     void init() {
         super.init()
-        variantType.value ?: (conf.schemes ? SCHEME : TC).name()
+        variantType.value = variantType.value ?: (conf.schemes ? SCHEME : TC).name()
         this.variants = buildVariantsList()
     }
 

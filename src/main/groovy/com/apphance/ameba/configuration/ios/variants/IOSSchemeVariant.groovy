@@ -7,8 +7,7 @@ import javax.inject.Inject
 
 class IOSSchemeVariant extends AbstractIOSVariant {
 
-    @Inject
-    XCSchemeParser schemeParser
+    @Inject XCSchemeParser schemeParser
 
     @Inject
     IOSSchemeVariant(@Assisted String name) {
@@ -24,7 +23,7 @@ class IOSSchemeVariant extends AbstractIOSVariant {
 
     @Override
     List<String> buildCmd() {
-        conf.xcodebuildExecutionPath() + "-scheme $name -configuration $configuration ${sdkCmd()} ${archCmd()}".split().flatten()
+        conf.xcodebuildExecutionPath() + "-scheme $name -configuration $configuration ${sdkCmd()} ${archCmd()} ${buildDirCmd()}".split().flatten()
     }
 
     @Override

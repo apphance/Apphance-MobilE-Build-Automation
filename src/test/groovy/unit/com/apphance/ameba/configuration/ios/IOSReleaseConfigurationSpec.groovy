@@ -37,7 +37,7 @@ class IOSReleaseConfigurationSpec extends Specification {
 
     def 'test defaultIcon'() {
         expect:
-        iosReleaseConf.defaultIcon().path == 'testProjects/ios/GradleXCode/icon.png'
+        iosReleaseConf.defaultIcon().path == 'icon.png'
     }
 
     def 'test possibleIcons'() {
@@ -62,7 +62,7 @@ class IOSReleaseConfigurationSpec extends Specification {
         iosReleaseConf.canBeEnabled()
     }
 
-    def 'test matching icon pattern' () {
+    def 'test matching icon pattern'() {
         expect:
         ok ==~ ICON_PATTERN
 
@@ -70,7 +70,7 @@ class IOSReleaseConfigurationSpec extends Specification {
         ok << ['Icon.png', 'icon.png', 'Icon@2x.png', 'Icon-72.png', 'icon-small.png', 'abcIcOnaaa.png']
     }
 
-    def 'test not matching icon pattern' () {
+    def 'test not matching icon pattern'() {
         expect:
         !(notMatching ==~ ICON_PATTERN)
 

@@ -2,6 +2,7 @@ package com.apphance.ameba.configuration
 
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
+import com.apphance.ameba.detection.ProjectTypeDetector
 import org.gradle.api.Project
 
 import javax.inject.Inject
@@ -10,9 +11,11 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
 
     public static final String TMP_DIR = 'flow-tmp'
     public static final String LOG_DIR = 'flow-log'
+    public static final String BUILD_DIR = 'build'
 
     @Inject Project project
     @Inject PropertyReader reader
+    @Inject ProjectTypeDetector projectTypeDetector
 
     abstract String getVersionCode()
 
@@ -37,7 +40,7 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
     abstract StringProperty getProjectName()
 
     File getBuildDir() {
-        project.file('build')
+        project.file(BUILD_DIR)
     }
 
     File getTmpDir() {

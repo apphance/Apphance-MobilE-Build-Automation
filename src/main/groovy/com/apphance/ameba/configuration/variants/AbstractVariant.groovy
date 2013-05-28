@@ -74,6 +74,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
     }
 
     File getTmpDir() {
+        println "${conf} ${conf?.tmpDir} $name"
         new File(conf.tmpDir, name)
     }
 

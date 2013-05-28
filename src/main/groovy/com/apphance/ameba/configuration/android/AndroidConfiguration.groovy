@@ -2,7 +2,6 @@ package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
-import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.plugins.android.parsers.AndroidBuildXmlHelper
 import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
@@ -20,7 +19,6 @@ class AndroidConfiguration extends ProjectConfiguration {
 
     String configurationName = 'Android Configuration'
 
-    @Inject ProjectTypeDetector projectTypeDetector
     @Inject AndroidBuildXmlHelper buildXmlHelper
     @Inject AndroidManifestHelper manifestHelper
     @Inject AndroidExecutor androidExecutor

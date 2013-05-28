@@ -39,7 +39,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
             zipfileset(dir: bi.mobileprovision.parent, includes: bi.mobileprovision)
             zipfileset(dir: bi.buildDir, includes: "${bi.target}.app/**")
         }
-        l.lifecycle("Distribution zip file created: $aa")
+        l.lifecycle("Distribution zip file created: ${aa.location}")
     }
 
     private void prepareDSYMZipFile(IOSBuilderInfo bi) {
@@ -50,7 +50,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         ant.zip(destfile: aa.location) {
             zipfileset(dir: bi.buildDir, includes: "${bi.target}.app.dSYM/**")
         }
-        l.lifecycle("dSYM zip file created: $aa")
+        l.lifecycle("dSYM zip file created: ${aa.location}")
     }
 
     private void prepareAhSYMFiles(IOSBuilderInfo bi) {
@@ -60,8 +60,8 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         aa.location.mkdirs()
         def je = new JythonExecutor()
         def args = ['-p', bi.plist.canonicalPath, '-d', new File(bi.buildDir, "${bi.id}.app.dSYM").canonicalPath, '-o', new File(aa.location.canonicalPath, bi.target).canonicalPath]
-        je.executeScript('jython/dump_reduce3_ameba.py', args)
-        l.lifecycle("ahSYM files created: ${aa.location.list()}")
+        je.executeScript('dump_reduce3_ameba.py', args)
+        l.lifecycle("ahSYM files created: ${aa.location}")
     }
 
     private void prepareIpaFile(IOSBuilderInfo bi) {
@@ -83,7 +83,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
                 bi.mobileprovision.canonicalPath
         ]
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: cmd))
-        l.lifecycle("ipa file created: $aa")
+        l.lifecycle("ipa file created: ${aa.location}")
     }
 
     private void prepareManifestFile(IOSBuilderInfo bi) {
@@ -103,7 +103,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         l.lifecycle("Building manifest from ${bi.plist}, bundleId: ${bundleId}")
         def result = engine.createTemplate(manifestTemplate).make(binding)
         aa.location << (result.toString())
-        l.lifecycle("Manifest file created: ${aa}")
+        l.lifecycle("Manifest file created: ${aa.location}")
     }
 
     private void prepareMobileProvisionFile(IOSBuilderInfo bi) {
@@ -112,6 +112,6 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         aa.location.parentFile.mkdirs()
         aa.location.delete()
         aa.location << bi.mobileprovision.text
-        l.lifecycle("Mobile provision file created: ${aa}")
+        l.lifecycle("Mobile provision file created: ${aa.location}")
     }
 }

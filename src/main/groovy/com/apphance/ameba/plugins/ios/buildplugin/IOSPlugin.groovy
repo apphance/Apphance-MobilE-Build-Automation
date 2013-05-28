@@ -43,7 +43,9 @@ class IOSPlugin implements Plugin<Project> {
                     type: CopySourcesTask)
 
             project.task(CopyMobileProvisionTask.NAME,
-                    type: CopyMobileProvisionTask)
+                    type: CopyMobileProvisionTask,
+                    dependsOn: CopySourcesTask.NAME
+            )
 
             project.task(UnlockKeyChainTask.NAME,
                     type: UnlockKeyChainTask)
@@ -64,7 +66,7 @@ class IOSPlugin implements Plugin<Project> {
             variantsConf.variants.each { variant ->
                 def buildTask = project.task(variant.buildTaskName,
                         type: SingleVariantTask,
-                        dependsOn: [CopySourcesTask.NAME, CopyMobileProvisionTask.NAME]
+                        dependsOn: [CopyMobileProvisionTask.NAME]
                 ) as SingleVariantTask
                 buildTask.variant = variant
 

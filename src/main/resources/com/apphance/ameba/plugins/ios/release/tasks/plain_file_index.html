@@ -16,7 +16,6 @@ ${rb.getString('Released')} ${currentDate}
         <ul>
             <% configurations.each { configuration -> %>
             <% def id = "${target}-${configuration}".toString() %>
-            <% if (!conf.isBuildExcluded(id)) {%>
             <li>${configuration}
                 <ul>
                     <% if (releaseConf.distributionZipFiles[id] != null) { %>
@@ -45,12 +44,11 @@ ${rb.getString('Released')} ${currentDate}
                 </ul>
             </li>
             <% } %>
-            <% } %>
         </ul>
         <% if (!releaseConf.dmgImageFiles.empty) { %>
         ${rb.getString('Simulator_images')}</br>
         <ul>
-            <% conf.families.each { family -> %>
+            <% conf.FAMILIES.each { family -> %>
             <% if (releaseConf.dmgImageFiles[family + '-' + target] != null) { %>
             <li>${java.text.MessageFormat.format(rb.getString('family_image'),family)}
                 <a href="${releaseConf.dmgImageFiles[family + '-' + target].getRelativeUrl(baseUrl)}"

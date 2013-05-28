@@ -8,6 +8,7 @@ import com.apphance.ameba.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.ameba.plugins.ios.parsers.MobileProvisionParser
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import groovy.text.SimpleTemplateEngine
+import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -21,7 +22,7 @@ import static org.gradle.api.logging.Logging.getLogger
 
 class AvailableArtifactsInfoTask extends DefaultTask {
 
-    private l = getLogger(getClass())
+    def l = getLogger(getClass())
 
     static final NAME = 'prepareAvailableArtifactsInfo'
     String description = 'Prepares information about available artifacts for mail message to include'
@@ -55,7 +56,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         prepareQRCode()
     }
 
-    private void prepareArtifacts(AbstractIOSVariant variant) {
+    @PackageScope
+    void prepareArtifacts(AbstractIOSVariant variant) {
         def bi = artifactProvider.builderInfo(variant)
 
         def zipDist = artifactProvider.zipDistribution(bi)
@@ -126,7 +128,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     private void prepareQRCode() {
         def urlEncoded = encode(releaseConf.otaIndexFile.url.toString(), "utf-8")
         downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), releaseConf.QRCodeFile.location)
-        l.lifecycle("QRCode created: ${aa.location}")
+        l.lifecycle("QRCode created: ${releaseConf.QRCodeFile.location}")
     }
 
     private void prepareOtaIndexFile() {
@@ -159,7 +161,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         def result = fillTemplate(tmpl, binding)
         templateToFile(releaseConf.otaIndexFile.location, result)
         l.lifecycle("Ota index created: ${releaseConf.otaIndexFile}")
-        ant.copy(file: releaseConf.iconFile, tofile: new File(releaseConf.otaIndexFile.location.parentFile, releaseConf.iconFile.name))
+        ant.copy(file: releaseConf.iconFile.value, tofile: new File(releaseConf.otaIndexFile.location.parentFile, releaseConf.iconFile.name))
     }
 
     private void prepareFileIndexFile(def udids) {

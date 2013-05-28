@@ -2,23 +2,33 @@ package com.apphance.ameba.configuration.ios
 
 import com.apphance.ameba.configuration.ios.variants.IOSTCVariant
 import com.apphance.ameba.configuration.reader.PropertyPersister
+import spock.lang.Shared
 import spock.lang.Specification
 
 import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.google.common.io.Files.createTempDir
 
 class IOSTCVariantSpec extends Specification {
 
     IOSConfiguration iosConf
     def propertyPersister
 
+    @Shared
+    def tmpDir = createTempDir()
+
     def setup() {
         iosConf = GroovySpy(IOSConfiguration)
         iosConf.getTargets() >> ['t1', 't2', 't3']
         iosConf.getConfigurations() >> ['c1', 'c3', 'c4']
+        iosConf.getTmpDir() >> tmpDir
 
         propertyPersister = GroovyMock(PropertyPersister)
         propertyPersister.get(_) >> ''
+    }
+
+    def cleanup() {
+        tmpDir.deleteDir()
     }
 
     def 'target and configuration is found well'() {
@@ -89,10 +99,9 @@ class IOSTCVariantSpec extends Specification {
 
         where:
         mode      | sdk           | simulatorSdk         | expected
-        SIMULATOR | ''            | 'iphonesimulator6.1' | 'xcodebuild -target t1 -configuration c1 -sdk iphonesimulator6.1 -arch i386'
-        SIMULATOR | 'iphoneos6.1' | 'iphonesimulator6.1' | 'xcodebuild -target t1 -configuration c1 -sdk iphonesimulator6.1 -arch i386'
-        DEVICE    | ''            | 'iphonesimulator6.1' | 'xcodebuild -target t1 -configuration c1'
-        DEVICE    | 'iphoneos6.1' | 'iphonesimulator6.1' | 'xcodebuild -target t1 -configuration c1 -sdk iphoneos6.1'
+        SIMULATOR | 'iphoneos6.1' | 'iphonesimulator6.1' | "xcodebuild -target t1 -configuration c1 -sdk iphonesimulator6.1 -arch i386 CONFIGURATION_BUILD_DIR=${tmpDir.absolutePath}/t1c1/build"
+        DEVICE    | ''            | 'iphonesimulator6.1' | "xcodebuild -target t1 -configuration c1 CONFIGURATION_BUILD_DIR=${tmpDir.absolutePath}/t1c1/build"
+        DEVICE    | 'iphoneos6.1' | 'iphonesimulator6.1' | "xcodebuild -target t1 -configuration c1 -sdk iphoneos6.1 CONFIGURATION_BUILD_DIR=${tmpDir.absolutePath}/t1c1/build"
 
     }
 }
