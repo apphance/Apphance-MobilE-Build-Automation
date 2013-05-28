@@ -14,6 +14,7 @@ import javax.inject.Inject
 import java.text.SimpleDateFormat
 
 import static com.apphance.ameba.util.file.FileManager.relativeTo
+import static org.apache.commons.lang.StringUtils.isNotBlank
 
 abstract class ReleaseConfiguration extends AbstractConfiguration {
 
@@ -46,7 +47,9 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     String releaseMailSubject
 
     Collection<String> getReleaseNotes() {
-        (reader.systemProperty('release.notes') ?: reader.envVariable('RELEASE_NOTES') ?: '').split('\n')
+        (reader.systemProperty('release.notes') ?: reader.envVariable('RELEASE_NOTES') ?: '').split('\n').findAll {
+            isNotBlank(it)
+        }
     }
 
     Locale getLocale() {

@@ -21,19 +21,19 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
 
     abstract String getVersionString()
 
-    final String getExtVersionCode() {
+    String getExtVersionCode() {
         reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
     }
 
-    final String getExtVersionString() {
+    String getExtVersionString() {
         reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
     }
 
-    final String getFullVersionString() {
+    String getFullVersionString() {
         "${versionString}_${versionCode}"
     }
 
-    final String getProjectVersionedName() {
+    String getProjectVersionedName() {
         "${projectName.value}-$fullVersionString"
     }
 

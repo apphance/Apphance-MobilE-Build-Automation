@@ -62,7 +62,7 @@ class IOSConfiguration extends ProjectConfiguration {
             message: 'iOS xcodeproj directory',
             possibleValues: { possibleXCodeDirs },
             validator: {
-                def file = new File(rootDir, (it?.trim() ?: '') as String)
+                def file = new File(rootDir, it as String)
                 file?.absolutePath?.trim() ? (file.exists() && file.isDirectory() && file.name.endsWith('.xcodeproj')) : false
             },
             required: { true }
