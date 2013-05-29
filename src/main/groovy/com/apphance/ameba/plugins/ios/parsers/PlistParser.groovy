@@ -58,7 +58,7 @@ class PlistParser {
         new JsonSlurper().parseText(text)
     }
 
-    String replaceBundledId(File plist, String oldBundleId, String newBundleId) {
+    void replaceBundledId(File plist, String oldBundleId, String newBundleId) {
         l.info("Attempting to replace oldBundleId ($oldBundleId) with newBundleId ($newBundleId) in file: ${plist.absolutePath}")
         def xml = new XmlSlurper().parse(plist)
         def keyNode = xml.dict.key.find { it.text() == 'CFBundleIdentifier' }
@@ -70,10 +70,10 @@ class PlistParser {
         } else {
             l.info("Bundle ID will not be replaced: newBundleId ($newBundleId) does not start with oldBundleId ($oldBundleId)")
         }
-        XmlUtil.serialize(xml)
+        plist.text = XmlUtil.serialize(xml)
     }
 
-    String replaceVersion(File plist, String versionCode, String versionString) {
+    void replaceVersion(File plist, String versionCode, String versionString) {
         def xml = new XmlSlurper().parse(plist)
 
         def versionCodeKey = xml.dict.key.find { it.text() == 'CFBundleVersion' }
@@ -84,7 +84,7 @@ class PlistParser {
         def versionStringValueNode = nextNode(versionStringKey)
         versionStringValueNode.replaceBody(versionString)
 
-        XmlUtil.serialize(xml)
+        plist.text = XmlUtil.serialize(xml)
     }
 
     private GPathResult nextNode(GPathResult node) {

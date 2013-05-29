@@ -3,6 +3,9 @@ package com.apphance.ameba.plugins.ios.parsers
 import com.apphance.ameba.executor.IOSExecutor
 import spock.lang.Specification
 
+import static com.google.common.io.Files.copy
+import static com.google.common.io.Files.createTempDir
+
 class PlistParserSpec extends Specification {
 
     def parser = new PlistParser()
@@ -36,15 +39,26 @@ class PlistParserSpec extends Specification {
         given:
         def plist = new File('testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist')
 
+        and:
+        def tmpDir = createTempDir()
+        def tmpPlist = new File(tmpDir, 'tmp.plist')
+
+        and:
+        copy(plist, tmpPlist)
+
         when:
-        def replaced = parser.replaceBundledId(plist, oldBundle, newBundle)
+        parser.replaceBundledId(tmpPlist, oldBundle, newBundle)
 
         then:
+        def replaced = tmpPlist.text
         replaced.contains(expected)
         def xml = new XmlSlurper().parseText(replaced)
         def keyNode = xml.dict.key.find { it.text() == 'CFBundleIdentifier' }
         def siblings = keyNode.parent().children()
         siblings[siblings.findIndexOf { it == keyNode } + 1].text() == expected
+
+        cleanup:
+        tmpDir.deleteDir()
 
         where:
         newBundle                 | oldBundle            | expected
@@ -58,16 +72,26 @@ class PlistParserSpec extends Specification {
         given:
         def plist = new File('testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist')
 
+        and:
+        def tmpDir = createTempDir()
+        def tmpPlist = new File(tmpDir, 'tmp.plist')
+
+        and:
+        copy(plist, tmpPlist)
+
         when:
-        def replaced = parser.replaceVersion(plist, '46', '2.0')
+        parser.replaceVersion(tmpPlist, '46', '2.0')
 
         then:
-        def xml = new XmlSlurper().parseText(replaced)
+        def xml = new XmlSlurper().parse(tmpPlist)
         ['CFBundleVersion': '46', 'CFBundleShortVersionString': '2.0'].every { m ->
             def keyNode = xml.dict.key.find { it.text() == m.key }
             def siblings = keyNode.parent().children()
             siblings[siblings.findIndexOf { it == keyNode } + 1].text() == m.value
         }
+
+        cleanup:
+        tmpDir.deleteDir()
     }
 
     def 'get icon files'() {
