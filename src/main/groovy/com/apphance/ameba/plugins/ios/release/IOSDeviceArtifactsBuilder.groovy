@@ -6,6 +6,7 @@ import com.apphance.ameba.executor.jython.JythonExecutor
 import com.apphance.ameba.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.ameba.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.ameba.plugins.ios.parsers.PlistParser
+import com.apphance.ameba.plugins.release.AmebaArtifact
 import groovy.text.SimpleTemplateEngine
 
 import javax.inject.Inject
@@ -59,8 +60,13 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         aa.location.delete()
         aa.location.mkdirs()
         def je = new JythonExecutor()
-        def args = ['-p', bi.plist.canonicalPath, '-d', new File(bi.buildDir, "${bi.id}.app.dSYM").canonicalPath, '-o', new File(aa.location.canonicalPath, bi.target).canonicalPath]
+        def dest = new File(bi.buildDir, "${bi.id}.app.dSYM")
+        def output = new File(aa.location.canonicalPath, bi.filePrefix)
+        def args = ['-p', bi.plist.canonicalPath, '-d', dest.canonicalPath, '-o', output.canonicalPath]
         je.executeScript('dump_reduce3_ameba.py', args)
+        dest.listFiles().each {
+            aa.childArtifacts << new AmebaArtifact(name: it.name, location: it, url: "${aa.url.toString()}/${it.name}".toURL())
+        }
         l.lifecycle("ahSYM files created: ${aa.location}")
     }
 

@@ -69,8 +69,12 @@ class AvailableArtifactsInfoTask extends DefaultTask {
             releaseConf.dSYMZipFiles.put(bi.id, dSym)
 
         def ahSym = artifactProvider.ahSYM(bi)
-        if (ahSym.location.exists())
+        if (ahSym.location.exists()) {
             releaseConf.ahSYMDirs.put(bi.id, ahSym)
+            ahSym.location.listFiles().each {
+                ahSym.childArtifacts << new AmebaArtifact(location: it, name: it.name, url: "${ahSym.url.toString()}/${it.name}".toURL())
+            }
+        }
 
         def ipa = artifactProvider.ipa(bi)
         if (ipa.location.exists())

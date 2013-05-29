@@ -395,13 +395,8 @@ def generate_filename(filename, arch):
     '''
 
     EXT = '.ahsym'
-    core = os.path.splitext(filename)[0]
-    old_extension = os.path.splitext(filename)[-1]
 
-    if old_extension.lower() == EXT or old_extension.lower() == '':
-        filename_with_ext = '%s_%s%s' % (core, arch, EXT)
-    else:
-        filename_with_ext = '%s_%s%s%s' % (core, arch, old_extension, EXT)
+    filename_with_ext = '%s_%s%s' % (filename, arch, EXT)
 
     return filename_with_ext
 

@@ -72,7 +72,7 @@
                 <h1>${v.name}</h1>
             </div>
             <div data-role="content">
-                <section id="${v.configuration}-">
+                <section id="${v.configuration}">
                     <header style="text-align:center;">
                         <h3>
                             <div>${rb.getString('Configuration')} ${v.configuration}</div>
@@ -81,24 +81,46 @@
                     <p>
                         <ul data-role="listview" data-inset="true" data-theme="a">
                             <% if (releaseConf.distributionZipFiles[v.name] != null) { %>
-                            <li><a href="${releaseConf.distributionZipFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
-                                <h3>${rb.getString('Zip_file')}</h3></a></li>
+                            <li>
+                                <a href="${releaseConf.distributionZipFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                                    <h3>${rb.getString('Zip_file')}</h3>
+                                </a>
+                            </li>
                             <% } %>
                             <% if (releaseConf.dSYMZipFiles[v.name] != null) { %>
-                            <li><a href="${releaseConf.dSYMZipFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
-                                <h3>${rb.getString('dSYM_file')}</h3></a></li>
+                            <li>
+                                <a href="${releaseConf.dSYMZipFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                                    <h3>${rb.getString('dSYM_file')}</h3>
+                                </a>
+                            </li>
                             <% } %>
                             <% if (releaseConf.ipaFiles[v.name] != null) { %>
-                            <li><a href="${releaseConf.ipaFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
-                                <h3>${rb.getString('Ipa_file')}</h3></a></li>
+                            <li>
+                                <a href="${releaseConf.ipaFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                                    <h3>${rb.getString('Ipa_file')}</h3>
+                                </a>
+                            </li>
                             <% } %>
                             <% if (releaseConf.manifestFiles[v.name] != null) { %>
-                            <li><a href="${releaseConf.manifestFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
-                                <h3>${rb.getString('Manifest_file')}</h3></a></li>
+                            <li>
+                                <a href="${releaseConf.manifestFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                                    <h3>${rb.getString('Manifest_file')}</h3>
+                                </a>
+                            </li>
                             <% } %>
                             <% if (releaseConf.mobileProvisionFiles[v.name] != null) { %>
-                            <li><a href="${releaseConf.mobileProvisionFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
-                                <h3>${rb.getString('Mobileprovision_file')}</h3></a></li>
+                            <li>
+                                <a href="${releaseConf.mobileProvisionFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                                    <h3>${rb.getString('Mobileprovision_file')}</h3>
+                                </a>
+                            </li>
+                            <% } %>
+                            <% if (releaseConf.ahSYMDirs[v.name] != null) { %>
+                            <li>
+                                <a href="#${v.name}-ahSYM" rel="external">
+                                    <h3>${rb.getString('ahSym_dir')}</h3>
+                                </a>
+                            </li>
                             <% } %>
                         </ul>
                 </section>
@@ -114,9 +136,12 @@
                     <ul data-role="listview" data-inset="true" data-theme="a">
                         <% conf.FAMILIES.each { family -> %>
                         <% if (releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target] != null) { %>
-                        <li><a href="${releaseConf.dmgImageFiles[family + '-' + target].getRelativeUrl(baseUrl)}"
-                               rel="external"><h3>
-                            ${java.text.MessageFormat.format(rb.getString('Family_simulator'),family)}</h3></a></li>
+                        <li>
+                            <a href="${releaseConf.dmgImageFiles[family + '-' + target].getRelativeUrl(baseUrl)}"
+                               rel="external">
+                                <h3>${java.text.MessageFormat.format(rb.getString('Family_simulator'),family)}</h3>
+                            </a>
+                        </li>
                         <% } %>
                         <% } %>
                     </ul>
@@ -124,7 +149,37 @@
                 <% } %>
             </div>
         </div>
-         <% } %>
+        <% } %>
+
+        <% variantsConf.variants.each { v -> %>
+        <div data-role="page" id="${v.name}-ahSYM" data-add-back-btn="true">
+            <div data-role="header">
+                <h1>${v.name}</h1>
+            </div>
+            <div data-role="content">
+                <section id="${v.configuration}-ahSYM">
+                    <header style="text-align:center;">
+                        <h3>
+                            <div>${rb.getString('Configuration')} ${v.configuration}</div>
+                        </h3>
+                    </header>
+                    <% if (releaseConf.ahSYMDirs[v.name] != null) { %>
+                    <p>
+                    <ul data-role="listview" data-inset="true" data-theme="a">
+                    <% releaseConf.ahSYMDirs[v.name].childArtifacts.each { a -> %>
+                        <li>
+                            <a href="${a.getRelativeUrl(baseUrl)}" rel="external">
+                                <h3>${a.name}</h3>
+                            </a>
+                        </li>
+                    <% } %>
+                    </ul>
+                    <% } %>
+                </section>
+            </div>
+        </div>
+        <% } %>
+
         <div data-role="page" id="provprofiles" data-add-back-btn="true">
             <div data-role="header">
                 <h1>${rb.getString('List_of_valid_UDIDs')}</h1>

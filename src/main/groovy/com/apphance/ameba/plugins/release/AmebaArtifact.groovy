@@ -11,6 +11,8 @@ class AmebaArtifact {
     URL url
     File location
 
+    final List<AmebaArtifact> childArtifacts = []
+
     String getRelativeUrl(def baseUrl) {
         l.info("Retrieving relative url from $url with base $baseUrl")
         String stringUrl = url.toString()
