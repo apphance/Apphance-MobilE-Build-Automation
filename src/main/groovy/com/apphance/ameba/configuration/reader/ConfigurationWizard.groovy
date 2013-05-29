@@ -7,7 +7,7 @@ import static java.lang.System.out
 import static org.apache.commons.lang.StringUtils.isBlank
 import static org.gradle.api.logging.Logging.getLogger
 
-class ConversationManager {
+class ConfigurationWizard {
 
     private log = getLogger(getClass())
 

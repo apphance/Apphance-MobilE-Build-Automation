@@ -3,15 +3,13 @@ package com.apphance.ameba.configuration.reader
 import com.apphance.ameba.configuration.properties.ProjectTypeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.detection.ProjectType
-import spock.lang.IgnoreRest
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 
-class ConversationManagerSpec extends Specification {
+class ConfigurationWizardSpec extends Specification {
 
-    def cm = new ConversationManager()
+    def cm = new ConfigurationWizard()
 
     def 'possible value string is formatted correctly'() {
         expect:

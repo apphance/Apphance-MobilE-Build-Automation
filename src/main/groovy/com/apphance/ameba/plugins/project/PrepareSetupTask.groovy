@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.project
 
 import com.apphance.ameba.configuration.AbstractConfiguration
-import com.apphance.ameba.configuration.reader.ConversationManager
+import com.apphance.ameba.configuration.reader.ConfigurationWizard
 import com.apphance.ameba.configuration.reader.PropertyPersister
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -19,7 +19,7 @@ class PrepareSetupTask extends DefaultTask {
 
     @Inject Map<Integer, AbstractConfiguration> configurations
     @Inject PropertyPersister propertyPersister
-    @Inject ConversationManager conversationManager
+    @Inject ConfigurationWizard conversationManager
 
 
     @TaskAction
