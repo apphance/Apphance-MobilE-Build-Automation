@@ -176,7 +176,7 @@ class AndroidConfiguration extends ProjectConfiguration {
     }
 
     private List<String> possibleTargets() {
-        androidExecutor.targets().findAll { !it?.trim()?.empty }
+        androidExecutor.targets
     }
 
     def readProperties() {

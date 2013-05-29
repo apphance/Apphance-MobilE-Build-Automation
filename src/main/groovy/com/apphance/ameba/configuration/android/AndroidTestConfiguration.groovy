@@ -59,7 +59,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     )
 
     private List<String> possibleTargets() {
-        androidExecutor.targets().findAll { !it?.trim()?.empty }
+        androidExecutor.targets
     }
 
     private List<String> possibleSkins() {

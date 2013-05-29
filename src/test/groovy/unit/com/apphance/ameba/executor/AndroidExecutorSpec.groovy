@@ -1,6 +1,7 @@
 package com.apphance.ameba.executor
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
+import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.Project
 import spock.lang.Specification
@@ -30,16 +31,16 @@ class AndroidExecutorSpec extends Specification {
     def 'test list targets'() {
         given:
         def ce = Mock(CommandExecutor)
-        ce.executeCommand(_) >> targets.split('\n')
+        ce.executeCommand({ it.commandForExecution.join(' ') == 'android list target' }) >> targets.split('\n')
 
         and:
         def ae = new AndroidExecutor(executor: ce, conf: conf)
 
         when:
-        def output = ae.targets()
+        def output = ae.targets
 
         then:
-        ['Google Inc.:Google APIs:3', 'Google Inc.:Google APIs:4', 'android-17', 'android-3', 'android-4'] == output
+        output == ['Google Inc.:Google APIs:3', 'Google Inc.:Google APIs:4', 'android-17', 'android-3', 'android-4']
     }
 
     def 'test list skins'() {

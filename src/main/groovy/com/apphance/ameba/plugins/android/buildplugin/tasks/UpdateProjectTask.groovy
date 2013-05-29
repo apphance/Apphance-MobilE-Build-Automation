@@ -21,11 +21,11 @@ class UpdateProjectTask extends DefaultTask {
 
     @TaskAction
     void runUpdate() {
-        runUpdateRecursively(conf.rootDir)
+        runRecursivelyInAllSubprojects(conf.rootDir, this.&runUpdateProject)
     }
 
-    void runUpdateRecursively(File currentDir) {
-        runUpdateProject(currentDir)
+    static void runRecursivelyInAllSubprojects(File currentDir, Closure method) {
+        method(currentDir)
 
         def propFile = new File(currentDir, 'project.properties')
 
@@ -34,13 +34,13 @@ class UpdateProjectTask extends DefaultTask {
             prop.load(new FileInputStream(propFile))
             prop.each { key, value ->
                 if (key.startsWith('android.library.reference.')) {
-                    runUpdateRecursively(new File(currentDir, value.toString()))
+                    runRecursivelyInAllSubprojects(new File(currentDir, value.toString()), method)
                 }
             }
         }
     }
 
-    private void runUpdateProject(File directory) {
+    void runUpdateProject(File directory) {
         if (!directory.exists()) {
             throw new GradleException("The directory ${directory} to execute the command, does not exist! Your configuration is wrong.")
         }

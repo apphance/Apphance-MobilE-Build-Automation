@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.android.builder
 
 import com.apphance.ameba.TestUtils
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
+import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
@@ -16,15 +17,15 @@ import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
+import static com.apphance.ameba.plugins.android.buildplugin.tasks.UpdateProjectTask.runRecursivelyInAllSubprojects
 import static java.io.File.createTempFile
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
-//TODO WARNING!! THIS TEST WORKS ON AN UPDATED (build.xml, local.properties) PROJECT!!!
 @Mixin(TestUtils)
 class SingleVariantTaskSpec extends Specification {
 
     def project = builder().withProjectDir(new File('testProjects/android/android-basic')).build()
-    def singleVariantTask = create SingleVariantTask
+    def singleVaraintTask = create SingleVariantTask
 
     def static projectName = 'TestAndroidProject'
     def static variantTmpDir = "${TMP_DIR}/test"
@@ -37,16 +38,24 @@ class SingleVariantTaskSpec extends Specification {
         commandLogFiles() >> logFiles
     }
     def executor = new CommandExecutor(fileLinker, logFileGenerator)
-    def antExecutor = new AntExecutor()
+    def antExecutor = new AntExecutor(executor: executor)
+    def androidExecutor = new AndroidExecutor(executor: executor)
 
     def setup() {
-        antExecutor.executor = executor
-        singleVariantTask.antExecutor = antExecutor
-        singleVariantTask.ant = project.ant
-        singleVariantTask.androidReleaseConf = Stub(AndroidReleaseConfiguration) { isEnabled() >> true }
+        singleVaraintTask.antExecutor = antExecutor
+        singleVaraintTask.ant = project.ant
+        singleVaraintTask.androidReleaseConf = Stub(AndroidReleaseConfiguration) { isEnabled() >> true }
 
         assert project.file(TMP_DIR).deleteDir()
         assert project.file(OTA_DIR).deleteDir()
+
+        runRecursivelyInAllSubprojects(project.rootDir, { File it ->
+            File localProps = new File(it, 'local.properties')
+            if (!localProps.exists()) {
+                androidExecutor.run(it, 'update project -p .')
+            }
+            assert localProps.exists()
+        })
     }
 
     def cleanup() {
@@ -61,12 +70,12 @@ class SingleVariantTaskSpec extends Specification {
     def 'artifacts are built according to passed config and copied to ota dir. Library = #library'() {
         given:
         def releaseFile = new File(project.rootDir, "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.$releaseFileExtension")
-        singleVariantTask.artifactProvider = GroovyStub(AndroidArtifactProvider)
-        singleVariantTask.artifactProvider.artifact(_) >> GroovyStub(AmebaArtifact, {
+        singleVaraintTask.artifactProvider = GroovyStub(AndroidArtifactProvider)
+        singleVaraintTask.artifactProvider.artifact(_) >> GroovyStub(AmebaArtifact, {
             getLocation() >> releaseFile
         })
 
-        singleVariantTask.artifactProvider.builderInfo(_) >> GroovyStub(AndroidBuilderInfo) {
+        singleVaraintTask.artifactProvider.builderInfo(_) >> GroovyStub(AndroidBuilderInfo) {
             getTmpDir() >> project.file(variantTmpDir)
             getVariantDir() >> project.file('variants/test')
             getMode() >> DEBUG
@@ -78,9 +87,9 @@ class SingleVariantTaskSpec extends Specification {
         new File(project.file(variantTmpDir), 'project.properties') << "android.library=$library\n"
 
         when:
-        singleVariantTask.singleVariant()
+        singleVaraintTask.singleVariant()
 
-        then:
+        then: 'files from variant directory are copied to tmp directory'
         def sampleProperties = project.file("${TMP_DIR}/test/res/raw/sample.properties")
         sampleProperties.isFile() && sampleProperties.length()
 
@@ -95,7 +104,6 @@ class SingleVariantTaskSpec extends Specification {
         library | releaseFileExtension | mainArtifact               | otherOutputs
         false   | 'apk'                | "${projectName}-debug.apk" | ["${projectName}-debug-unaligned.apk", "${projectName}-debug-unaligned.apk.d"]
         true    | 'jar'                | "classes.jar"              | []
-
     }
 
     def copyProjectToTmpDir() {
