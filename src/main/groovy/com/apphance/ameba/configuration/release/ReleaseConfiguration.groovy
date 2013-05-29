@@ -7,13 +7,18 @@ import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.properties.URLProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
+import com.apphance.ameba.env.Environment
 import com.apphance.ameba.plugins.release.AmebaArtifact
+import org.gradle.api.GradleException
 
 import javax.imageio.ImageIO
 import javax.inject.Inject
 import java.text.SimpleDateFormat
+import java.util.regex.Pattern
 
+import static com.apphance.ameba.env.Environment.JENKINS
 import static com.apphance.ameba.util.file.FileManager.relativeTo
+import static org.apache.commons.lang.StringUtils.isBlank
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
 abstract class ReleaseConfiguration extends AbstractConfiguration {
@@ -25,6 +30,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             'qrCode',
             'imageMontage'
     ]
+    def static WHITESPACE = Pattern.compile('\\s+')
 
     final String configurationName = 'Release Configuration'
 
@@ -191,8 +197,26 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
         icons
     }
 
+    static void validateMailServer(String mailServer) {
+        if (isBlank(mailServer) || WHITESPACE.matcher(mailServer).find())
+            throw new GradleException(mailServerValidationMsg)
+    }
+
+    static void validateMailPort(String mailPort) {
+        if (isBlank(mailPort) || !mailPort.matches('[0-9]+')) {
+            throw new GradleException(mailPortValidationMsg)
+        }
+    }
+
+    static void validateMail(StringProperty mail) {
+        if (!mail.validator(mail.value)) {
+            throw new GradleException(mailValidationMsg(mail))
+        }
+    }
+
     @Override
     void checkProperties() {
+
         check !checkException { baseURL }, "Property '${projectURL.name}' is not valid! Should be valid URL address!"
         check language.validator(language.value), "Property '${language.name}' is not valid! Should be two letter lowercase!"
         check country.validator(country.value), "Property '${country.name}' is not valid! Should be two letter uppercase!"
@@ -202,6 +226,28 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
         check releaseMailFlags.validator(releaseMailFlags.persistentForm()), "Property '${releaseMailFlags.name}' is not valid! Possible values: " +
                 "${ALL_EMAIL_FLAGS} Current value: ${releaseMailFlags.value}"
         check iconFile.validator(iconFile.value), "Property '${iconFile.name}' (${iconFile.value}) is not valid! Should be existing image file!"
+
+        if (Environment.env() == JENKINS) {
+            check !checkException { validateMailServer(mailServer) }, mailServerValidationMsg
+            check !checkException { validateMailPort(mailPort) }, mailPortValidationMsg
+            check !checkException { validateMail(releaseMailTo) }, mailValidationMsg(releaseMailTo)
+            check !checkException { validateMail(releaseMailFrom) }, mailValidationMsg(releaseMailFrom)
+        }
+    }
+
+    private static mailServerValidationMsg =
+        """|Property 'mail.server' has invalid value!
+           |Set it either by 'mail.server' system property or
+           |'MAIL_SERVER' environment variable!""".stripMargin()
+
+    private static mailPortValidationMsg =
+        """|Property 'mail.port' has invalid value!
+           |Set it either by 'mail.port' system property or 'MAIL_PORT' environment variable.
+           |This property must have numeric value!""".stripMargin()
+
+    private static mailValidationMsg = {
+        """|Property ${it.name} is not set!
+           |It should be valid email address!""".stripMargin()
     }
 }
 

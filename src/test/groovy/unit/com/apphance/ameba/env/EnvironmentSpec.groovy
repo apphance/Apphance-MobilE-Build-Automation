@@ -15,7 +15,7 @@ class EnvironmentSpec extends Specification {
 
     def 'jenkins env is detected'() {
         given:
-        System.metaClass.'static'.getenv = {
+        System.metaClass.static.getenv = {
             [
                     (JOB_URL.name()): 'job_url',
                     (WORKSPACE.name()): 'workspace',

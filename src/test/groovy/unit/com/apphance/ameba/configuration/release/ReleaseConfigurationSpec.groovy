@@ -3,10 +3,16 @@ package com.apphance.ameba.configuration.release
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.configuration.properties.URLProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
+import org.gradle.api.GradleException
 import org.gradle.api.Project
+import spock.lang.Ignore
 import spock.lang.Specification
+
+import static com.apphance.ameba.configuration.release.ReleaseConfiguration.validateMailPort
+import static com.apphance.ameba.configuration.release.ReleaseConfiguration.validateMailServer
 
 class ReleaseConfigurationSpec extends Specification {
 
@@ -187,5 +193,64 @@ class ReleaseConfigurationSpec extends Specification {
         'PL'  | true
         'USA' | false
         'pln' | false
+    }
+
+    def 'mail port is validated correctly when empty'() {
+        when:
+        validateMailPort(mailPort)
+
+        then:
+        def e = thrown(GradleException)
+        e.message =~ 'Property \'mail.port\' has invalid value!'
+
+        where:
+        mailPort << [null, '', '  \t', 'with letter', 'withletter', '123-123']
+    }
+
+    def 'mail port is validated correctly when set'() {
+        when:
+        validateMailPort(mailPort)
+
+        then:
+        noExceptionThrown()
+
+        where:
+        mailPort << ['121', '1']
+    }
+
+    def 'mail server is validated correctly when empty'() {
+        when:
+        validateMailServer(mailServer)
+
+        then:
+        def e = thrown(GradleException)
+        e.message =~ 'Property \'mail.server\' has invalid value!'
+
+        where:
+        mailServer << [null, '  ', '  \t', 'with\tletter', 'with space']
+    }
+
+    def 'mail server is validated correctly when set'() {
+        when:
+        validateMailServer(mailServer)
+
+        then:
+        noExceptionThrown()
+
+        where:
+        mailServer << ['releaseString', 'release_String', 'relase_String_123_4']
+    }
+
+    @Ignore('TODO')
+    def 'mail-related verification errors raised on jenkins env'() {
+        given:
+        def rc = GroovySpy(ReleaseConfiguration) {
+            getProjectURL() >> new URLProperty(value: 'http://ota.polidea.pl')
+        }
+        when:
+        rc.check true, "bolo bolob"
+
+        then:
+        noExceptionThrown()
     }
 }
