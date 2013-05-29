@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.ios.buildplugin
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.*
-import com.apphance.ameba.plugins.project.PrepareSetupTask
+import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project

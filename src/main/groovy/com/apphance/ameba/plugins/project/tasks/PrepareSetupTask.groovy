@@ -1,4 +1,4 @@
-package com.apphance.ameba.plugins.project
+package com.apphance.ameba.plugins.project.tasks
 
 import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.reader.ConfigurationWizard

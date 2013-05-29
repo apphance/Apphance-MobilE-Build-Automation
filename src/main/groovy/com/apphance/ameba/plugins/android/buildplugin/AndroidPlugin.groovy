@@ -3,7 +3,7 @@ package com.apphance.ameba.plugins.android.buildplugin
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.plugins.android.buildplugin.tasks.*
-import com.apphance.ameba.plugins.project.PrepareSetupTask
+import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.CleanConfTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin

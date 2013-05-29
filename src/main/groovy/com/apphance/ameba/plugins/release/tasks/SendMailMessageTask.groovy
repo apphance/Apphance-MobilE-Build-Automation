@@ -10,7 +10,10 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 import java.util.regex.Pattern
 
+import groovy.transform.PackageScope
+
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static org.apache.commons.lang.StringUtils.isBlank
 
 class SendMailMessageTask extends DefaultTask {
 
@@ -20,7 +23,7 @@ class SendMailMessageTask extends DefaultTask {
              or corresponding MAIL_SERVER, MAIL_PORT env variables (no authentication).
              It also uses certain properties to send mails:
              release.mail.from, release.mail.to, release.mail.flags
-             flags are one of: qrCode,imageMontage"""
+             flags are one of: qrCode, imageMontage, installableSimulator"""
 
     private Pattern WHITESPACE = Pattern.compile('\\s+')
 
@@ -32,8 +35,8 @@ class SendMailMessageTask extends DefaultTask {
         validateMailServer(releaseConf.mailServer)
         validateMailPort(releaseConf.mailPort)
 
-        validate(releaseConf.releaseMailFrom)
-        validate(releaseConf.releaseMailTo)
+        validateMail(releaseConf.releaseMailFrom)
+        validateMail(releaseConf.releaseMailTo)
 
         Properties props = System.getProperties()
         props.put('mail.smtp.host', releaseConf.mailServer)
@@ -60,30 +63,28 @@ class SendMailMessageTask extends DefaultTask {
         }
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void validateMailServer(String mailServer) {
-        mailServer = mailServer?.trim()
-        if (!mailServer || mailServer?.empty || WHITESPACE.matcher(mailServer ?: '').find())
+        if (isBlank(mailServer) || WHITESPACE.matcher(mailServer).find())
             throw new GradleException("""|Property 'mail.server' has invalid value!
                                          |Set it either by 'mail.server' system property or
                                          |'MAIL_SERVER' environment variable!""".stripMargin())
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void validateMailPort(String mailPort) {
-        mailPort = mailPort?.trim()
-        if (mailPort?.empty || !mailPort?.matches('[0-9]+')) {
+        if (isBlank(mailPort) || !mailPort.matches('[0-9]+')) {
             throw new GradleException("""|Property 'mail.port' has invalid value!
                                          |Set it either by 'mail.port' system property or 'MAIL_PORT' environment variable.
                                          |This property must have numeric value!""".stripMargin())
         }
     }
 
-    @groovy.transform.PackageScope
-    void validate(StringProperty mail) {
+    @PackageScope
+    void validateMail(StringProperty mail) {
         if (!mail.validator(mail.value)) {
             throw new GradleException("""|Property ${mail.name} is not set!
-                                         |Shoud be valid email address!""".stripMargin())
+                                         |It should be valid email address!""".stripMargin())
         }
     }
 }

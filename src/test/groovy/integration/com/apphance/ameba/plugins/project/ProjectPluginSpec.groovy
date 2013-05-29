@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.project
 
 import com.apphance.ameba.plugins.project.tasks.CheckTestsTask
 import com.apphance.ameba.plugins.project.tasks.CleanConfTask
+import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import spock.lang.Specification
 

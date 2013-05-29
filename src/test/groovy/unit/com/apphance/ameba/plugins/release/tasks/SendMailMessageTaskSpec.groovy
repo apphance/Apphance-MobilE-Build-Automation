@@ -1,17 +1,17 @@
 package com.apphance.ameba.plugins.release.tasks
 
+import com.apphance.ameba.TestUtils
 import org.gradle.api.GradleException
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
+@Mixin(TestUtils)
 class SendMailMessageTaskSpec extends Specification {
 
-    def p = ProjectBuilder.builder().build()
-    def smt = p.task(SendMailMessageTask.NAME, type: SendMailMessageTask) as SendMailMessageTask
+    def task = create(SendMailMessageTask)
 
     def 'mail port is validated correctly when empty'() {
         when:
-        smt.validateMailPort(mailPort)
+        task.validateMailPort(mailPort)
 
         then:
         def e = thrown(GradleException)
@@ -23,7 +23,7 @@ class SendMailMessageTaskSpec extends Specification {
 
     def 'mail port is validated correctly when set'() {
         when:
-        smt.validateMailPort(mailPort)
+        task.validateMailPort(mailPort)
 
         then:
         noExceptionThrown()
@@ -34,7 +34,7 @@ class SendMailMessageTaskSpec extends Specification {
 
     def 'mail server is validated correctly when empty'() {
         when:
-        smt.validateMailServer(mailServer)
+        task.validateMailServer(mailServer)
 
         then:
         def e = thrown(GradleException)
@@ -46,7 +46,7 @@ class SendMailMessageTaskSpec extends Specification {
 
     def 'mail server is validated correctly when set'() {
         when:
-        smt.validateMailServer(mailServer)
+        task.validateMailServer(mailServer)
 
         then:
         noExceptionThrown()
