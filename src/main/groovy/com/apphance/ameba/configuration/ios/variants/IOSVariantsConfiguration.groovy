@@ -10,8 +10,6 @@ import javax.inject.Inject
 
 import static IOSVariantType.SCHEME
 import static IOSVariantType.TC
-import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
-import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
 import static com.apphance.ameba.configuration.properties.ListStringProperty.getSEPARATOR
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
@@ -22,10 +20,8 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     private List<AbstractIOSVariant> variants
 
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSVariantFactory variantFactory
+    @Inject IOSConfiguration conf
+    @Inject IOSVariantFactory variantFactory
 
     @Override
     @Inject
@@ -98,16 +94,6 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     Collection<AbstractIOSVariant> getVariants() {
         this.@variants.findAll { it.name in variantsNames.value }
     }
-
-    @Lazy
-    Collection<AbstractIOSVariant> deviceVariants = {
-        this.getVariants().findAll { it.mode.value == DEVICE }
-    }()
-
-    @Lazy
-    Collection<AbstractIOSVariant> simulatorVariants = {
-        this.getVariants().findAll { it.mode.value == SIMULATOR }
-    }()
 
     AbstractIOSVariant getMainVariant() {
         variants[0]

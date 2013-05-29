@@ -4,10 +4,11 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
+import com.google.inject.Singleton
 
 import javax.inject.Inject
 
-@com.google.inject.Singleton
+@Singleton
 class IOSFrameworkConfiguration extends AbstractConfiguration {
 
     String configurationName = 'iOS Framework Configuration'

@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import com.apphance.ameba.plugins.ios.parsers.PlistParser
 import com.apphance.ameba.plugins.release.AmebaArtifact
+import com.google.inject.Singleton
 
 import javax.inject.Inject
 
@@ -11,7 +12,7 @@ import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.util.file.FileManager.relativeTo
 import static groovy.io.FileType.FILES
 
-@com.google.inject.Singleton
+@Singleton
 class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     Map<String, AmebaArtifact> distributionZipFiles = [:]

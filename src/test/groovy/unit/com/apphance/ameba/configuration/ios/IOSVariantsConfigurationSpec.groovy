@@ -65,23 +65,4 @@ class IOSVariantsConfigurationSpec extends Specification {
         false      | ['', '  ']
         false      | []
     }
-
-    def 'variants by mode'() {
-        given:
-        def vConf = GroovySpy(IOSVariantsConfiguration)
-        vConf.getVariants() >> [
-                GroovyStub(AbstractIOSVariant, {
-                    getName() >> 'v1'
-                    getMode() >> new IOSBuildModeProperty(value: DEVICE)
-                }),
-                GroovyStub(AbstractIOSVariant, {
-                    getName() >> 'v2'
-                    getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
-                })
-        ]
-
-        expect:
-        vConf.deviceVariants*.name == ['v1']
-        vConf.simulatorVariants*.name == ['v2']
-    }
 }
