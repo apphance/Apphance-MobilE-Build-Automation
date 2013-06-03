@@ -47,7 +47,6 @@ class IOSUnitTestConfiguration extends AbstractConfiguration {
     @Override
     void checkProperties() {
         super.checkProperties()
-        check conf.tmpDir.exists(), "Tmp directory ${conf.tmpDir.absolutePath} doesn't exist"
         defaultValidation variant
     }
 }
