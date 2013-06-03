@@ -11,8 +11,23 @@ import groovy.transform.PackageScope
 class ConfigurationWizard {
 
     private log = getLogger(getClass())
+    def static YELLOW = '\033[93m'
+    def static END = '\033[0m'
+    def static GREEN = '\033[92m'
 
     def reader = new BufferedReader(new InputStreamReader(System.in))
+
+    String yellow(String str) {
+        "${YELLOW}${str}${END}"
+    }
+
+    String green(String str) {
+        "${GREEN}${str}${END}"
+    }
+
+    static String removeColor(String str) {
+        str.replaceAll(/\033\[[0-9;]*m/,'')
+    }
 
     def resolveConfigurations(Collection<? extends AbstractConfiguration> configurations) {
         configurations.each { AbstractConfiguration c ->
@@ -31,7 +46,7 @@ class ConfigurationWizard {
     @PackageScope
     void enablePlugin(AbstractConfiguration conf) {
         if (conf.canBeEnabled()) {
-            print "Enable plugin ${conf.configurationName}? [y/n] "
+            print "Enable plugin ${GREEN}${conf.configurationName}${END}? [y/n] "
             out.flush()
             conf.enabled = reader.readLine()?.equalsIgnoreCase('y')
         } else {
@@ -59,7 +74,7 @@ class ConfigurationWizard {
                 setPropertyValue(ap, input)
                 break
             } else {
-                println ap.failedValidationMessage
+                println yellow(ap.failedValidationMessage)
                 out.flush()
             }
         }
@@ -87,11 +102,11 @@ class ConfigurationWizard {
 
     @PackageScope
     String promptDefault(AbstractProperty ap) {
-        ap.effectiveDefaultValue() ? ", default: '${ap.effectiveDefaultValue()}'" : ''
+        ap.effectiveDefaultValue() ? ", default: '${green(ap.effectiveDefaultValue())}'" : ''
     }
 
     @PackageScope
     String promptPossible(AbstractProperty ap) {
-        ap.possibleValues() ? ", possible: ${ap.possibleValues()}" : ''
+        ap.possibleValues() ? ", possible: ${green(ap.possibleValues().toString())}" : ''
     }
 }

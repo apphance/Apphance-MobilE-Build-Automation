@@ -5,6 +5,7 @@ import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.detection.ProjectType
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.removeColor
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 
 class ConfigurationWizardSpec extends Specification {
@@ -13,7 +14,7 @@ class ConfigurationWizardSpec extends Specification {
 
     def 'possible value string is formatted correctly'() {
         expect:
-        cm.promptPossible(p) == expectedString
+        removeColor(cm.promptPossible(p)) == expectedString
 
         where:
         p                                                                                                | expectedString
@@ -37,7 +38,7 @@ class ConfigurationWizardSpec extends Specification {
 
     def 'prompt is displayed well'() {
         expect:
-        cm.prompt(p) == expectedString
+        removeColor(cm.prompt(p)) == expectedString
 
         where:
         p                                                                                                                  | expectedString
