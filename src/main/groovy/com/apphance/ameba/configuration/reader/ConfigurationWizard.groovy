@@ -2,11 +2,11 @@ package com.apphance.ameba.configuration.reader
 
 import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.AbstractProperty
+import groovy.transform.PackageScope
 
 import static java.lang.System.out
 import static org.apache.commons.lang.StringUtils.isBlank
 import static org.gradle.api.logging.Logging.getLogger
-import groovy.transform.PackageScope
 
 class ConfigurationWizard {
 
@@ -26,7 +26,7 @@ class ConfigurationWizard {
     }
 
     static String removeColor(String str) {
-        str.replaceAll(/\033\[[0-9;]*m/,'')
+        str.replaceAll(/\033\[[0-9;]*m/, '')
     }
 
     def resolveConfigurations(Collection<? extends AbstractConfiguration> configurations) {
@@ -57,15 +57,16 @@ class ConfigurationWizard {
 
     @PackageScope
     void readValues(AbstractConfiguration conf) {
-        conf.amebaProperties.findAll { it.interactive() }.each {
-            readProperty(it)
+        conf.amebaProperties.each {
+            if (it.interactive()) readProperty(it)
         }
         if (!conf.subConfigurations?.empty) {
             resolveConfigurations(conf.subConfigurations)
         }
     }
 
-    private void readProperty(AbstractProperty ap) {
+    @PackageScope
+    void readProperty(AbstractProperty ap) {
         while (true) {
             print prompt(ap)
             out.flush()

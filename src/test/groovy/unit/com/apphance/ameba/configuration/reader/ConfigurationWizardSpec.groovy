@@ -1,5 +1,7 @@
 package com.apphance.ameba.configuration.reader
 
+import com.apphance.ameba.configuration.AbstractConfiguration
+import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.ProjectTypeProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.detection.ProjectType
@@ -7,6 +9,7 @@ import spock.lang.Specification
 
 import static com.apphance.ameba.configuration.reader.ConfigurationWizard.removeColor
 import static com.apphance.ameba.detection.ProjectType.ANDROID
+import static org.apache.commons.lang.StringUtils.isBlank
 
 class ConfigurationWizardSpec extends Specification {
 
@@ -95,5 +98,21 @@ class ConfigurationWizardSpec extends Specification {
         new StringProperty(defaultValue: { 'aaa' })               | ''    | 'aaa'
         new StringProperty(value: 'aaa')                          | ''    | 'aaa'
         new StringProperty(value: 'bbb', defaultValue: { 'bbb' }) | 'aaa' | 'aaa'
+    }
+
+    def 'test interactivity dynamically changed'() {
+        given:
+        def conf = GroovyStub(AbstractConfiguration)
+        StringProperty first = new StringProperty(value: '')
+        ListStringProperty second = new ListStringProperty(interactive: { isBlank(first.value) })
+        conf.amebaProperties >> [first, second]
+        def wizard = GroovySpy(ConfigurationWizard)
+        wizard.readProperty(_) >> { first.value = 'abc' }
+
+        when:
+        wizard.readValues(conf)
+
+        then:
+        0 * wizard.readProperty(second)
     }
 }
