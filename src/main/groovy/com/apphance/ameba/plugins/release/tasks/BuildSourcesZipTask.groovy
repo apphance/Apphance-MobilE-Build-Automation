@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.release.tasks
 
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
+import com.apphance.ameba.plugins.release.AmebaArtifact
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -12,7 +13,6 @@ import static com.apphance.ameba.configuration.reader.GradlePropertiesPersister.
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static com.apphance.ameba.util.file.FileManager.removeMissingSymlinks
-import static com.google.common.base.Preconditions.checkNotNull
 import static org.gradle.api.logging.Logging.getLogger
 
 class BuildSourcesZipTask extends DefaultTask {
@@ -28,16 +28,17 @@ class BuildSourcesZipTask extends DefaultTask {
 
     @TaskAction
     void buildSourcesZip() {
-        checkNotNull(releaseConf?.sourcesZip?.location, 'Sources ZIP artifact is not configured!')
+
+        prepareSourcesAndDocumentationArtifacts()
+
+        removeMissingSymlinks(conf.rootDir)
 
         File destZip = releaseConf.sourcesZip.location
-
-        removeMissingSymlinks(project.rootDir)
-
         destZip.parentFile.mkdirs()
         destZip.delete()
+
         ant.zip(destfile: destZip) {
-            fileset(dir: project.rootDir) {
+            fileset(dir: conf.rootDir) {
                 exclude(name: 'build/**')
                 exclude(name: "${OTA_DIR}/**")
                 exclude(name: "${TMP_DIR}/**")
@@ -51,5 +52,13 @@ class BuildSourcesZipTask extends DefaultTask {
         }
         l.debug("Extra source excludes: $conf.sourceExcludes")
         l.debug("Created source files at: $destZip")
+    }
+
+    private void prepareSourcesAndDocumentationArtifacts() {
+        def sourceZipName = "$conf.projectVersionedName-src.zip"
+        releaseConf.sourcesZip = new AmebaArtifact(
+                name: "$conf.projectName.value-src",
+                url: null, // we do not publish
+                location: new File(conf.tmpDir, sourceZipName))
     }
 }

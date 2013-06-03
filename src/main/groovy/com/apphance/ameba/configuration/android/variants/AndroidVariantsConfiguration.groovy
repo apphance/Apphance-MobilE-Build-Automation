@@ -17,7 +17,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     def log = getLogger(getClass())
 
-    String configurationName = 'Android variants configuration'
+    String configurationName = 'Android Variants Configuration'
 
     @Inject Project project
     @Inject AndroidConfiguration conf

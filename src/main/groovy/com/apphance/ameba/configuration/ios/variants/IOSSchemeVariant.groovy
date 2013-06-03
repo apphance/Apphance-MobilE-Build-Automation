@@ -22,8 +22,8 @@ class IOSSchemeVariant extends AbstractIOSVariant {
     }
 
     @Override
-    List<String> buildCmd() {
-        conf.xcodebuildExecutionPath() + "-scheme $name -configuration $configuration ${sdkCmd()} ${archCmd()} ${buildDirCmd()}".split().flatten()
+    String getTarget() {
+        pbxJsonParser.targetForBlueprintId(schemeParser.blueprintIdentifier(name))
     }
 
     @Override
@@ -32,7 +32,12 @@ class IOSSchemeVariant extends AbstractIOSVariant {
     }
 
     @Override
-    String getTarget() {
-        pbxJsonParser.targetForBlueprintId(schemeParser.blueprintIdentifier(name))
+    List<String> buildCmd() {
+        conf.xcodebuildExecutionPath() + "-scheme $name -configuration $configuration ${sdkCmd()} ${archCmd()} ${buildDirCmd()}".split().flatten()
+    }
+
+    @Override
+    void checkProperties() {
+        super.checkProperties()
     }
 }

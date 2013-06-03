@@ -3,12 +3,12 @@ package com.apphance.ameba.configuration.android
 import com.apphance.ameba.detection.ProjectTypeDetector
 import com.apphance.ameba.plugins.android.parsers.AndroidBuildXmlHelper
 import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
-import com.google.common.io.Files
 import org.gradle.api.Project
 import spock.lang.Specification
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static com.apphance.ameba.detection.ProjectType.IOS
+import static com.google.common.io.Files.createTempDir
 
 class AndroidTestConfigurationSpec extends Specification {
 
@@ -84,8 +84,8 @@ class AndroidTestConfigurationSpec extends Specification {
         atc.testProjectPackage == packageName
 
         where:
-        dir                                | projectName   | packageName
-        'bolo'                             | null          | null
-        Files.createTempDir().absolutePath | 'androidName' | 'androidPackage'
+        dir                          | projectName   | packageName
+        'no-dir'                     | null          | null
+        createTempDir().absolutePath | 'androidName' | 'androidPackage'
     }
 }

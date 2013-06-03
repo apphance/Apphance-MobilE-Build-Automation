@@ -67,7 +67,6 @@ def getUUID_ARCHS(sym_file, verbose = False):
     :param verbose: Verbose flag
     :return: Table of uuid/archs
     '''
-
     uuid_archs = []
 
     logging.info('Getting UUIDs and architectures')
@@ -100,7 +99,7 @@ def getUUID_ARCHS(sym_file, verbose = False):
         print '\tDONE'
 
     if len(uuid_archs) == 0:
-        sys.exit('No UUIDs found')
+        sys.exit('No UUIDs found in: %s' % sym_file)
 
     return uuid_archs
 

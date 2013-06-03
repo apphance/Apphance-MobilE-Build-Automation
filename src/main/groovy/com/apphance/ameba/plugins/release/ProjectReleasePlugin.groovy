@@ -38,7 +38,8 @@ class ProjectReleasePlugin implements Plugin<Project> {
             }
 
             project.task(CopyGalleryFilesTask.NAME,
-                    type: CopyGalleryFilesTask)
+                    type: CopyGalleryFilesTask,
+                    dependsOn: 'copySources')
 
             project.task(PrepareForReleaseTask.NAME,
                     type: PrepareForReleaseTask,

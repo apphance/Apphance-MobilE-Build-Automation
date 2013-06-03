@@ -127,7 +127,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         def aa = new AmebaArtifact(
                 name: 'QR Code',
                 url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"),
-                location: new File(releaseConf.targetDirectory, "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"))
+                location: new File(releaseConf.targetDir, "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"))
         aa.location.parentFile.mkdirs()
         aa.location.delete()
         releaseConf.QRCodeFile = aa
@@ -160,7 +160,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 version: conf.fullVersionString,
                 releaseNotes: releaseConf.releaseNotes,
                 currentDate: releaseConf.buildDate,
-                iconFileName: releaseConf.iconFile.name,
+                iconFileName: releaseConf.iconFile.value.name,
                 urlMap: urlMap,
                 conf: conf,
                 variantsConf: variantsConf,
@@ -169,8 +169,8 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         def tmpl = loadTemplate('index.html')
         def result = fillTemplate(tmpl, binding)
         templateToFile(releaseConf.otaIndexFile.location, result)
-        l.lifecycle("Ota index created: ${releaseConf.otaIndexFile.location}")
-        ant.copy(file: releaseConf.iconFile.value, tofile: new File(releaseConf.otaIndexFile.location.parentFile, releaseConf.iconFile.name))
+        l.lifecycle("OTA index created: ${releaseConf.otaIndexFile.location}")
+        ant.copy(file: releaseConf.iconFile.value, tofile: new File(releaseConf.otaIndexFile.location.parentFile, releaseConf.iconFile.value.name))
     }
 
     @PackageScope

@@ -65,6 +65,7 @@ class IOSArtifactProviderSpec extends Specification {
         variant.plist >> new File('GradleXCode-Info.plist')
         variant.mode >> new IOSBuildModeProperty(value: DEVICE)
         variant.name >> 'V1'
+        variant.buildableName >> 'GradleXCode'
 
         and:
         def provider = new IOSArtifactProvider()
@@ -82,6 +83,7 @@ class IOSArtifactProviderSpec extends Specification {
         bi.plist.name == 'GradleXCode-Info.plist'
         bi.mobileprovision.name == 'sample.mobileprovision'
         bi.mode == DEVICE
+        bi.buildableName == 'GradleXCode'
     }
 
     def 'zip distribution artifact is built well'() {

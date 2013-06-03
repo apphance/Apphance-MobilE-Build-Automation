@@ -31,14 +31,14 @@ class CopyGalleryFilesTask extends DefaultTask {
         releaseConf.galleryCSS = new AmebaArtifact(
                 name: 'CSS Gallery',
                 url: new URL(releaseConf.versionedApplicationUrl, '_css/jquery.swipegallery.css'),
-                location: new File(releaseConf.targetDirectory, '_css/jquery.swipegallery.css'))
+                location: new File(releaseConf.targetDir, '_css/jquery.swipegallery.css'))
         releaseConf.galleryJS = new AmebaArtifact(
                 name: 'JS Gallery',
                 url: new URL(releaseConf.versionedApplicationUrl, '_res/jquery.swipegallery.js'),
-                location: new File(releaseConf.targetDirectory, '_res/jquery.swipegallery.js'))
+                location: new File(releaseConf.targetDir, '_res/jquery.swipegallery.js'))
         releaseConf.galleryTrans = new AmebaArtifact(
                 name: 'JS Gallery',
                 url: new URL(releaseConf.versionedApplicationUrl, '_res/trans.png'),
-                location: new File(releaseConf.targetDirectory, '_res/trans.png'))
+                location: new File(releaseConf.targetDir, '_res/trans.png'))
     }
 }

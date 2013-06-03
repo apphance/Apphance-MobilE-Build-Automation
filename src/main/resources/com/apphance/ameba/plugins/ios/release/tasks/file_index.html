@@ -137,7 +137,7 @@
                         <% conf.FAMILIES.each { family -> %>
                         <% if (releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target] != null) { %>
                         <li>
-                            <a href="${releaseConf.dmgImageFiles[family + '-' + target].getRelativeUrl(baseUrl)}"
+                            <a href="${releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target].getRelativeUrl(baseUrl)}"
                                rel="external">
                                 <h3>${java.text.MessageFormat.format(rb.getString('Family_simulator'),family)}</h3>
                             </a>

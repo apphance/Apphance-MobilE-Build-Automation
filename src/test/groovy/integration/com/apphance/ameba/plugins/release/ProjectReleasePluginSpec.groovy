@@ -48,6 +48,7 @@ class ProjectReleasePluginSpec extends Specification {
                 'prepareMailMessage')
         project.tasks[CleanReleaseTask.NAME].dependsOn.flatten().containsAll(CLEAN_TASK_NAME)
         project.tasks[BuildSourcesZipTask.NAME].dependsOn.flatten().containsAll(PrepareForReleaseTask.NAME)
+        project.tasks[CopyGalleryFilesTask.NAME].dependsOn.flatten().containsAll('copySources')
     }
 
     def 'no tasks available when configuration is inactive'() {

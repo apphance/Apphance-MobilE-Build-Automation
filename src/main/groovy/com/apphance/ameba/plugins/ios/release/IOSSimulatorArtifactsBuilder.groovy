@@ -40,7 +40,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         rsyncTemplatePreservingExecutableFlag(destDir)
         File embedDir = new File(destDir, "Contents/Resources/EmbeddedApp")
         embedDir.mkdirs()
-        File sourceApp = new File(bi.buildDir, "${bi.target}.app")
+        File sourceApp = new File(bi.buildDir, "${bi.buildableName}")
         rsyncEmbeddedAppPreservingExecutableFlag(sourceApp, embedDir)
         updateBundleId(bi, destDir)
         resampleIcon(destDir)
@@ -57,7 +57,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         ]
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: cmd))
         releaseConf.dmgImageFiles.put("${family}-${variantsConf.mainVariant.target}" as String, file)
-        l.lifecycle("Simulator zip file created: ${file} for ${family}-${variantsConf.mainVariant.target}")
+        l.lifecycle("Simulator zip file created: ${file.location} for ${family}-${variantsConf.mainVariant.target}")
     }
 
     String getFolderPrefix(IOSBuilderInfo bi) {
@@ -95,7 +95,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     private resampleIcon(File tmpDir) {
         String[] cmd = [
                 '/opt/local/bin/convert',
-                releaseConf.iconFile.value.canonicalPath,
+                new File(conf.rootDir, releaseConf.iconFile.value.path).canonicalPath,
                 '-resample',
                 '128x128',
                 new File(tmpDir, "Contents/Resources/Launcher.icns").canonicalPath

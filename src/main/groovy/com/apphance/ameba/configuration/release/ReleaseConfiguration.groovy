@@ -23,6 +23,8 @@ import static org.apache.commons.lang.StringUtils.isNotBlank
 
 abstract class ReleaseConfiguration extends AbstractConfiguration {
 
+    final String configurationName = 'Release configuration'
+
     public static final String OTA_DIR = 'flow-ota'
     def MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
     def ALL_EMAIL_FLAGS = [
@@ -31,8 +33,6 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             'imageMontage'
     ]
     def static WHITESPACE = Pattern.compile('\\s+')
-
-    final String configurationName = 'Release Configuration'
 
     @Inject ProjectConfiguration conf
     @Inject PropertyReader reader
@@ -175,7 +175,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             message: 'Mail server'
     )
 
-    File getTargetDirectory() {
+    File getTargetDir() {
         new File(new File(otaDir, projectDirName), conf.fullVersionString)
     }
 

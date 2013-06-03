@@ -94,6 +94,9 @@ class PlistParser {
 
     String evaluate(String value, String target, String configuration) {
 
+        if (isBlank(value))
+            return value
+
         def matcher = PLACEHOLDER.matcher(value)
         def binding = [:]
 

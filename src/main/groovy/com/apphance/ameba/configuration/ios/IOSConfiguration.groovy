@@ -54,7 +54,7 @@ class IOSConfiguration extends ProjectConfiguration {
     }
 
     @Lazy File schemesDir = {
-        new File(xcodeDir.value, "xcshareddata${separator}xcschemes")
+        new File("$rootDir$separator$xcodeDir.value", "xcshareddata${separator}xcschemes")
     }()
 
     def xcodeDir = new FileProperty(

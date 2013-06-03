@@ -38,7 +38,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         aa.location.delete()
         ant.zip(destfile: aa.location) {
             zipfileset(dir: bi.mobileprovision.parent, includes: bi.mobileprovision)
-            zipfileset(dir: bi.buildDir, includes: "${bi.target}.app/**")
+            zipfileset(dir: bi.buildDir, includes: "${bi.buildableName}/**")
         }
         l.lifecycle("Distribution zip file created: ${aa.location}")
     }
@@ -49,7 +49,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         aa.location.parentFile.mkdirs()
         aa.location.delete()
         ant.zip(destfile: aa.location) {
-            zipfileset(dir: bi.buildDir, includes: "${bi.target}.app.dSYM/**")
+            zipfileset(dir: bi.buildDir, includes: "${bi.buildableName}.dSYM/**")
         }
         l.lifecycle("dSYM zip file created: ${aa.location}")
     }
@@ -60,7 +60,8 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         aa.location.delete()
         aa.location.mkdirs()
         def je = new JythonExecutor()
-        def dest = new File(bi.buildDir, "${bi.id}.app.dSYM")
+
+        def dest = new File(bi.buildDir, "${bi.target}.app.dSYM")
         def output = new File(aa.location.canonicalPath, bi.filePrefix)
         def args = ['-p', bi.plist.canonicalPath, '-d', dest.canonicalPath, '-o', output.canonicalPath]
         je.executeScript('dump_reduce3_ameba.py', args)

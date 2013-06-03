@@ -20,7 +20,10 @@ import javax.inject.Inject
 import static com.apphance.ameba.configuration.ProjectConfiguration.BUILD_DIR
 import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.ameba.plugins.release.tasks.AbstractUpdateVersionTask.WHITESPACE_PATTERN
 import static com.apphance.ameba.util.file.FileManager.relativeTo
+import static com.google.common.base.Preconditions.checkArgument
+import static org.apache.commons.lang.StringUtils.isNotBlank
 
 abstract class AbstractIOSVariant extends AbstractVariant {
 
@@ -54,13 +57,17 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         super.@conf as IOSConfiguration
     }
 
-    def mobileprovision = new FileProperty(
+    private FileProperty mobileprovision = new FileProperty(
             message: "Mobile provision file for variant defined",
             interactive: { releaseConf.enabled },
             required: { releaseConf.enabled },
             possibleValues: { possibleMobileProvisionFiles()*.path as List<String> },
             validator: { it in (possibleMobileProvisionFiles()*.path as List<String>) }
     )
+
+    FileProperty getMobileprovision() {
+        new FileProperty(value: new File(tmpDir, this.@mobileprovision.value.path))
+    }
 
     @PackageScope
     List<File> possibleMobileProvisionFiles() {
@@ -129,6 +136,9 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     String getProjectName() {
         String bundleDisplayName = plistParser.bundleDisplayName(plist)
+        checkArgument(isNotBlank(bundleDisplayName),
+                """|Cant find 'CFBundleDisplayName' property in file $plist.absolutePath
+                   |Is project configured well?""".stripMargin())
         plistParser.evaluate(bundleDisplayName, target, configuration)
     }
 
@@ -147,4 +157,15 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     abstract String getTarget()
 
     abstract List<String> buildCmd()
+
+    @Override
+    void checkProperties() {
+        check versionCode.matches('[0-9]+'), """|Property 'versionCode' must have numerical value! Check 'version.code'
+                                                |system property or 'VERSION_STRING' env variable
+                                                |or $plist.absolutePath file!""".stripMargin()
+        check !WHITESPACE_PATTERN.matcher(versionString).find(), """|Property 'versionString' must not have
+                                                                    |whitespace characters! Check 'version.string'
+                                                                    |system property or 'VERSION_STRING' env
+                                                                    |variable or $plist.absolutePath file!""".stripMargin()
+    }
 }

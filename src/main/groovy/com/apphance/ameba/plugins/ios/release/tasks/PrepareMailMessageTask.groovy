@@ -29,7 +29,7 @@ class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
         releaseConf.mailMessageFile.location.delete()
 
         def fileSize = 0
-        def existingBuild = conf().distributionZipFiles.find {
+        def existingBuild = ((IOSReleaseConfiguration) releaseConf).distributionZipFiles.find {
             it.value.location != null
         }
         if (existingBuild) {
@@ -41,6 +41,8 @@ class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
 
         def mainVariant = variantsConf.mainVariant
 
+        def dmgImgFiles = ((IOSReleaseConfiguration) releaseConf).dmgImageFiles
+
         def binding = [
                 title: mainVariant.projectName,
                 version: mainVariant.fullVersionString,
@@ -48,16 +50,16 @@ class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
                 otaUrl: releaseConf.otaIndexFile?.url,
                 fileIndexUrl: releaseConf.fileIndexFile?.url,
                 releaseNotes: releaseConf.releaseNotes,
-                installable: conf().dmgImageFiles,
+                installable: dmgImgFiles,
                 mainTarget: mainVariant.target,
                 families: FAMILIES,
                 fileSize: getHumanReadableSize(fileSize),
                 releaseMailFlags: releaseConf.releaseMailFlags,
                 rb: rb
         ]
-        if (conf().dmgImageFiles.size() > 0) {
+        if (dmgImgFiles.size() > 0) {
             FAMILIES.each { family ->
-                if (conf().dmgImageFiles["${family}-${mainVariant.target}"] == null) {
+                if (dmgImgFiles["${family}-${mainVariant.target}"] == null) {
                     throw new GradleException("Wrongly configured family or target: ${family}-${mainVariant.target} missing")
                 }
             }
@@ -67,9 +69,5 @@ class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
         releaseConf.mailMessageFile.location.write(result.toString(), 'UTF-8')
 
         l.lifecycle("Mail message file created: ${releaseConf.mailMessageFile.location}")
-    }
-
-    private IOSReleaseConfiguration conf() {
-        releaseConf as IOSReleaseConfiguration
     }
 }

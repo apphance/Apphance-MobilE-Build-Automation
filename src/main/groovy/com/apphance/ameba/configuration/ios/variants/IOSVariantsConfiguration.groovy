@@ -16,7 +16,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank
 @com.google.inject.Singleton
 class IOSVariantsConfiguration extends AbstractConfiguration {
 
-    String configurationName = 'IOS variants configuration'
+    String configurationName = 'iOS Variants Configuration'
 
     private List<AbstractIOSVariant> variants
 
@@ -97,9 +97,5 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     AbstractIOSVariant getMainVariant() {
         variants[0]
-    }
-
-    @Override
-    void checkProperties() {
     }
 }

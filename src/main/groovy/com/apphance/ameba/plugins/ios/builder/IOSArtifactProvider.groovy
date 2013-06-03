@@ -15,6 +15,7 @@ class IOSArtifactProvider {
     IOSBuilderInfo builderInfo(AbstractIOSVariant v) {
         def bi = new IOSBuilderInfo(
                 id: v.name,
+                buildableName: v.buildableName,
                 target: v.target,
                 configuration: v.configuration,
                 mode: v.mode.value,

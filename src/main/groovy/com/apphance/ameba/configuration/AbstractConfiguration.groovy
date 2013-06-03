@@ -12,7 +12,7 @@ abstract class AbstractConfiguration {
 
     @Inject PropertyPersister propertyPersister
 
-    List<String> errors = []
+    private List<String> errors = []
 
     @Inject
     void init() {
@@ -69,14 +69,16 @@ abstract class AbstractConfiguration {
 
     final def check(condition, String message) {
         if (!condition) {
-            errors << message
+            this.@errors << message
         }
     }
 
     final List<String> verify() {
         checkProperties()
-        errors
+        this.@errors
     }
+
+    void checkProperties() {}
 
     protected String checkException(Closure cl) {
         try {
@@ -86,8 +88,6 @@ abstract class AbstractConfiguration {
         }
         ''
     }
-
-    void checkProperties() {}
 
     boolean canBeEnabled() {
         return true

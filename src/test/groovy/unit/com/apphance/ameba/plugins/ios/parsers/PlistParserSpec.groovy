@@ -158,6 +158,7 @@ class PlistParserSpec extends Specification {
         'value2.1'          | '${VALUE2:rfc1034identifier}.1'
         'value'             | 'value'
         '1_42'              | '1_42'
+        null                | null
     }
 
     def 'rfc1034 identifier works well'() {

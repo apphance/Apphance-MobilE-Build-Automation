@@ -21,7 +21,7 @@ class CleanTask extends DefaultTask {
 
     @TaskAction
     void clean() {
-        executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['dot_clean', './']))
+        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: ['dot_clean', './']))
         conf.buildDir.deleteDir()
         conf.tmpDir.deleteDir()
         conf.logDir.deleteDir()

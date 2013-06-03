@@ -105,7 +105,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     void prepareQRCodeArtifact() {
         def urlEncoded = encode(releaseConf.otaIndexFile.url.toString(), 'utf-8')
         def qrCodeFileName = "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"
-        def qrCodeFile = new File(releaseConf.targetDirectory, qrCodeFileName)
+        def qrCodeFile = new File(releaseConf.targetDir, qrCodeFileName)
         qrCodeFile.parentFile.mkdirs()
         qrCodeFile.delete()
 

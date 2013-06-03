@@ -248,7 +248,7 @@ class ReleaseConfigurationSpec extends Specification {
             getProjectURL() >> new URLProperty(value: 'http://ota.polidea.pl')
         }
         when:
-        rc.check true, "bolo bolob"
+        rc.check true, 'msg'
 
         then:
         noExceptionThrown()

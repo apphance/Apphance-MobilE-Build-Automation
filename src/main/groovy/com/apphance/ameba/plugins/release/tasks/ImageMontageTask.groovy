@@ -1,8 +1,9 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import com.apphance.ameba.configuration.android.AndroidConfiguration
-import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
+import com.apphance.ameba.configuration.ProjectConfiguration
+import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import com.apphance.ameba.plugins.release.AmebaArtifact
+import groovy.transform.PackageScope
 import ij.ImagePlus
 import ij.ImageStack
 import ij.plugin.MontageMaker
@@ -31,8 +32,8 @@ class ImageMontageTask extends DefaultTask {
     String group = AMEBA_RELEASE
     String description = 'Builds montage of images found in the project'
 
-    @Inject AndroidConfiguration conf
-    @Inject AndroidReleaseConfiguration releaseConf
+    @Inject ProjectConfiguration conf
+    @Inject ReleaseConfiguration releaseConf
 
     public static int TILE_PX_SIZE = 120
     public static int MAX_NUMBER_OF_TILES_IN_ROW = 10
@@ -51,7 +52,7 @@ class ImageMontageTask extends DefaultTask {
                 location: imageMontageFile)
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void addDescription(File image, String description) {
         BufferedImage img = ImageIO.read(image)
 
@@ -64,15 +65,15 @@ class ImageMontageTask extends DefaultTask {
         ImageIO.write(img, "png", image)
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     File outputMontageFile() {
-        def imageMontageFile = new File(releaseConf.targetDirectory, "${conf.projectName.value}-${conf.fullVersionString}-image-montage.png")
+        def imageMontageFile = new File(releaseConf.targetDir, "${conf.projectName.value}-${conf.fullVersionString}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
         imageMontageFile
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     List<File> getFilesToMontage(File rootDir) {
         List<File> filesToMontage = []
 
@@ -85,7 +86,7 @@ class ImageMontageTask extends DefaultTask {
         filesToMontage
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void createMontage(File ouput, List<File> inputs) {
         Collection<Image> images = resizeImages(inputs)
 
@@ -110,14 +111,14 @@ class ImageMontageTask extends DefaultTask {
         }
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     List<Integer> computeWidthHeight(int numberOfTiles) {
         int columns = Math.min(numberOfTiles, MAX_NUMBER_OF_TILES_IN_ROW)
         int rows = Math.ceil(numberOfTiles / columns)
         [columns, rows]
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     Collection<Image> resizeImages(List<File> inputs) {
         Collection<Image> images = inputs.collect {
 
@@ -135,7 +136,7 @@ class ImageMontageTask extends DefaultTask {
         images
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     BufferedImage getImageFrom(File file) {
         log.info("Reading file: $file.absolutePath")
         getConverter(file.name)(file)
