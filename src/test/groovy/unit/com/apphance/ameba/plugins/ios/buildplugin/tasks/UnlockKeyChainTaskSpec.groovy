@@ -26,7 +26,7 @@ class UnlockKeyChainTaskSpec extends Specification {
                                          |OSX_KEYCHAIN_LOCATION environment variables""".stripMargin()
     }
 
-    def 'keychain is unlocked'() {
+    def 'keychain is unlocked when system properties passed'() {
         given:
         System.setProperty('osx.keychain.location', 'loc')
         System.setProperty('osx.keychain.password', 'pass')

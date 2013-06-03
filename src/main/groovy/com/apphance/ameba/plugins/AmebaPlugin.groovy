@@ -4,7 +4,10 @@ import com.apphance.ameba.di.CommandExecutorModule
 import com.apphance.ameba.di.ConfigurationModule
 import com.apphance.ameba.di.EnvironmentModule
 import com.apphance.ameba.di.GradleModule
+import com.apphance.ameba.util.Version
 import com.google.inject.Guice
+import groovy.transform.PackageScope
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -12,11 +15,16 @@ import static org.gradle.api.logging.Logging.getLogger
 
 class AmebaPlugin implements Plugin<Project> {
 
+    static final Version BORDER_VERSION = new Version('1.7')
+
     def l = getLogger(getClass())
+
 
     @Override
     void apply(Project project) {
         l.lifecycle(FLOW_ASCII_ART)
+
+        validateJavaRuntimeVersion()
 
         def injector = Guice.createInjector(
                 new GradleModule(project),
@@ -29,7 +37,22 @@ class AmebaPlugin implements Plugin<Project> {
         project.tasks.each { injector.injectMembers(it) }
     }
 
-    static String FLOW_ASCII_ART ="""
+    @PackageScope
+    void validateJavaRuntimeVersion() {
+        def runtimeVersion = new Version(trimmedJavaVersion)
+        if (runtimeVersion.compareTo(BORDER_VERSION) == -1)
+            throw new GradleException("Invalid JRE version: $runtimeVersion.version! " +
+                    "Minimal JRE version is: $BORDER_VERSION.version")
+    }
+
+    @PackageScope
+    String getTrimmedJavaVersion() {
+        String version = System.properties['java.version']
+        Integer underscore = version.indexOf('_')
+        version.substring(0, underscore >= 0 ? underscore : version.length()).trim()
+    }
+
+    static String FLOW_ASCII_ART = """
         |    _             _                       ___ _
         |   /_\\  _ __ _ __| |_  __ _ _ _  __ ___  | __| |_____ __ __
         |  / _ \\| '_ \\ '_ \\ ' \\/ _` | ' \\/ _/ -_) | _|| / _ \\ V  V /
