@@ -48,7 +48,8 @@ abstract class AbstractVariant extends AbstractConfiguration {
     def apphanceAppKey = new StringProperty(
             interactive: { apphanceConf.enabled && !(DISABLED == apphanceMode.value) },
             required: { apphanceConf.enabled },
-            validator: { it?.matches('[a-z0-9]+') }
+            validator: { it?.matches('[a-z0-9]+') },
+            validationMessage: "key should match '[a-z0-9]+'"
     )
 
     List<String> possibleApphanceModes() {

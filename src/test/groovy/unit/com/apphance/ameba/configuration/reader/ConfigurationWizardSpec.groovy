@@ -13,7 +13,7 @@ class ConfigurationWizardSpec extends Specification {
 
     def 'possible value string is formatted correctly'() {
         expect:
-        cm.possibleValuesString(p) == expectedString
+        cm.promptPossible(p) == expectedString
 
         where:
         p                                                                                                | expectedString
@@ -24,7 +24,7 @@ class ConfigurationWizardSpec extends Specification {
 
     def 'default value string is formatted correctly'() {
         expect:
-        cm.effectiveDefaultValue(p) == expectedString
+        p.effectiveDefaultValue() == expectedString
 
         where:
         p                                                  | expectedString
@@ -41,7 +41,7 @@ class ConfigurationWizardSpec extends Specification {
 
         where:
         p                                                                                                                  | expectedString
-        new StringProperty(message: 'Project name')                                                                        | "Project name, default: '': "
+        new StringProperty(message: 'Project name')                                                                        | "Project name: "
         new StringProperty(message: 'Project name', defaultValue: { 'a' })                                                 | "Project name, default: 'a': "
         new StringProperty(message: 'Project name', defaultValue: { 'b' }, possibleValues: { ['a', 'b'] as List<String> }) | "Project name, default: 'b', " +
                 "possible: [a, b]: "

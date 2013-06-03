@@ -6,6 +6,7 @@ import com.apphance.ameba.configuration.properties.AbstractProperty
 import static java.lang.System.out
 import static org.apache.commons.lang.StringUtils.isBlank
 import static org.gradle.api.logging.Logging.getLogger
+import groovy.transform.PackageScope
 
 class ConfigurationWizard {
 
@@ -27,23 +28,19 @@ class ConfigurationWizard {
         configurations.each { log.info(it.toString()) }
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void enablePlugin(AbstractConfiguration conf) {
         if (conf.canBeEnabled()) {
             print "Enable plugin ${conf.configurationName}? [y/n] "
             out.flush()
-            if (reader.readLine()?.equalsIgnoreCase('y')) {
-                conf.enabled = true
-            } else {
-                conf.enabled = false
-            }
+            conf.enabled = reader.readLine()?.equalsIgnoreCase('y')
         } else {
             print conf.message
             out.flush()
         }
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void readValues(AbstractConfiguration conf) {
         conf.amebaProperties.findAll { it.interactive() }.each {
             readProperty(it)
@@ -61,38 +58,40 @@ class ConfigurationWizard {
             if (validateInput(input, ap)) {
                 setPropertyValue(ap, input)
                 break
+            } else {
+                println ap.failedValidationMessage
+                out.flush()
             }
         }
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     boolean validateInput(String input, AbstractProperty ap) {
         if (isBlank(input)) {
-            effectiveDefaultValue(ap) || !ap.required()
+            ap.effectiveDefaultValue() || !ap.required()
         } else {
             ap.validator(input)
         }
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void setPropertyValue(AbstractProperty ap, String input) {
-        ap.value = isBlank(input) ? effectiveDefaultValue(ap) : input
-
+        ap.value = isBlank(input) ? ap.effectiveDefaultValue() : input
         log.info("Property '${ap.name}' value set to: ${ap.value}")
     }
 
-    @groovy.transform.PackageScope
-    String effectiveDefaultValue(AbstractProperty ap) {
-        ap.value ?: ap?.defaultValue() ?: ap.possibleValues() ? ap.possibleValues().get(0) : ''
-    }
-
-    @groovy.transform.PackageScope
+    @PackageScope
     String prompt(AbstractProperty ap) {
-        "${ap.message}, default: '${effectiveDefaultValue(ap)}'${possibleValuesString(ap)}: "
+        ap.message + promptDefault(ap) + promptPossible(ap) + ': '
     }
 
-    @groovy.transform.PackageScope
-    String possibleValuesString(AbstractProperty ap) {
+    @PackageScope
+    String promptDefault(AbstractProperty ap) {
+        ap.effectiveDefaultValue() ? ", default: '${ap.effectiveDefaultValue()}'" : ''
+    }
+
+    @PackageScope
+    String promptPossible(AbstractProperty ap) {
         ap.possibleValues() ? ", possible: ${ap.possibleValues()}" : ''
     }
 }

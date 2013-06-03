@@ -106,7 +106,9 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
                     (it as String).toURL()
                     return true
                 } catch (Exception e) { return false }
-            }
+            },
+            validationMessage: "Should be a valid URL"
+
     )
 
     String getProjectDirName() {
