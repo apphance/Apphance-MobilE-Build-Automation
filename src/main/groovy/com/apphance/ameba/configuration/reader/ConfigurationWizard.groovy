@@ -14,16 +14,17 @@ class ConfigurationWizard {
     def static YELLOW = '\033[93m'
     def static END = '\033[0m'
     def static GREEN = '\033[92m'
+    def static BLUE = '\033[94m'
 
     def reader = new BufferedReader(new InputStreamReader(System.in))
 
-    String yellow(String str) {
-        "${YELLOW}${str}${END}"
+    String color(String color, String str) {
+        "${color}${str}${END}"
     }
 
-    String green(String str) {
-        "${GREEN}${str}${END}"
-    }
+    Closure<String> yellow = this.&color.curry(YELLOW)
+    Closure<String> green = this.&color.curry(GREEN)
+    Closure<String> blue = this.&color.curry(BLUE)
 
     static String removeColor(String str) {
         str.replaceAll(/\033\[[0-9;]*m/, '')
@@ -98,16 +99,16 @@ class ConfigurationWizard {
 
     @PackageScope
     String prompt(AbstractProperty ap) {
-        ap.message + promptDefault(ap) + promptPossible(ap) + ': '
+        ap.message + promptPossible(ap) + '\n' + promptDefault(ap) + ': '
     }
 
     @PackageScope
     String promptDefault(AbstractProperty ap) {
-        ap.effectiveDefaultValue() ? ", default: '${green(ap.effectiveDefaultValue())}'" : ''
+        ap.effectiveDefaultValue() ? "default: '${green(ap.effectiveDefaultValue())}'" : ''
     }
 
     @PackageScope
     String promptPossible(AbstractProperty ap) {
-        ap.possibleValues() ? ", possible: ${green(ap.possibleValues().toString())}" : ''
+        ap.possibleValues() ? ", possible: ${blue(ap.possibleValues().toString())}" : ''
     }
 }

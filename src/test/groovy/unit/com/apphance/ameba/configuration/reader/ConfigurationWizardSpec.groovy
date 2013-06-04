@@ -44,13 +44,11 @@ class ConfigurationWizardSpec extends Specification {
         removeColor(cm.prompt(p)) == expectedString
 
         where:
-        p                                                                                                                  | expectedString
-        new StringProperty(message: 'Project name')                                                                        | "Project name: "
-        new StringProperty(message: 'Project name', defaultValue: { 'a' })                                                 | "Project name, default: 'a': "
-        new StringProperty(message: 'Project name', defaultValue: { 'b' }, possibleValues: { ['a', 'b'] as List<String> }) | "Project name, default: 'b', " +
-                "possible: [a, b]: "
-        new StringProperty(message: 'Project name', possibleValues: { ['a', 'b'] as List<String> })                        | "Project name, default: 'a', " +
-                "possible: [a, b]: "
+        p                                                                                                  | expectedString
+        new StringProperty(message: 'Project name')                                                        | "Project name\n: "
+        new StringProperty(message: 'Project name', defaultValue: { 'a' })                                 | "Project name\ndefault: 'a': "
+        new StringProperty(message: 'Project name', defaultValue: { 'b' }, possibleValues: { ['a', 'b'] }) | "Project name, possible: [a, b]\ndefault: 'b': "
+        new StringProperty(message: 'Project name', possibleValues: { ['a', 'b'] })                        | "Project name, possible: [a, b]\ndefault: 'a': "
     }
 
     def 'empty input validation works well.'() {
