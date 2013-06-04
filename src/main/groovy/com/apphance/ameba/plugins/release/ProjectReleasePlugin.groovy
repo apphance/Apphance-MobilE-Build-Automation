@@ -10,6 +10,7 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
 import static org.gradle.api.logging.Logging.getLogger
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
 
@@ -25,13 +26,14 @@ import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
  */
 class ProjectReleasePlugin implements Plugin<Project> {
 
-    def l = getLogger(getClass())
+    def log = getLogger(this.class)
 
     @Inject ReleaseConfiguration releaseConf
 
     @Override
     void apply(Project project) {
         if (releaseConf.isEnabled()) {
+            log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
 
             project.configurations.add('mail')
             project.dependencies {

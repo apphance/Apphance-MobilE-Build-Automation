@@ -9,10 +9,15 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
+import static org.gradle.api.logging.Logging.getLogger
+
 /**
  * Performs android testing.
  */
 class AndroidTestPlugin implements Plugin<Project> {
+
+    def log = getLogger(this.class)
 
     @Inject AndroidTestConfiguration testConf
     @Inject AndroidConfiguration conf
@@ -20,6 +25,7 @@ class AndroidTestPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         if (testConf.isEnabled()) {
+            log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
 
             if (testConf.emmaEnabled.value) {
                 project.configurations.add('emma')

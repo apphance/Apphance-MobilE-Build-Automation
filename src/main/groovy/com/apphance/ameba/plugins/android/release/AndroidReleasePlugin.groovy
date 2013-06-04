@@ -9,6 +9,9 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
+import static org.gradle.api.logging.Logging.getLogger
+
 /**
  * Plugin that provides release functionality for android.<br><br>
  *
@@ -20,11 +23,14 @@ import javax.inject.Inject
  */
 class AndroidReleasePlugin implements Plugin<Project> {
 
+    def log = getLogger(this.class)
+
     @Inject AndroidReleaseConfiguration releaseConf
 
     @Override
     void apply(Project project) {
         if (releaseConf.isEnabled()) {
+            log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
 
             project.task(
                     UpdateVersionTask.NAME,

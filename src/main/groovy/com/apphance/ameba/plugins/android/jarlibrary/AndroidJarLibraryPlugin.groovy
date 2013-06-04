@@ -8,6 +8,9 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
+import static org.gradle.api.logging.Logging.getLogger
+
 /**
  * Helps building the library with resources embedded. It is useful in case we want to generate libraries like
  * *.jar that wants to have the resources embedded.
@@ -23,11 +26,14 @@ import javax.inject.Inject
  */
 class AndroidJarLibraryPlugin implements Plugin<Project> {
 
+    def log = getLogger(this.class)
+
     @Inject AndroidJarLibraryConfiguration jarLibConf
 
     @Override
     void apply(Project project) {
         if (jarLibConf.isEnabled()) {
+            log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
 
             project.task(JarLibraryTask.NAME,
                     type: JarLibraryTask)

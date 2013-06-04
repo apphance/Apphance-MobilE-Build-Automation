@@ -8,6 +8,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.yellow
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
 
 /**
@@ -27,7 +28,7 @@ class VerifySetupTask extends DefaultTask {
         List errors = []
         verifyConfigurations(configurations.sort().values(), errors)
         if (errors) {
-            errors.each { logger.error("ERROR: $it") }
+            errors.each { logger.error(yellow("ERROR: $it")) }
             throw new GradleException('Verification error')
         }
     }

@@ -1,8 +1,8 @@
 package com.apphance.ameba.plugins.android.apphance
 
-import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.plugins.android.apphance.tasks.AddApphanceToAndroid
 import com.apphance.ameba.plugins.android.apphance.tasks.AndroidLogsConversionTask
 import com.apphance.ameba.plugins.android.apphance.tasks.ApphanceLogsConversionTask
@@ -15,6 +15,7 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
 import static org.gradle.api.logging.Logging.getLogger
 
@@ -47,6 +48,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         if (apphanceConf.isEnabled()) {
+            log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
             this.project = project
 
             addApphanceConfiguration(project)

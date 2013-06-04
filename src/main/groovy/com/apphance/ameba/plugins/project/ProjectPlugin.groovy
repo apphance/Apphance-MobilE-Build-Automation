@@ -1,11 +1,15 @@
 package com.apphance.ameba.plugins.project
 
+import com.apphance.ameba.configuration.reader.ConfigurationWizard
 import com.apphance.ameba.plugins.project.tasks.CheckTestsTask
 import com.apphance.ameba.plugins.project.tasks.CleanConfTask
 import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * This is the base plugin which should be applied in any project.
@@ -23,8 +27,12 @@ import org.gradle.api.Project
  */
 class ProjectPlugin implements Plugin<Project> {
 
+    def log = getLogger(this.class)
+
     @Override
     void apply(Project project) {
+        log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
+
         project.repositories.mavenCentral()
 
         project.task(CleanConfTask.NAME, type: CleanConfTask)

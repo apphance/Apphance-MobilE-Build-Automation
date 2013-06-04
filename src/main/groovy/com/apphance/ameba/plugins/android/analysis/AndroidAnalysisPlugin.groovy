@@ -11,7 +11,9 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Provides static code analysis.
@@ -19,11 +21,14 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYS
  */
 class AndroidAnalysisPlugin implements Plugin<Project> {
 
+    def log = getLogger(this.class)
+
     @Inject AndroidAnalysisConfiguration analysisConf
 
     @Override
     void apply(Project project) {
         if (analysisConf.isEnabled()) {
+            log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
 
             project.configurations.add('pmdConf')
             project.dependencies.add('pmdConf', 'pmd:pmd:4.3')

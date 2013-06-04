@@ -3,15 +3,17 @@ package com.apphance.ameba.plugins.android.buildplugin
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.plugins.android.buildplugin.tasks.*
-import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.CleanConfTask
+import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static org.gradle.api.logging.Logging.getLogger
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
 
 /**
@@ -25,6 +27,8 @@ import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
  */
 class AndroidPlugin implements Plugin<Project> {
 
+    def log = getLogger(this.class)
+
     static final String BUILD_ALL_TASK_NAME = 'buildAll'
     static final String BUILD_ALL_DEBUG_TASK_NAME = 'buildAllDebug'
     static final String BUILD_ALL_RELEASE_TASK_NAME = 'buildAllRelease'
@@ -36,6 +40,7 @@ class AndroidPlugin implements Plugin<Project> {
     void apply(Project project) {
 
         if (conf.isEnabled()) {
+            log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
 
             project.task(UpdateProjectTask.NAME,
                     type: UpdateProjectTask)

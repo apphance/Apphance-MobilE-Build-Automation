@@ -50,11 +50,15 @@ class SingleVariantTask extends DefaultTask {
         }
 
         antExecutor.executeTarget builderInfo.tmpDir, builderInfo.mode.lowerCase()
-        log.lifecycle("File created: ${builderInfo.originalFile}")
+        if (builderInfo.originalFile.exists()) {
+            log.lifecycle("File created: ${builderInfo.originalFile}")
 
-        if (androidReleaseConf.enabled || apphanceConf.enabled) {
-            log.lifecycle("Copying file ${builderInfo.originalFile.absolutePath} to ${artifactProvider.artifact(builderInfo).location.absolutePath}")
-            ant.copy(file: builderInfo.originalFile, tofile: artifactProvider.artifact(builderInfo).location)
+            if (androidReleaseConf.enabled || apphanceConf.enabled) {
+                log.lifecycle("Copying file ${builderInfo.originalFile.absolutePath} to ${artifactProvider.artifact(builderInfo).location.absolutePath}")
+                ant.copy(file: builderInfo.originalFile, tofile: artifactProvider.artifact(builderInfo).location)
+            }
+        } else {
+            log.lifecycle("File ${builderInfo.originalFile} was not created. Probably due to bad signing configuration in ant.properties")
         }
     }
 

@@ -18,13 +18,13 @@ class ConfigurationWizard {
 
     def reader = new BufferedReader(new InputStreamReader(System.in))
 
-    String color(String color, String str) {
+    static String color(String color, String str) {
         "${color}${str}${END}"
     }
 
-    Closure<String> yellow = this.&color.curry(YELLOW)
-    Closure<String> green = this.&color.curry(GREEN)
-    Closure<String> blue = this.&color.curry(BLUE)
+    public static Closure<String> yellow = this.&color.curry(YELLOW)
+    public static Closure<String> green = this.&color.curry(GREEN)
+    public static Closure<String> blue = this.&color.curry(BLUE)
 
     static String removeColor(String str) {
         str.replaceAll(/\033\[[0-9;]*m/, '')
@@ -47,7 +47,7 @@ class ConfigurationWizard {
     @PackageScope
     void enablePlugin(AbstractConfiguration conf) {
         if (conf.canBeEnabled()) {
-            print "Enable plugin ${GREEN}${conf.configurationName}${END}? [y/n] "
+            print "Enable plugin ${green(conf.configurationName)}? [y/n] "
             out.flush()
             conf.enabled = reader.readLine()?.equalsIgnoreCase('y')
         } else {
