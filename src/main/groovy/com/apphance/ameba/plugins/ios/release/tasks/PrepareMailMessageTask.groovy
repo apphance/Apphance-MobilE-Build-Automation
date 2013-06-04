@@ -4,13 +4,11 @@ import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.plugins.release.tasks.AbstractPrepareMailMessageTask
 import org.gradle.api.GradleException
-import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.ios.IOSConfiguration.FAMILIES
 import static com.apphance.ameba.util.file.FileManager.getHumanReadableSize
-import static com.google.common.base.Preconditions.checkNotNull
 import static org.gradle.api.logging.Logging.getLogger
 
 class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
@@ -19,15 +17,8 @@ class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
 
     @Inject IOSVariantsConfiguration variantsConf
 
-    @TaskAction
-    void mailMessage() {
-
-        checkNotNull(releaseConf?.mailMessageFile?.location?.parentFile)
-        validateReleaseNotes(releaseConf.releaseNotes)
-
-        releaseConf.mailMessageFile.location.parentFile.mkdirs()
-        releaseConf.mailMessageFile.location.delete()
-
+    @Override
+    void fillTemplate() {
         def fileSize = 0
         def existingBuild = ((IOSReleaseConfiguration) releaseConf).distributionZipFiles.find {
             it.value.location != null

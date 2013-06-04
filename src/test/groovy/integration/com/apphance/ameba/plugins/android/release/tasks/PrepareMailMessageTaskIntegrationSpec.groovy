@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.configuration.properties.URLProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import spock.lang.Specification
@@ -17,8 +18,8 @@ class PrepareMailMessageTaskIntegrationSpec extends Specification {
 
     def 'prepares mail message'() {
         given:
-        def otaDir = createTempDir()
         def apkDir = createTempDir()
+        def rootDir = createTempDir()
 
         and:
         def p = builder().build()
@@ -34,25 +35,25 @@ class PrepareMailMessageTaskIntegrationSpec extends Specification {
         def reader = new PropertyReader()
 
         and:
-        def arc = new AndroidReleaseConfiguration()
-        arc.mailMessageFile = new AmebaArtifact(
-                url: new URL(projectUrl, 'message_file.html'),
-                location: new File("$otaDir$separator$projectName$separator$fullVersionString", 'message_file.html'))
-        arc.apkFiles = [(mainVariant): new AmebaArtifact(url: projectUrl, location: apkDir)]
-        arc.fileIndexFile = new AmebaArtifact(url: new URL(projectUrl, 'fileIndexFile.html'))
-        arc.otaIndexFile = new AmebaArtifact(url: new URL(projectUrl, 'otaIndexFile.html'))
-        arc.reader = reader
-
-        and:
-        def avc = GroovyMock(AndroidVariantsConfiguration)
-        avc.mainVariant >> mainVariant
-
-        and:
         def ac = GroovyMock(AndroidConfiguration)
         ac.projectName >> new StringProperty(value: projectName)
         ac.fullVersionString >> fullVersionString
         ac.versionString >> '1.0.1'
         ac.versionCode >> '42'
+        ac.rootDir >> rootDir
+
+        and:
+        def arc = new AndroidReleaseConfiguration()
+        arc.projectURL = new URLProperty(value: projectUrl.toString())
+        arc.apkFiles = [(mainVariant): new AmebaArtifact(url: projectUrl, location: apkDir)]
+        arc.fileIndexFile = new AmebaArtifact(url: new URL(projectUrl, 'fileIndexFile.html'))
+        arc.otaIndexFile = new AmebaArtifact(url: new URL(projectUrl, 'otaIndexFile.html'))
+        arc.reader = reader
+        arc.conf = ac
+
+        and:
+        def avc = GroovyMock(AndroidVariantsConfiguration)
+        avc.mainVariant >> mainVariant
 
         and:
         def task = p.task(PrepareMailMessageTask.NAME, type: PrepareMailMessageTask) as PrepareMailMessageTask
@@ -61,11 +62,11 @@ class PrepareMailMessageTaskIntegrationSpec extends Specification {
         task.variantsConf = avc
 
         when:
-        task.mailMessage()
+        task.prepareMailMessage()
 
         then:
         arc.releaseMailSubject == 'Android TestAndroidProject 1.0.1_42 is ready to install'
-        def mailMsgDir = new File(otaDir, "${projectName}${separator}${fullVersionString}")
+        def mailMsgDir = new File(rootDir, "flow-ota${separator}/${projectName}${separator}${fullVersionString}")
         def mailMsgFile = new File(mailMsgDir, 'message_file.html')
         mailMsgDir.exists()
         mailMsgDir.list().size() == 1
@@ -83,8 +84,8 @@ class PrepareMailMessageTaskIntegrationSpec extends Specification {
         html.body.p[2].ul.li.a.@href.text() == 'http://ota.polidea.pl/fileIndexFile.html'
 
         cleanup:
-        otaDir.deleteDir()
         apkDir.deleteDir()
+        rootDir.deleteDir()
         properties.remove('release.notes')
     }
 }

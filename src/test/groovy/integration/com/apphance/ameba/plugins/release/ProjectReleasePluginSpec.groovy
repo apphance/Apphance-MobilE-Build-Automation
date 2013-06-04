@@ -1,10 +1,12 @@
 package com.apphance.ameba.plugins.release
 
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
-import com.apphance.ameba.plugins.release.tasks.*
+import com.apphance.ameba.plugins.release.tasks.BuildSourcesZipTask
+import com.apphance.ameba.plugins.release.tasks.CleanReleaseTask
+import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
+import com.apphance.ameba.plugins.release.tasks.SendMailMessageTask
 import spock.lang.Specification
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
 import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
@@ -33,22 +35,14 @@ class ProjectReleasePluginSpec extends Specification {
         project.dependencies.configurationContainer.mail.allDependencies.size() == 3
 
         then: 'every task exists and is in correct group'
-        project.tasks[CopyGalleryFilesTask.NAME].group == AMEBA_CONFIGURATION
-        project.tasks[PrepareForReleaseTask.NAME].group == AMEBA_RELEASE
         project.tasks[ImageMontageTask.NAME].group == AMEBA_RELEASE
         project.tasks[SendMailMessageTask.NAME].group == AMEBA_RELEASE
         project.tasks[CleanReleaseTask.NAME].group == AMEBA_RELEASE
         project.tasks[BuildSourcesZipTask.NAME].group == AMEBA_RELEASE
 
         then: 'each task has correct dependency'
-        project.tasks[PrepareForReleaseTask.NAME].dependsOn.flatten().containsAll(CopyGalleryFilesTask.NAME)
-        project.tasks[ImageMontageTask.NAME].dependsOn.flatten().containsAll(PrepareForReleaseTask.NAME)
-        project.tasks[SendMailMessageTask.NAME].dependsOn.flatten().containsAll(
-                PrepareForReleaseTask.NAME,
-                'prepareMailMessage')
+        project.tasks[SendMailMessageTask.NAME].dependsOn.flatten().contains('prepareMailMessage')
         project.tasks[CleanReleaseTask.NAME].dependsOn.flatten().containsAll(CLEAN_TASK_NAME)
-        project.tasks[BuildSourcesZipTask.NAME].dependsOn.flatten().containsAll(PrepareForReleaseTask.NAME)
-        project.tasks[CopyGalleryFilesTask.NAME].dependsOn.flatten().containsAll('copySources')
     }
 
     def 'no tasks available when configuration is inactive'() {
@@ -72,9 +66,7 @@ class ProjectReleasePluginSpec extends Specification {
         then:
         !project.getTasksByName(BuildSourcesZipTask.NAME, false)
         !project.getTasksByName(CleanReleaseTask.NAME, false)
-        !project.getTasksByName(CopyGalleryFilesTask.NAME, false)
         !project.getTasksByName(ImageMontageTask.NAME, false)
-        !project.getTasksByName(PrepareForReleaseTask.NAME, false)
         !project.getTasksByName(SendMailMessageTask.NAME, false)
     }
 }

@@ -5,7 +5,6 @@ import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.ameba.plugins.ios.release.tasks.PrepareMailMessageTask
 import com.apphance.ameba.plugins.ios.release.tasks.UpdateVersionTask
-import com.apphance.ameba.plugins.release.tasks.PrepareForReleaseTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -42,7 +41,7 @@ class IOSReleasePlugin implements Plugin<Project> {
 
             project.task(PrepareMailMessageTask.NAME,
                     type: PrepareMailMessageTask,
-                    dependsOn: [AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME])
+                    dependsOn: AvailableArtifactsInfoTask.NAME)
 
             builder.registerListener(listener)
         }

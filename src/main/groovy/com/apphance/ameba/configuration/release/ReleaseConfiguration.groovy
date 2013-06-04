@@ -96,7 +96,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     abstract List<String> possibleIcons()
 
-    URLProperty projectURL = new URLProperty(
+    def projectURL = new URLProperty(
             name: 'release.url',
             message: 'Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as ' +
                     'subdirectory of ota dir when artifacts are created locally.',

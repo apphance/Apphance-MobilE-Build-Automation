@@ -3,12 +3,10 @@ package com.apphance.ameba.plugins.android.release.tasks
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.plugins.release.tasks.AbstractPrepareMailMessageTask
-import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
 import static com.apphance.ameba.util.file.FileManager.getHumanReadableSize
-import static com.google.common.base.Preconditions.checkNotNull
 import static org.gradle.api.logging.Logging.getLogger
 
 class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
@@ -17,15 +15,8 @@ class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
 
     @Inject AndroidVariantsConfiguration variantsConf
 
-    @TaskAction
-    void mailMessage() {
-
-        checkNotNull(releaseConf?.mailMessageFile?.location?.parentFile)
-
-        validateReleaseNotes(releaseConf.releaseNotes)
-
-        releaseConf.mailMessageFile.location.parentFile.mkdirs()
-        releaseConf.mailMessageFile.location.delete()
+    @Override
+    void fillTemplate() {
 
         def rb = loadBundle()
         releaseConf.releaseMailSubject = fillMailSubject(rb)
@@ -42,9 +33,7 @@ class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
                 rb: rb
         ]
 
-        def mailTemplate = loadTemplate()
-        def result = createTemplate(mailTemplate, binding)
-
+        def result = createTemplate(loadTemplate(), binding)
         releaseConf.mailMessageFile.location.write(result.toString(), 'UTF-8')
 
         l.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")

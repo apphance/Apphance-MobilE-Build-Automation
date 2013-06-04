@@ -4,7 +4,6 @@ import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.ameba.plugins.android.release.tasks.PrepareMailMessageTask
 import com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
-import com.apphance.ameba.plugins.release.tasks.PrepareForReleaseTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -38,7 +37,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
             project.task(
                     PrepareMailMessageTask.NAME,
                     type: PrepareMailMessageTask,
-                    dependsOn: [AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME])
+                    dependsOn: AvailableArtifactsInfoTask.NAME)
         }
     }
 }

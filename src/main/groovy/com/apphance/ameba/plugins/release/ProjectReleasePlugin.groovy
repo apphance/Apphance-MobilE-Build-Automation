@@ -1,7 +1,10 @@
 package com.apphance.ameba.plugins.release
 
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
-import com.apphance.ameba.plugins.release.tasks.*
+import com.apphance.ameba.plugins.release.tasks.BuildSourcesZipTask
+import com.apphance.ameba.plugins.release.tasks.CleanReleaseTask
+import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
+import com.apphance.ameba.plugins.release.tasks.SendMailMessageTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -37,29 +40,19 @@ class ProjectReleasePlugin implements Plugin<Project> {
                 mail 'javax.activation:activation:1.1.1'
             }
 
-            project.task(CopyGalleryFilesTask.NAME,
-                    type: CopyGalleryFilesTask,
-                    dependsOn: 'copySources')
-
-            project.task(PrepareForReleaseTask.NAME,
-                    type: PrepareForReleaseTask,
-                    dependsOn: [CopyGalleryFilesTask.NAME])
-
             project.task(ImageMontageTask.NAME,
-                    type: ImageMontageTask,
-                    dependsOn: [PrepareForReleaseTask.NAME])
+                    type: ImageMontageTask)
 
             project.task(SendMailMessageTask.NAME,
                     type: SendMailMessageTask,
-                    dependsOn: [PrepareForReleaseTask.NAME, 'prepareMailMessage'])
+                    dependsOn: 'prepareMailMessage')
 
             project.task(CleanReleaseTask.NAME,
                     type: CleanReleaseTask,
                     dependsOn: [CLEAN_TASK_NAME])
 
             project.task(BuildSourcesZipTask.NAME,
-                    type: BuildSourcesZipTask,
-                    dependsOn: [PrepareForReleaseTask.NAME])
+                    type: BuildSourcesZipTask)
 
         }
     }

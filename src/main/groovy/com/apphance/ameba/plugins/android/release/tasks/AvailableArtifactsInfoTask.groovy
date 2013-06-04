@@ -126,8 +126,6 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     @PackageScope
     void prepareFileIndexFile() {
-        def tmpl = loadTemplate('file_index.html')
-        def rb = bundle('file_index')
         def binding = [
                 baseUrl: releaseConf.fileIndexFile.url,
                 title: conf.projectName.value,
@@ -137,16 +135,15 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 currentDate: releaseConf.buildDate,
                 variantsConf: variantsConf,
                 releaseConf: releaseConf,
-                rb: rb
+                rb: bundle('file_index')
         ]
-        def result = fillTemplate(tmpl, binding)
+        def result = fillTemplate(loadTemplate('file_index.html'), binding)
         templateToFile(releaseConf.fileIndexFile.location, result)
         l.lifecycle("File index created: ${releaseConf.fileIndexFile.location}")
     }
 
     @PackageScope
     void preparePlainFileIndexFile() {
-        def rb = bundle('plain_file_index')
         def binding = [
                 baseUrl: releaseConf.plainFileIndexFile.url,
                 title: conf.projectName.value,
@@ -155,18 +152,15 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 currentDate: releaseConf.buildDate,
                 variantsConf: variantsConf,
                 releaseConf: releaseConf,
-                rb: rb
+                rb: bundle('plain_file_index')
         ]
-        def tmpl = loadTemplate('plain_file_index.html')
-        def result = fillTemplate(tmpl, binding)
+        def result = fillTemplate(loadTemplate('plain_file_index.html'), binding)
         templateToFile(releaseConf.plainFileIndexFile.location, result)
         l.lifecycle("Plain file index created: ${releaseConf.plainFileIndexFile.location}")
     }
 
     @PackageScope
     void prepareOTAIndexFile() {
-        def otaIndexTemplate = loadTemplate('index.html')
-        def rb = bundle('index')
         def binding = [
                 baseUrl: releaseConf.otaIndexFile.url,
                 title: conf.projectName.value,
@@ -176,9 +170,9 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 iconFileName: releaseConf.iconFile.value.name,
                 variantsConf: variantsConf,
                 releaseConf: releaseConf,
-                rb: rb
+                rb: bundle('index')
         ]
-        def result = fillTemplate(otaIndexTemplate, binding)
+        def result = fillTemplate(loadTemplate('index.html'), binding)
         templateToFile(releaseConf.otaIndexFile.location, result)
         l.lifecycle("OTA index created: ${releaseConf.otaIndexFile.location}")
     }

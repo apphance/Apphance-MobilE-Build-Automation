@@ -2,10 +2,12 @@ package com.apphance.ameba.plugins.release.tasks
 
 import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
+import com.apphance.ameba.plugins.release.AmebaArtifact
 import groovy.text.SimpleTemplateEngine
 import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
@@ -20,6 +22,24 @@ abstract class AbstractPrepareMailMessageTask extends DefaultTask {
 
     @Inject ProjectConfiguration conf
     @Inject ReleaseConfiguration releaseConf
+
+    @TaskAction
+    final void prepareMailMessage() {
+        validateReleaseNotes(releaseConf.releaseNotes)
+        prepareMailMsgArtifact()
+        fillTemplate()
+    }
+
+    private void prepareMailMsgArtifact() {
+        releaseConf.mailMessageFile = new AmebaArtifact(
+                name: 'Mail message file',
+                url: new URL(releaseConf.versionedApplicationUrl, 'message_file.html'),
+                location: new File(releaseConf.targetDir, 'message_file.html'))
+        releaseConf.mailMessageFile.location.parentFile.mkdirs()
+        releaseConf.mailMessageFile.location.delete()
+    }
+
+    abstract void fillTemplate()
 
     @PackageScope
     void validateReleaseNotes(Collection<String> releaseNotes) {
