@@ -141,7 +141,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         ]
         def result = fillTemplate(tmpl, binding)
         templateToFile(releaseConf.fileIndexFile.location, result)
-        l.lifecycle("File index created: ${releaseConf.fileIndexFile}")
+        l.lifecycle("File index created: ${releaseConf.fileIndexFile.location}")
     }
 
     @PackageScope
@@ -160,7 +160,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         def tmpl = loadTemplate('plain_file_index.html')
         def result = fillTemplate(tmpl, binding)
         templateToFile(releaseConf.plainFileIndexFile.location, result)
-        l.lifecycle("Plain file index created: ${releaseConf.plainFileIndexFile}")
+        l.lifecycle("Plain file index created: ${releaseConf.plainFileIndexFile.location}")
     }
 
     @PackageScope
@@ -180,7 +180,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         ]
         def result = fillTemplate(otaIndexTemplate, binding)
         templateToFile(releaseConf.otaIndexFile.location, result)
-        l.lifecycle("Ota index created: ${releaseConf.otaIndexFile}")
+        l.lifecycle("OTA index created: ${releaseConf.otaIndexFile.location}")
     }
 
     private ResourceBundle bundle(String id) {

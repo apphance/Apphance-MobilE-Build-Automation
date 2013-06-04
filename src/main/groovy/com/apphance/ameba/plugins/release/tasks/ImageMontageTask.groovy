@@ -45,9 +45,10 @@ class ImageMontageTask extends DefaultTask {
         createMontage(imageMontageFile, filesToMontage)
         addDescription(imageMontageFile, "${conf.projectName.value} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}")
 
-        def imageMontageFileArtifact = new AmebaArtifact(
-                name: "Image Montage", url: new URL(releaseConf.projectURL.value, "${imageMontageFile.name}"), location: imageMontageFile)
-        releaseConf.imageMontageFile = imageMontageFileArtifact
+        releaseConf.imageMontageFile = new AmebaArtifact(
+                name: 'Image Montage',
+                url: new URL(releaseConf.baseURL, "${releaseConf.projectDirName}/${conf.fullVersionString}/${imageMontageFile.name}"),
+                location: imageMontageFile)
     }
 
     @groovy.transform.PackageScope
