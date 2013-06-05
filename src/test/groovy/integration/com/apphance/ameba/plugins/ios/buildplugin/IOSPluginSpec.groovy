@@ -63,10 +63,10 @@ class IOSPluginSpec extends Specification {
 
         and:
         project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_SIMULATOR_TASK_NAME, BUILD_ALL_DEVICE_TASK_NAME)
-        project.tasks['buildV1'].dependsOn.flatten().containsAll(CopyMobileProvisionTask.NAME)
-        project.tasks['buildV2'].dependsOn.flatten().containsAll(CopyMobileProvisionTask.NAME)
-        project.tasks[BUILD_ALL_SIMULATOR_TASK_NAME].dependsOn.flatten().containsAll('buildV2')
-        project.tasks[BUILD_ALL_DEVICE_TASK_NAME].dependsOn.flatten().containsAll('buildV1')
+        project.tasks['buildV1'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
+        project.tasks['buildV2'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
+        project.tasks[BUILD_ALL_SIMULATOR_TASK_NAME].dependsOn.flatten().contains('buildV2')
+        project.tasks[BUILD_ALL_DEVICE_TASK_NAME].dependsOn.flatten().contains('buildV1')
     }
 
     def 'no tasks available when configuration is inactive'() {

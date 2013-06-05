@@ -7,6 +7,7 @@ import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.SingleVariantTask
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.UnlockKeyChainTask
+import com.apphance.ameba.plugins.project.tasks.CheckTestsTask
 import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
 import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
@@ -47,7 +48,7 @@ class IOSPlugin implements Plugin<Project> {
             }
 
             project.task(CopySourcesTask.NAME,
-                    type: CopySourcesTask)
+                    type: CopySourcesTask).mustRunAfter(CleanFlowTask.NAME)
 
             project.task(CopyMobileProvisionTask.NAME,
                     type: CopyMobileProvisionTask,
@@ -82,10 +83,11 @@ class IOSPlugin implements Plugin<Project> {
             }
 
             project.tasks.each {
-                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME])) {
+                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME, CheckTestsTask.NAME])) {
                     it.dependsOn VerifySetupTask.NAME
                 }
             }
+
         }
     }
 }

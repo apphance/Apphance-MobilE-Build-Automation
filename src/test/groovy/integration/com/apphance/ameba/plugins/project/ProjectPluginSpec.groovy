@@ -8,6 +8,7 @@ import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
+import static com.apphance.ameba.plugins.project.ProjectPlugin.COPY_SOURCES_TASK_NAME
 import static com.google.common.io.Files.createTempDir
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
@@ -46,5 +47,8 @@ class ProjectPluginSpec extends Specification {
         project.tasks[CleanFlowTask.NAME].group == AMEBA_SETUP
         project.tasks[VerifySetupTask.NAME].group == AMEBA_SETUP
         project.tasks[CheckTestsTask.NAME].group == AMEBA_TEST
+
+        and:
+        project.tasks[VerifySetupTask.NAME].dependsOn.flatten().contains(COPY_SOURCES_TASK_NAME)
     }
 }

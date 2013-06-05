@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.buildplugin.tasks.*
+import com.apphance.ameba.plugins.project.tasks.CheckTestsTask
 import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
 import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
@@ -48,8 +49,7 @@ class AndroidPlugin implements Plugin<Project> {
                     type: UpdateProjectTask)
 
             project.task(CopySourcesTask.NAME,
-                    type: CopySourcesTask,
-                    dependsOn: UpdateProjectTask.NAME)
+                    type: CopySourcesTask).mustRunAfter(CleanFlowTask.NAME)
 
             project.task(ReplacePackageTask.NAME,
                     type: ReplacePackageTask,
@@ -83,7 +83,7 @@ class AndroidPlugin implements Plugin<Project> {
             variantsConf.variants.each { variant ->
                 project.task(variant.buildTaskName,
                         type: SingleVariantTask,
-                        dependsOn: [CopySourcesTask.NAME, UpdateProjectTask.NAME]).variant = variant
+                        dependsOn: CopySourcesTask.NAME).variant = variant
 
                 def buildAllMode = "buildAll${variant.mode.capitalize()}"
                 project.tasks[buildAllMode].dependsOn variant.buildTaskName
@@ -92,7 +92,7 @@ class AndroidPlugin implements Plugin<Project> {
             }
 
             project.tasks.each {
-                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME])) {
+                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME, CheckTestsTask.NAME])) {
                     it.dependsOn VerifySetupTask.NAME
                 }
             }

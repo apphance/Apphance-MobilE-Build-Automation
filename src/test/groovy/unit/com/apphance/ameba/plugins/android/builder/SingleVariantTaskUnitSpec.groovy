@@ -2,8 +2,12 @@ package com.apphance.ameba.plugins.android.builder
 
 import com.apphance.ameba.TestUtils
 import com.apphance.ameba.configuration.android.AndroidBuildMode
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
+import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
+import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.buildplugin.tasks.SingleVariantTask
 import com.apphance.ameba.plugins.release.AmebaArtifact
@@ -34,18 +38,28 @@ class SingleVariantTaskUnitSpec extends Specification {
                 }
             }
 
-            androidReleaseConf = GroovyStub(AndroidReleaseConfiguration)
+            conf = GroovyStub(AndroidConfiguration) {
+                getTarget() >> new StringProperty(value: 'android-8')
+                getProjectName() >> new StringProperty(value: 'TestAndroidProject')
+            }
+            releaseConf = GroovyStub(AndroidReleaseConfiguration)
+            variant = GroovyStub(AndroidVariantConfiguration) {
+                getTmpDir() >> new File('temp-variant-dir')
+            }
             apphanceConf = GroovyStub(ApphanceConfiguration)
             apphanceConf.enabled >> false
 
             ant = GroovyMock(AntBuilder)
             antExecutor = GroovyMock(AntExecutor)
+            androidExecutor = GroovyMock(AndroidExecutor)
+
+
         }
     }
 
     def 'test ant executor tasks'() {
         given:
-        task.androidReleaseConf.enabled >> false
+        task.releaseConf.enabled >> false
 
         when:
         task.singleVariant()
@@ -55,6 +69,7 @@ class SingleVariantTaskUnitSpec extends Specification {
             1 * antExecutor.executeTarget(tempDir, CLEAN)
             1 * antExecutor.executeTarget(tempDir, 'debug')
             0 * antExecutor.executeTarget(_, _)
+            1 * androidExecutor.updateProject(new File('temp-variant-dir'), 'android-8', 'TestAndroidProject')
             0 * ant.copy(_)
         }
     }
@@ -62,23 +77,23 @@ class SingleVariantTaskUnitSpec extends Specification {
     def 'test override files from variant dir'() {
         given: 'variant has its directory'
         builderInfo.variantDir >> createTempDir()
-        task.androidReleaseConf.enabled >> false
+        task.releaseConf.enabled >> false
 
         when:
         task.singleVariant()
 
         then:
-        1 * task.ant.copy(*_)
+        1 * task.ant.copy(* _)
     }
 
     def 'test copy to ota'() {
         given: 'variant has its directory'
-        task.androidReleaseConf.enabled >> true
+        task.releaseConf.enabled >> true
 
         when:
         task.singleVariant()
 
         then:
-        1 * task.ant.copy(*_)
+        1 * task.ant.copy(* _)
     }
 }

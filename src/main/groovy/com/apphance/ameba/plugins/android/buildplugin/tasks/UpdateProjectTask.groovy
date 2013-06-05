@@ -42,7 +42,7 @@ class UpdateProjectTask extends DefaultTask {
 
     void runUpdateProject(File directory) {
         if (!directory.exists()) {
-            throw new GradleException("The directory ${directory} to execute the command, does not exist! Your configuration is wrong.")
+            throw new GradleException("The directory $directory to execute the command, does not exist! Your configuration is wrong.")
         }
         androidExecutor.updateProject(directory, conf.target.value, conf.projectName.value)
     }

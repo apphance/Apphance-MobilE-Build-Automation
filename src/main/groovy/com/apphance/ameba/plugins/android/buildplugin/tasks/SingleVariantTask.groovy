@@ -4,6 +4,7 @@ import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
+import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.builder.AndroidArtifactProvider
 import com.apphance.ameba.plugins.android.builder.AndroidBuilderInfo
@@ -25,16 +26,20 @@ class SingleVariantTask extends DefaultTask {
     String group = AMEBA_BUILD
 
     @Inject AndroidConfiguration conf
-    @Inject AntBuilder ant
-    @Inject AntExecutor antExecutor
-    @Inject AndroidArtifactProvider artifactProvider
-    @Inject AndroidReleaseConfiguration androidReleaseConf
+    @Inject AndroidReleaseConfiguration releaseConf
     @Inject ApphanceConfiguration apphanceConf
+    @Inject AntBuilder ant
+    @Inject AndroidArtifactProvider artifactProvider
+    @Inject AntExecutor antExecutor
+    @Inject AndroidExecutor androidExecutor
 
     AndroidVariantConfiguration variant
 
     @TaskAction
     void singleVariant() {
+
+        androidExecutor.updateProject(variant.tmpDir, conf.target.value, conf.projectName.value)
+
         AndroidBuilderInfo builderInfo = artifactProvider.builderInfo(variant)
 
         log.lifecycle("Building variant ${builderInfo.variant}")
@@ -53,7 +58,7 @@ class SingleVariantTask extends DefaultTask {
         if (builderInfo.originalFile.exists()) {
             log.lifecycle("File created: ${builderInfo.originalFile}")
 
-            if (androidReleaseConf.enabled || apphanceConf.enabled) {
+            if (releaseConf.enabled || apphanceConf.enabled) {
                 log.lifecycle("Copying file ${builderInfo.originalFile.absolutePath} to ${artifactProvider.artifact(builderInfo).location.absolutePath}")
                 ant.copy(file: builderInfo.originalFile, tofile: artifactProvider.artifact(builderInfo).location)
             }

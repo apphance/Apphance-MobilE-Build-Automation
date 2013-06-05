@@ -27,7 +27,9 @@ import static org.gradle.api.logging.Logging.getLogger
  */
 class ProjectPlugin implements Plugin<Project> {
 
-    def log = getLogger(this.class)
+    private log = getLogger(getClass())
+
+    public static final String COPY_SOURCES_TASK_NAME = 'copySources'
 
     @Override
     void apply(Project project) {
@@ -38,7 +40,11 @@ class ProjectPlugin implements Plugin<Project> {
         if (project.file(FLOW_PROP_FILENAME).exists()) {
             project.task(CleanFlowTask.NAME, type: CleanFlowTask)
             project.task(CheckTestsTask.NAME, type: CheckTestsTask)
-            project.task(VerifySetupTask.NAME, type: VerifySetupTask)
+
+            project.task(VerifySetupTask.NAME,
+                    type: VerifySetupTask,
+                    dependsOn: COPY_SOURCES_TASK_NAME)
+
         }
 
         project.task(PrepareSetupTask.NAME, type: PrepareSetupTask)

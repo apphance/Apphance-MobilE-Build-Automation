@@ -76,19 +76,6 @@ class ExecuteAndroidBuildsTest {
     }
 
     @Test
-    void testCleanCheckTests() {
-        runGradle('updateProject', 'cleanFlow', 'checkTests')
-        assertFalse(new File(testProject, "bin").exists())
-        assertFalse(new File(testProject, "gen").exists())
-        assertFalse(new File(testProject, "build").exists())
-        assertEquals(new File(testProject, 'build').listFiles().size(), 0)
-        assertTrue(new File(testProject, 'flow-tmp').exists())
-        assertEquals(new File(testProject, 'flow-tmp').listFiles().size(), 0)
-        assertTrue(new File(testProject, 'flow-log').exists())
-        assertTrue(new File(testProject, 'flow-log').listFiles().size() > 0)
-    }
-
-    @Test
     void testAnalysis() {
         File baseDir = new File(testProject, "build/analysis/")
         runGradle('updateProject', 'analysis')
