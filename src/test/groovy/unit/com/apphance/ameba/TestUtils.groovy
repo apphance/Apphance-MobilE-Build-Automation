@@ -15,6 +15,6 @@ class TestUtils {
     }
 
     File createTempFile() {
-        createTempFile('prefix', 'soffix')
+        createTempFile('prefix', 'suffix')
     }
 }

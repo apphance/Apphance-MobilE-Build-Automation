@@ -6,24 +6,25 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_CONFIGURATION
+import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
 
-class CleanConfTask extends DefaultTask {
+class CleanFlowTask extends DefaultTask {
 
-    static String NAME = 'cleanConfiguration'
-    String description = 'Cleans configuration before each build'
-    String group = AMEBA_CONFIGURATION
+    static String NAME = 'cleanFlow'
+    String description = 'Cleans flow temporary folders before each build'
+    String group = AMEBA_SETUP
 
     @Inject ProjectConfiguration conf
 
     @TaskAction
     void clean() {
         conf.buildDir.deleteDir()
-        conf.tmpDir.deleteDir()
-        conf.logDir.deleteDir()
-
         conf.buildDir.mkdirs()
+
+        conf.tmpDir.deleteDir()
         conf.tmpDir.mkdirs()
+
+        conf.logDir.deleteDir()
         conf.logDir.mkdirs()
     }
 }

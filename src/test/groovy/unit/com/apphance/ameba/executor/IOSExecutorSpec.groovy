@@ -37,7 +37,7 @@ class IOSExecutorSpec extends Specification {
         }
         conf.xcodeDir >> new FileProperty(value: new File('GradleXCode.xcodeproj'))
 
-        iosExecutor.commandExecutor = executor
+        iosExecutor.executor = executor
         iosExecutor.conf = conf
         iosExecutor.parser = new XCodeOutputParser()
     }
@@ -82,7 +82,23 @@ class IOSExecutorSpec extends Specification {
 
         then:
         settings.size() > 0
-        settings.keySet().every{ it.matches('([A-Z0-9a-z]+_)*([A-Z0-9a-z])+')}
+        settings.keySet().every { it.matches('([A-Z0-9a-z]+_)*([A-Z0-9a-z])+') }
+    }
+
+    def 'runs dot clean'() {
+        given:
+        def ce = GroovyMock(CommandExecutor)
+
+        and:
+        def iose = new IOSExecutor(executor: ce, conf: GroovySpy(IOSConfiguration) {
+            getRootDir() >> new File('sampleDir')
+        })
+
+        when:
+        iose.clean()
+
+        then:
+        1 * ce.executeCommand({ it.commandForExecution.join(' ') == 'dot_clean ./' && it.runDir.name == 'sampleDir' })
     }
 
     def 'mobileprovision is converted to xml well'() {

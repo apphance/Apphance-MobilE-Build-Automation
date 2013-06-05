@@ -2,7 +2,12 @@ package com.apphance.ameba.plugins.ios.buildplugin
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
-import com.apphance.ameba.plugins.ios.buildplugin.tasks.*
+import com.apphance.ameba.executor.IOSExecutor
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopySourcesTask
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.SingleVariantTask
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.UnlockKeyChainTask
+import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
 import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
@@ -31,13 +36,15 @@ class IOSPlugin implements Plugin<Project> {
 
     @Inject IOSConfiguration conf
     @Inject IOSVariantsConfiguration variantsConf
+    @Inject IOSExecutor executor
 
     @Override
     void apply(Project project) {
         if (conf.isEnabled()) {
 
-            project.task(CleanTask.NAME,
-                    type: CleanTask)
+            project.tasks.findByName(CleanFlowTask.NAME) << {
+                executor.clean()
+            }
 
             project.task(CopySourcesTask.NAME,
                     type: CopySourcesTask)

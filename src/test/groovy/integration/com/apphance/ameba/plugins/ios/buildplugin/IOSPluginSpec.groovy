@@ -4,10 +4,10 @@ import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.properties.IOSBuildModeProperty
-import com.apphance.ameba.plugins.ios.buildplugin.tasks.CleanTask
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.UnlockKeyChainTask
+import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
 import spock.lang.Specification
 
 import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
@@ -21,6 +21,9 @@ class IOSPluginSpec extends Specification {
     def 'tasks defined in plugin available when configuration is active'() {
         given:
         def project = builder().build()
+
+        and:
+        project.task(CleanFlowTask.NAME)
 
         and:
         def conf = GroovyMock(IOSConfiguration)
@@ -49,7 +52,6 @@ class IOSPluginSpec extends Specification {
         plugin.apply(project)
 
         then:
-        project.tasks[CleanTask.NAME].group == AMEBA_BUILD
         project.tasks[CopySourcesTask.NAME].group == AMEBA_BUILD
         project.tasks[CopyMobileProvisionTask.NAME].group == AMEBA_BUILD
         project.tasks[UnlockKeyChainTask.NAME].group == AMEBA_BUILD
@@ -92,7 +94,6 @@ class IOSPluginSpec extends Specification {
 
         then:
         !project.getTasksByName(CopySourcesTask.NAME, false)
-        !project.getTasksByName(CleanTask.NAME, false)
         !project.getTasksByName(UnlockKeyChainTask.NAME, false)
         !project.getTasksByName(CopyMobileProvisionTask.NAME, false)
         !project.getTasksByName(BUILD_ALL_TASK_NAME, false)

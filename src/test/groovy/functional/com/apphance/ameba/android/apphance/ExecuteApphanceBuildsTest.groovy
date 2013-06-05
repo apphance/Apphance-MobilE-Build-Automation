@@ -62,7 +62,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceNoApplicationBuild() throws Exception {
-        run(tNoApplication, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
+        run(tNoApplication, 'cleanFlow', 'buildTestDebug', 'buildTestRelease')
         assertTrue(getMainActivityFile(tNoApplicationProject, 'TestDebug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProject, 'TestDebug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tNoApplicationProject, 'TestDebug').text.contains('import android.util.Log'))
@@ -78,7 +78,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceApplicationBuild() throws Exception {
-        run(tApplication, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
+        run(tApplication, 'cleanFlow', 'buildTestDebug', 'buildTestRelease')
         assertFalse(getMainActivityFile(tApplicationProject, 'TestDebug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tApplicationProject, 'TestDebug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tApplicationProject, 'TestDebug').text.contains('import android.util.Log'))
@@ -98,7 +98,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceNoApplicationBuildNoOnCreate() throws Exception {
-        run(tNoApplicationNoOnCreate, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
+        run(tNoApplicationNoOnCreate, 'cleanFlow', 'buildTestDebug', 'buildTestRelease')
         assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'TestDebug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'TestDebug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tNoApplicationProjectNoOnCreate, 'TestDebug').text.contains('import android.util.Log'))
@@ -114,7 +114,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceApplicationBuildNoOnCreate() throws Exception {
-        run(tApplicationNoOnCreate, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
+        run(tApplicationNoOnCreate, 'cleanFlow', 'buildTestDebug', 'buildTestRelease')
         assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestDebug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestDebug').text.contains('import com.apphance.android.Log'))
         assertFalse(getMainActivityFile(tApplicationProjectNoOnCreate, 'TestDebug').text.contains('import android.util.Log'))
@@ -134,7 +134,7 @@ class ExecuteApphanceBuildsTest {
 
     @Test
     public void testNoApphanceNoApplicationDifferentBuild() throws Exception {
-        run(tNoApplicationDifferentFormatting, 'cleanAndroid', 'buildTestDebug', 'buildTestRelease')
+        run(tNoApplicationDifferentFormatting, 'cleanFlow', 'buildTestDebug', 'buildTestRelease')
         assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestDebug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestDebug').text.contains('Apphance.startNewSession('))
         assertTrue(getMainActivityFile(tNoApplicationProjectDifferentFormatting, 'TestDebug').text.contains('import com.apphance.android.Log'))

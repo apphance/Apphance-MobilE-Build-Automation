@@ -1,8 +1,8 @@
 package com.apphance.ameba.plugins.release
 
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
+import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
 import com.apphance.ameba.plugins.release.tasks.BuildSourcesZipTask
-import com.apphance.ameba.plugins.release.tasks.CleanReleaseTask
 import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
 import com.apphance.ameba.plugins.release.tasks.SendMailMessageTask
 import org.gradle.api.Plugin
@@ -12,7 +12,6 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
 import static org.gradle.api.logging.Logging.getLogger
-import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
 
 /**
  *
@@ -35,7 +34,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
         if (releaseConf.isEnabled()) {
             log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
 
-            project.configurations.add('mail')
+            project.configurations.add('mail')//TODO
             project.dependencies {
                 mail 'org.apache.ant:ant-javamail:1.9.0'
                 mail 'javax.mail:mail:1.4'
@@ -49,13 +48,13 @@ class ProjectReleasePlugin implements Plugin<Project> {
                     type: SendMailMessageTask,
                     dependsOn: 'prepareMailMessage')
 
-            project.task(CleanReleaseTask.NAME,
-                    type: CleanReleaseTask,
-                    dependsOn: [CLEAN_TASK_NAME])
-
             project.task(BuildSourcesZipTask.NAME,
                     type: BuildSourcesZipTask)
 
+            project.tasks.findByName(CleanFlowTask.NAME) << {
+                releaseConf.otaDir.deleteDir()
+                releaseConf.otaDir.mkdirs()
+            }
         }
     }
 }

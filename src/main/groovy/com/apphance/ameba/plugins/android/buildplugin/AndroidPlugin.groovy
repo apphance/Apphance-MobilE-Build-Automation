@@ -2,8 +2,9 @@ package com.apphance.ameba.plugins.android.buildplugin
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.buildplugin.tasks.*
-import com.apphance.ameba.plugins.project.tasks.CleanConfTask
+import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
 import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
@@ -12,9 +13,9 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
+import static com.apphance.ameba.executor.AntExecutor.CLEAN
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 import static org.gradle.api.logging.Logging.getLogger
-import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
 
 /**
  * This is the main android build plugin.
@@ -35,6 +36,7 @@ class AndroidPlugin implements Plugin<Project> {
 
     @Inject AndroidConfiguration conf
     @Inject AndroidVariantsConfiguration variantsConf
+    @Inject AntExecutor antExecutor
 
     @Override
     void apply(Project project) {
@@ -45,10 +47,6 @@ class AndroidPlugin implements Plugin<Project> {
             project.task(UpdateProjectTask.NAME,
                     type: UpdateProjectTask)
 
-            project.task(CleanClassesTask.NAME,
-                    type: CleanClassesTask,
-                    dependsOn: UpdateProjectTask.NAME)
-
             project.task(CopySourcesTask.NAME,
                     type: CopySourcesTask,
                     dependsOn: UpdateProjectTask.NAME)
@@ -57,15 +55,13 @@ class AndroidPlugin implements Plugin<Project> {
                     type: ReplacePackageTask,
                     dependsOn: UpdateProjectTask.NAME)
 
-            project.task(CleanAndroidTask.NAME,
-                    type: CleanAndroidTask,
-                    dependsOn: [CleanConfTask.NAME, UpdateProjectTask.NAME])
-
-            project.task(CLEAN_TASK_NAME) << {
-                conf.buildDir.deleteDir()
+            project.tasks.findByName(CleanFlowTask.NAME) << {
+                def buildXml = new File(conf.rootDir, 'build.xml')
+                if (buildXml.exists())
+                    antExecutor.executeTarget(conf.rootDir, CLEAN)
+                else
+                    log.lifecycle("Skipping 'ant clean' in dir: $conf.rootDir. File $buildXml.absolutePath does not exist")
             }
-
-            project.tasks[CLEAN_TASK_NAME].dependsOn(CleanAndroidTask.NAME)
 
             project.task(CompileAndroidTask.NAME,
                     type: CompileAndroidTask,
