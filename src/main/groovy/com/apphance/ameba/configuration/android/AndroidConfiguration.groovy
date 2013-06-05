@@ -227,7 +227,8 @@ class AndroidConfiguration extends ProjectConfiguration {
             Properties antProperties = new Properties()
             antProperties.load(Files.newReader(file, UTF_8))
             String keyStorePath = antProperties.getProperty('key.store')
-            check keyStorePath && new File(keyStorePath).exists(), "Keystore path is not correctly configured: File ${keyStorePath} doesn't exist"
+            def keyStore = new File(project.rootDir, keyStorePath)
+            check keyStorePath && keyStore.exists(), "Keystore path is not correctly configured: File ${keyStore.absolutePath} doesn't exist."
         }
     }
 }
