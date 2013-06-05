@@ -32,7 +32,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         if (releaseConf.isEnabled()) {
-            log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
+            log.lifecycle("Applying plugin ${this.class.simpleName}")
 
             project.configurations.add('mail')//TODO
             project.dependencies {

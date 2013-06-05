@@ -48,7 +48,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         if (apphanceConf.isEnabled()) {
-            log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
+            log.lifecycle("Applying plugin ${this.class.simpleName}")
             this.project = project
 
             addApphanceConfiguration(project)

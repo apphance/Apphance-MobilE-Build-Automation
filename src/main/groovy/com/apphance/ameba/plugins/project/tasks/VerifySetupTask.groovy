@@ -28,7 +28,7 @@ class VerifySetupTask extends DefaultTask {
         List errors = []
         verifyConfigurations(configurations.sort().values(), errors)
         if (errors) {
-            errors.each { logger.error(yellow("ERROR: $it")) }
+            errors.each { logger.error("ERROR: $it") }
             throw new GradleException('Verification error')
         }
     }

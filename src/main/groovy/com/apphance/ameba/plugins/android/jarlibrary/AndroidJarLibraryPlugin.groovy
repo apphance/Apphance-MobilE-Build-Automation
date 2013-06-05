@@ -33,7 +33,7 @@ class AndroidJarLibraryPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         if (jarLibConf.isEnabled()) {
-            log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
+            log.lifecycle("Applying plugin ${this.class.simpleName}")
 
             project.task(JarLibraryTask.NAME,
                     type: JarLibraryTask)

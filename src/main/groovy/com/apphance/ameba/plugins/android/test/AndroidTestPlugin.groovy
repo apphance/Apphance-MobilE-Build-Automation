@@ -25,7 +25,7 @@ class AndroidTestPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         if (testConf.isEnabled()) {
-            log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
+            log.lifecycle("Applying plugin ${this.class.simpleName}")
 
             if (testConf.emmaEnabled.value) {
                 project.configurations.add('emma')

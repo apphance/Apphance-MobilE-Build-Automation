@@ -42,7 +42,7 @@ class AndroidPlugin implements Plugin<Project> {
     void apply(Project project) {
 
         if (conf.isEnabled()) {
-            log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
+            log.lifecycle("Applying plugin ${this.class.simpleName}")
 
             project.task(UpdateProjectTask.NAME,
                     type: UpdateProjectTask)

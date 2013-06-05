@@ -31,7 +31,7 @@ class ProjectPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        log.lifecycle("Applying plugin ${green(this.class.simpleName)}")
+        log.lifecycle("Applying plugin ${this.class.simpleName}")
 
         project.repositories.mavenCentral()
 
