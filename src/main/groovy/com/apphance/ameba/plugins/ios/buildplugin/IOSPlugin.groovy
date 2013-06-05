@@ -87,7 +87,6 @@ class IOSPlugin implements Plugin<Project> {
                     it.dependsOn VerifySetupTask.NAME
                 }
             }
-
         }
     }
 }

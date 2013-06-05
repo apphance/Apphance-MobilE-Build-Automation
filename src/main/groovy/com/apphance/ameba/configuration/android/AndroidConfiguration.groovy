@@ -16,6 +16,7 @@ import static com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
 import static com.google.common.base.Strings.isNullOrEmpty
 import static java.io.File.pathSeparator
 import static java.nio.charset.StandardCharsets.UTF_8
+import static org.apache.commons.lang.StringUtils.isNotEmpty
 
 @com.google.inject.Singleton
 class AndroidConfiguration extends ProjectConfiguration {
@@ -206,11 +207,10 @@ class AndroidConfiguration extends ProjectConfiguration {
         check versionCode?.matches('[0-9]+'), """|Property 'versionCode' must have numerical value! Check 'version.code'
                                                  |system property or 'VERSION_STRING' env variable
                                                  |or AndroidManifest.xml file!""".stripMargin()
-        check !WHITESPACE_PATTERN.matcher(versionString ?: '').find(), """|Property 'versionString' must not have
+        check((isNotEmpty(versionString) && !WHITESPACE_PATTERN.matcher(versionString).find()), """|Property 'versionString' must not have
                                                                           |whitespace characters! Check 'version.string'
                                                                           |system property or 'VERSION_STRING' env
-                                                                          |variable or AndroidManifest.xml file!"""
-                .stripMargin()
+                                                                          |variable or AndroidManifest.xml file!""".stripMargin())
         check target.validator(target.value), "Property ${target.name} must be set!"
         check !isNullOrEmpty(mainPackage), "Property 'package' must be set! Check AndroidManifest.xml file!"
 

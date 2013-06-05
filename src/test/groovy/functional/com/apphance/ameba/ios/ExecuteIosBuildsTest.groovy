@@ -1,5 +1,6 @@
 package com.apphance.ameba.ios
 
+import com.apphance.ameba.util.FlowUtils
 import org.gradle.tooling.BuildException
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
@@ -7,10 +8,10 @@ import org.junit.BeforeClass
 import org.junit.Ignore
 import org.junit.Test
 
+import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.*
 
-@Ignore('copy sources problem')
 class ExecuteIosBuildsTest {
 
     public static final List<String> GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
@@ -56,7 +57,7 @@ class ExecuteIosBuildsTest {
 
     protected void runGradleWithProperties(Properties p, ProjectConnection pc = gradleWithPropertiesConnection, String... tasks) {
         def buildLauncher = pc.newBuild()
-        def args = p.collect { property, value -> "-Dorg.gradle.project.${property}=${value}" }
+        def args = p.collect { property, value -> "-D${property}=${value}" }
         GRADLE_DAEMON_ARGS.each { args << it }
         buildLauncher.setJvmArguments(args as String[])
 
@@ -95,7 +96,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testOta() {
-        runGradleMoreVariants('cleanRelease')
+        runGradleMoreVariants('cleanFlow')
         assertTrue(new File(testProjectMoreVariants, "flow-ota").exists())
         assertEquals(0, new File(testProjectMoreVariants, "flow-ota").listFiles().length)
         assertTrue(new File(testProjectMoreVariants, "flow-tmp").exists())
@@ -138,32 +139,25 @@ class ExecuteIosBuildsTest {
         }
     }
 
-    @Ignore
+    @Test
     void testUpdateVersion() {
         Properties p = new Properties()
         p.setProperty('version.string', 'NEWVERSION')
         p.setProperty('version.code', '1234')
-        File original = new File(testProjectMoreVariants, 'GradleXCodeMoreVariants/GradleXCodeMoreVariants-Info.plist')
-        File tmp = new File(testProjectMoreVariants, 'GradleXCodeMoreVariants/GradleXCodeMoreVariants-Info.plist.orig')
-        tmp.delete()
-        tmp << original.text
-        try {
-            runGradleWithProperties(p, 'updateVersion')
-            def newText = new File(original.getAbsolutePath()).text
-            assertTrue(newText.contains('<string>1234</string>'))
-            assertTrue(newText.contains('<string>NEWVERSION</string>'))
-        } finally {
-            original.delete()
-            original << tmp.text
-        }
+        runGradleWithProperties(p, 'cleanFlow', 'updateVersion')
+        def variantsDir = new File(testProjectMoreVariants, TMP_DIR)
+        def plists = new FlowUtils().allFiles(dir: variantsDir, where: { it.name == 'GradleXCodeMoreVariants-Info.plist' })
+        assertTrue(plists.any {
+            def text = it.text
+            text.contains('<string>NEWVERSION</string>') && text.contains('<string>1234</string>')
+        })
     }
 
     @Test
     void testBuildAndPrepareMoreVariantsMailMessage() {
-        runGradleMoreVariants('cleanRelease', 'buildGradleXCodeMoreVariantsAnotherConfiguration')
         def p = new Properties()
         p.put('release.notes', 'some\nnotes')
-        runGradleMoreVariants(p, 'prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
+        runGradleMoreVariants(p, 'cleanFlow', 'buildGradleXCodeMoreVariantsAnotherConfiguration', 'prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/icon.png").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/index.html").exists())
@@ -176,7 +170,7 @@ class ExecuteIosBuildsTest {
     void testBuildAndPrepareMoreVariantsMailMessageWithSimulators() {
         def p = new Properties()
         p.put('release.notes', 'some\nnotes')
-        runGradleMoreVariants(p, 'cleanRelease', 'buildGradleXCodeMoreVariantsTestsDebug', 'prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
+        runGradleMoreVariants(p, 'cleanFlow', 'buildGradleXCodeMoreVariantsTestsDebug', 'prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
         def path = 'flow-ota/ssasdadasdasd/1.0_32'
         assertTrue(new File(testProjectMoreVariants, "$path/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/icon.png").exists())
@@ -189,10 +183,9 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareOneVariantMailMessage() {
-        runGradleOneVariant('cleanRelease', 'buildAllDevice')
         def p = new Properties()
         p.put('release.notes', 'some\nnotes')
-        runGradleOneVariant(p, 'prepareImageMontage', 'prepareMailMessage')
+        runGradleOneVariant(p, 'cleanFlow', 'buildAllDevice', 'prepareImageMontage', 'prepareMailMessage')
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/file_index.html").exists())
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/icon.png").exists())
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/index.html").exists())
@@ -204,22 +197,20 @@ class ExecuteIosBuildsTest {
     @Test
     void testBuildNoVersion() {
         try {
-            runGradleNoVersion('cleanRelease', 'buildGradleXCodeWithApphance')
+            runGradleNoVersion('cleanFlow', 'buildGradleXCodeWithApphance')
             fail("There should be a version exception thrown!")
         } catch (BuildException e) {
-            String message = e.cause.cause.cause.message
-            assertEquals('Verification error', message)
+            assertEquals('Verification error', e.cause.cause.cause.message)
         }
     }
 
-    @Ignore
+    @Test
     void testBuildNoVersionString() {
         try {
-            runGradleNoVersionString('cleanRelease', 'prepareAllTasks')
+            runGradleNoVersionString('cleanFlow', 'buildGradleXCodeWithApphance')
             fail("There should be a version exception thrown!")
         } catch (BuildException e) {
-            String message = e.cause.cause.cause.message
-            assertTrue("Wrong message: " + message, message.contains("The CFBundleShortVersionString key is missing"))
+            assertEquals('Verification error', e.cause.cause.cause.message)
         }
     }
 

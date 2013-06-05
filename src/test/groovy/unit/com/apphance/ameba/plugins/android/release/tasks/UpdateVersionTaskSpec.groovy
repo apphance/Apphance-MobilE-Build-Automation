@@ -65,7 +65,9 @@ class UpdateVersionTaskSpec extends Specification {
 
     def 'version is updated correctly'() {
         given:
-        def ac = GroovySpy(AndroidConfiguration)
+        def ac = GroovySpy(AndroidConfiguration) {
+            getRootDir() >> projectDir
+        }
         ac.reader = GroovyStub(PropertyReader) {
             systemProperty('version.code') >> '3145'
             systemProperty('version.string') >> '31.4.5'

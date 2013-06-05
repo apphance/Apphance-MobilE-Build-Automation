@@ -1,6 +1,7 @@
 package com.apphance.ameba.plugins.release.tasks
 
 import com.apphance.ameba.configuration.ProjectConfiguration
+import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
@@ -9,6 +10,7 @@ import javax.inject.Inject
 import java.util.regex.Pattern
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static org.apache.commons.lang.StringUtils.isEmpty
 import static org.gradle.api.logging.Logging.getLogger
 
 abstract class AbstractUpdateVersionTask extends DefaultTask {
@@ -40,20 +42,18 @@ abstract class AbstractUpdateVersionTask extends DefaultTask {
 
     abstract void updateDescriptor(String versionCode, String versionString)
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void validateVersionString(String versionString) {
-        versionString = versionString?.trim()
-        if (!versionString || versionString?.empty || WHITESPACE_PATTERN.matcher(versionString ?: '').find()) {
+        if (isEmpty(versionString) || WHITESPACE_PATTERN.matcher(versionString).find()) {
             throw new GradleException("""|Property 'version.string' has invalid value!
-                                         |Set it either by 'release.string' system property or 'VERSION_STRING' environment variable!
+                                         |Set it either by 'version.string' system property or 'VERSION_STRING' environment variable!
                                          |This property must not contain white space characters!""".stripMargin())
         }
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     void validateVersionCode(String versionCode) {
-        versionCode = versionCode?.trim()
-        if (versionCode?.empty || !versionCode?.matches('[0-9]+')) {
+        if (isEmpty(versionCode) || !versionCode.matches('[0-9]+')) {
             throw new GradleException("""|Property 'version.code' has invalid value!
                                          |Set it either by 'version.code' system property or 'VERSION_CODE' environment variable!
                                          |This property must have numeric value!""".stripMargin())

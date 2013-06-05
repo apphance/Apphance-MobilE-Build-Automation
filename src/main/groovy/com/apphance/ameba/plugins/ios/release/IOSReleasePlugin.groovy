@@ -2,9 +2,14 @@ package com.apphance.ameba.plugins.ios.release
 
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.ameba.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.ameba.plugins.ios.release.tasks.PrepareMailMessageTask
 import com.apphance.ameba.plugins.ios.release.tasks.UpdateVersionTask
+import com.apphance.ameba.plugins.project.tasks.CheckTestsTask
+import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
+import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
+import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -44,6 +49,12 @@ class IOSReleasePlugin implements Plugin<Project> {
                     dependsOn: AvailableArtifactsInfoTask.NAME)
 
             builder.registerListener(listener)
+
+            project.tasks.each {
+                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME, CheckTestsTask.NAME])) {
+                    it.dependsOn VerifySetupTask.NAME
+                }
+            }
         }
     }
 }
