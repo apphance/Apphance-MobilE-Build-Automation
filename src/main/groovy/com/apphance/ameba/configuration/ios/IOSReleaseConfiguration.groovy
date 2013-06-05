@@ -8,6 +8,7 @@ import com.google.inject.Singleton
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.ProjectConfiguration.BUILD_DIR
 import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.util.file.FileManager.relativeTo
 import static groovy.io.FileType.FILES
@@ -43,7 +44,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
         conf.rootDir.traverse(
                 type: FILES,
                 filter: { File it -> it.name ==~ ICON_PATTERN },
-                excludeFilter: ~/.*${TMP_DIR}.*/) {
+                excludeFilter: ~/.*(${TMP_DIR}|${OTA_DIR}|${BUILD_DIR}).*/) {
             icons << it
         }
         icons
@@ -54,7 +55,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
         conf.rootDir.traverse(
                 type: FILES,
                 nameFilter: ~/.*\.mobileprovision/,
-                excludeFilter: ~/.*${TMP_DIR}.*/) {
+                excludeFilter: ~/.*(${TMP_DIR}|${OTA_DIR}|${BUILD_DIR}).*/) {
             files << it
         }
         files

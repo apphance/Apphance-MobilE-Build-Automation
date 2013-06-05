@@ -46,9 +46,6 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     AmebaArtifact imageMontageFile
     AmebaArtifact mailMessageFile
     AmebaArtifact QRCodeFile
-    AmebaArtifact galleryCSS
-    AmebaArtifact galleryJS
-    AmebaArtifact galleryTrans
 
     String releaseMailSubject
 
