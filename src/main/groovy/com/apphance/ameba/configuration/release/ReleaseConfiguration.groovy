@@ -84,6 +84,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             defaultValue: { relativeTo(conf.rootDir.absolutePath, defaultIcon().absolutePath) },
             possibleValues: { possibleIcons() },
             validator: {
+                if (!it) return false
                 def file = new File(conf.rootDir, it as String)
                 file?.absolutePath?.trim() ? (file.exists() && ImageIO.read(file)) : false
             }
