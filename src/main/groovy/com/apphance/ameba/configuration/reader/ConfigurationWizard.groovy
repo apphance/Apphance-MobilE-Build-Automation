@@ -3,6 +3,7 @@ package com.apphance.ameba.configuration.reader
 import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.AbstractProperty
 import groovy.transform.PackageScope
+import org.gradle.api.GradleException
 
 import static java.lang.System.out
 import static org.apache.commons.lang.StringUtils.isBlank
@@ -10,13 +11,15 @@ import static org.gradle.api.logging.Logging.getLogger
 
 class ConfigurationWizard {
 
-    private log = getLogger(getClass())
+    def log = getLogger(this.class)
     def static YELLOW = '\033[93m'
     def static END = '\033[0m'
     def static GREEN = '\033[92m'
     def static BLUE = '\033[94m'
 
     def reader = new BufferedReader(new InputStreamReader(System.in))
+
+    boolean interactiveMode = true
 
     static String color(String color, String str) {
         "${color}${str}${END}"
@@ -26,13 +29,9 @@ class ConfigurationWizard {
     public static Closure<String> green = this.&color.curry(GREEN)
     public static Closure<String> blue = this.&color.curry(BLUE)
 
-    static String removeColor(String str) {
-        str.replaceAll(/\033\[[0-9;]*m/, '')
-    }
-
     def resolveConfigurations(Collection<? extends AbstractConfiguration> configurations) {
         configurations.each { AbstractConfiguration c ->
-            if (!c.enabled) {
+            if (!c.enabled && interactiveMode) {
                 enablePlugin(c)
             }
             if (c.enabled) {
@@ -71,15 +70,24 @@ class ConfigurationWizard {
         while (true) {
             print prompt(ap)
             out.flush()
-            def input = reader.readLine()
+            def input = getInput()
             if (validateInput(input, ap)) {
                 setPropertyValue(ap, input)
                 break
             } else {
+                if (!interactiveMode) {
+                    throw new GradleException("Cannot set value of property ${ap.name} in non-interacivte mode. No sensible default value")
+                }
+
                 println yellow(ap.failedValidationMessage)
                 out.flush()
             }
         }
+    }
+
+    @PackageScope
+    String getInput() {
+        interactiveMode ? reader.readLine() : ''
     }
 
     @PackageScope

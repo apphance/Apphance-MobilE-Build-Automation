@@ -23,7 +23,7 @@ class AndroidExecutor {
     @Inject CommandExecutor executor
     @Inject AndroidConfiguration conf
 
-    @Lazy List<String> listTargetOutput = {run(conf.rootDir, 'list target')}()
+    @Lazy List<String> listTargetOutput = { run(conf.rootDir, 'list target') }()
 
     @Lazy List<String> targets = {
         parseResult(listTargetOutput, TARGET_HEADER_PATTERN).sort().findAll { isNotBlank(it) }

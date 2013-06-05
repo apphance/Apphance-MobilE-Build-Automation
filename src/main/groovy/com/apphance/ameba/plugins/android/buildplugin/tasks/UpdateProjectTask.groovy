@@ -32,9 +32,9 @@ class UpdateProjectTask extends DefaultTask {
         if (propFile.exists()) {
             def prop = new Properties()
             prop.load(new FileInputStream(propFile))
-            prop.each { key, value ->
+            prop.each {String key, String value ->
                 if (key.startsWith('android.library.reference.')) {
-                    runRecursivelyInAllSubprojects(new File(currentDir, value.toString()), method)
+                    runRecursivelyInAllSubprojects(new File(currentDir, value), method)
                 }
             }
         }

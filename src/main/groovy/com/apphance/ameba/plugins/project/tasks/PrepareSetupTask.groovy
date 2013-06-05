@@ -15,16 +15,16 @@ class PrepareSetupTask extends DefaultTask {
 
     static final NAME = 'prepareSetup'
     String group = AMEBA_SETUP
-    String description = "Prepares configuration (${FLOW_PROP_FILENAME})"
+    String description = "Prepares configuration (${FLOW_PROP_FILENAME}). Can be used in non-interactive mode \"-Dnoninteractive\""
 
     @Inject Map<Integer, AbstractConfiguration> configurations
     @Inject PropertyPersister propertyPersister
     @Inject ConfigurationWizard conversationManager
 
-
     @TaskAction
     void prepareSetup() {
         Collection<AbstractConfiguration> sorted = configurations.sort().values()
+        conversationManager.interactiveMode = System.getProperty('noninteractive') == null
         conversationManager.resolveConfigurations(sorted)
         propertyPersister.save(sorted)
     }

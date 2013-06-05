@@ -7,13 +7,16 @@ import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.detection.ProjectType
 import spock.lang.Specification
 
-import static com.apphance.ameba.configuration.reader.ConfigurationWizard.removeColor
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static org.apache.commons.lang.StringUtils.isBlank
 
 class ConfigurationWizardSpec extends Specification {
 
     def cm = new ConfigurationWizard()
+
+    static String removeColor(String str) {
+        str.replaceAll(/\033\[[0-9;]*m/, '')
+    }
 
     def 'possible value string is formatted correctly'() {
         expect:
@@ -112,5 +115,44 @@ class ConfigurationWizardSpec extends Specification {
 
         then:
         0 * wizard.readProperty(second)
+    }
+
+    def "don't call enablePlugin in non-interactive mode"() {
+        given:
+        def wizard = GroovySpy(ConfigurationWizard)
+        wizard.enablePlugin(_) >> {}
+        def conf = GroovyStub(AbstractConfiguration)
+        conf.enabled >> false
+        wizard.interactiveMode = mode
+
+        when:
+
+        wizard.resolveConfigurations([conf])
+
+        then:
+        calls * wizard.enablePlugin(_)
+
+        where:
+        mode  | calls
+        true  | 1
+        false | 0
+    }
+
+    def "don't call reader for input in interactive mode"() {
+        given:
+        def wizard = GroovySpy(ConfigurationWizard)
+        wizard.reader = GroovyMock(Reader)
+        wizard.interactiveMode = mode
+
+        when:
+        wizard.getInput()
+
+        then:
+        calls * wizard.reader.readLine()
+
+        where:
+        mode  | calls
+        true  | 1
+        false | 0
     }
 }
