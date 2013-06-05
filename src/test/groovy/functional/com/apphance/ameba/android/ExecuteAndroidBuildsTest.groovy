@@ -156,7 +156,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testAnalysisAfterClean() {
-        runGradle('clean', 'updateProject', 'analysis')
+        runGradle('cleanFlow', 'updateProject', 'analysis')
         assertTrue(new File(testProject, "build/analysis/checkstyle-report.xml").exists())
         assertTrue(new File(testProject, "build/analysis/cpd-result.xml").exists())
         assertTrue(new File(testProject, "build/analysis/findbugs-result.xml").exists())
