@@ -8,6 +8,8 @@ import com.apphance.ameba.configuration.reader.PropertyPersister
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static org.apache.commons.collections.CollectionUtils.isEqualCollection
+
 @Mixin(TestUtils)
 class PrepareSetupTaskSpec extends Specification {
 
@@ -52,11 +54,14 @@ class PrepareSetupTaskSpec extends Specification {
     }
 
     def 'configurations are resolved and persisted'() {
+        given:
+        def confs = task.configurations.sort().values()
+
         when:
         task.prepareSetup()
 
         then:
-        1 * configurationWizard.resolveConfigurations(_)
-        1 * task.propertyPersister.save(_)
+        1 * configurationWizard.resolveConfigurations({ isEqualCollection(it, confs) })
+        1 * task.propertyPersister.save({ isEqualCollection(it, confs) })
     }
 }
