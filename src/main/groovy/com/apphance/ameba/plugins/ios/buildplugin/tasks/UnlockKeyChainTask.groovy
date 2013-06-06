@@ -28,7 +28,7 @@ class UnlockKeyChainTask extends DefaultTask {
     @TaskAction
     void unlockKeyChain() {
         def pass = reader.systemProperty('osx.keychain.password') ?: reader.envVariable('OSX_KEYCHAIN_PASSWORD') ?: null
-        def location = reader.systemProperty('osx.keychain.location') ?: reader.envVariable('OSX_KEYCHAIN_PASSWORD') ?: null
+        def location = reader.systemProperty('osx.keychain.location') ?: reader.envVariable('OSX_KEYCHAIN_LOCATION') ?: null
         if (isNotEmpty(pass) && isNotEmpty(location)) {
             executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
                     'security',

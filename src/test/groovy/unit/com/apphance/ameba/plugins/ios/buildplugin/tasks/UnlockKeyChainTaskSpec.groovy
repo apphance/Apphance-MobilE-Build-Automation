@@ -18,7 +18,10 @@ class UnlockKeyChainTaskSpec extends Specification {
 
     def 'exception is thrown when no keychain properties set'() {
         given:
-        task.reader = new PropertyReader()
+        def reader = GroovyMock(PropertyReader)
+        reader.envVariable(_) >> null
+        reader.systemProperty(_) >> null
+        task.reader = reader
 
         when:
         task.unlockKeyChain()
@@ -33,14 +36,15 @@ class UnlockKeyChainTaskSpec extends Specification {
 
     def 'keychain is unlocked when system properties passed'() {
         given:
-        System.setProperty('osx.keychain.location', 'loc')
-        System.setProperty('osx.keychain.password', 'pass')
+        def reader = GroovyMock(PropertyReader)
+        reader.systemProperty('osx.keychain.location') >> 'loc'
+        reader.systemProperty('osx.keychain.password') >> 'pass'
 
         and:
         def executor = GroovyMock(CommandExecutor)
 
         and:
-        task.reader = new PropertyReader()
+        task.reader = reader
         task.executor = executor
 
         when:
@@ -48,9 +52,26 @@ class UnlockKeyChainTaskSpec extends Specification {
 
         then:
         1 * executor.executeCommand({ it.commandForExecution == ['security', 'unlock-keychain', '-p', 'pass', 'loc'] })
-
-        cleanup:
-        System.properties.remove('osx.keychain.location')
-        System.properties.remove('osx.keychain.password')
     }
+
+    def 'keychain is unlocked when env variables passed'() {
+        given:
+        def reader = GroovyMock(PropertyReader)
+        reader.envVariable('OSX_KEYCHAIN_LOCATION') >> 'loc'
+        reader.envVariable('OSX_KEYCHAIN_PASSWORD') >> 'pass'
+
+        and:
+        def executor = GroovyMock(CommandExecutor)
+
+        and:
+        task.reader = reader
+        task.executor = executor
+
+        when:
+        task.unlockKeyChain()
+
+        then:
+        1 * executor.executeCommand({ it.commandForExecution == ['security', 'unlock-keychain', '-p', 'pass', 'loc'] })
+    }
+
 }
