@@ -6,12 +6,12 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_ANALYSIS
 
 class CheckstyleTask extends DefaultTask {
 
     static String NAME = 'checkstyle'
-    String group = AMEBA_ANALYSIS
+    String group = FLOW_ANALYSIS
     String description = 'Runs Checkstyle analysis on project'
 
     @Inject AndroidConfiguration androidConfiguration

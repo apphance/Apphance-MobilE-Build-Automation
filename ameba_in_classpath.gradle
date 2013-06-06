@@ -4,7 +4,7 @@ rootProject.buildscript {
     }
     dependencies {
         classpath files(
-                "$amebaProjectPath/bin",  // TODO: remove?
+                "$amebaProjectPath/bin",
                 "$amebaProjectPath/build/classes/main",
                 "$amebaProjectPath/build/resources/main"
         )

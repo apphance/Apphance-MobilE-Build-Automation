@@ -11,8 +11,7 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_ANALYSIS
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -54,7 +53,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
 
             project.task('analysis',
                     description: 'Runs all analysis on project',
-                    group: AMEBA_ANALYSIS,
+                    group: FLOW_ANALYSIS,
                     dependsOn: [FindBugsTask.NAME, PMDTask.NAME, CPDTask.NAME, CheckstyleTask.NAME])
         }
     }

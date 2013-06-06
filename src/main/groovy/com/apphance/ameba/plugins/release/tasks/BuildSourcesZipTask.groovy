@@ -12,7 +12,7 @@ import static com.apphance.ameba.configuration.ProjectConfiguration.BUILD_DIR
 import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.ameba.util.file.FileManager.removeMissingSymlinks
 import static org.gradle.api.logging.Logging.getLogger
 
@@ -22,7 +22,7 @@ class BuildSourcesZipTask extends DefaultTask {
 
     static String NAME = 'buildSourcesZip'
     String description = 'Builds sources .zip file.'
-    String group = AMEBA_RELEASE
+    String group = FLOW_RELEASE
 
     @Inject ProjectConfiguration conf
     @Inject ReleaseConfiguration releaseConf

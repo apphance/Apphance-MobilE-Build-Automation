@@ -17,7 +17,7 @@ import java.awt.*
 import java.awt.image.BufferedImage
 import java.util.List
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
 import static org.gradle.api.logging.Logging.getLogger
@@ -29,7 +29,7 @@ class ImageMontageTask extends DefaultTask {
     def log = getLogger(this.class)
 
     static String NAME = 'prepareImageMontage'
-    String group = AMEBA_RELEASE
+    String group = FLOW_RELEASE
     String description = 'Builds montage of images found in the project'
 
     @Inject ProjectConfiguration conf
@@ -139,18 +139,6 @@ class ImageMontageTask extends DefaultTask {
     @PackageScope
     BufferedImage getImageFrom(File file) {
         log.info("Reading file: $file.absolutePath")
-        getConverter(file.name)(file)
-    }
-
-    private Closure<BufferedImage> getConverter(String filename) {
-        switch (filename) {
-            case ~/.*\.svg/: this.&svgConverter; break
-            default: ImageIO.&read
-        }
-    }
-
-    BufferedImage svgConverter(File file) {
-        // TODO
         ImageIO.read(file)
     }
 }

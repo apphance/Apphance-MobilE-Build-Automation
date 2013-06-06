@@ -7,7 +7,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
 class PrepareRobolectricTask extends DefaultTask {
@@ -15,7 +15,7 @@ class PrepareRobolectricTask extends DefaultTask {
     private l = getLogger(getClass())
 
     static String NAME = 'prepareRobolectric'
-    String group = AMEBA_TEST
+    String group = FLOW_TEST
     String description = 'Prepares file structure for Robolectric test framework'
 
     private String robolectricPath = 'test/robolectric'

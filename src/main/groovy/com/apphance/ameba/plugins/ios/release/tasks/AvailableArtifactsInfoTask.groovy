@@ -14,7 +14,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.ameba.util.file.FileDownloader.downloadFile
 import static java.net.URLEncoder.encode
 import static java.util.ResourceBundle.getBundle
@@ -26,7 +26,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     static final NAME = 'prepareAvailableArtifactsInfo'
     String description = 'Prepares information about available artifacts for mail message to include'
-    String group = AMEBA_RELEASE
+    String group = FLOW_RELEASE
 
     @Inject IOSConfiguration conf
     @Inject IOSVariantsConfiguration variantsConf

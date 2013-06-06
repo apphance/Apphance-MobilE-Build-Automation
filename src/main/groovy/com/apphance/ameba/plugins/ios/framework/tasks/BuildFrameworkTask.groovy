@@ -10,7 +10,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -19,7 +19,7 @@ import static org.gradle.api.logging.Logging.getLogger
 class BuildFrameworkTask extends DefaultTask {
 
     static String NAME = 'buildFramework'
-    String group = AMEBA_BUILD
+    String group = FLOW_BUILD
     String description = 'Builds iOS framework project'
 
     static final String FRAMEWORK_BUILD_PATH = 'Development-Framework'

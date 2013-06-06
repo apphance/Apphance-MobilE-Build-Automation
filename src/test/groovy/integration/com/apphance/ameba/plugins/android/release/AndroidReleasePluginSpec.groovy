@@ -6,7 +6,7 @@ import com.apphance.ameba.plugins.android.release.tasks.PrepareMailMessageTask
 import com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
 import spock.lang.Specification
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidReleasePluginSpec extends Specification {
@@ -28,9 +28,9 @@ class AndroidReleasePluginSpec extends Specification {
         arp.apply(project)
 
         then: 'every single task is in correct group'
-        project.tasks[UpdateVersionTask.NAME].group == AMEBA_RELEASE
-        project.tasks[AvailableArtifactsInfoTask.NAME].group == AMEBA_RELEASE
-        project.tasks[PrepareMailMessageTask.NAME].group == AMEBA_RELEASE
+        project.tasks[UpdateVersionTask.NAME].group == FLOW_RELEASE.name()
+        project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.name()
+        project.tasks[PrepareMailMessageTask.NAME].group == FLOW_RELEASE.name()
 
         then: 'every task has correct dependencies'
 

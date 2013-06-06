@@ -10,7 +10,7 @@ import spock.lang.Specification
 
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_APPHANCE_SERVICE
 import static com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin.BUILD_ALL_DEBUG_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
@@ -39,8 +39,8 @@ class AndroidApphancePluginSpec extends Specification {
         project.configurations.apphance
 
         then: 'each task has correct group'
-        project.tasks[ApphanceLogsConversionTask.NAME].group == AMEBA_APPHANCE_SERVICE
-        project.tasks[AndroidLogsConversionTask.NAME].group == AMEBA_APPHANCE_SERVICE
+        project.tasks[ApphanceLogsConversionTask.NAME].group == FLOW_APPHANCE_SERVICE.name()
+        project.tasks[AndroidLogsConversionTask.NAME].group == FLOW_APPHANCE_SERVICE.name()
     }
 
     def 'no tasks available when configuration is inactive'() {
@@ -100,8 +100,8 @@ class AndroidApphancePluginSpec extends Specification {
         project.configurations.apphance
 
         then: 'each task has correct group'
-        project.tasks[ApphanceLogsConversionTask.NAME].group == AMEBA_APPHANCE_SERVICE
-        project.tasks[AndroidLogsConversionTask.NAME].group == AMEBA_APPHANCE_SERVICE
+        project.tasks[ApphanceLogsConversionTask.NAME].group == FLOW_APPHANCE_SERVICE.name()
+        project.tasks[AndroidLogsConversionTask.NAME].group == FLOW_APPHANCE_SERVICE.name()
 
         and: 'apphance tasks defined'
         project.tasks['uploadv1'].dependsOn.flatten().contains('buildv1')

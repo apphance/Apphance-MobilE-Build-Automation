@@ -7,7 +7,7 @@ import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
 import com.apphance.ameba.plugins.release.tasks.SendMailMessageTask
 import spock.lang.Specification
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class ProjectReleasePluginSpec extends Specification {
@@ -37,9 +37,9 @@ class ProjectReleasePluginSpec extends Specification {
         project.dependencies.configurationContainer.mail.allDependencies.size() == 3
 
         then: 'every task exists and is in correct group'
-        project.tasks[ImageMontageTask.NAME].group == AMEBA_RELEASE
-        project.tasks[SendMailMessageTask.NAME].group == AMEBA_RELEASE
-        project.tasks[BuildSourcesZipTask.NAME].group == AMEBA_RELEASE
+        project.tasks[ImageMontageTask.NAME].group == FLOW_RELEASE.name()
+        project.tasks[SendMailMessageTask.NAME].group == FLOW_RELEASE.name()
+        project.tasks[BuildSourcesZipTask.NAME].group == FLOW_RELEASE.name()
 
         then: 'each task has correct dependency'
         project.tasks[SendMailMessageTask.NAME].dependsOn.flatten().contains('prepareMailMessage')

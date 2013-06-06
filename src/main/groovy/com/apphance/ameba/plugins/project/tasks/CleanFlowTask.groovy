@@ -6,13 +6,13 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_SETUP
 
 class CleanFlowTask extends DefaultTask {
 
     static String NAME = 'cleanFlow'
     String description = 'Cleans flow temporary folders before each build'
-    String group = AMEBA_SETUP
+    String group = FLOW_SETUP
 
     @Inject ProjectConfiguration conf
 

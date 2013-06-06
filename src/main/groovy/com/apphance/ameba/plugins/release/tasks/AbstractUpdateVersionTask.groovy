@@ -9,7 +9,7 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 import java.util.regex.Pattern
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 import static org.apache.commons.lang.StringUtils.isEmpty
 import static org.gradle.api.logging.Logging.getLogger
 
@@ -18,7 +18,7 @@ abstract class AbstractUpdateVersionTask extends DefaultTask {
     private l = getLogger(getClass())
 
     static final String NAME = 'updateVersion'
-    String group = AMEBA_RELEASE
+    String group = FLOW_RELEASE
     String description = """Updates version stored in manifest file of the project.
            Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
 

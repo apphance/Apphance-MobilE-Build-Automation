@@ -8,12 +8,12 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.*
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 
 class SendMailMessageTask extends DefaultTask {
 
     static String NAME = 'sendMailMessage'
-    String group = AMEBA_RELEASE
+    String group = FLOW_RELEASE
     String description = """Sends mail message. Requires mail.server, mail.port properties
              or corresponding MAIL_SERVER, MAIL_PORT env variables (no authentication).
              It also uses certain properties to send mails:

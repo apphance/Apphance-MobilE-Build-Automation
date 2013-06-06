@@ -12,7 +12,7 @@ import spock.lang.Specification
 
 import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 import static com.apphance.ameba.plugins.ios.buildplugin.IOSPlugin.*
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
@@ -52,14 +52,14 @@ class IOSPluginSpec extends Specification {
         plugin.apply(project)
 
         then:
-        project.tasks[CopySourcesTask.NAME].group == AMEBA_BUILD
-        project.tasks[CopyMobileProvisionTask.NAME].group == AMEBA_BUILD
-        project.tasks[UnlockKeyChainTask.NAME].group == AMEBA_BUILD
-        project.tasks[BUILD_ALL_DEVICE_TASK_NAME].group == AMEBA_BUILD
-        project.tasks[BUILD_ALL_SIMULATOR_TASK_NAME].group == AMEBA_BUILD
-        project.tasks[BUILD_ALL_TASK_NAME].group == AMEBA_BUILD
-        project.tasks['buildV1'].group == AMEBA_BUILD
-        project.tasks['buildV2'].group == AMEBA_BUILD
+        project.tasks[CopySourcesTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[CopyMobileProvisionTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[UnlockKeyChainTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[BUILD_ALL_DEVICE_TASK_NAME].group == FLOW_BUILD.name()
+        project.tasks[BUILD_ALL_SIMULATOR_TASK_NAME].group == FLOW_BUILD.name()
+        project.tasks[BUILD_ALL_TASK_NAME].group == FLOW_BUILD.name()
+        project.tasks['buildV1'].group == FLOW_BUILD.name()
+        project.tasks['buildV2'].group == FLOW_BUILD.name()
 
         and:
         project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_SIMULATOR_TASK_NAME, BUILD_ALL_DEVICE_TASK_NAME)

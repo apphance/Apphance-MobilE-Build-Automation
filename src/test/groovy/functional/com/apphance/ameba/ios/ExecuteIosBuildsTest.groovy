@@ -87,14 +87,6 @@ class ExecuteIosBuildsTest {
     }
 
     @Test
-    void testCleanCheckTests() {
-        runGradleMoreVariants('clean', 'checkTests')
-        assertFalse(new File(testProjectMoreVariants, "bin").exists())
-        assertTrue(new File(testProjectMoreVariants, "build").exists())
-        assertEquals(0, new File(testProjectMoreVariants, "build").listFiles().length)
-    }
-
-    @Test
     void testOta() {
         runGradleMoreVariants('cleanFlow')
         assertTrue(new File(testProjectMoreVariants, "flow-ota").exists())

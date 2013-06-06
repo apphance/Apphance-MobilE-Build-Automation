@@ -5,12 +5,12 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_ANALYSIS
 
 class PMDTask extends DefaultTask {
 
     static String NAME = 'pmd'
-    String group = AMEBA_ANALYSIS
+    String group = FLOW_ANALYSIS
     String description = 'Runs PMD analysis on project'
 
     @Inject AndroidAnalysisResourceLocator resourceLocator

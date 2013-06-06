@@ -10,14 +10,14 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 
 @Mixin(Preconditions)
 class CopyMobileProvisionTask extends DefaultTask {
 
     static final NAME = 'copyMobileProvision'
     String description = 'Copies mobile provision file to the user library'
-    String group = AMEBA_BUILD
+    String group = FLOW_BUILD
 
     @Inject IOSVariantsConfiguration variantsConf
     @Inject MobileProvisionParser mpParser

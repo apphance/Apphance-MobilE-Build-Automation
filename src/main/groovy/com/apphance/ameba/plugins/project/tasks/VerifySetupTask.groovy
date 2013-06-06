@@ -8,8 +8,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.configuration.reader.ConfigurationWizard.yellow
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_SETUP
 
 /**
  * Verifies all properties.
@@ -19,7 +18,7 @@ class VerifySetupTask extends DefaultTask {
 
     static String NAME = 'verifySetup'
     String description = 'Verifies if the project can be build properly'
-    String group = AMEBA_SETUP
+    String group = FLOW_SETUP
 
     @Inject Map<Integer, AbstractConfiguration> configurations
 

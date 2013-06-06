@@ -10,7 +10,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
 class PrepareRobotiumTask extends DefaultTask {
@@ -18,7 +18,7 @@ class PrepareRobotiumTask extends DefaultTask {
     private l = getLogger(getClass())
 
     static String NAME = 'prepareRobotium'
-    String group = AMEBA_TEST
+    String group = FLOW_TEST
     String description = 'Prepares file structure for Robotium test framework'
 
     private String robotiumPath = 'test/android'
@@ -34,7 +34,6 @@ class PrepareRobotiumTask extends DefaultTask {
         replaceInstrumentationLibrary(path)
         addApphanceInstrumentation(path)
         addRobotiumLibrary(path)
-        // TODO: copy template test activities
         copyTemplateTestActivity(path)
     }
 

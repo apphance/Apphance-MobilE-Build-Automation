@@ -11,13 +11,13 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 import static java.util.ResourceBundle.getBundle
 
 abstract class AbstractPrepareMailMessageTask extends DefaultTask {
 
     static String NAME = 'prepareMailMessage'
-    String group = AMEBA_RELEASE
+    String group = FLOW_RELEASE
     String description = 'Prepares mail message which summarises the release'
 
     @Inject ProjectConfiguration conf

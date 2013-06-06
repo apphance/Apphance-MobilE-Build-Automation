@@ -7,14 +7,13 @@ import org.gradle.api.Task
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 
-//TODO be tested & refactored
 @Mixin(AndroidJarLibraryMixin)
 class DeployJarLibraryTask extends DefaultTask {
 
     static String NAME = 'deployJarLibrary'
-    String group = AMEBA_BUILD
+    String group = FLOW_BUILD
     String description = 'Deploys jar library to maven repository'
 
     @Inject AndroidConfiguration androidConf

@@ -7,14 +7,13 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 
-//TODO to be tested & refactored
 @Mixin(AndroidJarLibraryMixin)
 class JarLibraryTask extends DefaultTask {
 
     static String NAME = 'jarLibrary'
-    String group = AMEBA_BUILD
+    String group = FLOW_BUILD
     String description = 'Prepares jar library with embedded resources'
 
     @Inject AndroidConfiguration androidConf
@@ -24,7 +23,7 @@ class JarLibraryTask extends DefaultTask {
     void jarLibrary() {
         androidConf.tmpDir.mkdirs()
         def manifestFile = new File(androidConf.tmpDir, 'MANIFEST.MF')
-        project.ant.manifest(file: manifestFile) {
+        ant.manifest(file: manifestFile) {
             attribute(name: 'Specification-Title', value: androidConf.projectName.value)
             attribute(name: 'Specification-Vendor', value: androidConf.projectName.value)
             attribute(name: 'Implementation-Title', value: androidConf.versionString)
@@ -38,15 +37,15 @@ class JarLibraryTask extends DefaultTask {
         properties.setProperty("implementation.version", androidConf.versionCode)
         properties.store(manifestPropertiesFile.newOutputStream(), "Automatically generated with Ameba")
         File resDir = new File(androidConf.tmpDir, "${jarLibraryPrefix()}-res")
-        project.ant.delete(dir: resDir)
+        ant.delete(dir: resDir)
         resDir.mkdirs()
-        project.ant.copy(todir: resDir) {
+        ant.copy(todir: resDir) {
             fileset(dir: project.file('res'))
         }
         File destFile = project.file(getJarLibraryFilePath(androidConf.projectName.value, androidConf.versionString))
         File classesDir = project.file("bin/classes")
         destFile.delete()
-        project.ant.jar(destfile: destFile, manifest: manifestFile, manifestencoding: 'utf-8') {
+        ant.jar(destfile: destFile, manifest: manifestFile, manifestencoding: 'utf-8') {
             fileset(dir: classesDir) {
                 include(name: '**/*.class')
                 exclude(name: '**/test/*.class')

@@ -9,7 +9,7 @@ import org.gradle.tooling.ProjectConnection
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
 class TestRobolectricTask extends DefaultTask {
@@ -18,7 +18,7 @@ class TestRobolectricTask extends DefaultTask {
             '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
     static String NAME = 'testRobolectric'
-    String group = AMEBA_TEST
+    String group = FLOW_TEST
     String description = 'Runs Robolectric test on the project'
 
     @Inject AndroidConfiguration conf

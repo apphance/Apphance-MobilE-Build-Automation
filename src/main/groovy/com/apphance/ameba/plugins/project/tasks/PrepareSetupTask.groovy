@@ -10,12 +10,12 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_SETUP
 
 class PrepareSetupTask extends DefaultTask {
 
     static final NAME = 'prepareSetup'
-    String group = AMEBA_SETUP
+    String group = FLOW_SETUP
     String description = "Prepares configuration (${FLOW_PROP_FILENAME}). Can be used in non-interactive mode \"-Dnoninteractive\""
 
     @Inject Map<Integer, AbstractConfiguration> configurations

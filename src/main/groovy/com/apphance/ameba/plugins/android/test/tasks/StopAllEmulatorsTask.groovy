@@ -8,12 +8,12 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_TEST
 
 class StopAllEmulatorsTask extends DefaultTask {
 
     static String NAME = 'stopAllEmulators'
-    String group = AMEBA_TEST
+    String group = FLOW_TEST
     String description = 'Stops all emulators and accompanying logcat (includes stopping adb)'
 
     @Inject AndroidConfiguration conf

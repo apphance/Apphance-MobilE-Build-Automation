@@ -42,12 +42,6 @@ class FileManager {
         return plistFiles
     }
 
-    public static List getDirectoriesSortedAccordingToDepth(Project project, Closure filter) {
-        def xCodeProjFiles = getDirectories(project, filter)
-        xCodeProjFiles = xCodeProjFiles.sort { sprintf("%08d", it.findAll('[/\\\\]').size()) }
-        return xCodeProjFiles
-    }
-
     public static void removeMissingSymlinks(File baseDirectory) {
         baseDirectory.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
             if (!it.isDirectory()) {

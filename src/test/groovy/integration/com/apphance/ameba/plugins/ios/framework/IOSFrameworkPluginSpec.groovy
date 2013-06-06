@@ -6,7 +6,7 @@ import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
 import com.apphance.ameba.plugins.ios.framework.tasks.BuildFrameworkTask
 import spock.lang.Specification
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSFrameworkPluginSpec extends Specification {
@@ -24,7 +24,7 @@ class IOSFrameworkPluginSpec extends Specification {
         plugin.apply(project)
 
         then:
-        project.tasks[BuildFrameworkTask.NAME].group == AMEBA_BUILD
+        project.tasks[BuildFrameworkTask.NAME].group == FLOW_BUILD.name()
 
         and:
         project.tasks[BuildFrameworkTask.NAME].dependsOn.flatten().containsAll(CopyMobileProvisionTask.NAME)

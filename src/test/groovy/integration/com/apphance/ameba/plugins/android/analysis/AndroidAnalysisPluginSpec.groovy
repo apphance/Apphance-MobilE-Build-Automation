@@ -8,7 +8,7 @@ import com.apphance.ameba.plugins.android.analysis.tasks.PMDTask
 import com.apphance.ameba.plugins.android.buildplugin.tasks.CompileAndroidTask
 import spock.lang.Specification
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_ANALYSIS
 import static org.gradle.api.plugins.JavaPlugin.CLASSES_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
@@ -33,11 +33,11 @@ class AndroidAnalysisPluginSpec extends Specification {
         aap.apply(project)
 
         then: 'every single task is in correct group'
-        project.tasks[PMDTask.NAME].group == AMEBA_ANALYSIS
-        project.tasks[CPDTask.NAME].group == AMEBA_ANALYSIS
-        project.tasks[FindBugsTask.NAME].group == AMEBA_ANALYSIS
-        project.tasks[CheckstyleTask.NAME].group == AMEBA_ANALYSIS
-        project.tasks['analysis'].group == AMEBA_ANALYSIS
+        project.tasks[PMDTask.NAME].group == FLOW_ANALYSIS.name()
+        project.tasks[CPDTask.NAME].group == FLOW_ANALYSIS.name()
+        project.tasks[FindBugsTask.NAME].group == FLOW_ANALYSIS.name()
+        project.tasks[CheckstyleTask.NAME].group == FLOW_ANALYSIS.name()
+        project.tasks['analysis'].group == FLOW_ANALYSIS.name()
 
         then: 'configurations for tasks were added properly'
         project.configurations.pmdConf

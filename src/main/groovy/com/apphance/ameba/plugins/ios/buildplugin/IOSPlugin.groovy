@@ -7,7 +7,6 @@ import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.SingleVariantTask
 import com.apphance.ameba.plugins.ios.buildplugin.tasks.UnlockKeyChainTask
-import com.apphance.ameba.plugins.project.tasks.CheckTestsTask
 import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
 import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
@@ -16,7 +15,7 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 
 /*
  * Plugin for various X-Code related tasks.
@@ -59,15 +58,15 @@ class IOSPlugin implements Plugin<Project> {
                     type: UnlockKeyChainTask)
 
             project.task(BUILD_ALL_DEVICE_TASK_NAME,
-                    group: AMEBA_BUILD,
+                    group: FLOW_BUILD,
                     description: 'Builds all device variants')
 
             project.task(BUILD_ALL_SIMULATOR_TASK_NAME,
-                    group: AMEBA_BUILD,
+                    group: FLOW_BUILD,
                     description: 'Builds all simulator variants')
 
             project.task(BUILD_ALL_TASK_NAME,
-                    group: AMEBA_BUILD,
+                    group: FLOW_BUILD,
                     dependsOn: [BUILD_ALL_DEVICE_TASK_NAME, BUILD_ALL_SIMULATOR_TASK_NAME],
                     description: 'Builds all variants and produces all artifacts (zip, ipa, messages, etc)')
 
@@ -83,7 +82,7 @@ class IOSPlugin implements Plugin<Project> {
             }
 
             project.tasks.each {
-                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME, CheckTestsTask.NAME])) {
+                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME])) {
                     it.dependsOn VerifySetupTask.NAME
                 }
             }

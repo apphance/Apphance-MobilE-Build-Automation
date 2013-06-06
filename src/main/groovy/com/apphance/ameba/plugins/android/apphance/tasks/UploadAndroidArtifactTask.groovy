@@ -16,7 +16,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_APPHANCE_SERVICE
 import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(Preconditions)
@@ -26,7 +26,7 @@ class UploadAndroidArtifactTask extends DefaultTask {
     def l = getLogger(getClass())
 
     String description = 'Uploads apk & image_montage to Apphance server'
-    String group = AMEBA_APPHANCE_SERVICE
+    String group = FLOW_APPHANCE_SERVICE
 
     @Inject
     ApphanceConfiguration androidApphanceConfiguration

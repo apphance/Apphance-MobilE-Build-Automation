@@ -5,7 +5,7 @@ import com.apphance.ameba.plugins.android.jarlibrary.tasks.DeployJarLibraryTask
 import com.apphance.ameba.plugins.android.jarlibrary.tasks.JarLibraryTask
 import spock.lang.Specification
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidJarLibraryPluginSpec extends Specification {
@@ -30,8 +30,8 @@ class AndroidJarLibraryPluginSpec extends Specification {
         project.configurations.jarLibraryConfiguration
 
         then: 'every single task is in correct group'
-        project.tasks[JarLibraryTask.NAME].group == AMEBA_BUILD
-        project.tasks[DeployJarLibraryTask.NAME].group == AMEBA_BUILD
+        project.tasks[JarLibraryTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[DeployJarLibraryTask.NAME].group == FLOW_BUILD.name()
 
         then: 'every task has correct dependencies'
         project.tasks[DeployJarLibraryTask.NAME].dependsOn.flatten().contains(JarLibraryTask.NAME)

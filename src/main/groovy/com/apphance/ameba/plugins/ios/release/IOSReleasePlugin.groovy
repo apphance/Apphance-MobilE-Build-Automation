@@ -6,7 +6,6 @@ import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.ameba.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.ameba.plugins.ios.release.tasks.PrepareMailMessageTask
 import com.apphance.ameba.plugins.ios.release.tasks.UpdateVersionTask
-import com.apphance.ameba.plugins.project.tasks.CheckTestsTask
 import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
 import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
@@ -51,7 +50,7 @@ class IOSReleasePlugin implements Plugin<Project> {
             builder.registerListener(listener)
 
             project.tasks.each {
-                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME, CheckTestsTask.NAME])) {
+                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME])) {
                     it.dependsOn VerifySetupTask.NAME
                 }
             }

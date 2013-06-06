@@ -16,17 +16,14 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.executor.AntExecutor.CLEAN
 import static com.apphance.ameba.executor.AntExecutor.INSTRUMENT
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
-import static org.gradle.api.logging.Logging.getLogger
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_TEST
 
 class TestAndroidTask extends DefaultTask {
 
     public static final String TEST_RUNNER = "pl.polidea.instrumentation.PolideaInstrumentationTestRunner"
 
-    private l = getLogger(getClass())
-
     static String NAME = 'testAndroid'
-    String group = AMEBA_TEST
+    String group = FLOW_TEST
     String description = 'Runs android tests on the project'
 
     @Inject AndroidConfiguration conf
@@ -40,9 +37,8 @@ class TestAndroidTask extends DefaultTask {
 
     @TaskAction
     void testAndroid() {
-        // TODO: what to do when no test directory exists ?? should I automatically make one ??
         if (!testConf.testDir.value?.exists()) {
-            println "Test directory not found. Please run gradle prepareRobotium in order to create simple Robotium project. Aborting"
+            logger.lifecycle("Test directory not found. Please run gradle prepareRobotium in order to create simple Robotium project. Aborting")
             return
         }
         prepareTestBuilds()
@@ -84,9 +80,9 @@ class TestAndroidTask extends DefaultTask {
             File localEmFile = new File(testConf.testDir.value, 'coverage.em')
             if (localEmFile.exists()) {
                 boolean res = localEmFile.renameTo(testConf.coverageEMFile)
-                l.lifecycle("Renamed ${localEmFile} to ${testConf.coverageEMFile} with result: ${res}")
+                logger.lifecycle("Renamed ${localEmFile} to ${testConf.coverageEMFile} with result: ${res}")
             } else {
-                l.lifecycle("No ${localEmFile}. Not renaming to ${testConf.coverageEMFile}")
+                logger.lifecycle("No ${localEmFile}. Not renaming to ${testConf.coverageEMFile}")
             }
         } finally {
             if (useMockLocation) {
@@ -110,7 +106,7 @@ class TestAndroidTask extends DefaultTask {
     }
 
     private void startEmulator(boolean noWindow) {
-        l.lifecycle("Starting emulator ${testConf.emulatorName}")
+        logger.lifecycle("Starting emulator ${testConf.emulatorName}")
         def emulatorCommand = [
                 'emulator',
                 '-avd',
@@ -126,11 +122,11 @@ class TestAndroidTask extends DefaultTask {
         Thread.sleep(4 * 1000) // sleep for some time.
         runLogCat(project)
         waitUntilEmulatorReady()
-        l.lifecycle("Started emulator ${testConf.emulatorName}")
+        logger.lifecycle("Started emulator ${testConf.emulatorName}")
     }
 
     private void runLogCat(Project project) {
-        l.lifecycle("Starting logcat monitor on ${testConf.emulatorName}")
+        logger.lifecycle("Starting logcat monitor on ${testConf.emulatorName}")
         String[] commandRunLogcat = [
                 testConf.getADBBinary(),
                 '-s',
@@ -143,7 +139,7 @@ class TestAndroidTask extends DefaultTask {
     }
 
     private void waitUntilEmulatorReady() {
-        l.lifecycle("Waiting until emulator is ready ${testConf.emulatorName}")
+        logger.lifecycle("Waiting until emulator is ready ${testConf.emulatorName}")
         String[] commandRunShell = [
                 testConf.getADBBinary(),
                 '-s',
@@ -156,7 +152,7 @@ class TestAndroidTask extends DefaultTask {
         while (true) {
             def res = executor.executeCommand(new Command(runDir: conf.rootDir, cmd: commandRunShell, failOnError: false))
             if (res != null && res[0] == "1") {
-                l.lifecycle("Emulator is ready ${testConf.emulatorName}!")
+                logger.lifecycle("Emulator is ready ${testConf.emulatorName}!")
                 break
             }
             if (System.currentTimeMillis() - startTime > 360 * 1000) {
@@ -199,15 +195,15 @@ class TestAndroidTask extends DefaultTask {
     }
 
     private void runAndroidTests() {
-        l.lifecycle("Running tests on ${testConf.emulatorName}")
+        logger.lifecycle("Running tests on ${testConf.emulatorName}")
         if (testConf.testPerPackage) {
             def allPackages = []
             FileManager.findAllPackages("", new File(testConf.getTestDir().value, "src"), allPackages)
-            l.lifecycle("Running tests on packages ${allPackages}")
+            logger.lifecycle("Running tests on packages ${allPackages}")
             allPackages.each {
-                l.lifecycle("Running tests for package ${it}")
+                logger.lifecycle("Running tests for package ${it}")
                 def commandRunTests = prepareTestCommandLine(it)
-                l.lifecycle("Running  ${commandRunTests}")
+                logger.lifecycle("Running  ${commandRunTests}")
                 executor.executeCommand(new Command(runDir: testConf.getTestDir().value, cmd: commandRunTests))
             }
         } else {
@@ -253,7 +249,7 @@ class TestAndroidTask extends DefaultTask {
     }
 
     private void extractEmmaCoverage() {
-        l.lifecycle("Extracting coverage report from ${testConf.emulatorName}")
+        logger.lifecycle("Extracting coverage report from ${testConf.emulatorName}")
         String[] commandDownloadCoverageFile = [
                 testConf.getADBBinary(),
                 '-s',
@@ -263,7 +259,7 @@ class TestAndroidTask extends DefaultTask {
                 testConf.coverageECFile
         ]
         executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: commandDownloadCoverageFile))
-        l.lifecycle("Pulled coverage report from ${testConf.emulatorName} to ${testConf.coverageDir}...")
+        logger.lifecycle("Pulled coverage report from ${testConf.emulatorName} to ${testConf.coverageDir}...")
     }
 
     private void prepareCoverageReport() {
@@ -280,11 +276,11 @@ class TestAndroidTask extends DefaultTask {
                 html(outfile: "${testConf.coverageDir}/android_coverage.html")
             }
         }
-        l.lifecycle("Prepared coverage report from ${testConf.emulatorName} to ${testConf.coverageDir}...")
+        logger.lifecycle("Prepared coverage report from ${testConf.emulatorName} to ${testConf.coverageDir}...")
     }
 
     private void extractXMLJUnitFiles() {
-        l.lifecycle("Extracting coverage report from ${testConf.emulatorName}")
+        logger.lifecycle("Extracting coverage report from ${testConf.emulatorName}")
         String[] commandDownloadXmlFile = [
                 testConf.getADBBinary(),
                 '-s',
@@ -296,9 +292,9 @@ class TestAndroidTask extends DefaultTask {
     }
 
     private void stopEmulator() {
-        l.lifecycle("Stopping emulator ${testConf.emulatorName} and logcat")
+        logger.lifecycle("Stopping emulator ${testConf.emulatorName} and logcat")
         emulatorProcess?.destroy()
         logcatProcess?.destroy()
-        l.lifecycle("Stopped emulator ${testConf.emulatorName} and logcat")
+        logger.lifecycle("Stopped emulator ${testConf.emulatorName} and logcat")
     }
 }

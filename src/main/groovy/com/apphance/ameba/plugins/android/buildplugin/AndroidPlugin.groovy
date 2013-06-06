@@ -4,7 +4,6 @@ import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.buildplugin.tasks.*
-import com.apphance.ameba.plugins.project.tasks.CheckTestsTask
 import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
 import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
@@ -13,9 +12,8 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
 import static com.apphance.ameba.executor.AntExecutor.CLEAN
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -68,15 +66,15 @@ class AndroidPlugin implements Plugin<Project> {
                     dependsOn: UpdateProjectTask.NAME)
 
             project.task(BUILD_ALL_DEBUG_TASK_NAME,
-                    group: AMEBA_BUILD,
+                    group: FLOW_BUILD,
                     description: 'Builds all debug variants')
 
             project.task(BUILD_ALL_RELEASE_TASK_NAME,
-                    group: AMEBA_BUILD,
+                    group: FLOW_BUILD,
                     description: 'Build all release variants')
 
             project.task(BUILD_ALL_TASK_NAME,
-                    group: AMEBA_BUILD,
+                    group: FLOW_BUILD,
                     dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME],
                     description: 'Builds all variants')
 
@@ -92,7 +90,7 @@ class AndroidPlugin implements Plugin<Project> {
             }
 
             project.tasks.each {
-                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME, CheckTestsTask.NAME])) {
+                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME])) {
                     it.dependsOn VerifySetupTask.NAME
                 }
             }

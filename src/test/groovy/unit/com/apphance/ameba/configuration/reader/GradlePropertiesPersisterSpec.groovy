@@ -75,7 +75,8 @@ class GradlePropertiesPersisterSpec extends Specification {
         def iOSConfiguration = new IOSConfiguration()
         iOSConfiguration.project = project
         iOSConfiguration.projectTypeDetector = Mock(ProjectTypeDetector) { detectProjectType(_) >> IOS }
-        // TODO add some property and assertion to iOSConfiguration
+        iOSConfiguration.sdk.value = 'iphoneos'
+        iOSConfiguration.simulatorSdk.value = 'iphoneossimulator'
 
         when:
         persister.save([androidConfiguration, iOSConfiguration])
@@ -83,6 +84,8 @@ class GradlePropertiesPersisterSpec extends Specification {
 
         then:
         persister.get(androidConfiguration.target.name) == 'test target'
+        persister.get(iOSConfiguration.sdk.name) == 'iphoneos'
+        persister.get(iOSConfiguration.simulatorSdk.name) == 'iphoneossimulator'
         persister.get('nonexisting') == null
 
         cleanup:

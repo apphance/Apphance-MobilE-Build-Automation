@@ -14,7 +14,7 @@ import spock.lang.Specification
 
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 import static com.apphance.ameba.plugins.android.buildplugin.AndroidPlugin.*
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
@@ -44,13 +44,13 @@ class AndroidPluginSpec extends Specification {
         ap.apply(project)
 
         then:
-        project.tasks[CopySourcesTask.NAME].group == AMEBA_BUILD
-        project.tasks[ReplacePackageTask.NAME].group == AMEBA_BUILD
-        project.tasks[UpdateProjectTask.NAME].group == AMEBA_BUILD
-        project.tasks[CompileAndroidTask.NAME].group == AMEBA_BUILD
-        project.tasks[BUILD_ALL_TASK_NAME].group == AMEBA_BUILD
-        project.tasks[BUILD_ALL_DEBUG_TASK_NAME].group == AMEBA_BUILD
-        project.tasks[BUILD_ALL_RELEASE_TASK_NAME].group == AMEBA_BUILD
+        project.tasks[CopySourcesTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[ReplacePackageTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[UpdateProjectTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[CompileAndroidTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[BUILD_ALL_TASK_NAME].group == FLOW_BUILD.name()
+        project.tasks[BUILD_ALL_DEBUG_TASK_NAME].group == FLOW_BUILD.name()
+        project.tasks[BUILD_ALL_RELEASE_TASK_NAME].group == FLOW_BUILD.name()
 
         and:
         project.tasks[ReplacePackageTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
@@ -110,10 +110,10 @@ class AndroidPluginSpec extends Specification {
         ap.apply(project)
 
         then:
-        project.tasks[CopySourcesTask.NAME].group == AMEBA_BUILD
-        project.tasks[ReplacePackageTask.NAME].group == AMEBA_BUILD
-        project.tasks[UpdateProjectTask.NAME].group == AMEBA_BUILD
-        project.tasks[CompileAndroidTask.NAME].group == AMEBA_BUILD
+        project.tasks[CopySourcesTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[ReplacePackageTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[UpdateProjectTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[CompileAndroidTask.NAME].group == FLOW_BUILD.name()
 
         and:
         project.tasks['buildv1']

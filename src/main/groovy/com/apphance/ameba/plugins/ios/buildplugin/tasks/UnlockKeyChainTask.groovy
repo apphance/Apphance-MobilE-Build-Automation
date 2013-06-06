@@ -10,7 +10,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
 class UnlockKeyChainTask extends DefaultTask {
@@ -19,7 +19,7 @@ class UnlockKeyChainTask extends DefaultTask {
     String description = """|Unlocks key chain used during project building.
                             |Requires osx.keychain.password and osx.keychain.location properties
                             |or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION environment variable""".stripMargin()
-    String group = AMEBA_BUILD
+    String group = FLOW_BUILD
 
     @Inject ProjectConfiguration conf
     @Inject CommandExecutor executor

@@ -7,14 +7,14 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
 class SingleVariantTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    String group = AMEBA_BUILD
+    String group = FLOW_BUILD
     String description = 'Builds single variant for iOS.'
 
     @Inject IOSSingleVariantBuilder builder

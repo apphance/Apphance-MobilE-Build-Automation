@@ -15,8 +15,7 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
-import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_APPHANCE_SERVICE
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -56,13 +55,13 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
             //TODO probably both to be removed
             def t1 = project.task(ApphanceLogsConversionTask.NAME,
-                    group: AMEBA_APPHANCE_SERVICE,
+                    group: FLOW_APPHANCE_SERVICE,
                     description: 'Converts all logs to apphance from android logs for the source project')
             t1 << {
                 new ApphanceLogsConversionTask(project.ant).convertLogsToApphance(project.rootDir)
             }
             def t2 = project.task(AndroidLogsConversionTask.NAME,
-                    group: AMEBA_APPHANCE_SERVICE,
+                    group: FLOW_APPHANCE_SERVICE,
                     description: 'Converts all logs to android from apphance logs for the source project')
             t2 << {
                 new AndroidLogsConversionTask(project.ant).convertLogsToAndroid(project.rootDir)

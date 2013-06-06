@@ -9,7 +9,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
 class ReplacePackageTask extends DefaultTask {
@@ -17,7 +17,7 @@ class ReplacePackageTask extends DefaultTask {
     static String NAME = 'replacePackage'
     String description = """Replaces manifest's package with a new one. Requires oldPackage and newPackage
            parameters. Optionally it takes newLabel or newName parameters if application's label/name is to be replaced"""
-    String group = AMEBA_BUILD
+    String group = FLOW_BUILD
 
     private l = getLogger(getClass())
 

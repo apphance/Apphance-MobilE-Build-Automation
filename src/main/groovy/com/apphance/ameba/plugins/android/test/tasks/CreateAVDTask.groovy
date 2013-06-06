@@ -8,13 +8,13 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
 class CreateAVDTask extends DefaultTask {
 
     static String NAME = 'createAVD'
-    String group = AMEBA_TEST
+    String group = FLOW_TEST
     String description = 'Prepares AVDs for emulator'
 
     private l = getLogger(getClass())

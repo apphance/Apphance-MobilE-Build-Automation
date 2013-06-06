@@ -3,12 +3,12 @@ package com.apphance.ameba.plugins.android.analysis.tasks
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_ANALYSIS
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_ANALYSIS
 
 class CPDTask extends DefaultTask {
 
     static String NAME = 'cpd'
-    String group = AMEBA_ANALYSIS
+    String group = FLOW_ANALYSIS
     String description = 'Runs CPD (duplicated code) analysis on project'
 
     @TaskAction

@@ -8,7 +8,7 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.ameba.executor.AntExecutor.DEBUG
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
 class CompileAndroidTask extends DefaultTask {
@@ -16,7 +16,7 @@ class CompileAndroidTask extends DefaultTask {
 
     static String NAME = 'compileAndroid'
     String description = 'Performs code generation/compile tasks for android (if needed)'
-    String group = AMEBA_BUILD
+    String group = FLOW_BUILD
 
     @Inject AntExecutor antExecutor
     @Inject AndroidConfiguration conf

@@ -13,7 +13,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_APPHANCE_SERVICE
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_APPHANCE_SERVICE
 import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(Preconditions)
@@ -22,7 +22,7 @@ class UploadIOSArtifactTask extends DefaultTask {
     private l = getLogger(getClass())
 
     String description = 'Uploads ipa, dsym & image_montage to Apphance server'
-    String group = AMEBA_APPHANCE_SERVICE
+    String group = FLOW_APPHANCE_SERVICE
 
     @Inject IOSExecutor iosExecutor
     @Inject ApphanceConfiguration apphanceConf
