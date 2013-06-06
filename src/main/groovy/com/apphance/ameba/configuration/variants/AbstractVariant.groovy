@@ -2,6 +2,7 @@ package com.apphance.ameba.configuration.variants
 
 import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ProjectConfiguration
+import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.apphance.ApphanceMode
 import com.apphance.ameba.configuration.properties.ApphanceModeProperty
@@ -18,6 +19,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
 
     @Inject ProjectConfiguration conf
     @Inject ApphanceConfiguration apphanceConf
+    @Inject AndroidReleaseConfiguration androidReleaseConf
 
     @Inject
     AbstractVariant(@Assisted String name) {

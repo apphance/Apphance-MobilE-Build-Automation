@@ -3,14 +3,17 @@ package com.apphance.ameba.configuration.android.variants
 import com.apphance.ameba.configuration.android.AndroidBuildMode
 import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.configuration.variants.AbstractVariant
+import com.google.common.io.Files
 import com.google.inject.assistedinject.Assisted
 import com.google.inject.assistedinject.AssistedInject
 
 import javax.inject.Inject
+import java.nio.file.Paths
 
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
 import static com.apphance.ameba.util.file.FileManager.relativeTo
+import static java.nio.charset.StandardCharsets.UTF_8
 
 class AndroidVariantConfiguration extends AbstractVariant {
 
@@ -51,5 +54,26 @@ class AndroidVariantConfiguration extends AbstractVariant {
     @Override
     String getConfigurationName() {
         "Android Variant ${name}"
+    }
+
+    @Override
+    void checkProperties() {
+        if (androidReleaseConf.enabled || apphanceConf.enabled) {
+            checkSigningConfiguration()
+        }
+    }
+
+    void checkSigningConfiguration() {
+        def file = new File(tmpDir, 'ant.properties')//project.file('ant.properties')
+        check file.exists(), "If release or apphance plugin is enabled ant.properties should be present in ${tmpDir.absolutePath}"
+
+        if (file.exists()) {
+            Properties antProperties = new Properties()
+            antProperties.load(Files.newReader(file, UTF_8))
+            String keyStorePath = antProperties.getProperty('key.store')
+            check keyStorePath, "key.store value in ant.properties file is not correctly configured: ${keyStorePath}"
+            def keyStore = Paths.get(tmpDir.absolutePath).resolve(keyStorePath).toFile()
+            check keyStore.exists(), "Keystore path is not correctly configured: File ${keyStore.absolutePath} doesn't exist."
+        }
     }
 }

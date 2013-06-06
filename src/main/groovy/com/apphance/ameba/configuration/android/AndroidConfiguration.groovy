@@ -6,7 +6,6 @@ import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.plugins.android.parsers.AndroidBuildXmlHelper
 import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
-import com.google.common.io.Files
 
 import javax.inject.Inject
 
@@ -15,7 +14,6 @@ import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask.WHITESPACE_PATTERN
 import static com.google.common.base.Strings.isNullOrEmpty
 import static java.io.File.pathSeparator
-import static java.nio.charset.StandardCharsets.UTF_8
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
 @com.google.inject.Singleton
@@ -213,23 +211,5 @@ class AndroidConfiguration extends ProjectConfiguration {
                                                                           |variable or AndroidManifest.xml file!""".stripMargin())
         check target.validator(target.value), "Property ${target.name} must be set!"
         check !isNullOrEmpty(mainPackage), "Property 'package' must be set! Check AndroidManifest.xml file!"
-
-        if (androidReleaseConf.enabled || apphanceConf.enabled) {
-            //TODO commented this out, cause tests are not passing on my lap / Opal
-            //checkSigningConfiguration()
-        }
-    }
-
-    void checkSigningConfiguration() {
-        def file = project.file('ant.properties')
-        check file.exists(), "If release or apphance plugin is enabled ant.properties should be present"
-
-        if (file.exists()) {
-            Properties antProperties = new Properties()
-            antProperties.load(Files.newReader(file, UTF_8))
-            String keyStorePath = antProperties.getProperty('key.store')
-            def keyStore = new File(rootDir, keyStorePath)
-            check keyStorePath && keyStore.exists(), "Keystore path is not correctly configured: File ${keyStore.absolutePath} doesn't exist."
-        }
     }
 }
