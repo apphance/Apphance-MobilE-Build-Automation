@@ -31,7 +31,7 @@ class RunUnitTestsTasks extends DefaultTask {
         def testResults = new File(conf.tmpDir, "test-${unitTestConf.variant.name}.txt")
         testResults.createNewFile()
 
-        iosExecutor.buildTestVariant project.rootDir, unitTestConf.variant, "${testResults.canonicalPath}".toString()
+        iosExecutor.buildTestVariant conf.rootDir, unitTestConf.variant, "${testResults.canonicalPath}".toString()
 
         File outputUnitTestFile = new File(conf.tmpDir, "TEST-all.xml")
         parseAndExport(testResults, outputUnitTestFile)

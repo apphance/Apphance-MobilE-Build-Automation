@@ -37,7 +37,7 @@ abstract class AbstractUpdateVersionTask extends DefaultTask {
         updateDescriptor(versionCode, versionString)
 
         l.lifecycle("New version code: ${versionCode}")
-        l.lifecycle("Updated version string to ${versionString}")
+        l.lifecycle("New version string: ${versionString}")
     }
 
     abstract void updateDescriptor(String versionCode, String versionString)

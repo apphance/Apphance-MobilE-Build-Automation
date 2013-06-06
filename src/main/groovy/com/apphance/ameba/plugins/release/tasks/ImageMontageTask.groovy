@@ -41,7 +41,7 @@ class ImageMontageTask extends DefaultTask {
 
     @TaskAction
     void imageMontage() {
-        def filesToMontage = getFilesToMontage(project.rootDir)
+        def filesToMontage = getFilesToMontage(conf.rootDir)
         File imageMontageFile = outputMontageFile()
         createMontage(imageMontageFile, filesToMontage)
         addDescription(imageMontageFile, "${conf.projectName.value} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}")

@@ -1,10 +1,13 @@
 package com.apphance.ameba.plugins.android.test.tasks
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_TEST
 import static org.gradle.api.logging.Logging.getLogger
@@ -18,19 +21,21 @@ class TestRobolectricTask extends DefaultTask {
     String group = AMEBA_TEST
     String description = 'Runs Robolectric test on the project'
 
+    @Inject AndroidConfiguration conf
+
     private l = getLogger(getClass())
     private String robolectricPath = '/test/robolectric'
 
     @TaskAction
     void testRobolectric() {
-        def path = new File(project.rootDir.path, robolectricPath)
+        def path = new File(conf.rootDir.path, robolectricPath)
         if (!(path.exists())) {
             l.warn("Running Robolectric test has failed. No valid tests present nor test project had been created under " +
-                    "'${project.rootDir.path}/test/robolectric'. Run prepareRobolectric taks to (re)create unit test project.")
+                    "'${conf.rootDir.path}/test/robolectric'. Run prepareRobolectric taks to (re)create unit test project.")
             return
         }
 
-        ProjectConnection connection = getProjectConnection(project.rootDir, robolectricPath)
+        ProjectConnection connection = getProjectConnection(conf.rootDir, robolectricPath)
         try {
             BuildLauncher bl = connection.newBuild().forTasks('test');
 

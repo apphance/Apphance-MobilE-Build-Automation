@@ -120,8 +120,10 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     }
 
     private void prepareIconFile() {
-        def icon = releaseConf.iconFile.value
-        ant.copy(file: new File(project.rootDir, icon.path), tofile: new File(releaseConf.otaIndexFile.location.parentFile, icon.name))
+        ant.copy(
+                file: new File(project.rootDir, releaseConf.iconFile.value.path),
+                tofile: new File(releaseConf.otaIndexFile.location.parentFile, releaseConf.iconFile.value.name)
+        )
     }
 
     @PackageScope

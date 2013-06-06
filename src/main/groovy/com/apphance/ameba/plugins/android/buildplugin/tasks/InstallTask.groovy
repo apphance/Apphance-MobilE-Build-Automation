@@ -15,8 +15,8 @@ class InstallTask extends DefaultTask {
 
     String group = AMEBA_BUILD
 
-    @Inject AndroidConfiguration androidConf
-    @Inject AndroidReleaseConfiguration androidReleaseConf
+    @Inject AndroidConfiguration conf
+    @Inject AndroidReleaseConfiguration releaseConf
     @Inject AntExecutor antExecutor
 
     AndroidVariantConfiguration variant
@@ -25,9 +25,9 @@ class InstallTask extends DefaultTask {
     void install() {
         String debugRelease = variant.mode.capitalize()
         def firstLetterLowerCase = debugRelease[0].toLowerCase()
-        def apkName = "${androidConf.projectName.value}-${debugRelease}-${variant}-${androidConf.versionString}.apk".toString()
-        File apkFile = new File(androidReleaseConf.targetDir, apkName)
-        antExecutor.executeTarget project.rootDir, "install${firstLetterLowerCase}", ['out.final.file': apkFile.canonicalPath]
+        def apkName = "${conf.projectName.value}-${debugRelease}-${variant}-${conf.versionString}.apk".toString()
+        File apkFile = new File(releaseConf.targetDir, apkName)
+        antExecutor.executeTarget conf.rootDir, "install${firstLetterLowerCase}", ['out.final.file': apkFile.canonicalPath]
     }
 
     @Override

@@ -114,7 +114,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     }
 
     String getEmulatorName() {
-        project.rootDir.getAbsolutePath().replaceAll('[\\\\ /]', '_')
+        conf.rootDir.getAbsolutePath().replaceAll('[\\\\ /]', '_')
     }
 
     def testPerPackage = new BooleanProperty(

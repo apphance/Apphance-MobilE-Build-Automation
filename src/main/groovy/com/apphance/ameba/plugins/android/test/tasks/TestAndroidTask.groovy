@@ -76,7 +76,7 @@ class TestAndroidTask extends DefaultTask {
         executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: commandAndroid))
         boolean useMockLocation = testConf.mockLocation.value
         if (useMockLocation) {
-            manifestHelper.addPermissions(project.rootDir, 'android.permission.ACCESS_MOCK_LOCATION')
+            manifestHelper.addPermissions(conf.rootDir, 'android.permission.ACCESS_MOCK_LOCATION')
         }
         try {
             antExecutor.executeTarget testConf.testDir.value, CLEAN, ['test.runner': TEST_RUNNER]
@@ -90,7 +90,7 @@ class TestAndroidTask extends DefaultTask {
             }
         } finally {
             if (useMockLocation) {
-                manifestHelper.restoreOriginalManifest(project.rootDir)
+                manifestHelper.restoreOriginalManifest(conf.rootDir)
             }
         }
     }
@@ -122,7 +122,7 @@ class TestAndroidTask extends DefaultTask {
         if (noWindow) {
             emulatorCommand << '-no-window'
         }
-        emulatorProcess = executor.startCommand(new Command(runDir: project.rootDir, cmd: emulatorCommand))
+        emulatorProcess = executor.startCommand(new Command(runDir: conf.rootDir, cmd: emulatorCommand))
         Thread.sleep(4 * 1000) // sleep for some time.
         runLogCat(project)
         waitUntilEmulatorReady()
@@ -139,7 +139,7 @@ class TestAndroidTask extends DefaultTask {
                 '-v',
                 'time'
         ]
-        logcatProcess = executor.startCommand(new Command(runDir: project.rootDir, cmd: commandRunLogcat))
+        logcatProcess = executor.startCommand(new Command(runDir: conf.rootDir, cmd: commandRunLogcat))
     }
 
     private void waitUntilEmulatorReady() {
@@ -154,7 +154,7 @@ class TestAndroidTask extends DefaultTask {
         ]
         def startTime = System.currentTimeMillis()
         while (true) {
-            def res = executor.executeCommand(new Command(runDir: project.rootDir, cmd: commandRunShell, failOnError: false))
+            def res = executor.executeCommand(new Command(runDir: conf.rootDir, cmd: commandRunShell, failOnError: false))
             if (res != null && res[0] == "1") {
                 l.lifecycle("Emulator is ready ${testConf.emulatorName}!")
                 break
@@ -182,7 +182,7 @@ class TestAndroidTask extends DefaultTask {
                 'uninstall',
                 testConf.testProjectPackage
         ], failOnError: false))
-        executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
+        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
                 testConf.getADBBinary(),
                 '-s',
                 "emulator-${testConf.emulatorPort}",

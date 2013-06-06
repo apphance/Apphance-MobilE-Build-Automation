@@ -43,7 +43,7 @@ class ReplacePackageTask extends DefaultTask {
         }
         if (newName != null) {
             l.lifecycle("Replacing name with ${newName}")
-            buildXMLHelper.replaceProjectName(project.rootDir, newName)
+            buildXMLHelper.replaceProjectName(conf.rootDir, newName)
         }
         File sourceFolder = project.file("src/" + oldPackage.replaceAll('\\.', '/'))
         File targetFolder = project.file("src/" + newPackage.replaceAll('\\.', '/'))

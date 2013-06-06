@@ -29,7 +29,7 @@ class PrepareRobotiumTask extends DefaultTask {
 
     @TaskAction
     void prepareRobotium() {
-        File path = new File(project.rootDir.path, robotiumPath)
+        File path = new File(conf.rootDir.path, robotiumPath)
         setUpAndroidRobotiumProject(path)
         replaceInstrumentationLibrary(path)
         addApphanceInstrumentation(path)
@@ -130,7 +130,7 @@ class PrepareRobotiumTask extends DefaultTask {
         URL helloCaseTemplate = this.class.getResource("TestHello.java_")
 
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        def binding = [packageName: conf.mainPackage, mainActivity: manifestHelper.getMainActivityName(project.rootDir)]
+        def binding = [packageName: conf.mainPackage, mainActivity: manifestHelper.getMainActivityName(conf.rootDir)]
         def baseCaseResult = engine.createTemplate(baseCaseTemplate).make(binding)
         def helloCaseResult = engine.createTemplate(helloCaseTemplate).make(binding)
 

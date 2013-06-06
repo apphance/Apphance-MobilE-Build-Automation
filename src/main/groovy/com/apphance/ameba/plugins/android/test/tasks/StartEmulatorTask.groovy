@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.android.test.tasks
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidTestConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
@@ -21,6 +22,7 @@ class StartEmulatorTask extends DefaultTask {
     String description = 'Starts emulator for manual inspection'
 
     @Inject CommandExecutor executor
+    @Inject AndroidConfiguration conf
     @Inject AndroidTestConfiguration testConf
 
     private Process emulatorProcess
@@ -43,7 +45,7 @@ class StartEmulatorTask extends DefaultTask {
         if (noWindow) {
             emulatorCommand << '-no-window'
         }
-        emulatorProcess = executor.startCommand(new Command(runDir: project.rootDir, cmd: emulatorCommand))
+        emulatorProcess = executor.startCommand(new Command(runDir: conf.rootDir, cmd: emulatorCommand))
         Thread.sleep(4 * 1000) // sleep for some time.
         runLogCat()
         waitUntilEmulatorReady()
@@ -60,7 +62,7 @@ class StartEmulatorTask extends DefaultTask {
                 '-v',
                 'time'
         ]
-        executor.startCommand(new Command(runDir: project.rootDir, cmd: commandRunLogcat))
+        executor.startCommand(new Command(runDir: conf.rootDir, cmd: commandRunLogcat))
     }
 
     private void waitUntilEmulatorReady() {
@@ -75,7 +77,7 @@ class StartEmulatorTask extends DefaultTask {
         ]
         def startTime = System.currentTimeMillis()
         while (true) {
-            def res = executor.executeCommand(new Command(runDir: project.rootDir, cmd: commandRunShell, failOnError: false))
+            def res = executor.executeCommand(new Command(runDir: conf.rootDir, cmd: commandRunShell, failOnError: false))
             if (res != null && res[0] == "1") {
                 l.lifecycle("Emulator is ready ${testConf.emulatorName}!")
                 break

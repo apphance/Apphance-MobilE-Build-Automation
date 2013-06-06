@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
+import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
@@ -20,6 +21,7 @@ class UnlockKeyChainTask extends DefaultTask {
                             |or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION environment variable""".stripMargin()
     String group = AMEBA_BUILD
 
+    @Inject ProjectConfiguration conf
     @Inject CommandExecutor executor
     @Inject PropertyReader reader
 
@@ -28,7 +30,7 @@ class UnlockKeyChainTask extends DefaultTask {
         def pass = reader.systemProperty('osx.keychain.password') ?: reader.envVariable('OSX_KEYCHAIN_PASSWORD') ?: null
         def location = reader.systemProperty('osx.keychain.location') ?: reader.envVariable('OSX_KEYCHAIN_PASSWORD') ?: null
         if (isNotEmpty(pass) && isNotEmpty(location)) {
-            executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
+            executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
                     'security',
                     'unlock-keychain',
                     '-p',

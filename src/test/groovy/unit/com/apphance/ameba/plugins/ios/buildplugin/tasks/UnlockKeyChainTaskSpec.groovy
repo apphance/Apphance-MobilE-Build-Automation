@@ -1,6 +1,7 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
 import com.apphance.ameba.TestUtils
+import com.apphance.ameba.configuration.ProjectConfiguration
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.GradleException
@@ -10,6 +11,10 @@ import spock.lang.Specification
 class UnlockKeyChainTaskSpec extends Specification {
 
     def task = create(UnlockKeyChainTask)
+
+    def setup() {
+        task.conf = GroovyStub(ProjectConfiguration)
+    }
 
     def 'exception is thrown when no keychain properties set'() {
         given:
