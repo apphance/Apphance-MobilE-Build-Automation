@@ -2,9 +2,10 @@ package com.apphance.ameba.plugins.ios.ocunit
 
 import com.apphance.ameba.configuration.ios.IOSUnitTestConfiguration
 import com.apphance.ameba.plugins.ios.ocunit.tasks.RunUnitTestsTasks
-import javax.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+
+import javax.inject.Inject
 
 /**
  * Unit test plugin - all unit tests are run here.
@@ -16,14 +17,11 @@ import org.gradle.api.Project
  */
 class IOSUnitTestPlugin implements Plugin<Project> {
 
-    public static final String AMEBA_IOS_UNIT = 'Ameba iOS OCUnit tests'
-
-    @Inject
-    IOSUnitTestConfiguration iosUnitTestConf
+    @Inject IOSUnitTestConfiguration unitTestConf
 
     @Override
     void apply(Project project) {
-        if (iosUnitTestConf.isEnabled()) {
+        if (unitTestConf.isEnabled()) {
             project.task(RunUnitTestsTasks.NAME, type: RunUnitTestsTasks)
         }
     }

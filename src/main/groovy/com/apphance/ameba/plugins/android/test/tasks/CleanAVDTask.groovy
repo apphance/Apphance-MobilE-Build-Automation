@@ -18,6 +18,6 @@ class CleanAVDTask extends DefaultTask {
 
     @TaskAction
     void cleanAVD() {
-        ant.delete(dir: testConf.getAVDDir())
+        testConf.getAVDDir().deleteDir()
     }
 }

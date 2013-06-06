@@ -13,7 +13,6 @@ import static org.apache.commons.lang.StringUtils.isBlank
 import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.gradle.api.logging.Logging.getLogger
 
-//TODO may be transformed to stateful parser and keep plist, target, configuration
 class PlistParser {
 
     private l = getLogger(getClass())

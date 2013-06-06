@@ -18,11 +18,8 @@ import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.ameba.util.file.FileDownloader.downloadFile
 import static java.net.URLEncoder.encode
 import static java.util.ResourceBundle.getBundle
-import static org.gradle.api.logging.Logging.getLogger
 
 class AvailableArtifactsInfoTask extends DefaultTask {
-
-    def l = getLogger(getClass())
 
     static final NAME = 'prepareAvailableArtifactsInfo'
     String description = 'Prepares information about available artifacts for mail message to include'
@@ -40,7 +37,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     void availableArtifactsInfo() {
         def udids = [:]
         variantsConf.variants.each { v ->
-            l.lifecycle("Preparing artifact for ${v.name}")
+            logger.lifecycle("Preparing artifact for ${v.name}")
             prepareArtifacts(v)
             udids.put(v.name, mpParser.udids(v.mobileprovision.value))
         }
@@ -137,7 +134,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     void prepareQRCode() {
         def urlEncoded = encode(releaseConf.otaIndexFile.url.toString(), "utf-8")
         downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), releaseConf.QRCodeFile.location)
-        l.lifecycle("QRCode created: ${releaseConf.QRCodeFile.location}")
+        logger.lifecycle("QRCode created: ${releaseConf.QRCodeFile.location}")
     }
 
     @PackageScope
@@ -145,14 +142,14 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         def urlMap = [:]
         variantsConf.variants.each { v ->
             if (releaseConf.manifestFiles[v.name]) {
-                l.lifecycle("Preparing OTA configuration for ${v.name}")
+                logger.lifecycle("Preparing OTA configuration for ${v.name}")
                 def encodedUrl = encode(releaseConf.manifestFiles[v.name].url.toString(), "utf-8")
                 urlMap.put(v.name, "itms-services://?action=download-manifest&url=${encodedUrl}")
             } else {
-                l.warn("Skipping preparing OTA configuration for ${v.name} -> missing manifest")
+                logger.warn("Skipping preparing OTA configuration for ${v.name} -> missing manifest")
             }
         }
-        l.lifecycle("OTA urls: $urlMap")
+        logger.lifecycle("OTA urls: $urlMap")
         def binding = [
                 baseUrl: releaseConf.otaIndexFile.url,
                 title: conf.projectName.value,
@@ -167,7 +164,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         ]
         def result = fillTemplate(loadTemplate('index.html'), binding)
         templateToFile(releaseConf.otaIndexFile.location, result)
-        l.lifecycle("OTA index created: ${releaseConf.otaIndexFile.location}")
+        logger.lifecycle("OTA index created: ${releaseConf.otaIndexFile.location}")
         ant.copy(file: releaseConf.iconFile.value, tofile: new File(releaseConf.otaIndexFile.location.parentFile, releaseConf.iconFile.value.name))
     }
 
@@ -186,7 +183,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         ]
         def result = fillTemplate(loadTemplate('file_index.html'), binding)
         templateToFile(releaseConf.fileIndexFile.location, result)
-        l.lifecycle("File index created: ${releaseConf.fileIndexFile.location}")
+        logger.lifecycle("File index created: ${releaseConf.fileIndexFile.location}")
     }
 
     @PackageScope
@@ -203,7 +200,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         ]
         def result = fillTemplate(loadTemplate('plain_file_index.html'), binding)
         templateToFile(releaseConf.plainFileIndexFile.location, result)
-        l.lifecycle("Plain file index created: ${releaseConf.plainFileIndexFile.location}")
+        logger.lifecycle("Plain file index created: ${releaseConf.plainFileIndexFile.location}")
     }
 
     private ResourceBundle bundle(String id) {

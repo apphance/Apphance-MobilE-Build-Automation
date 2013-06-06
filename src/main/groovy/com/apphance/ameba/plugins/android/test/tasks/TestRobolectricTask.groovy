@@ -10,7 +10,6 @@ import org.gradle.tooling.ProjectConnection
 import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_TEST
-import static org.gradle.api.logging.Logging.getLogger
 
 class TestRobolectricTask extends DefaultTask {
 
@@ -23,14 +22,13 @@ class TestRobolectricTask extends DefaultTask {
 
     @Inject AndroidConfiguration conf
 
-    private l = getLogger(getClass())
     private String robolectricPath = '/test/robolectric'
 
     @TaskAction
     void testRobolectric() {
         def path = new File(conf.rootDir.path, robolectricPath)
         if (!(path.exists())) {
-            l.warn("Running Robolectric test has failed. No valid tests present nor test project had been created under " +
+            logger.warn("Running Robolectric test has failed. No valid tests present nor test project had been created under " +
                     "'${conf.rootDir.path}/test/robolectric'. Run prepareRobolectric taks to (re)create unit test project.")
             return
         }

@@ -14,7 +14,7 @@ class AmebaPluginSpec extends Specification {
         System.properties['java.version'] = '1.6.23_10'
 
         and:
-        def plugin = new AmebaPlugin()
+        def plugin = new FlowPlugin()
 
         when:
         plugin.apply(proj)

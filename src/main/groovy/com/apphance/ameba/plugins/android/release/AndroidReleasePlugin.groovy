@@ -9,7 +9,6 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
 import static org.gradle.api.logging.Logging.getLogger
 
 /**

@@ -5,6 +5,7 @@ import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.ameba.plugins.ios.parsers.PlistParser
 import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
+import com.google.inject.Singleton
 
 import javax.inject.Inject
 
@@ -17,7 +18,7 @@ import static org.gradle.api.logging.Logging.getLogger
  * Builds single variant for iOS projects.
  *
  */
-@com.google.inject.Singleton
+@Singleton
 class IOSSingleVariantBuilder {
 
     def l = getLogger(getClass())

@@ -9,12 +9,14 @@ import spock.lang.Specification
 class SendMailMessageTaskSpec extends Specification {
 
     def task = create(SendMailMessageTask) as SendMailMessageTask
+
     def releaseConf = GroovySpy(ReleaseConfiguration) {
         getMailServer() >> 'mail.server'
         getMailPort() >> '3145'
         getReleaseMailFrom() >> new StringProperty(value: 'relase@mail.from')
         getReleaseMailTo() >> new StringProperty(value: 'relase@mail.to')
     }
+
     def ant = GroovyMock(org.gradle.api.AntBuilder)
 
     def setup() {
@@ -24,7 +26,7 @@ class SendMailMessageTaskSpec extends Specification {
 
     def 'ant mailer is called'() {
         given:
-        task.project.configurations.add('mail')
+        task.project.configurations.create('mail')
 
         when:
         task.sendMailMessage()

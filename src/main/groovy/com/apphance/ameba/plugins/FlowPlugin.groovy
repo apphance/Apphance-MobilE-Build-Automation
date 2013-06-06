@@ -13,7 +13,7 @@ import org.gradle.api.Project
 
 import static org.gradle.api.logging.Logging.getLogger
 
-class AmebaPlugin implements Plugin<Project> {
+class FlowPlugin implements Plugin<Project> {
 
     static final Version BORDER_VERSION = new Version('1.7')
 

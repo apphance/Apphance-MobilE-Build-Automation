@@ -11,7 +11,6 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
-import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Builds iOS framework.
@@ -23,8 +22,6 @@ class BuildFrameworkTask extends DefaultTask {
     String description = 'Builds iOS framework project'
 
     static final String FRAMEWORK_BUILD_PATH = 'Development-Framework'
-
-    def l = getLogger(getClass())
 
     private File frameworkAppDir
     private File frameworkMainDir
@@ -66,7 +63,7 @@ class BuildFrameworkTask extends DefaultTask {
     }
 
     private createLibrary() {
-        l.lifecycle('Create library')
+        logger.lifecycle('Create library')
         def outputFile = new File(frameworkVersionsVersionDir, variant.projectName)
         outputFile.parentFile.mkdirs()
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
@@ -79,7 +76,7 @@ class BuildFrameworkTask extends DefaultTask {
     }
 
     private copyingResources() {
-        l.lifecycle('Copying resources')
+        logger.lifecycle('Copying resources')
         frameworkConf.resources.value.each {
             if (it != '') {
                 project.ant.copy(file: it, toDir: frameworkVersionsVersionResourcesDir)
@@ -88,7 +85,7 @@ class BuildFrameworkTask extends DefaultTask {
     }
 
     private copyingHeaders() {
-        l.lifecycle('Copying headers')
+        logger.lifecycle('Copying headers')
         frameworkConf.headers.value.each {
             if (it != '') {
                 project.ant.copy(file: it, toDir: frameworkVersionsVersionHeadersDir)
@@ -97,13 +94,13 @@ class BuildFrameworkTask extends DefaultTask {
     }
 
     private setLinkLibraries() {
-        l.lifecycle('Set link libraries')
+        logger.lifecycle('Set link libraries')
         iphoneosLibrary = new File(project.buildDir, "${variant.configuration}-iphoneos/lib${variant.target}.a")
         iphoneosSimulatorLibrary = new File(project.buildDir, "${variant.configuration}-iphonesimulator/lib${variant.target}.a")
     }
 
     private createSymlinks() {
-        l.lifecycle('Creating symlinks')
+        logger.lifecycle('Creating symlinks')
         executor.executeCommand(new Command(runDir: frameworkVersionsDir, cmd: [
                 'ln',
                 '-s',
@@ -133,12 +130,12 @@ class BuildFrameworkTask extends DefaultTask {
 
     private cleanFrameworkDir() {
         frameworkMainDir = new File(project.buildDir, FRAMEWORK_BUILD_PATH)
-        l.lifecycle("Cleaning framework dir: ${frameworkMainDir}")
+        logger.lifecycle("Cleaning framework dir: ${frameworkMainDir}")
         project.ant.delete(dir: frameworkMainDir)
     }
 
     private createDirectoryStructure() {
-        l.lifecycle('Creating directory structure')
+        logger.lifecycle('Creating directory structure')
         frameworkMainDir.mkdirs()
         frameworkAppDir = new File(frameworkMainDir, "${variant.projectName}.framework")
         frameworkAppDir.mkdirs()

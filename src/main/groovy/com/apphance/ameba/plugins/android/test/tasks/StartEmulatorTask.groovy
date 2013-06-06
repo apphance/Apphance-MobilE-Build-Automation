@@ -11,11 +11,8 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_TEST
-import static org.gradle.api.logging.Logging.getLogger
 
 class StartEmulatorTask extends DefaultTask {
-
-    private l = getLogger(getClass())
 
     static String NAME = 'startEmulator'
     String group = FLOW_TEST
@@ -33,7 +30,7 @@ class StartEmulatorTask extends DefaultTask {
     }
 
     private void startEmulator(boolean noWindow) {
-        l.lifecycle("Starting emulator ${testConf.emulatorName}")
+        logger.lifecycle("Starting emulator ${testConf.emulatorName}")
         def emulatorCommand = [
                 'emulator',
                 '-avd',
@@ -49,11 +46,11 @@ class StartEmulatorTask extends DefaultTask {
         Thread.sleep(4 * 1000) // sleep for some time.
         runLogCat()
         waitUntilEmulatorReady()
-        l.lifecycle("Started emulator ${testConf.emulatorName}")
+        logger.lifecycle("Started emulator ${testConf.emulatorName}")
     }
 
     private void runLogCat() {
-        l.lifecycle("Starting logcat monitor on ${testConf.emulatorName}")
+        logger.lifecycle("Starting logcat monitor on ${testConf.emulatorName}")
         String[] commandRunLogcat = [
                 testConf.getADBBinary(),
                 '-s',
@@ -66,7 +63,7 @@ class StartEmulatorTask extends DefaultTask {
     }
 
     private void waitUntilEmulatorReady() {
-        l.lifecycle("Waiting until emulator is ready ${testConf.emulatorName}")
+        logger.lifecycle("Waiting until emulator is ready ${testConf.emulatorName}")
         String[] commandRunShell = [
                 testConf.getADBBinary(),
                 '-s',
@@ -79,7 +76,7 @@ class StartEmulatorTask extends DefaultTask {
         while (true) {
             def res = executor.executeCommand(new Command(runDir: conf.rootDir, cmd: commandRunShell, failOnError: false))
             if (res != null && res[0] == "1") {
-                l.lifecycle("Emulator is ready ${testConf.emulatorName}!")
+                logger.lifecycle("Emulator is ready ${testConf.emulatorName}!")
                 break
             }
             if (System.currentTimeMillis() - startTime > 360 * 1000) {

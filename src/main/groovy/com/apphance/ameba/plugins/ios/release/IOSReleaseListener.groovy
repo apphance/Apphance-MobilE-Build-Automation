@@ -34,7 +34,7 @@ class IOSReleaseListener implements IOSBuildListener {
                 break
 
             default:
-                l.info("Unrecognized mode: ${bi.mode}, builder info: $bi")
+                l.warn("Unrecognized mode: $bi.mode, builder info: $bi")
         }
     }
 }

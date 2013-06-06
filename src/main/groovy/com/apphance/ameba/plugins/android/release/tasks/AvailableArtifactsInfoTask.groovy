@@ -16,11 +16,8 @@ import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.ameba.util.file.FileDownloader.downloadFile
 import static java.net.URLEncoder.encode
 import static java.util.ResourceBundle.getBundle
-import static org.gradle.api.logging.Logging.getLogger
 
 class AvailableArtifactsInfoTask extends DefaultTask {
-
-    private l = getLogger(getClass())
 
     static final NAME = 'prepareAvailableArtifactsInfo'
     String description = 'Prepares information about available artifacts for mail message to include'
@@ -116,7 +113,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
                 url: new URL(releaseConf.versionedApplicationUrl, qrCodeFileName),
                 location: qrCodeFile)
         releaseConf.QRCodeFile = artifact
-        l.lifecycle("QRCode created: ${artifact.location}")
+        logger.lifecycle("QRCode created: ${artifact.location}")
     }
 
     private void prepareIconFile() {
@@ -141,7 +138,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         ]
         def result = fillTemplate(loadTemplate('file_index.html'), binding)
         templateToFile(releaseConf.fileIndexFile.location, result)
-        l.lifecycle("File index created: ${releaseConf.fileIndexFile.location}")
+        logger.lifecycle("File index created: ${releaseConf.fileIndexFile.location}")
     }
 
     @PackageScope
@@ -158,7 +155,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         ]
         def result = fillTemplate(loadTemplate('plain_file_index.html'), binding)
         templateToFile(releaseConf.plainFileIndexFile.location, result)
-        l.lifecycle("Plain file index created: ${releaseConf.plainFileIndexFile.location}")
+        logger.lifecycle("Plain file index created: ${releaseConf.plainFileIndexFile.location}")
     }
 
     @PackageScope
@@ -176,7 +173,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         ]
         def result = fillTemplate(loadTemplate('index.html'), binding)
         templateToFile(releaseConf.otaIndexFile.location, result)
-        l.lifecycle("OTA index created: ${releaseConf.otaIndexFile.location}")
+        logger.lifecycle("OTA index created: ${releaseConf.otaIndexFile.location}")
     }
 
     private ResourceBundle bundle(String id) {

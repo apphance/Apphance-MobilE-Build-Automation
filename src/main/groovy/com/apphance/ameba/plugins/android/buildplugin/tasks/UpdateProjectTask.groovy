@@ -21,10 +21,10 @@ class UpdateProjectTask extends DefaultTask {
 
     @TaskAction
     void runUpdate() {
-        runRecursivelyInAllSubprojects(conf.rootDir, this.&runUpdateProject)
+        runRecursivelyInAllSubProjects(conf.rootDir, this.&runUpdateProject)
     }
 
-    static void runRecursivelyInAllSubprojects(File currentDir, Closure method) {
+    static void runRecursivelyInAllSubProjects(File currentDir, Closure method) {
         method(currentDir)
 
         def propFile = new File(currentDir, 'project.properties')
@@ -32,9 +32,9 @@ class UpdateProjectTask extends DefaultTask {
         if (propFile.exists()) {
             def prop = new Properties()
             prop.load(new FileInputStream(propFile))
-            prop.each {String key, String value ->
+            prop.each { String key, String value ->
                 if (key.startsWith('android.library.reference.')) {
-                    runRecursivelyInAllSubprojects(new File(currentDir, value), method)
+                    runRecursivelyInAllSubProjects(new File(currentDir, value), method)
                 }
             }
         }

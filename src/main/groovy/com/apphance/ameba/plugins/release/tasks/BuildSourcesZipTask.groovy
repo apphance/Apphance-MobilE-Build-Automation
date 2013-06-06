@@ -14,11 +14,8 @@ import static com.apphance.ameba.configuration.reader.GradlePropertiesPersister.
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.ameba.util.file.FileManager.removeMissingSymlinks
-import static org.gradle.api.logging.Logging.getLogger
 
 class BuildSourcesZipTask extends DefaultTask {
-
-    private l = getLogger(getClass())
 
     static String NAME = 'buildSourcesZip'
     String description = 'Builds sources .zip file.'
@@ -51,8 +48,8 @@ class BuildSourcesZipTask extends DefaultTask {
                 conf.sourceExcludes.each { exclude(name: it) }
             }
         }
-        l.debug("Extra source excludes: $conf.sourceExcludes")
-        l.debug("Created source files at: $destZip")
+        logger.debug("Extra source excludes: $conf.sourceExcludes")
+        logger.debug("Created source files at: $destZip")
     }
 
     private void prepareSourcesAndDocumentationArtifacts() {

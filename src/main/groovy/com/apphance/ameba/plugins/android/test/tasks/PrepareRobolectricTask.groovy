@@ -8,11 +8,8 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_TEST
-import static org.gradle.api.logging.Logging.getLogger
 
 class PrepareRobolectricTask extends DefaultTask {
-
-    private l = getLogger(getClass())
 
     static String NAME = 'prepareRobolectric'
     String group = FLOW_TEST
@@ -57,7 +54,7 @@ class PrepareRobolectricTask extends DefaultTask {
 
     @groovy.transform.PackageScope
     void downloadFile(URL url, File file) {
-        l.info("Downloading file from ${url} to ${file}")
+        logger.info("Downloading file from ${url} to ${file}")
         def stream = new FileOutputStream(file)
         def out = new BufferedOutputStream(stream)
         out << url.openStream()

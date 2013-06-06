@@ -7,11 +7,8 @@ import com.apphance.ameba.plugins.release.tasks.AbstractPrepareMailMessageTask
 import javax.inject.Inject
 
 import static com.apphance.ameba.util.file.FileManager.getHumanReadableSize
-import static org.gradle.api.logging.Logging.getLogger
 
 class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
-
-    private l = getLogger(getClass())
 
     @Inject AndroidVariantsConfiguration variantsConf
 
@@ -36,7 +33,7 @@ class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
         def result = createTemplate(loadTemplate(), binding)
         releaseConf.mailMessageFile.location.write(result.toString(), 'UTF-8')
 
-        l.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")
+        logger.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")
     }
 
     String fileSize() {

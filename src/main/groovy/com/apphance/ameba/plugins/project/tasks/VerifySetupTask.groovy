@@ -17,7 +17,7 @@ import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_SETUP
 class VerifySetupTask extends DefaultTask {
 
     static String NAME = 'verifySetup'
-    String description = 'Verifies if the project can be build properly'
+    String description = 'Verifies if the project can be built properly'
     String group = FLOW_SETUP
 
     @Inject Map<Integer, AbstractConfiguration> configurations

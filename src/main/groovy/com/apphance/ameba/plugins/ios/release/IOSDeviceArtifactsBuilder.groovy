@@ -15,7 +15,7 @@ import static org.gradle.api.logging.Logging.getLogger
 
 class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
-    private l = getLogger(getClass())
+    private logger = getLogger(getClass())
 
     @Inject IOSArtifactProvider artifactProvider
     @Inject org.gradle.api.AntBuilder ant
@@ -40,7 +40,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
             zipfileset(dir: bi.mobileprovision.parent, includes: bi.mobileprovision)
             zipfileset(dir: bi.buildDir, includes: "${bi.buildableName}/**")
         }
-        l.lifecycle("Distribution zip file created: ${aa.location}")
+        logger.lifecycle("Distribution zip file created: ${aa.location}")
     }
 
     private void prepareDSYMZipFile(IOSBuilderInfo bi) {
@@ -51,7 +51,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         ant.zip(destfile: aa.location) {
             zipfileset(dir: bi.buildDir, includes: "${bi.buildableName}.dSYM/**")
         }
-        l.lifecycle("dSYM zip file created: ${aa.location}")
+        logger.lifecycle("dSYM zip file created: ${aa.location}")
     }
 
     private void prepareAhSYMFiles(IOSBuilderInfo bi) {
@@ -68,7 +68,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         dest.listFiles().each {
             aa.childArtifacts << new AmebaArtifact(name: it.name, location: it, url: "${aa.url.toString()}/${it.name}".toURL())
         }
-        l.lifecycle("ahSYM files created: ${aa.location}")
+        logger.lifecycle("ahSYM files created: ${aa.location}")
     }
 
     private void prepareIpaFile(IOSBuilderInfo bi) {
@@ -90,7 +90,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
                 bi.mobileprovision.canonicalPath
         ]
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: cmd))
-        l.lifecycle("ipa file created: ${aa.location}")
+        logger.lifecycle("ipa file created: ${aa.location}")
     }
 
     private void prepareManifestFile(IOSBuilderInfo bi) {
@@ -99,7 +99,6 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         aa.location.parentFile.mkdirs()
         aa.location.delete()
 
-        URL manifestTemplate = getClass().getResource('manifest.plist')
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
         def bundleId = plistParser.evaluate(plistParser.bundleId(bi.plist), bi.target, bi.configuration)
         def binding = [
@@ -107,10 +106,10 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
                 title: bi.target,
                 bundleId: bundleId
         ]
-        l.lifecycle("Building manifest from ${bi.plist}, bundleId: ${bundleId}")
-        def result = engine.createTemplate(manifestTemplate).make(binding)
+        logger.lifecycle("Building manifest from ${bi.plist}, bundleId: ${bundleId}")
+        def result = engine.createTemplate(getClass().getResource('manifest.plist')).make(binding)
         aa.location << (result.toString())
-        l.lifecycle("Manifest file created: ${aa.location}")
+        logger.lifecycle("Manifest file created: ${aa.location}")
     }
 
     private void prepareMobileProvisionFile(IOSBuilderInfo bi) {
@@ -119,6 +118,6 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         aa.location.parentFile.mkdirs()
         aa.location.delete()
         aa.location << bi.mobileprovision.text
-        l.lifecycle("Mobile provision file created: ${aa.location}")
+        logger.lifecycle("Mobile provision file created: ${aa.location}")
     }
 }

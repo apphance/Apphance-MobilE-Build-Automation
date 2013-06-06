@@ -1,7 +1,7 @@
 package com.apphance.ameba.plugins.ios.release.tasks
 
+import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
-import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.plugins.release.tasks.AbstractPrepareMailMessageTask
 import org.gradle.api.GradleException
 
@@ -9,13 +9,10 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.configuration.ios.IOSConfiguration.FAMILIES
 import static com.apphance.ameba.util.file.FileManager.getHumanReadableSize
-import static org.gradle.api.logging.Logging.getLogger
 
 class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
 
-    private l = getLogger(getClass())
-
-    @Inject IOSVariantsConfiguration variantsConf
+    @Inject IOSConfiguration conf
 
     @Override
     void fillTemplate() {
@@ -24,25 +21,23 @@ class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
             it.value.location != null
         }
         if (existingBuild) {
-            l.lifecycle("Main build used for size calculation: ${existingBuild.key}")
+            logger.lifecycle("Main build used for size calculation: ${existingBuild.key}")
             fileSize = existingBuild.value.location.size()
         }
         def rb = loadBundle()
         releaseConf.releaseMailSubject = fillMailSubject(rb)
 
-        def mainVariant = variantsConf.mainVariant
-
         def dmgImgFiles = ((IOSReleaseConfiguration) releaseConf).dmgImageFiles
 
         def binding = [
-                title: mainVariant.projectName,
-                version: mainVariant.fullVersionString,
+                title: conf.projectName.value,
+                version: conf.fullVersionString,
                 currentDate: releaseConf.buildDate,
                 otaUrl: releaseConf.otaIndexFile?.url,
                 fileIndexUrl: releaseConf.fileIndexFile?.url,
                 releaseNotes: releaseConf.releaseNotes,
                 installable: dmgImgFiles,
-                mainTarget: mainVariant.target,
+                mainTarget: conf.iosVariantsConf.mainVariant.target,
                 families: FAMILIES,
                 fileSize: getHumanReadableSize(fileSize),
                 releaseMailFlags: releaseConf.releaseMailFlags,
@@ -50,8 +45,8 @@ class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
         ]
         if (dmgImgFiles.size() > 0) {
             FAMILIES.each { family ->
-                if (dmgImgFiles["${family}-${mainVariant.target}"] == null) {
-                    throw new GradleException("Wrongly configured family or target: ${family}-${mainVariant.target} missing")
+                if (dmgImgFiles["${family}-${conf.iosVariantsConf.mainVariant.target}"] == null) {
+                    throw new GradleException("Wrongly configured family or target: ${family}-${conf.iosVariantsConf.mainVariant.target} missing")
                 }
             }
         }
@@ -59,6 +54,6 @@ class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
         def result = createTemplate(mailTemplate, binding)
         releaseConf.mailMessageFile.location.write(result.toString(), 'UTF-8')
 
-        l.lifecycle("Mail message file created: ${releaseConf.mailMessageFile.location}")
+        logger.lifecycle("Mail message file created: ${releaseConf.mailMessageFile.location}")
     }
 }

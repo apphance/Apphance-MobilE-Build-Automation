@@ -4,7 +4,7 @@ import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
-import com.apphance.ameba.plugins.AmebaPlugin
+import com.apphance.ameba.plugins.FlowPlugin
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Ignore
 import spock.lang.Specification
@@ -35,7 +35,7 @@ class AndroidDependencyDetectionSpec extends Specification {
 
         and:
         def project = projectBuilder.build()
-        project.project.plugins.apply(AmebaPlugin)
+        project.project.plugins.apply(FlowPlugin)
 
         when:
         executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['ant', 'debug']))

@@ -20,13 +20,10 @@ import java.util.List
 import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
-import static org.gradle.api.logging.Logging.getLogger
 import static org.imgscalr.Scalr.pad
 
 @Mixin(ImageNameFilter)
 class ImageMontageTask extends DefaultTask {
-
-    def log = getLogger(this.class)
 
     static String NAME = 'prepareImageMontage'
     String group = FLOW_RELEASE
@@ -128,7 +125,7 @@ class ImageMontageTask extends DefaultTask {
                 image = pad(image, 20, Color.WHITE)
                 image.getScaledInstance(TILE_PX_SIZE, TILE_PX_SIZE, Image.SCALE_DEFAULT)
             } else {
-                log.error("Problem during converting ${it.absolutePath}")
+                logger.error("Problem during converting ${it.absolutePath}")
             }
         }
 
@@ -138,7 +135,7 @@ class ImageMontageTask extends DefaultTask {
 
     @PackageScope
     BufferedImage getImageFrom(File file) {
-        log.info("Reading file: $file.absolutePath")
+        logger.info("Reading file: $file.absolutePath")
         ImageIO.read(file)
     }
 }

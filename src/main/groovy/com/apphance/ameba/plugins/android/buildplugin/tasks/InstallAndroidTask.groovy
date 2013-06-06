@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_BUILD
 
-class InstallTask extends DefaultTask {
+class InstallAndroidTask extends DefaultTask {
 
     String group = FLOW_BUILD
 

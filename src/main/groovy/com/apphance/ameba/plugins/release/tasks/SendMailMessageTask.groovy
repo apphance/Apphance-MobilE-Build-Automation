@@ -2,6 +2,7 @@ package com.apphance.ameba.plugins.release.tasks
 
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import org.apache.tools.ant.Project
+import org.gradle.api.AntBuilder
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -20,10 +21,8 @@ class SendMailMessageTask extends DefaultTask {
              release.mail.from, release.mail.to, release.mail.flags
              flags are one of: qrCode, imageMontage, installableSimulator"""
 
-
-
     @Inject ReleaseConfiguration releaseConf
-    @Inject org.gradle.api.AntBuilder ant
+    @Inject AntBuilder ant
 
     @TaskAction
     void sendMailMessage() {

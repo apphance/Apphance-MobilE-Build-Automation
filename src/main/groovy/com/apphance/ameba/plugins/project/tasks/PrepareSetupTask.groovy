@@ -3,7 +3,6 @@ package com.apphance.ameba.plugins.project.tasks
 import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.reader.ConfigurationWizard
 import com.apphance.ameba.configuration.reader.PropertyPersister
-import com.apphance.ameba.configuration.reader.PropertyReader
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -21,7 +20,6 @@ class PrepareSetupTask extends DefaultTask {
     @Inject Map<Integer, AbstractConfiguration> configurations
     @Inject PropertyPersister propertyPersister
     @Inject ConfigurationWizard configurationWizard
-    @Inject PropertyReader propertyReader
 
     @TaskAction
     void prepareSetup() {

@@ -11,11 +11,8 @@ import java.util.regex.Pattern
 
 import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_RELEASE
 import static org.apache.commons.lang.StringUtils.isEmpty
-import static org.gradle.api.logging.Logging.getLogger
 
 abstract class AbstractUpdateVersionTask extends DefaultTask {
-
-    private l = getLogger(getClass())
 
     static final String NAME = 'updateVersion'
     String group = FLOW_RELEASE
@@ -36,8 +33,8 @@ abstract class AbstractUpdateVersionTask extends DefaultTask {
 
         updateDescriptor(versionCode, versionString)
 
-        l.lifecycle("New version code: ${versionCode}")
-        l.lifecycle("New version string: ${versionString}")
+        logger.lifecycle("New version string: $versionString")
+        logger.lifecycle("New version code: $versionCode")
     }
 
     abstract void updateDescriptor(String versionCode, String versionString)

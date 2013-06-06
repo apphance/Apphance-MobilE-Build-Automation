@@ -9,16 +9,13 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.ameba.plugins.ios.ocunit.IOSUnitTestPlugin.AMEBA_IOS_UNIT
-import static org.gradle.api.logging.Logging.getLogger
+import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_TEST
 
 class RunUnitTestsTasks extends DefaultTask {
 
-    private log = getLogger(getClass())
-
     static String NAME = 'runUnitTests'
-    String group = AMEBA_IOS_UNIT
-    String description = "Build and executes Unit tests. Requires UnitTests target."
+    String group = FLOW_TEST
+    String description = 'Build and executes Unit tests. Requires UnitTests target'
 
     @Inject IOSExecutor iosExecutor
     @Inject ProjectConfiguration conf
@@ -26,7 +23,7 @@ class RunUnitTestsTasks extends DefaultTask {
 
     @TaskAction
     void runUnitTests() {
-        log.lifecycle "Running unit tests with variant: ${unitTestConf.variant.name}"
+        logger.lifecycle "Running unit tests with variant: ${unitTestConf.variant.name}"
 
         def testResults = new File(conf.tmpDir, "test-${unitTestConf.variant.name}.txt")
         testResults.createNewFile()

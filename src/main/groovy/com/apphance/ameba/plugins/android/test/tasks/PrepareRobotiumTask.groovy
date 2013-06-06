@@ -11,11 +11,8 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_TEST
-import static org.gradle.api.logging.Logging.getLogger
 
 class PrepareRobotiumTask extends DefaultTask {
-
-    private l = getLogger(getClass())
 
     static String NAME = 'prepareRobotium'
     String group = FLOW_TEST
@@ -40,7 +37,7 @@ class PrepareRobotiumTask extends DefaultTask {
     private void setUpAndroidRobotiumProject(File path) {
         String[] command
         if (path.exists()) {
-            l.info("Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)")
+            logger.info("Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)")
             command = [
                     'android',
                     '-v',
@@ -52,7 +49,7 @@ class PrepareRobotiumTask extends DefaultTask {
                     '../..'
             ]
         } else {
-            l.info("No Robotium project detected, new one is going to be created")
+            logger.info("No Robotium project detected, new one is going to be created")
             path.mkdirs()
             command = [
                     'android',
@@ -71,14 +68,14 @@ class PrepareRobotiumTask extends DefaultTask {
     }
 
     private void replaceInstrumentationLibrary(File path) {
-        l.info("Changing Android Manifest file: PolideaInstrumentationTestRunner will be in use")
+        logger.info("Changing Android Manifest file: PolideaInstrumentationTestRunner will be in use")
         File manifest = new File(path.path, 'AndroidManifest.xml')
         String input = manifest.text.replace('android.test.InstrumentationTestRunner', 'pl.polidea.instrumentation.PolideaInstrumentationTestRunner');
         manifest.write(input)
     }
 
     private void addApphanceInstrumentation(File path) {
-        l.info("Downloading PolideaInstrumentationTestRunner library")
+        logger.info("Downloading PolideaInstrumentationTestRunner library")
         def libs = new File(path.path + '/libs/')
         libs.mkdirs()
         copyFromResources(libs, 'the-missing-android-xml-junit-test-runner-release-1.3_2.jar');
@@ -99,7 +96,7 @@ class PrepareRobotiumTask extends DefaultTask {
     }
 
     private void addRobotiumLibrary(File path) {
-        l.info("Downloading Robotium library")
+        logger.info("Downloading Robotium library")
         def libs = new File(path.path + '/libs/')
         libs.mkdirs()
         project.configurations.robotium.each {
@@ -109,7 +106,7 @@ class PrepareRobotiumTask extends DefaultTask {
 
     @groovy.transform.PackageScope
     void downloadFile(URL url, File file) {
-        l.info("Downloading file from ${url} to ${file}")
+        logger.info("Downloading file from ${url} to ${file}")
         def stream = new FileOutputStream(file)
         def out = new BufferedOutputStream(stream)
         out << url.openStream()
@@ -120,7 +117,6 @@ class PrepareRobotiumTask extends DefaultTask {
         File srcDir = new File(path.path + '/src/' + conf.mainPackage.replace('.', File.separator))
         srcDir.mkdirs()
 
-        // Delete the default test class
         new File(srcDir.path + "/TestActivityTest.java").delete()
 
         File baseCase = new File(srcDir.path + File.separator + 'BaseTestCase.java')
