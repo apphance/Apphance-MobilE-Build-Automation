@@ -27,13 +27,13 @@ abstract class AbstractProperty<T> {
     }
 
     @Override
-    String toString() { "$name = $value" }
+    String toString() { "$name = ${getValue()}" }
 
     /**
      * Default value of property used in configuration wizard calculated from <code>value</code>, <code>defaultValue</code> and <code>possibleValues</code>
      */
     String effectiveDefaultValue() {
-        value ?: defaultValue() ?: possibleValues() ? possibleValues().get(0) : ''
+        getValue() ?: defaultValue() ?: possibleValues() ? possibleValues().get(0) : ''
     }
 
     String getFailedValidationMessage() {

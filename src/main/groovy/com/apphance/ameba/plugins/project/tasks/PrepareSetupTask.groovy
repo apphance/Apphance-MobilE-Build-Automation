@@ -16,18 +16,19 @@ class PrepareSetupTask extends DefaultTask {
 
     static final NAME = 'prepareSetup'
     String group = FLOW_SETUP
-    String description = "Prepares configuration (${FLOW_PROP_FILENAME}). Can be used in non-interactive mode \"-Dnoninteractive\""
+    String description = "Prepares configuration (${FLOW_PROP_FILENAME}). Can be used in non-interactive mode '-Dnoninteractive' or '-Dni'"
 
     @Inject Map<Integer, AbstractConfiguration> configurations
     @Inject PropertyPersister propertyPersister
-    @Inject ConfigurationWizard conversationManager
+    @Inject ConfigurationWizard configurationWizard
     @Inject PropertyReader propertyReader
 
     @TaskAction
     void prepareSetup() {
         Collection<AbstractConfiguration> sorted = configurations.sort().values()
-        conversationManager.interactiveMode = propertyReader.systemProperty('noninteractive') == null
-        conversationManager.resolveConfigurations(sorted)
+        configurationWizard.interactiveMode = ['ni', 'noninteractive'].every { System.getProperty(it) == null }
+        println "Running configuration wizard. Interactive mode = ${configurationWizard.interactiveMode}"
+        configurationWizard.resolveConfigurations(sorted)
         propertyPersister.save(sorted)
     }
 }

@@ -24,7 +24,7 @@ class PropertyReaderSpec extends Specification {
         def epr = new PropertyReader()
 
         and: 'clear settings'
-        System.setProperty(name, '')
+        System.clearProperty(name)
 
         when:
         system.each {

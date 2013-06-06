@@ -73,6 +73,7 @@ class ConfigurationWizard {
             def input = getInput()
             if (validateInput(input, ap)) {
                 setPropertyValue(ap, input)
+                if (!interactiveMode) println ''
                 break
             } else {
                 if (!interactiveMode) {

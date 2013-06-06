@@ -7,10 +7,10 @@ class URLProperty extends AbstractProperty<URL> {
     private String internalValue
 
     @Override
-    void setValue(String value) {
-        value = value?.trim()
-        if (value)
-            this.internalValue = value
+    void setValue(String val) {
+        val = val?.trim()
+        if (val)
+            this.internalValue = val
     }
 
     @Override

@@ -7,7 +7,7 @@ class PropertyReader {
 
     String systemProperty(String name) {
         verify(name)
-        System.getProperty(name) ?: null
+        System.getProperty(name)
     }
 
     String envVariable(String name) {
