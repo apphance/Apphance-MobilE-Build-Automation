@@ -6,6 +6,7 @@ import com.apphance.ameba.executor.AndroidExecutor
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
+import org.gradle.api.Project
 import spock.lang.Specification
 
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
@@ -45,13 +46,15 @@ class UpdateProjectTaskSpec extends Specification {
         def ce = new CommandExecutor(fileLinker, logFileGenerator)
 
         and:
-        def ae = new AndroidExecutor(executor: ce)
-
-        and:
-        def ac = GroovyMock(AndroidConfiguration)
+        def ac = GroovySpy(AndroidConfiguration)
         ac.target >> new StringProperty(value: 'android-7')
         ac.projectName >> new StringProperty(value: 'TestAndroidProject')
-        ac.rootDir >> project.rootDir
+        ac.project = GroovyStub(Project) {
+            getRootDir() >> project.rootDir
+        }
+
+        and:
+        def ae = new AndroidExecutor(executor: ce, conf: ac)
 
         and:
         def updateTask = project.task(UpdateProjectTask.NAME, type: UpdateProjectTask) as UpdateProjectTask

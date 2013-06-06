@@ -1,15 +1,13 @@
 package com.apphance.ameba.plugins.ios.apphance.tasks
 
-import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.plugins.apphance.ApphancePluginCommons
-import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.google.inject.Inject
-import org.gradle.api.DefaultTask
+import com.google.inject.assistedinject.Assisted
 import org.gradle.api.GradleException
 
 import static com.apphance.ameba.util.file.FileManager.MAX_RECURSION_LEVEL
@@ -27,18 +25,16 @@ class AddIOSApphanceTask {
 
     @Inject CommandExecutor executor
     @Inject IOSExecutor iosExecutor
-    @Inject ApphanceConfiguration apphanceConf
     @Inject IOSConfiguration iosConfiguration
-
-    //TODO remove unused fields
-    //TODO this class should be written as a service
-
     @Inject PbxProjectHelper pbxProjectHelper
+
+
     private AbstractIOSVariant variant
     private String target
     private String configuration
 
-    AddIOSApphanceTask(AbstractIOSVariant variantConf) {
+    @Inject
+    AddIOSApphanceTask(@Assisted AbstractIOSVariant variantConf) {
         this.pbxProjectHelper = new PbxProjectHelper(variantConf.apphanceLibVersion.value, variantConf.apphanceMode.value.toString())
 
         this.variant = variantConf
@@ -47,17 +43,18 @@ class AddIOSApphanceTask {
     }
 
     void addIOSApphance() {
-        def builder = new IOSSingleVariantBuilder(project, iosExecutor)
-        if (!isApphancePresent(builder.tmpDir(target, configuration))) {
-            log.lifecycle("Adding Apphance to ${variant} (${target}, ${configuration}): ${builder.tmpDir(target, configuration)}. Project file = ${variant.tmpDir}")
-            pbxProjectHelper.addApphanceToProject(
-                    builder.tmpDir(target, configuration),
-                    iosConfiguration.xcodeDir.value,
-                    target,
-                    configuration,
-                    variant.apphanceAppKey.value)
-            copyApphanceFramework(builder.tmpDir(target, configuration))
-        }
+        //TODO way of using single variant builder has changed, to refactor when apphance refactoring is being done
+//        def builder = new IOSSingleVariantBuilder(iosExecutor: iosExecutor)
+//        if (!isApphancePresent(builder.tmpDir(target, configuration))) {
+//            log.lifecycle("Adding Apphance to ${variant} (${target}, ${configuration}): ${builder.tmpDir(target, configuration)}. Project file = ${variant.tmpDir}")
+//            pbxProjectHelper.addApphanceToProject(
+//                    builder.tmpDir(target, configuration),
+//                    iosConfiguration.xcodeDir.value,
+//                    target,
+//                    configuration,
+//                    variant.apphanceAppKey.value)
+//            copyApphanceFramework(builder.tmpDir(target, configuration))
+//        }
     }
 
     private boolean isApphancePresent(File projectDir) {

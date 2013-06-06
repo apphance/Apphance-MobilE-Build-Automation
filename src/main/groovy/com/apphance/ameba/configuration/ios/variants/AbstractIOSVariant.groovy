@@ -1,33 +1,39 @@
 package com.apphance.ameba.configuration.ios.variants
 
 import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
+import com.apphance.ameba.configuration.ios.IOSBuildMode
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
+import com.apphance.ameba.configuration.properties.IOSBuildModeProperty
+import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.configuration.variants.AbstractVariant
+import com.apphance.ameba.executor.IOSExecutor
 import com.apphance.ameba.plugins.ios.parsers.PbxJsonParser
 import com.apphance.ameba.plugins.ios.parsers.PlistParser
 import com.google.inject.assistedinject.Assisted
+import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.ProjectConfiguration.BUILD_DIR
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.ameba.plugins.release.tasks.AbstractUpdateVersionTask.WHITESPACE_PATTERN
+import static com.apphance.ameba.util.file.FileManager.relativeTo
+import static com.google.common.base.Preconditions.checkArgument
+import static org.apache.commons.lang.StringUtils.isNotBlank
+import static org.apache.commons.lang.StringUtils.isNotEmpty
+
 abstract class AbstractIOSVariant extends AbstractVariant {
 
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSReleaseConfiguration releaseConf
-    @Inject
-    ApphanceConfiguration apphanceConf
-    @Inject
-    PlistParser plistParser
-    @Inject
-    PbxJsonParser pbxJsonParser
-    @Inject
-    PropertyReader reader
-
-    final String prefix = 'ios'
+    @Inject IOSReleaseConfiguration releaseConf
+    @Inject ApphanceConfiguration apphanceConf
+    @Inject PlistParser plistParser
+    @Inject PbxJsonParser pbxJsonParser
+    @Inject PropertyReader reader
+    @Inject IOSExecutor executor
 
     @Inject
     AbstractIOSVariant(@Assisted String name) {
@@ -39,17 +45,57 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     void init() {
 
         mobileprovision.name = "ios.variant.${name}.mobileprovision"
-        mobileprovision.message = "Mobile provision file for '$name'"
+        mode.name = "ios.variant.${name}.mode"
+        bundleId.name = "ios.variant.${name}.bundleId"
 
         super.init()
     }
 
-    def mobileprovision = new FileProperty(
+    final String prefix = 'ios'
+
+    @PackageScope
+    IOSConfiguration getConf() {
+        super.@conf as IOSConfiguration
+    }
+
+    private FileProperty mobileprovision = new FileProperty(
+            message: "Mobile provision file for variant defined",
             interactive: { releaseConf.enabled },
             required: { releaseConf.enabled },
-            possibleValues: { releaseConf.findMobileProvisionFiles()*.name as List<String> },
-            validator: { it in releaseConf.findMobileProvisionFiles()*.name }
+            possibleValues: { possibleMobileProvisionFiles()*.path as List<String> },
+            validator: { it in (possibleMobileProvisionFiles()*.path as List<String>) }
     )
+
+    FileProperty getMobileprovision() {
+        new FileProperty(value: new File(tmpDir, this.@mobileprovision.value.path))
+    }
+
+    @PackageScope
+    List<File> possibleMobileProvisionFiles() {
+        releaseConf.findMobileProvisionFiles().collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath) }
+    }
+
+    def mode = new IOSBuildModeProperty(
+            message: "Build mode for the variant, it describes the environment the artifact is built for: (DEVICE|SIMULATOR)",
+            required: { true },
+            defaultValue: { (configuration.contains('debug') || configuration.contains('dev')) ? SIMULATOR : DEVICE },
+            possibleValues: { possibleBuildModeValues() },
+            validator: { it in possibleBuildModeValues() }
+    )
+
+    @PackageScope
+    List<String> possibleBuildModeValues() {
+        IOSBuildMode.values()*.name() as List<String>
+    }
+
+    def bundleId = new StringProperty(
+            message: "Bundle ID for variant defined. If present will be replaced during build process",
+            //TODO validator (domain name?)
+    )
+
+    String getEffectiveBundleId() {
+        bundleId.value ?: plistParser.evaluate(plistParser.bundleId(plist), target, configuration) ?: ''
+    }
 
     @Override
     String getConfigurationName() {
@@ -57,23 +103,32 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     }
 
     String getVersionCode() {
-        extVersionCode ?: plistParser.versionCode(plist) ?: ''
-    }
-
-    String getExtVersionCode() {
-        reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
+        conf.extVersionCode ?: plistParser.evaluate(plistParser.versionCode(plist), target, configuration) ?: ''
     }
 
     String getVersionString() {
-        extVersionString ?: plistParser.versionString(plist) ?: ''
-    }
-
-    String getExtVersionString() {
-        reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
+        conf.extVersionString ?: plistParser.evaluate(plistParser.versionString(plist), target, configuration) ?: ''
     }
 
     protected String sdkCmd() {
-        conf.sdk.value ? "-sdk ${conf.sdk.value}" : ''
+        switch (mode.value) {
+            case SIMULATOR:
+                conf.simulatorSdk.value ? "-sdk ${conf.simulatorSdk.value}" : ''
+                break
+            case DEVICE:
+                conf.sdk.value ? "-sdk ${conf.sdk.value}" : ''
+                break
+            default:
+                ''
+        }
+    }
+
+    protected String archCmd() {
+        mode.value == SIMULATOR ? '-arch i386' : ''
+    }
+
+    protected String buildDirCmd() {
+        "CONFIGURATION_BUILD_DIR=${buildDir.absolutePath}"
     }
 
     String getFullVersionString() {
@@ -81,20 +136,37 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     }
 
     String getProjectName() {
-        //TODO this value should be taken from plist - CFBundleDisplayName
-        //TODO the value of the mentioned key may refer to pbxjproj file
-        null
+        String bundleDisplayName = plistParser.bundleDisplayName(plist)
+        checkArgument(isNotBlank(bundleDisplayName),
+                """|Cant find 'CFBundleDisplayName' property in file $plist.absolutePath
+                   |Is project configured well?""".stripMargin())
+        plistParser.evaluate(bundleDisplayName, target, configuration)
     }
 
+    String getBuildableName() {
+        executor.buildSettings(target, configuration)['FULL_PRODUCT_NAME']
+    }
 
+    File getBuildDir() {
+        new File(tmpDir, BUILD_DIR)
+    }
 
     abstract File getPlist()
-
-    abstract String getBuildableName()
-
-    abstract List<String> buildCmd()
 
     abstract String getConfiguration()
 
     abstract String getTarget()
+
+    abstract List<String> buildCmd()
+
+    @Override
+    void checkProperties() {
+        check versionCode.matches('[0-9]+'), """|Property 'versionCode' must have numerical value! Check 'version.code'
+                                                |system property or 'VERSION_STRING' env variable
+                                                |or $plist.absolutePath file!""".stripMargin()
+        check((isNotEmpty(versionString) && !WHITESPACE_PATTERN.matcher(versionString).find()), """|Property 'versionString' must not have
+                                                                    |whitespace characters! Check 'version.string'
+                                                                    |system property or 'VERSION_STRING' env
+                                                                    |variable or $plist.absolutePath file!""".stripMargin())
+    }
 }

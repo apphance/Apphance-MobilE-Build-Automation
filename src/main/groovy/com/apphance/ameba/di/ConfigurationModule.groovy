@@ -16,6 +16,7 @@ import com.apphance.ameba.configuration.reader.GradlePropertiesPersister
 import com.apphance.ameba.configuration.reader.PropertyPersister
 import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import com.apphance.ameba.detection.ProjectTypeDetector
+import com.apphance.ameba.plugins.ios.apphance.tasks.AddIOSApphanceTaskFactory
 import com.google.inject.AbstractModule
 import com.google.inject.assistedinject.FactoryModuleBuilder
 import com.google.inject.multibindings.MapBinder
@@ -57,12 +58,13 @@ class ConfigurationModule extends AbstractModule {
             ],
     ]
 
-    def variantFactories = [
+    def static variantFactories = [
             (ANDROID): [
                     new FactoryModuleBuilder().build(AndroidVariantFactory)
             ],
             (IOS): [
                     new FactoryModuleBuilder().build(IOSVariantFactory),
+                    new FactoryModuleBuilder().build(AddIOSApphanceTaskFactory)
             ],
     ]
 
@@ -80,7 +82,6 @@ class ConfigurationModule extends AbstractModule {
         MapBinder<Integer, AbstractConfiguration> m = MapBinder.newMapBinder(binder(), Integer, AbstractConfiguration)
 
         def pt = typeDetector.detectProjectType(project.rootDir)
-
         def index = 0
 
         configurations[pt].each {
@@ -90,7 +91,7 @@ class ConfigurationModule extends AbstractModule {
         interfaces[pt].each {
             bind(it.key).to(it.value)
         }
-        install(variantFactories[pt])
+        variantFactories[pt].each { install(it) }
 
         bind(PropertyPersister).to(GradlePropertiesPersister)
 

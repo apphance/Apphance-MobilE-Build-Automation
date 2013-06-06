@@ -4,27 +4,25 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
-import com.apphance.ameba.executor.IOSExecutor
-import com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParser
+import com.google.inject.Singleton
 
 import javax.inject.Inject
 
-@com.google.inject.Singleton
+@Singleton
 class IOSFrameworkConfiguration extends AbstractConfiguration {
 
     String configurationName = 'iOS Framework Configuration'
     private boolean enabledInternal = false
 
+    @Inject IOSConfiguration conf
+    @Inject IOSVariantsConfiguration variantsConf
+    @Inject IOSReleaseConfiguration releaseConf
+
     @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSExecutor iosExecutor
-    @Inject
-    IOSXCodeOutputParser parser
-    @Inject
-    IOSVariantsConfiguration variantsConf
-    @Inject
-    IOSReleaseConfiguration releaseConf
+    @Override
+    void init() {
+        super.init()
+    }
 
     @Override
     boolean isEnabled() {

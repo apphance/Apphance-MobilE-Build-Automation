@@ -17,14 +17,11 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     def log = getLogger(getClass())
 
-    String configurationName = 'Android variants configuration'
+    String configurationName = 'Android Variants Configuration'
 
-    @Inject
-    Project project
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidVariantFactory variantFactory
+    @Inject Project project
+    @Inject AndroidConfiguration conf
+    @Inject AndroidVariantFactory variantFactory
 
     private List<AndroidVariantConfiguration> variants
 
@@ -80,13 +77,13 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
         AndroidBuildMode.values().collect { variantFactory.create(it.capitalize()) }
     }
 
+    String getMainVariant() {
+        variantsNames.value?.empty ? null : variantsNames.value[0]
+    }
+
     @Override
     Collection<AndroidVariantConfiguration> getSubConfigurations() {
         this.getVariants()
-    }
-
-    String getMainVariant() {
-        variantsNames.value?.empty ? null : variantsNames.value[0]
     }
 
     Collection<AndroidVariantConfiguration> getVariants() {

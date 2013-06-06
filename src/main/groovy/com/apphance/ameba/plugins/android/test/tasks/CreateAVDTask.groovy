@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.android.test.tasks
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidTestConfiguration
 import com.apphance.ameba.executor.AndroidExecutor
 import org.gradle.api.DefaultTask
@@ -18,19 +19,18 @@ class CreateAVDTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    @Inject
-    AndroidTestConfiguration testConf
-    @Inject
-    AndroidExecutor androidExecutor
+    @Inject AndroidConfiguration conf
+    @Inject AndroidTestConfiguration testConf
+    @Inject AndroidExecutor androidExecutor
 
     @TaskAction
     void createAVD() {
-        boolean emulatorExists = androidExecutor.listAvd(project.rootDir).any { it == testConf.emulatorName }
+        boolean emulatorExists = androidExecutor.listAvd().any { it == testConf.emulatorName }
         if (!testConf.getAVDDir().exists() || !emulatorExists) {
             testConf.getAVDDir().mkdirs()
             l.lifecycle("Creating emulator avd: ${testConf.emulatorName}")
             androidExecutor.createAvdEmulator(
-                    project.rootDir,
+                    conf.rootDir,
                     testConf.emulatorName,
                     testConf.emulatorTarget.value,
                     testConf.emulatorSkin.value,

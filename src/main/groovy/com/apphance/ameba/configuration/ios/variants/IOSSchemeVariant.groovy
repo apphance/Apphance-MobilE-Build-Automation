@@ -7,8 +7,7 @@ import javax.inject.Inject
 
 class IOSSchemeVariant extends AbstractIOSVariant {
 
-    @Inject
-    XCSchemeParser schemeParser
+    @Inject XCSchemeParser schemeParser
 
     @Inject
     IOSSchemeVariant(@Assisted String name) {
@@ -19,17 +18,12 @@ class IOSSchemeVariant extends AbstractIOSVariant {
     File getPlist() {
         String confName = schemeParser.configurationName(name)
         String blueprintId = schemeParser.blueprintIdentifier(name)
-        new File(conf.rootDir, pbxJsonParser.plistForScheme(confName, blueprintId))
+        new File(tmpDir, pbxJsonParser.plistForScheme(confName, blueprintId))
     }
 
     @Override
-    String getBuildableName() {
-        schemeParser.buildableName(name)
-    }
-
-    @Override
-    List<String> buildCmd() {
-        conf.xcodebuildExecutionPath() + "-scheme $name ${sdkCmd()}".split()
+    String getTarget() {
+        pbxJsonParser.targetForBlueprintId(schemeParser.blueprintIdentifier(name))
     }
 
     @Override
@@ -38,7 +32,12 @@ class IOSSchemeVariant extends AbstractIOSVariant {
     }
 
     @Override
-    String getTarget() {
-        pbxJsonParser.targetForBlueprintId(schemeParser.blueprintIdentifier(name))
+    List<String> buildCmd() {
+        conf.xcodebuildExecutionPath() + "-scheme $name -configuration $configuration ${sdkCmd()} ${archCmd()} ${buildDirCmd()}".split().flatten()
+    }
+
+    @Override
+    void checkProperties() {
+        super.checkProperties()
     }
 }

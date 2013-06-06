@@ -2,8 +2,14 @@ package com.apphance.ameba.plugins.ios.buildplugin
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
-import com.apphance.ameba.plugins.ios.buildplugin.tasks.*
-import com.apphance.ameba.plugins.project.PrepareSetupTask
+import com.apphance.ameba.executor.IOSExecutor
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopySourcesTask
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.SingleVariantTask
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.UnlockKeyChainTask
+import com.apphance.ameba.plugins.project.tasks.CheckTestsTask
+import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
+import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -26,39 +32,58 @@ import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 class IOSPlugin implements Plugin<Project> {
 
     static final String BUILD_ALL_TASK_NAME = 'buildAll'
+    static final String BUILD_ALL_DEVICE_TASK_NAME = 'buildAllDevice'
+    static final String BUILD_ALL_SIMULATOR_TASK_NAME = 'buildAllSimulator'
 
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSVariantsConfiguration variantsConf
+    @Inject IOSConfiguration conf
+    @Inject IOSVariantsConfiguration variantsConf
+    @Inject IOSExecutor executor
 
     @Override
     void apply(Project project) {
         if (conf.isEnabled()) {
 
-            project.task(CopySourcesTask.NAME, type: CopySourcesTask)
-            project.task(CopyDebugSourcesTask.NAME, type: CopyDebugSourcesTask)
-            project.task(CleanTask.NAME, type: CleanTask)
-            project.task(UnlockKeyChainTask.NAME, type: UnlockKeyChainTask)
-            project.task(CopyMobileProvisionTask.NAME, type: CopyMobileProvisionTask)
-            project.task(IOSAllSimulatorsBuilder.NAME, type: IOSAllSimulatorsBuilder, dependsOn: [
-                    CopyMobileProvisionTask.NAME,
-                    CopyDebugSourcesTask.NAME])
+            project.tasks.findByName(CleanFlowTask.NAME) << {
+                executor.clean()
+            }
 
-            project.task(BUILD_ALL_TASK_NAME, group: AMEBA_BUILD, description: 'Builds all variants and produces all artifacts (zip, ipa, messages, etc)')
+            project.task(CopySourcesTask.NAME,
+                    type: CopySourcesTask).mustRunAfter(CleanFlowTask.NAME)
 
-            variantsConf.variants.each {
-                def buildTask = project.task(it.buildTaskName,
+            project.task(CopyMobileProvisionTask.NAME,
+                    type: CopyMobileProvisionTask,
+                    dependsOn: CopySourcesTask.NAME
+            )
+
+            project.task(UnlockKeyChainTask.NAME,
+                    type: UnlockKeyChainTask)
+
+            project.task(BUILD_ALL_DEVICE_TASK_NAME,
+                    group: AMEBA_BUILD,
+                    description: 'Builds all device variants')
+
+            project.task(BUILD_ALL_SIMULATOR_TASK_NAME,
+                    group: AMEBA_BUILD,
+                    description: 'Builds all simulator variants')
+
+            project.task(BUILD_ALL_TASK_NAME,
+                    group: AMEBA_BUILD,
+                    dependsOn: [BUILD_ALL_DEVICE_TASK_NAME, BUILD_ALL_SIMULATOR_TASK_NAME],
+                    description: 'Builds all variants and produces all artifacts (zip, ipa, messages, etc)')
+
+            variantsConf.variants.each { variant ->
+                def buildTask = project.task(variant.buildTaskName,
                         type: SingleVariantTask,
-                        dependsOn: [CopySourcesTask.NAME, CopyMobileProvisionTask.NAME]
+                        dependsOn: [CopyMobileProvisionTask.NAME]
                 ) as SingleVariantTask
-                buildTask.variant = it
+                buildTask.variant = variant
 
-                project.tasks[BUILD_ALL_TASK_NAME].dependsOn it.buildTaskName
+                def buildAllMode = "buildAll${variant.mode.value.capitalize()}"
+                project.tasks[buildAllMode].dependsOn variant.buildTaskName
             }
 
             project.tasks.each {
-                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME])) {
+                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME, CheckTestsTask.NAME])) {
                     it.dependsOn VerifySetupTask.NAME
                 }
             }

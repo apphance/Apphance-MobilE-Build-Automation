@@ -1,44 +1,22 @@
 package com.apphance.ameba.plugins.android.release.tasks
 
-import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
-import javax.inject.Inject
-import groovy.text.SimpleTemplateEngine
-import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
-import org.gradle.api.tasks.TaskAction
+import com.apphance.ameba.plugins.release.tasks.AbstractPrepareMailMessageTask
 
-import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
+import javax.inject.Inject
+
 import static com.apphance.ameba.util.file.FileManager.getHumanReadableSize
-import static com.google.common.base.Preconditions.checkNotNull
-import static java.util.ResourceBundle.getBundle
 import static org.gradle.api.logging.Logging.getLogger
 
-class PrepareMailMessageTask extends DefaultTask {
+class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
 
     private l = getLogger(getClass())
 
-    static String NAME = 'prepareMailMessage'
-    String group = AMEBA_RELEASE
-    String description = 'Prepares mail message which summarises the release'
+    @Inject AndroidVariantsConfiguration variantsConf
 
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidReleaseConfiguration releaseConf
-    @Inject
-    AndroidVariantsConfiguration variantsConf
-
-    @TaskAction
-    public void mailMessage() {
-
-        checkNotNull(releaseConf?.mailMessageFile?.location?.parentFile)
-
-        validateReleaseNotes(releaseConf.releaseNotes)
-
-        releaseConf.mailMessageFile.location.parentFile.mkdirs()
-        releaseConf.mailMessageFile.location.delete()
+    @Override
+    void fillTemplate() {
 
         def rb = loadBundle()
         releaseConf.releaseMailSubject = fillMailSubject(rb)
@@ -55,42 +33,13 @@ class PrepareMailMessageTask extends DefaultTask {
                 rb: rb
         ]
 
-        def mailTemplate = loadTemplate()
-        def result = createTemplate(mailTemplate, binding)
-
+        def result = createTemplate(loadTemplate(), binding)
         releaseConf.mailMessageFile.location.write(result.toString(), 'UTF-8')
 
         l.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")
     }
 
-    @groovy.transform.PackageScope
-    void validateReleaseNotes(Collection<String> releaseNotes) {
-        if (!releaseNotes || releaseNotes.empty) {
-            throw new GradleException("""|Release notes are empty!
-                                         |Set them either by 'release.notes' system property or
-                                         |'RELEASE_NOTES environment variable!""")
-        }
-    }
-
-    private ResourceBundle loadBundle() {
-        getBundle("${getClass().package.name}.mail_message", releaseConf.locale, getClass().classLoader)
-    }
-
-    private String fillMailSubject(ResourceBundle rb) {
-        String subject = rb.getString('Subject')
-        Eval.me("conf", conf, /"$subject"/)
-    }
-
-    private String fileSize() {
-        getHumanReadableSize(releaseConf.apkFiles[variantsConf.mainVariant].location.size())
-    }
-
-    private URL loadTemplate() {
-        getClass().getResource('mail_message.html')
-    }
-
-    private Writable createTemplate(URL templateURL, Map binding) {
-        def engine = new SimpleTemplateEngine()
-        engine.createTemplate(templateURL).make(binding)
+    String fileSize() {
+        getHumanReadableSize((releaseConf as AndroidReleaseConfiguration).apkFiles[variantsConf.mainVariant].location.size())
     }
 }

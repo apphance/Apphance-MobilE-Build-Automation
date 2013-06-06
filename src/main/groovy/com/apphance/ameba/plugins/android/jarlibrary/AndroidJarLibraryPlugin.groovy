@@ -3,10 +3,13 @@ package com.apphance.ameba.plugins.android.jarlibrary
 import com.apphance.ameba.configuration.android.AndroidJarLibraryConfiguration
 import com.apphance.ameba.plugins.android.jarlibrary.tasks.DeployJarLibraryTask
 import com.apphance.ameba.plugins.android.jarlibrary.tasks.JarLibraryTask
-import javax.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+import javax.inject.Inject
+
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Helps building the library with resources embedded. It is useful in case we want to generate libraries like
@@ -23,12 +26,14 @@ import org.gradle.api.Project
  */
 class AndroidJarLibraryPlugin implements Plugin<Project> {
 
-    @Inject
-    private AndroidJarLibraryConfiguration jarLibConf
+    def log = getLogger(this.class)
+
+    @Inject AndroidJarLibraryConfiguration jarLibConf
 
     @Override
     void apply(Project project) {
         if (jarLibConf.isEnabled()) {
+            log.lifecycle("Applying plugin ${this.class.simpleName}")
 
             project.task(JarLibraryTask.NAME,
                     type: JarLibraryTask)

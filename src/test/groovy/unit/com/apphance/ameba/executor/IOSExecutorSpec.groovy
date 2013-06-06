@@ -5,7 +5,9 @@ import com.apphance.ameba.configuration.properties.FileProperty
 import com.apphance.ameba.executor.command.CommandExecutor
 import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.apphance.ameba.executor.linker.FileLinker
+import com.apphance.ameba.plugins.ios.parsers.XCodeOutputParser
 import groovy.json.JsonSlurper
+import org.gradle.api.Project
 import spock.lang.Specification
 
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
@@ -29,12 +31,15 @@ class IOSExecutorSpec extends Specification {
         fileLinker.fileLink(_) >> ''
         logFileGenerator.commandLogFiles() >> logFiles
 
-        conf = GroovyMock(IOSConfiguration)
-        conf.rootDir >> new File('testProjects/ios/GradleXCode')
+        conf = GroovySpy(IOSConfiguration)
+        conf.project = GroovyStub(Project) {
+            getRootDir() >> new File('testProjects/ios/GradleXCode')
+        }
         conf.xcodeDir >> new FileProperty(value: new File('GradleXCode.xcodeproj'))
 
-        iosExecutor.commandExecutor = executor
+        iosExecutor.executor = executor
         iosExecutor.conf = conf
+        iosExecutor.parser = new XCodeOutputParser()
     }
 
     def cleanup() {
@@ -43,25 +48,9 @@ class IOSExecutorSpec extends Specification {
         }
     }
 
-    def 'pbxproj is converted to xml format well'() {
-        when:
-        def xml = iosExecutor.pbxProjToXml()
-        xml = xml.join('\n')
-
-        then:
-        noExceptionThrown()
-
-        and:
-        xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')
-
-        and:
-        def slurped = new XmlSlurper().parse(new ByteArrayInputStream(xml.bytes))
-        slurped.dict.dict[1].key[0].text() == '6799F9CB151CA7A700178017'
-    }
-
     def 'pbxproj is converted to json format well'() {
         when:
-        def json = iosExecutor.pbxProjToJSON()
+        def json = iosExecutor.pbxProjToJSON
         json = json.join('\n')
 
         then:
@@ -85,6 +74,31 @@ class IOSExecutorSpec extends Specification {
         def slurped = new JsonSlurper().parseText(json)
         slurped.CFBundleName == '${PRODUCT_NAME}'
         slurped.CFBundleIdentifier == 'com.apphance.ameba'
+    }
+
+    def 'build settings got for target and configuration'() {
+        when:
+        def settings = iosExecutor.buildSettings('GradleXCode', 'BasicConfiguration')
+
+        then:
+        settings.size() > 0
+        settings.keySet().every { it.matches('([A-Z0-9a-z]+_)*([A-Z0-9a-z])+') }
+    }
+
+    def 'runs dot clean'() {
+        given:
+        def ce = GroovyMock(CommandExecutor)
+
+        and:
+        def iose = new IOSExecutor(executor: ce, conf: GroovySpy(IOSConfiguration) {
+            getRootDir() >> new File('sampleDir')
+        })
+
+        when:
+        iose.clean()
+
+        then:
+        1 * ce.executeCommand({ it.commandForExecution.join(' ') == 'dot_clean ./' && it.runDir.name == 'sampleDir' })
     }
 
     def 'mobileprovision is converted to xml well'() {

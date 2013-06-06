@@ -4,6 +4,6 @@ buildscript {
 }
 
 apply plugin: 'apphance-flow'
-iosUnitTests {
-    configuration = 'Debug'
-}
+//iosUnitTests {
+//    configuration = 'Debug'
+//}

@@ -1,16 +1,16 @@
 package com.apphance.ameba.plugins.android.release
 
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
-import com.apphance.ameba.plugins.android.builder.AndroidSingleVariantApkBuilder
-import com.apphance.ameba.plugins.android.builder.AndroidSingleVariantJarBuilder
 import com.apphance.ameba.plugins.android.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.ameba.plugins.android.release.tasks.PrepareMailMessageTask
 import com.apphance.ameba.plugins.android.release.tasks.UpdateVersionTask
-import com.apphance.ameba.plugins.release.tasks.PrepareForReleaseTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
+
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Plugin that provides release functionality for android.<br><br>
@@ -23,20 +23,14 @@ import javax.inject.Inject
  */
 class AndroidReleasePlugin implements Plugin<Project> {
 
-    @Inject
-    AndroidReleaseConfiguration releaseConf
-    @Inject
-    AndroidSingleVariantApkBuilder apkBuilder
-    @Inject
-    AndroidReleaseApkListener apkListener
-    @Inject
-    AndroidSingleVariantJarBuilder jarBuilder
-    @Inject
-    AndroidReleaseJarListener jarListener
+    def log = getLogger(this.class)
+
+    @Inject AndroidReleaseConfiguration releaseConf
 
     @Override
     void apply(Project project) {
         if (releaseConf.isEnabled()) {
+            log.lifecycle("Applying plugin ${this.class.simpleName}")
 
             project.task(
                     UpdateVersionTask.NAME,
@@ -49,10 +43,7 @@ class AndroidReleasePlugin implements Plugin<Project> {
             project.task(
                     PrepareMailMessageTask.NAME,
                     type: PrepareMailMessageTask,
-                    dependsOn: [AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME])
-
-            apkBuilder.registerListener(apkListener)
-            jarBuilder.registerListener(jarListener)
+                    dependsOn: AvailableArtifactsInfoTask.NAME)
         }
     }
 }

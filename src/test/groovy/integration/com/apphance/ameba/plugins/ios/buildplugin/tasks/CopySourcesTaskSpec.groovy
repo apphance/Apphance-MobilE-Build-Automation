@@ -1,11 +1,15 @@
 package com.apphance.ameba.plugins.ios.buildplugin.tasks
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
-import com.apphance.ameba.configuration.ios.variants.IOSSchemeVariant
+import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
+import com.apphance.ameba.configuration.properties.IOSBuildModeProperty
 import com.google.common.io.Files
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.SIMULATOR
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class CopySourcesTaskSpec extends Specification {
@@ -18,23 +22,31 @@ class CopySourcesTaskSpec extends Specification {
         def tmpDir = Files.createTempDir()
 
         and:
-        def v1 = GroovyMock(IOSSchemeVariant)
-        v1.tmpDir >> new File(tmpDir, 'v1')
-        def v2 = GroovyMock(IOSSchemeVariant)
-        v2.tmpDir >> new File(tmpDir, 'v2')
+        def variantsConf = GroovySpy(IOSVariantsConfiguration)
+        variantsConf.getVariants() >> [
+                GroovyStub(AbstractIOSVariant, {
+                    getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
+                    getTmpDir() >> new File(tmpDir, 'v1')
+                }),
+                GroovyStub(AbstractIOSVariant, {
+                    getMode() >> new IOSBuildModeProperty(value: DEVICE)
+                    getTmpDir() >> new File(tmpDir, 'v2')
+                })
+        ]
 
         and:
-        def variantsConf = GroovyMock(IOSVariantsConfiguration)
-        variantsConf.variants >> [v1, v2]
-
-        and:
-        def conf = GroovyMock(IOSConfiguration)
-        conf.rootDir >> p.rootDir
+        def conf = GroovySpy(IOSConfiguration)
+        conf.project = p
         conf.sourceExcludes >> []
+
+        and:
+        def releaseConf = GroovySpy(IOSReleaseConfiguration)
+        releaseConf.getOtaDir() >> p.file('flow-ota')
 
         and:
         def task = p.task(CopySourcesTask.NAME, type: CopySourcesTask) as CopySourcesTask
         task.conf = conf
+        task.releaseConf = releaseConf
         task.variantsConf = variantsConf
 
         when:
@@ -46,11 +58,19 @@ class CopySourcesTaskSpec extends Specification {
         v1dir.isDirectory()
         v1dir.list().size() > 0
         v1dir.listFiles().contains(new File(v1dir, 'GradleXCode'))
+        !(new File(v1dir, 'log').exists())
+        !(new File(v1dir, 'flow-log').exists())
+        !(new File(v1dir, 'flow-ota').exists())
+        !(new File(v1dir, 'flow-tmp').exists())
         def v2dir = new File(tmpDir, 'v2')
         v2dir.exists()
         v2dir.isDirectory()
         v2dir.list().size() > 0
         v2dir.listFiles().contains(new File(v2dir, 'GradleXCode'))
+        !(new File(v2dir, 'log').exists())
+        !(new File(v2dir, 'flow-log').exists())
+        !(new File(v2dir, 'flow-ota').exists())
+        !(new File(v2dir, 'flow-tmp').exists())
 
         cleanup:
         tmpDir.deleteDir()

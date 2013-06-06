@@ -21,14 +21,10 @@ class ReplacePackageTask extends DefaultTask {
 
     private l = getLogger(getClass())
 
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidManifestHelper manifestHelper
-    @Inject
-    AndroidBuildXmlHelper buildXMLHelper
-    @Inject
-    PropertyReader reader
+    @Inject AndroidConfiguration conf
+    @Inject AndroidManifestHelper manifestHelper
+    @Inject AndroidBuildXmlHelper buildXMLHelper
+    @Inject PropertyReader reader
 
     @TaskAction
     void replacePackage() {
@@ -47,7 +43,7 @@ class ReplacePackageTask extends DefaultTask {
         }
         if (newName != null) {
             l.lifecycle("Replacing name with ${newName}")
-            buildXMLHelper.replaceProjectName(project.rootDir, newName)
+            buildXMLHelper.replaceProjectName(conf.rootDir, newName)
         }
         File sourceFolder = project.file("src/" + oldPackage.replaceAll('\\.', '/'))
         File targetFolder = project.file("src/" + newPackage.replaceAll('\\.', '/'))

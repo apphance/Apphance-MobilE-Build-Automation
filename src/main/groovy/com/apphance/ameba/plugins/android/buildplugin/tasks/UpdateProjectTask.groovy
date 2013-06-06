@@ -2,10 +2,11 @@ package com.apphance.ameba.plugins.android.buildplugin.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.executor.AndroidExecutor
-import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
@@ -15,35 +16,33 @@ class UpdateProjectTask extends DefaultTask {
     String description = 'Updates project using android command line tool'
     String group = AMEBA_BUILD
 
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidExecutor androidExecutor
+    @Inject AndroidConfiguration conf
+    @Inject AndroidExecutor androidExecutor
 
     @TaskAction
     void runUpdate() {
-        runUpdateRecursively(conf.rootDir)
+        runRecursivelyInAllSubprojects(conf.rootDir, this.&runUpdateProject)
     }
 
-    void runUpdateRecursively(File currentDir) {
-        runUpdateProject(currentDir)
+    static void runRecursivelyInAllSubprojects(File currentDir, Closure method) {
+        method(currentDir)
 
         def propFile = new File(currentDir, 'project.properties')
 
         if (propFile.exists()) {
             def prop = new Properties()
             prop.load(new FileInputStream(propFile))
-            prop.each { key, value ->
+            prop.each {String key, String value ->
                 if (key.startsWith('android.library.reference.')) {
-                    runUpdateRecursively(new File(currentDir, value.toString()))
+                    runRecursivelyInAllSubprojects(new File(currentDir, value), method)
                 }
             }
         }
     }
 
-    private void runUpdateProject(File directory) {
+    void runUpdateProject(File directory) {
         if (!directory.exists()) {
-            throw new GradleException("The directory ${directory} to execute the command, does not exist! Your configuration is wrong.")
+            throw new GradleException("The directory $directory to execute the command, does not exist! Your configuration is wrong.")
         }
         androidExecutor.updateProject(directory, conf.target.value, conf.projectName.value)
     }

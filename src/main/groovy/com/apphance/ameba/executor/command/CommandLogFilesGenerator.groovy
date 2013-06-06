@@ -15,7 +15,8 @@ class CommandLogFilesGenerator {
     private AtomicInteger fileCounter = new AtomicInteger()
     private File logDir
 
-    @Inject CommandLogFilesGenerator(File logDir) {
+    @Inject
+    CommandLogFilesGenerator(File logDir) {
         this.logDir = logDir
     }
 

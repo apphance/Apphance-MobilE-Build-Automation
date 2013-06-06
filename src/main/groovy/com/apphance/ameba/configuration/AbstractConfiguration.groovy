@@ -8,15 +8,11 @@ import java.lang.reflect.Field
 
 import static org.apache.commons.lang.StringUtils.join
 
-abstract class AbstractConfiguration implements Configuration {
+abstract class AbstractConfiguration {
 
-    public static final String TMP_DIR = 'flow-tmp'
-    public static final String LOG_DIR = 'flow-log'
+    @Inject PropertyPersister propertyPersister
 
-    @Inject
-    PropertyPersister propertyPersister
-
-    List<String> errors = []
+    private List<String> errors = []
 
     @Inject
     void init() {
@@ -34,6 +30,8 @@ abstract class AbstractConfiguration implements Configuration {
     void setEnabled(boolean enabled) {
         throw new IllegalStateException("Cannot change '$configurationName' enabled status to: $enabled")
     }
+
+    abstract boolean isEnabled()
 
     List<Field> getPropertyFields() {
         List<Field> fields = []
@@ -71,14 +69,16 @@ abstract class AbstractConfiguration implements Configuration {
 
     final def check(condition, String message) {
         if (!condition) {
-            errors << message
+            this.@errors << message
         }
     }
 
     final List<String> verify() {
         checkProperties()
-        errors
+        this.@errors
     }
+
+    void checkProperties() {}
 
     protected String checkException(Closure cl) {
         try {
@@ -89,15 +89,17 @@ abstract class AbstractConfiguration implements Configuration {
         ''
     }
 
-    void checkProperties() {}
-
-    @Override
     boolean canBeEnabled() {
         return true
     }
 
-    @Override
     String getMessage() {
         ""
+    }
+
+    def defaultValidation(AbstractProperty... properties) {
+        properties.each {
+            check it.validator(it.value), "Incorrect value ${it.value} of ${it.name} property"
+        }
     }
 }

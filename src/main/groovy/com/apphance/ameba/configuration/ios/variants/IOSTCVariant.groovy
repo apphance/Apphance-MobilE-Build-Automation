@@ -27,12 +27,7 @@ class IOSTCVariant extends AbstractIOSVariant {
 
     @Override
     File getPlist() {
-        new File(conf.rootDir, pbxJsonParser.plistForTC(target, configuration))
-    }
-
-    @Override
-    String getBuildableName() {
-        throw new UnsupportedOperationException('to be done')
+        new File(tmpDir, pbxJsonParser.plistForTC(target, configuration))
     }
 
     @Override
@@ -47,6 +42,11 @@ class IOSTCVariant extends AbstractIOSVariant {
 
     @Override
     List<String> buildCmd() {
-        conf.xcodebuildExecutionPath() + " -target $target -configuration $configuration ${sdkCmd()}".split()
+        conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration ${sdkCmd()} ${archCmd()} ${buildDirCmd()}".split().flatten()
+    }
+
+    @Override
+    void checkProperties() {
+        super.checkProperties()
     }
 }

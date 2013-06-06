@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.android.test.tasks
 
+import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
 import org.gradle.api.DefaultTask
@@ -15,12 +16,12 @@ class StopAllEmulatorsTask extends DefaultTask {
     String group = AMEBA_TEST
     String description = 'Stops all emulators and accompanying logcat (includes stopping adb)'
 
-    @Inject
-    private CommandExecutor executor
+    @Inject AndroidConfiguration conf
+    @Inject CommandExecutor executor
 
     @TaskAction
     void stopAllEmulators() {
-        executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['killall', 'emulator-arm'], failOnError: false))
-        executor.executeCommand(new Command(runDir: project.rootDir, cmd: ['killall', 'adb'], failOnError: false))
+        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: ['killall', 'emulator-arm'], failOnError: false))
+        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: ['killall', 'adb'], failOnError: false))
     }
 }

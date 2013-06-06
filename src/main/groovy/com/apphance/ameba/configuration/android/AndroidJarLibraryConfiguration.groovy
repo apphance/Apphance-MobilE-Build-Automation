@@ -2,6 +2,7 @@ package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
+
 import javax.inject.Inject
 
 @com.google.inject.Singleton
@@ -11,12 +12,7 @@ class AndroidJarLibraryConfiguration extends AbstractConfiguration {
 
     private boolean enabledInternal = false
 
-    private AndroidConfiguration androidConf
-
-    @Inject
-    AndroidJarLibraryConfiguration(AndroidConfiguration androidConfiguration) {
-        this.androidConf = androidConfiguration
-    }
+    @Inject AndroidConfiguration androidConf
 
     @Override
     boolean isEnabled() {
@@ -41,6 +37,6 @@ class AndroidJarLibraryConfiguration extends AbstractConfiguration {
 
     @Override
     void checkProperties() {
-        check resourcePrefix.validator(resourcePrefix.value), "Property ${resourcePrefix.name} is not valid! Can not create '${new File(androidConf.tmpDir,"${resourcePrefix.value}-res")}' directory"
+        check resourcePrefix.validator(resourcePrefix.value), "Property ${resourcePrefix.name} is not valid! Can not create '${new File(androidConf.tmpDir, "${resourcePrefix.value}-res")}' directory"
     }
 }

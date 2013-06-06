@@ -15,7 +15,7 @@ class PbxJsonParserSpec extends Specification {
 
     def setup() {
         def executor = Mock(IOSExecutor)
-        executor.pbxProjToJSON() >> input.text.split('\n')
+        executor.pbxProjToJSON >> input.text.split('\n')
 
         parser.executor = executor
     }
@@ -45,5 +45,24 @@ class PbxJsonParserSpec extends Specification {
 
         expect:
         parser.targetForBlueprintId(blueprintId) == 'GradleXCode'
+    }
+
+    def 'placeholder is recognized correctly'() {
+        expect:
+        PbxJsonParser.isPlaceholder(placeholder) == expected
+
+        where:
+        placeholder | expected
+        '$()'       | false
+        ''          | false
+        '  \t'      | false
+        '$$()'      | false
+        '$(()'      | false
+        '$())'      | false
+        '$(_)'      | false
+        '$(AA_)'    | false
+        '$(AA_D)'   | true
+        '$(AA_D_)'  | false
+        '$(_AA_D_)'  | false
     }
 }

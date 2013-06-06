@@ -21,10 +21,8 @@ import javax.inject.Inject
  */
 class IOSFrameworkPlugin implements Plugin<Project> {
 
-    @Inject
-    IOSFrameworkConfiguration frameworkConf
-    @Inject
-    IOSVariantsConfiguration variantsConf
+    @Inject IOSFrameworkConfiguration frameworkConf
+    @Inject IOSVariantsConfiguration variantsConf
 
     @Override
     void apply(Project project) {

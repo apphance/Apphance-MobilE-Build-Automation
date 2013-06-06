@@ -1,9 +1,11 @@
 package com.apphance.ameba.executor
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.executor.command.Command
 import com.apphance.ameba.executor.command.CommandExecutor
-import com.apphance.ameba.plugins.ios.parsers.IOSXCodeOutputParser
+import com.apphance.ameba.plugins.ios.parsers.XCodeOutputParser
+import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
@@ -11,81 +13,94 @@ import static com.apphance.ameba.configuration.ios.IOSConfiguration.PROJECT_PBXP
 
 class IOSExecutor {
 
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSXCodeOutputParser parser
-    @Inject
-    CommandExecutor commandExecutor
+    @Inject IOSConfiguration conf
+    @Inject XCodeOutputParser parser
+    @Inject CommandExecutor executor
 
-    List<String> sdks() {
+    @Lazy List<String> sdks = {
         parser.readIphoneSdks(showSdks()*.trim())
-    }
+    }()
 
-    List<String> simulatorSdks() {
+    @Lazy List<String> simulatorSdks = {
         parser.readIphoneSimulatorSdks(showSdks()*.trim())
-    }
+    }()
 
     private List<String> showSdks() {
         run('-showsdks')
     }
 
-    List<String> targets() {
-        parser.readBaseTargets(list())
-    }
+    @Lazy List<String> targets = {
+        parser.readBaseTargets(list)
+    }()
 
-    List<String> configurations() {
-        parser.readBaseConfigurations(list())
-    }
+    @Lazy List<String> configurations = {
+        parser.readBaseConfigurations(list)
+    }()
 
-    List<String> schemes() {
-        parser.readSchemes(list())
-    }
+    @Lazy List<String> schemes = {
+        parser.readSchemes(list)
+    }()
 
-    List<String> list() {
-        run('-list')*.trim()
-    }
+    @Lazy
+    @PackageScope
+    List<String> list = { run('-list')*.trim() }()
 
-    List<String> pbxProjToXml() {
-        commandExecutor.executeCommand(new Command(
-                runDir: conf.rootDir,
-                cmd: "plutil -convert xml1 ${conf.xcodeDir.value}/$PROJECT_PBXPROJ -o -".split()))
-    }
-
-    List<String> pbxProjToJSON() {
-        commandExecutor.executeCommand(new Command(
+    @Lazy List<String> pbxProjToJSON = {
+        executor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: "plutil -convert json ${conf.xcodeDir.value}/$PROJECT_PBXPROJ -o -".split()))
-    }
+    }()
 
     List<String> plistToJSON(File plist) {
-        commandExecutor.executeCommand(new Command(
+        plistToJSONC(plist)
+    }
+
+    private Closure<List<String>> plistToJSONC = { File plist ->
+        executor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: "plutil -convert json ${plist.absolutePath} -o -".split()
         ))
-    }
+    }.memoize()
 
     List<String> mobileprovisionToXml(File mobileprovision) {
-        commandExecutor.executeCommand(new Command(
+        mobileProvisionToXmlC(mobileprovision)
+    }
+
+    private Closure<List<String>> mobileProvisionToXmlC = { File mobileprovision ->
+        executor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: "security cms -D -i ${mobileprovision.absolutePath}".split()
         ))
+    }.memoize()
+
+    Map<String, String> buildSettings(String target, String configuration) {
+        buildSettingsC(target, configuration)
     }
 
-    def buildTarget(File dir, String target, String configuration, String sdk = conf.sdk.value, String params = "") {
-        commandExecutor.executeCommand(new Command(runDir: dir, cmd:
-                conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -sdk $sdk $params".split().flatten()))
+    private Closure<Map<String, String>> buildSettingsC = { String target, String configuration ->
+        def result = executor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -showBuildSettings".split().flatten()
+        ))
+        parser.parseBuildSettings(result)
+    }.memoize()
+
+    def clean() {
+        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: ['dot_clean', './']))
     }
 
-    def buildTestTarget(File dir, String target, String configuration, String outputFilePath) {
-        commandExecutor.executeCommand(new Command(runDir: dir, cmd:
-                conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -sdk $conf.simulatorSdk.value".split().flatten(),
+    def buildVariant(File dir, List<String> buildCmd) {
+        executor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
+    }
+
+    def buildTestVariant(File dir, AbstractIOSVariant variant, String outputFilePath) {
+        executor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd() + [" -sdk $conf.simulatorSdk.value"],
                 environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: outputFilePath],
                 failOnError: false
-        ))
+        )
     }
 
     List<String> run(String command) {
-        commandExecutor.executeCommand(new Command(runDir: conf.rootDir, cmd: conf.xcodebuildExecutionPath() + command.split().flatten()))
+        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: conf.xcodebuildExecutionPath() + command.split().flatten()))
     }
 }

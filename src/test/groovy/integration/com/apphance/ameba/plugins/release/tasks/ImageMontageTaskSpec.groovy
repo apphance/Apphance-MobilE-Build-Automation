@@ -1,5 +1,6 @@
 package com.apphance.ameba.plugins.release.tasks
 
+import com.apphance.ameba.TestUtils
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
@@ -7,40 +8,42 @@ import com.apphance.ameba.executor.command.CommandLogFilesGenerator
 import com.google.common.io.Files
 import ij.ImagePlus
 import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import javax.imageio.ImageIO
 
-import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
+import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.ameba.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
 
+@Mixin(TestUtils)
 class ImageMontageTaskSpec extends Specification {
 
-    def p = ProjectBuilder.builder().build()
-    def imageMontageTask = p.task(ImageMontageTask.NAME, type: ImageMontageTask) as ImageMontageTask
+    def imageMontageTask = create ImageMontageTask
 
     private File testMontageFilesDir = new File('src/test/resources/com/apphance/ameba/plugins/release/tasks/montageFiles')
     def fileForDescTest = new File('src/test/resources/com/apphance/ameba/plugins/release/tasks/Blank.jpg')
 
     def setup() {
         def project = GroovyStub(Project)
-        def conf = GroovyStub(AndroidConfiguration)
+        def conf = GroovySpy(AndroidConfiguration)
         def releaseConf = GroovyStub(AndroidReleaseConfiguration)
         def logFileGenerator = Stub(CommandLogFilesGenerator)
 
         def testDir = Files.createTempDir()
         testDir.deleteOnExit()
-        releaseConf.getTargetDirectory() >> testDir
+        releaseConf.getTargetDir() >> testDir
         releaseConf.otaDir >> new File(OTA_DIR)
         conf.getProjectName() >> new StringProperty(value: 'testProjectName')
-        conf.fullVersionString >> 'fullVersionString'
-        conf.tmpDir >> new File(TMP_DIR)
+        conf.getVersionString() >> 'vs'
+        conf.getVersionCode() >> 'vc'
+        conf.project = GroovyStub(Project) {
+            file(TMP_DIR) >> new File(TMP_DIR)
+        }
         logFileGenerator.commandLogFiles() >> [(ERR): createTempFile('err', 'log'), (STD): createTempFile('std', 'log')]
         imageMontageTask.project >> project
         imageMontageTask.conf = conf
@@ -53,7 +56,7 @@ class ImageMontageTaskSpec extends Specification {
 
         then:
         !file.exists()
-        file.name == 'testProjectName-fullVersionString-image-montage.png'
+        file.name == 'testProjectName-vs_vc-image-montage.png'
     }
 
     def 'test createMontage'() {

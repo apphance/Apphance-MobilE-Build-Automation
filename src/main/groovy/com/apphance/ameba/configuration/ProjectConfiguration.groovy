@@ -1,30 +1,59 @@
 package com.apphance.ameba.configuration
 
 import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.configuration.reader.PropertyReader
+import com.apphance.ameba.detection.ProjectTypeDetector
+import org.gradle.api.Project
 
-public interface ProjectConfiguration extends Configuration {
+import javax.inject.Inject
 
-    String getVersionCode()
+abstract class ProjectConfiguration extends AbstractConfiguration {
 
-    String getExtVersionCode()
+    public static final String TMP_DIR = 'flow-tmp'
+    public static final String LOG_DIR = 'flow-log'
+    public static final String BUILD_DIR = 'build'
 
-    String getVersionString()
+    @Inject Project project
+    @Inject PropertyReader reader
+    @Inject ProjectTypeDetector projectTypeDetector
 
-    String getExtVersionString()
+    abstract String getVersionCode()
 
-    String getFullVersionString()
+    abstract String getVersionString()
 
-    String getProjectVersionedName()
+    String getExtVersionCode() {
+        reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
+    }
 
-    StringProperty getProjectName()
+    String getExtVersionString() {
+        reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
+    }
 
-    File getTmpDir()
+    String getFullVersionString() {
+        "${versionString}_${versionCode}"
+    }
 
-    File getBuildDir()
+    String getProjectVersionedName() {
+        "${projectName.value}-$fullVersionString"
+    }
 
-    File getLogDir()
+    abstract StringProperty getProjectName()
 
-    File getRootDir()
+    File getBuildDir() {
+        project.file(BUILD_DIR)
+    }
 
-    Collection<String> getSourceExcludes()
+    File getTmpDir() {
+        project.file(TMP_DIR)
+    }
+
+    File getLogDir() {
+        project.file(LOG_DIR)
+    }
+
+    File getRootDir() {
+        project.rootDir
+    }
+
+    abstract Collection<String> getSourceExcludes()
 }

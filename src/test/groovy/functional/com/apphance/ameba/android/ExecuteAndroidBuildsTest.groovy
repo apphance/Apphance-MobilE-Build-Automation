@@ -1,15 +1,12 @@
 package com.apphance.ameba.android
 
 import com.apphance.ameba.plugins.android.parsers.AndroidManifestHelper
-import com.apphance.ameba.plugins.project.ProjectConfiguration
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Ignore
 import org.junit.Test
 
-import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
-import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.*
 
@@ -29,7 +26,6 @@ class ExecuteAndroidBuildsTest {
     static ProjectConnection testAndroidConventionConnection
     static ProjectConnection testAndroidWrongConventionConnection
     static ProjectConnection testAndroidNoApphanceApplicationConnection
-    private static final String fullVersion = '1.0.1_42'
 
     @BeforeClass
     static void beforeClass() {
@@ -77,62 +73,6 @@ class ExecuteAndroidBuildsTest {
 
     protected void runGradleAndroidAnalysisWrongConvention(String... tasks) {
         testAndroidWrongConventionConnection.newBuild().forTasks(tasks).run();
-    }
-
-    @Test
-    void testCleanCheckTests() {
-        runGradle('updateProject', 'clean', 'checkTests')
-        assertFalse(new File(testProject, "bin").exists())
-        assertFalse(new File(testProject, "gen").exists())
-        assertFalse(new File(testProject, "build").exists())
-        assertFalse(new File(testProject, "tmp").exists())
-    }
-
-    @Test
-    void testBuildDebug() {
-        runGradle('clean', 'buildTestDebug')
-        assertTrue(new File(testProject,
-                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-${fullVersion}.apk").exists())
-        assertFalse(new File(testProject,
-                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-TestDebug-unsigned-${fullVersion}.apk").exists())
-        assertFalse(new File(testProject,
-                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-degub-TestDebug-unaligned-${fullVersion}.apk").exists())
-    }
-
-    @Test
-    void testBuildRelease() {
-        runGradle('clean', 'buildMarketRelease')
-
-        assertTrue(new File(testProject,
-                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
-        assertFalse(new File(testProject,
-                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unsigned-${fullVersion}.apk").exists())
-        assertFalse(new File(testProject,
-                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
-    }
-
-    @Test
-    void testBuildDebugNoVariant() {
-        runGradleNoVariants('clean', 'buildMarketDebug')
-
-        assertTrue(new File(testNoVariantsProject,
-                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-${fullVersion}.apk").exists())
-        assertFalse(new File(testNoVariantsProject,
-                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-debug-MarketDebug-unsigned-${fullVersion}.apk").exists())
-        assertFalse(new File(testNoVariantsProject,
-                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-debug-MarketDebug-unaligned-${fullVersion}.apk").exists())
-    }
-
-    @Test
-    void testBuildReleaseNoVariant() {
-        runGradleNoVariants('clean', 'buildMarketRelease')
-
-        assertTrue(new File(testNoVariantsProject,
-                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-${fullVersion}.apk").exists())
-        assertFalse(new File(testNoVariantsProject,
-                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProjectCle-release-MarketRelease-unsigned-${fullVersion}.apk").exists())
-        assertFalse(new File(testNoVariantsProject,
-                "${OTA_DIR}/TestAndroidProject/${fullVersion}/TestAndroidProject-release-MarketRelease-unaligned-${fullVersion}.apk").exists())
     }
 
     @Test
@@ -203,7 +143,7 @@ class ExecuteAndroidBuildsTest {
 
     @Test
     void testAnalysisAfterClean() {
-        runGradle('clean', 'updateProject', 'analysis')
+        runGradle('cleanFlow', 'updateProject', 'analysis')
         assertTrue(new File(testProject, "build/analysis/checkstyle-report.xml").exists())
         assertTrue(new File(testProject, "build/analysis/cpd-result.xml").exists())
         assertTrue(new File(testProject, "build/analysis/findbugs-result.xml").exists())
@@ -212,56 +152,56 @@ class ExecuteAndroidBuildsTest {
 
     @Ignore('to be used after apphance rewritten')
     void testDefaultApphanceDependency() {
-        AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
-        ProjectConfiguration projectConf = new ProjectConfiguration()
-        try {
-            Properties p = new Properties()
-            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
-            projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
-        } finally {
-            manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
-        }
-        def androidLib = new File("testProjects/android/android-no-apphance-application/${TMP_DIR}/TestDebug/libs/android.pre-production-1.8.2.jar")
-        assertTrue(androidLib.exists())
-        assertEquals('android.pre-production-1.8.2.jar', androidLib.name)
+//        AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
+//        ProjectConfiguration projectConf = new ProjectConfiguration()
+//        try {
+//            Properties p = new Properties()
+//            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
+//            projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
+//        } finally {
+//            manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
+//        }
+//        def androidLib = new File("testProjects/android/android-no-apphance-application/${TMP_DIR}/TestDebug/libs/android.pre-production-1.8.2.jar")
+//        assertTrue(androidLib.exists())
+//        assertEquals('android.pre-production-1.8.2.jar', androidLib.name)
     }
 
     @Ignore('to be used after apphance rewritten')
     void testCorrectApphanceDependencyFromProperty() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
-        ProjectConfiguration projectConf = new ProjectConfiguration()
-        try {
-            Properties p = new Properties()
-            p.put('apphance.lib', "com.apphance:android.production:1.8.2")
-            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
-            projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
-        } finally {
-            manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
-        }
-        def androidLib = new File("testProjects/android/android-no-apphance-application/MarketDebug/libs/android.production-1.8.2.jar")
-        assertTrue(androidLib.exists())
-        assertEquals('android.production-1.8.2.jar', androidLib.name)
+//        ProjectConfiguration projectConf = new ProjectConfiguration()
+//        try {
+//            Properties p = new Properties()
+//            p.put('apphance.lib', "com.apphance:android.production:1.8.2")
+//            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
+//            projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
+//        } finally {
+//            manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
+//        }
+//        def androidLib = new File("testProjects/android/android-no-apphance-application/MarketDebug/libs/android.production-1.8.2.jar")
+//        assertTrue(androidLib.exists())
+//        assertEquals('android.production-1.8.2.jar', androidLib.name)
     }
 
     @Ignore('to be used after apphance rewritten')
     void testIncorrectApphanceDependencyFromProperty() {
         AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
-        ProjectConfiguration projectConf = new ProjectConfiguration()
-        try {
-            Properties p = new Properties()
-            p.put('apphance.lib', "com.apphanc:android.production:1.8")
-            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
-            projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
-        } catch (Exception e) {
-
-            def c = e.cause.cause.cause
-            assertEquals("Error while resolving dependency: 'com.apphanc:android.production:1.8'", c.message)
-
-        } finally {
-            manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
-        }
-        def androidLibsDir = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/")
-        assertTrue(androidLibsDir.exists())
-        assertTrue(androidLibsDir.list().length == 0)
+//        ProjectConfiguration projectConf = new ProjectConfiguration()
+//        try {
+//            Properties p = new Properties()
+//            p.put('apphance.lib', "com.apphanc:android.production:1.8")
+//            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
+//            projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
+//        } catch (Exception e) {
+//
+//            def c = e.cause.cause.cause
+//            assertEquals("Error while resolving dependency: 'com.apphanc:android.production:1.8'", c.message)
+//
+//        } finally {
+//            manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
+//        }
+//        def androidLibsDir = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/")
+//        assertTrue(androidLibsDir.exists())
+//        assertTrue(androidLibsDir.list().length == 0)
     }
 }

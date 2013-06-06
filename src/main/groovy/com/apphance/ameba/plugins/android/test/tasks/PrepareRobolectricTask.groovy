@@ -19,12 +19,12 @@ class PrepareRobolectricTask extends DefaultTask {
     String description = 'Prepares file structure for Robolectric test framework'
 
     private String robolectricPath = 'test/robolectric'
-    @Inject
-    private AndroidConfiguration androidConf
+
+    @Inject AndroidConfiguration conf
 
     @TaskAction
     void prepareRobolectric() {
-        File path = new File(project.rootDir.path, robolectricPath)
+        File path = new File(conf.rootDir.path, robolectricPath)
         if (path.exists()) {
             println "Robolectric test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
             setUpRobolectricProject(path)
@@ -51,7 +51,7 @@ class PrepareRobolectricTask extends DefaultTask {
     }
 
     private String roboPath(File path) {
-        String _path = androidConf.mainPackage.replace('.', File.separator)
+        String _path = conf.mainPackage.replace('.', File.separator)
         return path.path + File.separator + 'src' + File.separator + 'test' + File.separator + 'java' + File.separator + _path + File.separator + 'test'
     }
 
@@ -92,7 +92,7 @@ class PrepareRobolectricTask extends DefaultTask {
         URL testClassTemplate = this.class.getResource("MyFirstTest.java_")
 
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        def binding = [packageName: androidConf.mainPackage]
+        def binding = [packageName: conf.mainPackage]
         def result = engine.createTemplate(testClassTemplate).make(binding)
         output.write(result.toString())
     }

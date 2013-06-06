@@ -19,8 +19,7 @@ class AbstractPropertySpec extends Specification {
 
         where:
         cls                 | value                        | expectedValue
-        LongProperty        | '3145'                       | 3145L
-        StringProperty      | 'bolo'                       | 'bolo'
+        StringProperty      | 'sp'                         | 'sp'
         FileProperty        | properties['java.io.tmpdir'] | new File(properties['java.io.tmpdir'].toString())
         ProjectTypeProperty | 'ANDROID'                    | ANDROID
         BooleanProperty     | 'true'                       | true

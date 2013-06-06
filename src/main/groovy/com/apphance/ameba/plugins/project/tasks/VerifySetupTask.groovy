@@ -1,12 +1,14 @@
 package com.apphance.ameba.plugins.project.tasks
 
 import com.apphance.ameba.configuration.AbstractConfiguration
+import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.yellow
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_SETUP
 
 /**
@@ -19,19 +21,25 @@ class VerifySetupTask extends DefaultTask {
     String description = 'Verifies if the project can be build properly'
     String group = AMEBA_SETUP
 
-    @Inject
-    private Map<Integer, AbstractConfiguration> configurations
+    @Inject Map<Integer, AbstractConfiguration> configurations
 
     @TaskAction
     void verifySetup() {
         List errors = []
-        configurations.sort().values().findAll { it.isEnabled() }.each {
-            it.verify()
-            errors += it.errors
-        }
+        verifyConfigurations(configurations.sort().values(), errors)
         if (errors) {
             errors.each { logger.error("ERROR: $it") }
             throw new GradleException('Verification error')
+        }
+    }
+
+    @PackageScope
+    void verifyConfigurations(Collection<? extends AbstractConfiguration> confs, List<String> errors) {
+        confs.each {
+            if (it.isEnabled()) {
+                errors.addAll(it.verify())
+                verifyConfigurations(it.subConfigurations, errors)
+            }
         }
     }
 }

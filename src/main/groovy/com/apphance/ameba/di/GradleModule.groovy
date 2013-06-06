@@ -14,6 +14,6 @@ class GradleModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(Project).toInstance(project)
-        bind(AntBuilder).toInstance(project.ant)
+        bind(org.gradle.api.AntBuilder).toInstance(project.ant)
     }
 }

@@ -36,12 +36,9 @@ class BuildFrameworkTask extends DefaultTask {
     private File iphoneosSimulatorLibrary
     private File destinationZipFile
 
-    @Inject
-    CommandExecutor executor
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSFrameworkConfiguration frameworkConf
+    @Inject CommandExecutor executor
+    @Inject IOSConfiguration conf
+    @Inject IOSFrameworkConfiguration frameworkConf
 
     AbstractIOSVariant variant
 
@@ -72,7 +69,7 @@ class BuildFrameworkTask extends DefaultTask {
         l.lifecycle('Create library')
         def outputFile = new File(frameworkVersionsVersionDir, variant.projectName)
         outputFile.parentFile.mkdirs()
-        executor.executeCommand(new Command(runDir: project.rootDir, cmd: [
+        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
                 'lipo',
                 '-create',
                 iphoneosLibrary,
@@ -156,7 +153,7 @@ class BuildFrameworkTask extends DefaultTask {
     }
 
     private xcodeBuilds() {
-        executor.executeCommand(new Command(runDir: project.rootDir, cmd: conf.xcodebuildExecutionPath() + [
+        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: conf.xcodebuildExecutionPath() + [
                 '-target',
                 variant.target,
                 '-configuration',
@@ -168,7 +165,7 @@ class BuildFrameworkTask extends DefaultTask {
                 'clean',
                 'build'
         ]))
-        executor.executeCommand(new Command(runDir: project.rootDir, cmd: conf.xcodebuildExecutionPath() + [
+        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: conf.xcodebuildExecutionPath() + [
                 '-target',
                 variant.target,
                 '-configuration',

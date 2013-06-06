@@ -17,8 +17,6 @@ class AntExecutor {
     @Inject
     CommandExecutor executor
 
-    File rootDir
-
     def executeTarget(File rootDir, String command, Map params = [:]) {
         try {
             executor.executeCommand(new Command([runDir: rootDir, cmd: "ant $command".split(), failOnError: true] + params))

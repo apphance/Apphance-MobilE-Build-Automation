@@ -26,25 +26,11 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     private boolean enabledInternal = false
     private Integer emulatorPort
 
-    private Project project
-    private AndroidConfiguration conf
-    private AndroidManifestHelper manifestHelper
-    private AndroidBuildXmlHelper buildXmlHelper
-    private AndroidExecutor androidExecutor
-
-    @Inject
-    AndroidTestConfiguration(
-            Project project,
-            AndroidConfiguration androidConf,
-            AndroidManifestHelper manifestHelper,
-            AndroidBuildXmlHelper buildXmlHelper,
-            AndroidExecutor androidExecutor) {
-        this.project = project
-        this.conf = androidConf
-        this.manifestHelper = manifestHelper
-        this.buildXmlHelper = buildXmlHelper
-        this.androidExecutor = androidExecutor
-    }
+    @Inject Project project
+    @Inject AndroidConfiguration conf
+    @Inject AndroidManifestHelper manifestHelper
+    @Inject AndroidBuildXmlHelper buildXmlHelper
+    @Inject AndroidExecutor androidExecutor
 
     @Override
     boolean isEnabled() {
@@ -67,17 +53,17 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     def emulatorSkin = new StringProperty(
             name: 'android.test.emulator.skin',
             message: 'Android emulator skin',
-            defaultValue: { androidExecutor.defaultSkinForTarget(conf.rootDir, emulatorTarget.value) },
+            defaultValue: { androidExecutor.defaultSkinForTarget(emulatorTarget.value) },
             possibleValues: { possibleSkins() },
             validator: { it in possibleSkins() }
     )
 
     private List<String> possibleTargets() {
-        androidExecutor.listTarget(conf.rootDir).findAll { !it?.trim()?.empty }
+        androidExecutor.targets
     }
 
     private List<String> possibleSkins() {
-        androidExecutor.listSkinsForTarget(conf.rootDir, emulatorTarget.value).findAll { !it?.trim()?.empty }
+        androidExecutor.skinsForTarget(emulatorTarget.value).findAll { !it?.trim()?.empty }
     }
 
     def emulatorCardSize = new StringProperty(
@@ -128,7 +114,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     }
 
     String getEmulatorName() {
-        project.rootDir.getAbsolutePath().replaceAll('[\\\\ /]', '_')
+        conf.rootDir.getAbsolutePath().replaceAll('[\\\\ /]', '_')
     }
 
     def testPerPackage = new BooleanProperty(

@@ -10,8 +10,10 @@ import com.apphance.ameba.configuration.properties.URLProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
 import com.apphance.ameba.plugins.android.builder.AndroidArtifactProvider
 import com.apphance.ameba.plugins.release.AmebaArtifact
+import org.gradle.api.Project
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.ameba.configuration.android.AndroidBuildMode.RELEASE
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
@@ -45,13 +47,19 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
     def setup() {
         System.setProperty('release.notes', 'release\nnotes')
 
-        conf = GroovyMock(AndroidConfiguration)
+        conf = GroovySpy(AndroidConfiguration)
         conf.isLibrary() >> false
         conf.fullVersionString >> fullVersionString
         conf.versionString >> '1.0.1'
         conf.projectName >> new StringProperty(value: projectName)
-        conf.rootDir >> rootDir
-        conf.tmpDir >> tmpDir
+        conf.project = GroovyStub(Project) {
+            getRootDir() >> rootDir
+            file(TMP_DIR) >> tmpDir
+        }
+        conf.reader = GroovyStub(PropertyReader) {
+            systemProperty('version.code') >> '42'
+            systemProperty('version.string') >> '1.0.1'
+        }
 
         releaseConf.conf = conf
         releaseConf.projectURL = new URLProperty(value: projectUrl)

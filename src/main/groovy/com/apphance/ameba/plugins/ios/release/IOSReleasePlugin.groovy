@@ -1,10 +1,15 @@
 package com.apphance.ameba.plugins.ios.release
 
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
+import com.apphance.ameba.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.ameba.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.ameba.plugins.ios.release.tasks.PrepareMailMessageTask
 import com.apphance.ameba.plugins.ios.release.tasks.UpdateVersionTask
-import com.apphance.ameba.plugins.release.tasks.PrepareForReleaseTask
+import com.apphance.ameba.plugins.project.tasks.CheckTestsTask
+import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
+import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
+import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -25,8 +30,9 @@ import javax.inject.Inject
  */
 class IOSReleasePlugin implements Plugin<Project> {
 
-    @Inject
-    IOSReleaseConfiguration releaseConf
+    @Inject IOSReleaseConfiguration releaseConf
+    @Inject IOSSingleVariantBuilder builder
+    @Inject IOSReleaseListener listener
 
     @Override
     void apply(Project project) {
@@ -40,8 +46,15 @@ class IOSReleasePlugin implements Plugin<Project> {
 
             project.task(PrepareMailMessageTask.NAME,
                     type: PrepareMailMessageTask,
-                    dependsOn: [AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME])
+                    dependsOn: AvailableArtifactsInfoTask.NAME)
 
+            builder.registerListener(listener)
+
+            project.tasks.each {
+                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME, CheckTestsTask.NAME])) {
+                    it.dependsOn VerifySetupTask.NAME
+                }
+            }
         }
     }
 }

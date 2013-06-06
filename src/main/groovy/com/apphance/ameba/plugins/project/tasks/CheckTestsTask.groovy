@@ -12,11 +12,12 @@ import static groovy.io.FileType.FILES
  * Checks if all tests are ok.
  *
  */
+//TODO do we need this task?
 class CheckTestsTask extends DefaultTask {
 
     static String NAME = 'checkTests'
     String group = AMEBA_TEST
-    String description = 'Checks if there are any failed junit test results in the project and fails if therea are'
+    String description = 'Checks if there are any failed junit test results in the project and fails if there are'
 
     @TaskAction
     void checkTests() {

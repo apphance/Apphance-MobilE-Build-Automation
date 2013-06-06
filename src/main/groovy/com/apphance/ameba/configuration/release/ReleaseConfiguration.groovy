@@ -7,15 +7,23 @@ import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
 import com.apphance.ameba.configuration.properties.URLProperty
 import com.apphance.ameba.configuration.reader.PropertyReader
+import com.apphance.ameba.env.Environment
 import com.apphance.ameba.plugins.release.AmebaArtifact
+import org.gradle.api.GradleException
 
 import javax.imageio.ImageIO
 import javax.inject.Inject
 import java.text.SimpleDateFormat
+import java.util.regex.Pattern
 
+import static com.apphance.ameba.env.Environment.JENKINS
 import static com.apphance.ameba.util.file.FileManager.relativeTo
+import static org.apache.commons.lang.StringUtils.isBlank
+import static org.apache.commons.lang.StringUtils.isNotBlank
 
 abstract class ReleaseConfiguration extends AbstractConfiguration {
+
+    final String configurationName = 'Release configuration'
 
     public static final String OTA_DIR = 'flow-ota'
     def MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
@@ -24,8 +32,10 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             'qrCode',
             'imageMontage'
     ]
+    def static WHITESPACE = Pattern.compile('\\s+')
 
-    final String configurationName = 'Release Configuration'
+    @Inject ProjectConfiguration conf
+    @Inject PropertyReader reader
 
     private boolean enabledInternal
 
@@ -36,19 +46,13 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     AmebaArtifact imageMontageFile
     AmebaArtifact mailMessageFile
     AmebaArtifact QRCodeFile
-    AmebaArtifact galleryCSS
-    AmebaArtifact galleryJS
-    AmebaArtifact galleryTrans
 
     String releaseMailSubject
 
-    @Inject
-    ProjectConfiguration conf
-    @Inject
-    PropertyReader reader
-
     Collection<String> getReleaseNotes() {
-        (reader.systemProperty('release.notes') ?: reader.envVariable('RELEASE_NOTES') ?: '').split('\n')
+        (reader.systemProperty('release.notes') ?: reader.envVariable('RELEASE_NOTES') ?: '').split('\n').findAll {
+            isNotBlank(it)
+        }
     }
 
     Locale getLocale() {
@@ -73,13 +77,14 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
         new File(conf.rootDir, OTA_DIR)
     }
 
-    FileProperty iconFile = new FileProperty(
+    def iconFile = new FileProperty(
             name: 'release.icon',
             message: 'Path to project\'s icon file, must be relative to the root dir of project',
             required: { true },
             defaultValue: { relativeTo(conf.rootDir.absolutePath, defaultIcon().absolutePath) },
             possibleValues: { possibleIcons() },
             validator: {
+                if (!it) return false
                 def file = new File(conf.rootDir, it as String)
                 file?.absolutePath?.trim() ? (file.exists() && ImageIO.read(file)) : false
             }
@@ -89,7 +94,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     abstract List<String> possibleIcons()
 
-    URLProperty projectURL = new URLProperty(
+    def projectURL = new URLProperty(
             name: 'release.url',
             message: 'Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as ' +
                     'subdirectory of ota dir when artifacts are created locally.',
@@ -99,7 +104,9 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
                     (it as String).toURL()
                     return true
                 } catch (Exception e) { return false }
-            }
+            },
+            validationMessage: "Should be a valid URL"
+
     )
 
     String getProjectDirName() {
@@ -118,14 +125,14 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             name: 'release.language',
             message: 'Language of the project',
             defaultValue: { 'en' },
-            validator: { it?.length() == 2 && it?.every { (it as Character).isLowerCase() } }
+            validator: { it ==~ /\p{Lower}{2}/ }
     )
 
     def country = new StringProperty(
             name: 'release.country',
             message: 'Project country',
             defaultValue: { 'US' },
-            validator: { it?.length() == 2 && it?.every { (it as Character).isUpperCase() } }
+            validator: { it ==~ /\p{Upper}{2}/ }
     )
 
     StringProperty releaseMailFrom = new StringProperty(
@@ -166,7 +173,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             message: 'Mail server'
     )
 
-    File getTargetDirectory() {
+    File getTargetDir() {
         new File(new File(otaDir, projectDirName), conf.fullVersionString)
     }
 
@@ -180,6 +187,67 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     void setEnabled(boolean enabled) {
         enabledInternal = enabled
+    }
+
+    protected List<File> getFiles(File searchRootDir, String dirPattern = '.*', Closure acceptFilter) {
+        List<File> icons = []
+        searchRootDir.eachDirMatch(~dirPattern) { dir ->
+            icons.addAll(dir.listFiles([accept: acceptFilter] as FileFilter))
+        }
+        icons
+    }
+
+    static void validateMailServer(String mailServer) {
+        if (isBlank(mailServer) || WHITESPACE.matcher(mailServer).find())
+            throw new GradleException(mailServerValidationMsg)
+    }
+
+    static void validateMailPort(String mailPort) {
+        if (isBlank(mailPort) || !mailPort.matches('[0-9]+')) {
+            throw new GradleException(mailPortValidationMsg)
+        }
+    }
+
+    static void validateMail(StringProperty mail) {
+        if (!mail.validator(mail.value)) {
+            throw new GradleException(mailValidationMsg(mail))
+        }
+    }
+
+    @Override
+    void checkProperties() {
+
+        check !checkException { baseURL }, "Property '${projectURL.name}' is not valid! Should be valid URL address!"
+        check language.validator(language.value), "Property '${language.name}' is not valid! Should be two letter lowercase!"
+        check country.validator(country.value), "Property '${country.name}' is not valid! Should be two letter uppercase!"
+        check releaseMailFrom.validator(releaseMailFrom.value), "Property '${releaseMailFrom.name}' is not valid! Should be valid " +
+                "email address! Current value: ${releaseMailFrom.value}"
+        check releaseMailTo.validator(releaseMailTo.value), "Property '${releaseMailTo.name}' is not valid! Should be valid email address!  Current value: ${releaseMailTo.value}"
+        check releaseMailFlags.validator(releaseMailFlags.persistentForm()), "Property '${releaseMailFlags.name}' is not valid! Possible values: " +
+                "${ALL_EMAIL_FLAGS} Current value: ${releaseMailFlags.value}"
+        check iconFile.validator(iconFile.value), "Property '${iconFile.name}' (${iconFile.value}) is not valid! Should be existing image file!"
+
+        if (Environment.env() == JENKINS) {
+            check !checkException { validateMailServer(mailServer) }, mailServerValidationMsg
+            check !checkException { validateMailPort(mailPort) }, mailPortValidationMsg
+            check !checkException { validateMail(releaseMailTo) }, mailValidationMsg(releaseMailTo)
+            check !checkException { validateMail(releaseMailFrom) }, mailValidationMsg(releaseMailFrom)
+        }
+    }
+
+    private static mailServerValidationMsg =
+        """|Property 'mail.server' has invalid value!
+           |Set it either by 'mail.server' system property or
+           |'MAIL_SERVER' environment variable!""".stripMargin()
+
+    private static mailPortValidationMsg =
+        """|Property 'mail.port' has invalid value!
+           |Set it either by 'mail.port' system property or 'MAIL_PORT' environment variable.
+           |This property must have numeric value!""".stripMargin()
+
+    private static mailValidationMsg = {
+        """|Property ${it.name} is not set!
+           |It should be valid email address!""".stripMargin()
     }
 }
 

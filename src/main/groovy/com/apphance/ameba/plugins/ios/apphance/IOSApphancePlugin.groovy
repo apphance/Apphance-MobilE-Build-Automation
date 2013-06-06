@@ -6,7 +6,8 @@ import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.plugins.apphance.ApphancePluginCommons
 import com.apphance.ameba.plugins.ios.apphance.tasks.AddIOSApphanceTaskFactory
 import com.apphance.ameba.plugins.ios.apphance.tasks.UploadIOSArtifactTask
-import com.apphance.ameba.plugins.ios.buildplugin.tasks.IOSAllSimulatorsBuilder
+import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
+import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import com.apphance.ameba.plugins.release.tasks.ImageMontageTask
 import com.google.inject.Inject
 import org.gradle.api.Plugin
@@ -25,14 +26,11 @@ class IOSApphancePlugin implements Plugin<Project> {
 
     def log = getLogger(this.class)
 
-    @Inject
-    IOSVariantsConfiguration variantsConf
-    @Inject
-    ApphanceConfiguration apphanceConf
-    AddIOSApphanceTaskFactory addIOSApphanceTaskFactory
-
-    //TODO write a spec for this class that will be checking if tasks are added or not (apphance conf - enabled/disabled)
-    //TODO minor: variant.apphanceMode.value in [QA, PROD, SILENT]*.toString() == variant.apphanceMode.value != DISABLED
+    @Inject IOSVariantsConfiguration variantsConf
+    @Inject ApphanceConfiguration apphanceConf
+    @Inject AddIOSApphanceTaskFactory addIOSApphanceTaskFactory
+    @Inject IOSSingleVariantBuilder builder
+    @Inject IOSReleaseListener listener
 
     @Override
     void apply(Project project) {
@@ -45,7 +43,6 @@ class IOSApphancePlugin implements Plugin<Project> {
                     def addApphance = { addIOSApphanceTaskFactory.create(variant).addIOSApphance() }
 
                     project.tasks[variant.getBuildTaskName()].doFirst(addApphance)
-                    project.tasks.findByName(IOSAllSimulatorsBuilder.NAME)?.doFirst(addApphance)
 
                     project.task("upload${variant.name}",
                             type: UploadIOSArtifactTask,
@@ -54,6 +51,8 @@ class IOSApphancePlugin implements Plugin<Project> {
                     log.lifecycle("Apphance is disabled for variant '${variant.name}'")
                 }
             }
+
+            builder.registerListener(listener)
         }
     }
 }

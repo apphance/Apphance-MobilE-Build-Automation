@@ -23,16 +23,13 @@ class PrepareRobotiumTask extends DefaultTask {
 
     private String robotiumPath = 'test/android'
 
-    @Inject
-    private CommandExecutor executor
-    @Inject
-    private AndroidConfiguration androidConf
-    @Inject
-    private AndroidManifestHelper manifestHelper
+    @Inject CommandExecutor executor
+    @Inject AndroidConfiguration conf
+    @Inject AndroidManifestHelper manifestHelper
 
     @TaskAction
     void prepareRobotium() {
-        File path = new File(project.rootDir.path, robotiumPath)
+        File path = new File(conf.rootDir.path, robotiumPath)
         setUpAndroidRobotiumProject(path)
         replaceInstrumentationLibrary(path)
         addApphanceInstrumentation(path)
@@ -121,7 +118,7 @@ class PrepareRobotiumTask extends DefaultTask {
     }
 
     private void copyTemplateTestActivity(File path) {
-        File srcDir = new File(path.path + '/src/' + androidConf.mainPackage.replace('.', File.separator))
+        File srcDir = new File(path.path + '/src/' + conf.mainPackage.replace('.', File.separator))
         srcDir.mkdirs()
 
         // Delete the default test class
@@ -133,7 +130,7 @@ class PrepareRobotiumTask extends DefaultTask {
         URL helloCaseTemplate = this.class.getResource("TestHello.java_")
 
         SimpleTemplateEngine engine = new SimpleTemplateEngine()
-        def binding = [packageName: androidConf.mainPackage, mainActivity: manifestHelper.getMainActivityName(project.rootDir)]
+        def binding = [packageName: conf.mainPackage, mainActivity: manifestHelper.getMainActivityName(conf.rootDir)]
         def baseCaseResult = engine.createTemplate(baseCaseTemplate).make(binding)
         def helloCaseResult = engine.createTemplate(helloCaseTemplate).make(binding)
 

@@ -1,57 +1,35 @@
 package com.apphance.ameba.plugins.release.tasks
 
-import org.gradle.api.GradleException
-import org.gradle.testfixtures.ProjectBuilder
+import com.apphance.ameba.TestUtils
+import com.apphance.ameba.configuration.properties.StringProperty
+import com.apphance.ameba.configuration.release.ReleaseConfiguration
 import spock.lang.Specification
 
+@Mixin(TestUtils)
 class SendMailMessageTaskSpec extends Specification {
 
-    def p = ProjectBuilder.builder().build()
-    def smt = p.task(SendMailMessageTask.NAME, type: SendMailMessageTask) as SendMailMessageTask
+    def task = create(SendMailMessageTask) as SendMailMessageTask
+    def releaseConf = GroovySpy(ReleaseConfiguration) {
+        getMailServer() >> 'mail.server'
+        getMailPort() >> '3145'
+        getReleaseMailFrom() >> new StringProperty(value: 'relase@mail.from')
+        getReleaseMailTo() >> new StringProperty(value: 'relase@mail.to')
+    }
+    def ant = GroovyMock(org.gradle.api.AntBuilder)
 
-    def 'mail port is validated correctly when empty'() {
-        when:
-        smt.validateMailPort(mailPort)
-
-        then:
-        def e = thrown(GradleException)
-        e.message =~ 'Property \'mail.port\' has invalid value!'
-
-        where:
-        mailPort << [null, '', '  \t', 'with letter', 'withletter', '123-123']
+    def setup() {
+        task.releaseConf = releaseConf
+        task.ant = ant
     }
 
-    def 'mail port is validated correctly when set'() {
+    def 'ant mailer is called'() {
+        given:
+        task.project.configurations.add('mail')
+
         when:
-        smt.validateMailPort(mailPort)
+        task.sendMailMessage()
 
         then:
-        noExceptionThrown()
-
-        where:
-        mailPort << ['121', '1']
-    }
-
-    def 'mail server is validated correctly when empty'() {
-        when:
-        smt.validateMailServer(mailServer)
-
-        then:
-        def e = thrown(GradleException)
-        e.message =~ 'Property \'mail.server\' has invalid value!'
-
-        where:
-        mailServer << [null, '  ', '  \t', 'with\tletter', 'with space']
-    }
-
-    def 'mail server is validated correctly when set'() {
-        when:
-        smt.validateMailServer(mailServer)
-
-        then:
-        noExceptionThrown()
-
-        where:
-        mailServer << ['releaseString', 'release_String', 'relase_String_123_4']
+        1 * ant.mail(_, _)
     }
 }

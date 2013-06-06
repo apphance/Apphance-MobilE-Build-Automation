@@ -43,7 +43,7 @@ class UploadAndroidArtifactTask extends DefaultTask {
 
     @TaskAction
     public void uploadArtifact() {
-        def builderInfo = artifactBuilder.apkBuilderInfo(variant)
+        def builderInfo = artifactBuilder.builderInfo(variant)
 
         String user = androidApphanceConfiguration.user.value
         String pass = androidApphanceConfiguration.pass.value

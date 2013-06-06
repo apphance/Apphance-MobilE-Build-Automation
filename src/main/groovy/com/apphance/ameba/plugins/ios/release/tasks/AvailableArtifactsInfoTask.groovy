@@ -2,11 +2,13 @@ package com.apphance.ameba.plugins.ios.release.tasks
 
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
+import com.apphance.ameba.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.ameba.plugins.ios.parsers.MobileProvisionParser
-import com.apphance.ameba.plugins.ios.release.IOSReleaseListener
 import com.apphance.ameba.plugins.release.AmebaArtifact
 import groovy.text.SimpleTemplateEngine
+import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -20,32 +22,27 @@ import static org.gradle.api.logging.Logging.getLogger
 
 class AvailableArtifactsInfoTask extends DefaultTask {
 
-    private l = getLogger(getClass())
+    def l = getLogger(getClass())
 
     static final NAME = 'prepareAvailableArtifactsInfo'
     String description = 'Prepares information about available artifacts for mail message to include'
     String group = AMEBA_RELEASE
 
-    @Inject
-    IOSConfiguration conf
-    @Inject
-    IOSVariantsConfiguration variantsConf
-    @Inject
-    IOSReleaseConfiguration releaseConf
-    @Inject
-    IOSReleaseListener releaseListener
-    @Inject
-    MobileProvisionParser mpParser
+    @Inject IOSConfiguration conf
+    @Inject IOSVariantsConfiguration variantsConf
+    @Inject IOSReleaseConfiguration releaseConf
+    @Inject MobileProvisionParser mpParser
+    @Inject IOSArtifactProvider artifactProvider
 
     SimpleTemplateEngine templateEngine = new SimpleTemplateEngine()
 
     @TaskAction
-    void prepareAvailableArtifactsInfo() {
+    void availableArtifactsInfo() {
         def udids = [:]
         variantsConf.variants.each { v ->
             l.lifecycle("Preparing artifact for ${v.name}")
-            releaseListener.buildArtifactsOnly(v)
-            udids.put(v.target, mpParser.udids(v.mobileprovision.value))
+            prepareArtifacts(v)
+            udids.put(v.name, mpParser.udids(v.mobileprovision.value))
         }
         String otaFolderPrefix = "${releaseConf.projectDirName}/${conf.fullVersionString}"
         fileIndexArtifact(otaFolderPrefix)
@@ -59,9 +56,43 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         prepareQRCode()
     }
 
-    private void fileIndexArtifact(String otaFolderPrefix) {
+    @PackageScope
+    void prepareArtifacts(AbstractIOSVariant variant) {
+        def bi = artifactProvider.builderInfo(variant)
+
+        def zipDist = artifactProvider.zipDistribution(bi)
+        if (zipDist.location.exists())
+            releaseConf.distributionZipFiles.put(bi.id, zipDist)
+
+        def dSym = artifactProvider.dSYMZip(bi)
+        if (dSym.location.exists())
+            releaseConf.dSYMZipFiles.put(bi.id, dSym)
+
+        def ahSym = artifactProvider.ahSYM(bi)
+        if (ahSym.location.exists()) {
+            releaseConf.ahSYMDirs.put(bi.id, ahSym)
+            ahSym.location.listFiles().each {
+                ahSym.childArtifacts << new AmebaArtifact(location: it, name: it.name, url: "${ahSym.url.toString()}/${it.name}".toURL())
+            }
+        }
+
+        def ipa = artifactProvider.ipa(bi)
+        if (ipa.location.exists())
+            releaseConf.ipaFiles.put(bi.id, ipa)
+
+        def manifest = artifactProvider.manifest(bi)
+        if (manifest.location.exists())
+            releaseConf.manifestFiles.put(bi.id, manifest)
+
+        def mobileprovision = artifactProvider.mobileprovision(bi)
+        if (mobileprovision.location.exists())
+            releaseConf.mobileProvisionFiles.put(bi.id, mobileprovision)
+    }
+
+    @PackageScope
+    void fileIndexArtifact(String otaFolderPrefix) {
         def aa = new AmebaArtifact(
-                name: "The file index file: ${conf.projectName}",
+                name: "The file index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/file_index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/file_index.html"))
         aa.location.parentFile.mkdirs()
@@ -69,9 +100,10 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         releaseConf.fileIndexFile = aa
     }
 
-    private void plainFileIndexArtifact(String otaFolderPrefix) {
+    @PackageScope
+    void plainFileIndexArtifact(String otaFolderPrefix) {
         def aa = new AmebaArtifact(
-                name: "The plain file index file: ${conf.projectName}",
+                name: "The plain file index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/plain_file_index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/plain_file_index.html"))
         aa.location.parentFile.mkdirs()
@@ -79,9 +111,10 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         releaseConf.plainFileIndexFile = aa
     }
 
-    private void otaIndexFileArtifact(String otaFolderPrefix) {
+    @PackageScope
+    void otaIndexFileArtifact(String otaFolderPrefix) {
         def aa = new AmebaArtifact(
-                name: "The ota index file: ${conf.projectName}",
+                name: "The ota index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/index.html"))
         aa.location.parentFile.mkdirs()
@@ -89,23 +122,26 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         releaseConf.otaIndexFile = aa
     }
 
-    private void qrCodeArtifact() {
+    @PackageScope
+    void qrCodeArtifact() {
         def aa = new AmebaArtifact(
                 name: 'QR Code',
-                url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName}-${conf.fullVersionString}.png"),
-                location: new File(releaseConf.targetDirectory, "qrcode-${conf.projectName}-${conf.fullVersionString}.png"))
+                url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"),
+                location: new File(releaseConf.targetDir, "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"))
         aa.location.parentFile.mkdirs()
         aa.location.delete()
         releaseConf.QRCodeFile = aa
     }
 
-    private void prepareQRCode() {
+    @PackageScope
+    void prepareQRCode() {
         def urlEncoded = encode(releaseConf.otaIndexFile.url.toString(), "utf-8")
         downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), releaseConf.QRCodeFile.location)
-        l.lifecycle("QRCode created: ${aa.location}")
+        l.lifecycle("QRCode created: ${releaseConf.QRCodeFile.location}")
     }
 
-    private void prepareOtaIndexFile() {
+    @PackageScope
+    void prepareOtaIndexFile() {
         def urlMap = [:]
         variantsConf.variants.each { v ->
             if (releaseConf.manifestFiles[v.name]) {
@@ -117,64 +153,57 @@ class AvailableArtifactsInfoTask extends DefaultTask {
             }
         }
         l.lifecycle("OTA urls: $urlMap")
-        def rb = bundle('index')
         def binding = [
                 baseUrl: releaseConf.otaIndexFile.url,
-                title: conf.projectName,
-                targets: conf.targets,
-                configurations: conf.configurations,
+                title: conf.projectName.value,
                 version: conf.fullVersionString,
                 releaseNotes: releaseConf.releaseNotes,
                 currentDate: releaseConf.buildDate,
-                iconFileName: releaseConf.iconFile.name,
+                iconFileName: releaseConf.iconFile.value.name,
                 urlMap: urlMap,
                 conf: conf,
-                rb: rb
+                variantsConf: variantsConf,
+                rb: bundle('index')
         ]
-        def tmpl = loadTemplate('index.html')
-        def result = fillTemplate(tmpl, binding)
+        def result = fillTemplate(loadTemplate('index.html'), binding)
         templateToFile(releaseConf.otaIndexFile.location, result)
-        l.lifecycle("Ota index created: ${releaseConf.otaIndexFile}")
-        ant.copy(file: releaseConf.iconFile, tofile: new File(releaseConf.otaIndexFile.location.parentFile, releaseConf.iconFile.name))
+        l.lifecycle("OTA index created: ${releaseConf.otaIndexFile.location}")
+        ant.copy(file: releaseConf.iconFile.value, tofile: new File(releaseConf.otaIndexFile.location.parentFile, releaseConf.iconFile.value.name))
     }
 
-    private void prepareFileIndexFile(def udids) {
-        def tmpl = loadTemplate('file_index.html')
-        def rb = bundle('file_index')
+    @PackageScope
+    void prepareFileIndexFile(def udids) {
         def binding = [
                 baseUrl: releaseConf.fileIndexFile.url,
-                title: conf.projectName,
-                targets: conf.targets,
-                configurations: conf.configurations,
+                title: conf.projectName.value,
                 version: conf.fullVersionString,
                 currentDate: releaseConf.buildDate,
                 conf: conf,
                 releaseConf: releaseConf,
+                variantsConf: variantsConf,
                 udids: udids,
-                rb: rb
+                rb: bundle('file_index')
         ]
-        def result = fillTemplate(tmpl, binding)
+        def result = fillTemplate(loadTemplate('file_index.html'), binding)
         templateToFile(releaseConf.fileIndexFile.location, result)
-        l.lifecycle("File index created: ${releaseConf.fileIndexFile}")
+        l.lifecycle("File index created: ${releaseConf.fileIndexFile.location}")
     }
 
-    private void preparePlainFileIndexFile() {
-        def tmpl = loadTemplate('plain_file_index.html')
-        def rb = bundle('plain_file_index')
+    @PackageScope
+    void preparePlainFileIndexFile() {
         def binding = [
                 baseUrl: releaseConf.plainFileIndexFile.url,
-                title: conf.projectName,
-                targets: conf.targets,
-                configurations: conf.configurations,
+                title: conf.projectName.value,
                 version: conf.fullVersionString,
                 currentDate: releaseConf.buildDate,
                 conf: conf,
+                variantsConf: variantsConf,
                 releaseConf: releaseConf,
-                rb: rb
+                rb: bundle('plain_file_index')
         ]
-        def result = fillTemplate(tmpl, binding)
+        def result = fillTemplate(loadTemplate('plain_file_index.html'), binding)
         templateToFile(releaseConf.plainFileIndexFile.location, result)
-        l.lifecycle("Plain file index created: ${releaseConf.plainFileIndexFile}")
+        l.lifecycle("Plain file index created: ${releaseConf.plainFileIndexFile.location}")
     }
 
     private ResourceBundle bundle(String id) {

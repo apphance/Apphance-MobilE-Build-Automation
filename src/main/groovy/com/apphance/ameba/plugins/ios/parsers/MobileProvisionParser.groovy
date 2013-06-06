@@ -7,8 +7,7 @@ import javax.inject.Inject
 
 class MobileProvisionParser {
 
-    @Inject
-    IOSExecutor executor
+    @Inject IOSExecutor executor
 
     String bundleId(File mobileprovision) {
         def xml = parsedXml(mobileprovisionToXml(mobileprovision))

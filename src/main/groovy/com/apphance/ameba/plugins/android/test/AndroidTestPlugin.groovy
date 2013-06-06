@@ -9,29 +9,31 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
-import static org.gradle.api.plugins.JavaPlugin.COMPILE_JAVA_TASK_NAME
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Performs android testing.
  */
 class AndroidTestPlugin implements Plugin<Project> {
 
-    @Inject
-    private AndroidTestConfiguration testConf
-    @Inject
-    private AndroidConfiguration androidConf
+    def log = getLogger(this.class)
+
+    @Inject AndroidTestConfiguration testConf
+    @Inject AndroidConfiguration conf
 
     @Override
     void apply(Project project) {
         if (testConf.isEnabled()) {
+            log.lifecycle("Applying plugin ${this.class.simpleName}")
 
             if (testConf.emmaEnabled.value) {
                 project.configurations.add('emma')
                 project.dependencies.add('emma', project.files([
-                        new File(androidConf.SDKDir, 'tools/lib/emma.jar')
+                        new File(conf.SDKDir, 'tools/lib/emma.jar')
                 ]))
                 project.dependencies.add('emma', project.files([
-                        new File(androidConf.SDKDir, 'tools/lib/emma_ant.jar')
+                        new File(conf.SDKDir, 'tools/lib/emma_ant.jar')
                 ]))
             }
 

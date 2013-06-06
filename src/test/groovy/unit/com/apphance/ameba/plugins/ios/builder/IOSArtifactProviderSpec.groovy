@@ -4,9 +4,11 @@ import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
 import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.properties.FileProperty
+import com.apphance.ameba.configuration.properties.IOSBuildModeProperty
 import spock.lang.Shared
 import spock.lang.Specification
 
+import static com.apphance.ameba.configuration.ios.IOSBuildMode.DEVICE
 import static com.google.common.io.Files.createTempDir
 import static java.lang.System.getProperties
 
@@ -55,11 +57,15 @@ class IOSArtifactProviderSpec extends Specification {
         variant.target >> 'GradleXCode'
         variant.configuration >> 'BasicConfiguration'
         variant.tmpDir >> new File(properties['java.io.tmpdir'])
+        variant.buildDir >> new File(properties['java.io.tmpdir'], 'build')
         variant.mobileprovision >> new FileProperty(value: new File('sample.mobileprovision'))
         variant.versionString >> '1.0.1'
         variant.versionCode >> '42'
         variant.fullVersionString >> '1.0.1_42'
         variant.plist >> new File('GradleXCode-Info.plist')
+        variant.mode >> new IOSBuildModeProperty(value: DEVICE)
+        variant.name >> 'V1'
+        variant.buildableName >> 'GradleXCode'
 
         and:
         def provider = new IOSArtifactProvider()
@@ -71,11 +77,13 @@ class IOSArtifactProviderSpec extends Specification {
         bi.target == 'GradleXCode'
         bi.configuration == 'BasicConfiguration'
         bi.buildDir == new File(properties['java.io.tmpdir'], 'build')
-        bi.filePrefix == 'GradleXCode-BasicConfiguration-1.0.1_42'
-        bi.fullReleaseName == 'GradleXCode-BasicConfiguration-1.0.1_42'
-        bi.id == 'GradleXCode-BasicConfiguration'
+        bi.filePrefix == 'V1-1.0.1_42'
+        bi.fullReleaseName == 'V1-1.0.1_42'
+        bi.id == 'V1'
         bi.plist.name == 'GradleXCode-Info.plist'
         bi.mobileprovision.name == 'sample.mobileprovision'
+        bi.mode == DEVICE
+        bi.buildableName == 'GradleXCode'
     }
 
     def 'zip distribution artifact is built well'() {

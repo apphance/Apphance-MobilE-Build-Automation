@@ -2,25 +2,29 @@ package com.apphance.ameba.configuration.android
 
 import com.apphance.ameba.detection.ProjectTypeDetector
 import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Ignore
 import spock.lang.Specification
 
 import static com.apphance.ameba.detection.ProjectType.ANDROID
 import static com.apphance.ameba.detection.ProjectType.IOS
+import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidConfigurationSpec extends Specification {
 
     def 'android analysis configuration is enabled based on project type'() {
         given:
-        def p = Mock(Project)
+        def p = GroovyStub(Project) {
+            getRootDir() >> GroovyStub(File)
+        }
 
         and:
-        def ptd = Mock(ProjectTypeDetector)
+        def ptd = GroovyStub(ProjectTypeDetector)
 
         when:
         ptd.detectProjectType(_) >> type
-        def ac = new AndroidConfiguration(p, * [null] * 3, ptd, null)
+        def ac = new AndroidConfiguration()
+        ac.projectTypeDetector = ptd
+        ac.project = p
 
         then:
         ac.isEnabled() == enabled
@@ -35,7 +39,7 @@ class AndroidConfigurationSpec extends Specification {
     @Ignore('FIXME works only on compiled projects')
     def 'linkedLibraryJars and libraryJars are filled correctly'() {
         given:
-        def project = Mock(Project)
+        def project = GroovyStub(Project)
         project.rootDir >> new File('testProjects/android/android-basic')
 
         and:
@@ -48,8 +52,8 @@ class AndroidConfigurationSpec extends Specification {
 
     def 'no exception during readProperties'() {
         given:
-        def project = ProjectBuilder.builder().build()
-        def androidConfiguration = new AndroidConfiguration(project, * [null] * 5)
+        def androidConfiguration = new AndroidConfiguration()
+        androidConfiguration.project = builder().build()
 
         expect:
         androidConfiguration.readProperties()

@@ -4,33 +4,30 @@ import com.apphance.ameba.configuration.AbstractConfiguration
 import com.apphance.ameba.configuration.ios.IOSConfiguration
 import com.apphance.ameba.configuration.properties.ListStringProperty
 import com.apphance.ameba.configuration.properties.StringProperty
-import org.apache.commons.lang.StringUtils
+import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
 import static IOSVariantType.SCHEME
 import static IOSVariantType.TC
 import static com.apphance.ameba.configuration.properties.ListStringProperty.getSEPARATOR
-import static org.apache.commons.lang.StringUtils.*
+import static org.apache.commons.lang.StringUtils.isNotBlank
 
 @com.google.inject.Singleton
 class IOSVariantsConfiguration extends AbstractConfiguration {
 
-    String configurationName = 'IOS variants configuration'
+    String configurationName = 'iOS Variants Configuration'
 
     private List<AbstractIOSVariant> variants
 
-    @Inject
-    IOSConfiguration conf
-
-    @Inject
-    IOSVariantFactory variantFactory
+    @Inject IOSConfiguration conf
+    @Inject IOSVariantFactory variantFactory
 
     @Override
     @Inject
     void init() {
         super.init()
-        variantType.value ?: (conf.schemes ? SCHEME : TC).name()
+        variantType.value = variantType.value ?: (conf.schemes ? SCHEME : TC).name()
         this.variants = buildVariantsList()
     }
 
@@ -46,12 +43,12 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
             possibleValues: { variantsNames.value ?: [] }
     )
 
-    @groovy.transform.PackageScope
+    @PackageScope
     List<AbstractIOSVariant> buildVariantsList() {
         List<AbstractIOSVariant> result = []
         if (variantsNames.value) {
             result.addAll(extractVariantsFromProperties())
-        } else if (hasSchemas()) {
+        } else if (hasSchemes()) {
             result.addAll(createVariantsFromSchemes())
             variantsNames.value = result*.name.join(SEPARATOR)
         } else {
@@ -61,7 +58,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         result
     }
 
-    @groovy.transform.PackageScope
+    @PackageScope
     List<AbstractIOSVariant> extractVariantsFromProperties() {
         variantsNames.value.collect {
             variantType.value == SCHEME.name() ?
@@ -71,8 +68,8 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         }
     }
 
-    @groovy.transform.PackageScope
-    boolean hasSchemas() {
+    @PackageScope
+    boolean hasSchemes() {
         conf.schemes.any { isNotBlank(it) }
     }
 
@@ -91,18 +88,14 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     Collection<AbstractIOSVariant> getSubConfigurations() {
-        this.@variants
+        this.getVariants()
     }
 
     Collection<AbstractIOSVariant> getVariants() {
-        this.@variants
+        this.@variants.findAll { it.name in variantsNames.value }
     }
 
     AbstractIOSVariant getMainVariant() {
         variants[0]
-    }
-
-    @Override
-    void checkProperties() {
     }
 }

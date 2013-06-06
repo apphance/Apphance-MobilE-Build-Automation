@@ -20,10 +20,8 @@ class FindBugsTask extends DefaultTask {
     String group = AMEBA_ANALYSIS
     String description = 'Runs Findbugs analysis on project'
 
-    @Inject
-    AndroidConfiguration androidConfiguration
-    @Inject
-    AndroidAnalysisResourceLocator resourceLocator
+    @Inject AndroidConfiguration androidConfiguration
+    @Inject AndroidAnalysisResourceLocator resourceLocator
 
     @TaskAction
     public void runFindbugs() {

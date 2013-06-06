@@ -4,9 +4,10 @@ import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.executor.AntExecutor
-import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
@@ -14,13 +15,9 @@ class InstallTask extends DefaultTask {
 
     String group = AMEBA_BUILD
 
-    @Inject
-    private AndroidConfiguration androidConf
-    @Inject
-    private AndroidReleaseConfiguration androidReleaseConf
-
-    @Inject
-    AntExecutor antExecutor
+    @Inject AndroidConfiguration conf
+    @Inject AndroidReleaseConfiguration releaseConf
+    @Inject AntExecutor antExecutor
 
     AndroidVariantConfiguration variant
 
@@ -28,10 +25,9 @@ class InstallTask extends DefaultTask {
     void install() {
         String debugRelease = variant.mode.capitalize()
         def firstLetterLowerCase = debugRelease[0].toLowerCase()
-        File targetDirectory = androidReleaseConf.targetDirectory
-        def apkName = "${androidConf.projectName.value}-${debugRelease}-${variant}-${androidConf.versionString}.apk".toString()
-        File apkFile = new File(targetDirectory, apkName)
-        antExecutor.executeTarget project.rootDir, "install${firstLetterLowerCase}", ['out.final.file': apkFile.canonicalPath]
+        def apkName = "${conf.projectName.value}-${debugRelease}-${variant}-${conf.versionString}.apk".toString()
+        File apkFile = new File(releaseConf.targetDir, apkName)
+        antExecutor.executeTarget conf.rootDir, "install${firstLetterLowerCase}", ['out.final.file': apkFile.canonicalPath]
     }
 
     @Override

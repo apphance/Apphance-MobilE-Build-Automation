@@ -1,10 +1,11 @@
 package com.apphance.ameba.plugins.android.jarlibrary.tasks
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
-import javax.inject.Inject
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.Task
+
+import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
 
@@ -16,8 +17,7 @@ class DeployJarLibraryTask extends DefaultTask {
     String group = AMEBA_BUILD
     String description = 'Deploys jar library to maven repository'
 
-    @Inject
-    private AndroidConfiguration androidConf
+    @Inject AndroidConfiguration androidConf
 
     @Override
     Task doFirst(Action<? super Task> action) {

@@ -12,8 +12,7 @@ class ApphanceConfiguration extends AbstractConfiguration {
     String configurationName = 'Apphance Configuration'
     private boolean enabledInternal = false
 
-    @Inject
-    ProjectConfiguration conf
+    @Inject ProjectConfiguration conf
 
     @Override
     boolean isEnabled() {

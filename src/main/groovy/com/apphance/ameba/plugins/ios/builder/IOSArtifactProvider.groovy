@@ -9,21 +9,21 @@ import javax.inject.Inject
 
 class IOSArtifactProvider {
 
-    @Inject
-    IOSReleaseConfiguration releaseConf
-    @Inject
-    IOSVariantsConfiguration variantsConf
+    @Inject IOSReleaseConfiguration releaseConf
+    @Inject IOSVariantsConfiguration variantsConf
 
-    IOSBuilderInfo builderInfo(AbstractIOSVariant variant) {
+    IOSBuilderInfo builderInfo(AbstractIOSVariant v) {
         def bi = new IOSBuilderInfo(
-                id: "${variant.target}-${variant.configuration}",
-                target: variant.target,
-                configuration: variant.configuration,
-                buildDir: new File(variant.tmpDir, 'build'),
-                fullReleaseName: "${variant.target}-${variant.configuration}-${variant.fullVersionString}",
-                filePrefix: "${variant.target}-${variant.configuration}-${variant.fullVersionString}",
-                mobileprovision: variant.mobileprovision.value,
-                plist: variant.plist
+                id: v.name,
+                buildableName: v.buildableName,
+                target: v.target,
+                configuration: v.configuration,
+                mode: v.mode.value,
+                buildDir: v.buildDir,
+                fullReleaseName: "${v.name}-${v.fullVersionString}",
+                filePrefix: "${v.name}-${v.fullVersionString}",
+                mobileprovision: v.mobileprovision.value,
+                plist: v.plist
         )
         bi
     }

@@ -41,7 +41,7 @@ class ApphanceOTFTest {
         tmpCopy.delete()
         tmpCopy << mainActivityFile.getText()
 
-        runGradleNoVariants('updateProject', 'cleanRelease', 'buildAllDebug')
+        runGradleNoVariants('updateProject', 'cleanFlow', 'buildAllDebug')
         assertTrue(new File(testNovariantsProject,
                 "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.apk").exists())
 

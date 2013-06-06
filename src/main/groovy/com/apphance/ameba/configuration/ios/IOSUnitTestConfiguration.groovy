@@ -1,6 +1,8 @@
 package com.apphance.ameba.configuration.ios
 
 import com.apphance.ameba.configuration.AbstractConfiguration
+import com.apphance.ameba.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.ameba.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.ameba.configuration.properties.StringProperty
 
 import javax.inject.Inject
@@ -11,8 +13,14 @@ class IOSUnitTestConfiguration extends AbstractConfiguration {
     String configurationName = 'iOS Unit Test Configuration'
     private enabledInternal = false
 
+    @Inject IOSConfiguration conf
+    @Inject IOSVariantsConfiguration iosVariantsConf
+
     @Inject
-    IOSConfiguration conf
+    @Override
+    void init() {
+        super.init()
+    }
 
     @Override
     boolean isEnabled() {
@@ -24,15 +32,21 @@ class IOSUnitTestConfiguration extends AbstractConfiguration {
         enabledInternal = enabled
     }
 
-    //TODO possible values, validator (after ios conf is done)
-    def configuration = new StringProperty(
-            name: 'ios.unitTests.configuration',
-            message: 'IOS unit test configuration'
+    def variant = new StringProperty(
+            name: 'ios.unitTests.variant',
+            message: 'IOS unit test variant',
+            possibleValues: { iosVariantsConf.variantsNames.value },
+            validator: { it in iosVariantsConf.variantsNames.value },
+            required: { true }
     )
 
-    //TODO possible values, validator (after ios conf is done)
-    def target = new StringProperty(
-            name: 'ios.unitTests.target',
-            message: 'IOS unit test target'
-    )
+    AbstractIOSVariant getVariant() {
+        iosVariantsConf.variants.find { it.name == this.@variant.value }
+    }
+
+    @Override
+    void checkProperties() {
+        super.checkProperties()
+        defaultValidation variant
+    }
 }

@@ -4,9 +4,11 @@ import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
+import org.gradle.api.Project
 import spock.lang.Specification
 
-import static com.apphance.ameba.configuration.AbstractConfiguration.TMP_DIR
+import static com.apphance.ameba.configuration.ProjectConfiguration.LOG_DIR
+import static com.apphance.ameba.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.ameba.configuration.release.ReleaseConfiguration.OTA_DIR
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
@@ -17,11 +19,14 @@ class CopySourcesTaskSpec extends Specification {
         def p = builder().withProjectDir(new File('testProjects/android/android-basic')).build()
 
         and:
-        def conf = GroovyMock(AndroidConfiguration, {
+        def conf = GroovySpy(AndroidConfiguration, {
             getSourceExcludes() >> []
-            getRootDir() >> p.rootDir
-            getTmpDir() >> p.file(TMP_DIR)
         })
+        conf.project = GroovyStub(Project) {
+            getRootDir() >> p.rootDir
+            file(TMP_DIR) >> p.file(TMP_DIR)
+            file(LOG_DIR) >> p.file(LOG_DIR)
+        }
 
         and:
         def releaseConf = GroovyMock(AndroidReleaseConfiguration, {
@@ -67,7 +72,7 @@ class CopySourcesTaskSpec extends Specification {
         !(new File(marketDir, TMP_DIR)).exists()
         !(new File(marketDir, OTA_DIR)).exists()
         !(new File(marketDir, OTA_DIR)).exists()
-        !(new File(testDir, 'log')).exists()
-        !(new File(testDir, 'log')).exists()
+        !(new File(testDir, LOG_DIR)).exists()
+        !(new File(testDir, LOG_DIR)).exists()
     }
 }

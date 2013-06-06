@@ -1,10 +1,10 @@
 package com.apphance.ameba.plugins.ios.release
 
 import com.apphance.ameba.configuration.ios.IOSReleaseConfiguration
+import com.apphance.ameba.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.ameba.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.ameba.plugins.ios.release.tasks.PrepareMailMessageTask
 import com.apphance.ameba.plugins.release.tasks.AbstractUpdateVersionTask
-import com.apphance.ameba.plugins.release.tasks.PrepareForReleaseTask
 import spock.lang.Specification
 
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_RELEASE
@@ -24,6 +24,8 @@ class IOSReleasePluginSpec extends Specification {
         and:
         def irp = new IOSReleasePlugin()
         irp.releaseConf = irc
+        irp.builder = new IOSSingleVariantBuilder()
+        irp.listener = GroovyStub(IOSReleaseListener)
 
         when:
         irp.apply(project)
@@ -34,7 +36,10 @@ class IOSReleasePluginSpec extends Specification {
         project.tasks[AvailableArtifactsInfoTask.NAME].group == AMEBA_RELEASE
 
         and:
-        project.tasks[PrepareMailMessageTask.NAME].dependsOn.flatten().containsAll(AvailableArtifactsInfoTask.NAME, PrepareForReleaseTask.NAME)
+        project.tasks[PrepareMailMessageTask.NAME].dependsOn.flatten().contains(AvailableArtifactsInfoTask.NAME)
+
+        and:
+        irp.builder.buildListeners.size() > 0
     }
 
     def 'no tasks available when configuration is inactive'() {

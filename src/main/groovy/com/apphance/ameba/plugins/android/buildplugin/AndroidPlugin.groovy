@@ -2,17 +2,21 @@ package com.apphance.ameba.plugins.android.buildplugin
 
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantsConfiguration
+import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.buildplugin.tasks.*
-import com.apphance.ameba.plugins.project.PrepareSetupTask
-import com.apphance.ameba.plugins.project.tasks.CleanConfTask
+import com.apphance.ameba.plugins.project.tasks.CheckTestsTask
+import com.apphance.ameba.plugins.project.tasks.CleanFlowTask
+import com.apphance.ameba.plugins.project.tasks.PrepareSetupTask
 import com.apphance.ameba.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.ameba.configuration.reader.ConfigurationWizard.green
+import static com.apphance.ameba.executor.AntExecutor.CLEAN
 import static com.apphance.ameba.plugins.AmebaCommonBuildTaskGroups.AMEBA_BUILD
-import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * This is the main android build plugin.
@@ -25,64 +29,70 @@ import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME
  */
 class AndroidPlugin implements Plugin<Project> {
 
+    def log = getLogger(this.class)
+
     static final String BUILD_ALL_TASK_NAME = 'buildAll'
     static final String BUILD_ALL_DEBUG_TASK_NAME = 'buildAllDebug'
     static final String BUILD_ALL_RELEASE_TASK_NAME = 'buildAllRelease'
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidVariantsConfiguration variantsConf
+
+    @Inject AndroidConfiguration conf
+    @Inject AndroidVariantsConfiguration variantsConf
+    @Inject AntExecutor antExecutor
 
     @Override
     void apply(Project project) {
 
         if (conf.isEnabled()) {
+            log.lifecycle("Applying plugin ${this.class.simpleName}")
 
-            project.task(UpdateProjectTask.NAME, type: UpdateProjectTask)
-
-            project.task(CleanClassesTask.NAME,
-                    type: CleanClassesTask,
-                    dependsOn: UpdateProjectTask.NAME)
+            project.task(UpdateProjectTask.NAME,
+                    type: UpdateProjectTask)
 
             project.task(CopySourcesTask.NAME,
-                    type: CopySourcesTask,
-                    dependsOn: UpdateProjectTask.NAME)
+                    type: CopySourcesTask).mustRunAfter(CleanFlowTask.NAME)
 
             project.task(ReplacePackageTask.NAME,
                     type: ReplacePackageTask,
                     dependsOn: UpdateProjectTask.NAME)
 
-            project.task(CleanAndroidTask.NAME,
-                    type: CleanAndroidTask,
-                    dependsOn: [CleanConfTask.NAME, UpdateProjectTask.NAME])
-
-            project.task(CLEAN_TASK_NAME) << {
-                conf.buildDir.deleteDir()
+            project.tasks.findByName(CleanFlowTask.NAME) << {
+                def buildXml = new File(conf.rootDir, 'build.xml')
+                if (buildXml.exists())
+                    antExecutor.executeTarget(conf.rootDir, CLEAN)
+                else
+                    log.lifecycle("Skipping 'ant clean' in dir: $conf.rootDir. File $buildXml.absolutePath does not exist")
             }
-
-            project.tasks[CLEAN_TASK_NAME].dependsOn(CleanAndroidTask.NAME)
 
             project.task(CompileAndroidTask.NAME,
                     type: CompileAndroidTask,
                     dependsOn: UpdateProjectTask.NAME)
 
-            project.task(BUILD_ALL_DEBUG_TASK_NAME, group: AMEBA_BUILD)
-            project.task(BUILD_ALL_RELEASE_TASK_NAME, group: AMEBA_BUILD)
-            project.task('buildAll', dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME], group: AMEBA_BUILD)
+            project.task(BUILD_ALL_DEBUG_TASK_NAME,
+                    group: AMEBA_BUILD,
+                    description: 'Builds all debug variants')
 
-            variantsConf.variants.each {
-                project.task(it.buildTaskName,
+            project.task(BUILD_ALL_RELEASE_TASK_NAME,
+                    group: AMEBA_BUILD,
+                    description: 'Build all release variants')
+
+            project.task(BUILD_ALL_TASK_NAME,
+                    group: AMEBA_BUILD,
+                    dependsOn: [BUILD_ALL_DEBUG_TASK_NAME, BUILD_ALL_RELEASE_TASK_NAME],
+                    description: 'Builds all variants')
+
+            variantsConf.variants.each { variant ->
+                project.task(variant.buildTaskName,
                         type: SingleVariantTask,
-                        dependsOn: [CopySourcesTask.NAME, UpdateProjectTask.NAME]).variant = it
+                        dependsOn: CopySourcesTask.NAME).variant = variant
 
-                def buildAllMode = "buildAll${it.mode.capitalize()}"
-                project.tasks[buildAllMode].dependsOn it.buildTaskName
+                def buildAllMode = "buildAll${variant.mode.capitalize()}"
+                project.tasks[buildAllMode].dependsOn variant.buildTaskName
 
-                project.task("install${it.name}", type: InstallTask, dependsOn: it.buildTaskName).variant = it
+                project.task("install${variant.name}", type: InstallTask, dependsOn: variant.buildTaskName).variant = variant
             }
 
             project.tasks.each {
-                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME])) {
+                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME, CheckTestsTask.NAME])) {
                     it.dependsOn VerifySetupTask.NAME
                 }
             }
