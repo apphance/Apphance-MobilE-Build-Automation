@@ -38,7 +38,7 @@ class AndroidJarLibraryPlugin implements Plugin<Project> {
             project.task(JarLibraryTask.NAME,
                     type: JarLibraryTask)
 
-            project.configurations.add('jarLibraryConfiguration')
+            project.configurations.create('jarLibraryConfiguration')
 
             project.task(DeployJarLibraryTask.NAME,
                     type: DeployJarLibraryTask,

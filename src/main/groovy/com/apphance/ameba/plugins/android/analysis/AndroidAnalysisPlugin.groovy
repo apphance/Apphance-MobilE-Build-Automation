@@ -29,7 +29,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         if (analysisConf.isEnabled()) {
             log.lifecycle("Applying plugin ${this.class.simpleName}")
 
-            project.configurations.add('pmdConf')
+            project.configurations.create('pmdConf')
             project.dependencies.add('pmdConf', 'pmd:pmd:4.3')
             project.task(PMDTask.NAME,
                     type: PMDTask)
@@ -37,7 +37,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
             project.task(CPDTask.NAME,
                     type: CPDTask)
 
-            project.configurations.add('findbugsConf')
+            project.configurations.create('findbugsConf')
             project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs:2.0.1')
             project.dependencies.add('findbugsConf', 'com.google.code.findbugs:findbugs-ant:2.0.1')
             project.task(FindBugsTask.NAME,
@@ -45,7 +45,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                     dependsOn: CompileAndroidTask.NAME)
 
 
-            project.configurations.add('checkstyleConf')
+            project.configurations.create('checkstyleConf')
             project.dependencies.add('checkstyleConf', 'com.puppycrawl.tools:checkstyle:5.6')
             project.task(CheckstyleTask.NAME,
                     type: CheckstyleTask,

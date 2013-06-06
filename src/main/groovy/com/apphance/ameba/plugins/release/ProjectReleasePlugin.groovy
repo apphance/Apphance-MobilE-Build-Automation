@@ -34,7 +34,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
         if (releaseConf.isEnabled()) {
             log.lifecycle("Applying plugin ${this.class.simpleName}")
 
-            project.configurations.add('mail')//TODO
+            project.configurations.create('mail')
             project.dependencies {
                 mail 'org.apache.ant:ant-javamail:1.9.0'
                 mail 'javax.mail:mail:1.4'

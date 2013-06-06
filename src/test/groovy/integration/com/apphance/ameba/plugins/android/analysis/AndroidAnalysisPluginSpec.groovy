@@ -19,7 +19,7 @@ class AndroidAnalysisPluginSpec extends Specification {
         def project = builder().build()
 
         and:
-        project.tasks.add(CLASSES_TASK_NAME)
+        project.task(CLASSES_TASK_NAME)
 
         and:
         def aap = new AndroidAnalysisPlugin()

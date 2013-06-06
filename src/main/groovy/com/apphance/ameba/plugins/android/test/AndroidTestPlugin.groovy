@@ -28,7 +28,7 @@ class AndroidTestPlugin implements Plugin<Project> {
             log.lifecycle("Applying plugin ${this.class.simpleName}")
 
             if (testConf.emmaEnabled.value) {
-                project.configurations.add('emma')
+                project.configurations.create('emma')
                 project.dependencies.add('emma', project.files([
                         new File(conf.SDKDir, 'tools/lib/emma.jar')
                 ]))
@@ -59,12 +59,12 @@ class AndroidTestPlugin implements Plugin<Project> {
                     type: TestRobolectricTask,
                     dependsOn: [CompileAndroidTask.NAME])
 
-            project.configurations.add('robotium')
+            project.configurations.create('robotium')
             project.dependencies.add('robotium', 'com.jayway.android.robotium:robotium-solo:3.1')
             project.task(PrepareRobotiumTask.NAME,
                     type: PrepareRobotiumTask)
 
-            project.configurations.add('robolectric')
+            project.configurations.create('robolectric')
             project.dependencies.add('robolectric', 'com.pivotallabs:robolectric:1.1')
             project.dependencies.add('robolectric', 'junit:junit:4.10')
             project.task(PrepareRobolectricTask.NAME,
