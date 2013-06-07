@@ -26,7 +26,7 @@ apply {
 }
 
 group = 'com.apphance.flow'
-ext.artifactId = 'Ameba'
+ext.artifactId = 'apphance-flow'
 
 task sourcesJar(type: Jar, dependsOn: classes, description: 'Prepares .jar file containing the source code of flow') {
     classifier = 'sources'
