@@ -81,7 +81,7 @@ uploadArchives {
             pom.artifactId = artifactId
 
             pom.project {
-                name 'flow'
+                name 'Apphance Flow'
                 packaging 'jar'
                 description 'AMEBA stands for Apphance MobilE Build Automation - it is gradle plugin to automate builds for mobile applications'
                 url 'http://flow.apphance.com/'

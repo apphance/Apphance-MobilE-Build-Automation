@@ -54,7 +54,7 @@ class SingleVariantTask extends DefaultTask {
         if (builderInfo.originalFile.exists()) {
             logger.lifecycle("File created: ${builderInfo.originalFile}")
 
-            if (releaseConf.enabled || apphanceConf.enabled) {
+            if (releaseConf.enabled) {
                 logger.lifecycle("Copying file ${builderInfo.originalFile.absolutePath} to ${artifactProvider.artifact(builderInfo).location.absolutePath}")
                 ant.copy(file: builderInfo.originalFile, tofile: artifactProvider.artifact(builderInfo).location)
             }
