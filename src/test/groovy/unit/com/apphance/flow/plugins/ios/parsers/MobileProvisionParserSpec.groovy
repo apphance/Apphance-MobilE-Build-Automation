@@ -19,7 +19,7 @@ class MobileProvisionParserSpec extends Specification {
 
     def 'bundle id is read correctly'() {
         expect:
-        parser.bundleId(Mock(File)) == 'com.apphance.flow'
+        parser.bundleId(Mock(File)) == 'com.apphance.ameba'
     }
 
     def 'udids are read correctly'() {

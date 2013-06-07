@@ -73,7 +73,7 @@ class IOSExecutorSpec extends Specification {
         and:
         def slurped = new JsonSlurper().parseText(json)
         slurped.CFBundleName == '${PRODUCT_NAME}'
-        slurped.CFBundleIdentifier == 'com.apphance.flow'
+        slurped.CFBundleIdentifier == 'com.apphance.ameba'
     }
 
     def 'build settings got for target and configuration'() {

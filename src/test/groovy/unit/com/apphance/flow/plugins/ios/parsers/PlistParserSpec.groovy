@@ -32,7 +32,7 @@ class PlistParserSpec extends Specification {
 
     def 'bundle id is read correctly'() {
         expect:
-        parser.bundleId(Mock(File)) == 'com.apphance.flow'
+        parser.bundleId(Mock(File)) == 'com.apphance.ameba'
     }
 
     def 'bundleId is replaced correctly'() {
@@ -62,10 +62,10 @@ class PlistParserSpec extends Specification {
 
         where:
         newBundle                 | oldBundle            | expected
-        'com.apphance.flow2'     | 'com.apphance.flow' | 'com.apphance.flow2'
-        'com.apphance.flow.test' | 'com.apphance.flow' | 'com.apphance.flow.test'
-        'com.app.flow'           | 'com.apphance.flow' | 'com.apphance.flow'
-        'pl.apphance.flow'       | 'com.apphance.flow' | 'com.apphance.flow'
+        'com.apphance.ameba2'     | 'com.apphance.ameba' | 'com.apphance.ameba2'
+        'com.apphance.ameba.test' | 'com.apphance.ameba' | 'com.apphance.ameba.test'
+        'com.app.ameba'           | 'com.apphance.ameba' | 'com.apphance.ameba'
+        'pl.apphance.ameba'       | 'com.apphance.ameba' | 'com.apphance.ameba'
     }
 
     def 'versionCode and versionString are replaced correctly'() {
