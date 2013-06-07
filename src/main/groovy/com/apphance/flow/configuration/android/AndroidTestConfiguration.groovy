@@ -24,7 +24,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     private final Closure<Boolean> BOOLEAN_VALIDATOR = { it in BOOLEAN_VALUES }
 
     private boolean enabledInternal = false
-    private Integer emulatorPort
 
     @Inject Project project
     @Inject AndroidConfiguration conf
@@ -92,7 +91,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     def testDir = new FileProperty(
             name: 'android.dir.test',
             message: 'Directory where Robotium test project is located',
-            defaultValue: { project.file("android${separator}test".toString()) },
+            defaultValue: { project.file("test${separator}android".toString()) },
             validator: {
                 def file = new File(conf.rootDir, it as String)
                 file?.absolutePath?.trim() ? (file.exists() && file.isDirectory() && file.canWrite()) : false
@@ -141,12 +140,9 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         project.file('avds')
     }
 
-    Integer getEmulatorPort() {
-        if (!emulatorPort) {
-            emulatorPort = findFreeEmulatorPort()
-        }
-        emulatorPort
-    }
+    @Lazy Integer emulatorPort = {
+        findFreeEmulatorPort()
+    }()
 
     private int findFreeEmulatorPort() {
         int startPort = 5554
@@ -210,6 +206,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         check !(testPerPackage.validator(testPerPackage.value)), "Property '${testPerPackage.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
         check !(mockLocation.validator(mockLocation.value)), "Property '${mockLocation.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
         check !(emmaEnabled.validator(emmaEnabled.value)), "Property '${emmaEnabled.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
-        check !(testDir.validator(testDir.value)), "Property '${testDir.name}' is not valid! Should be valid directory name!"
+        check testDir.validator(testDir.value), "Property '${testDir.name}' is not valid! Should be valid directory name!"
     }
 }

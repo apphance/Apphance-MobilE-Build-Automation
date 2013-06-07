@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.android.test.tasks
 
 import com.apphance.flow.configuration.android.AndroidConfiguration
+import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
@@ -18,15 +19,14 @@ class PrepareRobotiumTask extends DefaultTask {
     String group = FLOW_TEST
     String description = 'Prepares file structure for Robotium test framework'
 
-    private String robotiumPath = 'test/android'
-
     @Inject CommandExecutor executor
     @Inject AndroidConfiguration conf
+    @Inject AndroidTestConfiguration testConf
     @Inject AndroidManifestHelper manifestHelper
 
     @TaskAction
     void prepareRobotium() {
-        File path = new File(conf.rootDir.path, robotiumPath)
+        File path = new File(conf.rootDir.path, testConf.testDir.value.path)
         setUpAndroidRobotiumProject(path)
         replaceInstrumentationLibrary(path)
         addApphanceInstrumentation(path)
