@@ -28,12 +28,12 @@ class ExecuteApphanceBuildsTest {
 
     File getMainApplicationFile(File directory, String variant) {
         File tmpDir = new File(new File(directory, TMP_DIR), variant)
-        return new File(tmpDir, 'src/com/apphance/amebaTest/android/MainApplication.java')
+        return new File(tmpDir, 'src/com/apphance/flowTest/android/MainApplication.java')
     }
 
     File getMainActivityFile(File directory, String variant) {
         File tmpDir = new File(new File(directory, TMP_DIR), variant)
-        return new File(tmpDir, 'src/com/apphance/amebaTest/android/TestActivity.java')
+        return new File(tmpDir, 'src/com/apphance/flowTest/android/TestActivity.java')
     }
 
     @BeforeClass
