@@ -206,6 +206,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
         check !(testPerPackage.validator(testPerPackage.value)), "Property '${testPerPackage.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
         check !(mockLocation.validator(mockLocation.value)), "Property '${mockLocation.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
         check !(emmaEnabled.validator(emmaEnabled.value)), "Property '${emmaEnabled.name}' is not valid! Should match one of ${BOOLEAN_VALUES}"
-        check testDir.validator(testDir.value), "Property '${testDir.name}' is not valid! Should be valid directory name!"
+//        check testDir.validator(testDir.value), "Property '${testDir.name}' is not valid! Should be valid directory name!"//TODO not all projects run tests
     }
 }
