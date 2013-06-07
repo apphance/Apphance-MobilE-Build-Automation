@@ -28,7 +28,7 @@ class CopySourcesTask extends DefaultTask {
         variantsConf.variants.each { v ->
             v.tmpDir.deleteDir()
             logger.lifecycle("Copying sources from : ${conf.rootDir.absolutePath} to $v.tmpDir")
-            ant.sync(toDir: v.tmpDir, overwrite: true, failonerror: true, verbose: true) {
+            ant.sync(toDir: v.tmpDir, overwrite: true, failonerror: true, verbose: logger.isDebugEnabled()) {
                 fileset(dir: "${conf.rootDir.absolutePath}/") {
                     exclude(name: relativeTo(absoluteRoot, conf.tmpDir.absolutePath).name + '/**/*')
                     exclude(name: relativeTo(absoluteRoot, variantsConf.variantsDir.absolutePath).name + '/**/*')

@@ -41,7 +41,6 @@ class PrepareSetupTaskSpec extends Specification {
         props                        | mode
         [abc: 'abc']                 | true
         [non: '']                    | true
-
         [ni: '']                     | false
         [ni: 'false']                | false
         [ni: 'true']                 | false
