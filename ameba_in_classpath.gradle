@@ -4,12 +4,12 @@ rootProject.buildscript {
     }
     dependencies {
         classpath files(
-                "$amebaProjectPath/bin",
-                "$amebaProjectPath/build/classes/main",
-                "$amebaProjectPath/build/resources/main"
+                "$flowProjectPath/bin",
+                "$flowProjectPath/build/classes/main",
+                "$flowProjectPath/build/resources/main"
         )
 
-        file("$amebaProjectPath/plugins")
+        file("$flowProjectPath/plugins")
                 .listFiles()
                 .findAll { it.isDirectory() }
                 .collect { it.path }
