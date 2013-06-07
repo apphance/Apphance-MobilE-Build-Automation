@@ -1,9 +1,9 @@
 package com.apphance.ameba.plugins.android.apphance.tasks
 
-import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.configuration.android.AndroidConfiguration
 import com.apphance.ameba.configuration.android.AndroidReleaseConfiguration
 import com.apphance.ameba.configuration.android.variants.AndroidVariantConfiguration
+import com.apphance.ameba.configuration.apphance.ApphanceConfiguration
 import com.apphance.ameba.executor.AntExecutor
 import com.apphance.ameba.plugins.android.builder.AndroidArtifactProvider
 import com.apphance.ameba.plugins.apphance.ApphanceNetworkHelper
@@ -17,29 +17,21 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.ameba.plugins.FlowTasksGroups.FLOW_APPHANCE_SERVICE
-import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(Preconditions)
 //TODO to be tested and refactored
 class UploadAndroidArtifactTask extends DefaultTask {
 
-    def l = getLogger(getClass())
-
     String description = 'Uploads apk & image_montage to Apphance server'
     String group = FLOW_APPHANCE_SERVICE
 
-    @Inject
-    ApphanceConfiguration androidApphanceConfiguration
-    @Inject
-    AndroidConfiguration conf
-    @Inject
-    AndroidReleaseConfiguration releaseConf
-    @Inject
-    AndroidArtifactProvider artifactBuilder
-    AndroidVariantConfiguration variant
+    @Inject ApphanceConfiguration androidApphanceConfiguration
+    @Inject AndroidConfiguration conf
+    @Inject AndroidReleaseConfiguration releaseConf
+    @Inject AndroidArtifactProvider artifactBuilder
+    @Inject AntExecutor executor
 
-    @Inject
-    AntExecutor executor
+    AndroidVariantConfiguration variant
 
     @TaskAction
     public void uploadArtifact() {
@@ -57,24 +49,23 @@ class UploadAndroidArtifactTask extends DefaultTask {
         try {
             networkHelper = new ApphanceNetworkHelper(user, pass)
 
-            def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false,
-                    ['apk', 'image_montage'])
-            l.debug("Upload version query response: ${response.statusLine}")
+            def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false, ['apk', 'image_montage'])
+            logger.debug("Upload version query response: ${response.statusLine}")
             throwIfCondition(!response.entity, "Error while uploading version query, empty response received")
 
             def resp = new JsonSlurper().parseText(response.entity.content.text)
 
             response = networkHelper.uploadResource(builderInfo.originalFile, resp.update_urls.apk, 'apk')
-            l.debug("Upload apk response: ${response.statusLine}")
+            logger.debug("Upload apk response: ${response.statusLine}")
             EntityUtils.consume(response.entity)
 
             response = networkHelper.uploadResource(releaseConf.imageMontageFile.location, resp.update_urls.image_montage, 'image_montage')
-            l.debug("Upload image_montage response: ${response.statusLine}")
+            logger.debug("Upload image_montage response: ${response.statusLine}")
             EntityUtils.consume(response.entity)
 
         } catch (e) {
             def msg = "Error while uploading artifact to apphance: ${e.message}"
-            l.error(msg)
+            logger.error(msg)
             throw new GradleException(msg)
         } finally {
             networkHelper?.closeConnection()
