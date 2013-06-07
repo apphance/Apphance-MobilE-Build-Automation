@@ -64,9 +64,9 @@ class TestRobotiumCreation {
 
     @Test
     public void testNewTestClasses() {
-        assert new File(roboPath.path + '/src/com/apphance/amebaTest/android/BaseTestCase.java').exists()
-        assert new File(roboPath.path + '/src/com/apphance/amebaTest/android/TestHello.java').exists()
+        assert new File(roboPath.path + '/src/com/apphance/flowTest/android/BaseTestCase.java').exists()
+        assert new File(roboPath.path + '/src/com/apphance/flowTest/android/TestHello.java').exists()
 
-        assert !(new File(roboPath.path + '/src/com/apphance/amebaTest/android/TestActivityTest.java').exists())
+        assert !(new File(roboPath.path + '/src/com/apphance/flowTest/android/TestActivityTest.java').exists())
     }
 }

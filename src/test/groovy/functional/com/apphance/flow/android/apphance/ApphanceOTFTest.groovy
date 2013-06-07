@@ -35,8 +35,8 @@ class ApphanceOTFTest {
     }
 
     @Test
-    void testAddAmeba() {
-        File mainActivityFile = new File(testNovariantsProject, "src/com/apphance/amebaTest/android/TestActivity.java")
+    void testAddApphanceFlow() {
+        File mainActivityFile = new File(testNovariantsProject, "src/com/apphance/flowTest/android/TestActivity.java")
         File tmpCopy = new File("tmpCopy")
         tmpCopy.delete()
         tmpCopy << mainActivityFile.getText()
