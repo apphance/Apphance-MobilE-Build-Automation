@@ -40,7 +40,7 @@ class TestRobolectricTasks {
             bl.setJvmArguments(GRADLE_DAEMON_ARGS)
             bl.run()
             String output = baos.toString('utf-8')
-            assert output.contains("Running test: test myFirstRobolectricTest(com.apphance.amebaTest.android.MyFirstTest)")
+            assert output.contains("Running test: test myFirstRobolectricTest(com.apphance.flowTest.android.MyFirstTest)")
             assert output.contains('BUILD SUCCESSFUL')
         } finally {
             connection.close()

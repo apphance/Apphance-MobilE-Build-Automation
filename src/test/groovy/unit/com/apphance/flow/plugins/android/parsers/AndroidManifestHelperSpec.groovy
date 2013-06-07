@@ -19,7 +19,7 @@ class AndroidManifestHelperSpec extends Specification {
 
     def 'package is read correctly'() {
         expect:
-        amh.androidPackage(basic) == 'com.apphance.amebaTest.android'
+        amh.androidPackage(basic) == 'com.apphance.flowTest.android'
     }
 
     def 'version is read correctly'() {
@@ -78,7 +78,7 @@ class AndroidManifestHelperSpec extends Specification {
         !(getLabel(tmpManifest) == newLbl)
 
         when:
-        amh.replacePackage(tmpDir, 'com.apphance.amebaTest.android', newPkg, newLbl)
+        amh.replacePackage(tmpDir, 'com.apphance.flowTest.android', newPkg, newLbl)
 
         then:
         amh.androidPackage(tmpDir) == newPkg
@@ -89,8 +89,8 @@ class AndroidManifestHelperSpec extends Specification {
 
         where:
         newPkg                               | newLbl                 | expectedLbl
-        'com.apphance.amebaTest.android.new' | null                   | '@string/app_name'
-        'com.apphance.amebaTest.android.new' | '@string/app_name_new' | '@string/app_name_new'
+        'com.apphance.flowTest.android.new' | null                   | '@string/app_name'
+        'com.apphance.flowTest.android.new' | '@string/app_name_new' | '@string/app_name_new'
     }
 
     private String getLabel(File manifest) {
@@ -103,7 +103,7 @@ class AndroidManifestHelperSpec extends Specification {
 
         then:
         def e = thrown(GradleException)
-        e.message == "Package to replace in manifest is: 'com.apphance.amebaTest.android' and not expected: 'sample1' (neither target: 'sample2'). This must be wrong."
+        e.message == "Package to replace in manifest is: 'com.apphance.flowTest.android' and not expected: 'sample1' (neither target: 'sample2'). This must be wrong."
     }
 
     def 'permissions are added correctly'() {
@@ -155,7 +155,7 @@ class AndroidManifestHelperSpec extends Specification {
 
         and:
         manifest.instrumentation.@'android:name'.text() == 'com.apphance.android.ApphanceInstrumentation'
-        manifest.instrumentation.@targetPackage.text() == 'com.apphance.amebaTest.android'
+        manifest.instrumentation.@targetPackage.text() == 'com.apphance.flowTest.android'
 
         and:
         manifest.'uses-permission'.@'android:name'*.text().containsAll(
@@ -212,7 +212,7 @@ class AndroidManifestHelperSpec extends Specification {
         where:
         dir                   | expectedName
         basic                 | ''
-        noApphanceApplication | 'com.apphance.amebaTest.android.MainApplication'
+        noApphanceApplication | 'com.apphance.flowTest.android.MainApplication'
     }
 
     def 'apphance activity is not found'() {

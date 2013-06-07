@@ -1,4 +1,4 @@
-package com.apphance.amebaTest.android;
+package com.apphance.flowTest.android;
 
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -9,13 +9,13 @@ import android.test.ActivityInstrumentationTestCase2;
  * <p/>
  * To run this test, you can type:
  * adb shell am instrument -w \
- * -e class com.apphance.amebaTest.android.TestActivityTest \
- * com.apphance.amebaTest.android.tests/android.test.InstrumentationTestRunner
+ * -e class com.apphance.flowTest.android.TestActivityTest \
+ * com.apphance.flowTest.android.tests/android.test.InstrumentationTestRunner
  */
 public class TestActivityTest extends ActivityInstrumentationTestCase2<TestActivity> {
 
     public TestActivityTest() {
-        super("com.apphance.amebaTest.android", TestActivity.class);
+        super("com.apphance.flowTest.android", TestActivity.class);
     }
 
     public void testEmpty() throws Exception {

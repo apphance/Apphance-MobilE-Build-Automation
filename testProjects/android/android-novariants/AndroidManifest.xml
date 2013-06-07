@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.apphance.amebaTest.android"
+          package="com.apphance.flowTest.android"
           android:versionCode="42"
           android:versionName="1.0.1">
 

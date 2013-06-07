@@ -1,4 +1,4 @@
-package com.apphance.amebaTest.android;
+package com.apphance.flowTest.android;
 
 import com.xtremelabs.robolectric.RobolectricTestRunner;
 import org.junit.Test;
