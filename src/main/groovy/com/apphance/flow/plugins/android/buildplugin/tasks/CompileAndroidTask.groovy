@@ -21,13 +21,8 @@ class CompileAndroidTask extends DefaultTask {
 
     @TaskAction
     void compileAndroid() {
-        logger.lifecycle("Prepares to compile Java for static code analysis")
-        File gen = new File(conf.rootDir, 'gen')
-        if (!gen.exists() || gen.list().length == 0) {
-            logger.lifecycle("Regenerating gen directory by running debug project")
-            antExecutor.executeTarget conf.rootDir, DEBUG
-        } else {
-            logger.lifecycle("Not regenerating gen directory! You might need to run clean in order to get latest data (you can also run any of the android builds)")
-        }
+        logger.info("Deleting gen directory")
+        new File(conf.rootDir, 'gen').deleteDir()
+        antExecutor.executeTarget conf.rootDir, DEBUG
     }
 }
