@@ -25,10 +25,10 @@ apply {
     plugin 'codenarc'
 }
 
-group = 'com.apphance.ameba'
+group = 'com.apphance.flow'
 ext.artifactId = 'Ameba'
 
-task sourcesJar(type: Jar, dependsOn: classes, description: 'Prepares .jar file containing the source code of ameba') {
+task sourcesJar(type: Jar, dependsOn: classes, description: 'Prepares .jar file containing the source code of flow') {
     classifier = 'sources'
     from sourceSets.main.allSource
 }
@@ -81,10 +81,10 @@ uploadArchives {
             pom.artifactId = artifactId
 
             pom.project {
-                name 'ameba'
+                name 'flow'
                 packaging 'jar'
                 description 'AMEBA stands for Apphance MobilE Build Automation - it is gradle plugin to automate builds for mobile applications'
-                url 'http://ameba.apphance.com/'
+                url 'http://flow.apphance.com/'
 
                 scm {
                     url 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'

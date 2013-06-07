@@ -15,7 +15,7 @@
             "UIPrerenderedIcon": false
         }
     }, 
-    "CFBundleIdentifier": "com.apphance.ameba", 
+    "CFBundleIdentifier": "com.apphance.flow",
     "CFBundleInfoDictionaryVersion": "6.0", 
     "CFBundleName": "${PRODUCT_NAME}", 
     "CFBundlePackageType": "APPL", 

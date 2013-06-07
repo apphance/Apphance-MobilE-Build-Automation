@@ -1,4 +1,4 @@
-package com.apphance.ameba.documentation.sites
+package com.apphance.flow.documentation.sites
 
 import com.google.gdata.data.HtmlTextConstruct
 import com.google.gdata.data.sites.ContentEntry

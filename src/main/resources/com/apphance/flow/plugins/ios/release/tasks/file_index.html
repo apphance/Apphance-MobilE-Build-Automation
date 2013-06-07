@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>${title}</title>
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css"/>
+        <script src="http://code.jquery.com/jquery-2.0.0.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+    </head>
+    <body>
+        <div data-role="page" id="home">
+            <div data-role="header">
+                <h1>${rb.getString('Files_to_download')}</h1>
+            </div>
+            <div data-role="content">
+                <div>
+                    <section id="applications">
+                        <header style="text-align:center;">
+                            <h3>
+                                <div>${title}</div>
+                            </h3>
+                            <div>
+                                ${rb.getString('Version')} ${version}<br>
+                                ${rb.getString('Released')} ${currentDate}
+                            </div>
+                        </header>
+                        <p>
+                        <ul data-role="listview" data-inset="true" data-theme="a">
+                            <% variantsConf.variants.each { v -> %>
+                            <li><a href="#${v.name}"><h3>${v.name}</h3></a></li>
+                            <% } %>
+                        </ul>
+                    </section>
+                </div>
+                <div>
+                    <section id="other">
+                        <header style="text-align:center;">
+                            <h3>
+                                <div>${rb.getString('Other')}</div>
+                            </h3>
+                        </header>
+                        <p>
+                        <ul data-role="listview" data-inset="true" data-theme="a">
+                            <% if (releaseConf.mailMessageFile != null) { %>
+                            <li><a href="${releaseConf.mailMessageFile.getRelativeUrl(baseUrl)}" rel="external">
+                                <h3>${rb.getString('Mail_message')}</h3></a></li>
+                            <% } %>
+                            <% if (releaseConf.imageMontageFile != null) { %>
+                            <li><a href="${releaseConf.imageMontageFile.getRelativeUrl(baseUrl)}" rel="external">
+                                <h3>${rb.getString('Image_montage_file')}</h3></a></li>
+                            <% } %>
+                            <% if (releaseConf.QRCodeFile != null) { %>
+                            <li><a href="${releaseConf.QRCodeFile.getRelativeUrl(baseUrl)}" rel="external">
+                                <h3>${rb.getString('QR_Code')}</h3></a></li>
+                            <% } %>
+                            <% if (releaseConf.plainFileIndexFile != null) { %>
+                            <li><a href="${releaseConf.plainFileIndexFile.getRelativeUrl(baseUrl)}" rel="external">
+                                <h3>${rb.getString('Plain_file_index')}</h3></a></li>
+                            <% } %>
+                            <li><a href="#provprofiles"><h3>${rb.getString('Valid_UDIDs')}</h3></a></li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <% variantsConf.variants.each { v -> %>
+
+        <div data-role="page" id="${v.name}" data-add-back-btn="true">
+            <div data-role="header">
+                <h1>${v.name}</h1>
+            </div>
+            <div data-role="content">
+                <section id="${v.configuration}">
+                    <header style="text-align:center;">
+                        <h3>
+                            <div>${rb.getString('Configuration')} ${v.configuration}</div>
+                        </h3>
+                    </header>
+                    <p>
+                        <ul data-role="listview" data-inset="true" data-theme="a">
+                            <% if (releaseConf.distributionZipFiles[v.name] != null) { %>
+                            <li>
+                                <a href="${releaseConf.distributionZipFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                                    <h3>${rb.getString('Zip_file')}</h3>
+                                </a>
+                            </li>
+                            <% } %>
+                            <% if (releaseConf.dSYMZipFiles[v.name] != null) { %>
+                            <li>
+                                <a href="${releaseConf.dSYMZipFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                                    <h3>${rb.getString('dSYM_file')}</h3>
+                                </a>
+                            </li>
+                            <% } %>
+                            <% if (releaseConf.ipaFiles[v.name] != null) { %>
+                            <li>
+                                <a href="${releaseConf.ipaFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                                    <h3>${rb.getString('Ipa_file')}</h3>
+                                </a>
+                            </li>
+                            <% } %>
+                            <% if (releaseConf.manifestFiles[v.name] != null) { %>
+                            <li>
+                                <a href="${releaseConf.manifestFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                                    <h3>${rb.getString('Manifest_file')}</h3>
+                                </a>
+                            </li>
+                            <% } %>
+                            <% if (releaseConf.mobileProvisionFiles[v.name] != null) { %>
+                            <li>
+                                <a href="${releaseConf.mobileProvisionFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                                    <h3>${rb.getString('Mobileprovision_file')}</h3>
+                                </a>
+                            </li>
+                            <% } %>
+                            <% if (releaseConf.ahSYMDirs[v.name] != null) { %>
+                            <li>
+                                <a href="#${v.name}-ahSYM" rel="external">
+                                    <h3>${rb.getString('ahSym_dir')}</h3>
+                                </a>
+                            </li>
+                            <% } %>
+                        </ul>
+                </section>
+
+                <% if (!releaseConf.dmgImageFiles.isEmpty()) { %>
+                <section id="simulatorImages">
+                    <header style="text-align:center;">
+                        <h3>
+                            <div>${rb.getString('Simulator_images')}</div>
+                        </h3>
+                    </header>
+                    <p>
+                    <ul data-role="listview" data-inset="true" data-theme="a">
+                        <% conf.FAMILIES.each { family -> %>
+                        <% if (releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target] != null) { %>
+                        <li>
+                            <a href="${releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target].getRelativeUrl(baseUrl)}"
+                               rel="external">
+                                <h3>${java.text.MessageFormat.format(rb.getString('Family_simulator'),family)}</h3>
+                            </a>
+                        </li>
+                        <% } %>
+                        <% } %>
+                    </ul>
+                </section>
+                <% } %>
+            </div>
+        </div>
+        <% } %>
+
+        <% variantsConf.variants.each { v -> %>
+        <div data-role="page" id="${v.name}-ahSYM" data-add-back-btn="true">
+            <div data-role="header">
+                <h1>${v.name}</h1>
+            </div>
+            <div data-role="content">
+                <section id="${v.configuration}-ahSYM">
+                    <header style="text-align:center;">
+                        <h3>
+                            <div>${rb.getString('Configuration')} ${v.configuration}</div>
+                        </h3>
+                    </header>
+                    <% if (releaseConf.ahSYMDirs[v.name] != null) { %>
+                    <p>
+                    <ul data-role="listview" data-inset="true" data-theme="a">
+                    <% releaseConf.ahSYMDirs[v.name].childArtifacts.each { a -> %>
+                        <li>
+                            <a href="${a.getRelativeUrl(baseUrl)}" rel="external">
+                                <h3>${a.name}</h3>
+                            </a>
+                        </li>
+                    <% } %>
+                    </ul>
+                    <% } %>
+                </section>
+            </div>
+        </div>
+        <% } %>
+
+        <div data-role="page" id="provprofiles" data-add-back-btn="true">
+            <div data-role="header">
+                <h1>${rb.getString('List_of_valid_UDIDs')}</h1>
+            </div>
+            <div data-role="content">
+                <div>${rb.getString('List_of_valid_UDIDs')}</div>
+                <div style="word-wrap: break-word">
+                    <% variantsConf.variants.each { v -> %>
+                    <h2>${v.name}</h2>
+                    <ul>
+                        <% udids[v.name].each { udid -> %>
+                        <li>${udid}</li>
+                        <% } %>
+                    </ul>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

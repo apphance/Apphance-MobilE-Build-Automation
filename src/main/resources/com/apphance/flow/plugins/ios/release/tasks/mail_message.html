@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>${title} - iOS</title>
+</head>
+<body>
+${rb.getString('Application')} <b>${title}</b> - iOS<br>
+${rb.getString('Version')} <b>${version}</b>
+
+<p>
+    <b>${rb.getString('Installation')}</b>
+<ul>
+    <li><a href="${otaUrl}">${rb.getString('Install_on_your_iPhone_or_iPad')}</a></li>
+</ul>
+<p>
+    <% if (releaseNotes != null && !releaseNotes.isEmpty()) { %>
+    <b>${rb.getString('What_s_new')}</b>
+<ul>
+    <% releaseNotes.each { %>
+    <li>${it}</li>
+    <% } %>
+</ul>
+<% } %>
+
+<b>${rb.getString('Released')}</b> ${currentDate}<br>
+<b>${rb.getString('Size')}</b> ${fileSize}<p>
+
+    <b>${rb.getString('Extras')}</b>
+    <% if (releaseMailFlags.value.contains('installableSimulator') && installable.size() > 0 ) { %>
+    <% families.each { family -> %>
+    <% artifact = installable["${family}-${mainTarget}"] %>
+<li><a href="${artifact.url}">${java.text.MessageFormat.format(rb.getString('Download_for_simulator'), family) }</a>
+</li>
+<% } %>
+<% } %>
+<li><a href="${fileIndexUrl}">${rb.getString('More_information_and_files_to_download')}</a>
+
+    <p></li>
+
+${rb.getString('Have_fun')}<br><br>
+${rb.getString('Your_Jenkins')}
+</body>
+</html>

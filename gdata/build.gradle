@@ -35,7 +35,7 @@ def version = properties.get('version')
 task sendPluginReference(group: 'Ameba\'s documentation', description: 'Send plugin reference to Ameba\'s sites') << {
     javaexec {
         workingDir = getRootDir()
-        main = 'com.apphance.ameba.documentation.sites.AmebaPluginReferenceSender'
+        main = 'com.apphance.flow.documentation.sites.AmebaPluginReferenceSender'
         classpath = sourceSets.main.runtimeClasspath
         args project['username'], project['password'], file('../tmp/plugins_reference.html')
     }
@@ -45,7 +45,7 @@ project.sendPluginReference.dependsOn(project.classes, project.ask)
 task downloadPages(group: 'Ameba\'s documentation', description: 'Downloads all pages from Ameba\'s sites and prepares .zip file with the documentation') << {
     javaexec {
         workingDir = getRootDir()
-        main = 'com.apphance.ameba.documentation.sites.AmebaSiteRetrieval'
+        main = 'com.apphance.flow.documentation.sites.AmebaSiteRetrieval'
         classpath = sourceSets.main.runtimeClasspath
         args project['username'], project['password'], file('tmp/documentation')
     }
@@ -58,7 +58,7 @@ project.downloadPages.dependsOn(project.classes, project.ask)
 task sendZipDocumentation(group: 'Ameba\'s documentation', description: 'Sends .prepared zip file to Ameba\'s sites') << {
     javaexec {
         workingDir = getRootDir()
-        main = 'com.apphance.ameba.documentation.sites.AmebaFileUploader'
+        main = 'com.apphance.flow.documentation.sites.AmebaFileUploader'
         classpath = sourceSets.main.runtimeClasspath
         args project['username'], project['password'], file("tmp/Ameba-doc-${version}.zip")
     }
