@@ -29,7 +29,7 @@ class TestRobolectricTask extends DefaultTask {
         def path = new File(conf.rootDir.path, robolectricPath)
         if (!(path.exists())) {
             logger.warn("Running Robolectric test has failed. No valid tests present nor test project had been created under " +
-                    "'${conf.rootDir.path}/test/robolectric'. Run prepareRobolectric taks to (re)create unit test project.")
+                    "'${conf.rootDir.path}/test/robolectric'. Run prepareRobolectric task to (re)create unit test project.")
             return
         }
 
