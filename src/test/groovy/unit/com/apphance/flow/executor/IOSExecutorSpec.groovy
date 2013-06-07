@@ -162,7 +162,7 @@ class IOSExecutorSpec extends Specification {
             "\t<key>Entitlements</key>\n" +
             "\t<dict>\n" +
             "\t\t<key>application-identifier</key>\n" +
-            "\t\t<string>MT2B94Q7N6.com.apphance.flow</string>\n" +
+            "\t\t<string>MT2B94Q7N6.com.apphance.ameba</string>\n" +
             "\t\t<key>get-task-allow</key>\n" +
             "\t\t<false/>\n" +
             "\t\t<key>keychain-access-groups</key>\n" +

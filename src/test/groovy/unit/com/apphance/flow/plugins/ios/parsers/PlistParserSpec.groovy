@@ -62,7 +62,7 @@ class PlistParserSpec extends Specification {
 
         where:
         newBundle                 | oldBundle            | expected
-        'com.apphance.ameba2'     | 'com.apphance.flow' | 'com.apphance.ameba2'
+        'com.apphance.flow2'     | 'com.apphance.flow' | 'com.apphance.flow2'
         'com.apphance.flow.test' | 'com.apphance.flow' | 'com.apphance.flow.test'
         'com.app.flow'           | 'com.apphance.flow' | 'com.apphance.flow'
         'pl.apphance.flow'       | 'com.apphance.flow' | 'com.apphance.flow'
