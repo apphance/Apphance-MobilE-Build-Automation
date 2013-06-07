@@ -23,6 +23,7 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
 
     @Inject AndroidManifestHelper manifestHelper
     @Inject AndroidConfiguration androidConf
+    @Inject AndroidJarLibraryConfiguration jarLibraryConf
 
     @Lazy def files = super.&getFiles.curry(androidConf.resDir, DRAWABLE_DIR_PATTERN)
 
@@ -36,5 +37,20 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
     List<String> possibleIcons() {
         def icons = files { it.name ==~ ANDROID_ICON_PATTERN }*.canonicalPath
         icons.collect { relativeTo(androidConf.rootDir.absolutePath, it).path }
+    }
+
+    @Override
+    boolean canBeEnabled() {
+        !jarLibraryConf.enabled
+    }
+
+    @Override
+    String getMessage() {
+        "'$configurationName' cannot be enabled because '${jarLibraryConf.configurationName}' is enabled and those plugins are mutually exclusive.\n"
+    }
+
+    @Override
+    void checkProperties() {
+        check !jarLibraryConf.enabled, message
     }
 }

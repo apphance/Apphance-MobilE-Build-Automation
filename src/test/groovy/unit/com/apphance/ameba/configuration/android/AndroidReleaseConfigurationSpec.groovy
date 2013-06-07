@@ -21,4 +21,17 @@ class AndroidReleaseConfigurationSpec extends Specification {
         'drawable-abc'   | false
         'abc'            | false
     }
+
+    def 'mutual exclusion of release configuration and jar library configuration'() {
+        given:
+        def releaseConf = new AndroidReleaseConfiguration()
+        releaseConf.jarLibraryConf = GroovyStub(AndroidJarLibraryConfiguration)
+        releaseConf.jarLibraryConf.enabled >> jarEnabled
+
+        expect:
+        releaseConf.canBeEnabled() ^ jarEnabled
+
+        where:
+        jarEnabled << [true, false]
+    }
 }
