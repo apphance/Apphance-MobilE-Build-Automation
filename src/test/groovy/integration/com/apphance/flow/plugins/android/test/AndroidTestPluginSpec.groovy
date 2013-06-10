@@ -45,7 +45,8 @@ class AndroidTestPluginSpec extends Specification {
 
         then: 'every task has correct dependencies'
         project.tasks[TestAndroidTask.NAME].dependsOn.flatten().contains(CreateAVDTask.NAME)
-        project.tasks[TestRobolectricTask.NAME].dependsOn.flatten().contains(CompileAndroidTask.NAME)
+        project.tasks[PrepareRobolectricTask.NAME].dependsOn.flatten().contains(CompileAndroidTask.NAME)
+        project.tasks[TestRobolectricTask.NAME].dependsOn.flatten().contains(PrepareRobolectricTask.NAME)
 
         then: 'robotium configuration and dependencies added'
         project.configurations.robotium

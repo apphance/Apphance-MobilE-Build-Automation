@@ -54,20 +54,22 @@ class AndroidTestPlugin implements Plugin<Project> {
             project.task(StartEmulatorTask.NAME,
                     type: StartEmulatorTask)
 
+            project.configurations.create('robolectric')
+            project.dependencies.add('robolectric', 'com.pivotallabs:robolectric:1.1')
+            project.dependencies.add('robolectric', 'junit:junit:4.10')
+            project.task(PrepareRobolectricTask.NAME,
+                    type: PrepareRobolectricTask,
+                    dependsOn: CompileAndroidTask.NAME)
+
             project.task(TestRobolectricTask.NAME,
                     type: TestRobolectricTask,
-                    dependsOn: [CompileAndroidTask.NAME])
+                    dependsOn: [PrepareRobolectricTask.NAME])
 
             project.configurations.create('robotium')
             project.dependencies.add('robotium', 'com.jayway.android.robotium:robotium-solo:3.1')
             project.task(PrepareRobotiumTask.NAME,
                     type: PrepareRobotiumTask)
 
-            project.configurations.create('robolectric')
-            project.dependencies.add('robolectric', 'com.pivotallabs:robolectric:1.1')
-            project.dependencies.add('robolectric', 'junit:junit:4.10')
-            project.task(PrepareRobolectricTask.NAME,
-                    type: PrepareRobolectricTask)
 
         }
     }
