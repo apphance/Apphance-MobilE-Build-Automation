@@ -33,7 +33,7 @@ class IOSUnitTestConfiguration extends AbstractConfiguration {
     }
 
     def variant = new StringProperty(
-            name: 'ios.unitTests.variant',
+            name: 'ios.unit.test.variant',
             message: 'IOS unit test variant',
             possibleValues: { iosVariantsConf.variantsNames.value },
             validator: { it in iosVariantsConf.variantsNames.value },
