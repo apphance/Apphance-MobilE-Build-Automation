@@ -6,8 +6,6 @@ import spock.lang.Specification
 @Mixin(TestUtils)
 class XMLJunitExporterSpec extends Specification {
 
-    def runUnitTestTask = create RunUnitTestsTasks
-
     def 'generate export'() {
         given:
         File testResults = new File('src/test/resources/com/apphance/flow/plugins/ios/ocunit/tasks/test_output.txt')
@@ -18,7 +16,9 @@ class XMLJunitExporterSpec extends Specification {
         testResults.exists()
 
         when:
-        runUnitTestTask.parseAndExport(testResults, outputUnitTestFile)
+        OCUnitParser parser = new OCUnitParser()
+        parser.parse testResults.text.split('\n').toList()
+        new XMLJunitExporter(outputUnitTestFile, parser.testSuites).export()
         def testsuites = new XmlSlurper().parseText outputUnitTestFile.text
 
         then:
