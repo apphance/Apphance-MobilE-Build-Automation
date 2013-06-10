@@ -169,7 +169,8 @@ dependencies {
     compile 'gov.nih.imagej:imagej:1.46'
     compile 'org.imgscalr:imgscalr-lib:4.2'
 
-    compile 'org.apache.directory.studio:org.apache.commons.lang:2.6'
+    compile 'commons-lang:commons-lang:2.6'
+    compile 'commons-collections:commons-collections:3.2.1'
     compile 'com.google.guava:guava:14.0.1'
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
