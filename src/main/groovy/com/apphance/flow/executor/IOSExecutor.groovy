@@ -94,7 +94,7 @@ class IOSExecutor {
     }
 
     def buildTestVariant(File dir, AbstractIOSVariant variant, String outputFilePath) {
-        executor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd() + [" -sdk $conf.simulatorSdk.value"],
+        executor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd(),
                 environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: outputFilePath],
                 failOnError: false
         )
