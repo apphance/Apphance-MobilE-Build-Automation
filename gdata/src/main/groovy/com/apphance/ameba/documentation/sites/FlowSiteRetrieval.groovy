@@ -2,7 +2,7 @@ package com.apphance.flow.documentation.sites
 
 import com.google.gdata.data.sites.ContentEntry
 
-class AmebaSiteRetrieval {
+class FlowSiteRetrieval {
 
     public final static String ABSOLUTE_PREFIX = 'https://sites.google.com/a/apphance.com/mobile-build-automation/'
     public final static String SITE_PREFIX = '/a/apphance.com/mobile-build-automation/'
@@ -248,7 +248,7 @@ class AmebaSiteRetrieval {
         sitesCommunicator.createService()
         sitesCommunicator.loggingIn()
         List<ContentEntry> pages = sitesCommunicator.retrieveAllPagesIndex()
-        AmebaSiteRetrieval siteRetrieval = new AmebaSiteRetrieval()
+        FlowSiteRetrieval siteRetrieval = new FlowSiteRetrieval()
         siteRetrieval.cleanTargetDirectory(args)
         List<PageInfo> pageInfoList = siteRetrieval.readPageInfo(pages)
         siteRetrieval.downloadPages(pageInfoList)

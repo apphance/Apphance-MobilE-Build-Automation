@@ -2,7 +2,7 @@ package com.apphance.flow.documentation.sites
 
 import com.google.gdata.data.sites.ContentEntry
 
-class AmebaFileUploader {
+class FlowFileUploader {
     private static File getZipFile(String... args) {
         if (args.length < 3) {
             throw new IllegalArgumentException("The third argument of the call should be file name")

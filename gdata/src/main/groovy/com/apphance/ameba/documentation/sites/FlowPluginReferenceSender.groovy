@@ -3,7 +3,7 @@ package com.apphance.flow.documentation.sites
 import com.google.gdata.data.HtmlTextConstruct
 import com.google.gdata.data.sites.ContentEntry
 
-class AmebaPluginReferenceSender {
+class FlowPluginReferenceSender {
     private static File getPluginReferenceFile(String... args) {
         if (args.length < 3) {
             throw new IllegalArgumentException("The third argument of the call should be file name")
