@@ -85,7 +85,7 @@ class GradlePropertiesPersister implements PropertyPersister {
         writer.write("${conf.enabledPropKey}=${conf.enabled}\n".toString())
 
         if (conf.enabled) {
-            conf.amebaProperties.each { AbstractProperty prop ->
+            conf.flowProperties().each { AbstractProperty prop ->
                 writer.write("${prop.name}=${prop.persistentForm()}\n".toString())
             }
 

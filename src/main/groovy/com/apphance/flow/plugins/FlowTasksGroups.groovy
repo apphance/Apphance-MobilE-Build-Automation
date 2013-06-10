@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins
 
 /**
- * All task groups defined for Ameba.
+ * All task groups defined for Flow.
  *
  */
 enum FlowTasksGroups {

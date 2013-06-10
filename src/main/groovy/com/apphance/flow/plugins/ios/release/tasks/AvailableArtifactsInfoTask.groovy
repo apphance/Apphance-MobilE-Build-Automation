@@ -6,7 +6,7 @@ import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import groovy.text.SimpleTemplateEngine
 import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
@@ -69,7 +69,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         if (ahSym.location.exists()) {
             releaseConf.ahSYMDirs.put(bi.id, ahSym)
             ahSym.location.listFiles().each {
-                ahSym.childArtifacts << new AmebaArtifact(location: it, name: it.name, url: "${ahSym.url.toString()}/${it.name}".toURL())
+                ahSym.childArtifacts << new FlowArtifact(location: it, name: it.name, url: "${ahSym.url.toString()}/${it.name}".toURL())
             }
         }
 
@@ -88,7 +88,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     @PackageScope
     void fileIndexArtifact(String otaFolderPrefix) {
-        def aa = new AmebaArtifact(
+        def aa = new FlowArtifact(
                 name: "The file index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/file_index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/file_index.html"))
@@ -99,7 +99,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     @PackageScope
     void plainFileIndexArtifact(String otaFolderPrefix) {
-        def aa = new AmebaArtifact(
+        def aa = new FlowArtifact(
                 name: "The plain file index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/plain_file_index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/plain_file_index.html"))
@@ -110,7 +110,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     @PackageScope
     void otaIndexFileArtifact(String otaFolderPrefix) {
-        def aa = new AmebaArtifact(
+        def aa = new FlowArtifact(
                 name: "The ota index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/index.html"))
@@ -121,7 +121,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     @PackageScope
     void qrCodeArtifact() {
-        def aa = new AmebaArtifact(
+        def aa = new FlowArtifact(
                 name: 'QR Code',
                 url: new URL(releaseConf.versionedApplicationUrl, "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"),
                 location: new File(releaseConf.targetDir, "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"))

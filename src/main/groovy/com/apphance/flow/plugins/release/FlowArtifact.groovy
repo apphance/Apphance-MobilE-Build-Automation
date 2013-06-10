@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.release
 
 import static org.gradle.api.logging.Logging.getLogger
 
-class AmebaArtifact {
+class FlowArtifact {
 
     private l = getLogger(getClass())
 
@@ -10,7 +10,7 @@ class AmebaArtifact {
     URL url
     File location
 
-    final List<AmebaArtifact> childArtifacts = []
+    final List<FlowArtifact> childArtifacts = []
 
     String getRelativeUrl(def baseUrl) {
         l.info("Retrieving relative url from $url with base $baseUrl")

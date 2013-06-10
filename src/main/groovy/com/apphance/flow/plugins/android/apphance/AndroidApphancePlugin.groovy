@@ -21,7 +21,7 @@ import static org.gradle.api.logging.Logging.getLogger
 /**
  * Adds Apphance in automated way.
  *
- * This is the plugin that links Ameba with Apphance service.
+ * This is the plugin that links Flow with Apphance service.
  *
  * The plugin provides integration with Apphance service. It performs the
  * following tasks: adding Apphance on-the-fly while building the application

@@ -6,7 +6,7 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantsConfigura
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.configuration.reader.PropertyReader
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import spock.lang.Specification
 
 import static com.google.common.io.Files.createTempDir
@@ -45,9 +45,9 @@ class PrepareMailMessageTaskIntegrationSpec extends Specification {
         and:
         def arc = new AndroidReleaseConfiguration()
         arc.projectURL = new URLProperty(value: projectUrl.toString())
-        arc.apkFiles = [(mainVariant): new AmebaArtifact(url: projectUrl, location: apkDir)]
-        arc.fileIndexFile = new AmebaArtifact(url: new URL(projectUrl, 'fileIndexFile.html'))
-        arc.otaIndexFile = new AmebaArtifact(url: new URL(projectUrl, 'otaIndexFile.html'))
+        arc.apkFiles = [(mainVariant): new FlowArtifact(url: projectUrl, location: apkDir)]
+        arc.fileIndexFile = new FlowArtifact(url: new URL(projectUrl, 'fileIndexFile.html'))
+        arc.otaIndexFile = new FlowArtifact(url: new URL(projectUrl, 'otaIndexFile.html'))
         arc.reader = reader
         arc.conf = ac
 

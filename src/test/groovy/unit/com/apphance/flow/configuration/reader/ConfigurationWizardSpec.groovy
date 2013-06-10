@@ -106,7 +106,7 @@ class ConfigurationWizardSpec extends Specification {
         def conf = GroovyStub(AbstractConfiguration)
         StringProperty first = new StringProperty(value: '')
         ListStringProperty second = new ListStringProperty(interactive: { isBlank(first.value) })
-        conf.amebaProperties >> [first, second]
+        conf.flowProperties >> [first, second]
         def wizard = GroovySpy(ConfigurationWizard)
         wizard.readProperty(_) >> { first.value = 'abc' }
 

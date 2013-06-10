@@ -11,7 +11,7 @@ import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
 import com.apphance.flow.plugins.android.buildplugin.tasks.SingleVariantTask
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -75,7 +75,7 @@ class SingleVariantTaskSpec extends Specification {
         given:
         def releaseFile = new File(project.rootDir, "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.$releaseFileExtension")
         task.artifactProvider = GroovyStub(AndroidArtifactProvider)
-        task.artifactProvider.artifact(_) >> GroovyStub(AmebaArtifact, {
+        task.artifactProvider.artifact(_) >> GroovyStub(FlowArtifact, {
             getLocation() >> releaseFile
         })
 

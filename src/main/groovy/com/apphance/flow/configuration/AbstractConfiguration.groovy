@@ -16,7 +16,7 @@ abstract class AbstractConfiguration {
 
     @Inject
     void init() {
-        amebaProperties.each {
+        flowProperties().each {
             it.value = propertyPersister.get(it.name)
         }
 
@@ -48,7 +48,7 @@ abstract class AbstractConfiguration {
         }
     }
 
-    List<AbstractProperty> getAmebaProperties() {
+    List<AbstractProperty> flowProperties() {
         propertyFields*.get(this)
     }
 
@@ -56,7 +56,7 @@ abstract class AbstractConfiguration {
 
     @Override
     public String toString() {
-        "Configuration '$configurationName'" + (amebaProperties ? " \n${join(amebaProperties, '\n')}\n" : '');
+        "Configuration '$configurationName'" + (flowProperties() ? " \n${join(flowProperties(), '\n')}\n" : '');
     }
 
     Collection<? extends AbstractConfiguration> getSubConfigurations() {

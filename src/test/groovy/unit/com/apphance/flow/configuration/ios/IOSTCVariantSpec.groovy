@@ -68,7 +68,7 @@ class IOSTCVariantSpec extends Specification {
         tcVariant.init()
 
         then:
-        def fields = tcVariant.amebaProperties
+        def fields = tcVariant.flowProperties()
         fields.size() == 6
         fields*.name.containsAll(
                 [

@@ -4,7 +4,7 @@ import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import groovy.text.SimpleTemplateEngine
 import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
@@ -66,7 +66,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     @PackageScope
     void prepareFileIndexArtifact(String otaFolderPrefix) {
-        def artifact = new AmebaArtifact(
+        def artifact = new FlowArtifact(
                 name: "The file index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/file_index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/file_index.html")
@@ -78,7 +78,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     @PackageScope
     void preparePlainFileIndexArtifact(String otaFolderPrefix) {
-        def artifact = new AmebaArtifact(
+        def artifact = new FlowArtifact(
                 name: "The plain file index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/plain_file_index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/plain_file_index.html"))
@@ -89,7 +89,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
     @PackageScope
     void prepareOTAIndexFileArtifact(String otaFolderPrefix) {
-        def artifact = new AmebaArtifact(
+        def artifact = new FlowArtifact(
                 name: "The ota index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/index.html"))
@@ -108,7 +108,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
         downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), qrCodeFile)
 
-        def artifact = new AmebaArtifact(
+        def artifact = new FlowArtifact(
                 name: 'QR Code',
                 url: new URL(releaseConf.versionedApplicationUrl, qrCodeFileName),
                 location: qrCodeFile)

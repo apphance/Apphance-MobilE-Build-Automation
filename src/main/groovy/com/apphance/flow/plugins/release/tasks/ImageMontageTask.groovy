@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.release.tasks
 
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import groovy.transform.PackageScope
 import ij.ImagePlus
 import ij.ImageStack
@@ -43,7 +43,7 @@ class ImageMontageTask extends DefaultTask {
         createMontage(imageMontageFile, filesToMontage)
         addDescription(imageMontageFile, "${conf.projectName.value} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}")
 
-        releaseConf.imageMontageFile = new AmebaArtifact(
+        releaseConf.imageMontageFile = new FlowArtifact(
                 name: 'Image Montage',
                 url: new URL(releaseConf.baseURL, "${releaseConf.projectDirName}/${conf.fullVersionString}/${imageMontageFile.name}"),
                 location: imageMontageFile)

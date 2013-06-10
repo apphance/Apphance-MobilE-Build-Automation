@@ -10,7 +10,7 @@ import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.AndroidExecutor
 import com.apphance.flow.executor.AntExecutor
 import com.apphance.flow.plugins.android.buildplugin.tasks.SingleVariantTask
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import org.gradle.api.AntBuilder as AntBuilder
 import spock.lang.Specification
 
@@ -33,7 +33,7 @@ class SingleVariantTaskUnitSpec extends Specification {
         with(task) {
             artifactProvider = GroovyStub(AndroidArtifactProvider) {
                 builderInfo(_) >> builderInfo
-                artifact(_) >> GroovyStub(AmebaArtifact) {
+                artifact(_) >> GroovyStub(FlowArtifact) {
                     getLocation() >> createTempFile()
                 }
             }

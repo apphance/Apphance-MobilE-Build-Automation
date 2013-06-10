@@ -2,7 +2,7 @@ package com.apphance.flow.configuration.android
 
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
@@ -18,8 +18,8 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
     static final ANDROID_ICON_PATTERN = /icon.*\.(png|jpg|jpeg|bmp)/
     static final DRAWABLE_DIR_PATTERN = /drawable(-ldpi|-mdpi|-hdpi|-xhdpi|)/
 
-    Map<String, AmebaArtifact> apkFiles = [:]
-    Map<String, AmebaArtifact> jarFiles = [:]
+    Map<String, FlowArtifact> apkFiles = [:]
+    Map<String, FlowArtifact> jarFiles = [:]
 
     @Inject AndroidManifestHelper manifestHelper
     @Inject AndroidConfiguration androidConf

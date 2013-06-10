@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.release.tasks
 
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -54,7 +54,7 @@ class BuildSourcesZipTask extends DefaultTask {
 
     private void prepareSourcesAndDocumentationArtifacts() {
         def sourceZipName = "$conf.projectVersionedName-src.zip"
-        releaseConf.sourcesZip = new AmebaArtifact(
+        releaseConf.sourcesZip = new FlowArtifact(
                 name: "$conf.projectName.value-src",
                 url: null, // we do not publish
                 location: new File(conf.tmpDir, sourceZipName))

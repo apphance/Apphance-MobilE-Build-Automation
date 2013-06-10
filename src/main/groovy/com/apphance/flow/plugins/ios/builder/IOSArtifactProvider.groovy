@@ -3,7 +3,7 @@ package com.apphance.flow.plugins.ios.builder
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 
 import javax.inject.Inject
 
@@ -28,32 +28,32 @@ class IOSArtifactProvider {
         bi
     }
 
-    AmebaArtifact zipDistribution(IOSBuilderInfo bi) {
+    FlowArtifact zipDistribution(IOSBuilderInfo bi) {
         artifact('Distribution ZIP', bi, "${bi.filePrefix}.zip")
     }
 
-    AmebaArtifact dSYMZip(IOSBuilderInfo bi) {
+    FlowArtifact dSYMZip(IOSBuilderInfo bi) {
         artifact('dSYM ZIP', bi, "${bi.filePrefix}_dSYM.zip")
     }
 
-    AmebaArtifact ahSYM(IOSBuilderInfo bi) {
+    FlowArtifact ahSYM(IOSBuilderInfo bi) {
         artifact('ahSYM dir', bi, "${bi.filePrefix}_ahSYM")
     }
 
-    AmebaArtifact ipa(IOSBuilderInfo bi) {
+    FlowArtifact ipa(IOSBuilderInfo bi) {
         artifact('IPA file', bi, "${bi.filePrefix}.ipa")
     }
 
-    AmebaArtifact manifest(IOSBuilderInfo bi) {
+    FlowArtifact manifest(IOSBuilderInfo bi) {
         artifact('Manifest file', bi, 'manifest.plist')
     }
 
-    AmebaArtifact mobileprovision(IOSBuilderInfo bi) {
+    FlowArtifact mobileprovision(IOSBuilderInfo bi) {
         artifact('Mobile provision file', bi, "${bi.filePrefix}.mobileprovision")
     }
 
-    private AmebaArtifact artifact(String name, IOSBuilderInfo bi, String suffix) {
-        new AmebaArtifact(
+    private FlowArtifact artifact(String name, IOSBuilderInfo bi, String suffix) {
+        new FlowArtifact(
                 name: name,
                 url: new URL(releaseConf.baseURL, "${getFolderPrefix(bi)}/$suffix"),
                 location: new File(releaseConf.otaDir, "${getFolderPrefix(bi)}/$suffix")

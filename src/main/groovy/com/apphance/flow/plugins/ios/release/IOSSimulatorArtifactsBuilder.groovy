@@ -4,7 +4,7 @@ import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
     private void prepareSimulatorBundleFile(IOSBuilderInfo bi, String family) {
 
-        AmebaArtifact file = new AmebaArtifact()
+        FlowArtifact file = new FlowArtifact()
         file.name = "Simulator build for ${family}"
         file.url = new URL(releaseConf.baseURL, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
         file.location = new File(releaseConf.otaDir, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")

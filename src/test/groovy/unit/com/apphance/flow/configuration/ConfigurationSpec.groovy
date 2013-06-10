@@ -22,7 +22,7 @@ class ConfigurationSpec extends Specification {
 
     def 'return list of properties'() {
         when:
-        def props = androidConf.amebaProperties
+        def props = androidConf.flowProperties()
         then:
         props*.name.containsAll(['android.project.name'])
     }

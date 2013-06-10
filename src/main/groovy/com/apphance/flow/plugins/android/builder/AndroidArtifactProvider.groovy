@@ -4,7 +4,7 @@ import com.apphance.flow.configuration.android.AndroidArchiveType
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 
 import javax.inject.Inject
 
@@ -37,10 +37,10 @@ class AndroidArtifactProvider {
         new File(new File(conf.tmpDir, avc.name), 'bin')
     }
 
-    AmebaArtifact artifact(AndroidBuilderInfo abi) {
+    FlowArtifact artifact(AndroidBuilderInfo abi) {
         AndroidArchiveType type = conf.isLibrary() ? JAR : APK
         def name = "${getFolderPrefix()}/${abi.filePrefix}.${type.lowerCase()}"
-        new AmebaArtifact(
+        new FlowArtifact(
                 name: "${type.name()} ${abi.mode} file for ${abi.variant}",
                 url: new URL(releaseConf.baseURL, name),
                 location: new File(releaseConf.otaDir, name)

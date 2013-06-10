@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.release.tasks
 
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import groovy.text.SimpleTemplateEngine
 import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
@@ -31,7 +31,7 @@ abstract class AbstractPrepareMailMessageTask extends DefaultTask {
     }
 
     private void prepareMailMsgArtifact() {
-        releaseConf.mailMessageFile = new AmebaArtifact(
+        releaseConf.mailMessageFile = new FlowArtifact(
                 name: 'Mail message file',
                 url: new URL(releaseConf.versionedApplicationUrl, 'message_file.html'),
                 location: new File(releaseConf.targetDir, 'message_file.html'))

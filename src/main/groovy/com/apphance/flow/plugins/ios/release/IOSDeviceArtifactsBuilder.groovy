@@ -6,7 +6,7 @@ import com.apphance.flow.executor.jython.JythonExecutor
 import com.apphance.flow.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.flow.plugins.ios.parsers.PlistParser
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import groovy.text.SimpleTemplateEngine
 
 import javax.inject.Inject
@@ -64,9 +64,9 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         def dest = new File(bi.buildDir, "${bi.target}.app.dSYM")
         def output = new File(aa.location.canonicalPath, bi.filePrefix)
         def args = ['-p', bi.plist.canonicalPath, '-d', dest.canonicalPath, '-o', output.canonicalPath]
-        je.executeScript('dump_reduce3_ameba.py', args)
+        je.executeScript('dump_reduce3_flow.py', args)
         dest.listFiles().each {
-            aa.childArtifacts << new AmebaArtifact(name: it.name, location: it, url: "${aa.url.toString()}/${it.name}".toURL())
+            aa.childArtifacts << new FlowArtifact(name: it.name, location: it, url: "${aa.url.toString()}/${it.name}".toURL())
         }
         logger.lifecycle("ahSYM files created: ${aa.location}")
     }

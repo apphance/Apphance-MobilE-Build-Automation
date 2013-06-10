@@ -9,7 +9,7 @@ import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import org.gradle.api.Project
 import spock.lang.Specification
 
@@ -153,16 +153,16 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
 
     def 'file_index.html is generated and validated'() {
         given:
-        releaseConf.QRCodeFile = GroovyMock(AmebaArtifact) {
+        releaseConf.QRCodeFile = GroovyMock(FlowArtifact) {
             getRelativeUrl(_) >> 'qr.png'
         }
-        releaseConf.mailMessageFile = GroovyMock(AmebaArtifact) {
+        releaseConf.mailMessageFile = GroovyMock(FlowArtifact) {
             getRelativeUrl(_) >> 'mail_message'
         }
-        releaseConf.imageMontageFile = GroovyMock(AmebaArtifact) {
+        releaseConf.imageMontageFile = GroovyMock(FlowArtifact) {
             getRelativeUrl(_) >> 'image_montage.png'
         }
-        releaseConf.plainFileIndexFile = GroovyMock(AmebaArtifact) {
+        releaseConf.plainFileIndexFile = GroovyMock(FlowArtifact) {
             getRelativeUrl(_) >> 'plain_file_index.html'
         }
 
@@ -194,15 +194,15 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
 
     def 'plain_file_index.html is generated and validated'() {
         given:
-        releaseConf.QRCodeFile = GroovyMock(AmebaArtifact) {
+        releaseConf.QRCodeFile = GroovyMock(FlowArtifact) {
             getRelativeUrl(_) >> 'http://ota.polidea.pl'
             getUrl() >> 'http://ota.polidea.pl/qr.png'.toURL()
         }
-        releaseConf.mailMessageFile = GroovyMock(AmebaArtifact) {
+        releaseConf.mailMessageFile = GroovyMock(FlowArtifact) {
             getRelativeUrl(_) >> 'http://ota.polidea.pl'
             getUrl() >> 'http://ota.polidea.pl/mail_message'.toURL()
         }
-        releaseConf.imageMontageFile = GroovyMock(AmebaArtifact) {
+        releaseConf.imageMontageFile = GroovyMock(FlowArtifact) {
             getRelativeUrl(_) >> 'http://ota.polidea.pl'
             getUrl() >> 'http://ota.polidea.pl/image_montage.png'.toURL()
         }

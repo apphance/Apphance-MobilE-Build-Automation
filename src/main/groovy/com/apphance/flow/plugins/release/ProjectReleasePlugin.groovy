@@ -14,7 +14,7 @@ import static org.gradle.api.logging.Logging.getLogger
 
 /**
  *
- * This is Ameba release plugin.
+ * This is Flow release plugin.
  *
  * Plugin for releasing projects.
  *

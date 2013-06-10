@@ -8,7 +8,7 @@ import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.env.Environment
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import org.gradle.api.GradleException
 
 import javax.imageio.ImageIO
@@ -39,13 +39,13 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     private boolean enabledInternal
 
-    AmebaArtifact otaIndexFile
-    AmebaArtifact fileIndexFile
-    AmebaArtifact plainFileIndexFile
-    AmebaArtifact sourcesZip
-    AmebaArtifact imageMontageFile
-    AmebaArtifact mailMessageFile
-    AmebaArtifact QRCodeFile
+    FlowArtifact otaIndexFile
+    FlowArtifact fileIndexFile
+    FlowArtifact plainFileIndexFile
+    FlowArtifact sourcesZip
+    FlowArtifact imageMontageFile
+    FlowArtifact mailMessageFile
+    FlowArtifact QRCodeFile
 
     String releaseMailSubject
 

@@ -3,7 +3,7 @@ package com.apphance.flow.configuration.ios
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.plugins.ios.parsers.PlistParser
-import com.apphance.flow.plugins.release.AmebaArtifact
+import com.apphance.flow.plugins.release.FlowArtifact
 import com.google.inject.Singleton
 
 import javax.inject.Inject
@@ -16,13 +16,13 @@ import static groovy.io.FileType.FILES
 @Singleton
 class IOSReleaseConfiguration extends ReleaseConfiguration {
 
-    Map<String, AmebaArtifact> distributionZipFiles = [:]
-    Map<String, AmebaArtifact> dSYMZipFiles = [:]
-    Map<String, AmebaArtifact> ipaFiles = [:]
-    Map<String, AmebaArtifact> manifestFiles = [:]
-    Map<String, AmebaArtifact> mobileProvisionFiles = [:]
-    Map<String, AmebaArtifact> ahSYMDirs = [:]
-    Map<String, AmebaArtifact> dmgImageFiles = [:]
+    Map<String, FlowArtifact> distributionZipFiles = [:]
+    Map<String, FlowArtifact> dSYMZipFiles = [:]
+    Map<String, FlowArtifact> ipaFiles = [:]
+    Map<String, FlowArtifact> manifestFiles = [:]
+    Map<String, FlowArtifact> mobileProvisionFiles = [:]
+    Map<String, FlowArtifact> ahSYMDirs = [:]
+    Map<String, FlowArtifact> dmgImageFiles = [:]
 
     @Inject IOSVariantsConfiguration iosVariantsConf
     @Inject PlistParser plistParser
