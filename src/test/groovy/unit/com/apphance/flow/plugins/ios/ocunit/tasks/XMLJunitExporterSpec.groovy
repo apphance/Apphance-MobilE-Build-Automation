@@ -1,7 +1,6 @@
 package com.apphance.flow.plugins.ios.ocunit.tasks
 
 import com.apphance.flow.TestUtils
-import spock.lang.Ignore
 import spock.lang.Specification
 
 @Mixin(TestUtils)
@@ -9,18 +8,36 @@ class XMLJunitExporterSpec extends Specification {
 
     def runUnitTestTask = create RunUnitTestsTasks
 
-    @Ignore("Need example file with test result")
     def 'generate export'() {
         given:
-        File testResults // = ???
+        File testResults = new File('src/test/resources/com/apphance/flow/plugins/ios/ocunit/tasks/test_output.txt')
         File outputUnitTestFile = File.createTempFile('prefix', 'suffix')
         outputUnitTestFile.deleteOnExit()
 
+        expect:
+        testResults.exists()
+
         when:
         runUnitTestTask.parseAndExport(testResults, outputUnitTestFile)
+        def testsuites = new XmlSlurper().parseText outputUnitTestFile.text
 
         then:
-        // some assertions on
-        outputUnitTestFile.text
+        testsuites.testsuite.size() == 1
+        def rootTestSuite = testsuites.testsuite[0]
+        rootTestSuite.@name.text() == 'All tests'
+
+        rootTestSuite.testsuite.size() == 92
+
+        def testQWAddCommentMethodExecutorSpec = rootTestSuite.testsuite.find { it.@name.text() == 'QWAddCommentMethodExecutorSpec' }
+        testQWAddCommentMethodExecutorSpec.@failures.text() == '1'
+        def failedTest = testQWAddCommentMethodExecutorSpec.testcase.find {
+            it.@name.text() == 'QWAddCommentMethodExecutor_ExecutingRequest_WhenRequestFailed_ShouldRevertPopularityOfPhoto'
+        }
+        failedTest.failure
+        failedTest.failure.@message.text().contains('QWAddCommentMethodExecutor, executing request, when request failed, should revert popularity of photo')
+
+        def testQWAddCommentParserSpec = rootTestSuite.testsuite.find { it.@name.text() == 'QWAddCommentParserSpec' }
+        testQWAddCommentParserSpec.@failures.text() == '0'
+        testQWAddCommentParserSpec.testcase.findAll {it.@classname.text() == 'QWAddCommentParserSpec'}.size() == 6
     }
 }
