@@ -35,7 +35,7 @@ class TestRobolectricTask extends DefaultTask {
 
         ProjectConnection connection = getProjectConnection(conf.rootDir, robolectricPath)
         try {
-            BuildLauncher bl = connection.newBuild().forTasks('test');
+            BuildLauncher bl = connection.newBuild().forTasks('clean', 'test');
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream()
             bl.setStandardOutput(baos)
