@@ -61,7 +61,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         aa.location.mkdirs()
         def je = new JythonExecutor()
 
-        def dest = new File(bi.buildDir, "${bi.target}.app.dSYM")
+        def dest = new File(bi.buildDir, "${bi.buildableName}.app.dSYM")
         def output = new File(aa.location.canonicalPath, bi.filePrefix)
         def args = ['-p', bi.plist.canonicalPath, '-d', dest.canonicalPath, '-o', output.canonicalPath]
         je.executeScript('dump_reduce3_flow.py', args)
