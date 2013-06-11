@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.flow.util.file.FileDownloader.downloadFile
+import static com.apphance.flow.util.file.FileManager.getHumanReadableSize
 import static java.net.URLEncoder.encode
 import static java.util.ResourceBundle.getBundle
 
@@ -37,15 +38,18 @@ class AvailableArtifactsInfoTask extends DefaultTask {
 
         String otaFolderPrefix = "${releaseConf.projectDirName}/${conf.fullVersionString}"
 
+        prepareMailMsgArtifact()
         prepareFileIndexArtifact(otaFolderPrefix)
         preparePlainFileIndexArtifact(otaFolderPrefix)
         prepareOTAIndexFileArtifact(otaFolderPrefix)
         prepareQRCodeArtifact()
 
+        prepareMailMsg()
         prepareIconFile()
         prepareFileIndexFile()
         preparePlainFileIndexFile()
         prepareOTAIndexFile()
+        prepareQRCode()
     }
 
     @PackageScope
@@ -65,55 +69,89 @@ class AvailableArtifactsInfoTask extends DefaultTask {
     }
 
     @PackageScope
+    void prepareMailMsgArtifact() {
+        releaseConf.mailMessageFile = new FlowArtifact(
+                name: 'Mail message file',
+                url: new URL(releaseConf.versionedApplicationUrl, 'message_file.html'),
+                location: new File(releaseConf.targetDir, 'message_file.html'))
+        releaseConf.mailMessageFile.location.parentFile.mkdirs()
+        releaseConf.mailMessageFile.location.delete()
+    }
+
+    @PackageScope
     void prepareFileIndexArtifact(String otaFolderPrefix) {
-        def artifact = new FlowArtifact(
+        releaseConf.fileIndexFile = new FlowArtifact(
                 name: "The file index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/file_index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/file_index.html")
         )
-        artifact.location.parentFile.mkdirs()
-        artifact.location.delete()
-        releaseConf.fileIndexFile = artifact
+        releaseConf.fileIndexFile.location.parentFile.mkdirs()
+        releaseConf.fileIndexFile.location.delete()
     }
 
     @PackageScope
     void preparePlainFileIndexArtifact(String otaFolderPrefix) {
-        def artifact = new FlowArtifact(
+        releaseConf.plainFileIndexFile = new FlowArtifact(
                 name: "The plain file index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/plain_file_index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/plain_file_index.html"))
-        artifact.location.parentFile.mkdirs()
-        artifact.location.delete()
-        releaseConf.plainFileIndexFile = artifact
+        releaseConf.plainFileIndexFile.location.parentFile.mkdirs()
+        releaseConf.plainFileIndexFile.location.delete()
     }
 
     @PackageScope
     void prepareOTAIndexFileArtifact(String otaFolderPrefix) {
-        def artifact = new FlowArtifact(
+        releaseConf.otaIndexFile = new FlowArtifact(
                 name: "The ota index file: ${conf.projectName.value}",
                 url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/index.html"),
                 location: new File(releaseConf.otaDir, "${otaFolderPrefix}/index.html"))
-        artifact.location.parentFile.mkdirs()
-        artifact.location.delete()
-        releaseConf.otaIndexFile = artifact
+        releaseConf.otaIndexFile.location.parentFile.mkdirs()
+        releaseConf.otaIndexFile.location.delete()
     }
 
     @PackageScope
     void prepareQRCodeArtifact() {
-        def urlEncoded = encode(releaseConf.otaIndexFile.url.toString(), 'utf-8')
         def qrCodeFileName = "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"
         def qrCodeFile = new File(releaseConf.targetDir, qrCodeFileName)
-        qrCodeFile.parentFile.mkdirs()
-        qrCodeFile.delete()
-
-        downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), qrCodeFile)
-
-        def artifact = new FlowArtifact(
+        releaseConf.QRCodeFile = new FlowArtifact(
                 name: 'QR Code',
                 url: new URL(releaseConf.versionedApplicationUrl, qrCodeFileName),
                 location: qrCodeFile)
-        releaseConf.QRCodeFile = artifact
-        logger.lifecycle("QRCode created: ${artifact.location}")
+        releaseConf.QRCodeFile.location.parentFile.mkdirs()
+        releaseConf.QRCodeFile.location.delete()
+
+    }
+
+    @PackageScope
+    void prepareMailMsg() {
+        def rb = bundle('mail_message')
+        releaseConf.releaseMailSubject = fillMailSubject(rb)
+
+        def binding = [
+                title: conf.projectName.value,
+                version: conf.versionString,
+                currentDate: releaseConf.buildDate,
+                otaUrl: releaseConf.otaIndexFile?.url,
+                fileIndexUrl: releaseConf.fileIndexFile?.url,
+                releaseNotes: releaseConf.releaseNotes,
+                fileSize: fileSize(),
+                releaseMailFlags: releaseConf.releaseMailFlags,
+                rb: rb
+        ]
+
+        def result = fillTemplate(loadTemplate('mail_message.html'), binding)
+        releaseConf.mailMessageFile.location.write(result.toString(), 'UTF-8')
+
+        logger.lifecycle("Mail message file created: ${releaseConf.mailMessageFile.location}")
+    }
+
+    private String fillMailSubject(ResourceBundle rb) {
+        String subject = rb.getString('Subject')
+        Eval.me('conf', conf, /"$subject"/)
+    }
+
+    private String fileSize() {
+        getHumanReadableSize((releaseConf as AndroidReleaseConfiguration).apkFiles[variantsConf.mainVariant].location.size())
     }
 
     private void prepareIconFile() {
@@ -174,6 +212,13 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         def result = fillTemplate(loadTemplate('index.html'), binding)
         templateToFile(releaseConf.otaIndexFile.location, result)
         logger.lifecycle("OTA index created: ${releaseConf.otaIndexFile.location}")
+    }
+
+    @PackageScope
+    void prepareQRCode() {
+        def urlEncoded = encode(releaseConf.otaIndexFile.url.toString(), 'utf-8')
+        downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), releaseConf.QRCodeFile.location)
+        logger.lifecycle("QRCode created: ${releaseConf.QRCodeFile.location}")
     }
 
     private ResourceBundle bundle(String id) {

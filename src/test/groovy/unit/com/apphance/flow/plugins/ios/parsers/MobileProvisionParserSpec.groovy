@@ -6,16 +6,10 @@ import spock.lang.Specification
 class MobileProvisionParserSpec extends Specification {
 
     def input = new File('testProjects/ios/GradleXCode/release/distribution_resources/Ameba_Test_Project.mobileprovision.xml')
-    def executor
-    def parser
-
-    def setup() {
-        executor = GroovyMock(IOSExecutor)
-        executor.mobileprovisionToXml(_) >> input.text.split('\n')
-
-        parser = new MobileProvisionParser()
-        parser.executor = executor
+    def executor = GroovySpy(IOSExecutor) {
+        mobileprovisionToXml(_) >> input.text.split('\n')
     }
+    def parser = new MobileProvisionParser(executor: executor)
 
     def 'bundle id is read correctly'() {
         expect:

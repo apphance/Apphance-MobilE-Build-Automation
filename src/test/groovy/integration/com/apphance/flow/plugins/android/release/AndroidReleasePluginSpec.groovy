@@ -2,7 +2,6 @@ package com.apphance.flow.plugins.android.release
 
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.plugins.android.release.tasks.AvailableArtifactsInfoTask
-import com.apphance.flow.plugins.android.release.tasks.PrepareMailMessageTask
 import com.apphance.flow.plugins.android.release.tasks.UpdateVersionTask
 import spock.lang.Specification
 
@@ -30,11 +29,6 @@ class AndroidReleasePluginSpec extends Specification {
         then: 'every single task is in correct group'
         project.tasks[UpdateVersionTask.NAME].group == FLOW_RELEASE.name()
         project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.name()
-        project.tasks[PrepareMailMessageTask.NAME].group == FLOW_RELEASE.name()
-
-        then: 'every task has correct dependencies'
-
-        project.tasks[PrepareMailMessageTask.NAME].dependsOn.flatten().contains(AvailableArtifactsInfoTask.NAME)
     }
 
     def 'no tasks available when configuration is inactive'() {
@@ -55,6 +49,5 @@ class AndroidReleasePluginSpec extends Specification {
         then:
         !project.getTasksByName(UpdateVersionTask.NAME, false)
         !project.getTasksByName(AvailableArtifactsInfoTask.NAME, false)
-        !project.getTasksByName(PrepareMailMessageTask.NAME, false)
     }
 }
