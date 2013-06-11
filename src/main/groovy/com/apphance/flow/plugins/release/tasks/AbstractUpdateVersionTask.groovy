@@ -37,6 +37,7 @@ abstract class AbstractUpdateVersionTask extends DefaultTask {
         logger.lifecycle("New version code: $versionCode")
     }
 
+    @PackageScope
     abstract void updateDescriptor(String versionCode, String versionString)
 
     @PackageScope

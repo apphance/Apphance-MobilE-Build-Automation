@@ -114,6 +114,7 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
                 'icon.png',
                 'file_index.html',
                 'plain_file_index.html',
+                'message_file.html',
                 "qrcode-$projectName-${fullVersionString}.png"
         ].every {
             def f = new File(releaseDir, it)
@@ -124,7 +125,7 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
     def 'index.html is generated and validated'() {
         when:
         task.buildAPKArtifacts()
-        task.prepareOTAIndexFileArtifact(otaFolderPrefix)
+        task.otaIndexFileArtifact(otaFolderPrefix)
         task.prepareOTAIndexFile()
 
         then:
@@ -168,7 +169,7 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
 
         when:
         task.buildAPKArtifacts()
-        task.prepareFileIndexArtifact(otaFolderPrefix)
+        task.fileIndexArtifact(otaFolderPrefix)
         task.prepareFileIndexFile()
 
         then:
@@ -209,7 +210,7 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
 
         when:
         task.buildAPKArtifacts()
-        task.preparePlainFileIndexArtifact(otaFolderPrefix)
+        task.plainFileIndexArtifact(otaFolderPrefix)
         task.preparePlainFileIndexFile()
 
         then:
