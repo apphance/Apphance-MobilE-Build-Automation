@@ -221,14 +221,6 @@ class ExecuteIosBuildsTest {
         }
     }
 
-    @Test
-    void testBuildSourcesZip() {
-        runGradleMoreVariants('buildSourcesZip')
-        File file = new File(testProjectMoreVariants, 'flow-tmp/GradleXCodeMoreVariants-1.0_32-src.zip')
-        assertTrue(file.exists())
-        assertTrue(file.size() > 30000)
-    }
-
     @Ignore("ignored till apphance refactor")
     void testDefaultApphanceDependency() {
         Properties p = new Properties()

@@ -7,21 +7,21 @@ import spock.lang.Specification
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
-class BuildSourcesZipTaskIntegrationSpec extends Specification {
+class BuildSourcesZipTaskSpec extends Specification {
 
     def 'sources zip is built in correct location'() {
         given:
-        def projectDir = new File('testProjects/android/android-basic')
+        def projectDir = new File(projectPath)
 
         and:
         def project = builder().withProjectDir(projectDir).build()
 
         and:
-        def sourceZipName = "TestAndroidProject-1.0.1_42-src.zip"
+        def sourceZipName = srcZipName
 
         and:
         def ac = GroovySpy(AndroidConfiguration, {
-            getProjectVersionedName() >> 'TestAndroidProject-1.0.1_42'
+            getProjectVersionedName() >> projectVersionedName
         })
         ac.project = project
 
@@ -40,5 +40,10 @@ class BuildSourcesZipTaskIntegrationSpec extends Specification {
 
         cleanup:
         f.delete()
+
+        where:
+        projectPath                          | srcZipName                            | projectVersionedName
+        'testProjects/android/android-basic' | 'TestAndroidProject-1.0.1_42-src.zip' | 'TestAndroidProject-1.0.1_42'
+        'testProjects/ios/GradleXCode'       | 'GradleXCode-1.0_32-src.zip'          | 'GradleXCode-1.0_32'
     }
 }
