@@ -44,8 +44,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
                     type: ImageMontageTask)
 
             project.task(SendMailMessageTask.NAME,
-                    type: SendMailMessageTask,
-                    dependsOn: 'prepareMailMessage')
+                    type: SendMailMessageTask)
 
             project.task(BuildSourcesZipTask.NAME,
                     type: BuildSourcesZipTask)

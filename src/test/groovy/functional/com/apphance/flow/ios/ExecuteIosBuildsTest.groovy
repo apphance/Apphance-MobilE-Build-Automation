@@ -149,7 +149,7 @@ class ExecuteIosBuildsTest {
     void testBuildAndPrepareMoreVariantsMailMessage() {
         def p = new Properties()
         p.put('release.notes', 'some\nnotes')
-        runGradleMoreVariants(p, 'cleanFlow', 'buildGradleXCodeMoreVariantsAnotherConfiguration', 'prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
+        runGradleMoreVariants(p, 'cleanFlow', 'buildGradleXCodeMoreVariantsAnotherConfiguration', 'prepareImageMontage', 'prepareAvailableArtifactsInfo')
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/icon.png").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/index.html").exists())
@@ -162,7 +162,7 @@ class ExecuteIosBuildsTest {
     void testBuildAndPrepareMoreVariantsMailMessageWithSimulators() {
         def p = new Properties()
         p.put('release.notes', 'some\nnotes')
-        runGradleMoreVariants(p, 'cleanFlow', 'buildGradleXCodeMoreVariantsTestsDebug', 'prepareImageMontage', 'prepareAvailableArtifactsInfo', 'prepareMailMessage')
+        runGradleMoreVariants(p, 'cleanFlow', 'buildGradleXCodeMoreVariantsTestsDebug', 'prepareImageMontage', 'prepareAvailableArtifactsInfo')
         def path = 'flow-ota/ssasdadasdasd/1.0_32'
         assertTrue(new File(testProjectMoreVariants, "$path/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/icon.png").exists())
@@ -177,7 +177,7 @@ class ExecuteIosBuildsTest {
     void testBuildAndPrepareOneVariantMailMessage() {
         def p = new Properties()
         p.put('release.notes', 'some\nnotes')
-        runGradleOneVariant(p, 'cleanFlow', 'buildAllDevice', 'prepareImageMontage', 'prepareMailMessage')
+        runGradleOneVariant(p, 'cleanFlow', 'buildAllDevice', 'prepareAvailableArtifactsInfo', 'prepareImageMontage')
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/file_index.html").exists())
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/icon.png").exists())
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/index.html").exists())

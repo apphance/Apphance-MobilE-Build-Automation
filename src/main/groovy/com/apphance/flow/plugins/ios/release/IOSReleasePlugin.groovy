@@ -4,7 +4,6 @@ import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.ios.release.tasks.AvailableArtifactsInfoTask
-import com.apphance.flow.plugins.ios.release.tasks.PrepareMailMessageTask
 import com.apphance.flow.plugins.ios.release.tasks.UpdateVersionTask
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
 import com.apphance.flow.plugins.project.tasks.PrepareSetupTask
@@ -42,10 +41,6 @@ class IOSReleasePlugin implements Plugin<Project> {
 
             project.task(AvailableArtifactsInfoTask.NAME,
                     type: AvailableArtifactsInfoTask)
-
-            project.task(PrepareMailMessageTask.NAME,
-                    type: PrepareMailMessageTask,
-                    dependsOn: AvailableArtifactsInfoTask.NAME)
 
             builder.registerListener(listener)
 

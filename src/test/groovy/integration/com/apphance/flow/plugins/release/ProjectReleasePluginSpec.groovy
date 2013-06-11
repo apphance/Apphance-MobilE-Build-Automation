@@ -40,9 +40,6 @@ class ProjectReleasePluginSpec extends Specification {
         project.tasks[ImageMontageTask.NAME].group == FLOW_RELEASE.name()
         project.tasks[SendMailMessageTask.NAME].group == FLOW_RELEASE.name()
         project.tasks[BuildSourcesZipTask.NAME].group == FLOW_RELEASE.name()
-
-        then: 'each task has correct dependency'
-        project.tasks[SendMailMessageTask.NAME].dependsOn.flatten().contains('prepareMailMessage')
     }
 
     def 'no tasks available when configuration is inactive'() {

@@ -3,7 +3,6 @@ package com.apphance.flow.plugins.ios.release
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.flow.plugins.ios.release.tasks.AvailableArtifactsInfoTask
-import com.apphance.flow.plugins.ios.release.tasks.PrepareMailMessageTask
 import com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask
 import spock.lang.Specification
 
@@ -32,11 +31,7 @@ class IOSReleasePluginSpec extends Specification {
 
         then:
         project.tasks[AbstractUpdateVersionTask.NAME].group == FLOW_RELEASE.name()
-        project.tasks[PrepareMailMessageTask.NAME].group == FLOW_RELEASE.name()
         project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.name()
-
-        and:
-        project.tasks[PrepareMailMessageTask.NAME].dependsOn.flatten().contains(AvailableArtifactsInfoTask.NAME)
 
         and:
         irp.builder.buildListeners.size() > 0
@@ -59,7 +54,6 @@ class IOSReleasePluginSpec extends Specification {
 
         then:
         !project.getTasksByName(AbstractUpdateVersionTask.NAME, false)
-        !project.getTasksByName(PrepareMailMessageTask.NAME, false)
         !project.getTasksByName(AvailableArtifactsInfoTask.NAME, false)
     }
 }
