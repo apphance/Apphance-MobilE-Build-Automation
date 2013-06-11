@@ -24,7 +24,6 @@ class AndroidConfiguration extends ProjectConfiguration {
     @Inject AndroidBuildXmlHelper buildXmlHelper
     @Inject AndroidManifestHelper manifestHelper
     @Inject AndroidExecutor androidExecutor
-    @Inject AndroidReleaseConfiguration androidReleaseConf
     @Inject ApphanceConfiguration apphanceConf
 
     private Properties androidProperties

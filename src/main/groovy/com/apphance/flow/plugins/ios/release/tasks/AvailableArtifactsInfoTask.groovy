@@ -52,6 +52,7 @@ class AvailableArtifactsInfoTask extends DefaultTask {
         otaIndexFileArtifact(otaFolderPrefix)
         qrCodeArtifact()
 
+        prepareMailMsg()
         prepareFileIndexFile(udids)
         preparePlainFileIndexFile()
         prepareOtaIndexFile()
