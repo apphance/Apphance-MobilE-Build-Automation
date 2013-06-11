@@ -61,7 +61,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         aa.location.mkdirs()
         def je = new JythonExecutor()
 
-        def dest = new File(bi.buildDir, "${bi.buildableName}.app.dSYM")
+        def dest = new File(bi.buildDir, "${bi.buildableName}.dSYM")
         def output = new File(aa.location.canonicalPath, bi.filePrefix)
         def args = ['-p', bi.plist.canonicalPath, '-d', dest.canonicalPath, '-o', output.canonicalPath]
         je.executeScript('dump_reduce3_flow.py', args)
@@ -90,7 +90,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
                 bi.mobileprovision.canonicalPath
         ]
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: cmd))
-        logger.lifecycle("ipa file created: ${aa.location}")
+        logger.lifecycle("IPA file created: ${aa.location}")
     }
 
     private void prepareManifestFile(IOSBuilderInfo bi) {
