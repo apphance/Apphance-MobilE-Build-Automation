@@ -1,5 +1,7 @@
 testProjects/android/android-*/build
 testProjects/android/android-*/ameba-*
+testProjects/android/android-*/flow-*
+testProjects/ios/*/flow-*
 testProjects/android/android*/gen
 testProjects/android/android*/avds
 testProjects/android/android*/srcTmp
@@ -14,6 +16,7 @@ testProjects/*/ota
 testProjects/*/bin
 testProjects/android/android*/test/*/libs
 testProjects/android/android*/test/*/build
+testProjects/android/flow-demo
 proguard-project.txt
 local.properties
 .gradle

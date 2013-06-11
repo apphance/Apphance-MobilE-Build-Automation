@@ -4,9 +4,9 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('com.apphance.ameba:Ameba:1.0-M1')
+        classpath('com.apphance.flow:apphence-flow:1.0-M2')
     }
 }
 
-apply plugin: 'ameba'
+apply plugin: 'apphance-flow'
 

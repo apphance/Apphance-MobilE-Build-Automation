@@ -1,10 +1,10 @@
 buildscript {
-    amebaProjectPath = file('../../..').absolutePath
-    apply from: "$amebaProjectPath/ameba_in_classpath.gradle"
+    flowProjectPath = file('../../..').absolutePath
+    apply from: "$flowProjectPath/flow_in_classpath.gradle"
 }
 
-apply plugin: 'ameba'
+apply plugin: 'apphance-flow'
 
-iosUnitTests {
-    configuration = 'Debug'
-}
+//iosUnitTests {
+//    configuration = 'Debug'
+//}

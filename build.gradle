@@ -25,10 +25,10 @@ apply {
     plugin 'codenarc'
 }
 
-group = 'com.apphance.ameba'
-ext.artifactId = 'Ameba'
+group = 'com.apphance.flow'
+ext.artifactId = 'apphance-flow'
 
-task sourcesJar(type: Jar, dependsOn: classes, description: 'Prepares .jar file containing the source code of ameba') {
+task sourcesJar(type: Jar, dependsOn: classes, description: 'Prepares .jar file containing the source code of flow') {
     classifier = 'sources'
     from sourceSets.main.allSource
 }
@@ -81,10 +81,10 @@ uploadArchives {
             pom.artifactId = artifactId
 
             pom.project {
-                name 'ameba'
+                name 'Apphance Flow'
                 packaging 'jar'
-                description 'AMEBA stands for Apphance MobilE Build Automation - it is gradle plugin to automate builds for mobile applications'
-                url 'http://ameba.apphance.com/'
+                description 'Apphance Flow - gradle plugin to automate builds for mobile applications'
+                url 'http://flow.apphance.com/'
 
                 scm {
                     url 'scm:git@github.com:apphance/Apphance-MobilE-Build-Automation.git'
@@ -158,7 +158,9 @@ dependencies {
     compile('com.google.inject.extensions:guice-multibindings:3.0') {
         exclude group: 'org.sonatype.sisu.inject'
     }
-
+    compile('com.google.inject.extensions:guice-assistedinject:3.0') {
+        exclude group: 'org.sonatype.sisu.inject'
+    }
     compile('org.apache.httpcomponents:httpmime:4.2.2') {
         exclude group: 'org.apache.httpcomponents', module: 'httpcore'
     }
@@ -167,7 +169,8 @@ dependencies {
     compile 'gov.nih.imagej:imagej:1.46'
     compile 'org.imgscalr:imgscalr-lib:4.2'
 
-    compile 'org.apache.directory.studio:org.apache.commons.lang:2.6'
+    compile 'commons-lang:commons-lang:2.6'
+    compile 'commons-collections:commons-collections:3.2.1'
     compile 'com.google.guava:guava:14.0.1'
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {

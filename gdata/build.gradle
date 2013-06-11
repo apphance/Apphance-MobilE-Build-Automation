@@ -14,7 +14,7 @@ dependencies {
     groovy localGroovy()
 }
 
-task ask(group: 'Ameba\'s documentation', description: 'Asks for user/password in case not specified as username/password properties') << {
+task ask(group: 'Apphance Flow documentation', description: 'Asks for user/password in case not specified as username/password properties') << {
     def console = System.console()
     if (console) {
         if (!project.hasProperty('username')) {
@@ -32,35 +32,35 @@ Properties props = new Properties()
 props.load(file('../gradle.properties').newInputStream())
 def version = properties.get('version')
 
-task sendPluginReference(group: 'Ameba\'s documentation', description: 'Send plugin reference to Ameba\'s sites') << {
+task sendPluginReference(group: 'Apphance Flow documentation', description: 'Send plugin reference to Apphance Flow\'s sites') << {
     javaexec {
         workingDir = getRootDir()
-        main = 'com.apphance.ameba.documentation.sites.AmebaPluginReferenceSender'
+        main = 'com.apphance.flow.documentation.sites.FlowPluginReferenceSender'
         classpath = sourceSets.main.runtimeClasspath
         args project['username'], project['password'], file('../tmp/plugins_reference.html')
     }
 }
 project.sendPluginReference.dependsOn(project.classes, project.ask)
 
-task downloadPages(group: 'Ameba\'s documentation', description: 'Downloads all pages from Ameba\'s sites and prepares .zip file with the documentation') << {
+task downloadPages(group: 'Apphance Flow documentation', description: 'Downloads all pages from Apphance Flow sites and prepares .zip file with the documentation') << {
     javaexec {
         workingDir = getRootDir()
-        main = 'com.apphance.ameba.documentation.sites.AmebaSiteRetrieval'
+        main = 'com.apphance.flow.documentation.sites.FlowSiteRetrieval'
         classpath = sourceSets.main.runtimeClasspath
         args project['username'], project['password'], file('tmp/documentation')
     }
-    ant.zip(destfile: file("tmp/Ameba-doc-${version}.zip")) {
+    ant.zip(destfile: file("tmp/Apphance-Flow-doc-${version}.zip")) {
         zipfileset(dir: file('tmp/documentation'))
     }
 }
 project.downloadPages.dependsOn(project.classes, project.ask)
 
-task sendZipDocumentation(group: 'Ameba\'s documentation', description: 'Sends .prepared zip file to Ameba\'s sites') << {
+task sendZipDocumentation(group: 'Apphance Flow documentation', description: 'Sends .prepared zip file to Apphance Flow sites') << {
     javaexec {
         workingDir = getRootDir()
-        main = 'com.apphance.ameba.documentation.sites.AmebaFileUploader'
+        main = 'com.apphance.flow.documentation.sites.FlowFileUploader'
         classpath = sourceSets.main.runtimeClasspath
-        args project['username'], project['password'], file("tmp/Ameba-doc-${version}.zip")
+        args project['username'], project['password'], file("tmp/Apphance-Flow-doc-${version}.zip")
     }
 }
 project.sendZipDocumentation.dependsOn(project.classes, project.ask)

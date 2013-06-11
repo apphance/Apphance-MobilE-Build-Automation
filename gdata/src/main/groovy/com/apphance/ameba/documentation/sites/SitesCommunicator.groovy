@@ -1,4 +1,4 @@
-package com.apphance.ameba.documentation.sites
+package com.apphance.flow.documentation.sites
 
 import com.google.gdata.client.sites.ContentQuery
 import com.google.gdata.client.sites.SitesService
@@ -14,7 +14,7 @@ import com.google.gdata.util.ServiceException
 import javax.activation.MimetypesFileTypeMap
 
 class SitesCommunicator {
-    public static final String APP_NAME = 'apphance-ameba-v0.99.3'
+    public static final String APP_NAME = 'apphance-flow-v0.99.3'
     public static final String CONTENT_URL = 'https://sites.google.com/feeds/content/apphance.com/mobile-build-automation/'
 
     String username = null
