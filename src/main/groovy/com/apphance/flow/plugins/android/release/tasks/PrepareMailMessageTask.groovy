@@ -33,7 +33,7 @@ class PrepareMailMessageTask extends AbstractPrepareMailMessageTask {
         def result = createTemplate(loadTemplate(), binding)
         releaseConf.mailMessageFile.location.write(result.toString(), 'UTF-8')
 
-        logger.lifecycle("Mail message file created: ${releaseConf.mailMessageFile}")
+        logger.lifecycle("Mail message file created: ${releaseConf.mailMessageFile.location}")
     }
 
     String fileSize() {
