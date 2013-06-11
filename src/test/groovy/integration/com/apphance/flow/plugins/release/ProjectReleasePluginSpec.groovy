@@ -20,6 +20,9 @@ class ProjectReleasePluginSpec extends Specification {
         project.task(CleanFlowTask.NAME)
 
         and:
+        project.task('prepareAvailableArtifactsInfo')
+
+        and:
         def prp = new ProjectReleasePlugin()
 
         and: 'create mock release configuration and set it'
@@ -40,6 +43,9 @@ class ProjectReleasePluginSpec extends Specification {
         project.tasks[ImageMontageTask.NAME].group == FLOW_RELEASE.name()
         project.tasks[SendMailMessageTask.NAME].group == FLOW_RELEASE.name()
         project.tasks[BuildSourcesZipTask.NAME].group == FLOW_RELEASE.name()
+
+        then:
+        project.tasks[SendMailMessageTask.NAME].dependsOn.flatten().contains('prepareAvailableArtifactsInfo')
     }
 
     def 'no tasks available when configuration is inactive'() {
