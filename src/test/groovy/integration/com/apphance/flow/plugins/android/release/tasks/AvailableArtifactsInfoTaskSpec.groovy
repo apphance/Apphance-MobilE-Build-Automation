@@ -18,10 +18,9 @@ import static com.apphance.flow.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.flow.configuration.android.AndroidBuildMode.RELEASE
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.google.common.io.Files.createTempDir
-import static java.lang.System.getProperties
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
-class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
+class AvailableArtifactsInfoTaskSpec extends Specification {
 
     def rootDir = createTempDir()
     def apkDir = createTempDir()
@@ -35,19 +34,21 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
     def mainVariant = 'MainVariant'
 
     def otaFolderPrefix
-
-    def conf
     def releaseConf = new AndroidReleaseConfiguration()
-    def variantsConf
 
-    def artifactBuilder = new AndroidArtifactProvider()
+    def variantsConf
 
     def task = p.task(AvailableArtifactsInfoTask.NAME, type: AvailableArtifactsInfoTask) as AvailableArtifactsInfoTask
 
     def setup() {
-        System.setProperty('release.notes', 'release\nnotes')
 
-        conf = GroovySpy(AndroidConfiguration)
+        def reader = GroovyStub(PropertyReader) {
+            systemProperty('version.code') >> '42'
+            systemProperty('version.string') >> '1.0.1'
+            systemProperty('release.notes') >> 'release\nnotes'
+        }
+
+        def conf = GroovySpy(AndroidConfiguration)
         conf.isLibrary() >> false
         conf.fullVersionString >> fullVersionString
         conf.versionString >> '1.0.1'
@@ -56,15 +57,12 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
             getRootDir() >> rootDir
             file(TMP_DIR) >> tmpDir
         }
-        conf.reader = GroovyStub(PropertyReader) {
-            systemProperty('version.code') >> '42'
-            systemProperty('version.string') >> '1.0.1'
-        }
+        conf.reader = reader
 
         releaseConf.conf = conf
         releaseConf.projectURL = new URLProperty(value: projectUrl)
         releaseConf.iconFile = new FileProperty(value: 'res/drawable-hdpi/icon.png')
-        releaseConf.reader = new PropertyReader()
+        releaseConf.reader = reader
 
         variantsConf = GroovyMock(AndroidVariantsConfiguration)
         variantsConf.variants >> [
@@ -85,8 +83,7 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
 
         otaFolderPrefix = "${releaseConf.projectDirName}/${conf.fullVersionString}"
 
-        artifactBuilder.conf = conf
-        artifactBuilder.releaseConf = releaseConf
+        def artifactBuilder = new AndroidArtifactProvider(conf: conf, releaseConf: releaseConf)
 
         task.conf = conf
         task.releaseConf = releaseConf
@@ -98,7 +95,6 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
         rootDir.deleteDir()
         apkDir.deleteDir()
         tmpDir.deleteDir()
-        properties.remove('release.notes')
     }
 
     def 'task action is executed and all artifacts are prepared'() {
@@ -229,5 +225,35 @@ class AvailableArtifactsInfoTaskIntegrationSpec extends Specification {
         slurper.body.ul[1].li[0].text() == 'Mail message: http://ota.polidea.pl/mail_message'
         slurper.body.ul[1].li[1].text() == 'Image montage: http://ota.polidea.pl/image_montage.png'
         slurper.body.ul[1].li[2].text() == 'QR code: http://ota.polidea.pl/qr.png'
+    }
+
+    def 'message_file.html is generated and validated'() {
+        given:
+        releaseConf.otaIndexFile = GroovySpy(FlowArtifact) {
+            getUrl() >> 'http://ota.polidea.pl/otaIndexFile.html'.toURL()
+        }
+        releaseConf.fileIndexFile = GroovySpy(FlowArtifact) {
+            getUrl() >> 'http://ota.polidea.pl/fileIndexFile.html'.toURL()
+        }
+        releaseConf.apkFiles[variantsConf.mainVariant] = GroovySpy(FlowArtifact) {
+            getLocation() >> GroovyMock(File) {
+                size() >> 3145l
+            }
+        }
+
+        when:
+        task.mailMsgArtifact()
+        task.prepareMailMsg()
+
+        then:
+        releaseConf.releaseMailSubject == "Android $projectName $fullVersionString is ready to install"
+        def slurper = new XmlSlurper().parse(releaseConf.mailMessageFile.location)
+        slurper.head.title.text() == 'TestAndroidProject - Android'
+        slurper.body.b[0].text() == 'TestAndroidProject'
+        slurper.body.b[1].text() == '1.0.1'
+        slurper.body.p[0].ul.li.a.@href.text() == 'http://ota.polidea.pl/otaIndexFile.html'
+        slurper.body.p[1].ul.li[0].text() == 'release'
+        slurper.body.p[1].ul.li[1].text() == 'notes'
+        slurper.body.p[2].ul.li.a.@href.text() == 'http://ota.polidea.pl/fileIndexFile.html'
     }
 }
