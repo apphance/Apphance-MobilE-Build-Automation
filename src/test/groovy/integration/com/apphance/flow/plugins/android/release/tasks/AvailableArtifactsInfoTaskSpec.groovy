@@ -35,7 +35,6 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
 
     def otaFolderPrefix
     def releaseConf = new AndroidReleaseConfiguration()
-
     def variantsConf
 
     def task = p.task(AvailableArtifactsInfoTask.NAME, type: AvailableArtifactsInfoTask) as AvailableArtifactsInfoTask
@@ -48,11 +47,12 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
             systemProperty('release.notes') >> 'release\nnotes'
         }
 
-        def conf = GroovySpy(AndroidConfiguration)
-        conf.isLibrary() >> false
-        conf.fullVersionString >> fullVersionString
-        conf.versionString >> '1.0.1'
-        conf.projectName >> new StringProperty(value: projectName)
+        def conf = GroovySpy(AndroidConfiguration) {
+            isLibrary() >> false
+            getFullVersionString() >> fullVersionString
+            getVersionString() >> '1.0.1'
+            getProjectName() >> new StringProperty(value: projectName)
+        }
         conf.project = GroovyStub(Project) {
             getRootDir() >> rootDir
             file(TMP_DIR) >> tmpDir
@@ -125,9 +125,11 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         task.prepareOTAIndexFile()
 
         then:
+        !releaseConf.otaIndexFile.location.text.contains('null')
         def slurper = new XmlSlurper().parse(releaseConf.otaIndexFile.location)
         slurper.head.title.text() == "$projectName - Android"
         slurper.body.div[0].div[0].h1.text() == 'OTA installation - Android'
+        slurper.body.div[0].div[1].div[0].ul.li.img.@src.text() == 'icon.png'
         slurper.body.div[0].div[1].div.ul.li[0].text() == projectName
         slurper.body.div[0].div[1].div.ul.li[1].text().trim().startsWith('Version: 1.0.1')
         slurper.body.div[0].div[1].div[1].section.header.h3.div.text() == 'Main installation'
@@ -169,6 +171,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         task.prepareFileIndexFile()
 
         then:
+        !releaseConf.fileIndexFile.location.text.contains('null')
         def slurper = new XmlSlurper().parse(releaseConf.fileIndexFile.location)
         slurper.body.div[0].div[0].h1.text() == 'Files to download'
         slurper.body.div[0].div[1].div[0].section.header.h3.text() == projectName
@@ -210,6 +213,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         task.preparePlainFileIndexFile()
 
         then:
+        !releaseConf.plainFileIndexFile.location.text.contains('null')
         def slurper = new XmlSlurper().parse(releaseConf.plainFileIndexFile.location)
         slurper.body.h1.text() == 'TestAndroidProject'
         slurper.body.text().contains('Version: 1.0.1')
@@ -246,6 +250,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         task.prepareMailMsg()
 
         then:
+        !releaseConf.mailMessageFile.location.text.contains('null')
         releaseConf.releaseMailSubject == "Android $projectName $fullVersionString is ready to install"
         def slurper = new XmlSlurper().parse(releaseConf.mailMessageFile.location)
         slurper.head.title.text() == 'TestAndroidProject - Android'

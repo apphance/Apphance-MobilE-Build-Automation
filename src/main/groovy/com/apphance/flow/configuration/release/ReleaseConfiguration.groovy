@@ -25,9 +25,9 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     final String configurationName = 'Release configuration'
 
-    public static final String OTA_DIR = 'flow-ota'
-    def MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
-    def ALL_EMAIL_FLAGS = [
+    static final String OTA_DIR = 'flow-ota'
+    static final MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
+    static final ALL_EMAIL_FLAGS = [
             'installableSimulator',
             'qrCode',
             'imageMontage'

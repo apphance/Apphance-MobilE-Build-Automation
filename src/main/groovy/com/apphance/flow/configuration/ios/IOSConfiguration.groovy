@@ -23,7 +23,7 @@ class IOSConfiguration extends ProjectConfiguration {
     public static final PROJECT_PBXPROJ = 'project.pbxproj'
 
     @Inject IOSExecutor executor
-    @Inject IOSVariantsConfiguration iosVariantsConf
+    @Inject IOSVariantsConfiguration variantsConf
 
     @Inject
     @Override
@@ -33,12 +33,12 @@ class IOSConfiguration extends ProjectConfiguration {
 
     @Override
     String getVersionCode() {
-        iosVariantsConf.mainVariant.versionCode
+        variantsConf.mainVariant.versionCode
     }
 
     @Override
     String getVersionString() {
-        iosVariantsConf.mainVariant.versionString
+        variantsConf.mainVariant.versionString
     }
 
     @Override
@@ -49,7 +49,7 @@ class IOSConfiguration extends ProjectConfiguration {
                 value
             }
         }
-        sp.value = iosVariantsConf.mainVariant.projectName
+        sp.value = variantsConf.mainVariant.projectName
         sp
     }
 

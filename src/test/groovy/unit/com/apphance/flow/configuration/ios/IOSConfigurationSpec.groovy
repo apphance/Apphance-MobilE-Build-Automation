@@ -52,7 +52,7 @@ class IOSConfigurationSpec extends Specification {
         conf.@variants = [variant]
 
         def iOSConf = new IOSConfiguration()
-        iOSConf.iosVariantsConf = conf
+        iOSConf.variantsConf = conf
 
         expect:
         with(iOSConf) {
@@ -78,7 +78,7 @@ class IOSConfigurationSpec extends Specification {
 
     def 'test get project name'() {
         given:
-        def iOSConf = new IOSConfiguration(iosVariantsConf:
+        def iOSConf = new IOSConfiguration(variantsConf:
                 new IOSVariantsConfiguration(
                         variants: [GroovyStub(AbstractIOSVariant) { getProjectName() >> 'test project name' }]
                 )
