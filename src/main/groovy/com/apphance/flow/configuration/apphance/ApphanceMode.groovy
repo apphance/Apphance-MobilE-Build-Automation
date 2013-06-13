@@ -1,5 +1,5 @@
 package com.apphance.flow.configuration.apphance
 
-public enum ApphanceMode {
+enum ApphanceMode {
     QA, SILENT, PROD, DISABLED
 }

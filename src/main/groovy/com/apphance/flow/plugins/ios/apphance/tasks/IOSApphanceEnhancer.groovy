@@ -1,19 +1,23 @@
 package com.apphance.flow.plugins.ios.apphance.tasks
 
-import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.apphance.ApphancePluginCommons
+import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.google.inject.Inject
 import com.google.inject.assistedinject.Assisted
+import groovy.json.JsonSlurper
+import groovy.transform.PackageScope
 import org.gradle.api.GradleException
+import org.gradle.api.Project
 
+import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.DIRECTORIES
-import static groovy.io.FileType.FILES
-import static java.io.File.separator
+import static java.text.MessageFormat.format
+import static java.util.ResourceBundle.getBundle
 import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(ApphancePluginCommons)
@@ -21,116 +25,131 @@ class IOSApphanceEnhancer {
 
     static final APPHANCE_FRAMEWORK_NAME_PATTERN = ~/.*[aA]pphance.*\.framework/
 
-    private log = getLogger(getClass())
+    private logger = getLogger(getClass())
 
+    @Inject Project project
     @Inject CommandExecutor executor
     @Inject IOSExecutor iosExecutor
-    @Inject IOSConfiguration iosConfiguration
-    @Inject PbxProjectHelper pbxProjectHelper
-
+    @Inject PbxJsonParser pbxJsonParser
+//    @Inject PbxProjectHelper pbxProjectHelper
 
     private AbstractIOSVariant variant
-    private String target
-    private String configuration
+    private bundle = getBundle('validation')
 
     @Inject
-    IOSApphanceEnhancer(@Assisted AbstractIOSVariant variantConf) {
-        this.pbxProjectHelper = new PbxProjectHelper(variantConf.apphanceLibVersion.value, variantConf.apphanceMode.value.toString())
-
-        this.variant = variantConf
-        this.target = variantConf.target
-        this.configuration = variantConf.target
+    IOSApphanceEnhancer(@Assisted AbstractIOSVariant variant) {
+        this.variant = variant
+//        this.pbxProjectHelper = new PbxProjectHelper(variantConf.apphanceLibVersion.value, variantConf.apphanceMode.value.toString())
     }
 
     void addApphance() {
-        //TODO way of using single variant builder has changed, to refactor when apphance refactoring is being done
-//        def builder = new IOSSingleVariantBuilder(iosExecutor: iosExecutor)
-//        if (!isApphancePresent(builder.tmpDir(target, configuration))) {
-//            log.lifecycle("Adding Apphance to ${variant} (${target}, ${configuration}): ${builder.tmpDir(target, configuration)}. Project file = ${variant.tmpDir}")
-//            pbxProjectHelper.addApphanceToProject(
-//                    builder.tmpDir(target, configuration),
-//                    iosConfiguration.xcodeDir.value,
-//                    target,
-//                    configuration,
-//                    variant.apphanceAppKey.value)
-//            copyApphanceFramework(builder.tmpDir(target, configuration))
-//        }
+        if (pbxJsonParser.isFrameworkDeclared(APPHANCE_FRAMEWORK_NAME_PATTERN) || findApphanceInPath()) {
+            throw new GradleException(format(bundle.getString('exception.apphance.declared'), variant.name, variant.tmpDir.absolutePath))
+        } else {
+            //add apphance with pbx
+            copyApphanceFramework()
+        }
     }
 
-    private boolean isApphancePresent(File projectDir) {
-        log.lifecycle("Looking for apphance in: ${projectDir.absolutePath}")
+    @PackageScope
+    boolean findApphanceInPath() {
+        logger.info("Searching for apphance in: $variant.tmpDir.absolutePath")
 
-        def apphancePresent = false
+        def apphanceFound = false
 
-        projectDir.traverse([type: DIRECTORIES, maxDepth: MAX_RECURSION_LEVEL]) { file ->
+        variant.tmpDir.traverse([type: DIRECTORIES, maxDepth: MAX_RECURSION_LEVEL]) { file ->
             if (file.name =~ APPHANCE_FRAMEWORK_NAME_PATTERN) {
-                apphancePresent = true
+                apphanceFound = true
             }
         }
 
-        log.lifecycle("Apphance ${apphancePresent ? 'already' : 'not'} in project")
+        logger.info("Apphance ${apphanceFound ? '' : 'not'} found in project: $variant.tmpDir.absolutePath")
 
-        apphancePresent
+        apphanceFound
     }
 
-    private copyApphanceFramework(File libsDir) {
+    @PackageScope
+    void copyApphanceFramework() {
+        def dependency = apphanceLibDependency()
+        def apphanceFileName = 'apphance.zip'
+        def apphanceZip = new File(variant.tmpDir, apphanceFileName)
 
-        def apphanceLibDependency = prepareApphanceLibDependency(project, 'com.apphance:ios.pre-production.armv7:1.8+')
-
-        libsDir.mkdirs()
-        clearLibsDir(libsDir)
-        log.lifecycle("Copying apphance framework directory " + libsDir)
+        project.dependencies {
+            apphance dependency
+        }
 
         try {
-            project.copy {
-                from { project.configurations.apphance }
-                into libsDir
-                rename { String filename ->
-                    'apphance.zip'
-                }
-            }
+            downloadApphance(apphanceFileName)
         } catch (e) {
-            def msg = "Error while resolving dependency: '$apphanceLibDependency'"
-            log.error("$msg.\nTo solve the problem add correct dependency to gradle.properties file or add -Dapphance.lib=<apphance.lib> to invocation.\n" +
-                    "Dependency should be added in gradle style to 'apphance.lib' entry")
-            throw new GradleException(msg)
+            logger.error("Error while resolving dependency: $dependency, error: $e.message")
+            throw new GradleException(format(bundle.getString('exception.apphance.dependency', dependency, variant.name)))
         }
 
-        def projectApphanceZip = new File(libsDir, "apphance.zip")
-        log.lifecycle("Unpacking file " + projectApphanceZip)
-        log.lifecycle("Exists " + projectApphanceZip.exists())
-        executor.executeCommand(new Command(runDir: project.rootDir,
-                cmd: ['unzip', projectApphanceZip.canonicalPath, '-d', libsDir.canonicalPath]))
+        unzip(apphanceZip)
 
-        checkFrameworkFolders(apphanceLibDependency, libsDir)
+        checkFrameworkFolders(dependency)
 
-        project.delete {
-            projectApphanceZip
-        }
+        apphanceZip.delete()
     }
 
-    private clearLibsDir(File libsDir) {
-        libsDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { framework ->
-            if (framework.name =~ APPHANCE_FRAMEWORK_NAME_PATTERN) {
-                log.lifecycle("Removing old apphance framework: " + framework.name)
-                delClos(new File(framework.canonicalPath))
+    @PackageScope
+    String apphanceLibDependency() {
+        "com.apphance:ios.${apphanceDependencyGroup()}.${apphanceDependencyArch()}:${variant.apphanceLibVersion.value}"
+    }
+
+    @PackageScope
+    String apphanceDependencyGroup() {
+        libForMode(variant.apphanceMode.value).groupName
+    }
+
+    @PackageScope
+    String apphanceDependencyArch() {
+        def xc = availableXCodeArchitectures()
+        def af = availableArtifactoryArchitectures()
+        af.retainAll(xc)
+        af.unique().sort()[-1]
+    }
+
+    @PackageScope
+    Collection<String> availableXCodeArchitectures() {
+        iosExecutor.buildSettings(variant.target, variant.configuration)['ARCHS'].split(' ')*.trim()
+    }
+
+    @PackageScope
+    Collection<String> availableArtifactoryArchitectures() {
+        def text = 'https://dev.polidea.pl/artifactory/api/storage/libs-releases-local/com/apphance'.toURL().openStream().readLines().join('\n')
+        def json = new JsonSlurper().parseText(text)
+
+        json.children.findAll {
+            it.uri.startsWith("/ios.${apphanceDependencyGroup()}")
+        }*.uri.collect {
+            it.split('\\.')[2]
+        }*.trim().unique().sort()
+    }
+
+    private void downloadApphance(String apphanceFileName) {
+        project.copy {
+            from { project.configurations.apphance }
+            into variant.tmpDir
+            rename { String filename ->
+                apphanceFileName
             }
         }
     }
 
-    private delClos = {
-        it.eachDir(delClos);
-        it.eachFile {
-            it.delete()
-        }
+    private void unzip(File apphanceZip) {
+        executor.executeCommand(new Command(
+                runDir: variant.tmpDir,
+                cmd: ['unzip', apphanceZip.canonicalPath, '-d', variant.tmpDir.canonicalPath]))
     }
 
-    private void checkFrameworkFolders(String apphanceLib, File libsDir) {
-        def libVariant = apphanceLib.split(':')[1].split('\\.')[1].replace('p', 'P')
+    @PackageScope
+    void checkFrameworkFolders(String dependency) {
+        def libVariant = apphanceDependencyGroup().replace('p', 'P')
         def frameworkFolder = "Apphance-${libVariant}.framework"
-        def frameworkFolderFile = new File(libsDir.canonicalPath + separator + frameworkFolder)
+        def frameworkFolderFile = new File(variant.tmpDir, frameworkFolder)
         if (!frameworkFolderFile.exists() || !frameworkFolderFile.isDirectory() || !(frameworkFolderFile.length() > 0l)) {
-            throw new GradleException("There is no framework folder (or may be empty): ${frameworkFolderFile.canonicalPath} associated with apphance version: '${apphanceLib}'")
+            throw new GradleException(format(bundle.getString('exception.apphance.ios.folders'), frameworkFolderFile.canonicalPath, dependency))
         }
     }
 }
