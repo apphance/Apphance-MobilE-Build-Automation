@@ -1,9 +1,6 @@
 package com.apphance.flow.plugins
 
-import com.apphance.flow.di.CommandExecutorModule
-import com.apphance.flow.di.ConfigurationModule
-import com.apphance.flow.di.EnvironmentModule
-import com.apphance.flow.di.GradleModule
+import com.apphance.flow.di.*
 import com.apphance.flow.util.Version
 import com.google.inject.Guice
 import groovy.transform.PackageScope
@@ -28,6 +25,7 @@ class FlowPlugin implements Plugin<Project> {
 
         def injector = Guice.createInjector(
                 new GradleModule(project),
+                new IOSModule(project),
                 new ConfigurationModule(project),
                 new EnvironmentModule(),
                 new CommandExecutorModule(project),

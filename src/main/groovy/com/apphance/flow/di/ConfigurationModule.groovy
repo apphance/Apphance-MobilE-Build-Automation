@@ -16,10 +16,10 @@ import com.apphance.flow.configuration.reader.GradlePropertiesPersister
 import com.apphance.flow.configuration.reader.PropertyPersister
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.detection.ProjectTypeDetector
-import com.apphance.flow.plugins.ios.apphance.tasks.AddIOSApphanceTaskFactory
 import com.google.inject.AbstractModule
 import com.google.inject.assistedinject.FactoryModuleBuilder
 import com.google.inject.multibindings.MapBinder
+import groovy.transform.PackageScope
 import org.gradle.api.Project
 
 import static com.apphance.flow.detection.ProjectType.ANDROID
@@ -64,13 +64,12 @@ class ConfigurationModule extends AbstractModule {
             ],
             (IOS): [
                     new FactoryModuleBuilder().build(IOSVariantFactory),
-                    new FactoryModuleBuilder().build(AddIOSApphanceTaskFactory)
             ],
     ]
 
     private Project project
 
-    @groovy.transform.PackageScope
+    @PackageScope
     ProjectTypeDetector typeDetector = new ProjectTypeDetector()
 
     ConfigurationModule(Project project) {
@@ -94,6 +93,5 @@ class ConfigurationModule extends AbstractModule {
         variantFactories[pt].each { install(it) }
 
         bind(PropertyPersister).to(GradlePropertiesPersister)
-
     }
 }

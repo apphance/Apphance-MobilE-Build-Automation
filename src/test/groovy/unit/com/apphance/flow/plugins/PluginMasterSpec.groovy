@@ -4,6 +4,7 @@ import com.apphance.flow.detection.ProjectTypeDetector
 import com.apphance.flow.di.CommandExecutorModule
 import com.apphance.flow.di.ConfigurationModule
 import com.apphance.flow.di.EnvironmentModule
+import com.apphance.flow.di.IOSModule
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.android.analysis.AndroidAnalysisPlugin
 import com.apphance.flow.plugins.android.apphance.AndroidApphancePlugin
@@ -165,6 +166,7 @@ class PluginMasterSpec extends Specification {
 
         return Guice.createInjector(
                 new EnvironmentModule(),
+                new IOSModule(project),
                 new CommandExecutorModule(project),
                 new ConfigurationModule(project),
                 new AbstractModule() {
