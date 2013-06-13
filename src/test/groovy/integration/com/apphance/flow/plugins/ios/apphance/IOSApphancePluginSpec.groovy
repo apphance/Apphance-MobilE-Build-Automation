@@ -6,9 +6,7 @@ import com.apphance.flow.configuration.ios.variants.IOSTCVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.flow.plugins.ios.release.IOSReleaseListener
-import com.apphance.flow.plugins.project.ProjectPlugin
 import com.apphance.flow.plugins.release.tasks.ImageMontageTask
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import static org.gradle.testfixtures.ProjectBuilder.builder
@@ -112,29 +110,5 @@ class IOSApphancePluginSpec extends Specification {
 
         then:
         plugin.builder.buildListeners.size() > 0
-    }
-
-    @Ignore('Verify if this specification is still up-to-date. Do we create buildAllSimulators task independently of variant configuration?')
-    def "plugin tasks' graph configured correctly when buildAllSimulators tasks exists"() {
-        given:
-        def project = builder().build()
-
-        and:
-        project.plugins.apply(ProjectPlugin)
-
-        when:
-        def plugin = new IOSApphancePlugin()
-        plugin.apphanceConf = GroovyStub(ApphanceConfiguration) { isEnabled() >> true }
-        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration) { getVariants() >> [] }
-        plugin.apply(project)
-
-        then: 'apphance configuration is added'
-        project.configurations.apphance
-
-        then: 'tasks not added'
-        !project.tasks.findByName('build-id1')
-        !project.tasks.findByName('build-id2')
-        !project.tasks.findByName('upload-id1')
-        !project.tasks.findByName('upload-id2')
     }
 }

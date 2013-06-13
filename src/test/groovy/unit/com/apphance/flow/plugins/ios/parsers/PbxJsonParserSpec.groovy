@@ -4,7 +4,7 @@ import com.apphance.flow.executor.IOSExecutor
 import spock.lang.Shared
 import spock.lang.Specification
 
-import static com.apphance.flow.plugins.ios.apphance.tasks.AddIOSApphanceTask.getAPPHANCE_FRAMEWORK_NAME_PATTERN
+import static com.apphance.flow.plugins.ios.apphance.tasks.IOSApphanceEnhancer.getAPPHANCE_FRAMEWORK_NAME_PATTERN
 
 class PbxJsonParserSpec extends Specification {
 

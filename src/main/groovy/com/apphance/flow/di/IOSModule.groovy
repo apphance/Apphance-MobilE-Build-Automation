@@ -1,7 +1,7 @@
 package com.apphance.flow.di
 
 import com.apphance.flow.detection.ProjectTypeDetector
-import com.apphance.flow.plugins.ios.apphance.tasks.AddIOSApphanceTaskFactory
+import com.apphance.flow.plugins.ios.apphance.tasks.IOSApphanceEnhancerFactory
 import com.google.inject.AbstractModule
 import com.google.inject.assistedinject.FactoryModuleBuilder
 import org.gradle.api.Project
@@ -20,6 +20,6 @@ class IOSModule extends AbstractModule {
     @Override
     protected void configure() {
         if (projectTypeDetector.detectProjectType(project.rootDir) == IOS)
-            install(new FactoryModuleBuilder().build(AddIOSApphanceTaskFactory))
+            install(new FactoryModuleBuilder().build(IOSApphanceEnhancerFactory))
     }
 }

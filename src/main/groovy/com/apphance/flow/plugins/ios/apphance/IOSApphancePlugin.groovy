@@ -1,10 +1,9 @@
 package com.apphance.flow.plugins.ios.apphance
 
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.apphance.ApphancePluginCommons
-import com.apphance.flow.plugins.ios.apphance.tasks.AddIOSApphanceTaskFactory
+import com.apphance.flow.plugins.ios.apphance.tasks.IOSApphanceEnhancerFactory
 import com.apphance.flow.plugins.ios.apphance.tasks.UploadIOSArtifactTask
 import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.flow.plugins.ios.release.IOSReleaseListener
@@ -24,31 +23,38 @@ import static org.gradle.api.logging.Logging.getLogger
 @Mixin(ApphancePluginCommons)
 class IOSApphancePlugin implements Plugin<Project> {
 
-    def log = getLogger(this.class)
+    private logger = getLogger(getClass())
 
-    @Inject IOSVariantsConfiguration variantsConf
     @Inject ApphanceConfiguration apphanceConf
-    @Inject AddIOSApphanceTaskFactory addIOSApphanceTaskFactory
+    @Inject IOSVariantsConfiguration variantsConf
+    @Inject IOSApphanceEnhancerFactory addIOSApphanceTaskFactory
     @Inject IOSSingleVariantBuilder builder
     @Inject IOSReleaseListener listener
 
     @Override
     void apply(Project project) {
         if (apphanceConf.enabled) {
+
+            logger.lifecycle("Applying plugin ${getClass().simpleName}")
+
             addApphanceConfiguration(project)
 
-            variantsConf.variants.each { AbstractIOSVariant variant ->
+            variantsConf.variants.each { variant ->
 
                 if (variant.apphanceMode.value in [QA, PROD, SILENT]) {
-                    def addApphance = { addIOSApphanceTaskFactory.create(variant).addIOSApphance() }
+                    logger.info("Adding apphance for variant '$variant.name'")
 
-                    project.tasks[variant.getBuildTaskName()].doFirst(addApphance)
+                    def addApphance = { addIOSApphanceTaskFactory.create(variant).addApphance() }
 
-                    project.task("upload${variant.name}",
-                            type: UploadIOSArtifactTask,
-                            dependsOn: [variant.getBuildTaskName(), ImageMontageTask.NAME]).variant = variant
+                    project.tasks[variant.buildTaskName].doFirst(addApphance)
+
+                    def uploadTask =
+                        project.task("upload$variant.name",
+                                type: UploadIOSArtifactTask,
+                                dependsOn: [variant.buildTaskName, ImageMontageTask.NAME]) as UploadIOSArtifactTask
+                    uploadTask.variant = variant
                 } else {
-                    log.lifecycle("Apphance is disabled for variant '${variant.name}'")
+                    logger.info("Apphance is disabled for variant '$variant.name'")
                 }
             }
 

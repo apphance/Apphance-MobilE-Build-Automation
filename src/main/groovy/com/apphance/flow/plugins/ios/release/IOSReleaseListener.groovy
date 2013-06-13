@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.ios.release
 
 import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.flow.plugins.ios.buildplugin.IOSBuildListener
+import com.google.inject.Singleton
 
 import javax.inject.Inject
 
@@ -13,10 +14,10 @@ import static org.gradle.api.logging.Logging.getLogger
  * Build listener for releases.
  *
  */
-@com.google.inject.Singleton
+@Singleton
 class IOSReleaseListener implements IOSBuildListener {
 
-    def l = getLogger(getClass())
+    private logger = getLogger(getClass())
 
     @Inject IOSDeviceArtifactsBuilder deviceArtifactsBuilder
     @Inject IOSSimulatorArtifactsBuilder simulatorArtifactsBuilder
@@ -34,7 +35,7 @@ class IOSReleaseListener implements IOSBuildListener {
                 break
 
             default:
-                l.warn("Unrecognized mode: $bi.mode, builder info: $bi")
+                logger.warn("Unrecognized mode: $bi.mode, builder info: $bi")
         }
     }
 }

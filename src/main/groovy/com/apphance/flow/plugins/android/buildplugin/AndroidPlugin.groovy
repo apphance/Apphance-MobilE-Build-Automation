@@ -27,7 +27,7 @@ import static org.gradle.api.logging.Logging.getLogger
  */
 class AndroidPlugin implements Plugin<Project> {
 
-    def log = getLogger(this.class)
+    private logger = getLogger(getClass())
 
     static final String BUILD_ALL_TASK_NAME = 'buildAll'
     static final String BUILD_ALL_DEBUG_TASK_NAME = 'buildAllDebug'
@@ -41,7 +41,7 @@ class AndroidPlugin implements Plugin<Project> {
     void apply(Project project) {
 
         if (conf.isEnabled()) {
-            log.lifecycle("Applying plugin ${this.class.simpleName}")
+            logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
             project.task(UpdateProjectTask.NAME,
                     type: UpdateProjectTask)
@@ -58,7 +58,7 @@ class AndroidPlugin implements Plugin<Project> {
                 if (buildXml.exists())
                     antExecutor.executeTarget(conf.rootDir, CLEAN)
                 else
-                    log.lifecycle("Skipping 'ant clean' in dir: $conf.rootDir. File $buildXml.absolutePath does not exist")
+                    logger.lifecycle("Skipping 'ant clean' in dir: $conf.rootDir. File $buildXml.absolutePath does not exist")
             }
 
             project.task(CompileAndroidTask.NAME,

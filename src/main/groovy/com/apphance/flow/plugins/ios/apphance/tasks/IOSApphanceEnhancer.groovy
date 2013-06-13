@@ -17,7 +17,7 @@ import static java.io.File.separator
 import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(ApphancePluginCommons)
-class AddIOSApphanceTask {
+class IOSApphanceEnhancer {
 
     static final APPHANCE_FRAMEWORK_NAME_PATTERN = ~/.*[aA]pphance.*\.framework/
 
@@ -34,7 +34,7 @@ class AddIOSApphanceTask {
     private String configuration
 
     @Inject
-    AddIOSApphanceTask(@Assisted AbstractIOSVariant variantConf) {
+    IOSApphanceEnhancer(@Assisted AbstractIOSVariant variantConf) {
         this.pbxProjectHelper = new PbxProjectHelper(variantConf.apphanceLibVersion.value, variantConf.apphanceMode.value.toString())
 
         this.variant = variantConf
@@ -42,7 +42,7 @@ class AddIOSApphanceTask {
         this.configuration = variantConf.target
     }
 
-    void addIOSApphance() {
+    void addApphance() {
         //TODO way of using single variant builder has changed, to refactor when apphance refactoring is being done
 //        def builder = new IOSSingleVariantBuilder(iosExecutor: iosExecutor)
 //        if (!isApphancePresent(builder.tmpDir(target, configuration))) {
