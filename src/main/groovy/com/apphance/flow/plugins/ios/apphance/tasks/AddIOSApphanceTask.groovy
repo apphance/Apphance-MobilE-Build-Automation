@@ -19,7 +19,7 @@ import static org.gradle.api.logging.Logging.getLogger
 @Mixin(ApphancePluginCommons)
 class AddIOSApphanceTask {
 
-    static final FRAMEWORK_PATTERN = ~/.*[aA]pphance.*\.framework/
+    static final APPHANCE_FRAMEWORK_NAME_PATTERN = ~/.*[aA]pphance.*\.framework/
 
     private log = getLogger(getClass())
 
@@ -63,7 +63,7 @@ class AddIOSApphanceTask {
         def apphancePresent = false
 
         projectDir.traverse([type: DIRECTORIES, maxDepth: MAX_RECURSION_LEVEL]) { file ->
-            if (file.name =~ FRAMEWORK_PATTERN) {
+            if (file.name =~ APPHANCE_FRAMEWORK_NAME_PATTERN) {
                 apphancePresent = true
             }
         }
@@ -111,7 +111,7 @@ class AddIOSApphanceTask {
 
     private clearLibsDir(File libsDir) {
         libsDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) { framework ->
-            if (framework.name =~ FRAMEWORK_PATTERN) {
+            if (framework.name =~ APPHANCE_FRAMEWORK_NAME_PATTERN) {
                 log.lifecycle("Removing old apphance framework: " + framework.name)
                 delClos(new File(framework.canonicalPath))
             }

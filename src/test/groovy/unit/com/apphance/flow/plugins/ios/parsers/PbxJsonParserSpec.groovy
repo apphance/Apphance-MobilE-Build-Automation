@@ -4,22 +4,16 @@ import com.apphance.flow.executor.IOSExecutor
 import spock.lang.Shared
 import spock.lang.Specification
 
+import static com.apphance.flow.plugins.ios.apphance.tasks.AddIOSApphanceTask.getAPPHANCE_FRAMEWORK_NAME_PATTERN
+
 class PbxJsonParserSpec extends Specification {
 
     @Shared
     def input = new File('testProjects/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
     @Shared
-    def parser = new PbxJsonParser()
-    @Shared
-    def executor
-
-    def setup() {
-        def executor = Mock(IOSExecutor)
-        executor.pbxProjToJSON >> input.text.split('\n')
-
-        parser.executor = executor
-    }
-
+    def parser = new PbxJsonParser(executor: GroovyMock(IOSExecutor) {
+        getPbxProjToJSON() >> input.text.split('\n')
+    })
 
     def 'plist for configuration and blueprint is found correctly'() {
         given:
@@ -63,6 +57,21 @@ class PbxJsonParserSpec extends Specification {
         '$(AA_)'    | false
         '$(AA_D)'   | true
         '$(AA_D_)'  | false
-        '$(_AA_D_)'  | false
+        '$(_AA_D_)' | false
+    }
+
+    def 'apphance framework is found correctly'() {
+        given:
+        parser.executor = GroovyMock(IOSExecutor) {
+            getPbxProjToJSON() >> parsedJSON
+        }
+
+        expect:
+        parser.isFrameworkDeclared(APPHANCE_FRAMEWORK_NAME_PATTERN) == frameworkDeclared
+
+        where:
+        frameworkDeclared | parsedJSON
+        true              | new File(getClass().getResource('project.pbxproj.with.apphance.json').toURI()).text.split('\n')
+        false             | input.text.split('\n')
     }
 }

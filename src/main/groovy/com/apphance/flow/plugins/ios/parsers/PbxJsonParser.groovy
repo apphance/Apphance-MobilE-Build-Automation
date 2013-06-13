@@ -56,6 +56,11 @@ class PbxJsonParser {
         targetObject.value.name
     }
 
+    boolean isFrameworkDeclared(def frameworkNamePattern) {
+        def json = parsedPBX()
+        json.objects.find { it.value.isa == 'PBXFileReference' && it.value.name =~ frameworkNamePattern }
+    }
+
     private Object parsedPBX() {
         new JsonSlurper().parseText(executor.pbxProjToJSON.join('\n'))
     }
