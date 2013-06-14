@@ -9,7 +9,12 @@ import static org.apache.commons.lang.StringUtils.isNotBlank
 
 class PbxJsonParser {
 
-    static final INFOPLIST_FILE = 'INFOPLIST_FILE'
+    public static final String PBXNATIVE_TARGET = 'PBXNativeTarget'
+    public static final String PBXFILE_REFERENCE = 'PBXFileReference'
+    public static final String PBXFRAMEWORKS_BUILD_PHASE = 'PBXFrameworksBuildPhase'
+    public static final String PBXSOURCES_BUILD_PHASE = 'PBXSourcesBuildPhase'
+    public static final String INFOPLIST_FILE = 'INFOPLIST_FILE'
+    public static final String XCBUILD_CONFIGURATION = 'XCBuildConfiguration'
 
     @Inject IOSExecutor executor
 
@@ -28,7 +33,7 @@ class PbxJsonParser {
         def json = parsedPBX()
         def objects = json.objects
 
-        def targetObject = objects.find { it.value.isa == 'PBXNativeTarget' && it.value.name == target }
+        def targetObject = objects.find { it.value.isa == PBXNATIVE_TARGET && it.value.name == target }
         def buildConfigurationListKey = targetObject.value.buildConfigurationList
         def conf = findConfiguration(buildConfigurationListKey, configuration)
 
@@ -42,7 +47,7 @@ class PbxJsonParser {
         def buildConfigurationList = objects.find { it.key == buildConfigurationListKey }
         def buildConfigurations = buildConfigurationList.value.buildConfigurations
         def configurations = objects.findAll { it.key in buildConfigurations }
-        def conf = configurations.find { it.value.isa == 'XCBuildConfiguration' && it.value.name == configuration }
+        def conf = configurations.find { it.value.isa == XCBUILD_CONFIGURATION && it.value.name == configuration }
 
         conf
     }
@@ -51,14 +56,14 @@ class PbxJsonParser {
         def json = parsedPBX()
         def objects = json.objects
 
-        def targetObject = objects.find { it.value.isa == 'PBXNativeTarget' && it.key == blueprintId }
+        def targetObject = objects.find { it.value.isa == PBXNATIVE_TARGET && it.key == blueprintId }
 
         targetObject.value.name
     }
 
     boolean isFrameworkDeclared(def frameworkNamePattern) {
         def json = parsedPBX()
-        json.objects.find { it.value.isa == 'PBXFileReference' && it.value.name =~ frameworkNamePattern }
+        json.objects.find { it.value.isa == PBXFILE_REFERENCE && it.value.name =~ frameworkNamePattern }
     }
 
     private Object parsedPBX() {

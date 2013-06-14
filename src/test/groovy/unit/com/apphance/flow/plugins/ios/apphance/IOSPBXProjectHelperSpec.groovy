@@ -1,13 +1,13 @@
 package com.apphance.flow.plugins.ios.apphance
 
-import com.apphance.flow.plugins.ios.apphance.tasks.PbxProjectHelper
+import com.apphance.flow.plugins.ios.apphance.tasks.IOSApphancePbxEnhancerOLD
 import spock.lang.Specification
 
 class IOSPBXProjectHelperSpec extends Specification {
 
     def 'checks pbx parser output'() {
         given:
-        def helper = new PbxProjectHelper()
+        def helper = new IOSApphancePbxEnhancerOLD()
 
         and:
         def pbxFile = new File(getClass().getResource('project.pbxproj').file)

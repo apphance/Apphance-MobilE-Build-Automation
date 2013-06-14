@@ -1,15 +1,24 @@
 package com.apphance.flow.plugins.ios.apphance.tasks
 
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.google.inject.assistedinject.Assisted
+
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  * Helper parsing PBX project file.
  *
  */
-class PbxProjectHelper {
+class IOSApphancePbxEnhancerOLD {
 
-    static Logger logger = Logging.getLogger(PbxProjectHelper.class)
+    private logger = getLogger(getClass())
+
+    private AbstractIOSVariant variant
+
+    //-----
+    IOSApphancePbxEnhancerOLD(@Assisted AbstractIOSVariant variant) {
+        this.variant = variant
+    }
 
     static final String PROJECT_PBXPROJ = "project.pbxproj"
 
@@ -22,7 +31,7 @@ class PbxProjectHelper {
     String apphanceMode
     IOSApphanceSourceHelper apphanceSourceHelper = new IOSApphanceSourceHelper()
 
-    PbxProjectHelper(String apphanceLib = null, String apphanceMode = null) {
+    IOSApphancePbxEnhancerOLD(String apphanceLib = null, String apphanceMode = null) {
         assignApphanceFrameworkAndMode(apphanceLib, apphanceMode)
     }
 
@@ -89,6 +98,50 @@ class PbxProjectHelper {
         object.appendNode(value, valueString)
     }
 
+    void addApphanceToFramework(Object frameworks) {
+        def frameworksToAdd = [
+                ["name": "${apphanceFramework}.framework", "path": "${apphanceFramework}.framework", "group": "<group>", "searchName": "apphance", "strong": "Required"],
+                ["name": "CoreLocation.framework", "path": "System/Library/Frameworks/CoreLocation.framework", "group": "SDKROOT", "searchName": "corelocation.framework", "strong": "Required"],
+                ["name": "QuartzCore.framework", "path": "System/Library/Frameworks/QuartzCore.framework", "group": "SDKROOT", "searchName": "quartzcore.framework", "strong": "Required"],
+                ["name": "SystemConfiguration.framework", "path": "System/Library/Frameworks/SystemConfiguration.framework", "group": "SDKROOT", "searchName": "systemconfiguration.framework", "strong": "Weak"],
+                ["name": "CoreTelephony.framework", "path": "System/Library/Frameworks/CoreTelephony.framework", "group": "SDKROOT", "searchName": "coretelephony.framework", "strong": "Weak"],
+                ["name": "AudioToolbox.framework", "path": "System/Library/Frameworks/AudioToolbox.framework", "group": "SDKROOT", "searchName": "audiotoolbox.framework", "strong": "Required"],
+                ["name": "Security.framework", "path": "System/Library/Frameworks/Security.framework", "group": "SDKROOT", "searchName": "security.framework", "strong": "Required"]
+        ]
+
+        frameworksToAdd.each { framework ->
+            if (findFramework(frameworks, framework["searchName"])) {
+                logger.lifecycle("Framework " + framework["searchName"] + " already in project")
+                return
+            }
+            logger.lifecycle("Framework " + framework["searchName"] + " not found in project")
+            addFramework(frameworks, framework["name"], framework["path"], framework["group"], framework["strong"])
+        }
+
+    }
+
+    boolean findFramework(Object frameworks, String name) {
+        boolean foundFramework = false
+        getProperty(frameworks, "files").'*'.each { file ->
+            // find file reference in objects
+            def fileString = file.text()
+            def property = getProperty(getObject("${fileString}"), "fileRef")
+            if (property != null) {
+                def fileRef = property.text()
+                def frameworkName = getProperty(getObject("${fileRef}"), "name")
+                def frameworkPath = getProperty(getObject("${fileRef}"), "path")
+                if ((frameworkName != null && frameworkName.text().toLowerCase().contains(name)) || (frameworkPath != null && frameworkPath.text().toLowerCase().endsWith(name))) {
+                    // apphance already added
+                    foundFramework = true
+                    if (name.equals("apphance")) {
+                        hasApphance = true
+                    }
+                }
+            }
+        }
+        return foundFramework
+    }
+
     void addFramework(Object frameworks, String name, String path, String group, String strongWeak) {
         int apphanceFrameworkHash = nextHash()
         int apphanceFileFrameworkHash = nextHash()
@@ -117,50 +170,6 @@ class PbxProjectHelper {
         def mainGroupProp = getProperty(project, "mainGroup")
         def mainGroup = getObject(mainGroupProp.text())
         getProperty(mainGroup, "children").appendNode("string", apphanceFileFrameworkHash.toString())
-    }
-
-    boolean findFramework(Object frameworks, String name) {
-        boolean foundFramework = false
-        getProperty(frameworks, "files").'*'.each { file ->
-            // find file reference in objects
-            def fileString = file.text()
-            def property = getProperty(getObject("${fileString}"), "fileRef")
-            if (property != null) {
-                def fileRef = property.text()
-                def frameworkName = getProperty(getObject("${fileRef}"), "name")
-                def frameworkPath = getProperty(getObject("${fileRef}"), "path")
-                if ((frameworkName != null && frameworkName.text().toLowerCase().contains(name)) || (frameworkPath != null && frameworkPath.text().toLowerCase().endsWith(name))) {
-                    // apphance already added
-                    foundFramework = true
-                    if (name.equals("apphance")) {
-                        hasApphance = true
-                    }
-                }
-            }
-        }
-        return foundFramework
-    }
-
-    void addApphanceToFramework(Object frameworks) {
-        def frameworksToAdd = [
-                ["name": "${apphanceFramework}.framework", "path": "${apphanceFramework}.framework", "group": "<group>", "searchName": "apphance", "strong": "Required"],
-                ["name": "CoreLocation.framework", "path": "System/Library/Frameworks/CoreLocation.framework", "group": "SDKROOT", "searchName": "corelocation.framework", "strong": "Required"],
-                ["name": "QuartzCore.framework", "path": "System/Library/Frameworks/QuartzCore.framework", "group": "SDKROOT", "searchName": "quartzcore.framework", "strong": "Required"],
-                ["name": "SystemConfiguration.framework", "path": "System/Library/Frameworks/SystemConfiguration.framework", "group": "SDKROOT", "searchName": "systemconfiguration.framework", "strong": "Weak"],
-                ["name": "CoreTelephony.framework", "path": "System/Library/Frameworks/CoreTelephony.framework", "group": "SDKROOT", "searchName": "coretelephony.framework", "strong": "Weak"],
-                ["name": "AudioToolbox.framework", "path": "System/Library/Frameworks/AudioToolbox.framework", "group": "SDKROOT", "searchName": "audiotoolbox.framework", "strong": "Required"],
-                ["name": "Security.framework", "path": "System/Library/Frameworks/Security.framework", "group": "SDKROOT", "searchName": "security.framework", "strong": "Required"]
-        ]
-
-        frameworksToAdd.each { framework ->
-            if (findFramework(frameworks, framework["searchName"])) {
-                logger.lifecycle("Framework " + framework["searchName"] + " already in project")
-                return
-            }
-            logger.lifecycle("Framework " + framework["searchName"] + " not found in project")
-            addFramework(frameworks, framework["name"], framework["path"], framework["group"], framework["strong"])
-        }
-
     }
 
     String printElementToString(Object node, int level) {
@@ -265,9 +274,9 @@ class PbxProjectHelper {
                     // find frameworks in build phases
                     def phaseText = phase.text()
                     if (getProperty(getObject("${phaseText}"), "isa").text().equals("PBXFrameworksBuildPhase")) {
-                        addApphanceToFramework(getObject("${phaseText}"))
+                        addApphanceToFramework(getObject("${phaseText}"))//TODO
                     } else if (getProperty(getObject("${phaseText}"), "isa").text().equals("PBXSourcesBuildPhase")) {
-                        replaceLogsWithApphance(projectRootDirectory, getObject("${phaseText}"), project)
+                        replaceLogsWithApphance(projectRootDirectory, getObject("${phaseText}"), project)//TODO
                     }
                 }
                 if (!hasApphance) {
@@ -275,6 +284,7 @@ class PbxProjectHelper {
                     def buildConfigurationList = getProperty(getObject("${targetText}"), "buildConfigurationList")
                     getProperty(getObject(buildConfigurationList.text()), "buildConfigurations").'*'.each { configuration ->
                         if (getProperty(getObject(configuration.text()), "name").text().equals(configurationName)) {
+                            //TODO
                             sourceHelper.addApphanceToPch(new File(projectRootDirectory, getProperty(getProperty(getObject(configuration.text()), "buildSettings"),
                                     "GCC_PREFIX_HEADER").text()), apphanceFramework)
                         }

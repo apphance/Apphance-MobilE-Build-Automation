@@ -31,22 +31,25 @@ class IOSApphanceEnhancer {
     @Inject CommandExecutor executor
     @Inject IOSExecutor iosExecutor
     @Inject PbxJsonParser pbxJsonParser
-//    @Inject PbxProjectHelper pbxProjectHelper
+    @Inject IOSApphancePbxEnhancerFactory apphancePbxEnhancerFactory
 
     private AbstractIOSVariant variant
     private bundle = getBundle('validation')
+    @Lazy
+    private IOSApphancePbxEnhancerOLD apphancePbxEnhancer = {
+        apphancePbxEnhancerFactory.create(variant)
+    }()
 
     @Inject
     IOSApphanceEnhancer(@Assisted AbstractIOSVariant variant) {
         this.variant = variant
-//        this.pbxProjectHelper = new PbxProjectHelper(variantConf.apphanceLibVersion.value, variantConf.apphanceMode.value.toString())
     }
 
     void addApphance() {
         if (pbxJsonParser.isFrameworkDeclared(APPHANCE_FRAMEWORK_NAME_PATTERN) || findApphanceInPath()) {
             throw new GradleException(format(bundle.getString('exception.apphance.declared'), variant.name, variant.tmpDir.absolutePath))
         } else {
-            //add apphance with pbx
+            //TODO add apphance with pbx
             copyApphanceFramework()
         }
     }
@@ -56,15 +59,11 @@ class IOSApphanceEnhancer {
         logger.info("Searching for apphance in: $variant.tmpDir.absolutePath")
 
         def apphanceFound = false
-
         variant.tmpDir.traverse([type: DIRECTORIES, maxDepth: MAX_RECURSION_LEVEL]) { file ->
             if (file.name =~ APPHANCE_FRAMEWORK_NAME_PATTERN) {
                 apphanceFound = true
             }
         }
-
-        logger.info("Apphance ${apphanceFound ? '' : 'not'} found in project: $variant.tmpDir.absolutePath")
-
         apphanceFound
     }
 
@@ -82,13 +81,10 @@ class IOSApphanceEnhancer {
             downloadApphance(apphanceFileName)
         } catch (e) {
             logger.error("Error while resolving dependency: $dependency, error: $e.message")
-            throw new GradleException(format(bundle.getString('exception.apphance.dependency', dependency, variant.name)))
+            throw new GradleException(format(bundle.getString('exception.apphance.dependency'), dependency, variant.name))
         }
-
         unzip(apphanceZip)
-
         checkFrameworkFolders(dependency)
-
         apphanceZip.delete()
     }
 
