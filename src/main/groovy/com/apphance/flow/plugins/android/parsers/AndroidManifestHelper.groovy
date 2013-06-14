@@ -13,7 +13,7 @@ import org.gradle.api.logging.Logging
 @Mixin(Preconditions)
 class AndroidManifestHelper {
 
-    def l = Logging.getLogger(getClass())
+    def logger = Logging.getLogger(getClass())
 
     static final String ANDROID_MANIFEST = 'AndroidManifest.xml'
 
@@ -66,7 +66,7 @@ class AndroidManifestHelper {
         throwIfCondition((packageName != oldPkg && packageName != newPkg), "Package to replace in manifest is: " +
                 "'$packageName' and not expected: '$oldPkg' (neither target: '$newPkg'). This must be wrong.")
 
-        l.lifecycle("Replacing package: '$packageName' with new package: '$newPkg'")
+        logger.lifecycle("Replacing package: '$packageName' with new package: '$newPkg'")
         manifest.@package = newPkg
 
         if (newLbl) {
@@ -114,6 +114,19 @@ class AndroidManifestHelper {
         String result = xmlToString(manifest)
         f.delete()
         f.write(replaceTag0(result))
+    }
+
+    void withManifest(File projectDir, Closure doSomething) {
+        def manifestFile = new File(projectDir, ANDROID_MANIFEST)
+        saveOriginalFile(projectDir, manifestFile)
+
+        GPathResult manifest = new XmlSlurper().parse(manifestFile)
+
+        doSomething(manifest)
+
+        String result = xmlToString(manifest)
+        manifestFile.delete()
+        manifestFile.write(replaceTag0(result))
     }
 
     private void saveOriginalFile(File projectDir, File file) {
@@ -275,7 +288,7 @@ class AndroidManifestHelper {
         def file = new File(projectDir, ANDROID_MANIFEST)
         def originalFile = new File(projectDir, "${file.name}.orig")
         if (!originalFile.exists()) {
-            l.warn("Could not restore original file. It's missing!")
+            logger.warn("Could not restore original file. It's missing!")
             return
         }
         file.delete()

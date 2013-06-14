@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.android.apphance.tasks
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceMode
 import com.google.common.io.Files
+import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.io.FileUtils
 import spock.lang.Specification
 
@@ -55,4 +56,20 @@ class AddApphanceToAndroidSpec extends Specification {
         addApphanceToAndroid.checkIfApphancePresent()
     }
 
+    def 'test addReportActivityToManifest'() {
+        given:
+        addApphanceToAndroid.addReportActivityToManifest()
+        def manifestFile = new File(variantDir, 'AndroidManifest.xml')
+        def manifest = new XmlSlurper().parse(manifestFile).declareNamespace(android: 'http://schemas.android.com/apk/res/android');
+
+        expect:
+        manifest.application.activity.find { GPathResult it ->
+            ['android:name': 'com.apphance.android.ui.ProblemActivity',
+            'android:configChanges': 'orientation',
+            'android:launchMode': 'singleInstance',
+            'android:process': 'com.utest.apphance.reporteditor'].every { key, val ->
+                it."@$key".text() == val
+            }
+        }
+    }
 }

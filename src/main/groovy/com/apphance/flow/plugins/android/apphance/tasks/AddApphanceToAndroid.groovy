@@ -4,6 +4,7 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantConfigurat
 import com.apphance.flow.configuration.apphance.ApphanceMode
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import com.apphance.flow.util.FlowUtils
+import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.GradleException
 
 import static com.google.common.base.Preconditions.checkArgument
@@ -30,7 +31,7 @@ class AddApphanceToAndroid {
             throw new GradleException("Apphance was already added")
         }
 
-        // Add Report Editor activity to the manifest
+        addReportActivityToManifest()
         // Add required permissions to the manifest
         // Add 'Apphance.startNewSession(...)' call to the main activity
         // Add 'Apphance.setCurrentActitivity(this);' to each activity you want to check with Apphance
@@ -44,10 +45,13 @@ class AddApphanceToAndroid {
     }
 
     void addReportActivityToManifest() {
-
-    }
-
-    File getManifestFile() {
-        new File(variantDir, ANDROID_MANIFEST)
+        withManifest(variantDir) { GPathResult manifest ->
+            manifest.application.appendNode {
+                activity('android:name': 'com.apphance.android.ui.ProblemActivity',
+                        'android:configChanges': 'orientation',
+                        'android:launchMode': 'singleInstance',
+                        'android:process': 'com.utest.apphance.reporteditor')
+            }
+        }
     }
 }
