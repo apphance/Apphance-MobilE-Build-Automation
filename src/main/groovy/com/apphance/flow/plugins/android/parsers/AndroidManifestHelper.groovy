@@ -1,10 +1,15 @@
 package com.apphance.flow.plugins.android.parsers
 
+import android.Manifest
 import com.apphance.flow.util.Preconditions
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
 import org.gradle.api.logging.Logging
+
+import static android.Manifest.permission.GET_TASKS
+import static android.Manifest.permission.INTERNET
+import static android.Manifest.permission.READ_PHONE_STATE
 
 /**
  * Helps to parse and process android manifest.
@@ -102,8 +107,7 @@ class AndroidManifestHelper {
         def manifest = new XmlSlurper().parse(f)
 
         addInstrumentation(manifest)
-        addPermissionsToManifest(manifest,
-                'android.permission.INTERNET', 'android.permission.READ_PHONE_STATE', 'android.permission.GET_TASKS')
+        addPermissionsToManifest(manifest, INTERNET, READ_PHONE_STATE, GET_TASKS)
         addActivities(manifest)
         addAlias(manifest)
 

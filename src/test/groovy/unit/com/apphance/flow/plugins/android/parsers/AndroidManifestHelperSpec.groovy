@@ -5,6 +5,7 @@ import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
 
+import static android.Manifest.permission.ACCESS_MOCK_LOCATION
 import static com.google.common.io.Files.copy
 import static com.google.common.io.Files.createTempDir
 
@@ -122,7 +123,7 @@ class AndroidManifestHelperSpec extends Specification {
         })
 
         when:
-        amh.addPermissions(tmpDir, 'android.permission.ACCESS_MOCK_LOCATION')
+        amh.addPermissions(tmpDir, ACCESS_MOCK_LOCATION)
 
         then:
         parsedManifest(tmpManifest).'uses-permission'.@'android:name'.find {

@@ -7,6 +7,7 @@ import com.apphance.flow.util.FlowUtils
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.GradleException
 
+import static android.Manifest.permission.*
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkNotNull
 
@@ -32,7 +33,7 @@ class AddApphanceToAndroid {
         }
 
         addReportActivityToManifest()
-        // Add required permissions to the manifest
+        addPermisions()
         // Add 'Apphance.startNewSession(...)' call to the main activity
         // Add 'Apphance.setCurrentActitivity(this);' to each activity you want to check with Apphance
     }
@@ -52,6 +53,13 @@ class AddApphanceToAndroid {
                         'android:launchMode': 'singleInstance',
                         'android:process': 'com.utest.apphance.reporteditor')
             }
+        }
+    }
+
+    void addPermisions() {
+        withManifest(variantDir) { GPathResult manifest ->
+            addPermissionsToManifest(manifest, INTERNET, READ_PHONE_STATE, GET_TASKS, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE,
+                    ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION, BLUETOOTH)
         }
     }
 }

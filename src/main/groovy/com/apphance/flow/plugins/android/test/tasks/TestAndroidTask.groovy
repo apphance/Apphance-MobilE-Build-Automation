@@ -1,5 +1,6 @@
 package com.apphance.flow.plugins.android.test.tasks
 
+import android.Manifest
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.executor.AntExecutor
@@ -14,6 +15,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
+import static android.Manifest.permission.ACCESS_MOCK_LOCATION
 import static com.apphance.flow.executor.AntExecutor.CLEAN
 import static com.apphance.flow.executor.AntExecutor.INSTRUMENT
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
@@ -72,7 +74,7 @@ class TestAndroidTask extends DefaultTask {
         executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: commandAndroid))
         boolean useMockLocation = testConf.mockLocation.value
         if (useMockLocation) {
-            manifestHelper.addPermissions(conf.rootDir, 'android.permission.ACCESS_MOCK_LOCATION')
+            manifestHelper.addPermissions(conf.rootDir, ACCESS_MOCK_LOCATION)
         }
         try {
             antExecutor.executeTarget testConf.testDir.value, CLEAN, ['test.runner': TEST_RUNNER]
