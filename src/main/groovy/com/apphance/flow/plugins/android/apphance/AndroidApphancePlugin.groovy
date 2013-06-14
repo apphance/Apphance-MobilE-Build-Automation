@@ -3,7 +3,7 @@ package com.apphance.flow.plugins.android.apphance
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
-import com.apphance.flow.plugins.android.apphance.tasks.AddApphanceToAndroid
+import com.apphance.flow.plugins.android.apphance.tasks.AddApphance18ToAndroid
 import com.apphance.flow.plugins.android.apphance.tasks.AndroidLogsConversionTask
 import com.apphance.flow.plugins.android.apphance.tasks.ApphanceLogsConversionTask
 import com.apphance.flow.plugins.android.apphance.tasks.UploadAndroidArtifactTask
@@ -42,7 +42,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
     @Inject
     ApphanceConfiguration apphanceConf
     @Inject
-    AddApphanceToAndroid addAndroidApphance
+    AddApphance18ToAndroid addAndroidApphance
 
     @Override
     void apply(Project project) {

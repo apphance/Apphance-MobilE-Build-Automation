@@ -169,26 +169,35 @@ class AndroidManifestHelper {
         }
     }
 
+    @Deprecated
+    // TODO remove this method and replace invocations with getMainActivities
     String getMainActivityName(File projectDir) {
-        def file = new File(projectDir, ANDROID_MANIFEST)
+        getMainActivities(projectDir)[0]
+    }
+
+    List<String> getMainActivities(File projectDir, String manifestName = ANDROID_MANIFEST) {
+        def file = new File(projectDir, manifestName)
         def manifest = new XmlSlurper().parse(file)
 
         def activities = manifest.application.activity
 
-        def mainActivity = activities.find {
+        def mainActivities = activities.findAll {
             'android.intent.action.MAIN' in it.'intent-filter'.action.@'android:name'*.text() &&
                     'android.intent.category.LAUNCHER' in it.'intent-filter'.category.@'android:name'*.text()
         }
 
-        throwIfCondition(mainActivity.isEmpty(), 'Main activity could not be found!')
+        throwIfCondition(mainActivities.collect { it }.empty, 'Main activity could not be found!')
 
-        def packageName = manifest.@package.text()
-        def className = mainActivity.@'android:name'.text()
+        mainActivities.collect { mainActivity ->
 
-        packageName = className.startsWith('.') ? packageName : packageName + '.'
-        packageName = className.startsWith(packageName) ? '' : packageName
+            def packageName = manifest.@package.text()
+            def className = mainActivity.@'android:name'.text()
 
-        packageName + className
+            packageName = className.startsWith('.') ? packageName : packageName + '.'
+            packageName = className.startsWith(packageName) ? '' : packageName
+
+            packageName + className
+        }
     }
 
     private void replaceAction(def activities) {
@@ -250,7 +259,7 @@ class AndroidManifestHelper {
             def activityName = it.@'android:name'.text().toLowerCase()
             activityName.equals('com.apphance.android.ui.loginactivity') ||
                     activityName.equals('com.apphance.android.ui.problemactivity')
-        }.size() != 0
+        }
     }
 
     boolean isApphanceInstrumentationPresent(File projectDir) {

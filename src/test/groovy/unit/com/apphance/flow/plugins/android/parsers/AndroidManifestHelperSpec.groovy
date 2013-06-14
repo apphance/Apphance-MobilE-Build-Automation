@@ -191,14 +191,25 @@ class AndroidManifestHelperSpec extends Specification {
         tmpDir.deleteDir()
     }
 
-    def 'main activity name is read correctly'() {
+    def 'main activity name is read correctly deprecated method'() {
         expect:
         amh.getMainActivityName(new File('testProjects/apphance-updates/')) == 'pl.morizon.client.ui.HomeActivity'
     }
 
+    def 'main activity name is read correctly'() {
+        expect:
+        amh.getMainActivities(new File('testProjects/apphance-updates/')) == ['pl.morizon.client.ui.HomeActivity']
+    }
+
+    def 'two main activities is read correctly'() {
+        expect:
+        amh.getMainActivities(new File('src/test/resources/com/apphance/flow/android'), 'AndroidManifestTwoMainActivities.xml') ==
+                ['pl.morizon.client.ui.HomeActivity', 'pl.morizon.client.ui.SecondMainActivity']
+    }
+
     def 'exception thrown when no main activity can be found'() {
         when:
-        amh.getMainActivityName(basic)
+        amh.getMainActivities(basic)
 
         then:
         def e = thrown(GradleException)

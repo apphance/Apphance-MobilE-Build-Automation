@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto"
+          android:versionCode="86" android:versionName="1.02" package="pl.morizon.client">
+
+    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="8"/>
+
+    <application android:icon="@drawable/icon" android:label="@string/app_name"
+                 android:name="pl.morizon.client.ClientApplication" android:theme="@style/Theme.Foo">
+        <uses-library android:name="com.google.android.maps"/>
+
+        <activity android:label="@string/app_name" android:launchMode="singleTop" android:name=".ui.HomeActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="pl.morizon.action.HOME"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name="com.apphance.android.ui.ProblemActivity"
+                android:configChanges="orientation"
+                android:launchMode="singleInstance"
+                android:process="com.utest.apphance.reporteditor">
+        </activity>
+
+        <activity android:name=".ui.FavouritesActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="pl.morizon.action.FAV"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.SettingsActivity" android:screenOrientation="portrait"
+                  android:windowSoftInputMode="stateHidden|adjustResize">
+            <intent-filter>
+                <action android:name="pl.morizon.action.SETTINGS"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.OfferActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="pl.morizon.action.OFFER"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.SearchResultsListActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="pl.morizon.action.RESULTS_LIST"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.SearchResultsMapActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="pl.morizon.action.RESULTS_MAP"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.HistoryActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="pl.morizon.action.RESULTS"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.SearchActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="pl.morizon.action.SEARCH"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.AddCriterionActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="pl.morizon.action.ADD"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.SearchLocationFormActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="pl.morizon.action.LOCATION_FORM"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.SearchLocationMapActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="pl.morizon.action.LOCATION_MAP"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:configChanges="orientation" android:name=".ui.PhotoGalleryActivity">
+            <intent-filter>
+                <action android:name="pl.morizon.action.GALLERY"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:label="@string/app_name" android:name=".ui.ContainerActivity"
+                  android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="pl.morizon.action.CONTAINER"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.UnsupportedVersionActivity" android:screenOrientation="portrait"
+                  android:theme="@android:style/Theme.Translucent"/>
+    </application>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+</manifest>
