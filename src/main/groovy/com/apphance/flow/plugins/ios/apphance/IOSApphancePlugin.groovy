@@ -3,7 +3,6 @@ package com.apphance.flow.plugins.ios.apphance
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.apphance.ApphancePluginCommons
-import com.apphance.flow.plugins.ios.apphance.tasks.IOSApphanceEnhancerFactory
 import com.apphance.flow.plugins.ios.apphance.tasks.UploadIOSArtifactTask
 import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.flow.plugins.ios.release.IOSReleaseListener
@@ -27,7 +26,7 @@ class IOSApphancePlugin implements Plugin<Project> {
 
     @Inject ApphanceConfiguration apphanceConf
     @Inject IOSVariantsConfiguration variantsConf
-    @Inject IOSApphanceEnhancerFactory addIOSApphanceTaskFactory
+    @Inject IOSApphanceEnhancerFactory iosApphanceEnhancerFactory
     @Inject IOSSingleVariantBuilder builder
     @Inject IOSReleaseListener listener
 
@@ -44,7 +43,7 @@ class IOSApphancePlugin implements Plugin<Project> {
                 if (variant.apphanceMode.value in [QA, PROD, SILENT]) {
                     logger.info("Adding apphance for variant '$variant.name'")
 
-                    def addApphance = { addIOSApphanceTaskFactory.create(variant).addApphance() }
+                    def addApphance = { iosApphanceEnhancerFactory.create(variant).addApphance() }
 
                     project.tasks[variant.buildTaskName].doFirst(addApphance)
 

@@ -30,7 +30,8 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     @Override
     File defaultIcon() {
-        iconFiles.find { it.name.toLowerCase().startsWith('icon') } ?: iconFiles.find()
+        def icon = iconFiles.find { it.name.toLowerCase().startsWith('icon') } ?: iconFiles.find()
+        icon ? relativeTo(conf.rootDir.absolutePath, icon.absolutePath) : null
     }
 
     @Override

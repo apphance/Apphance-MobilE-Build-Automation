@@ -58,6 +58,8 @@ abstract class AbstractVariant extends AbstractConfiguration {
         ApphanceMode.values()*.name() as List<String>
     }
 
+    //TODO add default
+    //TODO add possible
     def apphanceLibVersion = new StringProperty(
             interactive: { apphanceConf.enabled && !(DISABLED == apphanceMode.value) },
             validator: { it?.matches('([0-9]+\\.)*[0-9]+') }

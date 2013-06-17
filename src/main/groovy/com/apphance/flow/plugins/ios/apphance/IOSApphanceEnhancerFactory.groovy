@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.apphance.tasks
+package com.apphance.flow.plugins.ios.apphance
 
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 

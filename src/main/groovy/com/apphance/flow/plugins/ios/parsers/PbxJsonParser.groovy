@@ -9,10 +9,12 @@ import static org.apache.commons.lang.StringUtils.isNotBlank
 
 class PbxJsonParser {
 
-    public static final String PBXNATIVE_TARGET = 'PBXNativeTarget'
-    public static final String PBXFILE_REFERENCE = 'PBXFileReference'
-    public static final String PBXFRAMEWORKS_BUILD_PHASE = 'PBXFrameworksBuildPhase'
-    public static final String PBXSOURCES_BUILD_PHASE = 'PBXSourcesBuildPhase'
+    public static final String PBX_NATIVE_TARGET = 'PBXNativeTarget'
+    public static final String PBX_FILE_REFERENCE = 'PBXFileReference'
+    public static final String PBX_BUILD_FILE = 'PBXBuildFile'
+    public static final String PBX_GROUP = 'PBXGroup'
+    public static final String PBX_FRAMEWORKS_BUILD_PHASE = 'PBXFrameworksBuildPhase'
+    public static final String PBX_SOURCES_BUILD_PHASE = 'PBXSourcesBuildPhase'
     public static final String INFOPLIST_FILE = 'INFOPLIST_FILE'
     public static final String XCBUILD_CONFIGURATION = 'XCBuildConfiguration'
 
@@ -33,7 +35,7 @@ class PbxJsonParser {
         def json = parsedPBX()
         def objects = json.objects
 
-        def targetObject = objects.find { it.value.isa == PBXNATIVE_TARGET && it.value.name == target }
+        def targetObject = objects.find { it.value.isa == PBX_NATIVE_TARGET && it.value.name == target }
         def buildConfigurationListKey = targetObject.value.buildConfigurationList
         def conf = findConfiguration(buildConfigurationListKey, configuration)
 
@@ -56,14 +58,14 @@ class PbxJsonParser {
         def json = parsedPBX()
         def objects = json.objects
 
-        def targetObject = objects.find { it.value.isa == PBXNATIVE_TARGET && it.key == blueprintId }
+        def targetObject = objects.find { it.value.isa == PBX_NATIVE_TARGET && it.key == blueprintId }
 
         targetObject.value.name
     }
 
     boolean isFrameworkDeclared(def frameworkNamePattern) {
         def json = parsedPBX()
-        json.objects.find { it.value.isa == PBXFILE_REFERENCE && it.value.name =~ frameworkNamePattern }
+        json.objects.find { it.value.isa == PBX_FILE_REFERENCE && it.value.name =~ frameworkNamePattern }
     }
 
     private Object parsedPBX() {

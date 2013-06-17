@@ -1,10 +1,14 @@
-package com.apphance.flow.plugins.ios.apphance.tasks
+package com.apphance.flow.plugins.ios.apphance
 
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.apphance.ApphancePluginCommons
+import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancer
+import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancerFactory
+import com.apphance.flow.plugins.ios.apphance.source.IOSApphanceSourceEnhancer
+import com.apphance.flow.plugins.ios.apphance.source.IOSApphanceSourceEnhancerFactory
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.google.inject.Inject
 import com.google.inject.assistedinject.Assisted
@@ -32,12 +36,17 @@ class IOSApphanceEnhancer {
     @Inject IOSExecutor iosExecutor
     @Inject PbxJsonParser pbxJsonParser
     @Inject IOSApphancePbxEnhancerFactory apphancePbxEnhancerFactory
+    @Inject IOSApphanceSourceEnhancerFactory apphanceSourceEnhancerFactory
 
     private AbstractIOSVariant variant
     private bundle = getBundle('validation')
     @Lazy
-    private IOSApphancePbxEnhancerOLD apphancePbxEnhancer = {
+    private IOSApphancePbxEnhancer apphancePbxEnhancer = {
         apphancePbxEnhancerFactory.create(variant)
+    }()
+    @Lazy
+    private IOSApphanceSourceEnhancer apphanceSourceEnhancer = {
+        apphanceSourceEnhancerFactory.create(variant, apphancePbxEnhancer)
     }()
 
     @Inject
@@ -49,7 +58,8 @@ class IOSApphanceEnhancer {
         if (pbxJsonParser.isFrameworkDeclared(APPHANCE_FRAMEWORK_NAME_PATTERN) || findApphanceInPath()) {
             throw new GradleException(format(bundle.getString('exception.apphance.declared'), variant.name, variant.tmpDir.absolutePath))
         } else {
-            //TODO add apphance with pbx
+            apphancePbxEnhancer.addApphanceToPbx()
+            apphanceSourceEnhancer.addApphanceToSource()
             copyApphanceFramework()
         }
     }

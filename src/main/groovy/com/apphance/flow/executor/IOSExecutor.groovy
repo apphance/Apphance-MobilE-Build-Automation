@@ -62,6 +62,13 @@ class IOSExecutor {
         ))
     }.memoize()
 
+    List<String> plistToXML(File plistJSON) {
+        executor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: "plutil -convert xml1 ${plistJSON.absolutePath} -o -".split()
+        ))
+    }
+
     List<String> mobileprovisionToXml(File mobileprovision) {
         mobileProvisionToXmlC(mobileprovision)
     }

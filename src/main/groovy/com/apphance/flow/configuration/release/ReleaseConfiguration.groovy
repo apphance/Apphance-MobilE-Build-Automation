@@ -25,9 +25,9 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     final String configurationName = 'Release configuration'
 
-    static final String OTA_DIR = 'flow-ota'
-    static final MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
-    static final ALL_EMAIL_FLAGS = [
+    public static final String OTA_DIR = 'flow-ota'
+    public static final MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
+    public static final ALL_EMAIL_FLAGS = [
             'installableSimulator',
             'qrCode',
             'imageMontage'
@@ -151,7 +151,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             name: 'release.mail.flags',
             message: 'Flags for release email',
             defaultValue: { ['qrCode', 'imageMontage'] as List<String> },
-            validator: { it?.split(',')?.every { it?.trim() in ALL_EMAIL_FLAGS } }
+            validator: { it?.split(',')?.every { it?.trim() in ReleaseConfiguration.ALL_EMAIL_FLAGS } }
     )
 
     String getMailPort() {

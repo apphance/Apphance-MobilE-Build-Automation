@@ -15,6 +15,7 @@ import spock.lang.Specification
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.ALL_EMAIL_FLAGS
+import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.getOTA_DIR
 import static com.google.common.io.Files.createTempDir
 import static org.gradle.testfixtures.ProjectBuilder.builder

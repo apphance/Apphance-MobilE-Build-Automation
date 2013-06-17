@@ -1,6 +1,5 @@
 package com.apphance.flow.configuration.ios.variants
 
-import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
@@ -29,7 +28,6 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty
 abstract class AbstractIOSVariant extends AbstractVariant {
 
     @Inject IOSReleaseConfiguration releaseConf
-    @Inject ApphanceConfiguration apphanceConf
     @Inject PlistParser plistParser
     @Inject PbxJsonParser pbxJsonParser
     @Inject PropertyReader reader
@@ -72,7 +70,8 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     @PackageScope
     List<File> possibleMobileProvisionFiles() {
-        releaseConf.findMobileProvisionFiles().collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath) }
+        def mp = releaseConf.findMobileProvisionFiles()
+        mp ? mp.collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath) } : []
     }
 
     def mode = new IOSBuildModeProperty(
@@ -162,7 +161,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     @Override
     void checkProperties() {
         check versionCode.matches('[0-9]+'), """|Property 'versionCode' must have numerical value! Check 'version.code'
-                                                |system property or 'VERSION_STRING' env variable
+                                                |system property or 'VERSION_CODE' env variable
                                                 |or $plist.absolutePath file!""".stripMargin()
         check((isNotEmpty(versionString) && !WHITESPACE_PATTERN.matcher(versionString).find()), """|Property 'versionString' must not have
                                                                     |whitespace characters! Check 'version.string'
