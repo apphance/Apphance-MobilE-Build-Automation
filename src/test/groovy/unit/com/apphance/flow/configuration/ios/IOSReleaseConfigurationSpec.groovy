@@ -4,6 +4,7 @@ import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PlistParser
+import com.google.common.io.Files
 import org.gradle.api.Project
 import spock.lang.Specification
 
@@ -74,5 +75,26 @@ class IOSReleaseConfigurationSpec extends Specification {
 
         where:
         notMatching << ['con.png', 'icoan.png', 'icon.jpg', 'icon', 'ico.png']
+    }
+
+    def 'non existing icon handled'() {
+        given:
+        def rootDir = Files.createTempDir()
+
+        and:
+        def releaseConf = new IOSReleaseConfiguration(conf: GroovyStub(IOSConfiguration) {
+            getRootDir() >> rootDir
+        })
+
+        when:
+        releaseConf.defaultIcon()
+        def value = releaseConf.iconFile.defaultValue()
+
+        then:
+        noExceptionThrown()
+        value == null
+
+        cleanup:
+        rootDir.deleteDir()
     }
 }

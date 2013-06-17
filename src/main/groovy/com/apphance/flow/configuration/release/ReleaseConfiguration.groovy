@@ -81,7 +81,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             name: 'release.icon',
             message: 'Path to project\'s icon file, must be relative to the root dir of project',
             required: { true },
-            defaultValue: { relativeTo(conf.rootDir.absolutePath, defaultIcon().absolutePath) },
+            defaultValue: { defaultIcon() ? relativeTo(conf.rootDir.absolutePath, defaultIcon().absolutePath) : null },
             possibleValues: { possibleIcons() },
             validator: {
                 if (!it) return false
