@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.android.parsers
 
-import android.Manifest
 import com.apphance.flow.util.Preconditions
+import groovy.util.slurpersupport.FilteredNodeChildren
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
@@ -68,7 +68,7 @@ class AndroidManifestHelper {
         def manifest = new XmlSlurper(false, false).parse(file)
         def packageName = manifest.@package
 
-        throwIfCondition((packageName != oldPkg && packageName != newPkg), "Package to replace in manifest is: " +
+        throwIfConditionTrue((packageName != oldPkg && packageName != newPkg), "Package to replace in manifest is: " +
                 "'$packageName' and not expected: '$oldPkg' (neither target: '$newPkg'). This must be wrong.")
 
         logger.lifecycle("Replacing package: '$packageName' with new package: '$newPkg'")
@@ -189,32 +189,44 @@ class AndroidManifestHelper {
     @Deprecated
     // TODO remove this method and replace invocations with getMainActivities
     String getMainActivityName(File projectDir) {
-        getMainActivities(projectDir)[0]
+        getMainActivitiesFromProject(projectDir)[0]
     }
 
-    List<String> getMainActivities(File projectDir, String manifestName = ANDROID_MANIFEST) {
-        def file = new File(projectDir, manifestName)
-        def manifest = new XmlSlurper().parse(file)
+    List<String> getMainActivitiesFromProject(File projectDir, String manifestName = ANDROID_MANIFEST) {
+        def manifestFile = new File(projectDir, manifestName)
+        getMainActivities(manifestFile)
+    }
+
+    List<String> getMainActivities(File manifestFile) {
+        def manifest = new XmlSlurper().parse(manifestFile)
 
         def activities = manifest.application.activity
+        def activityAliases = manifest.application.'activity-alias'
 
-        def mainActivities = activities.findAll {
+        Closure<Boolean> mainActivityFilter = {
             'android.intent.action.MAIN' in it.'intent-filter'.action.@'android:name'*.text() &&
                     'android.intent.category.LAUNCHER' in it.'intent-filter'.category.@'android:name'*.text()
         }
+        FilteredNodeChildren mainActivities = activities.findAll(mainActivityFilter)
+        FilteredNodeChildren mainAliasActivities = activityAliases.findAll(mainActivityFilter)
 
-        throwIfCondition(mainActivities.collect { it }.empty, 'Main activity could not be found!')
+        logger.info("Found main activities: ${mainActivities.size()}, main alias activities: ${mainAliasActivities.size()}")
 
-        mainActivities.collect { mainActivity ->
+        throwIfConditionTrue(!(mainActivities.size() + mainAliasActivities.size()), 'Main activity could not be found!')
 
-            def packageName = manifest.@package.text()
-            def className = mainActivity.@'android:name'.text()
+        mainActivities.collect { nodeToClassName(manifest, it) } + mainAliasActivities.collect { nodeToClassName(manifest, it) }
+    }
 
-            packageName = className.startsWith('.') ? packageName : packageName + '.'
-            packageName = className.startsWith(packageName) ? '' : packageName
+    String nodeToClassName(GPathResult manifest, GPathResult mainActivity) {
+        assert mainActivity.name() in ['activity', 'activity-alias']
 
-            packageName + className
-        }
+        def packageName = manifest.@package.text()
+        def className = mainActivity.name() == 'activity' ? mainActivity.@'android:name'.text() : mainActivity.@'android:targetActivity'.text()
+
+        packageName = className.startsWith('.') ? packageName : packageName + '.'
+        packageName = className.startsWith(packageName) ? '' : packageName
+
+        packageName + className
     }
 
     private void replaceAction(def activities) {
@@ -298,5 +310,9 @@ class AndroidManifestHelper {
         file.delete()
         file << originalFile.text
         originalFile.delete()
+    }
+
+    List<File> getSourcesOf(File projDir, List<String> classes) {
+        classes.collect { new File(projDir, "src/${it.replace('.', '/')}.java") }
     }
 }

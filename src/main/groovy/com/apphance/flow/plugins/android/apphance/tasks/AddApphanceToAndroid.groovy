@@ -4,6 +4,10 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantConfigurat
 import com.apphance.flow.configuration.apphance.ApphanceMode
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import com.apphance.flow.util.FlowUtils
+import com.thoughtworks.qdox.JavaDocBuilder
+import com.thoughtworks.qdox.model.JavaClass
+import com.thoughtworks.qdox.model.JavaField
+import com.thoughtworks.qdox.model.Type
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.GradleException
 
@@ -34,7 +38,7 @@ class AddApphanceToAndroid {
 
         addReportActivityToManifest()
         addPermisions()
-        // Add 'Apphance.startNewSession(...)' call to the main activity
+        addStartNewSessionToAllMainActivities()
         // Add 'Apphance.setCurrentActitivity(this);' to each activity you want to check with Apphance
     }
 
@@ -60,6 +64,31 @@ class AddApphanceToAndroid {
         withManifest(variantDir) { GPathResult manifest ->
             addPermissionsToManifest(manifest, INTERNET, READ_PHONE_STATE, GET_TASKS, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE,
                     ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION, BLUETOOTH)
+        }
+    }
+
+    def addStartNewSessionToAllMainActivities() {
+        List<String> classes = getMainActivitiesFromProject(variantDir)
+        List<File> sourceFiles = getSourcesOf(variantDir, classes)
+
+        sourceFiles.each {
+            JavaDocBuilder builder = new JavaDocBuilder()
+            builder.addSource(it)
+            JavaClass activity = builder.getClasses().find()
+            assert activity
+
+            // public static final String APP_KEY = "apphanceAppKey";
+            JavaField appKey = new JavaField(new Type('String'), 'APP_KEY')
+            appKey.setModifiers('public', 'static', 'final')
+            appKey.setInitializationExpression("\"$apphanceAppKey\"")
+            activity.addField(appKey)
+
+            // Apphance.startNewSession(this, APP_KEY, Mode.QA);
+            def onCreate = activity.getMethodBySignature('onCreate', [new Type('android.os.Bundle')] as Type[])
+            assert onCreate
+            onCreate.setSourceCode(onCreate.sourceCode + '\nApphance.startNewSession(this, APP_KEY, Mode.QA);\n')
+
+            it.setText(activity.source.toString())
         }
     }
 }

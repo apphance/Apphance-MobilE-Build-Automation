@@ -100,7 +100,7 @@ class CommandExecutor {
     }
 
     private void handleExitValue(Integer exitValue, Command c) {
-        throwIfCondition(
+        throwIfConditionTrue(
                 (exitValue != 0 && c.failOnError),
                 "Error while executing: '${c.commandForPublic}', in dir: '${c.runDir}', " +
                         "exit value: '${exitValue}'"

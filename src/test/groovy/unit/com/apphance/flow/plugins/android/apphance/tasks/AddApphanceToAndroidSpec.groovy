@@ -86,4 +86,23 @@ class AddApphanceToAndroidSpec extends Specification {
                 [INTERNET, CHANGE_WIFI_STATE, READ_PHONE_STATE, GET_TASKS, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE, ACCESS_COARSE_LOCATION,
                         ACCESS_FINE_LOCATION, BLUETOOTH]
     }
+
+    def 'test addStartNewSessionToAllMainActivities'() {
+        given:
+        File mainActivity = new File(variantDir, 'src/com/apphance/flowTest/android/TestActivity.java')
+        def appKeyCond = { mainActivity.text.contains('public static final String APP_KEY = "TestKey";') }
+        def startNewSessionCond = { mainActivity.text.contains('Apphance.startNewSession(this, APP_KEY, Mode.QA);') }
+
+        expect:
+        mainActivity.exists()
+        !appKeyCond()
+        !startNewSessionCond()
+
+        when:
+        addApphanceToAndroid.addStartNewSessionToAllMainActivities()
+
+        then:
+        appKeyCond()
+        startNewSessionCond()
+    }
 }

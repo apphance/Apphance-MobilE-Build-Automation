@@ -16,16 +16,16 @@ class AndroidManifestHelperSpec extends Specification {
     @Shared
     def noApphanceApplication = new File('testProjects/android/android-no-apphance-application')
     @Shared
-    def amh = new AndroidManifestHelper()
+    def androidManifestHelper = new AndroidManifestHelper()
 
     def 'package is read correctly'() {
         expect:
-        amh.androidPackage(basic) == 'com.apphance.flowTest.android'
+        androidManifestHelper.androidPackage(basic) == 'com.apphance.flowTest.android'
     }
 
     def 'version is read correctly'() {
         given:
-        def versionDetails = amh.readVersion(basic)
+        def versionDetails = androidManifestHelper.readVersion(basic)
 
         expect:
         versionDetails.versionString == '1.0.1'
@@ -34,7 +34,7 @@ class AndroidManifestHelperSpec extends Specification {
 
     def 'project icon is found'() {
         expect:
-        'icon' == amh.readIcon(basic)
+        'icon' == androidManifestHelper.readIcon(basic)
     }
 
     def 'version is updated and read correctly'() {
@@ -49,14 +49,14 @@ class AndroidManifestHelperSpec extends Specification {
         def versionCode = '3145'
 
         expect:
-        !(amh.readVersion(basic).versionString == versionString)
-        !(amh.readVersion(basic).versionCode == versionCode)
+        !(androidManifestHelper.readVersion(basic).versionString == versionString)
+        !(androidManifestHelper.readVersion(basic).versionCode == versionCode)
 
         when:
-        amh.updateVersion(tmpDir, versionString, versionCode)
+        androidManifestHelper.updateVersion(tmpDir, versionString, versionCode)
 
         then:
-        def versionDetails = amh.readVersion(tmpDir)
+        def versionDetails = androidManifestHelper.readVersion(tmpDir)
         versionDetails.versionString == versionString
         versionDetails.versionCode == versionCode
 
@@ -79,17 +79,17 @@ class AndroidManifestHelperSpec extends Specification {
         !(getLabel(tmpManifest) == newLbl)
 
         when:
-        amh.replacePackage(tmpDir, 'com.apphance.flowTest.android', newPkg, newLbl)
+        androidManifestHelper.replacePackage(tmpDir, 'com.apphance.flowTest.android', newPkg, newLbl)
 
         then:
-        amh.androidPackage(tmpDir) == newPkg
+        androidManifestHelper.androidPackage(tmpDir) == newPkg
         getLabel(tmpManifest) == expectedLbl
 
         cleanup:
         tmpDir.deleteDir()
 
         where:
-        newPkg                               | newLbl                 | expectedLbl
+        newPkg                              | newLbl                 | expectedLbl
         'com.apphance.flowTest.android.new' | null                   | '@string/app_name'
         'com.apphance.flowTest.android.new' | '@string/app_name_new' | '@string/app_name_new'
     }
@@ -100,7 +100,7 @@ class AndroidManifestHelperSpec extends Specification {
 
     def 'exception is thrown on bad package'() {
         when:
-        amh.replacePackage(basic, 'sample1', 'sample2')
+        androidManifestHelper.replacePackage(basic, 'sample1', 'sample2')
 
         then:
         def e = thrown(GradleException)
@@ -123,7 +123,7 @@ class AndroidManifestHelperSpec extends Specification {
         })
 
         when:
-        amh.addPermissions(tmpDir, ACCESS_MOCK_LOCATION)
+        androidManifestHelper.addPermissions(tmpDir, ACCESS_MOCK_LOCATION)
 
         then:
         parsedManifest(tmpManifest).'uses-permission'.@'android:name'.find {
@@ -145,11 +145,11 @@ class AndroidManifestHelperSpec extends Specification {
         copy(new File(noApphanceApplication, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), tmpManifest)
 
         expect:
-        !amh.isApphanceActivityPresent(tmpDir)
-        !amh.isApphanceInstrumentationPresent(tmpDir)
+        !androidManifestHelper.isApphanceActivityPresent(tmpDir)
+        !androidManifestHelper.isApphanceInstrumentationPresent(tmpDir)
 
         when:
-        amh.addApphance(tmpDir)
+        androidManifestHelper.addApphance(tmpDir)
 
         then:
         def manifest = parsedManifest(tmpManifest)
@@ -194,23 +194,29 @@ class AndroidManifestHelperSpec extends Specification {
 
     def 'main activity name is read correctly deprecated method'() {
         expect:
-        amh.getMainActivityName(new File('testProjects/apphance-updates/')) == 'pl.morizon.client.ui.HomeActivity'
+        androidManifestHelper.getMainActivityName(new File('testProjects/apphance-updates/')) == 'pl.morizon.client.ui.HomeActivity'
     }
 
     def 'main activity name is read correctly'() {
         expect:
-        amh.getMainActivities(new File('testProjects/apphance-updates/')) == ['pl.morizon.client.ui.HomeActivity']
+        androidManifestHelper.getMainActivitiesFromProject(new File('testProjects/apphance-updates/')) == ['pl.morizon.client.ui.HomeActivity']
     }
 
     def 'two main activities is read correctly'() {
         expect:
-        amh.getMainActivities(new File('src/test/resources/com/apphance/flow/android'), 'AndroidManifestTwoMainActivities.xml') ==
-                ['pl.morizon.client.ui.HomeActivity', 'pl.morizon.client.ui.SecondMainActivity']
+        androidManifestHelper.getMainActivitiesFromProject(new File('src/test/resources/com/apphance/flow/android'), 'ManifestWithTwoMainActivitiesOneInAlias.xml') ==
+                ['com.apphance.flowTest.android.ui.SecondMainActivity', 'com.apphance.flowTest.android.TestActivity']
+    }
+
+    def 'alias main activities is read correctly'() {
+        expect:
+        androidManifestHelper.getMainActivitiesFromProject(new File('src/test/resources/com/apphance/flow/android'), 'ManifestWithTwoMainActivitiesOneInAlias.xml') ==
+                ['com.apphance.flowTest.android.ui.SecondMainActivity', 'com.apphance.flowTest.android.TestActivity']
     }
 
     def 'exception thrown when no main activity can be found'() {
         when:
-        amh.getMainActivities(basic)
+        androidManifestHelper.getMainActivities(new File('src/test/resources/com/apphance/flow/android/AndroidManifestWithoutMainActivity.xml'))
 
         then:
         def e = thrown(GradleException)
@@ -219,7 +225,7 @@ class AndroidManifestHelperSpec extends Specification {
 
     def 'application name is read correctly'() {
         expect:
-        amh.getApplicationName(dir) == expectedName
+        androidManifestHelper.getApplicationName(dir) == expectedName
 
         where:
         dir                   | expectedName
@@ -229,7 +235,7 @@ class AndroidManifestHelperSpec extends Specification {
 
     def 'apphance activity is not found'() {
         expect:
-        !amh.isApphanceActivityPresent(basic)
+        !androidManifestHelper.isApphanceActivityPresent(basic)
     }
 
     def 'apphance activity is found'() {
@@ -243,13 +249,13 @@ class AndroidManifestHelperSpec extends Specification {
         copy(new File(noApphanceApplication, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), tmpManifest)
 
         expect:
-        !amh.isApphanceActivityPresent(tmpDir)
+        !androidManifestHelper.isApphanceActivityPresent(tmpDir)
 
         when:
-        amh.addApphance(tmpDir)
+        androidManifestHelper.addApphance(tmpDir)
 
         then:
-        amh.isApphanceActivityPresent(tmpDir)
+        androidManifestHelper.isApphanceActivityPresent(tmpDir)
 
         cleanup:
         tmpDir.deleteDir()
@@ -266,16 +272,27 @@ class AndroidManifestHelperSpec extends Specification {
         copy(new File(noApphanceApplication, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), tmpManifest)
 
         expect:
-        !amh.isApphanceInstrumentationPresent(tmpDir)
+        !androidManifestHelper.isApphanceInstrumentationPresent(tmpDir)
 
         when:
-        amh.addApphance(tmpDir)
+        androidManifestHelper.addApphance(tmpDir)
 
         then:
-        amh.isApphanceInstrumentationPresent(tmpDir)
+        androidManifestHelper.isApphanceInstrumentationPresent(tmpDir)
 
         cleanup:
         tmpDir.deleteDir()
+    }
+
+    def 'test getSourcesOf'() {
+        when:
+        def files = androidManifestHelper.getSourcesOf(basic, ['com.apphance.flowTest.android.TestActivity', 'com.apphance.flowTest.android.AnotherActivity'])
+
+        then:
+        files
+        files.size() == 2
+        files.every { it.exists() }
+        files.collect { it.name } == ['TestActivity.java', 'AnotherActivity.java']
     }
 
     private GPathResult parsedManifest(File manifest) {

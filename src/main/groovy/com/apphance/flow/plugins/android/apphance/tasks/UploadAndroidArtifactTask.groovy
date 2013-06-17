@@ -51,7 +51,7 @@ class UploadAndroidArtifactTask extends DefaultTask {
 
             def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false, ['apk', 'image_montage'])
             logger.debug("Upload version query response: ${response.statusLine}")
-            throwIfCondition(!response.entity, "Error while uploading version query, empty response received")
+            throwIfConditionTrue(!response.entity, "Error while uploading version query, empty response received")
 
             def resp = new JsonSlurper().parseText(response.entity.content.text)
 
