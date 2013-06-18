@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.android.apphance.tasks
 
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceMode
+import com.apphance.flow.util.FlowUtils
 import com.google.common.io.Files
 import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.io.FileUtils
@@ -10,6 +11,7 @@ import spock.lang.Specification
 import static android.Manifest.permission.*
 import static org.apache.commons.io.FileUtils.copyFile
 
+@Mixin(FlowUtils)
 class AddApphanceToAndroidSpec extends Specification {
 
     def androidVariantConf = new AndroidVariantConfiguration('test variant')
@@ -104,5 +106,25 @@ class AddApphanceToAndroidSpec extends Specification {
         then:
         appKeyCond()
         startNewSessionCond()
+    }
+
+    def 'test addStartStopInvocations'() {
+        given:
+        File activity = new File(variantDir, 'src/com/apphance/flowTest/android/TestActivity.java')
+
+        when:
+        addApphanceToAndroid.addStartStopInvocations(activity)
+
+        then:
+        activity.text.contains('Apphance.onStart(this);')
+        activity.text.contains('Apphance.onStop(this);')
+        println activity.text
+
+        removeWhitespace(activity.text).contains(removeWhitespace("""
+            |protected void onStart() {
+            |    super.onStart();
+            |    Apphance.onStart(this);
+            |}
+            |""".stripMargin()))
     }
 }

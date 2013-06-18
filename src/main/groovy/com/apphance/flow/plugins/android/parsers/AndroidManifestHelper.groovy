@@ -197,6 +197,10 @@ class AndroidManifestHelper {
         getActivities(manifestFile, MAIN_ACTIVITY_FILTER)
     }
 
+    File getManifest(File projectDir, String manifestName = ANDROID_MANIFEST) {
+        new File(projectDir, manifestName)
+    }
+
     public static Closure<Boolean> MAIN_ACTIVITY_FILTER = {
         'android.intent.action.MAIN' in it.'intent-filter'.action.@'android:name'*.text() &&
                 'android.intent.category.LAUNCHER' in it.'intent-filter'.category.@'android:name'*.text()
