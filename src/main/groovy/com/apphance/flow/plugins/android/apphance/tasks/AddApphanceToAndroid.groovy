@@ -68,7 +68,7 @@ class AddApphanceToAndroid {
     }
 
     def addStartNewSessionToAllMainActivities() {
-        List<String> classes = getMainActivitiesFromProject(variantDir)
+        Collection<String> classes = getMainActivitiesFromProject(variantDir)
         List<File> sourceFiles = getSourcesOf(variantDir, classes)
 
         sourceFiles.each {
