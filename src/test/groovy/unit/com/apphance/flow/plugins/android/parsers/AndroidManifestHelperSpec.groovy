@@ -6,6 +6,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import static android.Manifest.permission.ACCESS_MOCK_LOCATION
+import static com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.MAIN_ACTIVITY_FILTER
 import static com.google.common.io.Files.copy
 import static com.google.common.io.Files.createTempDir
 
@@ -199,24 +200,24 @@ class AndroidManifestHelperSpec extends Specification {
 
     def 'main activity name is read correctly'() {
         expect:
-        androidManifestHelper.getMainActivitiesFromProject(new File('testProjects/apphance-updates/')) == ['pl.morizon.client.ui.HomeActivity']
+        androidManifestHelper.getMainActivitiesFromProject(new File('testProjects/apphance-updates/')) == ['pl.morizon.client.ui.HomeActivity'] as Set
     }
 
     def 'two main activities is read correctly'() {
         expect:
         androidManifestHelper.getMainActivitiesFromProject(new File('src/test/resources/com/apphance/flow/android'), 'ManifestWithTwoMainActivitiesOneInAlias.xml') ==
-                ['com.apphance.flowTest.android.ui.SecondMainActivity', 'com.apphance.flowTest.android.TestActivity']
+                ['com.apphance.flowTest.android.ui.SecondMainActivity', 'com.apphance.flowTest.android.TestActivity'] as Set
     }
 
     def 'alias main activities is read correctly'() {
         expect:
         androidManifestHelper.getMainActivitiesFromProject(new File('src/test/resources/com/apphance/flow/android'), 'ManifestWithTwoMainActivitiesOneInAlias.xml') ==
-                ['com.apphance.flowTest.android.ui.SecondMainActivity', 'com.apphance.flowTest.android.TestActivity']
+                ['com.apphance.flowTest.android.ui.SecondMainActivity', 'com.apphance.flowTest.android.TestActivity'] as Set
     }
 
     def 'exception thrown when no main activity can be found'() {
         when:
-        androidManifestHelper.getMainActivities(new File('src/test/resources/com/apphance/flow/android/AndroidManifestWithoutMainActivity.xml'))
+        androidManifestHelper.getActivities(new File('src/test/resources/com/apphance/flow/android/AndroidManifestWithoutMainActivity.xml'), MAIN_ACTIVITY_FILTER)
 
         then:
         def e = thrown(GradleException)

@@ -18,7 +18,7 @@ import static android.Manifest.permission.READ_PHONE_STATE
 @Mixin(Preconditions)
 class AndroidManifestHelper {
 
-    def logger = Logging.getLogger(getClass())
+    private def logger = Logging.getLogger(getClass())
 
     static final String ANDROID_MANIFEST = 'AndroidManifest.xml'
 
@@ -189,32 +189,33 @@ class AndroidManifestHelper {
     @Deprecated
     // TODO remove this method and replace invocations with getMainActivities
     String getMainActivityName(File projectDir) {
-        getMainActivitiesFromProject(projectDir)[0]
+        getMainActivitiesFromProject(projectDir).find()
     }
 
-    List<String> getMainActivitiesFromProject(File projectDir, String manifestName = ANDROID_MANIFEST) {
+    Collection<String> getMainActivitiesFromProject(File projectDir, String manifestName = ANDROID_MANIFEST) {
         def manifestFile = new File(projectDir, manifestName)
-        getMainActivities(manifestFile)
+        getActivities(manifestFile, MAIN_ACTIVITY_FILTER)
     }
 
-    List<String> getMainActivities(File manifestFile) {
+    public static Closure<Boolean> MAIN_ACTIVITY_FILTER = {
+        'android.intent.action.MAIN' in it.'intent-filter'.action.@'android:name'*.text() &&
+                'android.intent.category.LAUNCHER' in it.'intent-filter'.category.@'android:name'*.text()
+    }
+
+    Set<String> getActivities(File manifestFile, Closure<Boolean> filter = { true }) {
         def manifest = new XmlSlurper().parse(manifestFile)
 
         def activities = manifest.application.activity
         def activityAliases = manifest.application.'activity-alias'
 
-        Closure<Boolean> mainActivityFilter = {
-            'android.intent.action.MAIN' in it.'intent-filter'.action.@'android:name'*.text() &&
-                    'android.intent.category.LAUNCHER' in it.'intent-filter'.category.@'android:name'*.text()
-        }
-        FilteredNodeChildren mainActivities = activities.findAll(mainActivityFilter)
-        FilteredNodeChildren mainAliasActivities = activityAliases.findAll(mainActivityFilter)
+        FilteredNodeChildren mainActivities = activities.findAll(filter)
+        FilteredNodeChildren mainAliasActivities = activityAliases.findAll(filter)
 
         logger.info("Found main activities: ${mainActivities.size()}, main alias activities: ${mainAliasActivities.size()}")
 
         throwIfConditionTrue(!(mainActivities.size() + mainAliasActivities.size()), 'Main activity could not be found!')
 
-        mainActivities.collect { nodeToClassName(manifest, it) } + mainAliasActivities.collect { nodeToClassName(manifest, it) }
+        mainActivities.collect { nodeToClassName(manifest, it) } + mainAliasActivities.collect { nodeToClassName(manifest, it) } as Set
     }
 
     String nodeToClassName(GPathResult manifest, GPathResult mainActivity) {
@@ -312,7 +313,7 @@ class AndroidManifestHelper {
         originalFile.delete()
     }
 
-    List<File> getSourcesOf(File projDir, List<String> classes) {
+    List<File> getSourcesOf(File projDir, Collection<String> classes) {
         classes.collect { new File(projDir, "src/${it.replace('.', '/')}.java") }
     }
 }
