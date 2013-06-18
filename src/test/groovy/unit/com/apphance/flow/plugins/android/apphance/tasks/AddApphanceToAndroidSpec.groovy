@@ -1,5 +1,6 @@
 package com.apphance.flow.plugins.android.apphance.tasks
 
+import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceMode
 import com.apphance.flow.util.FlowUtils
@@ -11,7 +12,7 @@ import spock.lang.Specification
 import static android.Manifest.permission.*
 import static org.apache.commons.io.FileUtils.copyFile
 
-@Mixin(FlowUtils)
+@Mixin([FlowUtils, TestUtils])
 class AddApphanceToAndroidSpec extends Specification {
 
     def androidVariantConf = new AndroidVariantConfiguration('test variant')
@@ -36,7 +37,7 @@ class AddApphanceToAndroidSpec extends Specification {
 
     def 'test checkIfApphancePresent startNewSession'() {
         given:
-        copyFile(new File('src/test/resources/com/apphance/flow/android/TestActivity.java.txt'), new File(variantDir,
+        copyFile(new File('src/test/resources/com/apphance/flow/android/TestActivity.java'), new File(variantDir,
                 'src/com/apphance/flowTest/android/TestActivity.java'))
 
         expect:
@@ -109,22 +110,35 @@ class AddApphanceToAndroidSpec extends Specification {
     }
 
     def 'test addStartStopInvocations'() {
-        given:
-        File activity = new File(variantDir, 'src/com/apphance/flowTest/android/TestActivity.java')
-
         when:
         addApphanceToAndroid.addStartStopInvocations(activity)
 
         then:
-        activity.text.contains('Apphance.onStart(this);')
-        activity.text.contains('Apphance.onStop(this);')
-        println activity.text
-
         removeWhitespace(activity.text).contains(removeWhitespace("""
             |protected void onStart() {
             |    super.onStart();
             |    Apphance.onStart(this);
             |}
             |""".stripMargin()))
+
+        removeWhitespace(activity.text).contains(removeWhitespace("""
+            |protected void onStop() {
+            |    super.onStop();
+            |    Apphance.onStop(this);
+            |}
+            |""".stripMargin()))
+
+        where:
+        activity                                                                                               | _
+        tempFile << new File('src/test/resources/com/apphance/flow/android/TestActivity.java').text            | _
+        tempFile << new File('src/test/resources/com/apphance/flow/android/TestActivityWithOnStart.java').text | _
+    }
+
+    def 'test get public class activity'() {
+        given:
+        def file = new File('src/test/resources/com/apphance/flow/android/TestActivityManyClasses.java')
+
+        expect:
+        addApphanceToAndroid.getActivity(file).name == 'TestActivityManyClasses'
     }
 }

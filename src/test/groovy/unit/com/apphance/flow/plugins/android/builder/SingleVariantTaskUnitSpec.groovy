@@ -28,13 +28,13 @@ class SingleVariantTaskUnitSpec extends Specification {
         builderInfo = GroovyStub(AndroidBuilderInfo) {
             getTmpDir() >> tempDir
             getMode() >> AndroidBuildMode.DEBUG
-            getOriginalFile() >> createTempFile()
+            getOriginalFile() >> getTempFile()
         }
         with(task) {
             artifactProvider = GroovyStub(AndroidArtifactProvider) {
                 builderInfo(_) >> builderInfo
                 artifact(_) >> GroovyStub(FlowArtifact) {
-                    getLocation() >> createTempFile()
+                    getLocation() >> getTempFile()
                 }
             }
 

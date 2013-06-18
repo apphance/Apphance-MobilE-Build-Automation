@@ -14,7 +14,7 @@ class TestUtils {
         project.task(name, type: type) as T
     }
 
-    File createTempFile() {
+    File getTempFile() {
         createTempFile('prefix', 'suffix')
     }
 }

@@ -101,7 +101,8 @@ class AddApphanceToAndroid {
         }
     }
 
-    private JavaClass getActivity(File activityFile) {
+    @PackageScope
+    JavaClass getActivity(File activityFile) {
         JavaDocBuilder builder = new JavaDocBuilder()
         builder.addSource(activityFile)
         JavaClass activity = builder.getClasses().find { 'public' in it.modifiers }
@@ -113,15 +114,12 @@ class AddApphanceToAndroid {
     void addApphanceToOnStartAndOnStopMethodsInAllActivities() {
         Set<String> activityNames = getActivities(getManifest(variantDir))
         List<File> activityFiles = getSourcesOf(variantDir, activityNames)
-
-        activityFiles.each {
-            logger.info "Adding onStart and onStop invocation to ${it.name}"
-            addStartStopInvocations(it)
-        }
+        activityFiles.each { addStartStopInvocations(it) }
     }
 
     @PackageScope
     void addStartStopInvocations(File file) {
+        logger.info "Adding onStart and onStop invocation to ${file.name}"
         JavaClass activity = getActivity(file)
         [ON_START, ON_STOP].each { String methodName ->
             def method = activity.getMethodBySignature(methodName)
@@ -130,7 +128,7 @@ class AddApphanceToAndroid {
                 method.sourceCode += apphanceInvocation
             } else {
                 method = new JavaMethod(VOID, methodName)
-                method.sourceCode = 'super.onStart();\n' + apphanceInvocation
+                method.sourceCode = "super.$methodName();\n" + apphanceInvocation
                 method.setModifiers(['protected'] as String[])
                 activity.addMethod method
             }

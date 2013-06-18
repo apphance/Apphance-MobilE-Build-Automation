@@ -133,18 +133,9 @@ configure(install.repositories.mavenInstaller) {
 }
 
 sourceSets {
-    testUnit {
-        groovy.srcDirs = [file('src/test/groovy/unit')]
-        resources.srcDirs = [file('src/test/resources')]
-    }
-    testIntegration {
-        groovy.srcDirs = [file('src/test/groovy/integration')]
-        resources.srcDirs = [file('src/test/resources')]
-    }
-    testFunctional {
-        groovy.srcDirs = [file('src/test/groovy/functional')]
-        resources.srcDirs = [file('src/test/resources')]
-    }
+    testUnit.groovy.srcDirs = ['src/test/groovy/unit']
+    testIntegration.groovy.srcDirs = ['src/test/groovy/integration']
+    testFunctional.groovy.srcDirs = ['src/test/groovy/functional']
 }
 
 dependencies {
@@ -241,7 +232,6 @@ idea {
                 file('src/test/groovy/unit'),
                 file('src/test/groovy/integration'),
                 file('src/test/groovy/functional'),
-                file('src/test/resources'),
         ]
     }
 }
