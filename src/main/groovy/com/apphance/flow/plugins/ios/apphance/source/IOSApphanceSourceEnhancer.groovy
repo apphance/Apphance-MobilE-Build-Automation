@@ -54,7 +54,7 @@ class IOSApphanceSourceEnhancer {
     }
 
     private String getApphanceFrameworkName() {
-        libForMode(variant.apphanceMode.value).groupName.replace('p', 'P')
+        "Apphance-${libForMode(variant.apphanceMode.value).groupName.replace('p', 'P')}"
     }
 
     void addApphanceInit() {

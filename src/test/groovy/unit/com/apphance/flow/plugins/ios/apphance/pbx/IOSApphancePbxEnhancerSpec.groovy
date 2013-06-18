@@ -46,7 +46,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         enhancer.filesToReplaceLogs.size() > 0
     }
 
-    @Ignore('this test hangs in Jenkins ??? ')
+    @Ignore('this test hangs in Jenkins ???')
     def 'apphance is added to pbx'() {
         given:
         def tmpDir = createTempDir()
@@ -126,7 +126,15 @@ class IOSApphancePbxEnhancerSpec extends Specification {
 
         and:
         def frameworks = json.objects.findAll { it.value.isa == PBX_FILE_REFERENCE }*.value.name
-        frameworks.containsAll(['Apphance-Pre-Production.framework', 'Security.framework', 'AudioToolbox.framework', 'CoreLocation.framework', 'QuartzCore.framework', 'SystemConfiguration.framework', 'CoreTelephony.framework'])
+        frameworks.containsAll([
+                'Apphance-Pre-Production.framework',
+                'Security.framework',
+                'AudioToolbox.framework',
+                'CoreLocation.framework',
+                'QuartzCore.framework',
+                'SystemConfiguration.framework',
+                'CoreTelephony.framework']
+        )
 
         and:
         json.objects.findAll { it.key.length() > 24 }.size() == 14
