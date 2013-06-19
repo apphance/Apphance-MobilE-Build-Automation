@@ -28,6 +28,7 @@ class AddApphanceToAndroid {
     final String apphanceAppKey
     final ApphanceMode apphanceMode
 
+    private static final String IMPORT_APPHANCE = 'com.apphance.android.Apphance'
     private static final String ON_START = 'onStart'
     private static final String ON_STOP = 'onStop'
 
@@ -46,7 +47,7 @@ class AddApphanceToAndroid {
         addProblemActivityToManifest()
         addPermisions()
         addStartNewSessionToAllMainActivities()
-        addApphanceToOnStartAndOnStopMethodsInAllActivities()
+        addApphanceImportsAndStartStopMethodsInAllActivities()
     }
 
     @PackageScope
@@ -111,10 +112,14 @@ class AddApphanceToAndroid {
     }
 
     @PackageScope
-    void addApphanceToOnStartAndOnStopMethodsInAllActivities() {
+    void addApphanceImportsAndStartStopMethodsInAllActivities() {
         Set<String> activityNames = getActivities(getManifest(variantDir))
         List<File> activityFiles = getSourcesOf(variantDir, activityNames)
-        activityFiles.each { addStartStopInvocations(it) }
+        activityFiles.each {
+            convertLogToApphance(it)
+            addApphanceImportTo(it)
+            addStartStopInvocations(it)
+        }
     }
 
     @PackageScope
@@ -143,7 +148,16 @@ class AddApphanceToAndroid {
         logger.info "Adding Apphance import to ${file.name}"
 
         JavaClass activity = getActivity(file)
-        activity.getSource().addImport 'com.apphance.android.Apphance'
+        if (!(IMPORT_APPHANCE in activity.getSource().imports)) {
+            activity.getSource().addImport IMPORT_APPHANCE
+        }
         file.setText activity.source.toString()
+    }
+
+    @PackageScope
+    void convertLogToApphance(File file) {
+        logger.info "Adding Apphance logger to ${file.name}"
+
+        file.setText file.text.replaceAll(/\s*import\s*android.util.Log\s*;/, '\nimport com.apphance.android.Log;')
     }
 }

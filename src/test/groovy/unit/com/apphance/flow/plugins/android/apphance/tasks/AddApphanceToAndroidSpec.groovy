@@ -16,6 +16,8 @@ import static org.apache.commons.io.FileUtils.copyFile
 class AddApphanceToAndroidSpec extends Specification {
 
     public static final File TEST_ACTIVITY = new File('src/test/resources/com/apphance/flow/android/TestActivity.java')
+    public static final String APPHANCE_IMPORT = 'import com.apphance.android.Apphance;'
+    public static final String APPHANCE_LOG_IMPORT = 'import com.apphance.android.Log;'
     def androidVariantConf = new AndroidVariantConfiguration('test variant')
     def variantDir = Files.createTempDir()
     AddApphanceToAndroid addApphanceToAndroid
@@ -131,7 +133,7 @@ class AddApphanceToAndroidSpec extends Specification {
 
         where:
         activity                                                                                               | _
-        tempFile << TEST_ACTIVITY.text            | _
+        tempFile << TEST_ACTIVITY.text                                                                         | _
         tempFile << new File('src/test/resources/com/apphance/flow/android/TestActivityWithOnStart.java').text | _
     }
 
@@ -151,6 +153,22 @@ class AddApphanceToAndroidSpec extends Specification {
         addApphanceToAndroid.addApphanceImportTo(testActivity)
 
         then:
-        testActivity.readLines()*.trim().contains('import com.apphance.android.Apphance;')
+        contains(testActivity, APPHANCE_IMPORT)
+    }
+
+    def 'test apphance log'() {
+        given:
+        def testActivity = tempFile << TEST_ACTIVITY.text
+
+        when:
+        addApphanceToAndroid.convertLogToApphance(testActivity)
+
+        then:
+        contains(testActivity, APPHANCE_LOG_IMPORT)
+        !contains(testActivity, 'android.util.Log')
+    }
+
+    boolean contains(File testActivity, String content) {
+        testActivity.readLines()*.trim().contains(content)
     }
 }
