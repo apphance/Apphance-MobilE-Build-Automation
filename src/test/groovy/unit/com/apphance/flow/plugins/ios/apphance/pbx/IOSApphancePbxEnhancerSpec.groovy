@@ -40,10 +40,15 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         enhancer.rootObject.isa == 'PBXProject'
         enhancer.target.name == 'GradleXCode'
         enhancer.configuration.name == 'BasicConfiguration'
-        enhancer.frameworksBuildPhaseHash == 'D382B70E14703FE500E9CC9B'
-        enhancer.mainGroupHash == 'D382B70614703FE500E9CC9B'
+        enhancer.frameworksBuildPhase.files.containsAll(
+                'D382B71614703FE500E9CC9B', 'D382B71814703FE500E9CC9B', 'D382B71A14703FE500E9CC9B'
+        )
+        enhancer.mainGroup.children.containsAll(
+                'D382B71B14703FE500E9CC9B', 'D382B73C14703FE500E9CC9B', 'D382B71414703FE500E9CC9B', 'D382B71214703FE500E9CC9B'
+        )
         enhancer.GCCPrefixFilePath == 'GradleXCode/GradleXCode-Prefix.pch'
         enhancer.filesToReplaceLogs.size() > 0
+        enhancer.mainGroupFrameworks.name == 'Frameworks'
     }
 
     @Ignore('this test hangs in Jenkins ???')
@@ -121,8 +126,8 @@ class IOSApphancePbxEnhancerSpec extends Specification {
 
         and:
         configuration.buildSettings.OTHER_LDFLAGS == ['-ObjC', '-all_load']
-        configuration.buildSettings.FRAMEWORK_SEARCH_PATHS == ['$(inherited)', '$(SRCROOT)']
-        configuration.buildSettings.LIBRARY_SEARCH_PATHS == ['$(inherited)', "\$(SRCROOT)/Apphance-Pre-Production.framework"]
+        configuration.buildSettings.FRAMEWORK_SEARCH_PATHS == ['$(inherited)', '"$(SRCROOT)"']
+        configuration.buildSettings.LIBRARY_SEARCH_PATHS == ['$(inherited)', "\"\$(SRCROOT)/Apphance-Pre-Production.framework\""]
 
         and:
         def frameworks = json.objects.findAll { it.value.isa == PBX_FILE_REFERENCE }*.value.name

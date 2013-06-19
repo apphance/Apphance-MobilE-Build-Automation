@@ -9,12 +9,12 @@ import groovy.json.JsonSlurper
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
+import java.util.concurrent.atomic.AtomicInteger
 
 import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
 import static com.apphance.flow.plugins.ios.parsers.PbxJsonParser.*
 import static groovy.json.JsonOutput.toJson
 import static java.io.File.createTempFile
-import static java.lang.System.nanoTime
 import static java.security.MessageDigest.getInstance
 import static org.gradle.api.logging.Logging.getLogger
 
@@ -31,6 +31,7 @@ class IOSApphancePbxEnhancer {
     @Inject PbxJsonParser pbxJsonParser
 
     @PackageScope AbstractIOSVariant variant
+    private AtomicInteger hash = new AtomicInteger()
 
     @Inject
     IOSApphancePbxEnhancer(@Assisted AbstractIOSVariant variant) {
@@ -56,18 +57,16 @@ class IOSApphancePbxEnhancer {
                 lastKnownFileType: 'wrapper.framework',
                 name: frameworkDetails.name,
                 path: frameworkDetails.path,
-                sourceTree: frameworkDetails.group
+                sourceTree: frameworkDetails.group,
         ]
 
         def frameworkFileHash = hash()
         json.objects[frameworkFileHash] = [
                 isa: PBX_BUILD_FILE,
                 fileRef: frameworkHash,
-                settings: [ATTRIBUTES: frameworkDetails.strong]
         ]
-
-        json.objects[frameworksBuildPhaseHash].files << frameworkFileHash
-        json.objects[mainGroupHash].children << frameworkHash
+        frameworksBuildPhase.files << frameworkFileHash
+        mainGroupFrameworks.children << frameworkHash
     }
 
     @PackageScope
@@ -82,15 +81,15 @@ class IOSApphancePbxEnhancer {
         }
 
         if (bs.FRAMEWORK_SEARCH_PATHS) {
-            bs.FRAMEWORK_SEARCH_PATHS << '$(SRCROOT)'
+            bs.FRAMEWORK_SEARCH_PATHS << '\"$(SRCROOT)\"'
         } else {
-            bs.FRAMEWORK_SEARCH_PATHS = ['$(inherited)', '$(SRCROOT)']
+            bs.FRAMEWORK_SEARCH_PATHS = ['$(inherited)', '\"$(SRCROOT)\"']
         }
 
         if (bs.LIBRARY_SEARCH_PATHS) {
             bs.LIBRARY_SEARCH_PATHS << "\$(SRCROOT)/${frameworkName}.framework"
         } else {
-            bs.LIBRARY_SEARCH_PATHS = ['$(inherited)', "\$(SRCROOT)/${frameworkName}.framework"]
+            bs.LIBRARY_SEARCH_PATHS = ['$(inherited)', "\"\$(SRCROOT)/${frameworkName}.framework\""]
         }
     }
 
@@ -98,7 +97,7 @@ class IOSApphancePbxEnhancer {
     List<String> getFilesToReplaceLogs() {
         //TODO replace with one method
         def allSourceFiles = [:]
-        findAllSourceFiles(json.objects[mainGroupHash] as Map, allSourceFiles, '')
+        findAllSourceFiles(mainGroup, allSourceFiles, '')
         def sourceFilesForPhase = fileNamesForSourceBuildPhase
         allSourceFiles.findAll { it.key in sourceFilesForPhase }.values() as List<String>
     }
@@ -159,15 +158,25 @@ class IOSApphancePbxEnhancer {
     }()
 
     @Lazy
-    @PackageScope String frameworksBuildPhaseHash = {
+    @PackageScope Map frameworksBuildPhase = {
         json.objects.find {
             it.key in target.buildPhases && it.value.isa == PBX_FRAMEWORKS_BUILD_PHASE
-        }.key
+        }.value as Map
     }()
 
     @Lazy
-    @PackageScope String mainGroupHash = {
+    @PackageScope Map mainGroup = {
         rootObject.mainGroup
+        json.objects[rootObject.mainGroup] as Map
+    }()
+
+    @Lazy
+    @PackageScope Map mainGroupFrameworks = {
+        def mainGroupHash = rootObject.mainGroup
+        def mainGroupChildrenHashes = json.objects[mainGroupHash].children
+        json.objects.find {
+            it.key in mainGroupChildrenHashes && it.value.name == 'Frameworks' && it.value.isa == PBX_GROUP
+        }.value as Map
     }()
 
     private void saveModifiedPbx() {
@@ -180,7 +189,7 @@ class IOSApphancePbxEnhancer {
     }
 
     private String hash() {
-        md5(nanoTime().toString()).toUpperCase()
+        md5(hash.incrementAndGet().toString()).toUpperCase()
     }
 
     private String md5(String s) {
@@ -191,13 +200,13 @@ class IOSApphancePbxEnhancer {
 
     @Lazy
     private frameworksToAdd = [
-            ['name': "${frameworkName}.framework", 'path': "${frameworkName}.framework", 'group': '<group>', 'searchName': 'apphance', 'strong': 'Required'],
-            ['name': 'CoreLocation.framework', 'path': 'System/Library/Frameworks/CoreLocation.framework', 'group': 'SDKROOT', 'searchName': 'corelocation.framework', 'strong': 'Required'],
-            ['name': 'QuartzCore.framework', 'path': 'System/Library/Frameworks/QuartzCore.framework', 'group': 'SDKROOT', 'searchName': 'quartzcore.framework', 'strong': 'Required'],
-            ['name': 'SystemConfiguration.framework', 'path': 'System/Library/Frameworks/SystemConfiguration.framework', 'group': 'SDKROOT', 'searchName': 'systemconfiguration.framework', 'strong': 'Weak'],
-            ['name': 'CoreTelephony.framework', 'path': 'System/Library/Frameworks/CoreTelephony.framework', 'group': 'SDKROOT', 'searchName': 'coretelephony.framework', 'strong': 'Weak'],
-            ['name': 'AudioToolbox.framework', 'path': 'System/Library/Frameworks/AudioToolbox.framework', 'group': 'SDKROOT', 'searchName': 'audiotoolbox.framework', 'strong': 'Required'],
-            ['name': 'Security.framework', 'path': 'System/Library/Frameworks/Security.framework', 'group': 'SDKROOT', 'searchName': 'security.framework', 'strong': 'Required'],
+            ['name': "${frameworkName}.framework", 'path': "${frameworkName}.framework", 'group': '<group>'],
+            ['name': 'CoreLocation.framework', 'path': 'System/Library/Frameworks/CoreLocation.framework', 'group': 'SDKROOT'],
+            ['name': 'QuartzCore.framework', 'path': 'System/Library/Frameworks/QuartzCore.framework', 'group': 'SDKROOT'],
+            ['name': 'SystemConfiguration.framework', 'path': 'System/Library/Frameworks/SystemConfiguration.framework', 'group': 'SDKROOT'],
+            ['name': 'CoreTelephony.framework', 'path': 'System/Library/Frameworks/CoreTelephony.framework', 'group': 'SDKROOT'],
+            ['name': 'AudioToolbox.framework', 'path': 'System/Library/Frameworks/AudioToolbox.framework', 'group': 'SDKROOT'],
+            ['name': 'Security.framework', 'path': 'System/Library/Frameworks/Security.framework', 'group': 'SDKROOT'],
     ]
 
     private String getFrameworkName() {

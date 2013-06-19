@@ -24,14 +24,14 @@ import static org.gradle.api.logging.Logging.getLogger
  */
 class ProjectReleasePlugin implements Plugin<Project> {
 
-    def log = getLogger(this.class)
+    def logger = getLogger(getClass())
 
     @Inject ReleaseConfiguration releaseConf
 
     @Override
     void apply(Project project) {
         if (releaseConf.isEnabled()) {
-            log.lifecycle("Applying plugin ${this.class.simpleName}")
+            logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
             project.configurations.create('mail')
             project.dependencies {
