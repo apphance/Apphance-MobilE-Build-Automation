@@ -15,6 +15,8 @@ class TestUtils {
     }
 
     File getTempFile() {
-        createTempFile('prefix', 'suffix')
+        File file = createTempFile('prefix', 'suffix')
+        file.deleteOnExit()
+        file
     }
 }

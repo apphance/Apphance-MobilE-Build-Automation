@@ -15,6 +15,7 @@ import static org.apache.commons.io.FileUtils.copyFile
 @Mixin([FlowUtils, TestUtils])
 class AddApphanceToAndroidSpec extends Specification {
 
+    public static final File TEST_ACTIVITY = new File('src/test/resources/com/apphance/flow/android/TestActivity.java')
     def androidVariantConf = new AndroidVariantConfiguration('test variant')
     def variantDir = Files.createTempDir()
     AddApphanceToAndroid addApphanceToAndroid
@@ -62,7 +63,7 @@ class AddApphanceToAndroidSpec extends Specification {
 
     def 'test addReportActivityToManifest'() {
         given:
-        addApphanceToAndroid.addReportActivityToManifest()
+        addApphanceToAndroid.addProblemActivityToManifest()
         def manifestFile = new File(variantDir, 'AndroidManifest.xml')
         def manifest = new XmlSlurper().parse(manifestFile).declareNamespace(android: 'http://schemas.android.com/apk/res/android');
 
@@ -93,8 +94,8 @@ class AddApphanceToAndroidSpec extends Specification {
     def 'test addStartNewSessionToAllMainActivities'() {
         given:
         File mainActivity = new File(variantDir, 'src/com/apphance/flowTest/android/TestActivity.java')
-        def appKeyCond = { mainActivity.text.contains('public static final String APP_KEY = "TestKey";') }
-        def startNewSessionCond = { mainActivity.text.contains('Apphance.startNewSession(this, APP_KEY, Mode.QA);') }
+        def appKeyCond = { mainActivity.text.contains 'public static final String APP_KEY = "TestKey";' }
+        def startNewSessionCond = { mainActivity.text.contains 'Apphance.startNewSession(this, APP_KEY, Mode.QA);' }
 
         expect:
         mainActivity.exists()
@@ -130,7 +131,7 @@ class AddApphanceToAndroidSpec extends Specification {
 
         where:
         activity                                                                                               | _
-        tempFile << new File('src/test/resources/com/apphance/flow/android/TestActivity.java').text            | _
+        tempFile << TEST_ACTIVITY.text            | _
         tempFile << new File('src/test/resources/com/apphance/flow/android/TestActivityWithOnStart.java').text | _
     }
 
@@ -140,5 +141,16 @@ class AddApphanceToAndroidSpec extends Specification {
 
         expect:
         addApphanceToAndroid.getActivity(file).name == 'TestActivityManyClasses'
+    }
+
+    def 'test aphance import added'() {
+        given:
+        def testActivity = tempFile << TEST_ACTIVITY.text
+
+        when:
+        addApphanceToAndroid.addApphanceImportTo(testActivity)
+
+        then:
+        testActivity.readLines()*.trim().contains('import com.apphance.android.Apphance;')
     }
 }

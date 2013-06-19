@@ -43,7 +43,7 @@ class AddApphanceToAndroid {
     public void addApphance() {
         if (checkIfApphancePresent()) throw new GradleException("Apphance was already added")
 
-        addReportActivityToManifest()
+        addProblemActivityToManifest()
         addPermisions()
         addStartNewSessionToAllMainActivities()
         addApphanceToOnStartAndOnStopMethodsInAllActivities()
@@ -58,7 +58,7 @@ class AddApphanceToAndroid {
     }
 
     @PackageScope
-    void addReportActivityToManifest() {
+    void addProblemActivityToManifest() {
         withManifest(variantDir) { GPathResult manifest ->
             manifest.application.appendNode {
                 activity 'android:name': 'com.apphance.android.ui.ProblemActivity',
@@ -120,6 +120,7 @@ class AddApphanceToAndroid {
     @PackageScope
     void addStartStopInvocations(File file) {
         logger.info "Adding onStart and onStop invocation to ${file.name}"
+
         JavaClass activity = getActivity(file)
         [ON_START, ON_STOP].each { String methodName ->
             def method = activity.getMethodBySignature(methodName)
@@ -134,6 +135,15 @@ class AddApphanceToAndroid {
             }
 
         }
+        file.setText activity.source.toString()
+    }
+
+    @PackageScope
+    void addApphanceImportTo(File file) {
+        logger.info "Adding Apphance import to ${file.name}"
+
+        JavaClass activity = getActivity(file)
+        activity.getSource().addImport 'com.apphance.android.Apphance'
         file.setText activity.source.toString()
     }
 }
