@@ -1,0 +1,13 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath('com.apphance.flow:apphance-flow:1.0-M3')
+    }
+}
+
+apply plugin: 'apphance-flow'
+
+
