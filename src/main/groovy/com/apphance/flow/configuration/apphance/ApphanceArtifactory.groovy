@@ -2,7 +2,8 @@ package com.apphance.flow.configuration.apphance
 
 import groovy.json.JsonSlurper
 
-import static com.apphance.flow.configuration.apphance.ApphanceMode.*
+import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
+import static com.apphance.flow.configuration.apphance.ApphanceMode.DISABLED
 import static com.google.common.base.Preconditions.checkArgument
 import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.apache.commons.lang.StringUtils.isNotEmpty
@@ -14,53 +15,27 @@ class ApphanceArtifactory {
 
     List<String> androidLibraries(ApphanceMode mode) {
         checkArgument(mode && mode != DISABLED, "Invalid apphance mode: $mode")
-        switch (mode) {
-            case QA:
-            case SILENT:
-                return androidPreProdLibs
-            case PROD:
-                return androidProdLibs
-        }
-        []
+        androidLibs.call(mode)
     }
 
     @Lazy
-    private List<String> androidPreProdLibs = {
-        def response = readStreamFromUrl("$APPHANCE_ARTIFACTORY_REST_URL/com/apphance/android.pre-production")
+    private Closure<List<String>> androidLibs = { ApphanceMode mode ->
+        def response = readStreamFromUrl("$APPHANCE_ARTIFACTORY_REST_URL/com/apphance/android.${libForMode(mode).groupName}")
         getParsedVersions(response)
-    }()
-
-    @Lazy
-    private List<String> androidProdLibs = {
-        def response = readStreamFromUrl("$APPHANCE_ARTIFACTORY_REST_URL/com/apphance/android.production")
-        getParsedVersions(response)
-    }()
+    }.memoize()
 
     List<String> iOSLibraries(ApphanceMode mode, String arch) {
         checkArgument(mode && mode != DISABLED, "Invalid apphance mode: $mode")
         checkArgument(isNotBlank(arch), "Invalid arch: $arch")
-        switch (mode) {
-            case QA:
-            case SILENT:
-                return iOSPreProdLibs.call(arch)
-            case PROD:
-                return iOSProdLibs.call(arch)
-        }
-        []
+        iosLibs.call(mode, arch)
     }
 
-    @Lazy
-    private Closure<List<String>> iOSPreProdLibs = { arch ->
-        def response = readStreamFromUrl("$APPHANCE_ARTIFACTORY_REST_URL/com/apphance/ios.pre-production.$arch")
-        getParsedVersions(response)
-    }.memoize()
 
     @Lazy
-    private Closure<List<String>> iOSProdLibs = { arch ->
-        def response = readStreamFromUrl("$APPHANCE_ARTIFACTORY_REST_URL/com/apphance/ios.production.$arch")
+    private Closure<List<String>> iosLibs = { ApphanceMode mode, String arch ->
+        def response = readStreamFromUrl("$APPHANCE_ARTIFACTORY_REST_URL/com/apphance/ios.${libForMode(mode).groupName}.$arch")
         getParsedVersions(response)
     }.memoize()
-
 
     private String readStreamFromUrl(String url) {
         try { return url.toURL().openStream().readLines().join('\n') } catch (e) { return '' }

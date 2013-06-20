@@ -60,7 +60,7 @@ class IOSApphanceEnhancer {
         } else {
             apphancePbxEnhancer.addApphanceToPbx()
             apphanceSourceEnhancer.addApphanceToSource()
-            copyApphanceFramework()
+            downloadDependency()
         }
     }
 
@@ -78,7 +78,7 @@ class IOSApphanceEnhancer {
     }
 
     @PackageScope
-    void copyApphanceFramework() {
+    void downloadDependency() {
         def dependency = apphanceLibDependency()
         def apphanceFileName = 'apphance.zip'
         def apphanceZip = new File(variant.tmpDir, apphanceFileName)
