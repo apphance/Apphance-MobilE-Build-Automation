@@ -88,7 +88,7 @@ class IOSApphanceSourceEnhancer {
     void addApphanceToFile(File appDelegateFile, File newAppDelegateFile) {
         boolean startNewSessionAdded = false
         boolean searchingForOpeningBrace = false
-        def apphanceInit = "[APHLogger startNewSessionWithApplicationKey:@\"" + "$variant.apphanceAppKey" + "\" $apphanceMode];"
+        def apphanceInit = "[APHLogger startNewSessionWithApplicationKey:@\"" + "$variant.apphanceAppKey.value" + "\" $apphanceMode];"
         def apphanceExceptionHandler = "NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);"
         newAppDelegateFile.withWriter { out ->
             appDelegateFile.eachLine { line ->

@@ -2,7 +2,6 @@ package com.apphance.flow.plugins.ios.apphance
 
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
-import com.apphance.flow.plugins.apphance.ApphancePluginCommons
 import com.apphance.flow.plugins.ios.apphance.tasks.UploadIOSArtifactTask
 import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.flow.plugins.ios.release.IOSReleaseListener
@@ -19,7 +18,6 @@ import static org.gradle.api.logging.Logging.getLogger
  *
  * This plugins provides automated adding of Apphance libraries to the project
  */
-@Mixin(ApphancePluginCommons)
 class IOSApphancePlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())
@@ -35,8 +33,6 @@ class IOSApphancePlugin implements Plugin<Project> {
         if (apphanceConf.enabled) {
 
             logger.lifecycle("Applying plugin ${getClass().simpleName}")
-
-            addApphanceConfiguration(project)
 
             variantsConf.variants.each { variant ->
 

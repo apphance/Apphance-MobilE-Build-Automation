@@ -83,12 +83,15 @@ class IOSApphanceEnhancer {
         def apphanceFileName = 'apphance.zip'
         def apphanceZip = new File(variant.tmpDir, apphanceFileName)
 
+        String confName = "apphance$variant.name".toString()
+
+        addApphanceConfiguration(project, confName)
         project.dependencies {
-            apphance dependency
+            "apphance$variant.name" dependency
         }
 
         try {
-            downloadApphance(apphanceFileName)
+            downloadApphance(confName, apphanceFileName)
         } catch (e) {
             logger.error("Error while resolving dependency: $dependency, error: $e.message")
             throw new GradleException(format(bundle.getString('exception.apphance.dependency'), dependency, variant.name))
@@ -133,9 +136,9 @@ class IOSApphanceEnhancer {
         }*.trim().unique().sort()
     }
 
-    private void downloadApphance(String apphanceFileName) {
+    private void downloadApphance(String confName, String apphanceFileName) {
         project.copy {
-            from { project.configurations.apphance }
+            from { project.configurations.getByName(confName) }
             into variant.tmpDir
             rename { String filename ->
                 apphanceFileName
@@ -144,6 +147,7 @@ class IOSApphanceEnhancer {
     }
 
     private void unzip(File apphanceZip) {
+        //TODO with antbuilder
         executor.executeCommand(new Command(
                 runDir: variant.tmpDir,
                 cmd: ['unzip', apphanceZip.canonicalPath, '-d', variant.tmpDir.canonicalPath]))

@@ -4,12 +4,14 @@ import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Test
 
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
+@Ignore('to be run after apphance dependency resolving finished')
 class ExecuteApphanceBuildsTest {
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',

@@ -46,7 +46,8 @@ class AndroidApphancePlugin implements Plugin<Project> {
             log.lifecycle("Applying plugin ${this.class.simpleName}")
             this.project = project
 
-            addApphanceConfiguration(project)
+            //TODO
+//            addApphanceConfiguration(project)
             preProcessBuildsWithApphance()
 
             //TODO probably both to be removed

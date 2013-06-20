@@ -172,7 +172,8 @@ class AddApphance18ToAndroid {
 
     private copyApphanceJar(File directory) {
 
-        def apphanceLibDependency = prepareApphanceLibDependency(project, 'com.apphance:android.pre-production:1.8+')
+        //TODO
+        def apphanceLibDependency// = prepareApphanceLibDependency(project, 'com.apphance:android.pre-production:1.8+')
 
         def libsDir = new File(directory, 'libs')
         libsDir.mkdirs()

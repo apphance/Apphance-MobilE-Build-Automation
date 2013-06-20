@@ -35,9 +35,6 @@ class AndroidApphancePluginSpec extends Specification {
         when:
         aap.apply(project)
 
-        then: 'apphance configuration was added'
-        project.configurations.apphance
-
         then: 'each task has correct group'
         project.tasks[ApphanceLogsConversionTask.NAME].group == FLOW_APPHANCE_SERVICE.name()
         project.tasks[AndroidLogsConversionTask.NAME].group == FLOW_APPHANCE_SERVICE.name()
@@ -95,9 +92,6 @@ class AndroidApphancePluginSpec extends Specification {
 
         when:
         aap.apply(project)
-
-        then: 'apphance configuration was added'
-        project.configurations.apphance
 
         then: 'each task has correct group'
         project.tasks[ApphanceLogsConversionTask.NAME].group == FLOW_APPHANCE_SERVICE.name()

@@ -19,7 +19,7 @@ class ApphancePluginCommonsSpec extends Specification {
         !project.repositories
 
         when:
-        pluginUtil.addApphanceConfiguration(project)
+        pluginUtil.addApphanceConfiguration(project, 'apphance')
 
         then:
         project.configurations.asMap['apphance']
@@ -28,23 +28,5 @@ class ApphancePluginCommonsSpec extends Specification {
                 'https://dev.polidea.pl/artifactory/libs-snapshots-local/'
         ].sort() ==
                 project.repositories*.url*.toString().sort()
-    }
-
-    def 'prepares apphance lib dependency'() {
-        given:
-        def project = builder().build()
-
-        expect:
-        project.dependencies.properties['configurationContainer'].empty
-
-        when:
-        pluginUtil.addApphanceConfiguration(project)
-        def dependency = pluginUtil.prepareApphanceLibDependency(project, 'com:corp:1.2')
-
-        then:
-        !project.dependencies.properties['configurationContainer'].empty
-        project.configurations.apphance
-        project.dependencies.properties['configurationContainer'].properties.asMap['apphance']
-        'com:corp:1.2' == dependency
     }
 }
