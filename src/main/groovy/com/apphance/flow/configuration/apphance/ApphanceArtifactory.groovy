@@ -37,6 +37,26 @@ class ApphanceArtifactory {
         getParsedVersions(response)
     }.memoize()
 
+    List<String> iOSArchs(ApphanceMode mode) {
+        checkArgument(mode && mode != DISABLED, "Invalid apphance mode: $mode")
+        archs.call(mode)
+    }
+
+    @Lazy
+    private Closure<List<String>> archs = { ApphanceMode mode ->
+        def response = readStreamFromUrl("$APPHANCE_ARTIFACTORY_REST_URL/com/apphance")
+        if (isNotEmpty(response)) {
+            def json = new JsonSlurper().parseText(response)
+
+            return json.children.findAll {
+                it.uri.startsWith("/ios.${libForMode(mode).groupName}")
+            }*.uri.collect {
+                it.split('\\.')[2]
+            }*.trim().unique().sort()
+        }
+        []
+    }.memoize()
+
     private String readStreamFromUrl(String url) {
         try { return url.toURL().openStream().readLines().join('\n') } catch (e) { return '' }
     }

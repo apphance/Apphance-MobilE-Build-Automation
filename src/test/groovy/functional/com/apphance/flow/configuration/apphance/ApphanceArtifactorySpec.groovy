@@ -103,4 +103,15 @@ class ApphanceArtifactorySpec extends Specification {
         noExceptionThrown()
         libs == []
     }
+
+    def 'iOS architectures downloaded correctly for mode'() {
+        expect:
+        archs == apphanceArtifactory.iOSArchs(mode)
+
+        where:
+        mode   | archs
+        QA     | ['armv6', 'armv7']
+        SILENT | ['armv6', 'armv7']
+        PROD   | ['armv6', 'armv7']
+    }
 }

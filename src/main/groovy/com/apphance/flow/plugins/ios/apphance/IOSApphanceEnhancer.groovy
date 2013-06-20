@@ -1,8 +1,8 @@
 package com.apphance.flow.plugins.ios.apphance
 
+import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
-import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.apphance.ApphancePluginCommons
 import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancer
@@ -10,9 +10,9 @@ import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancerFactory
 import com.apphance.flow.plugins.ios.apphance.source.IOSApphanceSourceEnhancer
 import com.apphance.flow.plugins.ios.apphance.source.IOSApphanceSourceEnhancerFactory
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
+import com.apphance.flow.util.FlowUtils
 import com.google.inject.Inject
 import com.google.inject.assistedinject.Assisted
-import groovy.json.JsonSlurper
 import groovy.transform.PackageScope
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -37,6 +37,8 @@ class IOSApphanceEnhancer {
     @Inject PbxJsonParser pbxJsonParser
     @Inject IOSApphancePbxEnhancerFactory apphancePbxEnhancerFactory
     @Inject IOSApphanceSourceEnhancerFactory apphanceSourceEnhancerFactory
+    @Inject FlowUtils flowUtils
+    @Inject ApphanceArtifactory apphanceArtifactory
 
     private AbstractIOSVariant variant
     private bundle = getBundle('validation')
@@ -114,7 +116,7 @@ class IOSApphanceEnhancer {
     @PackageScope
     String apphanceDependencyArch() {
         def xc = availableXCodeArchitectures()
-        def af = availableArtifactoryArchitectures()
+        def af = apphanceArtifactory.iOSArchs(variant.apphanceMode.value)
         af.retainAll(xc)
         af.unique().sort()[-1]
     }
@@ -122,18 +124,6 @@ class IOSApphanceEnhancer {
     @PackageScope
     Collection<String> availableXCodeArchitectures() {
         iosExecutor.buildSettings(variant.target, variant.configuration)['ARCHS'].split(' ')*.trim()
-    }
-
-    @PackageScope
-    Collection<String> availableArtifactoryArchitectures() {
-        def text = 'https://dev.polidea.pl/artifactory/api/storage/libs-releases-local/com/apphance'.toURL().openStream().readLines().join('\n')
-        def json = new JsonSlurper().parseText(text)
-
-        json.children.findAll {
-            it.uri.startsWith("/ios.${apphanceDependencyGroup()}")
-        }*.uri.collect {
-            it.split('\\.')[2]
-        }*.trim().unique().sort()
     }
 
     private void downloadApphance(String confName, String apphanceFileName) {
@@ -147,10 +137,7 @@ class IOSApphanceEnhancer {
     }
 
     private void unzip(File apphanceZip) {
-        //TODO with antbuilder
-        executor.executeCommand(new Command(
-                runDir: variant.tmpDir,
-                cmd: ['unzip', apphanceZip.canonicalPath, '-d', variant.tmpDir.canonicalPath]))
+        flowUtils.unzip(apphanceZip, variant.tmpDir)
     }
 
     @PackageScope

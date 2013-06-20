@@ -1,5 +1,6 @@
 package com.apphance.flow.plugins.ios.apphance
 
+import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
@@ -91,6 +92,9 @@ class IOSApphanceEnhancerSpec extends Specification {
         })
         enhancer.iosExecutor = GroovyMock(IOSExecutor) {
             buildSettings(_, _) >> ['ARCHS': 'armv6 armv7']
+        }
+        enhancer.apphanceArtifactory = GroovyMock(ApphanceArtifactory) {
+            iOSArchs(_) >> ['armv6', 'armv7']
         }
 
         expect:
