@@ -53,7 +53,7 @@ class AddApphanceToAndroid {
     @PackageScope
     boolean checkIfApphancePresent() {
         def startNewSession = { File it -> it.name.endsWith('.java') && it.text.contains('Apphance.startNewSession') }
-        def apphanceLib = { File it -> it.name == 'apphance-library.jar' }
+        def apphanceLib = { File it -> it.name ==~ /.*apphance-library.*/ }
 
         allFiles(dir: variantDir, where: { startNewSession(it) || apphanceLib(it) }) || isApphanceActivityPresent(variantDir)
     }
