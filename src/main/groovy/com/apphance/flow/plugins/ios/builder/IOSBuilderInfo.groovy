@@ -16,6 +16,7 @@ class IOSBuilderInfo {
     File buildDir
     String fullReleaseName
     String filePrefix
+    String versionString
     File mobileprovision
     File plist
 

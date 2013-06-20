@@ -8,6 +8,7 @@ import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import com.apphance.flow.plugins.release.FlowArtifact
 import groovy.text.SimpleTemplateEngine
+import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
@@ -31,7 +32,8 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         prepareMobileProvisionFile(bi)
     }
 
-    private void prepareDistributionZipFile(IOSBuilderInfo bi) {
+    @PackageScope
+    void prepareDistributionZipFile(IOSBuilderInfo bi) {
         def aa = artifactProvider.zipDistribution(bi)
         releaseConf.distributionZipFiles.put(bi.id, aa)
         aa.location.parentFile.mkdirs()
@@ -40,10 +42,11 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
             zipfileset(dir: bi.mobileprovision.parent, includes: bi.mobileprovision)
             zipfileset(dir: bi.buildDir, includes: "${bi.buildableName}/**")
         }
-        logger.lifecycle("Distribution zip file created: ${aa.location}")
+        logger.info("Distribution zip file created: ${aa.location}")
     }
 
-    private void prepareDSYMZipFile(IOSBuilderInfo bi) {
+    @PackageScope
+    void prepareDSYMZipFile(IOSBuilderInfo bi) {
         def aa = artifactProvider.dSYMZip(bi)
         releaseConf.dSYMZipFiles.put(bi.id, aa)
         aa.location.parentFile.mkdirs()
@@ -51,10 +54,11 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         ant.zip(destfile: aa.location) {
             zipfileset(dir: bi.buildDir, includes: "${bi.buildableName}.dSYM/**")
         }
-        logger.lifecycle("dSYM zip file created: ${aa.location}")
+        logger.info("dSYM zip file created: ${aa.location}")
     }
 
-    private void prepareAhSYMFiles(IOSBuilderInfo bi) {
+    @PackageScope
+    void prepareAhSYMFiles(IOSBuilderInfo bi) {
         def aa = artifactProvider.ahSYM(bi)
         releaseConf.ahSYMDirs.put(bi.id, aa)
         aa.location.delete()
@@ -68,10 +72,11 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         dest.listFiles().each {
             aa.childArtifacts << new FlowArtifact(name: it.name, location: it, url: "${aa.url.toString()}/${it.name}".toURL())
         }
-        logger.lifecycle("ahSYM files created: ${aa.location}")
+        logger.info("ahSYM files created: ${aa.location}")
     }
 
-    private void prepareIpaFile(IOSBuilderInfo bi) {
+    @PackageScope
+    void prepareIpaFile(IOSBuilderInfo bi) {
         def aa = artifactProvider.ipa(bi)
         releaseConf.ipaFiles.put(bi.id, aa)
         aa.location.parentFile.mkdirs()
@@ -90,34 +95,37 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
                 bi.mobileprovision.canonicalPath
         ]
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: cmd))
-        logger.lifecycle("IPA file created: ${aa.location}")
+        logger.info("IPA file created: ${aa.location}")
     }
 
-    private void prepareManifestFile(IOSBuilderInfo bi) {
+    @PackageScope
+    void prepareManifestFile(IOSBuilderInfo bi) {
         def aa = artifactProvider.manifest(bi)
         releaseConf.manifestFiles.put(bi.id, aa)
         aa.location.parentFile.mkdirs()
         aa.location.delete()
 
-        SimpleTemplateEngine engine = new SimpleTemplateEngine()
+        def engine = new SimpleTemplateEngine()
         def bundleId = plistParser.evaluate(plistParser.bundleId(bi.plist), bi.target, bi.configuration)
         def binding = [
                 ipaUrl: releaseConf.ipaFiles.get(bi.id).url,
                 title: bi.target,
-                bundleId: bundleId
+                bundleId: bundleId,
+                versionString: bi.versionString
         ]
-        logger.lifecycle("Building manifest from ${bi.plist}, bundleId: ${bundleId}")
+        logger.info("Building manifest from ${bi.plist}, bundleId: ${bundleId}")
         def result = engine.createTemplate(getClass().getResource('manifest.plist')).make(binding)
         aa.location << (result.toString())
-        logger.lifecycle("Manifest file created: ${aa.location}")
+        logger.info("Manifest file created: ${aa.location}")
     }
 
-    private void prepareMobileProvisionFile(IOSBuilderInfo bi) {
+    @PackageScope
+    void prepareMobileProvisionFile(IOSBuilderInfo bi) {
         def aa = artifactProvider.mobileprovision(bi)
         releaseConf.mobileProvisionFiles.put(bi.id, aa)
         aa.location.parentFile.mkdirs()
         aa.location.delete()
         aa.location << bi.mobileprovision.text
-        logger.lifecycle("Mobile provision file created: ${aa.location}")
+        logger.info("Mobile provision file created: ${aa.location}")
     }
 }

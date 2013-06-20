@@ -23,7 +23,8 @@ class IOSArtifactProvider {
                 fullReleaseName: "${v.name}-${v.fullVersionString}",
                 filePrefix: "${v.name}-${v.fullVersionString}",
                 mobileprovision: v.mobileprovision.value,
-                plist: v.plist
+                plist: v.plist,
+                versionString: v.versionString
         )
         bi
     }
