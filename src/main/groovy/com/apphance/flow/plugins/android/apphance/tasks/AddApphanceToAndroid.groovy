@@ -22,6 +22,7 @@ import static com.thoughtworks.qdox.model.Type.VOID
 @Mixin([FlowUtils, AndroidManifestHelper])
 class AddApphanceToAndroid {
 
+    public static final String ARTIFACTORY_URL = 'https://dev.polidea.pl/artifactory/libs-releases-local/com/apphance/android.pre-production/1.9-RC1/android.pre-production-1.9-RC1.zip'
     def logger = Logging.getLogger(this.class)
 
     final File variantDir
@@ -48,6 +49,7 @@ class AddApphanceToAndroid {
         addPermisions()
         addStartNewSessionToAllMainActivities()
         addApphanceImportsAndStartStopMethodsInAllActivities()
+        addApphanceLib()
     }
 
     @PackageScope
@@ -159,5 +161,10 @@ class AddApphanceToAndroid {
         logger.info "Adding Apphance logger to ${file.name}"
 
         file.setText file.text.replaceAll(/\s*import\s*android.util.Log\s*;/, '\nimport com.apphance.android.Log;')
+    }
+
+    @PackageScope
+    def addApphanceLib() {
+        unzip downloadToTempFile(ARTIFACTORY_URL), new File("$variantDir.absolutePath/libs")
     }
 }

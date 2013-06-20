@@ -2,6 +2,8 @@ package com.apphance.flow.util
 
 import groovy.io.FileType
 
+import java.nio.file.Files
+
 import static com.google.common.base.Preconditions.*
 
 class FlowUtils {
@@ -24,5 +26,16 @@ class FlowUtils {
 
     String removeWhitespace(String input) {
         input.replaceAll(/\s/, '')
+    }
+
+    File downloadToTempFile(String url) {
+        File file = Files.createTempFile('apphance-library-', '.zip').toFile()
+        file.append(url.toURL().newInputStream())
+        file
+    }
+
+    File unzip(File zip, File destDir) {
+        new AntBuilder().unzip(src: zip.absolutePath, dest: destDir.absolutePath)
+        destDir
     }
 }

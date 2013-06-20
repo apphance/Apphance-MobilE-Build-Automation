@@ -3,7 +3,7 @@ package com.apphance.flow.plugins.android.apphance
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
-import com.apphance.flow.plugins.android.apphance.tasks.AddApphance18ToAndroid
+import com.apphance.flow.plugins.android.apphance.tasks.AddApphanceToAndroid
 import com.apphance.flow.plugins.android.apphance.tasks.AndroidLogsConversionTask
 import com.apphance.flow.plugins.android.apphance.tasks.ApphanceLogsConversionTask
 import com.apphance.flow.plugins.android.apphance.tasks.UploadAndroidArtifactTask
@@ -37,12 +37,8 @@ class AndroidApphancePlugin implements Plugin<Project> {
     def log = getLogger(this.class)
 
     Project project
-    @Inject
-    AndroidVariantsConfiguration variantsConf
-    @Inject
-    ApphanceConfiguration apphanceConf
-    @Inject
-    AddApphance18ToAndroid addAndroidApphance
+    @Inject AndroidVariantsConfiguration variantsConf
+    @Inject ApphanceConfiguration apphanceConf
 
     @Override
     void apply(Project project) {
@@ -71,16 +67,16 @@ class AndroidApphancePlugin implements Plugin<Project> {
 
     void preProcessBuildsWithApphance() {
         //TODO for each variant add apphance if it's enabled in variant conf
-        variantsConf.variants.each { avc ->
-            if (avc.mode == DEBUG) {
-                log.lifecycle("Adding apphance task for ${avc.name}")
-                def task = project.tasks.findByName("build${avc.name}")
+        variantsConf.variants.each { AndroidVariantConfiguration variantConf ->
+            if (variantConf.mode == DEBUG) {
+                log.lifecycle("Adding apphance task for ${variantConf.name}")
+                def task = project.tasks.findByName("build${variantConf.name}")
                 task?.doFirst {
-                    addAndroidApphance.addApphance(avc)
+                    new AddApphanceToAndroid(variantConf).addApphance()
                 }
-                prepareSingleBuildUploadTask(avc, task?.name)
+                prepareSingleBuildUploadTask(variantConf, task?.name)
             } else {
-                log.lifecycle("Not adding apphance to ${avc.name} because it is not in debug mode")
+                log.lifecycle("Not adding apphance to ${variantConf.name} because it is not in debug mode")
             }
         }
     }
