@@ -22,7 +22,8 @@ import static com.thoughtworks.qdox.model.Type.VOID
 @Mixin([FlowUtils, AndroidManifestHelper])
 class AddApphanceToAndroid {
 
-    public static final String ARTIFACTORY_URL = 'https://dev.polidea.pl/artifactory/libs-releases-local/com/apphance/android.pre-production/1.9-RC1/android.pre-production-1.9-RC1.zip'
+    String apphanceVersion
+    public final String ARTIFACTORY_URL
     def logger = Logging.getLogger(this.class)
 
     final File variantDir
@@ -34,22 +35,28 @@ class AddApphanceToAndroid {
     private static final String ON_STOP = 'onStop'
 
     AddApphanceToAndroid(AndroidVariantConfiguration androidVariantConf) {
-        variantDir = androidVariantConf.variantDir.value
+        variantDir = androidVariantConf.tmpDir
         apphanceAppKey = androidVariantConf.apphanceAppKey.value
+        apphanceVersion = androidVariantConf.apphanceLibVersion.value
         apphanceMode = androidVariantConf.apphanceMode.value
+        ARTIFACTORY_URL = "https://dev.polidea.pl/artifactory/libs-releases-local/com/apphance/android.pre-production/1.9-RC1/android" +
+                ".pre-production-${apphanceVersion}.zip"
         checkArgument variantDir.exists()
         checkNotNull apphanceAppKey
         checkNotNull apphanceMode
+        checkNotNull apphanceVersion
     }
 
     public void addApphance() {
+        logger.info "Adding apphance to $variantDir.absolutePath"
         if (checkIfApphancePresent()) throw new GradleException("Apphance was already added")
 
-        addProblemActivityToManifest()
-        addPermisions()
         addStartNewSessionToAllMainActivities()
         addApphanceImportsAndStartStopMethodsInAllActivities()
+        addProblemActivityToManifest()
+        addPermisions()
         addApphanceLib()
+        addApphanceLibraryReferenceToProjectProperties()
     }
 
     @PackageScope
@@ -98,7 +105,7 @@ class AddApphanceToAndroid {
             // Apphance.startNewSession(this, APP_KEY, Mode.QA);
             def onCreate = activity.getMethodBySignature('onCreate', [new Type('android.os.Bundle')] as Type[])
             assert onCreate
-            onCreate.setSourceCode(onCreate.sourceCode + '\nApphance.startNewSession(this, APP_KEY, Mode.QA);\n')
+            onCreate.setSourceCode(onCreate.sourceCode + '\nApphance.startNewSession(this, APP_KEY, Apphance.Mode.QA);\n')
 
             it.setText activity.source.toString()
         }
@@ -140,7 +147,6 @@ class AddApphanceToAndroid {
                 method.setModifiers(['protected'] as String[])
                 activity.addMethod method
             }
-
         }
         file.setText activity.source.toString()
     }
@@ -166,5 +172,13 @@ class AddApphanceToAndroid {
     @PackageScope
     def addApphanceLib() {
         unzip downloadToTempFile(ARTIFACTORY_URL), new File("$variantDir.absolutePath/libs")
+    }
+
+    @PackageScope
+    void addApphanceLibraryReferenceToProjectProperties() {
+        File projectProperties = new File(variantDir, 'project.properties')
+        assert projectProperties.exists()
+        def libSize = projectProperties.readLines().findAll {it.trim().startsWith('android.library.reference.')}.size()
+        projectProperties << "android.library.reference.${libSize + 1}=libs/apphance-library-${apphanceVersion}"
     }
 }

@@ -29,8 +29,9 @@ class FlowUtils {
     }
 
     File downloadToTempFile(String url) {
-        File file = Files.createTempFile('apphance-library-', '.zip').toFile()
+        File file = Files.createTempFile('tempFile', '.ext').toFile()
         file.append(url.toURL().newInputStream())
+        assert file.size() > 0, "Empty downloaded file: $url"
         file
     }
 

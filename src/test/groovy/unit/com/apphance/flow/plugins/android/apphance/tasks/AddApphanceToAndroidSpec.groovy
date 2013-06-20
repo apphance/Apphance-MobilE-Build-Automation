@@ -18,7 +18,7 @@ class AddApphanceToAndroidSpec extends Specification {
     public static final File TEST_ACTIVITY = new File('src/test/resources/com/apphance/flow/android/TestActivity.java')
     public static final String APPHANCE_IMPORT = 'import com.apphance.android.Apphance;'
     public static final String APPHANCE_LOG_IMPORT = 'import com.apphance.android.Log;'
-    def androidVariantConf = new AndroidVariantConfiguration('test variant')
+    def androidVariantConf = GroovySpy(AndroidVariantConfiguration, constructorArgs: ['test variant'])
     def variantDir = Files.createTempDir()
     AddApphanceToAndroid addApphanceToAndroid
 
@@ -28,7 +28,8 @@ class AddApphanceToAndroidSpec extends Specification {
 
         androidVariantConf.apphanceMode.value = ApphanceMode.QA
         androidVariantConf.apphanceAppKey.value = 'TestKey'
-        androidVariantConf.variantDir.value = variantDir
+        androidVariantConf.apphanceLibVersion.value = '1.9-RC1'
+        androidVariantConf.getTmpDir() >> variantDir
 
         addApphanceToAndroid = new AddApphanceToAndroid(androidVariantConf)
     }
@@ -97,7 +98,7 @@ class AddApphanceToAndroidSpec extends Specification {
         given:
         File mainActivity = new File(variantDir, 'src/com/apphance/flowTest/android/TestActivity.java')
         def appKeyCond = { mainActivity.text.contains 'public static final String APP_KEY = "TestKey";' }
-        def startNewSessionCond = { mainActivity.text.contains 'Apphance.startNewSession(this, APP_KEY, Mode.QA);' }
+        def startNewSessionCond = { mainActivity.text.contains 'Apphance.startNewSession(this, APP_KEY, Apphance.Mode.QA);' }
 
         expect:
         mainActivity.exists()
@@ -168,7 +169,14 @@ class AddApphanceToAndroidSpec extends Specification {
         !contains(testActivity, 'android.util.Log')
     }
 
-    boolean contains(File testActivity, String content) {
-        testActivity.readLines()*.trim().contains(content)
+    def 'test addApphanceLibToProjectProperties'() {
+        expect:
+        !contains(new File(variantDir, 'project.properties'), 'libs/apphance-library-1.9-RC1')
+
+        when:
+        addApphanceToAndroid.addApphanceLibraryReferenceToProjectProperties()
+
+        then:
+        contains(new File(variantDir, 'project.properties'), 'android.library.reference.2=libs/apphance-library-1.9-RC1')
     }
 }

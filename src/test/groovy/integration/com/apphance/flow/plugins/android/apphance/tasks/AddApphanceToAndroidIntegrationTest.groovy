@@ -15,10 +15,11 @@ class AddApphanceToAndroidIntegrationTest extends Specification {
         variantDir.deleteOnExit()
         FileUtils.copyDirectory(new File('testProjects/android/android-basic'), variantDir)
 
-        def androidVariantConf = new AndroidVariantConfiguration('test variant')
+        def androidVariantConf = GroovySpy(AndroidVariantConfiguration, constructorArgs: ['test variant'])
         androidVariantConf.apphanceMode.value = ApphanceMode.QA
         androidVariantConf.apphanceAppKey.value = 'TestKey'
-        androidVariantConf.variantDir.value = variantDir
+        androidVariantConf.apphanceLibVersion.value = '1.9-RC1'
+        androidVariantConf.getTmpDir() >> variantDir
 
         addApphanceToAndroid = new AddApphanceToAndroid(androidVariantConf)
     }

@@ -19,4 +19,8 @@ class TestUtils {
         file.deleteOnExit()
         file
     }
+
+    boolean contains(File file, String content) {
+        file.readLines()*.trim().contains(content)
+    }
 }
