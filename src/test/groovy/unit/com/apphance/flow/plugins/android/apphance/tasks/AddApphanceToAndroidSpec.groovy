@@ -89,9 +89,9 @@ class AddApphanceToAndroidSpec extends Specification {
 
         expect:
         manifest.'uses-permission'.size() == 9
-        manifest.'uses-permission'.collect { it.'@android:name'.text() } ==
+        manifest.'uses-permission'.collect { it.'@android:name'.text() }.sort() ==
                 [INTERNET, CHANGE_WIFI_STATE, READ_PHONE_STATE, GET_TASKS, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE, ACCESS_COARSE_LOCATION,
-                        ACCESS_FINE_LOCATION, BLUETOOTH]
+                        ACCESS_FINE_LOCATION, BLUETOOTH].sort()
     }
 
     def 'test addStartNewSessionToAllMainActivities'() {
@@ -183,21 +183,35 @@ class AddApphanceToAndroidSpec extends Specification {
     def 'test adding problem activity after addStartStopInvocations'() {
         given:
         def addApphance = Spy(AddApphanceToAndroid)
-        with(addApphance) {
-            checkIfApphancePresent() >> false
-            addStartNewSessionToAllMainActivities() >> null
-            addPermisions() >> null
-            addApphanceLib() >> null
-            addApphanceLibraryReferenceToProjectProperties() >> null
-        }
 
         when:
         addApphance.addApphance()
 
         then:
+        1 * addApphance.checkIfApphancePresent() >> false
         1 * addApphance.addApphanceImportsAndStartStopMethodsInAllActivities() >> null
+        1 * addApphance.addStartNewSessionToAllMainActivities() >> null
 
         then:
         1 * addApphance.addProblemActivityToManifest() >> null
+        1 * addApphance.addPermisions() >> null
+        1 * addApphance.addApphanceLib() >> null
+        1 * addApphance.addApphanceLibraryReferenceToProjectProperties() >> null
+    }
+
+    def 'test addApphance in production mode'() {
+        given:
+        androidVariantConf.apphanceMode.value = ApphanceMode.PROD
+        def addApphance = Spy(AddApphanceToAndroid, constructorArgs: [androidVariantConf])
+        addApphance.addApphanceLib() >> null
+        def manifest = new File(variantDir, 'AndroidManifest.xml')
+
+        when:
+        addApphance.addApphance()
+
+        then:
+        !manifest.text.contains('ProblemActivity')
+        !manifest.text.contains('READ_PHONE_STATE')
+        !manifest.text.contains('GET_TASKS')
     }
 }

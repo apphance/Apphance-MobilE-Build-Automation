@@ -15,6 +15,8 @@ import org.gradle.api.GradleException
 import org.gradle.api.logging.Logging
 
 import static android.Manifest.permission.*
+import static com.apphance.flow.configuration.apphance.ApphanceLibType.PRE_PROD
+import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkNotNull
 import static com.thoughtworks.qdox.model.Type.VOID
@@ -72,21 +74,28 @@ class AddApphanceToAndroid {
 
     @PackageScope
     void addProblemActivityToManifest() {
-        withManifest(variantDir) { GPathResult manifest ->
-            manifest.application.appendNode {
-                activity 'android:name': 'com.apphance.android.ui.ProblemActivity',
-                        'android:configChanges': 'orientation',
-                        'android:launchMode': 'singleInstance',
-                        'android:process': 'com.utest.apphance.reporteditor'
+        if (libForMode(apphanceMode) == PRE_PROD) {
+            withManifest(variantDir) { GPathResult manifest ->
+                manifest.application.appendNode {
+                    activity 'android:name': 'com.apphance.android.ui.ProblemActivity',
+                            'android:configChanges': 'orientation',
+                            'android:launchMode': 'singleInstance',
+                            'android:process': 'com.utest.apphance.reporteditor'
+                }
             }
+        } else {
+            logger.info("Problem activity not added in apphance production mode")
         }
     }
 
     @PackageScope
     void addPermisions() {
         withManifest(variantDir) { GPathResult manifest ->
-            addPermissionsToManifest manifest, INTERNET, READ_PHONE_STATE, GET_TASKS, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE, ACCESS_COARSE_LOCATION,
-                    ACCESS_FINE_LOCATION, BLUETOOTH
+            addPermissionsToManifest manifest, INTERNET, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE, ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION, BLUETOOTH
+
+            if (libForMode(apphanceMode) == PRE_PROD) {
+                addPermissionsToManifest manifest, READ_PHONE_STATE, GET_TASKS
+            }
         }
     }
 
@@ -181,7 +190,8 @@ class AddApphanceToAndroid {
     void addApphanceLibraryReferenceToProjectProperties() {
         File projectProperties = new File(variantDir, 'project.properties')
         assert projectProperties.exists()
-        def libSize = projectProperties.readLines().findAll {it.trim().startsWith('android.library.reference.')}.size()
+        def libSize = projectProperties.readLines().findAll { it.trim().startsWith('android.library.reference.') }.size()
         projectProperties << "android.library.reference.${libSize + 1}=libs/apphance-library-${apphanceVersion}"
     }
+
 }
