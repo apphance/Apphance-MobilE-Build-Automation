@@ -109,24 +109,24 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         conf.extVersionString ?: plistParser.evaluate(plistParser.versionString(plist), target, configuration) ?: ''
     }
 
-    protected String sdkCmd() {
+    protected List<String> getSdkCmd() {
         switch (mode.value) {
             case SIMULATOR:
-                conf.simulatorSdk.value ? "-sdk ${conf.simulatorSdk.value}" : ''
+                conf.simulatorSdk.value ? ['-sdk', conf.simulatorSdk.value] : []
                 break
             case DEVICE:
-                conf.sdk.value ? "-sdk ${conf.sdk.value}" : ''
+                conf.sdk.value ? ['-sdk', conf.sdk.value] : []
                 break
             default:
-                ''
+                []
         }
     }
 
-    protected String archCmd() {
-        mode.value == SIMULATOR ? '-arch i386' : ''
+    protected List<String> getArchCmd() {
+        mode.value == SIMULATOR ? ['-arch', 'i386'] : []
     }
 
-    protected String buildDirCmd() {
+    protected String getBuildDirCmd() {
         "CONFIGURATION_BUILD_DIR=${buildDir.absolutePath}"
     }
 

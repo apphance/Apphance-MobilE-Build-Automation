@@ -42,7 +42,7 @@ class SingleVariantTaskSpec extends Specification {
     def conf = GroovyStub(AndroidConfiguration) {
         getTarget() >> new StringProperty(value: 'android-7')
         getProjectName() >> new StringProperty(value: projectName)
-        getRootDir() >> new File('')
+        getRootDir() >> project.rootDir
     }
     def executor = new CommandExecutor(fileLinker, logFileGenerator)
     def antExecutor = new AntExecutor(executor: executor)
@@ -54,8 +54,8 @@ class SingleVariantTaskSpec extends Specification {
         task.androidExecutor = androidExecutor
         task.releaseConf = Stub(AndroidReleaseConfiguration) { isEnabled() >> true }
         task.conf = conf
-        task.variant = GroovyStub(AndroidVariantConfiguration) {
-            getTmpDir() >> new File(variantTmpDir.toString())
+        task.variant = GroovyMock(AndroidVariantConfiguration) {
+            getTmpDir() >> new File(project.rootDir, variantTmpDir.toString())
         }
 
         assert project.file(TMP_DIR).deleteDir()

@@ -26,7 +26,9 @@ class IOSExecutor {
     }()
 
     private List<String> showSdks() {
-        run('-showsdks').toList()
+        executor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: conf.xcodebuildExecutionPath() + ['-showsdks'])).toList()*.trim()
     }
 
     @Lazy List<String> targets = {
@@ -43,12 +45,17 @@ class IOSExecutor {
 
     @Lazy
     @PackageScope
-    List<String> list = { run('-list')*.trim() }()
+    List<String> list = {
+        executor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: conf.xcodebuildExecutionPath() + ['-list'])).toList()*.trim()
+    }()
 
     @Lazy List<String> pbxProjToJSON = {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: "plutil -convert json ${conf.xcodeDir.value}/$PROJECT_PBXPROJ -o -".split())).toList()
+                cmd: ['plutil', '-convert', 'json', "${conf.xcodeDir.value}/$PROJECT_PBXPROJ", '-o', '-']
+        )).toList()
     }()
 
     List<String> plistToJSON(File plist) {
@@ -58,14 +65,14 @@ class IOSExecutor {
     private Closure<List<String>> plistToJSONC = { File plist ->
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: "plutil -convert json ${plist.absolutePath} -o -".split().toList()
+                cmd: ['plutil', '-convert', 'json', "${plist.absolutePath}", '-o', '-']
         )).toList()
     }.memoize()
 
     List<String> plistToXML(File plistJSON) {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: "plutil -convert xml1 ${plistJSON.absolutePath} -o -".split().toList()
+                cmd: ['plutil', '-convert', 'xml1', "${plistJSON.absolutePath}", '-o', '-']
         )).toList()
     }
 
@@ -76,7 +83,7 @@ class IOSExecutor {
     private Closure<List<String>> mobileProvisionToXmlC = { File mobileprovision ->
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: "security cms -D -i ${mobileprovision.absolutePath}".split()
+                cmd: ['security', 'cms', '-D', '-i', "${mobileprovision.absolutePath}"]
         )).toList()
     }.memoize()
 
@@ -87,7 +94,7 @@ class IOSExecutor {
     private Closure<Map<String, String>> buildSettingsC = { String target, String configuration ->
         def result = executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -showBuildSettings".split().flatten()
+                cmd: conf.xcodebuildExecutionPath().toList() + ['-target', "$target", '-configuration', "$configuration", '-showBuildSettings']
         )).toList()
         parser.parseBuildSettings(result)
     }.memoize()
@@ -105,9 +112,5 @@ class IOSExecutor {
                 environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: outputFilePath],
                 failOnError: false
         )
-    }
-
-    Iterator<String> run(String command) {
-        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: conf.xcodebuildExecutionPath() + command.split().flatten()))
     }
 }

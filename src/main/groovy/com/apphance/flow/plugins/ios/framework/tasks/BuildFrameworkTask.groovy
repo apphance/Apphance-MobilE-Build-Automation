@@ -152,9 +152,9 @@ class BuildFrameworkTask extends DefaultTask {
     private xcodeBuilds() {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: conf.xcodebuildExecutionPath() + [
                 '-target',
-                variant.target,
+                "\"$variant.target\"",
                 '-configuration',
-                variant.configuration,
+                "\"$variant.configuration\"",
                 '-sdk',
                 conf.simulatorSdk.value,
                 '-arch',
@@ -164,9 +164,9 @@ class BuildFrameworkTask extends DefaultTask {
         ]))
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: conf.xcodebuildExecutionPath() + [
                 '-target',
-                variant.target,
+                "\"$variant.target\"",
                 '-configuration',
-                variant.configuration,
+                "\"$variant.configuration\"",
                 '-sdk',
                 conf.sdk.value,
                 'clean',

@@ -25,11 +25,6 @@ class AndroidExecutorSpec extends Specification {
         then: 1 * commandExecutor.executeCommand({ it.commandForExecution.join(' ') == 'android list avd -c' })
     }
 
-    def 'test run method'() {
-        when: androidExecutor.run(file, "command")
-        then: 1 * commandExecutor.executeCommand({ it.commandForExecution.join(' ') == 'android command' })
-    }
-
     def 'test list targets'() {
         given:
         def ce = Mock(CommandExecutor)
