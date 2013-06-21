@@ -215,7 +215,7 @@ class AndroidManifestHelper {
         FilteredNodeChildren mainActivities = activities.findAll(filter)
         FilteredNodeChildren mainAliasActivities = activityAliases.findAll(filter)
 
-        logger.info("Found main activities: ${mainActivities.size()}, main alias activities: ${mainAliasActivities.size()}")
+        logger.info("Found activities: ${mainActivities.size()}, alias activities: ${mainAliasActivities.size()}")
 
         throwIfConditionTrue(!(mainActivities.size() + mainAliasActivities.size()), 'Main activity could not be found!')
 
