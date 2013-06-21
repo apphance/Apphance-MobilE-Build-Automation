@@ -26,7 +26,7 @@ class IOSExecutor {
     }()
 
     private List<String> showSdks() {
-        run('-showsdks')
+        run('-showsdks').toList()
     }
 
     @Lazy List<String> targets = {
@@ -48,7 +48,7 @@ class IOSExecutor {
     @Lazy List<String> pbxProjToJSON = {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: "plutil -convert json ${conf.xcodeDir.value}/$PROJECT_PBXPROJ -o -".split()))
+                cmd: "plutil -convert json ${conf.xcodeDir.value}/$PROJECT_PBXPROJ -o -".split())).toList()
     }()
 
     List<String> plistToJSON(File plist) {
@@ -58,15 +58,15 @@ class IOSExecutor {
     private Closure<List<String>> plistToJSONC = { File plist ->
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: "plutil -convert json ${plist.absolutePath} -o -".split()
-        ))
+                cmd: "plutil -convert json ${plist.absolutePath} -o -".split().toList()
+        )).toList()
     }.memoize()
 
     List<String> plistToXML(File plistJSON) {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: "plutil -convert xml1 ${plistJSON.absolutePath} -o -".split()
-        ))
+                cmd: "plutil -convert xml1 ${plistJSON.absolutePath} -o -".split().toList()
+        )).toList()
     }
 
     List<String> mobileprovisionToXml(File mobileprovision) {
@@ -77,7 +77,7 @@ class IOSExecutor {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: "security cms -D -i ${mobileprovision.absolutePath}".split()
-        ))
+        )).toList()
     }.memoize()
 
     Map<String, String> buildSettings(String target, String configuration) {
@@ -88,7 +88,7 @@ class IOSExecutor {
         def result = executor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -showBuildSettings".split().flatten()
-        ))
+        )).toList()
         parser.parseBuildSettings(result)
     }.memoize()
 
@@ -107,7 +107,7 @@ class IOSExecutor {
         )
     }
 
-    List<String> run(String command) {
+    Iterator<String> run(String command) {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: conf.xcodebuildExecutionPath() + command.split().flatten()))
     }
 }

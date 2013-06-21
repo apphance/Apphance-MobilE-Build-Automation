@@ -33,7 +33,7 @@ class CommandExecutorSpec extends Specification {
         def command = new Command(cmd: cmd, runDir: runDir)
 
         expect:
-        expectedOutput == executor.executeCommand(command)
+        expectedOutput == executor.executeCommand(command).toList()
 
         where:
         expectedOutput          | runDir                  | cmd
@@ -59,7 +59,7 @@ class CommandExecutorSpec extends Specification {
         def command = new Command(cmd: ['ASDAFSFAG'], runDir: new File('src', 'test'), failOnError: false)
 
         when:
-        def output = executor.executeCommand(command)
+        def output = executor.executeCommand(command).toList()
 
         then:
         output == []
@@ -88,7 +88,7 @@ class CommandExecutorSpec extends Specification {
 
         expect:
         def command = new Command(cmd: cmd, runDir: runDir, environment: env, failOnError: false)
-        expectedOutput == executor.executeCommand(command)
+        expectedOutput == executor.executeCommand(command).toList()
 
         where:
         expectedOutput   | runDir                  | cmd                               | env
@@ -100,7 +100,7 @@ class CommandExecutorSpec extends Specification {
         def command = new Command(cmd: ['/bin/bash', '-c', 'read V; echo $V'], runDir: '.' as File, input: ['10'], params: [V: '$V'])
 
         when:
-        def output = executor.executeCommand(command)
+        def output = executor.executeCommand(command).toList()
 
         then:
         output == ['10']

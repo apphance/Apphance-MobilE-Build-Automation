@@ -75,7 +75,7 @@ class IOSApphanceEnhancerSpec extends Specification {
         })
 
         expect:
-        enhancer.apphanceDependencyGroup() == expectedDependency
+        enhancer.apphanceDependencyGroup == expectedDependency
 
         where:
         apphanceMode | expectedDependency
@@ -98,7 +98,7 @@ class IOSApphanceEnhancerSpec extends Specification {
         }
 
         expect:
-        enhancer.apphanceLibDependency() == expectedDependency
+        enhancer.apphanceLibDependency == expectedDependency
 
         where:
         apphanceMode | expectedDependency

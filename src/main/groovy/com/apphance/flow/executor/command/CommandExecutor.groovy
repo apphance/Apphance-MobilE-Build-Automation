@@ -13,7 +13,7 @@ import static java.lang.System.getProperties
 @Mixin(Preconditions)
 class CommandExecutor {
 
-    def l = Logging.getLogger(getClass())
+    def logger = Logging.getLogger(getClass())
 
     private FileLinker fileLinker
     private CommandLogFilesGenerator logFileGenerator
@@ -28,22 +28,22 @@ class CommandExecutor {
 
         def commandLogs = logFileGenerator.commandLogFiles()
 
-        l.lifecycle("Starting command: '${c.commandForPublic}', in dir: '${c.runDir}' in background")
-        l.lifecycle("Command std: ${fileLinker.fileLink(commandLogs[STD])}")
-        l.lifecycle("Command err: ${fileLinker.fileLink(commandLogs[ERR])}")
+        logger.lifecycle("Starting command: '${c.commandForPublic}', in dir: '${c.runDir}' in background")
+        logger.lifecycle("Command std: ${fileLinker.fileLink(commandLogs[STD])}")
+        logger.lifecycle("Command err: ${fileLinker.fileLink(commandLogs[ERR])}")
 
         Process process = runCommand(c, commandLogs)
 
         process
     }
 
-    List<String> executeCommand(Command c) {
+    Iterator<String> executeCommand(Command c) {
 
         def commandLogs = logFileGenerator.commandLogFiles()
 
-        l.lifecycle("Executing command: '${c.commandForPublic}', in dir: '${c.runDir}'")
-        l.lifecycle("Command std: ${fileLinker.fileLink(commandLogs[STD])}")
-        l.lifecycle("Command err: ${fileLinker.fileLink(commandLogs[ERR])}")
+        logger.lifecycle("Executing command: '${c.commandForPublic}', in dir: '${c.runDir}'")
+        logger.lifecycle("Command std: ${fileLinker.fileLink(commandLogs[STD])}")
+        logger.lifecycle("Command err: ${fileLinker.fileLink(commandLogs[ERR])}")
 
         Process process = runCommand(c, commandLogs)
 
@@ -52,11 +52,11 @@ class CommandExecutor {
         handleExitValue(exitValue, c)
 
         if (commandLogs[ERR]?.text) {
-            l.warn("Command err: ${fileLinker.fileLink(commandLogs[ERR])}, contains some text. It may be info about" +
+            logger.warn("Command err: ${fileLinker.fileLink(commandLogs[ERR])}, contains some text. It may be info about" +
                     " potential problems")
         }
 
-        commandLogs[STD]?.readLines()
+        commandLogs[STD]?.newInputStream()?.newReader()?.iterator()
     }
 
     private Process runCommand(Command c, Map<CommandLogFilesGenerator.LogFile, File> commandLog) {
@@ -81,7 +81,7 @@ class CommandExecutor {
             if (c.failOnError) {
                 throw new CommandFailedException(e.message, c)
             } else {
-                l.error("Error while executing command: ${c.commandForPublic}, in dir: ${c.runDir}, error: ${e.message}")
+                logger.error("Error while executing command: ${c.commandForPublic}, in dir: ${c.runDir}, error: ${e.message}")
             }
         }
 
@@ -106,7 +106,7 @@ class CommandExecutor {
                         "exit value: '${exitValue}'"
         )
         if (exitValue != 0 && !c.failOnError) {
-            l.warn("Executor is set not to fail on error, but command exited with value not equal to '0': '$exitValue'." +
+            logger.warn("Executor is set not to fail on error, but command exited with value not equal to '0': '$exitValue'." +
                     " Might be potential problem, investigate error logs")
         }
     }

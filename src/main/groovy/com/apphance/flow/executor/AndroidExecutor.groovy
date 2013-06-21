@@ -23,7 +23,7 @@ class AndroidExecutor {
     @Inject CommandExecutor executor
     @Inject AndroidConfiguration conf
 
-    @Lazy List<String> listTargetOutput = { run(conf.rootDir, 'list target') }()
+    @Lazy List<String> listTargetOutput = { run(conf.rootDir, 'list target').toList() }()
 
     @Lazy List<String> targets = {
         parseResult(listTargetOutput, TARGET_HEADER_PATTERN).sort().findAll { isNotBlank(it) }
@@ -89,7 +89,7 @@ class AndroidExecutor {
         run(directory, "-v create avd -n $name -t $targetName -s $skin -c $cardSize -p $avdDir -f ${snapshotsEnabled ? '-a' : ''}", [input: ['no']])
     }
 
-    private List<String> run(File directory, String command, Map params = [:]) {
+    private Iterator<String> run(File directory, String command, Map params = [:]) {
         try {
             executor.executeCommand(new Command([runDir: directory, cmd: "android $command".split(), failOnError: false] + params))
         } catch (IOException e) {

@@ -1,6 +1,5 @@
 package com.apphance.flow.plugins.android.test.tasks
 
-import android.Manifest
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.executor.AntExecutor
@@ -290,7 +289,7 @@ class TestAndroidTask extends DefaultTask {
                 'pull',
                 testConf.XMLJUnitDirPath
         ]
-        executor.executeCommand(new Command(rawDir: testConf.coverageDir, cmd: commandDownloadXmlFile))
+        executor.executeCommand(new Command(runDir: testConf.coverageDir, cmd: commandDownloadXmlFile))
     }
 
     private void stopEmulator() {

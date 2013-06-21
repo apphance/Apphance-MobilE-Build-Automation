@@ -3,13 +3,16 @@ package com.apphance.flow.executor
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.executor.command.CommandExecutor
 import org.gradle.api.Project
+import spock.lang.Shared
 import spock.lang.Specification
 
 class AndroidExecutorSpec extends Specification {
 
-    AndroidConfiguration conf = new AndroidConfiguration(project: GroovyStub(Project))
-    CommandExecutor commandExecutor = Mock()
-    File file = Mock()
+    def conf = new AndroidConfiguration(project: GroovyStub(Project))
+    def commandExecutor = GroovyMock(CommandExecutor) {
+        executeCommand(_) >> targets.split('\n').iterator()
+    }
+    def file = GroovyMock(File)
     def androidExecutor = new AndroidExecutor(executor: commandExecutor, conf: conf)
 
     def 'test updateProject method'() {
@@ -30,7 +33,7 @@ class AndroidExecutorSpec extends Specification {
     def 'test list targets'() {
         given:
         def ce = Mock(CommandExecutor)
-        ce.executeCommand({ it.commandForExecution.join(' ') == 'android list target' }) >> targets.split('\n')
+        ce.executeCommand({ it.commandForExecution.join(' ') == 'android list target' }) >> targets.split('\n').iterator()
 
         and:
         def ae = new AndroidExecutor(executor: ce, conf: conf)
@@ -45,7 +48,7 @@ class AndroidExecutorSpec extends Specification {
     def 'test list skins'() {
         given:
         def ce = Mock(CommandExecutor)
-        ce.executeCommand(_) >> targets.split('\n')
+        ce.executeCommand(_) >> targets.split('\n').iterator()
 
         and:
         def ae = new AndroidExecutor(executor: ce, conf: conf)
@@ -60,7 +63,7 @@ class AndroidExecutorSpec extends Specification {
     def 'test default skin for target'() {
         given:
         def ce = Mock(CommandExecutor)
-        ce.executeCommand(_) >> targets.split('\n')
+        ce.executeCommand(_) >> targets.split('\n').iterator()
 
         and:
         def ae = new AndroidExecutor(executor: ce, conf: conf)
@@ -78,7 +81,7 @@ class AndroidExecutorSpec extends Specification {
     def 'id for target'() {
         given:
         def ce = Mock(CommandExecutor)
-        ce.executeCommand(_) >> targets.split('\n')
+        ce.executeCommand(_) >> targets.split('\n').iterator()
 
         and:
         def ae = new AndroidExecutor(executor: ce, conf: conf)
@@ -94,6 +97,7 @@ class AndroidExecutorSpec extends Specification {
         '4'         | 'Google Inc.:Google APIs:4'
     }
 
+    @Shared
     def targets = "Available Android targets:\n" +
             "----------\n" +
             "id: 1 or \"android-3\"\n" +
