@@ -30,12 +30,13 @@ class ConfigurationWizard {
     public static Closure<String> blue = this.&color.curry(BLUE)
 
     def resolveConfigurations(Collection<? extends AbstractConfiguration> configurations) {
-        configurations.each { AbstractConfiguration c ->
-            if (!c.enabled && interactiveMode) {
-                enablePlugin(c)
+        configurations.each { AbstractConfiguration conf ->
+            println "\nConfiguring $conf.configurationName"
+            if (!conf.enabled && interactiveMode) {
+                enablePlugin(conf)
             }
-            if (c.enabled) {
-                readValues(c)
+            if (conf.enabled) {
+                readValues(conf)
             }
         }
 
