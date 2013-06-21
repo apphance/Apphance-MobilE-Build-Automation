@@ -160,6 +160,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     @Override
     void checkProperties() {
+        super.checkProperties()
         check versionCode.matches('[0-9]+'), """|Property 'versionCode' must have numerical value! Check 'version.code'
                                                 |system property or 'VERSION_CODE' env variable
                                                 |or $plist.absolutePath file!""".stripMargin()

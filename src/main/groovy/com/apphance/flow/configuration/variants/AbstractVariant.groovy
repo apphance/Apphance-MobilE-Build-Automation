@@ -44,7 +44,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
             interactive: { apphanceConf.enabled },
             required: { apphanceConf.enabled },
             possibleValues: { possibleApphanceModes() },
-            validator: { it in possibleApphanceModes() }
+            validator: { ApphanceMode it -> it.toString() in possibleApphanceModes() }
     )
 
     def apphanceAppKey = new StringProperty(
@@ -83,4 +83,11 @@ abstract class AbstractVariant extends AbstractConfiguration {
     }
 
     abstract String getPrefix()
+
+    @Override
+    void checkProperties() {
+        if (apphanceConf.enabled) {
+            defaultValidation apphanceMode, apphanceAppKey, apphanceLibVersion
+        }
+    }
 }

@@ -58,6 +58,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
 
     @Override
     void checkProperties() {
+        super.checkProperties()
         if (androidReleaseConf.enabled || apphanceConf.enabled) {
             checkSigningConfiguration()
         }
