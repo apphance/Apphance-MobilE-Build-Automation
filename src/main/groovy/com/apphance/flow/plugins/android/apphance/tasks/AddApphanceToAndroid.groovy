@@ -34,6 +34,9 @@ class AddApphanceToAndroid {
     private static final String ON_START = 'onStart'
     private static final String ON_STOP = 'onStop'
 
+    AddApphanceToAndroid() {
+    }
+
     AddApphanceToAndroid(AndroidVariantConfiguration androidVariantConf) {
         variantDir = androidVariantConf.tmpDir
         apphanceAppKey = androidVariantConf.apphanceAppKey.value
@@ -48,7 +51,7 @@ class AddApphanceToAndroid {
     }
 
     public void addApphance() {
-        logger.info "Adding apphance to $variantDir.absolutePath"
+        logger.info "Adding apphance to ${variantDir?.absolutePath}"
         if (checkIfApphancePresent()) throw new GradleException("Apphance was already added")
 
         addStartNewSessionToAllMainActivities()

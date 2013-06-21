@@ -179,4 +179,25 @@ class AddApphanceToAndroidSpec extends Specification {
         then:
         contains(new File(variantDir, 'project.properties'), 'android.library.reference.2=libs/apphance-library-1.9-RC1')
     }
+
+    def 'test adding problem activity after addStartStopInvocations'() {
+        given:
+        def addApphance = Spy(AddApphanceToAndroid)
+        with(addApphance) {
+            checkIfApphancePresent() >> false
+            addStartNewSessionToAllMainActivities() >> null
+            addPermisions() >> null
+            addApphanceLib() >> null
+            addApphanceLibraryReferenceToProjectProperties() >> null
+        }
+
+        when:
+        addApphance.addApphance()
+
+        then:
+        1 * addApphance.addApphanceImportsAndStartStopMethodsInAllActivities() >> null
+
+        then:
+        1 * addApphance.addProblemActivityToManifest() >> null
+    }
 }
