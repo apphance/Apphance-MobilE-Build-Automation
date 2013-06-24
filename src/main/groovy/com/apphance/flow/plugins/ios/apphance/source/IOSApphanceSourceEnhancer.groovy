@@ -19,6 +19,8 @@ class IOSApphanceSourceEnhancer {
 
     private logger = getLogger(getClass())
 
+    private final static DELEGATE_PATTERN = ~/.*<.*UIApplicationDelegate.*>.*/
+
     @Inject AntBuilder ant
 
     @PackageScope AbstractIOSVariant variant
@@ -77,7 +79,7 @@ class IOSApphanceSourceEnhancer {
     String findAppDelegateFile() {
         def appFilename = null
         variant.tmpDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
-            if (it.name.endsWith('.h') && it.text.contains('<UIApplicationDelegate>')) {
+            if (it.name.endsWith('.h') && it.filterLine { it ==~ DELEGATE_PATTERN }) {
                 appFilename = it.canonicalPath
             }
         }
@@ -88,8 +90,8 @@ class IOSApphanceSourceEnhancer {
     void addApphanceToFile(File appDelegateFile, File newAppDelegateFile) {
         boolean startNewSessionAdded = false
         boolean searchingForOpeningBrace = false
-        def apphanceInit = "[APHLogger startNewSessionWithApplicationKey:@\"" + "$variant.apphanceAppKey.value" + "\" $apphanceMode];"
-        def apphanceExceptionHandler = "NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);"
+        def apphanceInit = """[APHLogger startNewSessionWithApplicationKey:@"$variant.apphanceAppKey.value" $apphanceMode];"""
+        def apphanceExceptionHandler = 'NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);'
         newAppDelegateFile.withWriter { out ->
             appDelegateFile.eachLine { line ->
                 if (line.matches('.*application.*[dD]idFinishLaunching.*')) {
