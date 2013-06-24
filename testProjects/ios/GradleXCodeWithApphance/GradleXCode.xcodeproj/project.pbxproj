@@ -12,7 +12,6 @@
 		671DF9401510CCE8001613B7 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671DF93F1510CCE8001613B7 /* CoreLocation.framework */; };
 		671DF9421510CCF2001613B7 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671DF9411510CCF2001613B7 /* CoreTelephony.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		671DF9441510CCFE001613B7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671DF9431510CCFE001613B7 /* SystemConfiguration.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		6A3A634D16A00C210099C004 /* Apphance-Pre-Production.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A3A634C16A00C210099C004 /* Apphance-Pre-Production.framework */; };
 		6A52E4F6169F01EF0082C2CE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A52E4F5169F01EF0082C2CE /* Security.framework */; };
 		D382B71614703FE500E9CC9B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71514703FE500E9CC9B /* UIKit.framework */; };
 		D382B71814703FE500E9CC9B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D382B71714703FE500E9CC9B /* Foundation.framework */; };
@@ -41,14 +40,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		671DF9381510CA8F001613B7 /* GradleXCode copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GradleXCode copy-Info.plist"; path = "/Users/blazejmarcinkiewicz/projects/Ameba/testProjects/ios/GradleXCodeWithApphance/GradleXCode copy-Info.plist"; sourceTree = "<absolute>"; };
-		671DF9391510CBB5001613B7 /* Apphance-iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Apphance-iOS.framework"; path = "GradleXCode/Apphance-iOS.framework"; sourceTree = "<group>"; };
 		671DF93B1510CCD1001613B7 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		671DF93D1510CCD7001613B7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		671DF93F1510CCE8001613B7 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		671DF9411510CCF2001613B7 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		671DF9431510CCFE001613B7 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		6A3A634C16A00C210099C004 /* Apphance-Pre-Production.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Apphance-Pre-Production.framework"; path = "GradleXCode/Apphance-Pre-Production.framework"; sourceTree = "<group>"; };
 		6A52E4F5169F01EF0082C2CE /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		D382B71114703FE500E9CC9B /* GradleXCodeWithApphance.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GradleXCodeWithApphance.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D382B71514703FE500E9CC9B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -77,7 +73,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6A3A634D16A00C210099C004 /* Apphance-Pre-Production.framework in Frameworks */,
 				6A52E4F6169F01EF0082C2CE /* Security.framework in Frameworks */,
 				671DF9441510CCFE001613B7 /* SystemConfiguration.framework in Frameworks */,
 				671DF9421510CCF2001613B7 /* CoreTelephony.framework in Frameworks */,
@@ -106,7 +101,6 @@
 		D382B70614703FE500E9CC9B = {
 			isa = PBXGroup;
 			children = (
-				6A3A634C16A00C210099C004 /* Apphance-Pre-Production.framework */,
 				6A52E4F5169F01EF0082C2CE /* Security.framework */,
 				671DF9431510CCFE001613B7 /* SystemConfiguration.framework */,
 				671DF9411510CCF2001613B7 /* CoreTelephony.framework */,
@@ -117,7 +111,6 @@
 				D382B73C14703FE500E9CC9B /* GradleXCodeTests */,
 				D382B71414703FE500E9CC9B /* Frameworks */,
 				D382B71214703FE500E9CC9B /* Products */,
-				671DF9381510CA8F001613B7 /* GradleXCode copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -133,7 +126,6 @@
 		D382B71414703FE500E9CC9B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				671DF9391510CBB5001613B7 /* Apphance-iOS.framework */,
 				D382B71514703FE500E9CC9B /* UIKit.framework */,
 				D382B71714703FE500E9CC9B /* Foundation.framework */,
 				D382B71914703FE500E9CC9B /* CoreGraphics.framework */,

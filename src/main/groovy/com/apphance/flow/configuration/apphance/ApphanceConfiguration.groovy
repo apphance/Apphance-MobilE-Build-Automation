@@ -3,10 +3,11 @@ package com.apphance.flow.configuration.apphance
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
+import com.google.inject.Singleton
 
 import javax.inject.Inject
 
-@com.google.inject.Singleton
+@Singleton
 class ApphanceConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Apphance Configuration'

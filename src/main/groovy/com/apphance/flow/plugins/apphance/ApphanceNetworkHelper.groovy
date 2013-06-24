@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.apphance
 
-import groovy.json.JsonBuilder
+import groovy.json.JsonOutput
 import org.apache.http.HttpHost
 import org.apache.http.HttpResponse
 import org.apache.http.auth.AuthScope
@@ -23,77 +23,75 @@ import static org.apache.http.entity.mime.HttpMultipartMode.STRICT
 
 class ApphanceNetworkHelper {
 
-    String username
-    String pass
-    DefaultHttpClient httpClient
-    HttpHost targetHost
-    BasicHttpContext localcontext
+    private String username
+    private String pass
+    private HttpHost targetHost
+    private DefaultHttpClient httpClient
+    private BasicHttpContext localContext
 
-    public ApphanceNetworkHelper(String username, String pass) {
-        this.username = username
+    ApphanceNetworkHelper(String user, String pass) {
+        this.username = user
         this.pass = pass
-        targetHost = new HttpHost("apphance-app.appspot.com", 443, "https");
-        httpClient = new DefaultHttpClient()
+        this.targetHost = new HttpHost('apphance-app.appspot.com', 443, 'https')
+        this.httpClient = new DefaultHttpClient()
         httpClient.getCredentialsProvider().setCredentials(
                 new AuthScope(targetHost.getHostName(), targetHost.getPort()),
-                new UsernamePasswordCredentials("${username}", "${pass}")
+                new UsernamePasswordCredentials(user, pass)
         )
-        AuthCache authCache = new BasicAuthCache();
-        authCache.put(targetHost, new BasicScheme());
+        AuthCache authCache = new BasicAuthCache()
+        authCache.put(targetHost, new BasicScheme())
 
-        localcontext = new BasicHttpContext();
-        localcontext.setAttribute(AUTH_CACHE, authCache);
+        this.localContext = new BasicHttpContext()
+        localContext.setAttribute(AUTH_CACHE, authCache)
     }
 
-    HttpResponse updateArtifactQuery(String apphanceKey, String versionString, String versionNumber, boolean setAsCurrent, ArrayList resourcesToUpdate) {
+    HttpResponse updateArtifactQuery(String apphanceKey, String versionString, String versionNumber, boolean setAsCurrent, List resourcesToUpdate) {
 
-        HttpPost post = new HttpPost('/api/application.update_version')
+        def post = new HttpPost('/api/application.update_version')
 
-        String message = prepareUpdateArtifactJSON(apphanceKey, versionString, versionNumber, setAsCurrent, resourcesToUpdate)
-        StringEntity se = new StringEntity(message)
-        post.entity = se
+        def content = updateArtifactsJSONQuery(apphanceKey, versionString, versionNumber, setAsCurrent, resourcesToUpdate)
+        post.entity = new StringEntity(content)
 
-        post.setHeader("Accept", "application/json");
-        post.setHeader("Content-type", "application/json");
-        post.setHeader("Connection", "close")
-        post.setHeader("Host", targetHost.getHostName())
+        post.setHeader('Accept', 'application/json')
+        post.setHeader('Content-type', 'application/json')
+        post.setHeader('Connection', 'close')
+        post.setHeader('Host', targetHost.getHostName())
 
-        httpClient.execute(targetHost, post, localcontext)
+        httpClient.execute(targetHost, post, localContext)
     }
 
-    String prepareUpdateArtifactJSON(apphanceKey, versionString, versionNumber, setAsCurrent, resourcesToUpdate) {
-        def jsonBuilder = new JsonBuilder(
+    private String updateArtifactsJSONQuery(apphanceKey, versionString, versionCode, setAsCurrent, resourcesToUpdate) {
+        JsonOutput.toJson(
                 [
                         api_key: apphanceKey,
                         version: [
                                 name: versionString,
-                                number: versionNumber
+                                number: versionCode.toInteger()
                         ],
                         current: setAsCurrent,
                         update_resources: resourcesToUpdate
                 ]
         )
-        jsonBuilder.toString()
     }
 
     HttpResponse uploadResource(File resource, String url, String formBodyPart) {
-        HttpPost uploadReq = new HttpPost(url.replace("https://apphance-app.appspot.com", ""))
+        HttpPost uploadReq = new HttpPost(url.replace('https://apphance-app.appspot.com', ''))
 
-        def boundary = "----------------------------90505c6cdd54"
+        def boundary = '----------------------------90505c6cdd54'
 
-        MultipartEntity reqEntity = new MultipartEntity(STRICT, boundary, Charset.forName("UTF-8"));
-        reqEntity.addPart(new FormBodyPart(formBodyPart, new FileBody(resource, "application/octet-stream")))
+        def reqEntity = new MultipartEntity(STRICT, boundary, Charset.forName('UTF-8'))
+        reqEntity.addPart(new FormBodyPart(formBodyPart, new FileBody(resource, 'application/octet-stream')))
         uploadReq.setEntity(reqEntity)
 
-        uploadReq.setHeader("Content-type", "multipart/form-data; boundary=" + boundary)
-        uploadReq.setHeader("Accept", "*/*")
-        uploadReq.setHeader("Connection", "close")
-        uploadReq.setHeader("Host", targetHost.getHostName())
+        uploadReq.setHeader('Content-type', "multipart/form-data; boundary=$boundary")
+        uploadReq.setHeader('Accept', '*/*')
+        uploadReq.setHeader('Connection', 'close')
+        uploadReq.setHeader('Host', targetHost.getHostName())
 
-        httpClient.execute(targetHost, uploadReq, localcontext)
+        httpClient.execute(targetHost, uploadReq, localContext)
     }
 
-    void closeConnection() {
-        httpClient.getConnectionManager().shutdown();
+    void close() {
+        httpClient.getConnectionManager().shutdown()
     }
 }

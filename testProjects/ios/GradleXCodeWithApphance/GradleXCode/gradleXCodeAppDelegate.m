@@ -13,7 +13,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [APHLogger startNewSessionWithApplicationKey:@"aaa" apphanceMode:kAPHApphanceModeQA];
     // Override point for customization after application launch.
     return YES;
 }

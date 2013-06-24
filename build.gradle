@@ -164,7 +164,9 @@ dependencies {
     compile 'commons-collections:commons-collections:3.2.1'
     compile 'com.google.guava:guava:14.0.1'
     compile 'com.thoughtworks.qdox:qdox:1.12.1'
-    compile 'com.google.android:android:4.1.1.4'
+    compile('com.google.android:android:4.1.1.4') {
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+    }
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'

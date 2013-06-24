@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.apphance
 
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
-import com.apphance.flow.plugins.ios.apphance.tasks.UploadIOSArtifactTask
+import com.apphance.flow.plugins.ios.apphance.tasks.IOSApphanceUploadTask
 import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.flow.plugins.ios.release.IOSReleaseListener
 import com.apphance.flow.plugins.release.tasks.ImageMontageTask
@@ -45,8 +45,8 @@ class IOSApphancePlugin implements Plugin<Project> {
 
                     def uploadTask =
                         project.task("upload$variant.name",
-                                type: UploadIOSArtifactTask,
-                                dependsOn: [variant.buildTaskName, ImageMontageTask.NAME]) as UploadIOSArtifactTask
+                                type: IOSApphanceUploadTask,
+                                dependsOn: [variant.buildTaskName, ImageMontageTask.NAME]) as IOSApphanceUploadTask
                     uploadTask.variant = variant
                 } else {
                     logger.info("Apphance is disabled for variant '$variant.name'")

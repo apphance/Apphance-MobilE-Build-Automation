@@ -3,12 +3,4 @@ buildscript {
     apply from: "$flowProjectPath/flow_in_classpath.gradle"
 }
 
-ext {
-	apphanceUserName = "maciej.opala@polidea.pl"
-	apphancePassword = "apphancetest"
-}
-
 apply plugin: 'apphance-flow'
-iosUnitTests {
-    configuration = 'Debug'
-}

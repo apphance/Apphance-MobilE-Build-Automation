@@ -68,7 +68,7 @@ class UploadAndroidArtifactTask extends DefaultTask {
             logger.error(msg)
             throw new GradleException(msg)
         } finally {
-            networkHelper?.closeConnection()
+            networkHelper?.close()
         }
     }
 
