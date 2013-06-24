@@ -7,7 +7,6 @@ import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.flow.plugins.ios.release.IOSReleaseListener
-import com.apphance.flow.plugins.release.tasks.ImageMontageTask
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.QA
@@ -103,10 +102,6 @@ class IOSApphancePluginSpec extends Specification {
         project.tasks['buildid2'].actions
         project.tasks['uploadid1'].actions
         project.tasks['uploadid2'].actions
-
-        then: 'each tasks has correct dependency'
-        project.tasks['uploadid1'].dependsOn.flatten().containsAll('buildid1', ImageMontageTask.NAME)
-        project.tasks['uploadid2'].dependsOn.flatten().containsAll('buildid2', ImageMontageTask.NAME)
 
         then:
         plugin.builder.buildListeners.size() > 0

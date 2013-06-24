@@ -95,7 +95,6 @@ class IOSApphancePbxEnhancer {
 
     @PackageScope
     List<String> getFilesToReplaceLogs() {
-        //TODO replace with one method
         def allSourceFiles = [:]
         findAllSourceFiles(mainGroup, allSourceFiles, '')
         def sourceFilesForPhase = fileNamesForSourceBuildPhase

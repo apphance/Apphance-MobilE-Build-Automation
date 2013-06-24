@@ -7,7 +7,6 @@ import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.plugins.apphance.ApphanceNetworkHelper
 import com.apphance.flow.util.Preconditions
 import com.google.inject.Inject
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.transform.PackageScope
 import org.apache.http.util.EntityUtils
@@ -26,7 +25,7 @@ class IOSApphanceUploadTask extends DefaultTask {
 
     private logger = getLogger(getClass())
 
-    String description = 'Uploads ipa, dsym & image_montage to Apphance server'
+    String description = 'Uploads ipa, dsym to Apphance server'
     String group = FLOW_APPHANCE_SERVICE
 
     @Inject ApphanceConfiguration apphanceConf
@@ -34,7 +33,7 @@ class IOSApphanceUploadTask extends DefaultTask {
     @Inject PropertyReader reader
 
     AbstractIOSVariant variant
-    @Lazy
+    @Lazy(soft = true)
     @PackageScope
     ApphanceNetworkHelper networkHelper = {
         new ApphanceNetworkHelper(apphanceUser, apphancePass)
@@ -50,36 +49,54 @@ class IOSApphanceUploadTask extends DefaultTask {
         validate(isNotEmpty(apphanceKey), { throw new GradleException(format(bundle.getString('exception.apphance.empty.key'), variant.name)) })
 
         try {
+            def response = updateArtifactQuery()
 
-            def response = networkHelper.updateArtifactQuery(apphanceKey, variant.versionString, variant.versionCode, false, ['ipa', 'dsym', 'image_montage'])
-            logger.info("Upload version query response: $response.statusLine")
-
-            validate(response.entity != null, { throw new GradleException('Error while uploading version query, empty response received') })
-
-            def responseJSON = new JsonSlurper().parseText(response.entity.content.text) as Map
-
-            response = networkHelper.uploadResource(releaseConf.ipaFiles[variant.name].location, responseJSON.update_urls.ipa, 'ipa')
-            logger.info("Upload ipa response: $response.statusLine")
-            EntityUtils.consume(response.entity)
-
-            response = networkHelper.uploadResource(releaseConf.imageMontageFile.location, responseJSON.update_urls.image_montage, 'image_montage')
-            logger.info("Upload image_montage response: $response.statusLine")
-            EntityUtils.consume(response.entity)
-
-            def ahSymDir = releaseConf.ahSYMDirs[variant.name].location
-            def ahSymFiles = ahSymDir.listFiles([accept: { d, n -> def f = new File(d, n); n.endsWith('ahsym') && f.isFile() && f.exists() }] as FilenameFilter)
-            ahSymFiles.each { ahSYM ->
-                response = networkHelper.uploadResource(ahSYM, responseJSON.update_urls.dsym, 'dsym')
-                logger.info("Upload ahsym ($ahSYM) response: $response.statusLine")
-                EntityUtils.consume(response.entity)
-            }
+            uploadIpa(response.update_urls.ipa)
+            updateAhsym(response.update_urls.dsym)
 
         } catch (e) {
-            def msg = "Error while uploading iOS artifacts to apphance: $e.message"
+            def msg = "Error while uploading iOS artifacts to apphance. $e.message"
             logger.error(msg)
             throw new GradleException(msg)
         } finally {
             networkHelper?.close()
+        }
+    }
+
+    private Map updateArtifactQuery() {
+        def response = networkHelper.updateArtifactQuery(apphanceKey, variant.versionString, variant.versionCode, false, ['ipa', 'dsym'])
+        logger.info("Upload version query response: $response.statusLine")
+
+        validate(response.entity != null, { throw new GradleException('Error while uploading version query, empty response received') })
+
+        new JsonSlurper().parseText(response.entity.content.text) as Map
+    }
+
+    private void uploadIpa(String url) {
+        def response = networkHelper.uploadResource(releaseConf.ipaFiles[variant.name].location, url, 'ipa')
+        validate(response.statusLine.statusCode == 200,
+                {
+                    throw new GradleException(format(bundle.getString('exception.apphance.ios.upload.ipa'),
+                            releaseConf.ipaFiles[variant.name].location.absolutePath, response.entity.content as String))
+                })
+        logger.info("Upload ipa response: $response.statusLine")
+        EntityUtils.consume(response.entity)
+    }
+
+    private void updateAhsym(String url) {
+        def ahSymDir = releaseConf.ahSYMDirs[variant.name].location
+        def ahSymFiles = ahSymDir.listFiles(
+                [accept: { d, n -> def f = new File(d, n); n.endsWith('ahsym') && f.isFile() && f.exists() }] as FilenameFilter)
+
+        ahSymFiles.each { ahSYM ->
+            def response = networkHelper.uploadResource(ahSYM, url, 'dsym')
+            logger.info("Upload ahsym ($ahSYM) response: $response.statusLine")
+            validate(response.statusLine.statusCode == 200,
+                    {
+                        throw new GradleException(format(bundle.getString('exception.apphance.ios.upload.ahsym'),
+                                ahSYM.absolutePath, response.entity.content as String))
+                    })
+            EntityUtils.consume(response.entity)
         }
     }
 
