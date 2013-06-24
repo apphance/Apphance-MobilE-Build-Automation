@@ -44,7 +44,7 @@ class AddApphanceToAndroid {
         apphanceAppKey = androidVariantConf.apphanceAppKey.value
         apphanceVersion = androidVariantConf.apphanceLibVersion.value
         apphanceMode = androidVariantConf.apphanceMode.value
-        ARTIFACTORY_URL = "https://dev.polidea.pl/artifactory/libs-releases-local/com/apphance/android.pre-production/1.9-RC1/android" +
+        ARTIFACTORY_URL = "https://dev.polidea.pl/artifactory/libs-releases-local/com/apphance/android.pre-production/${apphanceVersion}/android" +
                 ".pre-production-${apphanceVersion}.zip"
         checkArgument variantDir.exists()
         checkNotNull apphanceAppKey
