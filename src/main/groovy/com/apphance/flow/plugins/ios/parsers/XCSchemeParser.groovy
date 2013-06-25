@@ -18,6 +18,11 @@ class XCSchemeParser {
         conf
     }
 
+    boolean isBuildable(String schemeName) {
+        def xml = parseSchemeFile(schemeName)
+        xml.LaunchAction.BuildableProductRunnable.size() != 0
+    }
+
     String buildableName(String schemeName) {
         def xml = parseSchemeFile(schemeName)
         def buildableName = xml.LaunchAction.BuildableProductRunnable.BuildableReference.@BuildableName
@@ -37,8 +42,8 @@ class XCSchemeParser {
 
     private File schemeFile(String schemeName) {
         def file = new File(conf.schemesDir, "${schemeName}.xcscheme")
-        validate(file.exists() && file.isFile(), {
-            throw new GradleException("Shemes must be shared! Invalid scheme file: ${file.absolutePath}")
+        validate(file.exists() && file.isFile() && file.size() > 0, {
+            throw new GradleException("Shemes must be shared! Invalid scheme file: $file.absolutePath")
         })
         file
     }

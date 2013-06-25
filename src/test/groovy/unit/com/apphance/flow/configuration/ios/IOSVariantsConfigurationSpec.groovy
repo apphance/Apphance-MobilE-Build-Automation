@@ -1,7 +1,11 @@
 package com.apphance.flow.configuration.ios
 
-import com.apphance.flow.configuration.ios.variants.*
+import com.apphance.flow.configuration.ios.variants.IOSSchemeVariant
+import com.apphance.flow.configuration.ios.variants.IOSTCVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariantFactory
+import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.reader.PropertyPersister
+import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -25,6 +29,9 @@ class IOSVariantsConfigurationSpec extends Specification {
         variantsConf.conf = conf
         variantsConf.propertyPersister = Stub(PropertyPersister, { get(_) >> '' })
         variantsConf.variantFactory = vf
+        variantsConf.schemeParser = GroovyMock(XCSchemeParser) {
+            isBuildable(_) >> true
+        }
     }
 
     @Unroll
@@ -50,7 +57,7 @@ class IOSVariantsConfigurationSpec extends Specification {
         conf.schemes >> schemes
 
         when:
-        def variants = variantsConf.buildVariantsList()
+        variantsConf.buildVariantsList()
 
         then:
         variantsConf.hasSchemes() == hasSchemes
@@ -60,5 +67,26 @@ class IOSVariantsConfigurationSpec extends Specification {
         true       | ['Some', 'SomeWithMonkey']
         false      | ['', '  ']
         false      | []
+    }
+
+    def 'has schemes when some are not buildable'() {
+        given:
+        conf.schemes >> [schemeName]
+
+        and:
+        variantsConf.schemeParser = GroovyMock(XCSchemeParser) {
+            isBuildable(schemeName) >> buildable
+        }
+
+        when:
+        variantsConf.buildVariantsList()
+
+        then:
+        variantsConf.hasSchemes() == hasSchemes
+
+        where:
+        hasSchemes | schemeName | buildable
+        false      | 'Some'     | false
+        true       | 'Some2'    | true
     }
 }

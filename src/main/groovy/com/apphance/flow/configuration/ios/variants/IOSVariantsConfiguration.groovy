@@ -4,6 +4,7 @@ import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
+import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.google.inject.Singleton
 import groovy.transform.PackageScope
 
@@ -23,6 +24,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Inject IOSConfiguration conf
     @Inject IOSVariantFactory variantFactory
+    @Inject XCSchemeParser schemeParser
 
     @Override
     @Inject
@@ -41,8 +43,8 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     def variantsNames = new ListStringProperty(
             name: 'ios.variants',
             message: "Variants (first variant on the list will be considered as a 'main'",
-            validator: { true },//TODO
             possibleValues: { variantsNames.value ?: [] }
+            //TODO validator
     )
 
     @PackageScope
@@ -72,11 +74,11 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @PackageScope
     boolean hasSchemes() {
-        conf.schemes.any { isNotBlank(it) }
+        conf.schemes.any { isNotBlank(it) && schemeParser.isBuildable(it) }
     }
 
     private List<AbstractIOSVariant> createVariantsFromSchemes() {
-        conf.schemes.collect { variantFactory.createSchemeVariant(it) }
+        conf.schemes.findAll { schemeParser.isBuildable(it) }.collect { variantFactory.createSchemeVariant(it) }
     }
 
     private List<AbstractIOSVariant> createVariantsFromTargetsAndConfigurations() {
@@ -104,6 +106,5 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     @Override
     void checkProperties() {
         super.checkProperties()
-
     }
 }
