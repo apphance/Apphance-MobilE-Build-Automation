@@ -127,7 +127,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     }
 
     protected String getBuildDirCmd() {
-        "CONFIGURATION_BUILD_DIR=${buildDir.absolutePath}"
+        "CONFIGURATION_BUILD_DIR=$buildDir.absolutePath"
     }
 
     String getFullVersionString() {

@@ -99,7 +99,7 @@ abstract class AbstractConfiguration {
 
     def defaultValidation(AbstractProperty... properties) {
         properties.each {
-            check it.validator(it.value), "Incorrect value ${it.value} of ${it.name} property"
+            check it.validator(it.value), "Incorrect value $it.value of $it.name property"
         }
     }
 }

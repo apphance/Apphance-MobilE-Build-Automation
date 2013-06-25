@@ -10,6 +10,8 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static org.gradle.api.logging.Logging.getLogger
+
 /**
  * Plugin for preparing reports after successful IOS build.
  *
@@ -21,12 +23,15 @@ import javax.inject.Inject
  */
 class IOSFrameworkPlugin implements Plugin<Project> {
 
+    private logger = getLogger(getClass())
+
     @Inject IOSFrameworkConfiguration frameworkConf
     @Inject IOSVariantsConfiguration variantsConf
 
     @Override
     void apply(Project project) {
         if (frameworkConf.isEnabled()) {
+            logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
             def task = project.task(BuildFrameworkTask.NAME,
                     type: BuildFrameworkTask,

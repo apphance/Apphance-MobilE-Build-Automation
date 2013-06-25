@@ -33,7 +33,7 @@ class IOSSchemeVariant extends AbstractIOSVariant {
 
     @Override
     List<String> buildCmd() {
-        conf.xcodebuildExecutionPath() + ['-scheme', "$name", '-configuration', "$configuration"] + sdkCmd + archCmd + [buildDirCmd]
+        conf.xcodebuildExecutionPath() + ['-scheme', name, '-configuration', configuration] + sdkCmd + archCmd + [buildDirCmd]
     }
 
     @Override

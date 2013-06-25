@@ -16,6 +16,7 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
+import static org.gradle.api.logging.Logging.getLogger
 
 /*
  * Plugin for various X-Code related tasks.
@@ -34,6 +35,8 @@ class IOSPlugin implements Plugin<Project> {
     static final String BUILD_ALL_DEVICE_TASK_NAME = 'buildAllDevice'
     static final String BUILD_ALL_SIMULATOR_TASK_NAME = 'buildAllSimulator'
 
+    private logger = getLogger(getClass())
+
     @Inject IOSConfiguration conf
     @Inject IOSVariantsConfiguration variantsConf
     @Inject IOSExecutor executor
@@ -41,6 +44,7 @@ class IOSPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         if (conf.isEnabled()) {
+            logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
             project.tasks.findByName(CleanFlowTask.NAME) << {
                 executor.clean()

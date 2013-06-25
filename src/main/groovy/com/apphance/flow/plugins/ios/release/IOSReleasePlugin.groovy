@@ -13,6 +13,8 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static org.gradle.api.logging.Logging.getLogger
+
 /**
  *
  * Plugin for releasing iOS build.
@@ -28,6 +30,8 @@ import javax.inject.Inject
  */
 class IOSReleasePlugin implements Plugin<Project> {
 
+    private logger = getLogger(getClass())
+
     @Inject IOSReleaseConfiguration releaseConf
     @Inject IOSSingleVariantBuilder builder
     @Inject IOSReleaseListener listener
@@ -35,6 +39,7 @@ class IOSReleasePlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         if (releaseConf.isEnabled()) {
+            logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
             project.task(UpdateVersionTask.NAME,
                     type: UpdateVersionTask)

@@ -4,6 +4,7 @@ import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
+import com.google.inject.Singleton
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
@@ -13,7 +14,7 @@ import static IOSVariantType.TC
 import static com.apphance.flow.configuration.properties.ListStringProperty.getSEPARATOR
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
-@com.google.inject.Singleton
+@Singleton
 class IOSVariantsConfiguration extends AbstractConfiguration {
 
     String configurationName = 'iOS Variants Configuration'
@@ -40,6 +41,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     def variantsNames = new ListStringProperty(
             name: 'ios.variants',
             message: "Variants (first variant on the list will be considered as a 'main'",
+            validator: { true },//TODO
             possibleValues: { variantsNames.value ?: [] }
     )
 
@@ -97,5 +99,11 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     AbstractIOSVariant getMainVariant() {
         variants[0]
+    }
+
+    @Override
+    void checkProperties() {
+        super.checkProperties()
+
     }
 }
