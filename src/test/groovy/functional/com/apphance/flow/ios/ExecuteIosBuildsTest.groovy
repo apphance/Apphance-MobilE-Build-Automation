@@ -5,7 +5,6 @@ import org.gradle.tooling.BuildException
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Test
 
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
@@ -219,37 +218,5 @@ class ExecuteIosBuildsTest {
             assertTrue(fileIpad.exists())
             assertTrue(fileIpad.size() > 30000)
         }
-    }
-
-    @Ignore("ignored till apphance refactor")
-    void testDefaultApphanceDependency() {
-        Properties p = new Properties()
-        runGradleWithProperties(p, gradleOneVariantConnection, 'clean', 'unlockKeyChain', 'build-GradleXCode-BasicConfiguration')
-        def apphanceLib = new File("testProjects/ios/tmp-GradleXCode-GradleXCode-BasicConfiguration/Apphance-Pre-Production.framework")
-        assertTrue(apphanceLib.exists())
-        assertTrue(apphanceLib.list().length > 0)
-    }
-
-    @Ignore("ignored till apphance refactor")
-    void testIncorrectApphanceDependency() {
-        Properties p = new Properties()
-        p.put('apphance.lib', 'com.apphanc:ios.production.armv7:1.8')
-        try {
-            runGradleWithProperties(p, gradleOneVariantConnection, 'clean', 'unlockKeyChain', 'build-GradleXCode-BasicConfiguration')
-        } catch (e) {
-            def c = e.cause.cause.cause
-            assertEquals("Error while resolving dependency: 'com.apphanc:ios.production.armv7:1.8'", c.message)
-        }
-        def apphanceLib = new File("testProjects/ios/tmp-GradleXCode-GradleXCode-BasicConfiguration/Apphance-Production.framework")
-        assertFalse(apphanceLib.exists())
-    }
-
-    @Ignore("ignored till apphance refactor")
-    void testCorrectApphanceDependency() {
-        Properties p = new Properties()
-        p.put('apphance.lib', 'com.apphance:ios.pre-production.armv7:1.8.2')
-        runGradleWithProperties(p, gradleOneVariantConnection, 'clean', 'unlockKeyChain', 'build-GradleXCode-BasicConfiguration')
-        def apphanceLib = new File("testProjects/ios/tmp-GradleXCode-GradleXCode-BasicConfiguration/Apphance-Pre-Production.framework")
-        assertTrue(apphanceLib.exists())
     }
 }

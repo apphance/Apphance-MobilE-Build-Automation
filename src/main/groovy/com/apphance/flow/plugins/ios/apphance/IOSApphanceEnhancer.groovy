@@ -1,8 +1,6 @@
 package com.apphance.flow.plugins.ios.apphance
 
-import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
-import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.apphance.ApphancePluginCommons
@@ -33,11 +31,9 @@ class IOSApphanceEnhancer {
 
     @Inject Project project
     @Inject CommandExecutor executor
-    @Inject IOSExecutor iosExecutor
     @Inject PbxJsonParser pbxJsonParser
     @Inject IOSApphancePbxEnhancerFactory apphancePbxEnhancerFactory
     @Inject IOSApphanceSourceEnhancerFactory apphanceSourceEnhancerFactory
-    @Inject ApphanceArtifactory apphanceArtifactory
 
     private AbstractIOSVariant variant
     private bundle = getBundle('validation')
@@ -103,7 +99,7 @@ class IOSApphanceEnhancer {
     @Lazy
     @PackageScope
     String apphanceLibDependency = {
-        "com.apphance:ios.${apphanceDependencyGroup}.${apphanceDependencyArch()}:${variant.apphanceLibVersion.value}"
+        "com.apphance:ios.${apphanceDependencyGroup}.${variant.apphanceDependencyArch()}:${variant.apphanceLibVersion.value}"
     }()
 
     @Lazy
@@ -111,19 +107,6 @@ class IOSApphanceEnhancer {
     String apphanceDependencyGroup = {
         libForMode(variant.apphanceMode.value).groupName
     }()
-
-    @PackageScope
-    String apphanceDependencyArch() {
-        def xc = availableXCodeArchitectures()
-        def af = apphanceArtifactory.iOSArchs(variant.apphanceMode.value)
-        af.retainAll(xc)
-        af.unique().sort()[-1]
-    }
-
-    @PackageScope
-    Collection<String> availableXCodeArchitectures() {
-        iosExecutor.buildSettings(variant.target, variant.configuration)['ARCHS'].split(' ')*.trim()
-    }
 
     private void downloadApphance(String confName, String apphanceFileName) {
         project.copy {

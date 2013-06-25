@@ -96,6 +96,24 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         bundleId.value ?: plistParser.evaluate(plistParser.bundleId(plist), target, configuration) ?: ''
     }
 
+    @Override
+    List<String> possibleApphanceLibVersions() {
+        apphanceArtifactory.iOSLibraries(apphanceMode.value, apphanceDependencyArch())
+    }
+
+    @PackageScope
+    String apphanceDependencyArch() {
+        def xc = availableXCodeArchitectures()
+        def af = apphanceArtifactory.iOSArchs(apphanceMode.value)
+        af.retainAll(xc)
+        af.unique().sort()[-1]
+    }
+
+    @PackageScope
+    Collection<String> availableXCodeArchitectures() {
+        executor.buildSettings(target, configuration)['ARCHS'].split(' ')*.trim()
+    }
+
     @Lazy
     boolean apphanceEnabledForVariant = {
         mode.value != SIMULATOR

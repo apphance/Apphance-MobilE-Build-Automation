@@ -3,6 +3,7 @@ package com.apphance.flow.configuration.variants
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
+import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceMode
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
@@ -21,6 +22,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
     @Inject ProjectConfiguration conf
     @Inject ApphanceConfiguration apphanceConf
     @Inject AndroidReleaseConfiguration androidReleaseConf
+    @Inject ApphanceArtifactory apphanceArtifactory
 
     @Inject
     AbstractVariant(@Assisted String name) {
@@ -59,12 +61,13 @@ abstract class AbstractVariant extends AbstractConfiguration {
         ApphanceMode.values()*.name() as List<String>
     }
 
-    //TODO add default
-    //TODO add possible
     def apphanceLibVersion = new StringProperty(
             interactive: { apphanceEnabled && !(DISABLED == apphanceMode.value) },
+            possibleValues: { possibleApphanceLibVersions() },
             validator: { it?.matches('([0-9]+\\.)*[0-9]+(-[^-]*)?') }
     )
+
+    abstract List<String> possibleApphanceLibVersions()
 
     @Lazy
     @PackageScope

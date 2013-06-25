@@ -52,6 +52,11 @@ class AndroidVariantConfiguration extends AbstractVariant {
     )
 
     @Override
+    List<String> possibleApphanceLibVersions() {
+        apphanceArtifactory.androidLibraries(apphanceMode.value)
+    }
+
+    @Override
     String getConfigurationName() {
         "Android Variant ${name}"
     }

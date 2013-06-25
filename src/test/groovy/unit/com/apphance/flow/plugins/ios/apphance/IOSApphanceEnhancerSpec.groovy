@@ -1,10 +1,8 @@
 package com.apphance.flow.plugins.ios.apphance
 
-import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
-import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import org.gradle.api.GradleException
 import spock.lang.Shared
@@ -89,13 +87,8 @@ class IOSApphanceEnhancerSpec extends Specification {
         def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
             getApphanceMode() >> new ApphanceModeProperty(value: apphanceMode)
             getApphanceLibVersion() >> new StringProperty(value: '1.8.2')
+            apphanceDependencyArch() >> 'armv7'
         })
-        enhancer.iosExecutor = GroovyMock(IOSExecutor) {
-            buildSettings(_, _) >> ['ARCHS': 'armv6 armv7']
-        }
-        enhancer.apphanceArtifactory = GroovyMock(ApphanceArtifactory) {
-            iOSArchs(_) >> ['armv6', 'armv7']
-        }
 
         expect:
         enhancer.apphanceLibDependency == expectedDependency
