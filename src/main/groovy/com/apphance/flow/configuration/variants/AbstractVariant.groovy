@@ -8,6 +8,7 @@ import com.apphance.flow.configuration.apphance.ApphanceMode
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.google.inject.assistedinject.Assisted
+import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
@@ -41,14 +42,14 @@ abstract class AbstractVariant extends AbstractConfiguration {
     }
 
     def apphanceMode = new ApphanceModeProperty(
-            interactive: { apphanceConf.enabled },
+            interactive: { apphanceEnabled },
             required: { apphanceConf.enabled },
             possibleValues: { possibleApphanceModes() },
             validator: { ApphanceMode it -> it.toString() in possibleApphanceModes() }
     )
 
     def apphanceAppKey = new StringProperty(
-            interactive: { apphanceConf.enabled && !(DISABLED == apphanceMode.value) },
+            interactive: { apphanceEnabled && !(DISABLED == apphanceMode.value) },
             required: { apphanceConf.enabled },
             validator: { it?.matches('[a-z0-9]+') },
             validationMessage: "Key should match '[a-z0-9]+'"
@@ -61,9 +62,23 @@ abstract class AbstractVariant extends AbstractConfiguration {
     //TODO add default
     //TODO add possible
     def apphanceLibVersion = new StringProperty(
-            interactive: { apphanceConf.enabled && !(DISABLED == apphanceMode.value) },
+            interactive: { apphanceEnabled && !(DISABLED == apphanceMode.value) },
             validator: { it?.matches('([0-9]+\\.)*[0-9]+(-[^-]*)?') }
     )
+
+    @Lazy
+    @PackageScope
+    boolean apphanceEnabled = {
+        def enabled = apphanceConf.enabled && apphanceEnabledForVariant
+        if (!enabled)
+            apphanceMode.value = DISABLED
+        enabled
+    }()
+
+    @Lazy
+    boolean apphanceEnabledForVariant = {
+        true
+    }()
 
     String getName() {
         this.@name

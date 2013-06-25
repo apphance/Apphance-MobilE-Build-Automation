@@ -22,7 +22,7 @@ import static org.gradle.api.logging.Logging.getLogger
  * an application. It should be added after build plugin is added.
  *
  */
-class ProjectReleasePlugin implements Plugin<Project> {
+class ReleasePlugin implements Plugin<Project> {
 
     def logger = getLogger(getClass())
 

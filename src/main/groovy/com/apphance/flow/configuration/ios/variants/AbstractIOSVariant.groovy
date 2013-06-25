@@ -96,6 +96,11 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         bundleId.value ?: plistParser.evaluate(plistParser.bundleId(plist), target, configuration) ?: ''
     }
 
+    @Lazy
+    boolean apphanceEnabledForVariant = {
+        mode.value != SIMULATOR
+    }()
+
     @Override
     String getConfigurationName() {
         "iOS Variant ${name}"

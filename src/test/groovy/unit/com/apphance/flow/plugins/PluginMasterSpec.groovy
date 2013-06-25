@@ -18,7 +18,7 @@ import com.apphance.flow.plugins.ios.framework.IOSFrameworkPlugin
 import com.apphance.flow.plugins.ios.ocunit.IOSUnitTestPlugin
 import com.apphance.flow.plugins.ios.release.IOSReleasePlugin
 import com.apphance.flow.plugins.project.ProjectPlugin
-import com.apphance.flow.plugins.release.ProjectReleasePlugin
+import com.apphance.flow.plugins.release.ReleasePlugin
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import org.gradle.api.Project
@@ -94,8 +94,8 @@ class PluginMasterSpec extends Specification {
         where:
         before               | after
         ProjectPlugin        | AndroidPlugin
-        AndroidPlugin        | ProjectReleasePlugin
-        ProjectReleasePlugin | AndroidReleasePlugin
+        AndroidPlugin        | ReleasePlugin
+        ReleasePlugin | AndroidReleasePlugin
     }
 
     def 'test iOS plugins order'() {
@@ -125,15 +125,15 @@ class PluginMasterSpec extends Specification {
         where:
         before               | after
         ProjectPlugin        | IOSPlugin
-        IOSPlugin            | ProjectReleasePlugin
-        ProjectReleasePlugin | IOSReleasePlugin
+        IOSPlugin            | ReleasePlugin
+        ReleasePlugin | IOSReleasePlugin
     }
 
     final projectTypeDetectorMock = Mock(ProjectTypeDetector)
 
     def mockToMap = { [(it): Mock(it)] }
 
-    static commonPlugins = [ProjectPlugin, ProjectReleasePlugin]
+    static commonPlugins = [ProjectPlugin, ReleasePlugin]
 
     static androidPlugins = [
             AndroidPlugin,

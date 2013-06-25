@@ -14,7 +14,7 @@ import com.apphance.flow.plugins.ios.framework.IOSFrameworkPlugin
 import com.apphance.flow.plugins.ios.ocunit.IOSUnitTestPlugin
 import com.apphance.flow.plugins.ios.release.IOSReleasePlugin
 import com.apphance.flow.plugins.project.ProjectPlugin
-import com.apphance.flow.plugins.release.ProjectReleasePlugin
+import com.apphance.flow.plugins.release.ReleasePlugin
 import com.google.inject.Injector
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -38,7 +38,7 @@ class PluginMaster {
 
             IOS: [
                     IOSPlugin,
-                    ProjectReleasePlugin,
+                    ReleasePlugin,
                     IOSFrameworkPlugin,
                     IOSReleasePlugin,
                     IOSApphancePlugin,
@@ -47,7 +47,7 @@ class PluginMaster {
 
             ANDROID: [
                     AndroidPlugin,
-                    ProjectReleasePlugin,
+                    ReleasePlugin,
                     AndroidAnalysisPlugin,
                     AndroidApphancePlugin,
                     AndroidJarLibraryPlugin,

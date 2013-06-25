@@ -3,12 +3,10 @@ package com.apphance.flow.configuration.release
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
-import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.validateMailPort
@@ -239,18 +237,5 @@ class ReleaseConfigurationSpec extends Specification {
 
         where:
         mailServer << ['releaseString', 'release_String', 'relase_String_123_4']
-    }
-
-    @Ignore('TODO')
-    def 'mail-related verification errors raised on jenkins env'() {
-        given:
-        def rc = GroovySpy(ReleaseConfiguration) {
-            getProjectURL() >> new URLProperty(value: 'http://ota.polidea.pl')
-        }
-        when:
-        rc.check true, 'msg'
-
-        then:
-        noExceptionThrown()
     }
 }

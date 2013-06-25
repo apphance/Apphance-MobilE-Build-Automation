@@ -10,7 +10,7 @@ import spock.lang.Specification
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
-class ProjectReleasePluginSpec extends Specification {
+class ReleasePluginSpec extends Specification {
 
     def 'tasks defined in plugin available when configuration is active'() {
         given:
@@ -23,7 +23,7 @@ class ProjectReleasePluginSpec extends Specification {
         project.task('prepareAvailableArtifactsInfo')
 
         and:
-        def prp = new ProjectReleasePlugin()
+        def prp = new ReleasePlugin()
 
         and: 'create mock release configuration and set it'
         def rc = Mock(ReleaseConfiguration)
@@ -53,7 +53,7 @@ class ProjectReleasePluginSpec extends Specification {
         def project = builder().build()
 
         and:
-        def prp = new ProjectReleasePlugin()
+        def prp = new ReleasePlugin()
 
         and: 'create mock release configuration and set it'
         def rc = Mock(ReleaseConfiguration)
