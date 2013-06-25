@@ -74,11 +74,11 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @PackageScope
     boolean hasSchemes() {
-        conf.schemes.any { isNotBlank(it) && schemeParser.isBuildable(it) }
+        conf.schemes.any { isNotBlank(it) }
     }
 
     private List<AbstractIOSVariant> createVariantsFromSchemes() {
-        conf.schemes.findAll { schemeParser.isBuildable(it) }.collect { variantFactory.createSchemeVariant(it) }
+        conf.schemes.collect { variantFactory.createSchemeVariant(it) }
     }
 
     private List<AbstractIOSVariant> createVariantsFromTargetsAndConfigurations() {

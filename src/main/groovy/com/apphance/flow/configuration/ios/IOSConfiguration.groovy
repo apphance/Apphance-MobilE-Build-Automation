@@ -111,10 +111,7 @@ class IOSConfiguration extends ProjectConfiguration {
     }
 
     List<String> getSchemes() {
-        executor.schemes.findAll {
-            def f = new File(schemesDir, it)
-            f.exists() && f.isFile() && f.size() > 0
-        }
+        executor.schemes
     }
 
     Collection<String> sourceExcludes = ['**/build/**']
