@@ -37,7 +37,7 @@ class AddApphance18ToAndroid {
             boolean isActivity
             (mainFile, isActivity) = getMainApplicationFile(variantDir)
             if (mainFile) {
-                new ApphanceLogsConversionTask(ant).convertLogsToApphance(variantDir)
+//                new ApphanceLogsConversionTask(ant).convertLogsToApphance(variantDir)
                 addApphanceInit(variantDir, mainFile, isActivity, avc.apphanceAppKey.value, avc.apphanceMode.value)
                 copyApphanceJar(variantDir)
                 addApphanceToManifest(variantDir)

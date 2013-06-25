@@ -1,5 +1,7 @@
 package com.apphance.flow.configuration.properties
 
+import org.gradle.api.GradleException
+
 abstract class AbstractProperty<T> {
 
     String name
@@ -30,7 +32,7 @@ abstract class AbstractProperty<T> {
     String toString() { "$name = ${getValue()}" }
 
     /**
-     * Default value of property used in configuration wizard calculated from <code>value</code>, <code>defaultValue</code> and <code>possibleValues</code>
+     * Default value of property used in configuration wizard. Calculated from <code>value</code>, <code>defaultValue</code> and <code>possibleValues</code>
      */
     String effectiveDefaultValue() {
         getValue() ?: defaultValue() ?: possibleValues() ? possibleValues().get(0) : ''
@@ -38,5 +40,10 @@ abstract class AbstractProperty<T> {
 
     String getFailedValidationMessage() {
         "Validation failed for property: $name $validationMessage"
+    }
+
+    T getNotEmptyValue() {
+        if (value) return getValue()
+        else throw new GradleException("Invalid $message. property name: $name")
     }
 }

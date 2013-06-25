@@ -21,12 +21,12 @@ import static com.google.common.io.Files.createTempDir
 class SingleVariantTaskUnitSpec extends Specification {
 
     def task = create SingleVariantTask
-    def tempDir = createTempDir()
+    def tmpDir = createTempDir()
     AndroidBuilderInfo builderInfo
 
     def setup() {
         builderInfo = GroovyStub(AndroidBuilderInfo) {
-            getTmpDir() >> tempDir
+            getTmpDir() >> tmpDir
             getMode() >> AndroidBuildMode.DEBUG
             getOriginalFile() >> getTempFile()
         }
@@ -66,8 +66,8 @@ class SingleVariantTaskUnitSpec extends Specification {
 
         then:
         with(task) {
-            1 * antExecutor.executeTarget(tempDir, CLEAN)
-            1 * antExecutor.executeTarget(tempDir, 'debug')
+            1 * antExecutor.executeTarget(tmpDir, CLEAN)
+            1 * antExecutor.executeTarget(tmpDir, 'debug')
             0 * antExecutor.executeTarget(_, _)
             1 * androidExecutor.updateProject(new File('temp-variant-dir'), 'android-8', 'TestAndroidProject')
             0 * ant.copy(_)

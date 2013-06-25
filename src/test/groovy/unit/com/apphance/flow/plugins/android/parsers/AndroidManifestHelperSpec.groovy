@@ -1,5 +1,6 @@
 package com.apphance.flow.plugins.android.parsers
 
+import com.apphance.flow.TestUtils
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.GradleException
 import spock.lang.Shared
@@ -8,8 +9,8 @@ import spock.lang.Specification
 import static android.Manifest.permission.ACCESS_MOCK_LOCATION
 import static com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.MAIN_ACTIVITY_FILTER
 import static com.google.common.io.Files.copy
-import static com.google.common.io.Files.createTempDir
 
+@Mixin(TestUtils)
 class AndroidManifestHelperSpec extends Specification {
 
     @Shared
@@ -40,7 +41,7 @@ class AndroidManifestHelperSpec extends Specification {
 
     def 'version is updated and read correctly'() {
         given:
-        def tmpDir = createTempDir()
+        def tmpDir = temporaryDir
 
         and:
         copy(new File(basic, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), new File(tmpDir, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST))
@@ -60,14 +61,11 @@ class AndroidManifestHelperSpec extends Specification {
         def versionDetails = androidManifestHelper.readVersion(tmpDir)
         versionDetails.versionString == versionString
         versionDetails.versionCode == versionCode
-
-        cleanup:
-        tmpDir.deleteDir()
     }
 
     def 'package and label is replaced correctly'() {
         given:
-        def tmpDir = createTempDir()
+        def tmpDir = temporaryDir
 
         and:
         def tmpManifest = new File(tmpDir, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
@@ -85,9 +83,6 @@ class AndroidManifestHelperSpec extends Specification {
         then:
         androidManifestHelper.androidPackage(tmpDir) == newPkg
         getLabel(tmpManifest) == expectedLbl
-
-        cleanup:
-        tmpDir.deleteDir()
 
         where:
         newPkg                              | newLbl                 | expectedLbl
@@ -110,7 +105,7 @@ class AndroidManifestHelperSpec extends Specification {
 
     def 'permissions are added correctly'() {
         given:
-        def tmpDir = createTempDir()
+        def tmpDir = temporaryDir
 
         and:
         def tmpManifest = new File(tmpDir, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
@@ -130,14 +125,11 @@ class AndroidManifestHelperSpec extends Specification {
         parsedManifest(tmpManifest).'uses-permission'.@'android:name'.find {
             it.text() == 'android.permission.ACCESS_MOCK_LOCATION'
         }
-
-        cleanup:
-        tmpDir.deleteDir()
     }
 
     def 'apphance is added correctly'() {
         given:
-        def tmpDir = createTempDir()
+        def tmpDir = temporaryDir
 
         and:
         def tmpManifest = new File(tmpDir, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
@@ -188,9 +180,6 @@ class AndroidManifestHelperSpec extends Specification {
         manifest.application.activity.'intent-filter'.find {
             it.action.@'android:name' == 'com.apphance.android.LAUNCH'
         }.category.@'android:name'.text() == 'android.intent.category.DEFAULT'
-
-        cleanup:
-        tmpDir.deleteDir()
     }
 
     def 'main activity name is read correctly deprecated method'() {
@@ -241,7 +230,7 @@ class AndroidManifestHelperSpec extends Specification {
 
     def 'apphance activity is found'() {
         given:
-        def tmpDir = createTempDir()
+        def tmpDir = temporaryDir
 
         and:
         def tmpManifest = new File(tmpDir, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
@@ -257,14 +246,11 @@ class AndroidManifestHelperSpec extends Specification {
 
         then:
         androidManifestHelper.isApphanceActivityPresent(tmpDir)
-
-        cleanup:
-        tmpDir.deleteDir()
     }
 
     def 'apphance instrumentation is found'() {
         given:
-        def tmpDir = createTempDir()
+        def tmpDir = temporaryDir
 
         and:
         def tmpManifest = new File(tmpDir, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
@@ -280,9 +266,6 @@ class AndroidManifestHelperSpec extends Specification {
 
         then:
         androidManifestHelper.isApphanceInstrumentationPresent(tmpDir)
-
-        cleanup:
-        tmpDir.deleteDir()
     }
 
     def 'test getSourcesOf'() {

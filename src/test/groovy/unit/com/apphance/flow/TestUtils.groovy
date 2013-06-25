@@ -1,5 +1,6 @@
 package com.apphance.flow
 
+import com.google.common.io.Files
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -16,6 +17,12 @@ class TestUtils {
 
     File getTempFile() {
         File file = createTempFile('prefix', 'suffix')
+        file.deleteOnExit()
+        file
+    }
+
+    File getTemporaryDir() {
+        File file = Files.createTempDir()
         file.deleteOnExit()
         file
     }

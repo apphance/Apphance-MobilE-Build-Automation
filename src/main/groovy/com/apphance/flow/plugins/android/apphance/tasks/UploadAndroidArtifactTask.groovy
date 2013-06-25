@@ -37,54 +37,34 @@ class UploadAndroidArtifactTask extends DefaultTask {
     public void uploadArtifact() {
         def builderInfo = artifactBuilder.builderInfo(variant)
 
-        String user = androidApphanceConfiguration.user.value
-        String pass = androidApphanceConfiguration.pass.value
-        String key = variant.apphanceAppKey.value
-
-        validateUser(user)
-        validatePass(pass)
+        String user = androidApphanceConfiguration.user.getNotEmptyValue()
+        String pass = androidApphanceConfiguration.pass.getNotEmptyValue()
+        String key = variant.apphanceAppKey.getNotEmptyValue()
 
         ApphanceNetworkHelper networkHelper = null
 
         try {
             networkHelper = new ApphanceNetworkHelper(user, pass)
 
+            logger.lifecycle "Updating arfifact. Version string: $conf.versionString, version code: $conf.versionCode"
             def response = networkHelper.updateArtifactQuery(key, conf.versionString, conf.versionCode, false, ['apk', 'image_montage'])
-            logger.debug("Upload version query response: ${response.statusLine}")
+            logger.lifecycle "Upload version query response: ${response.statusLine}"
             throwIfConditionTrue(!response.entity, "Error while uploading version query, empty response received")
 
-            def resp = new JsonSlurper().parseText(response.entity.content.text)
+            String content = response.entity.content.text
+            logger.info "Full response: $content"
+            def resp = new JsonSlurper().parseText(content)
 
+            logger.lifecycle "Updating arfifact  $builderInfo.originalFile.absolutePath"
             response = networkHelper.uploadResource(builderInfo.originalFile, resp.update_urls.apk, 'apk')
-            logger.debug("Upload apk response: ${response.statusLine}")
+            logger.lifecycle "Upload apk response: ${response.statusLine}"
             EntityUtils.consume(response.entity)
-
-            response = networkHelper.uploadResource(releaseConf.imageMontageFile.location, resp.update_urls.image_montage, 'image_montage')
-            logger.debug("Upload image_montage response: ${response.statusLine}")
-            EntityUtils.consume(response.entity)
-
         } catch (e) {
             def msg = "Error while uploading artifact to apphance: ${e.message}"
             logger.error(msg)
-            throw new GradleException(msg)
+            throw new GradleException(msg, e)
         } finally {
             networkHelper?.close()
-        }
-    }
-
-    @groovy.transform.PackageScope
-    void validateUser(String user) {
-        if (!user || user?.trim()?.empty) {
-            throw new GradleException("""|Property 'android.apphance.user' has invalid value!
-                                         |This property must be set when invoking task: ${this.name}""")
-        }
-    }
-
-    @groovy.transform.PackageScope
-    void validatePass(String pass) {
-        if (!pass || pass?.trim()?.empty) {
-            throw new GradleException("""|Property 'android.apphance.pass' has invalid value!
-                                         |This property must be set when invoking task: ${this.name}""")
         }
     }
 }
