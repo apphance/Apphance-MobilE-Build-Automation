@@ -19,7 +19,8 @@ class XCSchemeParser {
     }
 
     boolean isBuildable(String schemeName) {
-        def xml = parseSchemeFile(schemeName)
+        def xml
+        try { xml = parseSchemeFile(schemeName) } catch (e) { return false }
         xml.LaunchAction.BuildableProductRunnable.size() != 0
     }
 

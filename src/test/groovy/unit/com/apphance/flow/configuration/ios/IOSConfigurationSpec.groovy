@@ -44,13 +44,13 @@ class IOSConfigurationSpec extends Specification {
 
     def 'version code and string are taken from main variant'() {
         given:
-        def conf = new IOSVariantsConfiguration()
-        def variant = GroovyStub(AbstractIOSVariant)
-        variant.getVersionCode() >> 'version code'
-        variant.getVersionString() >> 'version string'
-
-        conf.@variants = [variant]
-
+        def variant = GroovyMock(AbstractIOSVariant) {
+            getVersionCode() >> 'version code'
+            getVersionString() >> 'version string'
+        }
+        def conf = GroovyStub(IOSVariantsConfiguration) {
+            getMainVariant() >> variant
+        }
         def iOSConf = new IOSConfiguration()
         iOSConf.variantsConf = conf
 
@@ -79,9 +79,9 @@ class IOSConfigurationSpec extends Specification {
     def 'test get project name'() {
         given:
         def iOSConf = new IOSConfiguration(variantsConf:
-                new IOSVariantsConfiguration(
-                        variants: [GroovyStub(AbstractIOSVariant) { getProjectName() >> 'test project name' }]
-                )
+                GroovyMock(IOSVariantsConfiguration) {
+                    getMainVariant() >> GroovyMock(AbstractIOSVariant) { getProjectName() >> 'test project name' }
+                }
         )
 
         expect:

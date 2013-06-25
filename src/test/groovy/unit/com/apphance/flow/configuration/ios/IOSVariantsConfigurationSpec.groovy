@@ -6,7 +6,6 @@ import com.apphance.flow.configuration.ios.variants.IOSVariantFactory
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.reader.PropertyPersister
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -38,18 +37,30 @@ class IOSVariantsConfigurationSpec extends Specification {
     @Unroll
     def 'test buildVariantsList #variantClass variant'() {
         given:
-        conf.schemes >> schemas
+        conf.schemes >> schemes
+        variantsConf.variantsNames.value = ['v1', 'v2', 'v3']
 
-        when:
-        def variants = variantsConf.buildVariantsList()
-
-        then:
-        variants.size() == expectedSize
-        variants.every { it.class == variantClass }
+        expect:
+        variantsConf.variants.size() == expectedSize
+        variantsConf.variants.every { it.class == variantClass }
 
         where:
-        expectedSize | variantClass     | schemas
-        5            | IOSSchemeVariant | ['Some', 'SomeWithMonkey', 'SomeSpecs', 'OtherSomeSpecs', 'RunMonkeyTests']
+        expectedSize | variantClass     | schemes
+        3            | IOSSchemeVariant | ['v1', 'v2', 'v3']
+        3            | IOSTCVariant     | []
+    }
+
+    @Unroll
+    def 'possible variants for class #variantClass'() {
+        given:
+        conf.schemes >> schemes
+
+        expect:
+        variantsConf.possibleVariants.size() == expectedSize
+
+        where:
+        expectedSize | variantClass     | schemes
+        3            | IOSSchemeVariant | ['v1', 'v2', 'v3']
         24           | IOSTCVariant     | []
     }
 
@@ -58,10 +69,15 @@ class IOSVariantsConfigurationSpec extends Specification {
         conf.schemes >> schemes
 
         when:
-        variantsConf.buildVariantsList()
+        variantsConf.variantsNames.value.collect {
+            variantsConf.hasSchemes ?
+                variantsConf.variantFactory.createSchemeVariant(it)
+            :
+                variantsConf.variantFactory.createTCVariant(it)
+        }
 
         then:
-        variantsConf.hasSchemes() == hasSchemes
+        variantsConf.hasSchemes == hasSchemes
 
         where:
         hasSchemes | schemes
@@ -70,7 +86,6 @@ class IOSVariantsConfigurationSpec extends Specification {
         false      | []
     }
 
-    @Ignore('ignored for the moment')
     def 'has schemes when some are not buildable'() {
         given:
         conf.schemes >> [schemeName]
@@ -81,10 +96,15 @@ class IOSVariantsConfigurationSpec extends Specification {
         }
 
         when:
-        variantsConf.buildVariantsList()
+        variantsConf.variantsNames.value.collect {
+            variantsConf.hasSchemes ?
+                variantsConf.variantFactory.createSchemeVariant(it)
+            :
+                variantsConf.variantFactory.createTCVariant(it)
+        }
 
         then:
-        variantsConf.hasSchemes() == hasSchemes
+        variantsConf.hasSchemes == hasSchemes
 
         where:
         hasSchemes | schemeName | buildable
