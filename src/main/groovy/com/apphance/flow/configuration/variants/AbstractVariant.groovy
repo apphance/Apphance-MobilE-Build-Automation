@@ -86,13 +86,12 @@ abstract class AbstractVariant extends AbstractConfiguration {
 
     @Override
     void checkProperties() {
-        // FIXME
-//        if (apphanceConf.enabled) {
-//            defaultValidation apphanceMode
-//
-//            if (apphanceMode.value != DISABLED) {
-//                defaultValidation apphanceAppKey, apphanceLibVersion
-//            }
-//        }
+        if (apphanceConf.enabled) {
+            defaultValidation apphanceMode
+
+            if (apphanceMode.value != DISABLED) {
+                defaultValidation apphanceAppKey, apphanceLibVersion
+            }
+        }
     }
 }
