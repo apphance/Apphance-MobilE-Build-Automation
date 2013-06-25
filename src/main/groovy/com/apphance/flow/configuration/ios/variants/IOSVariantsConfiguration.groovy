@@ -29,8 +29,11 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     def variantsNames = new ListStringProperty(
             name: 'ios.variants',
             message: "Variants (first variant on the list will be considered as a 'main'",
-            possibleValues: { possibleVariants }
-            //TODO validator
+            possibleValues: { possibleVariants },
+            validator: {
+                def list = variantsNames.convert(it.toString())
+                list.size() == list.unique().size() && !list.isEmpty()
+            }
     )
 
     @Lazy

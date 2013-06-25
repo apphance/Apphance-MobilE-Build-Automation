@@ -111,4 +111,22 @@ class IOSVariantsConfigurationSpec extends Specification {
         false      | 'Some'     | false
         true       | 'Some2'    | true
     }
+
+    def 'variantNames validator works'() {
+        given:
+        def variantsConf = new IOSVariantsConfiguration()
+
+        expect:
+        variantsConf.variantsNames.validator(input) == expected
+
+        where:
+        input        | expected
+        ['v1', 'v1'] | false
+        '[v1,v1]'    | false
+        '[v1,v2]'    | true
+        ['v1', 'v2'] | true
+        []           | false
+        '[]'         | false
+        ['\n']       | false
+    }
 }
