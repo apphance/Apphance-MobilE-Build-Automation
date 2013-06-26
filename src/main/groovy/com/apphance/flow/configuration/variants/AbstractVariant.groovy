@@ -91,6 +91,10 @@ abstract class AbstractVariant extends AbstractConfiguration {
         "build$name"
     }
 
+    String getUploadTaskName() {
+        "upload$name"
+    }
+
     @Override
     boolean isEnabled() {
         conf.enabled

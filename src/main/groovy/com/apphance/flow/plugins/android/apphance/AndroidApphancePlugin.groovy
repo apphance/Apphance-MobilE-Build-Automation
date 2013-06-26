@@ -5,13 +5,12 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantsConfigura
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.plugins.android.apphance.tasks.AddApphanceToAndroid
 import com.apphance.flow.plugins.android.apphance.tasks.UploadAndroidArtifactTask
-import com.apphance.flow.plugins.apphance.ApphancePluginCommons
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.android.AndroidBuildMode.DEBUG
+import static com.apphance.flow.configuration.apphance.ApphanceMode.DISABLED
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -37,14 +36,14 @@ class AndroidApphancePlugin implements Plugin<Project> {
             logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
             variantsConf.variants.each { AndroidVariantConfiguration variantConf ->
-                if (variantConf.mode == DEBUG) {
+                if (variantConf.apphanceMode.value != DISABLED) {
                     logger.lifecycle("Adding apphance task for ${variantConf.name}")
 
-                    def buildVariantTask = project.tasks.findByName("build${variantConf.name}")
+                    def buildVariantTask = project.tasks.findByName(variantConf.buildTaskName)
                     buildVariantTask?.doFirst {
                         new AddApphanceToAndroid(variantConf).addApphance()
                     }
-                    project.task("upload${variantConf.name}", type: UploadAndroidArtifactTask, dependsOn: buildVariantTask?.name).variant = variantConf
+                    project.task(variantConf.uploadTaskName, type: UploadAndroidArtifactTask, dependsOn: buildVariantTask?.name).variant = variantConf
                 } else {
                     logger.lifecycle("Not adding apphance to ${variantConf.name} because it is not in debug mode")
                 }
