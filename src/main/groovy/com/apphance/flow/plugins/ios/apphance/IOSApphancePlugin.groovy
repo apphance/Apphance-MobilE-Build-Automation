@@ -10,6 +10,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.*
+import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -34,7 +35,7 @@ class IOSApphancePlugin implements Plugin<Project> {
 
             variantsConf.variants.each { variant ->
 
-                if (variant.apphanceMode.value in [QA, PROD, SILENT]) {
+                if (variant.apphanceMode.value in [QA, PROD, SILENT] && variant.mode.value == DEVICE) {
                     logger.info("Adding apphance for variant '$variant.name'")
 
                     def addApphance = { iosApphanceEnhancerFactory.create(variant).addApphance() }
@@ -42,7 +43,7 @@ class IOSApphancePlugin implements Plugin<Project> {
                     project.tasks[variant.buildTaskName].doFirst(addApphance)
 
                     def uploadTask =
-                        project.task("upload$variant.name",
+                        project.task(variant.uploadTaskName,
                                 type: IOSApphanceUploadTask,
                                 dependsOn: variant.buildTaskName) as IOSApphanceUploadTask
                     uploadTask.variant = variant

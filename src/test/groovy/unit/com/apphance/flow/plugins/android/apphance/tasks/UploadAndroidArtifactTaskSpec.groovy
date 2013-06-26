@@ -22,9 +22,9 @@ class UploadAndroidArtifactTaskSpec extends Specification {
         task.artifactBuilder = GroovyMock(AndroidArtifactProvider)
         task.artifactBuilder.builderInfo(_) >> builderInfo
 
-        task.androidApphanceConfiguration = new ApphanceConfiguration()
-        task.androidApphanceConfiguration.user.value = 'user'
-        task.androidApphanceConfiguration.pass.value = 'pass'
+        task.apphanceConf = new ApphanceConfiguration()
+        task.apphanceConf.user.value = 'user'
+        task.apphanceConf.pass.value = 'pass'
         task.conf = GroovyStub(AndroidConfiguration)
         task.conf.getVersionString() >> '1.1.1'
         task.conf.getVersionCode() >> '20'

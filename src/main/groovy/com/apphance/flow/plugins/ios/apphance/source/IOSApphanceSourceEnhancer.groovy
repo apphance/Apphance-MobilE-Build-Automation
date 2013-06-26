@@ -17,9 +17,8 @@ import static org.gradle.api.logging.Logging.getLogger
 
 class IOSApphanceSourceEnhancer {
 
+    private final static DELEGATE_PATTERN = /.*<.*UIApplicationDelegate.*>.*/
     private logger = getLogger(getClass())
-
-    private final static DELEGATE_PATTERN = ~/.*<.*UIApplicationDelegate.*>.*/
 
     @Inject AntBuilder ant
 
@@ -40,6 +39,7 @@ class IOSApphanceSourceEnhancer {
 
     @PackageScope
     void replaceLogs() {
+        logger.info("Replacing apphance logger in dir: $variant.tmpDir.absolutePath")
         ant.replaceregexp(match: '^\\s+NSLog', replace: 'APHLog', byline: true) {
             fileset(dir: variant.tmpDir) {
                 apphancePbxEnhancer.filesToReplaceLogs.each {
@@ -52,6 +52,7 @@ class IOSApphanceSourceEnhancer {
     @PackageScope
     void addApphanceToPch() {
         def pch = new File(variant.tmpDir, apphancePbxEnhancer.GCCPrefixFilePath)
+        logger.info("Adding apphance to PCH file : $pch.absolutePath")
         pch.text = pch.text.replace("#ifdef __OBJC__", "#ifdef __OBJC__\n#import <$apphanceFrameworkName/APHLogger.h>")
     }
 
@@ -59,6 +60,7 @@ class IOSApphanceSourceEnhancer {
         "Apphance-${libForMode(variant.apphanceMode.value).groupName.replace('p', 'P')}"
     }
 
+    @PackageScope
     void addApphanceInit() {
         def appFilename = findAppDelegateFile()
 
@@ -67,19 +69,14 @@ class IOSApphanceSourceEnhancer {
         }
 
         appFilename = appFilename.replace('.h', '.m')
-        File appDelegateFile = new File(appFilename)
-        File newAppDelegateFile = new File("${appFilename}.tmp")
-        newAppDelegateFile.delete()
-        addApphanceToFile(appDelegateFile, newAppDelegateFile)
-        appDelegateFile.delete()
-        newAppDelegateFile.renameTo(appDelegateFile)
+        addApphanceToFile(new File(appFilename))
     }
 
     @PackageScope
     String findAppDelegateFile() {
         def appFilename = null
         variant.tmpDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
-            if (it.name.endsWith('.h') && it.filterLine { it ==~ DELEGATE_PATTERN }) {
+            if (it.name.endsWith('.h') && it.readLines().find { it =~ DELEGATE_PATTERN }) {
                 appFilename = it.canonicalPath
             }
         }
@@ -87,27 +84,21 @@ class IOSApphanceSourceEnhancer {
     }
 
     @PackageScope
-    void addApphanceToFile(File appDelegateFile, File newAppDelegateFile) {
-        boolean startNewSessionAdded = false
-        boolean searchingForOpeningBrace = false
+    void addApphanceToFile(File delegate) {
+        logger.info("Adding apphance init in file: $delegate.absolutePath")
         def apphanceInit = """[APHLogger startNewSessionWithApplicationKey:@"$variant.apphanceAppKey.value" $apphanceMode];"""
         def apphanceExceptionHandler = 'NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);'
-        newAppDelegateFile.withWriter { out ->
-            appDelegateFile.eachLine { line ->
-                if (line.matches('.*application.*[dD]idFinishLaunching.*')) {
-                    searchingForOpeningBrace = true
-                }
-                if (!startNewSessionAdded && searchingForOpeningBrace && line.matches('.*\\{.*')) {
-                    out.println(line.replace('{', "{ ${apphanceInit}${apphanceExceptionHandler}"))
-                    startNewSessionAdded = true
-                } else {
-                    out.println(line)
-                }
-            }
-        }
-        if (!startNewSessionAdded) {
-            logger.warn("Could not find application's didFinishLaunching. Apphance not added")
-        }
+
+        def splitLines = delegate.inject([]) { list, line -> list << line.split('\\s+') } as List
+        def didFinishLine = splitLines.find { line -> line.join(' ').matches('.*application.*[dD]idFinishLaunching.*') } as List
+        def didFinishLineIndex = splitLines.indexOf(didFinishLine)
+        def bracketLineIndex = splitLines.findIndexOf(didFinishLineIndex, { line -> line.find { String token -> token.contains('{') } })
+        def bracketLine = splitLines[bracketLineIndex] as List
+        def bracketIndex = bracketLine.findIndexOf { String token -> token.contains('{') }
+        def bracketToken = bracketLine[bracketIndex] as String
+        bracketLine[bracketIndex] = bracketToken.replaceFirst('\\{', "\\{ $apphanceInit $apphanceExceptionHandler ")
+        splitLines[bracketLineIndex] = bracketLine
+        delegate.text = splitLines.collect { line -> line.join(' ') }.join('\n')
     }
 
     String getApphanceMode() {

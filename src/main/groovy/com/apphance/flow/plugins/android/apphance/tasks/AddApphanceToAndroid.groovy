@@ -59,7 +59,7 @@ class AddApphanceToAndroid {
         addStartNewSessionToAllMainActivities()
         addApphanceImportsAndStartStopMethodsInAllActivities()
         addProblemActivityToManifest()
-        addPermisions()
+        addPermissions()
         addApphanceLib()
         addApphanceLibraryReferenceToProjectProperties()
     }
@@ -89,7 +89,7 @@ class AddApphanceToAndroid {
     }
 
     @PackageScope
-    void addPermisions() {
+    void addPermissions() {
         withManifest(variantDir) { GPathResult manifest ->
             addPermissionsToManifest manifest, INTERNET, ACCESS_WIFI_STATE, ACCESS_NETWORK_STATE, ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION, BLUETOOTH
 

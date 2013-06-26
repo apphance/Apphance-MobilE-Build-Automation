@@ -83,7 +83,7 @@ class AddApphanceToAndroidSpec extends Specification {
 
     def 'test addPermisions'() {
         given:
-        addApphanceToAndroid.addPermisions()
+        addApphanceToAndroid.addPermissions()
         def manifestFile = new File(variantDir, 'AndroidManifest.xml')
         def manifest = new XmlSlurper().parse(manifestFile).declareNamespace(android: 'http://schemas.android.com/apk/res/android');
 
@@ -194,7 +194,7 @@ class AddApphanceToAndroidSpec extends Specification {
 
         then:
         1 * addApphance.addProblemActivityToManifest() >> null
-        1 * addApphance.addPermisions() >> null
+        1 * addApphance.addPermissions() >> null
         1 * addApphance.addApphanceLib() >> null
         1 * addApphance.addApphanceLibraryReferenceToProjectProperties() >> null
     }

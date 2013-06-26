@@ -9,6 +9,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.QA
+import static com.google.common.io.Files.copy
 import static com.google.common.io.Files.createTempDir
 
 class IOSApphanceSourceEnhancerSpec extends Specification {
@@ -99,20 +100,21 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
         )
 
         and:
-        new AntBuilder().copy(toDir: tmpDir.absolutePath) {
-            fileset(dir: projectDir.absolutePath) {
-                include(name: 'GradleXCode/gradleXCodeAppDelegate.h')
-                include(name: 'GradleXCode/gradleXCodeAppDelegate.m')
-            }
-        }
+        copy(new File(getClass().getResource(hFile).toURI()), new File(tmpDir, mFile.replaceAll('.m', '.h')))
+        copy(new File(getClass().getResource(mFile).toURI()), new File(tmpDir, mFile))
 
         when:
         sourceEnhancer.addApphanceInit()
 
         then:
-        def mFileContent = new File(tmpDir, 'GradleXCode/gradleXCodeAppDelegate.m').text
+        def mFileContent = new File(tmpDir, mFile).text
         mFileContent.contains('[APHLogger startNewSessionWithApplicationKey:@"3145abcd" apphanceMode:kAPHApphanceModeQA];')
         mFileContent.contains('NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);')
+
+        where:
+        hFile                      | mFile
+        'gradleXCodeAppDelegate.h' | 'gradleXCodeAppDelegate.m'
+        'gradleXCodeAppDelegate.h' | 'gradleXCodeAppDelegate2.m'
     }
 
     def 'exception is thrown when no UIApplicationDelegate file found'() {

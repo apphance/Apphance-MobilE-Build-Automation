@@ -5,7 +5,6 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantConfigurat
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
 import com.apphance.flow.plugins.apphance.ApphanceNetworkHelper
-import com.apphance.flow.util.Preconditions
 import groovy.json.JsonSlurper
 import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
@@ -15,14 +14,13 @@ import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_APPHANCE_SERVICE
 
-@Mixin(Preconditions)
 class UploadAndroidArtifactTask extends DefaultTask {
 
     String description = 'Uploads apk to Apphance server'
     String group = FLOW_APPHANCE_SERVICE
 
-    @Inject ApphanceConfiguration androidApphanceConfiguration
     @Inject AndroidConfiguration conf
+    @Inject ApphanceConfiguration apphanceConf
     @Inject AndroidArtifactProvider artifactBuilder
 
     AndroidVariantConfiguration variant
@@ -33,8 +31,8 @@ class UploadAndroidArtifactTask extends DefaultTask {
     public void uploadArtifact() {
         def builderInfo = artifactBuilder.builderInfo(variant)
 
-        String user = androidApphanceConfiguration.user.getNotEmptyValue()
-        String pass = androidApphanceConfiguration.pass.getNotEmptyValue()
+        String user = apphanceConf.user.getNotEmptyValue()
+        String pass = apphanceConf.pass.getNotEmptyValue()
         String key = variant.apphanceAppKey.getNotEmptyValue()
 
         logger.lifecycle "Uploading arfifact: ${builderInfo.originalFile} with version ${conf.versionString} (${conf.versionCode})"

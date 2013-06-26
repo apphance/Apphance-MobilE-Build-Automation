@@ -5,11 +5,13 @@ import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSTCVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
+import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.flow.plugins.ios.release.IOSReleaseListener
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.QA
+import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSApphancePluginSpec extends Specification {
@@ -82,6 +84,8 @@ class IOSApphancePluginSpec extends Specification {
                         getConfiguration() >> 'c1'
                         getApphanceMode() >> new ApphanceModeProperty(value: QA)
                         getBuildTaskName() >> 'buildid1'
+                        getUploadTaskName() >> 'uploadid1'
+                        getMode() >> new IOSBuildModeProperty(value: DEVICE)
                     },
                     GroovyMock(AbstractIOSVariant) {
                         getName() >> 'id2'
@@ -89,6 +93,8 @@ class IOSApphancePluginSpec extends Specification {
                         getConfiguration() >> 'c2'
                         getApphanceMode() >> new ApphanceModeProperty(value: QA)
                         getBuildTaskName() >> 'buildid2'
+                        getUploadTaskName() >> 'uploadid2'
+                        getMode() >> new IOSBuildModeProperty(value: DEVICE)
                     }]
         }
         plugin.apply(project)
