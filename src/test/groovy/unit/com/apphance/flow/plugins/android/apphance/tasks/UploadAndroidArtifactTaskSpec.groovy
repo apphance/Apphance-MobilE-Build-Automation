@@ -37,7 +37,7 @@ class UploadAndroidArtifactTaskSpec extends Specification {
         task.uploadArtifact()
 
         then:
-        1 * task.action.upload(_ as ApphanceNetworkHelper, origFile, '123', '1.1.1', '20')
+        1 * task.action.upload(new ApphanceNetworkHelper('user', 'pass'), origFile, '123', '1.1.1', '20')
     }
 
     def 'upload method calls helper'() {

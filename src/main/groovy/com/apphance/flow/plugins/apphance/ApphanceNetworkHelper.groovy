@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.apphance
 
 import com.apphance.flow.util.Preconditions
 import groovy.json.JsonOutput
+import groovy.transform.EqualsAndHashCode
 import org.apache.http.HttpHost
 import org.apache.http.HttpResponse
 import org.apache.http.auth.AuthScope
@@ -26,7 +27,8 @@ import static org.apache.http.client.protocol.ClientContext.AUTH_CACHE
 import static org.apache.http.entity.mime.HttpMultipartMode.STRICT
 
 @Mixin(Preconditions)
- class ApphanceNetworkHelper {
+@EqualsAndHashCode
+class ApphanceNetworkHelper {
 
     def static logger = Logging.getLogger(this.class)
 
@@ -61,9 +63,9 @@ import static org.apache.http.entity.mime.HttpMultipartMode.STRICT
         response
     }
 
-    HttpResponse callApphanceApi(String endpoint, String content) {
+    HttpResponse callApphanceApi(String endpoint, Map content) {
         def post = new HttpPost("/api/$endpoint")
-        post.entity = new StringEntity(content)
+        post.entity = new StringEntity(JsonOutput.toJson(content))
         post.setHeader 'Accept', 'application/json'
         post.setHeader 'Content-type', 'application/json'
         post.setHeader 'Connection', 'close'
@@ -72,8 +74,8 @@ import static org.apache.http.entity.mime.HttpMultipartMode.STRICT
         httpClient.execute(targetHost, post, localContext)
     }
 
-    private String updateArtifactsJSONQuery(apphanceKey, versionString, versionCode, setAsCurrent, resourcesToUpdate) {
-        JsonOutput.toJson([
+    private Map updateArtifactsJSONQuery(apphanceKey, versionString, versionCode, setAsCurrent, resourcesToUpdate) {
+        [
                 api_key: apphanceKey,
                 version: [
                         name: versionString,
@@ -81,7 +83,7 @@ import static org.apache.http.entity.mime.HttpMultipartMode.STRICT
                 ],
                 current: setAsCurrent,
                 update_resources: resourcesToUpdate
-        ])
+        ]
     }
 
     HttpResponse uploadResource(File resource, String url, String formBodyPart) {
@@ -112,7 +114,7 @@ import static org.apache.http.entity.mime.HttpMultipartMode.STRICT
 
     String uploadResourceJson(File resource, String url, String formBodyPart) {
         toJson {
-            uploadResource(builderInfo.originalFile, resp.update_urls.apk, 'apk')
+            uploadResource(resource, url, formBodyPart)
         }
     }
 
