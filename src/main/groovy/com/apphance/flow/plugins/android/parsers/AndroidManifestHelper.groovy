@@ -219,7 +219,12 @@ class AndroidManifestHelper {
 
         throwIfConditionTrue(!(mainActivities.size() + mainAliasActivities.size()), 'Main activity could not be found!')
 
-        mainActivities.collect { nodeToClassName(manifest, it) } + mainAliasActivities.collect { nodeToClassName(manifest, it) } as Set
+        def allActivities = mainActivities.collect { nodeToClassName(manifest, it) } + mainAliasActivities.collect { nodeToClassName(manifest, it) }
+        logger.info("All activities from manifest: $allActivities")
+
+        List<String> projectActivities = allActivities.findAll { it.startsWith(manifest.@package.text()) }
+        logger.info("Project activities : $projectActivities")
+        projectActivities as Set
     }
 
     String nodeToClassName(GPathResult manifest, GPathResult mainActivity) {
@@ -228,10 +233,11 @@ class AndroidManifestHelper {
         def packageName = manifest.@package.text()
         def className = mainActivity.name() == 'activity' ? mainActivity.@'android:name'.text() : mainActivity.@'android:targetActivity'.text()
 
-        packageName = className.startsWith('.') ? packageName : packageName + '.'
-        packageName = className.startsWith(packageName) ? '' : packageName
-
-        packageName + className
+        if (className.startsWith('.')) {
+            packageName + className
+        } else {
+            className
+        }
     }
 
     private void replaceAction(def activities) {
