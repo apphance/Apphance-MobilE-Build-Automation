@@ -130,7 +130,7 @@ class ApphanceNetworkHelper {
         httpClient.getConnectionManager().shutdown()
     }
 
-    void call(Closure action) {
+    void safeCall(Closure action) {
         try {
             action(this)
         } catch (e) {

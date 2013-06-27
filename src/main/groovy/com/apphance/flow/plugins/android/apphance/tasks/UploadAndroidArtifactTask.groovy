@@ -45,7 +45,7 @@ class UploadAndroidArtifactTaskAction {
 
     @PackageScope
     void upload(ApphanceNetworkHelper apphanceNetworkHelper, File originalFile, String key, String versionString, String versionCode) {
-        apphanceNetworkHelper.call { ApphanceNetworkHelper networkHelper ->
+        apphanceNetworkHelper.safeCall { ApphanceNetworkHelper networkHelper ->
             String updateResponseJson = networkHelper.updateArtifactJson(key, versionString, versionCode, false, ['apk'])
             def resp = new JsonSlurper().parseText(updateResponseJson)
             networkHelper.uploadResourceJson(originalFile, resp.update_urls.apk, 'apk')
