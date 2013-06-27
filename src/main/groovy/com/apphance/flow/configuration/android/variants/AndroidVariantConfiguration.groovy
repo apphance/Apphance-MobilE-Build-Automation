@@ -1,6 +1,7 @@
 package com.apphance.flow.configuration.android.variants
 
 import com.apphance.flow.configuration.android.AndroidBuildMode
+import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.variants.AbstractVariant
 import com.google.common.io.Files
@@ -19,6 +20,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
 
     final String prefix = 'android'
 
+    @Inject AndroidReleaseConfiguration androidReleaseConf
     private File vDir
 
     @AssistedInject

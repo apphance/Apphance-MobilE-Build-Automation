@@ -42,7 +42,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         def reader = GroovyStub(PropertyReader) {
             systemProperty('version.code') >> '32'
             systemProperty('version.string') >> '1.0'
-            systemProperty('release.notes') >> 'release\nnotes'
+            envVariable('RELEASE_NOTES') >> 'release\nnotes'
         }
 
         def conf = GroovySpy(IOSConfiguration) {

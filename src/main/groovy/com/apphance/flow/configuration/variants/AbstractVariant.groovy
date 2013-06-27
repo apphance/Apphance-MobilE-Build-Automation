@@ -2,7 +2,6 @@ package com.apphance.flow.configuration.variants
 
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ProjectConfiguration
-import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceMode
@@ -21,7 +20,6 @@ abstract class AbstractVariant extends AbstractConfiguration {
 
     @Inject ProjectConfiguration conf
     @Inject ApphanceConfiguration apphanceConf
-    @Inject AndroidReleaseConfiguration androidReleaseConf
     @Inject ApphanceArtifactory apphanceArtifactory
 
     @Inject

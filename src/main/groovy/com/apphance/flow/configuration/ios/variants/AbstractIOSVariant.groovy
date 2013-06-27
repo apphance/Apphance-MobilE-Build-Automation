@@ -22,6 +22,8 @@ import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
 import static com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask.WHITESPACE_PATTERN
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
+import static java.text.MessageFormat.format
+import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
@@ -32,6 +34,8 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     @Inject PbxJsonParser pbxJsonParser
     @Inject PropertyReader reader
     @Inject IOSExecutor executor
+
+    private bundle = getBundle('validation')
 
     @Inject
     AbstractIOSVariant(@Assisted String name) {
@@ -184,12 +188,8 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     @Override
     void checkProperties() {
         super.checkProperties()
-        check versionCode.matches('[0-9]+'), """|Property 'versionCode' must have numerical value! Check 'version.code'
-                                                |system property or 'VERSION_CODE' env variable
-                                                |or $plist.absolutePath file!""".stripMargin()
-        check((isNotEmpty(versionString) && !WHITESPACE_PATTERN.matcher(versionString).find()), """|Property 'versionString' must not have
-                                                                    |whitespace characters! Check 'version.string'
-                                                                    |system property or 'VERSION_STRING' env
-                                                                    |variable or $plist.absolutePath file!""".stripMargin())
+        check versionCode.matches('[0-9]+'), format(bundle.getString('exception.ios.version.code'), plist.absolutePath)
+        check((isNotEmpty(versionString) && !WHITESPACE_PATTERN.matcher(versionString).find()),
+                format(bundle.getString('exception.ios.version.string'), plist.absolutePath))
     }
 }

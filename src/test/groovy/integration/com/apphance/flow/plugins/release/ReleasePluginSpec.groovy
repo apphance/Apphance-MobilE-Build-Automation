@@ -30,6 +30,9 @@ class ReleasePluginSpec extends Specification {
         rc.isEnabled() >> true
         prp.releaseConf = rc
 
+        expect:
+        project.tasks[CleanFlowTask.NAME].actions.size() == 0
+
         when:
         prp.apply(project)
 
@@ -46,6 +49,9 @@ class ReleasePluginSpec extends Specification {
 
         then:
         project.tasks[SendMailMessageTask.NAME].dependsOn.flatten().contains('prepareAvailableArtifactsInfo')
+
+        then:
+        project.tasks[CleanFlowTask.NAME].actions.size() > 0
     }
 
     def 'no tasks available when configuration is inactive'() {
