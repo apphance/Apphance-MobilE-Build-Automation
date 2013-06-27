@@ -3,6 +3,7 @@ package com.apphance.flow.configuration.android.variants
 import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
+import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.variants.AbstractVariant
 import com.google.common.io.Files
 import com.google.inject.assistedinject.Assisted
@@ -52,6 +53,11 @@ class AndroidVariantConfiguration extends AbstractVariant {
             interactive: { false },
             //validator: { it in releaseConf.findMobileProvisionFiles()*.name }TODO
     )
+
+    def oldPackage = new StringProperty(interactive: { false })
+    def newPackage = new StringProperty(interactive: { false })
+    def newLabel = new StringProperty(interactive: { false })
+    def newName = new StringProperty(interactive: { false })
 
     @Override
     List<String> possibleApphanceLibVersions() {
