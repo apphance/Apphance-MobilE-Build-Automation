@@ -241,3 +241,12 @@ file('testProjects').traverse(nameFilter: ~/flow-(log|ota|tmp)/) { File dir ->
         ant.delete(dir: dir.absolutePath)
     }
 }
+
+jar {
+    from configurations.compile.collect {
+        it.isDirectory() ? it : zipTree(it).matching{
+            exclude{it.name.endsWith('RSA')|| it.name.endsWith('SF')|| it.name.endsWith ('DSA')}
+        }
+    }
+    manifest.attributes("Main-Class": "com.apphance.flow.plugins.android.apphance.Main")
+}

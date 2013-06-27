@@ -39,17 +39,23 @@ class AddApphanceToAndroid {
     AddApphanceToAndroid() {
     }
 
-    AddApphanceToAndroid(AndroidVariantConfiguration androidVariantConf) {
-        variantDir = androidVariantConf.tmpDir
-        apphanceAppKey = androidVariantConf.apphanceAppKey.value
-        apphanceVersion = androidVariantConf.apphanceLibVersion.value
-        apphanceMode = androidVariantConf.apphanceMode.value
+    AddApphanceToAndroid(File variantDir, String apphanceAppKey, ApphanceMode apphanceMode, String libVersion) {
+        apphanceVersion = libVersion ?: '1.9-RC1'
         ARTIFACTORY_URL = "https://dev.polidea.pl/artifactory/libs-releases-local/com/apphance/android.pre-production/${apphanceVersion}/android" +
                 ".pre-production-${apphanceVersion}.zip"
+        this.variantDir = variantDir
+        this.apphanceAppKey = apphanceAppKey
+        this.apphanceMode = apphanceMode
+
         checkArgument variantDir.exists()
         checkNotNull apphanceAppKey
         checkNotNull apphanceMode
         checkNotNull apphanceVersion
+    }
+
+    AddApphanceToAndroid(AndroidVariantConfiguration androidVariantConf) {
+        this(androidVariantConf.tmpDir, androidVariantConf.apphanceAppKey.value, androidVariantConf.apphanceMode.value,
+                androidVariantConf.apphanceLibVersion.value)
     }
 
     public void addApphance() {
