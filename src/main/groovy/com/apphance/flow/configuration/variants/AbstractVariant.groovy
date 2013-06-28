@@ -45,7 +45,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
             interactive: { apphanceEnabled },
             required: { apphanceConf.enabled },
             possibleValues: { possibleApphanceModes() },
-            validator: { ApphanceMode it -> it.toString() in possibleApphanceModes() }
+            validator: { it -> it.toString() in possibleApphanceModes() }
     )
 
     def apphanceAppKey = new StringProperty(
