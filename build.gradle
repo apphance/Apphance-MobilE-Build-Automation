@@ -190,12 +190,6 @@ dependencies {
     testFunctionalRuntime configurations.testRuntime
 }
 
-file('tmp').mkdirs()
-
-task cleanTmp(type: Delete, description: 'Cleans tmp directory') {
-    delete 'tmp'
-}
-
 def beforeTestClosure = { descriptor ->
     logger.lifecycle("Test -> class: ${descriptor.className}, name: '${descriptor.name}'")
 }
