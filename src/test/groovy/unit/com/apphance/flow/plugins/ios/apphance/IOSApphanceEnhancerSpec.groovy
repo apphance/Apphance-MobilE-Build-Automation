@@ -55,7 +55,7 @@ class IOSApphanceEnhancerSpec extends Specification {
 
         and:
         enhancer.pbxJsonParser = GroovyMock(PbxJsonParser) {
-            isFrameworkDeclared(_) >> true
+            isFrameworkDeclared(_, _) >> true
         }
 
         when:

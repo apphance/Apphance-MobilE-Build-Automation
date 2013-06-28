@@ -20,56 +20,54 @@ class PbxJsonParser {
 
     @Inject IOSExecutor executor
 
-    String plistForScheme(String configuration, String blueprintId) {
-        def json = parsedPBX()
+    String plistForScheme(File pbx, String configuration, String blueprintId) {
+        def json = parsedPBX(pbx)
         def objects = json.objects
 
-        def targetObject = objects.find { it.key == blueprintId }
-        def buildConfigurationListKey = targetObject.value.buildConfigurationList
-        def conf = findConfiguration(buildConfigurationListKey, configuration)
+        def targetObject = objects.find { it.key == blueprintId }.value as Map
+        def buildConfigurationListKey = targetObject.buildConfigurationList
+        def conf = findConfiguration(objects, buildConfigurationListKey, configuration)
 
-        conf.value.buildSettings[INFOPLIST_FILE]
+        conf.buildSettings[INFOPLIST_FILE]
     }
 
-    String plistForTC(String target, String configuration) {
-        def json = parsedPBX()
+    String plistForTC(File pbx, String target, String configuration) {
+        def json = parsedPBX(pbx)
         def objects = json.objects
 
-        def targetObject = objects.find { it.value.isa == PBX_NATIVE_TARGET && it.value.name == target }
-        def buildConfigurationListKey = targetObject.value.buildConfigurationList
-        def conf = findConfiguration(buildConfigurationListKey, configuration)
+        def targetObject = objects.find { it.value.isa == PBX_NATIVE_TARGET && it.value.name == target }.value as Map
+        def buildConfigurationListKey = targetObject.buildConfigurationList
+        def conf = findConfiguration(objects, buildConfigurationListKey, configuration)
 
-        conf.value.buildSettings[INFOPLIST_FILE]
+        conf.buildSettings[INFOPLIST_FILE]
     }
 
-    private def findConfiguration(String buildConfigurationListKey, String configuration) {
-        def json = parsedPBX()
-        def objects = json.objects
+    private Map findConfiguration(Map objects, String buildConfigurationListKey, String configuration) {
 
-        def buildConfigurationList = objects.find { it.key == buildConfigurationListKey }
-        def buildConfigurations = buildConfigurationList.value.buildConfigurations
+        def buildConfigurationList = objects.find { it.key == buildConfigurationListKey }.value as Map
+        def buildConfigurations = buildConfigurationList.buildConfigurations
         def configurations = objects.findAll { it.key in buildConfigurations }
         def conf = configurations.find { it.value.isa == XCBUILD_CONFIGURATION && it.value.name == configuration }
 
-        conf
+        conf.value as Map
     }
 
-    String targetForBlueprintId(String blueprintId) {
-        def json = parsedPBX()
+    String targetForBlueprintId(File pbx, String blueprintId) {
+        def json = parsedPBX(pbx)
         def objects = json.objects
 
-        def targetObject = objects.find { it.value.isa == PBX_NATIVE_TARGET && it.key == blueprintId }
+        def targetObject = objects.find { it.value.isa == PBX_NATIVE_TARGET && it.key == blueprintId }.value as Map
 
-        targetObject.value.name
+        targetObject.name
     }
 
-    boolean isFrameworkDeclared(def frameworkNamePattern) {
-        def json = parsedPBX()
+    boolean isFrameworkDeclared(File pbx, def frameworkNamePattern) {
+        def json = parsedPBX(pbx)
         json.objects.find { it.value.isa == PBX_FILE_REFERENCE && it.value.name =~ frameworkNamePattern }
     }
 
-    private Object parsedPBX() {
-        new JsonSlurper().parseText(executor.pbxProjToJSON.join('\n'))
+    private Map parsedPBX(File pbx) {
+        new JsonSlurper().parseText(executor.pbxProjToJSON(pbx).join('\n')) as Map
     }
 
     static boolean isPlaceholder(String value) {

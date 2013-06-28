@@ -49,21 +49,7 @@ class IOSExecutorSpec extends Specification {
         }
     }
 
-    def 'root pbxproj is converted to json format well'() {
-        when:
-        def json = iosExecutor.pbxProjToJSON
-        json = json.join('\n')
-
-        then:
-        noExceptionThrown()
-
-        and:
-        def slurped = new JsonSlurper().parseText(json)
-        slurped.objectVersion == '46'
-        slurped.archiveVersion == '1'
-    }
-
-    def 'variant pbxproj is converted to json format well'() {
+    def 'pbxproj is converted to json format well'() {
         when:
         def json = iosExecutor.pbxProjToJSON(new File("$conf.rootDir.absolutePath/$conf.xcodeDir.value.name", PROJECT_PBXPROJ))
 

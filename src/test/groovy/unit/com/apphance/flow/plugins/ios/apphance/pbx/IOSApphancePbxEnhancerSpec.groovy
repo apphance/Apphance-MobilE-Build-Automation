@@ -33,7 +33,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
             getConfiguration() >> 'BasicConfiguration'
         })
         enhancer.iosExecutor = GroovyMock(IOSExecutor) {
-            getPbxProjToJSON() >> pbxJSON.text.split('\n')
+            pbxProjToJSON(_) >> pbxJSON.text.split('\n')
         }
 
         expect:
@@ -72,7 +72,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
 
         and:
         def executor = GroovySpy(IOSExecutor) {
-            getPbxProjToJSON() >> pbxJSON.text.split('\n')
+            pbxProjToJSON(_) >> pbxJSON.text.split('\n')
         }
         executor.conf = conf
         executor.executor = commandExecutor
@@ -83,6 +83,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
             getConfiguration() >> 'BasicConfiguration'
             getApphanceMode() >> new ApphanceModeProperty(value: QA)
             getTmpDir() >> tmpDir
+            getVariantPbx() >> GroovyMock(File)
         }
         and:
         def enhancer = new IOSApphancePbxEnhancer(variant)

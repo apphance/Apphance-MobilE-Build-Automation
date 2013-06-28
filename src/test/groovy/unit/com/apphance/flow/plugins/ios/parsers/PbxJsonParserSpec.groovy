@@ -12,7 +12,7 @@ class PbxJsonParserSpec extends Specification {
     def input = new File('testProjects/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
     @Shared
     def parser = new PbxJsonParser(executor: GroovyMock(IOSExecutor) {
-        getPbxProjToJSON() >> input.text.split('\n')
+        pbxProjToJSON(_) >> input.text.split('\n')
     })
 
     def 'plist for configuration and blueprint is found correctly'() {
@@ -21,7 +21,7 @@ class PbxJsonParserSpec extends Specification {
         def blueprintId = 'D382B71014703FE500E9CC9B'
 
         expect:
-        parser.plistForScheme(configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
+        parser.plistForScheme(GroovyMock(File), configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
     }
 
     def 'plist for target and configuration is found correctly'() {
@@ -30,7 +30,7 @@ class PbxJsonParserSpec extends Specification {
         def configuration = 'BasicConfiguration'
 
         expect:
-        parser.plistForTC(target, configuration) == 'GradleXCode/GradleXCode-Info.plist'
+        parser.plistForTC(GroovyMock(File), target, configuration) == 'GradleXCode/GradleXCode-Info.plist'
     }
 
     def 'target name is found for blueprint id'() {
@@ -38,7 +38,7 @@ class PbxJsonParserSpec extends Specification {
         def blueprintId = 'D382B71014703FE500E9CC9B'
 
         expect:
-        parser.targetForBlueprintId(blueprintId) == 'GradleXCode'
+        parser.targetForBlueprintId(GroovyMock(File), blueprintId) == 'GradleXCode'
     }
 
     def 'placeholder is recognized correctly'() {
@@ -63,11 +63,11 @@ class PbxJsonParserSpec extends Specification {
     def 'apphance framework is found correctly'() {
         given:
         parser.executor = GroovyMock(IOSExecutor) {
-            getPbxProjToJSON() >> parsedJSON
+            pbxProjToJSON(_) >> parsedJSON
         }
 
         expect:
-        parser.isFrameworkDeclared(APPHANCE_FRAMEWORK_NAME_PATTERN) == frameworkDeclared
+        parser.isFrameworkDeclared(GroovyMock(File), APPHANCE_FRAMEWORK_NAME_PATTERN) == frameworkDeclared
 
         where:
         frameworkDeclared | parsedJSON

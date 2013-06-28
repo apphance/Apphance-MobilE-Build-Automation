@@ -18,12 +18,12 @@ class IOSSchemeVariant extends AbstractIOSVariant {
     File getPlist() {
         String confName = schemeParser.configurationName(name)
         String blueprintId = schemeParser.blueprintIdentifier(name)
-        new File(tmpDir, pbxJsonParser.plistForScheme(confName, blueprintId))
+        new File(tmpDir, pbxJsonParser.plistForScheme(variantPbx, confName, blueprintId))
     }
 
     @Override
     String getTarget() {
-        pbxJsonParser.targetForBlueprintId(schemeParser.blueprintIdentifier(name))
+        pbxJsonParser.targetForBlueprintId(variantPbx, schemeParser.blueprintIdentifier(name))
     }
 
     @Override

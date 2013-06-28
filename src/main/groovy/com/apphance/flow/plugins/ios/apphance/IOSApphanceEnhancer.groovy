@@ -51,8 +51,8 @@ class IOSApphanceEnhancer {
         this.variant = variant
     }
 
-    void addApphance() {
-        if (pbxJsonParser.isFrameworkDeclared(APPHANCE_FRAMEWORK_NAME_PATTERN) || findApphanceInPath()) {
+    void enhanceApphance() {
+        if (pbxJsonParser.isFrameworkDeclared(variant.variantPbx, APPHANCE_FRAMEWORK_NAME_PATTERN) || findApphanceInPath()) {
             throw new GradleException(format(bundle.getString('exception.apphance.declared'), variant.name, variant.tmpDir.absolutePath))
         } else {
             apphancePbxEnhancer.addApphanceToPbx()
@@ -66,8 +66,8 @@ class IOSApphanceEnhancer {
         logger.info("Searching for apphance in: $variant.tmpDir.absolutePath")
 
         def apphanceFound = false
-        variant.tmpDir.traverse([type: DIRECTORIES, maxDepth: MAX_RECURSION_LEVEL]) { file ->
-            if (file.name =~ APPHANCE_FRAMEWORK_NAME_PATTERN) {
+        variant.tmpDir.traverse([type: DIRECTORIES, maxDepth: MAX_RECURSION_LEVEL]) {
+            if (it.name =~ APPHANCE_FRAMEWORK_NAME_PATTERN) {
                 apphanceFound = true
             }
         }

@@ -46,7 +46,7 @@ class IOSApphancePbxEnhancer {
 
     @PackageScope
     void addFrameworks() {
-        frameworksToAdd.findAll { !pbxJsonParser.isFrameworkDeclared(~/${it.name}/) }.each(this.&addFramework)
+        frameworksToAdd.findAll { !pbxJsonParser.isFrameworkDeclared(variant.variantPbx, ~/${it.name}/) }.each(this.&addFramework)
     }
 
     @PackageScope
@@ -130,7 +130,7 @@ class IOSApphancePbxEnhancer {
 
     @Lazy
     private Map json = {
-        new JsonSlurper().parseText(iosExecutor.pbxProjToJSON.join('\n')) as Map
+        new JsonSlurper().parseText(iosExecutor.pbxProjToJSON(variant.variantPbx).join('\n')) as Map
     }()
 
     @Lazy

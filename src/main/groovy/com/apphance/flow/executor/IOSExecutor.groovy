@@ -9,8 +9,6 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
-
 class IOSExecutor {
 
     @Inject IOSConfiguration conf
@@ -49,13 +47,6 @@ class IOSExecutor {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: conf.xcodebuildExecutionPath() + ['-list'])).toList()*.trim()
-    }()
-
-    @Lazy List<String> pbxProjToJSON = {
-        executor.executeCommand(new Command(
-                runDir: conf.rootDir,
-                cmd: ['plutil', '-convert', 'json', "${conf.xcodeDir.value}/$PROJECT_PBXPROJ", '-o', '-']
-        )).toList()
     }()
 
     List<String> pbxProjToJSON(File pbxproj) {

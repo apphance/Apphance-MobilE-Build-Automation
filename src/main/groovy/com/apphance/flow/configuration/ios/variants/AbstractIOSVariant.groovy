@@ -19,6 +19,7 @@ import javax.inject.Inject
 import static com.apphance.flow.configuration.ProjectConfiguration.BUILD_DIR
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask.WHITESPACE_PATTERN
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
@@ -176,6 +177,11 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     File getBuildDir() {
         new File(tmpDir, BUILD_DIR)
     }
+
+    @Lazy
+    File variantPbx = {
+        new File("$tmpDir.absolutePath/$conf.xcodeDir.value", PROJECT_PBXPROJ)
+    }()
 
     abstract File getPlist()
 
