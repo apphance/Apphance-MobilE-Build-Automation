@@ -15,12 +15,6 @@ class TestUtils {
         project.task(name, type: type) as T
     }
 
-    File getTempFile() {
-        File file = createTempFile('prefix', 'suffix')
-        file.deleteOnExit()
-        file
-    }
-
     File getTemporaryDir() {
         File file = Files.createTempDir()
         file.deleteOnExit()

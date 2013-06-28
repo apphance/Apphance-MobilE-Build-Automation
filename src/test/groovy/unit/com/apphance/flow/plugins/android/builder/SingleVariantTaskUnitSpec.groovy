@@ -11,13 +11,14 @@ import com.apphance.flow.executor.AndroidExecutor
 import com.apphance.flow.executor.AntExecutor
 import com.apphance.flow.plugins.android.buildplugin.tasks.SingleVariantTask
 import com.apphance.flow.plugins.release.FlowArtifact
+import com.apphance.flow.util.FlowUtils
 import org.gradle.api.AntBuilder as AntBuilder
 import spock.lang.Specification
 
 import static com.apphance.flow.executor.AntExecutor.CLEAN
 import static com.google.common.io.Files.createTempDir
 
-@Mixin(TestUtils)
+@Mixin([TestUtils, FlowUtils])
 class SingleVariantTaskUnitSpec extends Specification {
 
     def task = create SingleVariantTask

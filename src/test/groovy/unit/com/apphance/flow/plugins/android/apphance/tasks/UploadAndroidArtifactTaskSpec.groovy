@@ -7,9 +7,10 @@ import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
 import com.apphance.flow.plugins.android.builder.AndroidBuilderInfo
 import com.apphance.flow.plugins.apphance.ApphanceNetworkHelper
+import com.apphance.flow.util.FlowUtils
 import spock.lang.Specification
 
-@Mixin(TestUtils)
+@Mixin([TestUtils, FlowUtils])
 class UploadAndroidArtifactTaskSpec extends Specification {
 
     def 'upload method invoked with appropriate arguments'() {
