@@ -59,7 +59,7 @@ class IOSApphanceEnhancerSpec extends Specification {
         }
 
         when:
-        enhancer.addApphance()
+        enhancer.enhanceApphance()
 
         then:
         def e = thrown(GradleException)

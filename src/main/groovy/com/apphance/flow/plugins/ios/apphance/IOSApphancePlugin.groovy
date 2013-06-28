@@ -38,9 +38,9 @@ class IOSApphancePlugin implements Plugin<Project> {
                 if (variant.apphanceMode.value in [QA, PROD, SILENT] && variant.mode.value == DEVICE) {
                     logger.info("Adding apphance for variant '$variant.name'")
 
-                    def addApphance = { iosApphanceEnhancerFactory.create(variant).addApphance() }
+                    def enhance = { iosApphanceEnhancerFactory.create(variant).enhanceApphance() }
 
-                    project.tasks[variant.buildTaskName].doFirst(addApphance)
+                    project.tasks[variant.buildTaskName].doFirst(enhance)
 
                     def uploadTask =
                         project.task(variant.uploadTaskName,
