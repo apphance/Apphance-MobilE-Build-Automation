@@ -127,61 +127,6 @@ class AndroidManifestHelperSpec extends Specification {
         }
     }
 
-    def 'apphance is added correctly'() {
-        given:
-        def tmpDir = temporaryDir
-
-        and:
-        def tmpManifest = new File(tmpDir, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
-
-        and:
-        copy(new File(noApphanceApplication, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), tmpManifest)
-
-        expect:
-        !androidManifestHelper.isApphanceActivityPresent(tmpDir)
-        !androidManifestHelper.isApphanceInstrumentationPresent(tmpDir)
-
-        when:
-        androidManifestHelper.addApphance(tmpDir)
-
-        then:
-        def manifest = parsedManifest(tmpManifest)
-
-        and:
-        manifest.instrumentation.@'android:name'.text() == 'com.apphance.android.ApphanceInstrumentation'
-        manifest.instrumentation.@targetPackage.text() == 'com.apphance.flowTest.android'
-
-        and:
-        manifest.'uses-permission'.@'android:name'*.text().containsAll(
-                'android.permission.INTERNET',
-                'android.permission.READ_PHONE_STATE',
-                'android.permission.GET_TASKS')
-
-        and:
-        manifest.application.activity.@'android:name'*.text().containsAll(
-                'com.apphance.android.ui.LoginActivity',
-                'com.apphance.android.ui.ProblemActivity',
-                'com.apphance.android.LauncherActivity')
-
-        and:
-        def pa = manifest.application.activity.find { it.@'android:name' == 'com.apphance.android.ui.ProblemActivity' }
-        pa.@configChanges.text() == 'orientation'
-        pa.@launchMode.text() == 'singleInstance'
-
-        and:
-        def la = manifest.application.activity.find { it.@'android:name' == 'com.apphance.android.LauncherActivity' }
-        la.@theme == '@android:style/Theme.Translucent.NoTitleBar'
-
-        and:
-        def aa = manifest.application.'activity-alias'.find { it.@'andoid:name' == '.ApphanceLauncherActivity' }
-        aa.@targetActivity == 'com.apphance.android.LauncherActivity'
-
-        and:
-        manifest.application.activity.'intent-filter'.find {
-            it.action.@'android:name' == 'com.apphance.android.LAUNCH'
-        }.category.@'android:name'.text() == 'android.intent.category.DEFAULT'
-    }
-
     def 'main activity name is read correctly deprecated method'() {
         expect:
         androidManifestHelper.getMainActivityName(new File('testProjects/apphance-updates/')) == 'pl.morizon.client.ui.HomeActivity'
@@ -226,46 +171,6 @@ class AndroidManifestHelperSpec extends Specification {
     def 'apphance activity is not found'() {
         expect:
         !androidManifestHelper.isApphanceActivityPresent(basic)
-    }
-
-    def 'apphance activity is found'() {
-        given:
-        def tmpDir = temporaryDir
-
-        and:
-        def tmpManifest = new File(tmpDir, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
-
-        and:
-        copy(new File(noApphanceApplication, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), tmpManifest)
-
-        expect:
-        !androidManifestHelper.isApphanceActivityPresent(tmpDir)
-
-        when:
-        androidManifestHelper.addApphance(tmpDir)
-
-        then:
-        androidManifestHelper.isApphanceActivityPresent(tmpDir)
-    }
-
-    def 'apphance instrumentation is found'() {
-        given:
-        def tmpDir = temporaryDir
-
-        and:
-        def tmpManifest = new File(tmpDir, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST)
-
-        and:
-        copy(new File(noApphanceApplication, com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST), tmpManifest)
-
-        expect:
-        !androidManifestHelper.isApphanceInstrumentationPresent(tmpDir)
-
-        when:
-        androidManifestHelper.addApphance(tmpDir)
-
-        then:
-        androidManifestHelper.isApphanceInstrumentationPresent(tmpDir)
     }
 
     def 'test getSourcesOf'() {
