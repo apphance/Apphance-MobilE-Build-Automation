@@ -10,6 +10,7 @@ import groovy.json.JsonSlurper
 import org.gradle.api.Project
 import spock.lang.Specification
 
+import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
@@ -48,7 +49,7 @@ class IOSExecutorSpec extends Specification {
         }
     }
 
-    def 'pbxproj is converted to json format well'() {
+    def 'root pbxproj is converted to json format well'() {
         when:
         def json = iosExecutor.pbxProjToJSON
         json = json.join('\n')
@@ -58,6 +59,19 @@ class IOSExecutorSpec extends Specification {
 
         and:
         def slurped = new JsonSlurper().parseText(json)
+        slurped.objectVersion == '46'
+        slurped.archiveVersion == '1'
+    }
+
+    def 'variant pbxproj is converted to json format well'() {
+        when:
+        def json = iosExecutor.pbxProjToJSON(new File("$conf.rootDir.absolutePath/$conf.xcodeDir.value.name", PROJECT_PBXPROJ))
+
+        then:
+        noExceptionThrown()
+
+        and:
+        def slurped = new JsonSlurper().parseText(json.join('\n'))
         slurped.objectVersion == '46'
         slurped.archiveVersion == '1'
     }

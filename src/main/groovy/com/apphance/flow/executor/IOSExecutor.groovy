@@ -58,6 +58,17 @@ class IOSExecutor {
         )).toList()
     }()
 
+    List<String> pbxProjToJSON(File pbxproj) {
+        pbxProjToJSONC(pbxproj)
+    }
+
+    private Closure<List<String>> pbxProjToJSONC = { File pbxproj ->
+        executor.executeCommand(new Command(
+                runDir: pbxproj.parentFile,
+                cmd: ['plutil', '-convert', 'json', "${pbxproj.absolutePath}", '-o', '-']
+        )).toList()
+    }.memoize()
+
     List<String> plistToJSON(File plist) {
         plistToJSONC(plist)
     }
