@@ -97,20 +97,33 @@ class AddApphanceToAndroidSpec extends Specification {
     def 'test addStartNewSessionToAllMainActivities'() {
         given:
         File mainActivity = new File(variantDir, 'src/com/apphance/flowTest/android/TestActivity.java')
-        def appKeyCond = { mainActivity.text.contains 'public static final String APP_KEY = "TestKey";' }
-        def startNewSessionCond = { mainActivity.text.contains 'Apphance.startNewSession(this, APP_KEY, Apphance.Mode.QA);' }
-
+        def startSession = 'Apphance.startNewSession(this, "TestKey", Apphance.Mode.QA);'
         expect:
         mainActivity.exists()
-        !appKeyCond()
-        !startNewSessionCond()
+        !mainActivity.text.contains(startSession)
 
         when:
         addApphanceToAndroid.addStartNewSessionToAllMainActivities()
 
         then:
-        appKeyCond()
-        startNewSessionCond()
+        mainActivity.text.contains startSession
+    }
+
+    def 'test addStartNewSessionToAllMainActivities source without onCreate method'() {
+        given:
+        File mainActivity = tempFile << new File('src/test/resources/com/apphance/flow/android/TestActivityWithoutOnCreate.java').text
+        def startSession = 'Apphance.startNewSession(this, "TestKey", Apphance.Mode.QA);'
+
+        expect:
+        mainActivity.exists()
+        !mainActivity.text.contains(startSession)
+
+        when:
+        addApphanceToAndroid.addApphanceInit(mainActivity, "TestKey", ApphanceMode.QA)
+        println mainActivity.text
+
+        then:
+        mainActivity.text.contains startSession
     }
 
     def 'test addStartStopInvocations'() {
@@ -118,17 +131,20 @@ class AddApphanceToAndroidSpec extends Specification {
         addApphanceToAndroid.addStartStopInvocations(activity)
 
         then:
+        true
+
+        then:
         removeWhitespace(activity.text).contains(removeWhitespace("""
             |protected void onStart() {
-            |    super.onStart();
             |    Apphance.onStart(this);
+            |    super.onStart();
             |}
             |""".stripMargin()))
 
         removeWhitespace(activity.text).contains(removeWhitespace("""
             |protected void onStop() {
-            |    super.onStop();
             |    Apphance.onStop(this);
+            |    super.onStop();
             |}
             |""".stripMargin()))
 
@@ -149,12 +165,14 @@ class AddApphanceToAndroidSpec extends Specification {
     def 'test aphance import added'() {
         given:
         def testActivity = tempFile << TEST_ACTIVITY.text
+        def before = testActivity.readLines().findAll { it.contains('import') }.size()
 
         when:
         addApphanceToAndroid.addApphanceImportTo(testActivity)
 
         then:
         contains(testActivity, APPHANCE_IMPORT)
+        testActivity.readLines().findAll { it.contains('import') }.size() == before +1
     }
 
     def 'test apphance log'() {
@@ -214,4 +232,24 @@ class AddApphanceToAndroidSpec extends Specification {
         !manifest.text.contains('READ_PHONE_STATE')
         !manifest.text.contains('GET_TASKS')
     }
+
+    def 'test annotations'() {
+        given:
+        def testActivity = tempFile << new File('src/test/resources/com/apphance/flow/android/NoApphanceActivity.java').text
+
+        when:
+        addApphanceToAndroid.addApphanceImportTo(testActivity)
+        println testActivity.text
+
+        then:
+        testActivity.text.contains('@Override')
+        contains(testActivity, APPHANCE_IMPORT)
+    }
+
+    def 'test isOnCreatePresent'() {
+        expect:
+        !addApphanceToAndroid.isMethodPresent(new File('src/test/resources/com/apphance/flow/android/TestActivityWithoutOnCreate.java'), 'onCreate')
+        addApphanceToAndroid.isMethodPresent(new File('src/test/resources/com/apphance/flow/android/TestActivity.java'), 'onCreate')
+    }
+
 }

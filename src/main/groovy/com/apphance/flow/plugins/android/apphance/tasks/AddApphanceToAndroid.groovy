@@ -6,9 +6,6 @@ import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import com.apphance.flow.util.FlowUtils
 import com.thoughtworks.qdox.JavaDocBuilder
 import com.thoughtworks.qdox.model.JavaClass
-import com.thoughtworks.qdox.model.JavaField
-import com.thoughtworks.qdox.model.JavaMethod
-import com.thoughtworks.qdox.model.Type
 import groovy.transform.PackageScope
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.GradleException
@@ -19,7 +16,6 @@ import static com.apphance.flow.configuration.apphance.ApphanceLibType.PRE_PROD
 import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkNotNull
-import static com.thoughtworks.qdox.model.Type.VOID
 
 @Mixin([FlowUtils, AndroidManifestHelper])
 class AddApphanceToAndroid {
@@ -112,20 +108,8 @@ class AddApphanceToAndroid {
 
         sourceFiles.each {
             logger.info "Adding startNewSession invocation to ${it.name}"
-            JavaClass activity = getActivity(it)
 
-            // public static final String APP_KEY = "apphanceAppKey";
-            JavaField appKey = new JavaField(new Type('String'), 'APP_KEY')
-            appKey.setModifiers 'public', 'static', 'final'
-            appKey.setInitializationExpression "\"$apphanceAppKey\""
-            activity.addField appKey
-
-            // Apphance.startNewSession(this, APP_KEY, Mode.QA);
-            def onCreate = activity.getMethodBySignature('onCreate', [new Type('android.os.Bundle')] as Type[])
-            assert onCreate
-            onCreate.setSourceCode(onCreate.sourceCode + '\nApphance.startNewSession(this, APP_KEY, Apphance.Mode.QA);\n')
-
-            it.setText activity.source.toString()
+            addApphanceInit(it, apphanceAppKey, apphanceMode)
         }
     }
 
@@ -153,20 +137,19 @@ class AddApphanceToAndroid {
     void addStartStopInvocations(File file) {
         logger.info "Adding onStart and onStop invocation to ${file.name}"
 
-        JavaClass activity = getActivity(file)
         [ON_START, ON_STOP].each { String methodName ->
-            def method = activity.getMethodBySignature(methodName)
-            String apphanceInvocation = "Apphance.${methodName}(this);\n"
-            if (method) {
-                method.sourceCode += apphanceInvocation
+            if (!isMethodPresent(file, methodName)) {
+                String methodBody = """
+                    |    @Override
+                    |    protected void $methodName() {
+                    |        Apphance.$methodName(this);
+                    |        super.$methodName();
+                    |    }""".stripMargin()
+                addMethodToClassFile(methodBody, file)
             } else {
-                method = new JavaMethod(VOID, methodName)
-                method.sourceCode = "super.$methodName();\n" + apphanceInvocation
-                method.setModifiers(['protected'] as String[])
-                activity.addMethod method
+                addLineOfCodeToMethod(file, methodName, "    Apphance.$methodName(this);")
             }
         }
-        file.setText activity.source.toString()
     }
 
     @PackageScope
@@ -175,9 +158,13 @@ class AddApphanceToAndroid {
 
         JavaClass activity = getActivity(file)
         if (!(IMPORT_APPHANCE in activity.getSource().imports)) {
-            activity.getSource().addImport IMPORT_APPHANCE
+            List<String> lines = file.text.readLines()
+            int firstImportLine = lines.findIndexOf { it.trim().startsWith('import') }
+            assert firstImportLine >= 0
+            lines.add(firstImportLine, "import $IMPORT_APPHANCE;")
+
+            file.setText lines.join('\n')
         }
-        file.setText activity.source.toString()
     }
 
     @PackageScope
@@ -189,6 +176,7 @@ class AddApphanceToAndroid {
 
     @PackageScope
     def addApphanceLib() {
+        logger.info('Downloading apphance')
         unzip downloadToTempFile(ARTIFACTORY_URL), new File("$variantDir.absolutePath/libs")
     }
 
@@ -200,4 +188,69 @@ class AddApphanceToAndroid {
         projectProperties << "android.library.reference.${libSize + 1}=libs/apphance-library-${apphanceVersion}"
     }
 
+    def addApphanceInit(File mainFile, String apphanceAppKey, ApphanceMode apphanceMode) {
+        logger.debug("Adding apphance init to file: $mainFile.absolutePath")
+        String startSession = """    Apphance.startNewSession(this, "$apphanceAppKey", ${mapApphanceMode(apphanceMode)});"""
+        if (isMethodPresent(mainFile, 'onCreate')) {
+            addLineOfCodeToMethod(mainFile, 'onCreate', startSession)
+        } else {
+            String body = "    public void onCreate(final Bundle savedInstanceState) {\n    super.onCreate(savedInstanceState);\n    $startSession\n}\n"
+            addMethodToClassFile(body, mainFile)
+        }
+    }
+
+    @PackageScope
+    boolean isMethodPresent(File file, String methodName) {
+        file.readLines().any { it.matches(".*void.*$methodName\\(.*") }
+    }
+
+    private String mapApphanceMode(ApphanceMode apphanceMode) {
+        (apphanceMode == ApphanceMode.QA) ? 'Apphance.Mode.QA' : 'Apphance.Mode.Silent'
+    }
+
+    private void addLineOfCodeToMethod(File file, String methodName, String lineOfCode) {
+        File temp = tempFile
+
+        boolean lineAdded = false
+        boolean searchingForOpeningBrace = false
+        temp.withWriter { out ->
+            file.eachLine { line ->
+                if (line.matches(".*void\\s$methodName\\(.*") && !lineAdded) {
+                    searchingForOpeningBrace = true
+                }
+                if (!lineAdded && searchingForOpeningBrace && line.matches('.*\\{.*')) {
+                    out.println(line.replaceAll('\\{', "{\n$lineOfCode"))
+                    lineAdded = true
+                } else {
+                    out.println(line)
+                }
+            }
+        }
+        if (!lineAdded) {
+            logger.warn("Could not find $methodName(). Apphance not added.")
+        }
+
+        file.delete()
+        file << temp.text
+        temp.delete()
+    }
+
+    private void addMethodToClassFile(String methodBody, File file) {
+        File temp = tempFile
+
+        boolean onCreateAdded = false
+        temp.withWriter { out ->
+            file.eachLine { line ->
+                out.println(line)
+                if (line.matches('.*class.*extends.*\\{.*') && !onCreateAdded) {
+                    out.println(methodBody)
+                    onCreateAdded = true
+                }
+            }
+        }
+
+        file.delete()
+        file << temp.text
+        temp.delete()
+    }
 }
