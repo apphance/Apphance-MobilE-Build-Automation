@@ -62,7 +62,7 @@ class IOSSingleVariantBuilder {
         def result = []
         dir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
             if ((it.name.endsWith('.m') || it.name.endsWith('.h')) && !it.path.contains('/External/')) {
-                l.lifecycle("Adding source file ${it} to processing list")
+                l.info("Adding source file ${it} to processing list")
                 result << it
             }
         }

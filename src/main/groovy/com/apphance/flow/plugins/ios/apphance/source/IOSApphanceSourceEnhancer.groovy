@@ -40,7 +40,8 @@ class IOSApphanceSourceEnhancer {
     @PackageScope
     void replaceLogs() {
         logger.info("Replacing apphance logger in dir: $variant.tmpDir.absolutePath")
-        ant.replaceregexp(match: '^\\s+NSLog', replace: 'APHLog', byline: true) {
+        logger.info("Source files to replace logs: ${apphancePbxEnhancer.filesToReplaceLogs}")
+        ant.replaceregexp(match: '\\bNSLog\\b', replace: 'APHLog', byline: true) {
             fileset(dir: variant.tmpDir) {
                 apphancePbxEnhancer.filesToReplaceLogs.each {
                     include(name: it)

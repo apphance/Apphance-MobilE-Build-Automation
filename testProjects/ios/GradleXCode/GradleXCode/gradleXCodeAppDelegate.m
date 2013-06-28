@@ -13,7 +13,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    NSLog (@"Application started");
     NSLog(@"Application started");
+    NSLogPageSize();
     // Override point for customization after application launch.
     return YES;
 }

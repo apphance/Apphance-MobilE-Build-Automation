@@ -11,6 +11,7 @@ import spock.lang.Specification
 import static com.apphance.flow.configuration.apphance.ApphanceMode.QA
 import static com.google.common.io.Files.copy
 import static com.google.common.io.Files.createTempDir
+import static java.util.regex.Pattern.compile
 
 class IOSApphanceSourceEnhancerSpec extends Specification {
 
@@ -57,8 +58,14 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
 
         then:
         def files = filesToReplace.collect { new File(tmpDir, it) }
-        !files.any { it.text.contains('NSLog') }
         files.any { it.text.contains('APHLog') }
+        !files.any {
+            it.readLines().find { line ->
+                def m = compile("\\bNSLog\\b").matcher(line)
+                m.find()
+            }
+        }
+        files.findAll { it.text.contains('NSLogPageSize') }.size() == 1
     }
 
     def 'apphance is added to PCH file'() {
