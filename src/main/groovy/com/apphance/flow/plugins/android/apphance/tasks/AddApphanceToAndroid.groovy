@@ -239,14 +239,24 @@ class AddApphanceToAndroid {
         File temp = tempFile
 
         boolean onCreateAdded = false
+        boolean searchingForOpeningBrace = false
         temp.withWriter { out ->
             file.eachLine { line ->
                 out.println(line)
-                if (line.matches('.*class.*extends.*\\{.*') && !onCreateAdded) {
+
+                if (line.matches('.*class.*extends.*') && !onCreateAdded) {
+                    searchingForOpeningBrace = true
+                }
+
+                if (!onCreateAdded && searchingForOpeningBrace && line.matches('.*\\{.*')) {
                     out.println(methodBody)
                     onCreateAdded = true
                 }
             }
+        }
+
+        if (!onCreateAdded) {
+            logger.warn("Method was not added")
         }
 
         file.delete()
