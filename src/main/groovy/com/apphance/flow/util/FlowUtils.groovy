@@ -4,7 +4,8 @@ import groovy.io.FileType
 
 import java.nio.file.Files
 
-import static com.google.common.base.Preconditions.*
+import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
+import static com.google.common.base.Preconditions.checkArgument
 
 class FlowUtils {
 
@@ -14,7 +15,7 @@ class FlowUtils {
         checkArgument(dir.exists())
 
         Closure where = options.where ?: { true }
-        dir.traverse(type: FileType.FILES, filter: where) {
+        dir.traverse(type: FileType.FILES, maxDepth: MAX_RECURSION_LEVEL, filter: where) {
             files << it
         }
         files

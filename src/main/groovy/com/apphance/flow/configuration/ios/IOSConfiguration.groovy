@@ -5,10 +5,12 @@ import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.util.file.FileManager
 
 import javax.inject.Inject
 
 import static com.apphance.flow.detection.ProjectType.IOS
+import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static groovy.io.FileType.DIRECTORIES
@@ -73,7 +75,7 @@ class IOSConfiguration extends ProjectConfiguration {
         rootDir.traverse(
                 type: DIRECTORIES,
                 nameFilter: ~/.*\.xcodeproj/,
-                excludeFilter: ~/.*${TMP_DIR}.*/,
+                excludeFilter: EXCLUDE_FILTER,
                 maxDepth: MAX_RECURSION_LEVEL) {
             dirs << relativeTo(rootDir.absolutePath, it.absolutePath).path
         }

@@ -18,6 +18,7 @@ import java.awt.image.BufferedImage
 import java.util.List
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
+import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
 import static org.imgscalr.Scalr.pad
@@ -74,7 +75,7 @@ class ImageMontageTask extends DefaultTask {
     List<File> getFilesToMontage(File rootDir) {
         List<File> filesToMontage = []
 
-        rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL, excludeFilter: '**/flow-*/**']) { File file ->
+        rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL, excludeFilter: EXCLUDE_FILTER]) { File file ->
             //FIXME apply better filter
             if (isValid(rootDir, file) && [conf.tmpDir, releaseConf.otaDir]*.name.every { !file.absolutePath.contains(it) }) {
                 filesToMontage << file
