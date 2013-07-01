@@ -55,10 +55,12 @@ class AndroidPlugin implements Plugin<Project> {
 
             project.tasks.findByName(CleanFlowTask.NAME) << {
                 def buildXml = new File(conf.rootDir, 'build.xml')
-                if (buildXml.exists())
+                def localProperties = new File(conf.rootDir, 'local.properties')
+                if (buildXml.exists() && localProperties.exists()) {
                     antExecutor.executeTarget(conf.rootDir, CLEAN)
-                else
-                    logger.lifecycle("Skipping 'ant clean' in dir: $conf.rootDir. File $buildXml.absolutePath does not exist")
+                } else {
+                    logger.lifecycle("Skipping 'ant clean' in dir: $conf.rootDir. File $buildXml.absolutePath or $localProperties.absolutePath does not exist")
+                }
             }
 
             project.task(CompileAndroidTask.NAME,
