@@ -8,9 +8,7 @@ import com.google.inject.Singleton
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ProjectConfiguration.BUILD_DIR
-import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
-import static com.apphance.flow.util.file.FileManager.relativeTo
+import static com.apphance.flow.util.file.FileManager.*
 import static groovy.io.FileType.FILES
 
 @Singleton
@@ -26,7 +24,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     @Inject IOSVariantsConfiguration iosVariantsConf
     @Inject PlistParser plistParser
-    static String ICON_PATTERN = /(?i).*icon.*png/
+    static final String ICON_PATTERN = /(?i).*icon.*png/
 
     @Override
     File defaultIcon() {
@@ -43,8 +41,9 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
         def icons = []
         conf.rootDir.traverse(
                 type: FILES,
+                maxDepth: MAX_RECURSION_LEVEL,
                 filter: { File it -> it.name ==~ ICON_PATTERN },
-                excludeFilter: ~/.*(${TMP_DIR}|${OTA_DIR}|${BUILD_DIR}).*/) {
+                excludeFilter: EXCLUDE_FILTER) {
             icons << it
         }
         icons
@@ -54,8 +53,9 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
         def files = []
         conf.rootDir.traverse(
                 type: FILES,
+                maxDepth: MAX_RECURSION_LEVEL,
                 nameFilter: ~/.*\.mobileprovision/,
-                excludeFilter: ~/.*(${TMP_DIR}|${OTA_DIR}|${BUILD_DIR}).*/) {
+                excludeFilter: EXCLUDE_FILTER) {
             files << it
         }
         files

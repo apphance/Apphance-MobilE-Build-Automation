@@ -45,12 +45,12 @@ class IOSReleaseConfigurationSpec extends Specification {
         iosReleaseConf.possibleIcons().containsAll(['icon.png', 'icon_retina.png'])
     }
 
-    def 'test findMobileProvisionFiles'() {
+    def 'mobile provision file are found'() {
         when:
         def files = iosReleaseConf.findMobileProvisionFiles()
 
         then:
-        files.size() <= 2
+        files.size() == 1
         'Ameba_Test_Project.mobileprovision' in files*.name
 
     }

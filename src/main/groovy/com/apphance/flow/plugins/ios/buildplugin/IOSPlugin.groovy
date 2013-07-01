@@ -22,10 +22,7 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
  * This is the main iOS build plugin.
  *
  * The plugin provides all the task needed to build iOS application.
- * Besides tasks explained below, the plugin prepares build-*
- * tasks which are dynamically created, based on targets and configurations available.
- * There is one task available per each Target-Configuration combination - unless particular
- * combination is excluded by the exclude property.
+ * Besides tasks explained below, the plugin prepares build*
  *
  */
 class IOSPlugin implements Plugin<Project> {

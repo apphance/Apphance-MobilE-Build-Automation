@@ -9,8 +9,7 @@ import com.apphance.flow.executor.IOSExecutor
 import javax.inject.Inject
 
 import static com.apphance.flow.detection.ProjectType.IOS
-import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
-import static com.apphance.flow.util.file.FileManager.relativeTo
+import static com.apphance.flow.util.file.FileManager.*
 import static groovy.io.FileType.DIRECTORIES
 import static java.io.File.separator
 
@@ -73,7 +72,7 @@ class IOSConfiguration extends ProjectConfiguration {
         rootDir.traverse(
                 type: DIRECTORIES,
                 nameFilter: ~/.*\.xcodeproj/,
-                excludeFilter: ~/.*${TMP_DIR}.*/,
+                excludeFilter: EXCLUDE_FILTER,
                 maxDepth: MAX_RECURSION_LEVEL) {
             dirs << relativeTo(rootDir.absolutePath, it.absolutePath).path
         }
@@ -113,8 +112,6 @@ class IOSConfiguration extends ProjectConfiguration {
     List<String> getSchemes() {
         executor.schemes
     }
-
-    Collection<String> sourceExcludes = ['**/build/**']
 
     @Override
     boolean isEnabled() {

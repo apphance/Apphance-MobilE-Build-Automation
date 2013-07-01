@@ -23,6 +23,7 @@ class CopySourcesTask extends DefaultTask {
     @Inject IOSVariantsConfiguration variantsConf
 
     @TaskAction
+    //http://ant.apache.org/manual/dirtasks.html#defaultexcludes
     void copySources() {
         def absoluteRoot = conf.rootDir.absolutePath
         variantsConf.variants.each { v ->

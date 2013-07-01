@@ -5,11 +5,15 @@ import org.gradle.api.Project
 
 import java.nio.file.Paths
 
+import static com.apphance.flow.configuration.ProjectConfiguration.BUILD_DIR
+import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
+import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
 import static java.lang.String.format
 
 class FileManager {
+    public static final EXCLUDE_FILTER = ~/.*(${TMP_DIR}|${OTA_DIR}|${BUILD_DIR}|\.git|\.hg).*/
     public static final int MAX_RECURSION_LEVEL = 7
     private static final long MEGABYTE = 1048576L
 

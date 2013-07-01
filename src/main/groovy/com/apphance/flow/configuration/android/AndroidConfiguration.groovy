@@ -9,7 +9,6 @@ import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.flow.detection.ProjectType.ANDROID
 import static com.apphance.flow.plugins.android.release.tasks.UpdateVersionTask.WHITESPACE_PATTERN
 import static com.google.common.base.Strings.isNullOrEmpty
@@ -80,7 +79,7 @@ class AndroidConfiguration extends ProjectConfiguration {
         androidHome ? new File(androidHome) : null
     }
 
-    final Collection<String> sourceExcludes = ['**/*.class', '**/bin/**', '**/build/*', "**/${TMP_DIR}/**/*", "**/${OTA_DIR}/**/*"]
+    final Collection<String> sourceExcludes = super.sourceExcludes + ['**/*.class', '**/bin/**']
 
     private Collection<File> sdkJarLibs = []
 
