@@ -242,7 +242,9 @@ file('testProjects').traverse(nameFilter: ~/flow-(log|ota|tmp)/) { File dir ->
     }
 }
 
-jar {
+task fatJar(type: Jar, dependsOn: jar) {
+    appendix = "standalone"
+    from zipTree(jar.archivePath)
     from configurations.compile.collect {
         it.isDirectory() ? it : zipTree(it).matching{
             exclude{it.name.endsWith('RSA')|| it.name.endsWith('SF')|| it.name.endsWith ('DSA')}
