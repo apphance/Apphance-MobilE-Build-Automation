@@ -23,6 +23,7 @@ class CopySourcesTask extends DefaultTask {
     @Inject AndroidVariantsConfiguration variantsConf
 
     @TaskAction
+    //http://ant.apache.org/manual/dirtasks.html#defaultexcludes
     void copySources() {
         def absoluteRoot = conf.rootDir.absolutePath
         variantsConf.variants.each { v ->
@@ -34,6 +35,7 @@ class CopySourcesTask extends DefaultTask {
                     exclude(name: relativeTo(absoluteRoot, variantsConf.variantsDir.absolutePath).name + '/**/*')
                     exclude(name: relativeTo(absoluteRoot, releaseConf.otaDir.absolutePath).name + '/**/*')
                     exclude(name: relativeTo(absoluteRoot, conf.logDir.absolutePath).name + '/**/*')
+                    exclude(name: 'log/**/*')
                     conf.sourceExcludes.each { exclude(name: it) }
                 }
             }

@@ -116,8 +116,6 @@ class IOSConfiguration extends ProjectConfiguration {
         executor.schemes
     }
 
-    Collection<String> sourceExcludes = ['**/build/**']
-
     @Override
     boolean isEnabled() {
         projectTypeDetector.detectProjectType(project.rootDir) == IOS
