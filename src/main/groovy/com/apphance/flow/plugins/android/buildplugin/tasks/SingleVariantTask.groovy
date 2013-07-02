@@ -50,6 +50,11 @@ class SingleVariantTask extends DefaultTask {
             logger.lifecycle("No files copied because directory ${builderInfo.variantDir} does not exists")
         }
 
+        if (variant.oldPackage.value && variant.newPackage.value) {
+            def replacePackageTask = project.tasks[ReplacePackageTask.NAME] as ReplacePackageTask
+            replacePackageTask.replace(variant.tmpDir, variant.oldPackage.value, variant.newPackage.value, variant.newLabel.value, variant.newName.value)
+        }
+
         antExecutor.executeTarget builderInfo.tmpDir, builderInfo.mode.lowerCase()
         if (builderInfo.originalFile.exists()) {
             logger.lifecycle("File created: ${builderInfo.originalFile}")

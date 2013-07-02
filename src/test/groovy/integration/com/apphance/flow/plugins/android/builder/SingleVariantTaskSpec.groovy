@@ -56,6 +56,8 @@ class SingleVariantTaskSpec extends Specification {
         task.conf = conf
         task.variant = GroovyMock(AndroidVariantConfiguration) {
             getTmpDir() >> new File(project.rootDir, variantTmpDir.toString())
+            getOldPackage() >> new StringProperty()
+            getNewPackage() >> new StringProperty()
         }
 
         assert project.file(TMP_DIR).deleteDir()

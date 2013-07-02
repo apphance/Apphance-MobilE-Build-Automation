@@ -46,6 +46,8 @@ class SingleVariantTaskUnitSpec extends Specification {
             releaseConf = GroovyStub(AndroidReleaseConfiguration)
             variant = GroovyStub(AndroidVariantConfiguration) {
                 getTmpDir() >> new File('temp-variant-dir')
+                getOldPackage() >> new StringProperty()
+                getNewPackage() >> new StringProperty()
             }
             apphanceConf = GroovyStub(ApphanceConfiguration)
             apphanceConf.enabled >> false

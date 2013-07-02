@@ -54,10 +54,22 @@ class AndroidVariantConfiguration extends AbstractVariant {
             //validator: { it in releaseConf.findMobileProvisionFiles()*.name }TODO
     )
 
-    def oldPackage = new StringProperty(interactive: { false })
-    def newPackage = new StringProperty(interactive: { false })
-    def newLabel = new StringProperty(interactive: { false })
-    def newName = new StringProperty(interactive: { false })
+    def oldPackage = new StringProperty(
+            name: "android.variant.${name}.replacePackage.oldPackage",
+            interactive: { false })
+    def newPackage = new StringProperty(
+            name: "android.variant.${name}.replacePackage.newPackage",
+            interactive: { false })
+    def newLabel = new StringProperty(
+            name: "android.variant.${name}.replacePackage.newLabel",
+            interactive: { false })
+    def newName = new StringProperty(
+            name: "android.variant.${name}.replacePackage.newName",
+            interactive: { false })
+
+    def variantIcon = new FileProperty(
+            name: "android.variant.${name}.replacePackage.variantIcon",
+            interactive: { false })
 
     @Override
     List<String> possibleApphanceLibVersions() {

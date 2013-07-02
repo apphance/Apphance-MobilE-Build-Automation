@@ -61,7 +61,7 @@ class AndroidManifestHelper {
         file << XmlUtil.serialize(manifest)
     }
 
-    void replacePackage(File projectDir, String oldPkg, String newPkg, String newLbl = null) {
+    void replacePackage(File projectDir, String oldPkg, String newPkg, String newLbl = null, String newName = null) {
         def file = new File(projectDir, ANDROID_MANIFEST)
         saveOriginalFile(projectDir, file)
 
@@ -75,16 +75,20 @@ class AndroidManifestHelper {
         manifest.@package = newPkg
 
         if (newLbl) {
-            replaceAndroidLabel(manifest, newLbl)
+            replaceAndroidProperty(manifest, 'label', newLbl)
+        }
+
+        if (newName) {
+            replaceAndroidProperty(manifest, 'name', newName)
         }
 
         file.delete()
         file << XmlUtil.serialize(manifest)
     }
 
-    private void replaceAndroidLabel(GPathResult manifest, String newLbl) {
+    private void replaceAndroidProperty(GPathResult manifest, String propertyName, String newValue) {
         manifest.application.each {
-            it.@'android:label' = newLbl
+            it.@"android:$propertyName" = newValue
         }
     }
 
