@@ -47,6 +47,6 @@ class ArchiveVariantTaskSpec extends Specification {
         task.archiveVariant()
 
         then:
-        1 * executor.archiveVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', '-configuration', 'BasicConfiguration', 'CONFIGURATION_BUILD_DIR=absolute', 'archive'])
+        1 * executor.archiveVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', 'CONFIGURATION_BUILD_DIR=absolute', 'archive'])
     }
 }

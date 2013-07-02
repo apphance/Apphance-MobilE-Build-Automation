@@ -2,17 +2,17 @@ package com.apphance.flow.configuration.ios.variants
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
-import com.google.common.io.Files
 import spock.lang.Shared
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.google.common.io.Files.createTempDir
 
 class IOSSchemeVariantSpec extends Specification {
 
     @Shared
-    def tmpDir = Files.createTempDir()
+    def tmpDir = createTempDir()
 
     def cleanup() {
         tmpDir.deleteDir()
@@ -24,7 +24,6 @@ class IOSSchemeVariantSpec extends Specification {
         iosConf.getTargets() >> ['t1', 't2', 't3']
         iosConf.getConfigurations() >> ['c1', 'c3', 'c4']
         iosConf.getTmpDir() >> tmpDir
-
 
         and:
         def schemeParser = GroovyStub(XCSchemeParser) {
@@ -46,9 +45,9 @@ class IOSSchemeVariantSpec extends Specification {
 
         where:
         mode      | sdk           | simulatorSdk         | expected
-        SIMULATOR | ''            | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -configuration c1 -sdk iphonesimulator6.1 -arch i386 CONFIGURATION_BUILD_DIR=${tmpDir.absolutePath}/scheme1/build"
-        SIMULATOR | 'iphoneos6.1' | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -configuration c1 -sdk iphonesimulator6.1 -arch i386 CONFIGURATION_BUILD_DIR=${tmpDir.absolutePath}/scheme1/build"
-        DEVICE    | ''            | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -configuration c1 CONFIGURATION_BUILD_DIR=${tmpDir.absolutePath}/scheme1/build"
-        DEVICE    | 'iphoneos6.1' | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -configuration c1 -sdk iphoneos6.1 CONFIGURATION_BUILD_DIR=${tmpDir.absolutePath}/scheme1/build"
+        SIMULATOR | ''            | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -sdk iphonesimulator6.1 -arch i386 CONFIGURATION_BUILD_DIR=${tmpDir.absolutePath}/scheme1/build"
+        SIMULATOR | 'iphoneos6.1' | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -sdk iphonesimulator6.1 -arch i386 CONFIGURATION_BUILD_DIR=${tmpDir.absolutePath}/scheme1/build"
+        DEVICE    | ''            | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 CONFIGURATION_BUILD_DIR=${tmpDir.absolutePath}/scheme1/build"
+        DEVICE    | 'iphoneos6.1' | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -sdk iphoneos6.1 CONFIGURATION_BUILD_DIR=${tmpDir.absolutePath}/scheme1/build"
     }
 }

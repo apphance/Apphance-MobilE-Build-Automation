@@ -34,7 +34,7 @@ class IOSSchemeVariant extends AbstractIOSVariant {
 
     @Override
     List<String> buildCmd() {
-        conf.xcodebuildExecutionPath() + ['-scheme', name, '-configuration', configuration] + sdkCmd + archCmd + [buildDirCmd]
+        conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + [buildDirCmd]
     }
 
     String getArchiveTaskName() {
@@ -42,7 +42,7 @@ class IOSSchemeVariant extends AbstractIOSVariant {
     }
 
     List<String> archiveCmd() {
-        conf.xcodebuildExecutionPath() + ['-scheme', name, '-configuration', configuration] + sdkCmd + archCmd + [buildDirCmd] + ['archive']
+        conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + [buildDirCmd] + ['archive']
     }
 
     @Override
