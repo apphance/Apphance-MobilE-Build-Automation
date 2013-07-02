@@ -4,7 +4,6 @@ import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
-import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -46,7 +45,7 @@ class IOSApphanceEnhancerSpec extends Specification {
         false | tmpDir     | { new File(tmpDir, 'Apphance.framewoork').mkdirs() }
     }
 
-    def 'exception is thrown when apphance found in variant dir'() {
+    def 'no exception is thrown when apphance found in variant dir'() {
         given:
         def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
             getName() >> 'Variant1'
@@ -62,8 +61,7 @@ class IOSApphanceEnhancerSpec extends Specification {
         enhancer.enhanceApphance()
 
         then:
-        def e = thrown(GradleException)
-        e.message.startsWith('Apphance framework found for variant: Variant1 in dir:')
+        noExceptionThrown()
     }
 
     def 'apphance dependency group resolved'() {

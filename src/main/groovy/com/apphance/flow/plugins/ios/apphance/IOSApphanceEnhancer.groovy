@@ -53,8 +53,7 @@ class IOSApphanceEnhancer {
 
     void enhanceApphance() {
         if (pbxJsonParser.isFrameworkDeclared(variant.variantPbx, APPHANCE_FRAMEWORK_NAME_PATTERN) || findApphanceInPath()) {
-            //TODO do not throw exception!!
-            throw new GradleException(format(bundle.getString('exception.apphance.declared'), variant.name, variant.tmpDir.absolutePath))
+            logger.warn("\n\nApphance framework found for variant: ${variant.name} in dir: ${variant.tmpDir.absolutePath}. Apphance will not be added!!\n\n")
         } else {
             apphancePbxEnhancer.addApphanceToPbx()
             apphanceSourceEnhancer.addApphanceToSource()
