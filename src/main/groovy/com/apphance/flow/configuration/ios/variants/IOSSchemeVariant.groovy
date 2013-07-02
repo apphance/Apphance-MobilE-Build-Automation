@@ -36,6 +36,14 @@ class IOSSchemeVariant extends AbstractIOSVariant {
         conf.xcodebuildExecutionPath() + ['-scheme', name, '-configuration', configuration] + sdkCmd + archCmd + [buildDirCmd]
     }
 
+    String getArchiveTaskName() {
+        "archive$name"
+    }
+
+    List<String> archiveCmd() {
+        conf.xcodebuildExecutionPath() + ['-scheme', name, '-configuration', configuration] + sdkCmd + archCmd + [buildDirCmd] + ['archive']
+    }
+
     @Override
     void checkProperties() {
         super.checkProperties()

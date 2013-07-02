@@ -5,14 +5,11 @@ import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
-import com.apphance.flow.util.file.FileManager
 
 import javax.inject.Inject
 
 import static com.apphance.flow.detection.ProjectType.IOS
-import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
-import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
-import static com.apphance.flow.util.file.FileManager.relativeTo
+import static com.apphance.flow.util.file.FileManager.*
 import static groovy.io.FileType.DIRECTORIES
 import static java.io.File.separator
 

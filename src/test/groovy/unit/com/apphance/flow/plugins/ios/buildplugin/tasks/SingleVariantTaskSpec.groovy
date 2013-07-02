@@ -18,12 +18,12 @@ class SingleVariantTaskSpec extends Specification {
         def builder = GroovyMock(IOSSingleVariantBuilder)
 
         and:
-        def task = proj.task('buildVariant1', type: SingleVariantTask) as SingleVariantTask
+        def task = proj.task('buildVariant1', type: BuildVariantTask) as BuildVariantTask
         task.builder = builder
         task.variant = variant
 
         when:
-        task.buildSingleVariant()
+        task.buildVariant()
 
         then:
         invocations * builder.buildVariant(variant)

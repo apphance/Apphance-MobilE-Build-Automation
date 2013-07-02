@@ -1,12 +1,11 @@
 package com.apphance.flow.plugins.ios.buildplugin
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSSchemeVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.executor.IOSExecutor
-import com.apphance.flow.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
-import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
-import com.apphance.flow.plugins.ios.buildplugin.tasks.SingleVariantTask
-import com.apphance.flow.plugins.ios.buildplugin.tasks.UnlockKeyChainTask
+import com.apphance.flow.plugins.ios.buildplugin.tasks.*
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
 import com.apphance.flow.plugins.project.tasks.PrepareSetupTask
 import com.apphance.flow.plugins.project.tasks.VerifySetupTask
@@ -38,10 +37,13 @@ class IOSPlugin implements Plugin<Project> {
     @Inject IOSVariantsConfiguration variantsConf
     @Inject IOSExecutor executor
 
+    private Project project
+
     @Override
     void apply(Project project) {
         if (conf.isEnabled()) {
-            logger.lifecycle("Applying plugin ${this.class.simpleName}")
+            this.project = project
+            logger.lifecycle("Applying plugin ${getClass().simpleName}")
 
             project.tasks.findByName(CleanFlowTask.NAME) << {
                 executor.clean()
@@ -71,16 +73,8 @@ class IOSPlugin implements Plugin<Project> {
                     dependsOn: [BUILD_ALL_DEVICE_TASK_NAME, BUILD_ALL_SIMULATOR_TASK_NAME],
                     description: 'Builds all variants and produces all artifacts (zip, ipa, messages, etc)')
 
-            variantsConf.variants.each { variant ->
-                def buildTask = project.task(variant.buildTaskName,
-                        type: SingleVariantTask,
-                        dependsOn: [CopyMobileProvisionTask.NAME]
-                ) as SingleVariantTask
-                buildTask.variant = variant
-
-                def buildAllMode = "buildAll${variant.mode.value.capitalize()}"
-                project.tasks[buildAllMode].dependsOn variant.buildTaskName
-            }
+            variantsConf.variants.each(this.&createBuildTask)
+            variantsConf.variants.findAll { it instanceof IOSSchemeVariant }.each(this.&createArchiveTask)
 
             project.tasks.each {
                 if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME])) {
@@ -88,5 +82,24 @@ class IOSPlugin implements Plugin<Project> {
                 }
             }
         }
+    }
+
+    private void createBuildTask(AbstractIOSVariant variant) {
+        def buildTask = project.task(variant.buildTaskName,
+                type: BuildVariantTask,
+                dependsOn: [CopyMobileProvisionTask.NAME]
+        ) as BuildVariantTask
+        buildTask.variant = variant
+
+        def buildAllMode = "buildAll${variant.mode.value.capitalize()}"
+        project.tasks[buildAllMode].dependsOn variant.buildTaskName
+    }
+
+    private void createArchiveTask(IOSSchemeVariant variant) {
+        def archiveTask = project.task(variant.archiveTaskName,
+                type: ArchiveVariantTask,
+                dependsOn: [CopyMobileProvisionTask.NAME]
+        ) as ArchiveVariantTask
+        archiveTask.variant = variant
     }
 }

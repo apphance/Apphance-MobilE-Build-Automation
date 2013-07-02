@@ -9,17 +9,17 @@ import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 
-class SingleVariantTask extends DefaultTask {
+class BuildVariantTask extends DefaultTask {
 
     String group = FLOW_BUILD
-    String description = 'Builds single variant for iOS.'
+    String description = 'Builds single variant for iOS'
 
     @Inject IOSSingleVariantBuilder builder
 
     AbstractIOSVariant variant
 
     @TaskAction
-    void buildSingleVariant() {
+    void buildVariant() {
         if (variant != null)
             builder.buildVariant(variant)
         else

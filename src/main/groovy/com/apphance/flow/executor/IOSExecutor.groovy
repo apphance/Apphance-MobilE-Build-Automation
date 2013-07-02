@@ -109,6 +109,10 @@ class IOSExecutor {
         executor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
     }
 
+    def archiveVariant(File dir, List<String> buildCmd) {
+        executor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
+    }
+
     def buildTestVariant(File dir, AbstractIOSVariant variant, String outputFilePath) {
         executor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd(),
                 environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: outputFilePath],
