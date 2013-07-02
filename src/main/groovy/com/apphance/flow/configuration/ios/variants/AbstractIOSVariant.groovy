@@ -94,7 +94,6 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     def bundleId = new StringProperty(
             message: "Bundle ID for variant defined. If present will be replaced during build process",
-            //TODO validator (domain name?)
     )
 
     String getEffectiveBundleId() {

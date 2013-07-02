@@ -64,8 +64,8 @@ class PlistParserSpec extends Specification {
         newBundle                 | oldBundle            | expected
         'com.apphance.ameba2'     | 'com.apphance.ameba' | 'com.apphance.ameba2'
         'com.apphance.ameba.test' | 'com.apphance.ameba' | 'com.apphance.ameba.test'
-        'com.app.ameba'           | 'com.apphance.ameba' | 'com.apphance.ameba'
-        'pl.apphance.ameba'       | 'com.apphance.ameba' | 'com.apphance.ameba'
+        'com.app.ameba'           | 'com.apphance.ameba' | 'com.app.ameba'
+        'pl.apphance.ameba'       | 'com.apphance.ameba' | 'pl.apphance.ameba'
     }
 
     def 'versionCode and versionString are replaced correctly'() {
