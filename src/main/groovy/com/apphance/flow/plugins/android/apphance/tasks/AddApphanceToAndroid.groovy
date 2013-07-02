@@ -56,7 +56,10 @@ class AddApphanceToAndroid {
 
     public void addApphance() {
         logger.info "Adding apphance to ${variantDir?.absolutePath}"
-        if (checkIfApphancePresent()) throw new GradleException("Apphance was already added")
+        if (checkIfApphancePresent()) {
+            logger.warn "Apphance was already added. Skipping adding apphance task."
+            return
+        }
 
         addStartNewSessionToAllMainActivities()
         addApphanceImportsAndStartStopMethodsInAllActivities()

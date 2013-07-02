@@ -172,7 +172,7 @@ class AddApphanceToAndroidSpec extends Specification {
 
         then:
         contains(testActivity, APPHANCE_IMPORT)
-        testActivity.readLines().findAll { it.contains('import') }.size() == before +1
+        testActivity.readLines().findAll { it.contains('import') }.size() == before + 1
     }
 
     def 'test apphance log'() {
@@ -252,4 +252,20 @@ class AddApphanceToAndroidSpec extends Specification {
         addApphanceToAndroid.isMethodPresent(new File('src/test/resources/com/apphance/flow/android/TestActivity.java'), 'onCreate')
     }
 
+    def 'test not adding apphance if already present'() {
+        given:
+        def addApphance = GroovySpy(AddApphanceToAndroid)
+        addApphance.checkIfApphancePresent() >> true
+
+        when:
+        addApphance.addApphance()
+
+        then:
+        0 * addApphance.addStartNewSessionToAllMainActivities()
+        0 * addApphance.addApphanceImportsAndStartStopMethodsInAllActivities()
+        0 * addApphance.addProblemActivityToManifest()
+        0 * addApphance.addPermissions()
+        0 * addApphance.addApphanceLib()
+        0 * addApphance.addApphanceLibraryReferenceToProjectProperties()
+    }
 }
