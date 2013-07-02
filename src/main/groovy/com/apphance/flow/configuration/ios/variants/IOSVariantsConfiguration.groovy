@@ -52,16 +52,24 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         conf.schemes.any { isNotBlank(it) && schemeParser.isBuildable(it) }
     }()
 
-    @Lazy
-    @PackageScope
-    private List<AbstractIOSVariant> variantsInternal = {
+    private List<AbstractIOSVariant> variantsInternal() {
         variantsNames.value.collect {
             if (hasSchemes)
-                variantFactory.createSchemeVariant(it)
+                schemeVariant.call(it)
             else
-                variantFactory.createTCVariant(it)
+                tcVariant.call(it)
         }
-    }()
+    }
+
+    @PackageScope
+    Closure<IOSSchemeVariant> schemeVariant = { String name ->
+        variantFactory.createSchemeVariant(name)
+    }.memoize()
+
+    @PackageScope
+    Closure<IOSTCVariant> tcVariant = { String name ->
+        variantFactory.createTCVariant(name)
+    }.memoize()
 
     @Override
     boolean isEnabled() {
@@ -70,15 +78,15 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     Collection<AbstractIOSVariant> getSubConfigurations() {
-        variantsInternal
+        variantsInternal()
     }
 
     Collection<AbstractIOSVariant> getVariants() {
-        variantsInternal
+        variantsInternal()
     }
 
     AbstractIOSVariant getMainVariant() {
-        variantsInternal[0]
+        variantsInternal()[0]
     }
 
     @Override

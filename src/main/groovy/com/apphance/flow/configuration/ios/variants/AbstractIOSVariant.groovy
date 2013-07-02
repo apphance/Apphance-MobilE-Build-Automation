@@ -180,7 +180,8 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     @Lazy
     File variantPbx = {
-        new File("$tmpDir.absolutePath/$conf.xcodeDir.value", PROJECT_PBXPROJ)
+        def pbx = new File("$tmpDir.absolutePath/$conf.xcodeDir.value", PROJECT_PBXPROJ)
+        pbx.exists() ? pbx : new File("${conf.rootDir}/${conf.xcodeDir.value}", PROJECT_PBXPROJ)
     }()
 
     abstract File getPlist()

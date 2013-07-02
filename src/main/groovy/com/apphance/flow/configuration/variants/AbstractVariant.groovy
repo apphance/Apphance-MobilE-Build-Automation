@@ -86,11 +86,11 @@ abstract class AbstractVariant extends AbstractConfiguration {
     }
 
     String getBuildTaskName() {
-        "build$name"
+        "build$name".replaceAll('\\s', '')
     }
 
     String getUploadTaskName() {
-        "upload$name"
+        "upload$name".replaceAll('\\s', '')
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.google.inject.assistedinject.Assisted
 
 import javax.inject.Inject
 
+@com.google.inject.Singleton
 class IOSSchemeVariant extends AbstractIOSVariant {
 
     @Inject XCSchemeParser schemeParser

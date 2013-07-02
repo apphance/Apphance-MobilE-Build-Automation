@@ -4,6 +4,7 @@ import com.google.inject.assistedinject.Assisted
 
 import javax.inject.Inject
 
+@com.google.inject.Singleton
 class IOSTCVariant extends AbstractIOSVariant {
 
     private String target
