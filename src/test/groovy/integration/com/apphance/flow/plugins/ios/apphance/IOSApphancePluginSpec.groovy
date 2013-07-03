@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.apphance
 
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
-import com.apphance.flow.configuration.ios.variants.IOSTCVariant
+import com.apphance.flow.configuration.ios.variants.IOSSchemeVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
@@ -46,11 +46,9 @@ class IOSApphancePluginSpec extends Specification {
         plugin.builder = new IOSSingleVariantBuilder()
         plugin.listener = new IOSReleaseListener()
 
-        def id1 = new IOSTCVariant('id1')
-        id1.configuration = 'c1'
-        id1.target = 't1'
-        id1.apphanceMode.value = QA.toString()
-        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration) { getVariants() >> [id1] }
+        def v1 = new IOSSchemeVariant('id1')
+        v1.apphanceMode.value = QA.toString()
+        plugin.variantsConf = GroovyStub(IOSVariantsConfiguration) { getVariants() >> [v1] }
         plugin.apply(project)
 
         then: 'apphance configuration is added'

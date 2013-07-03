@@ -1,12 +1,10 @@
 package com.apphance.flow.ios
 
-import com.apphance.flow.util.FlowUtils
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.Test
 
-import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.assertTrue
 
@@ -18,35 +16,23 @@ class ExecuteIosBuildsTest {
     static File testProjectMoreVariants = new File("testProjects/ios/GradleXCodeMoreVariants")
     static File testProjectOneVariant = new File("testProjects/ios/GradleXCode")
     static ProjectConnection connection
-    static ProjectConnection gradleWithPropertiesConnection
     static ProjectConnection gradleOneVariantConnection
 
     @BeforeClass
     static void beforeClass() {
         connection = newConnector().forProjectDirectory(testProjectMoreVariants).connect()
-        gradleWithPropertiesConnection = newConnector().forProjectDirectory(testProjectMoreVariants).connect()
         gradleOneVariantConnection = newConnector().forProjectDirectory(testProjectOneVariant).connect()
     }
 
     @AfterClass
     static public void afterClass() {
         connection.close()
-        gradleWithPropertiesConnection.close()
         gradleOneVariantConnection.close()
     }
 
     protected void runGradleMoreVariants(String... tasks) {
         def buildLauncher = connection.newBuild()
         buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS as String[])
-        buildLauncher.forTasks(tasks).run()
-    }
-
-    protected void runGradleWithProperties(Properties p, ProjectConnection pc = gradleWithPropertiesConnection, String... tasks) {
-        def buildLauncher = pc.newBuild()
-        def args = p.collect { property, value -> "-D${property}=${value}" }
-        GRADLE_DAEMON_ARGS.each { args << it }
-        buildLauncher.setJvmArguments(args as String[])
-
         buildLauncher.forTasks(tasks).run()
     }
 
@@ -74,60 +60,45 @@ class ExecuteIosBuildsTest {
         runGradleMoreVariants('buildAllDevice')
         def path = 'flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariants'
 
-        ['AnotherConfiguration', 'BasicConfiguration', 'Debug', 'Release'].each {
-            assertTrue(new File(testProjectMoreVariants,
-                    "$path/$it/GradleXCodeMoreVariants$it-1.0_32.ipa").exists())
-            assertTrue(new File(testProjectMoreVariants,
-                    "$path/$it/GradleXCodeMoreVariants$it-1.0_32.mobileprovision").exists())
-            assertTrue(new File(testProjectMoreVariants,
-                    "$path/$it/GradleXCodeMoreVariants$it-1.0_32.zip").exists())
-            assertTrue(new File(testProjectMoreVariants,
-                    "$path/$it/GradleXCodeMoreVariants$it-1.0_32_dSYM.zip").exists())
-            assertTrue(new File(testProjectMoreVariants,
-                    "$path/$it/manifest.plist").exists())
-            assertTrue(new File(testProjectMoreVariants,
-                    "$path/$it/GradleXCodeMoreVariants$it-1.0_32_ahSYM").exists())
-            assertTrue(new File(testProjectMoreVariants,
-                    "$path/$it/GradleXCodeMoreVariants$it-1.0_32_ahSYM").listFiles().size() > 0)
-        }
-    }
+        assertTrue(new File(testProjectMoreVariants, "$path/Release/GradleXCodeMoreVariants-1.0_32.ipa").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/Release/GradleXCodeMoreVariants-1.0_32.mobileprovision").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/Release/GradleXCodeMoreVariants-1.0_32.zip").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/Release/GradleXCodeMoreVariants-1.0_32_dSYM.zip").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/Release/manifest.plist").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/Release/GradleXCodeMoreVariants-1.0_32_ahSYM").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/Release/GradleXCodeMoreVariants-1.0_32_ahSYM").listFiles().size() > 0)
 
-    @Test
-    void testUpdateVersion() {
-        Properties p = new Properties()
-        p.setProperty('version.string', 'NEWVERSION')
-        p.setProperty('version.code', '1234')
-        runGradleWithProperties(p, 'cleanFlow', 'updateVersion')
-        def variantsDir = new File(testProjectMoreVariants, TMP_DIR)
-        def plists = new FlowUtils().allFiles(dir: variantsDir, where: { it.name == 'GradleXCodeMoreVariants-Info.plist' })
-        assertTrue(plists.any {
-            def text = it.text
-            text.contains('<string>NEWVERSION</string>') && text.contains('<string>1234</string>')
-        })
+        assertTrue(new File(testProjectMoreVariants, "$path/Debug/GradleXCodeMoreVariantsWithApphance-1.0_32.ipa").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/Debug/GradleXCodeMoreVariantsWithApphance-1.0_32.mobileprovision").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/Debug/GradleXCodeMoreVariantsWithApphance-1.0_32.zip").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/Debug/GradleXCodeMoreVariantsWithApphance-1.0_32_dSYM.zip").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/Debug/manifest.plist").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/Debug/GradleXCodeMoreVariantsWithApphance-1.0_32_ahSYM").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/Debug/GradleXCodeMoreVariantsWithApphance-1.0_32_ahSYM").listFiles().size() > 0)
     }
 
     @Test
     void testBuildAndPrepareMoreVariantsMailMessage() {
-        runGradleMoreVariants('cleanFlow', 'buildGradleXCodeMoreVariantsAnotherConfiguration', 'prepareImageMontage', 'prepareAvailableArtifactsInfo')
+        runGradleMoreVariants('cleanFlow', 'buildGradleXCodeMoreVariants', 'prepareImageMontage', 'prepareAvailableArtifactsInfo')
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/icon.png").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/plain_file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/qrcode-GradleXCodeMoreVariants-1.0_32.png").exists())
-        assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariants/AnotherConfiguration/GradleXCodeMoreVariantsAnotherConfiguration-1.0_32.ipa").exists())
+        assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariants/Release/GradleXCodeMoreVariants-1.0_32.ipa").exists())
     }
 
     @Test
     void testBuildAndPrepareMoreVariantsMailMessageWithSimulators() {
-        runGradleMoreVariants('cleanFlow', 'buildGradleXCodeMoreVariantsTestsDebug', 'prepareImageMontage', 'prepareAvailableArtifactsInfo')
+        runGradleMoreVariants('cleanFlow', 'buildGradleXCodeMoreVariantsTests', 'prepareImageMontage', 'prepareAvailableArtifactsInfo')
         def path = 'flow-ota/ssasdadasdasd/1.0_32'
         assertTrue(new File(testProjectMoreVariants, "$path/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/icon.png").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/plain_file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/qrcode-GradleXCodeMoreVariants-1.0_32.png").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsTests/Debug/GradleXCodeMoreVariantsTestsDebug-1.0_1-iPad-simulator-image.dmg").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsTests/Debug/GradleXCodeMoreVariantsTestsDebug-1.0_1-iPhone-simulator-image.dmg").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/Debug/GradleXCodeMoreVariantsTests-1.0_32-iPad-simulator-image.dmg").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/Debug/GradleXCodeMoreVariantsTests-1.0_32-iPhone-simulator-image.dmg").exists())
     }
 
     @Test
@@ -144,15 +115,13 @@ class ExecuteIosBuildsTest {
     @Test
     void testBuildAllSimulators() {
         runGradleMoreVariants('buildAllSimulator')
-        def path = 'flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariantsTests'
+        def path = 'flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariants/Debug'
 
-        ['AnotherConfiguration', 'BasicConfiguration', 'Debug', 'Release'].each {
-            File fileIphone = new File(testProjectMoreVariants, "$path/$it/GradleXCodeMoreVariantsTests$it-1.0_1-iPhone-simulator-image.dmg")
-            File fileIpad = new File(testProjectMoreVariants, "$path/$it/GradleXCodeMoreVariantsTests$it-1.0_1-iPad-simulator-image.dmg")
-            assertTrue(fileIphone.exists())
-            assertTrue(fileIphone.size() > 30000)
-            assertTrue(fileIpad.exists())
-            assertTrue(fileIpad.size() > 30000)
-        }
+        File fileIphone = new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsTests-1.0_32-iPhone-simulator-image.dmg")
+        File fileIpad = new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsTests-1.0_32-iPad-simulator-image.dmg")
+        assertTrue(fileIphone.exists())
+        assertTrue(fileIphone.size() > 30000)
+        assertTrue(fileIpad.exists())
+        assertTrue(fileIpad.size() > 30000)
     }
 }

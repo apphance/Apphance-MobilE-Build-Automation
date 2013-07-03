@@ -1,7 +1,6 @@
 package com.apphance.flow.configuration.ios
 
 import com.apphance.flow.configuration.ios.variants.IOSSchemeVariant
-import com.apphance.flow.configuration.ios.variants.IOSTCVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantFactory
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.reader.PropertyPersister
@@ -23,7 +22,6 @@ class IOSVariantsConfigurationSpec extends Specification {
 
         def vf = GroovyMock(IOSVariantFactory)
         vf.createSchemeVariant(_) >> new IOSSchemeVariant('scheme')
-        vf.createTCVariant(_) >> new IOSTCVariant('tc')
 
         variantsConf = new IOSVariantsConfiguration()
         variantsConf.conf = conf
@@ -47,7 +45,6 @@ class IOSVariantsConfigurationSpec extends Specification {
         where:
         expectedSize | variantClass     | schemes
         3            | IOSSchemeVariant | ['v1', 'v2', 'v3']
-        3            | IOSTCVariant     | []
     }
 
     @Unroll
@@ -61,7 +58,6 @@ class IOSVariantsConfigurationSpec extends Specification {
         where:
         expectedSize | variantClass     | schemes
         3            | IOSSchemeVariant | ['v1', 'v2', 'v3']
-        24           | IOSTCVariant     | []
     }
 
     def 'has schemes'() {
@@ -70,10 +66,7 @@ class IOSVariantsConfigurationSpec extends Specification {
 
         when:
         variantsConf.variantsNames.value.collect {
-            variantsConf.hasSchemes ?
-                variantsConf.variantFactory.createSchemeVariant(it)
-            :
-                variantsConf.variantFactory.createTCVariant(it)
+            variantsConf.variantFactory.createSchemeVariant(it)
         }
 
         then:
@@ -97,10 +90,7 @@ class IOSVariantsConfigurationSpec extends Specification {
 
         when:
         variantsConf.variantsNames.value.collect {
-            variantsConf.hasSchemes ?
-                variantsConf.variantFactory.createSchemeVariant(it)
-            :
-                variantsConf.variantFactory.createTCVariant(it)
+            variantsConf.variantFactory.createSchemeVariant(it)
         }
 
         then:

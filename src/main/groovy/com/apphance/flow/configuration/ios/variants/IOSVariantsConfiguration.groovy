@@ -54,21 +54,16 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     private List<AbstractIOSVariant> variantsInternal() {
         variantsNames.value.collect {
-            if (hasSchemes)
-                schemeVariant.call(it)
-            else
-                tcVariant.call(it)
+            schemeVariant.call(it)
+//            else
+//            TODO
+//            ;
         }
     }
 
     @PackageScope
     Closure<IOSSchemeVariant> schemeVariant = { String name ->
         variantFactory.createSchemeVariant(name)
-    }.memoize()
-
-    @PackageScope
-    Closure<IOSTCVariant> tcVariant = { String name ->
-        variantFactory.createTCVariant(name)
     }.memoize()
 
     @Override
