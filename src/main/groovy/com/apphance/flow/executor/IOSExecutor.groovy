@@ -56,7 +56,7 @@ class IOSExecutor {
     private Closure<List<String>> pbxProjToJSONC = { File pbxproj ->
         executor.executeCommand(new Command(
                 runDir: pbxproj.parentFile,
-                cmd: ['plutil', '-convert', 'json', "${pbxproj.absolutePath}", '-o', '-']
+                cmd: ['plutil', '-convert', 'json', pbxproj.absolutePath, '-o', '-']
         )).toList()
     }.memoize()
 
@@ -67,14 +67,14 @@ class IOSExecutor {
     private Closure<List<String>> plistToJSONC = { File plist ->
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: ['plutil', '-convert', 'json', "${plist.absolutePath}", '-o', '-']
+                cmd: ['plutil', '-convert', 'json', plist.absolutePath, '-o', '-']
         )).toList()
     }.memoize()
 
     List<String> plistToXML(File plistJSON) {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: ['plutil', '-convert', 'xml1', "${plistJSON.absolutePath}", '-o', '-']
+                cmd: ['plutil', '-convert', 'xml1', plistJSON.absolutePath, '-o', '-']
         )).toList()
     }
 
@@ -85,7 +85,7 @@ class IOSExecutor {
     private Closure<List<String>> mobileProvisionToXmlC = { File mobileprovision ->
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: ['security', 'cms', '-D', '-i', "${mobileprovision.absolutePath}"]
+                cmd: ['security', 'cms', '-D', '-i', mobileprovision.absolutePath]
         )).toList()
     }.memoize()
 
@@ -96,7 +96,7 @@ class IOSExecutor {
     private Closure<Map<String, String>> buildSettingsC = { String target, String configuration ->
         def result = executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath().toList() + ['-target', "$target", '-configuration', "$configuration", '-showBuildSettings']
+                cmd: conf.xcodebuildExecutionPath().toList() + ['-target', target, '-configuration', configuration, '-showBuildSettings']
         )).toList()
         parser.parseBuildSettings(result)
     }.memoize()

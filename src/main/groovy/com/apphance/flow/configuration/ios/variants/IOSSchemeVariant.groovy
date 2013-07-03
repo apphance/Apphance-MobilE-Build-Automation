@@ -38,7 +38,7 @@ class IOSSchemeVariant extends AbstractIOSVariant {
     }
 
     String getArchiveTaskName() {
-        "archive$name"
+        "archive$name".replaceAll('\\s', '')
     }
 
     List<String> archiveCmd() {

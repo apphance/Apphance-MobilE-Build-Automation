@@ -21,7 +21,7 @@ import static org.gradle.api.logging.Logging.getLogger
 @Singleton
 class IOSSingleVariantBuilder {
 
-    def l = getLogger(getClass())
+    def logger = getLogger(getClass())
 
     final Set<IOSBuildListener> buildListeners = [] as Set<IOSReleaseListener>
 
@@ -53,7 +53,7 @@ class IOSSingleVariantBuilder {
             String t = file.text
             if (t.contains(valueToFind)) {
                 file.write(t.replace(valueToFind, valueToReplace))
-                l.lifecycle("Replaced the $valueToFind with $valueToReplace in $file")
+                logger.lifecycle("Replaced the $valueToFind with $valueToReplace in $file")
             }
         }
     }
@@ -62,7 +62,7 @@ class IOSSingleVariantBuilder {
         def result = []
         dir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
             if ((it.name.endsWith('.m') || it.name.endsWith('.h')) && !it.path.contains('/External/')) {
-                l.info("Adding source file ${it} to processing list")
+                logger.info("Adding source file ${it} to processing list")
                 result << it
             }
         }

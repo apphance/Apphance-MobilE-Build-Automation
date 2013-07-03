@@ -15,7 +15,7 @@ class RunUnitTestsTasks extends DefaultTask {
 
     static String NAME = 'runUnitTests'
     String group = FLOW_TEST
-    String description = 'Build and executes Unit tests. Requires UnitTests target'
+    String description = 'Build and executes Unit tests'
 
     @Inject IOSExecutor iosExecutor
     @Inject ProjectConfiguration conf
@@ -23,14 +23,14 @@ class RunUnitTestsTasks extends DefaultTask {
 
     @TaskAction
     void runUnitTests() {
-        logger.lifecycle "Running unit tests with variant: ${unitTestConf.variant.name}"
+        logger.lifecycle "Running unit tests with variant: $unitTestConf.variant.name"
 
         def testResults = new File(conf.tmpDir, "test-${unitTestConf.variant.name}.txt")
         testResults.createNewFile()
 
         iosExecutor.buildTestVariant conf.rootDir, unitTestConf.variant, "${testResults.canonicalPath}".toString()
 
-        File outputUnitTestFile = new File(conf.tmpDir, "TEST-all.xml")
+        File outputUnitTestFile = new File(conf.tmpDir, 'TEST-all.xml')
         parseAndExport(testResults, outputUnitTestFile)
     }
 
