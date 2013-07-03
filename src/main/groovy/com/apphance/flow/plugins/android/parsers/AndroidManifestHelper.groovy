@@ -237,10 +237,16 @@ class AndroidManifestHelper {
         def packageName = manifest.@package.text()
         def className = mainActivity.name() == 'activity' ? mainActivity.@'android:name'.text() : mainActivity.@'android:targetActivity'.text()
 
+        extractClassName(packageName, className)
+    }
+
+    String extractClassName(String packageName, String className) {
         if (className.startsWith('.')) {
             packageName + className
-        } else {
+        } else if (className.contains('.')){
             className
+        } else {
+            "${packageName}.${className}"
         }
     }
 

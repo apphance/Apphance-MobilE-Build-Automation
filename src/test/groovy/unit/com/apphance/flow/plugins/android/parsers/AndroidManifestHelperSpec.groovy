@@ -184,6 +184,19 @@ class AndroidManifestHelperSpec extends Specification {
         files.collect { it.name } == ['TestActivity.java', 'AnotherActivity.java']
     }
 
+    def 'test extractClassName'() {
+        expect:
+        result == androidManifestHelper.extractClassName(packageName, className)
+
+        where:
+        className               | packageName   | result
+        'Activity'              | 'com.polidea' | 'com.polidea.Activity'
+        '.Activity'             | 'com.polidea' | 'com.polidea.Activity'
+        'com.polidea.Activity'  | 'com.polidea' | 'com.polidea.Activity'
+        'com.facebook.Activity' | 'com.polidea' | 'com.facebook.Activity'
+
+    }
+
     private GPathResult parsedManifest(File manifest) {
         new XmlSlurper().parse(manifest)
     }
