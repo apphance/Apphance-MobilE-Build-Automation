@@ -47,7 +47,7 @@ class SingleVariantTask extends DefaultTask {
                 fileset(dir: builderInfo.variantDir, includes: '**/*')
             }
         } else {
-            logger.lifecycle("No files copied because directory ${builderInfo.variantDir} does not exists")
+            logger.lifecycle("No files copied because variant directory ${builderInfo.variantDir} does not exists")
         }
 
         if (variant.oldPackage.value && variant.newPackage.value) {
@@ -55,7 +55,15 @@ class SingleVariantTask extends DefaultTask {
             replacePackageTask.replace(variant.tmpDir, variant.oldPackage.value, variant.newPackage.value, variant.newLabel.value, variant.newName.value)
         }
 
-        antExecutor.executeTarget builderInfo.tmpDir, builderInfo.mode.lowerCase()
+        try {
+            antExecutor.executeTarget builderInfo.tmpDir, builderInfo.mode.lowerCase()
+        } catch (Exception exp) {
+            if (exp.hasProperty('output') && exp.output.contains('method onStart in class Apphance cannot be applied to given types')) {
+                logger.error "Error during source compilation. Probably some non-activity class was configured as activity in AndroidManifest.xml.\n" +
+                        "Make sure that all <activity> tags in your manifest points to some activity classes and not to other classes like Fragment."
+            }
+            throw exp
+        }
         if (builderInfo.originalFile.exists()) {
             logger.lifecycle("File created: ${builderInfo.originalFile}")
 
