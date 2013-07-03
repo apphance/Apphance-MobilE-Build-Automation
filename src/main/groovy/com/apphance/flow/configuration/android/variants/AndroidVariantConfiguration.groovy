@@ -67,10 +67,6 @@ class AndroidVariantConfiguration extends AbstractVariant {
             name: "android.variant.${name}.replacePackage.newName",
             interactive: { false })
 
-    def variantIcon = new FileProperty(
-            name: "android.variant.${name}.replacePackage.variantIcon",
-            interactive: { false })
-
     @Override
     List<String> possibleApphanceLibVersions() {
         apphanceArtifactory.androidLibraries(apphanceMode.value)
