@@ -30,8 +30,8 @@ class CleanFlowTaskSpec extends Specification {
         task.clean()
 
         then:
-//        project.file(TMP_DIR).exists()
-//        project.file(TMP_DIR).list().size() == 0
+        project.file(TMP_DIR).exists()
+        project.file(TMP_DIR).list().size() == 0
         project.file(LOG_DIR).exists()
         project.file(LOG_DIR).list().size() == 0
     }

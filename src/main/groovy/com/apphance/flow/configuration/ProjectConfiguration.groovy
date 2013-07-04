@@ -1,6 +1,5 @@
 package com.apphance.flow.configuration
 
-import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.detection.ProjectTypeDetector
@@ -10,7 +9,6 @@ import javax.inject.Inject
 
 import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
-import static org.apache.commons.lang.StringUtils.isBlank
 
 abstract class ProjectConfiguration extends AbstractConfiguration {
 
@@ -48,21 +46,8 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
         project.file(BUILD_DIR)
     }
 
-    def buildTmpDir = new FileProperty(
-            name: 'android.build.tmp.dir',
-            interactive: { false },
-            validator: {
-                if (it == null) return true
-                if (it instanceof String) {
-                    isBlank(it) || new File(it).exists()
-                } else if (it instanceof File) {
-                    it.exists()
-                } else false
-            }
-    )
-
     File getTmpDir() {
-        buildTmpDir.value ?: project.file(TMP_DIR)
+        project.file(TMP_DIR)
     }
 
     File getLogDir() {
