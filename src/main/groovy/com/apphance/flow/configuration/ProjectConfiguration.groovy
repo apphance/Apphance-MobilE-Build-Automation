@@ -73,9 +73,4 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
                 '**/.gradle/**',
         ]
     }
-
-    @Override
-    void checkProperties() {
-        defaultValidation buildTmpDir
-    }
 }
