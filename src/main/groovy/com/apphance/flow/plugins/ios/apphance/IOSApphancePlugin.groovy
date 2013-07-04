@@ -37,6 +37,7 @@ class IOSApphancePlugin implements Plugin<Project> {
                     def enhance = { iosApphanceEnhancerFactory.create(variant).enhanceApphance() }
 
                     project.tasks[variant.buildTaskName].doFirst(enhance)
+                    project.tasks[variant.archiveTaskName].doFirst(enhance)
 
                     def uploadTask =
                         project.task(variant.uploadTaskName,
