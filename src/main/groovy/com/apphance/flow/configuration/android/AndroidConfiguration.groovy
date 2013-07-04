@@ -199,6 +199,8 @@ class AndroidConfiguration extends ProjectConfiguration {
 
     @Override
     void checkProperties() {
+        super.checkProperties()
+
         check !isNullOrEmpty(reader.envVariable('ANDROID_HOME')), "Environment variable 'ANDROID_HOME' must be set!"
         check rootDir.canWrite(), "No write access to project root dir ${rootDir.absolutePath}, check file system permissions!"
         check !isNullOrEmpty(projectName.value), "Property ${projectName.name} must be set!"

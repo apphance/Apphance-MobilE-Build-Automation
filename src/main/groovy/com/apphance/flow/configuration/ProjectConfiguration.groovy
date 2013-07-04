@@ -1,5 +1,6 @@
 package com.apphance.flow.configuration
 
+import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.detection.ProjectTypeDetector
@@ -46,8 +47,13 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
         project.file(BUILD_DIR)
     }
 
+    def buildTmpDir = new FileProperty(
+            name: 'android.build.tmp.dir',
+            interactive: { false }
+    )
+
     File getTmpDir() {
-        project.file(TMP_DIR)
+        buildTmpDir.value ?: project.file(TMP_DIR)
     }
 
     File getLogDir() {
@@ -72,5 +78,10 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
                 '.hgcheck/**',
                 '**/.gradle/**',
         ]
+    }
+
+    @Override
+    void checkProperties() {
+        defaultValidation buildTmpDir
     }
 }

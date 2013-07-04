@@ -18,6 +18,6 @@ class FileProperty extends AbstractProperty<File> {
 
     @Override
     Closure<Boolean> getValidator() {
-        internalValidator ?: { it?.trim() ? new File(it as String).exists() : false }
+        internalValidator ?: { it ? new File(it as String).exists() : false }
     }
 }
