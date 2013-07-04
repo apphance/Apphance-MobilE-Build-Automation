@@ -44,6 +44,6 @@ class UpdateVersionTaskSpec extends Specification {
         task.updateVersion()
 
         then:
-        2 * parser.replaceVersion(_, '3145', '3.1.45')
+        1 * parser.replaceVersion(_, '3145', '3.1.45')
     }
 }
