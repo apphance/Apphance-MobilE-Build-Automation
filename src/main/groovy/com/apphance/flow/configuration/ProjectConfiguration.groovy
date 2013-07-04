@@ -52,10 +52,11 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
             name: 'android.build.tmp.dir',
             interactive: { false },
             validator: {
+                if (it == null) return true
                 if (it instanceof String) {
                     isBlank(it) || new File(it).exists()
                 } else if (it instanceof File) {
-                    it == null || it.exists()
+                    it.exists()
                 } else false
             }
     )
