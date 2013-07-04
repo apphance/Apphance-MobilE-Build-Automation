@@ -10,6 +10,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
+import static org.apache.commons.lang.StringUtils.isBlank
 
 abstract class ProjectConfiguration extends AbstractConfiguration {
 
@@ -49,7 +50,8 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
 
     def buildTmpDir = new FileProperty(
             name: 'android.build.tmp.dir',
-            interactive: { false }
+            interactive: { false },
+            validator: { isBlank(it) || new File(it).exists() }
     )
 
     File getTmpDir() {
