@@ -23,9 +23,13 @@ class SingleVariantTaskUnitSpec extends Specification {
 
     def task = create SingleVariantTask
     def tmpDir = createTempDir()
+    def variantDir = temporaryDir
     AndroidBuilderInfo builderInfo
 
     def setup() {
+
+
+
         builderInfo = GroovyStub(AndroidBuilderInfo) {
             getTmpDir() >> tmpDir
             getMode() >> AndroidBuildMode.DEBUG
@@ -45,7 +49,7 @@ class SingleVariantTaskUnitSpec extends Specification {
             }
             releaseConf = GroovyStub(AndroidReleaseConfiguration)
             variant = GroovyStub(AndroidVariantConfiguration) {
-                getTmpDir() >> new File('temp-variant-dir')
+                getTmpDir() >> variantDir
                 getOldPackage() >> new StringProperty()
                 getNewPackage() >> new StringProperty()
             }
@@ -55,8 +59,6 @@ class SingleVariantTaskUnitSpec extends Specification {
             ant = GroovyMock(AntBuilder)
             antExecutor = GroovyMock(AntExecutor)
             androidExecutor = GroovyMock(AndroidExecutor)
-
-
         }
     }
 
@@ -72,7 +74,7 @@ class SingleVariantTaskUnitSpec extends Specification {
             1 * antExecutor.executeTarget(tmpDir, CLEAN)
             1 * antExecutor.executeTarget(tmpDir, 'debug')
             0 * antExecutor.executeTarget(_, _)
-            1 * androidExecutor.updateProject(new File('temp-variant-dir'), 'android-8', 'TestAndroidProject')
+            1 * androidExecutor.updateProject(variantDir, 'android-8', 'TestAndroidProject')
             0 * ant.copy(_)
         }
     }
