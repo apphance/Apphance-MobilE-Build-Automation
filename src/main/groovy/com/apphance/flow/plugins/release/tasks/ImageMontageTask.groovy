@@ -39,7 +39,9 @@ class ImageMontageTask extends DefaultTask {
 
     @TaskAction
     void imageMontage() {
+        logger.lifecycle "Preparing image montage"
         def filesToMontage = getFilesToMontage(conf.rootDir)
+        logger.lifecycle "Found ${filesToMontage.size()} files"
         File imageMontageFile = outputMontageFile()
         createMontage(imageMontageFile, filesToMontage)
         addDescription(imageMontageFile, "${conf.projectName.value} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}")
@@ -87,6 +89,7 @@ class ImageMontageTask extends DefaultTask {
     @PackageScope
     void createMontage(File ouput, List<File> inputs) {
         Collection<Image> images = resizeImages(inputs)
+        logger.info "${images.size()} images"
 
         def processors = images.collect { new ColorProcessor(it) }
 

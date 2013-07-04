@@ -157,7 +157,6 @@ dependencies {
     }
     compile 'org.python:jython-standalone:2.7-b1'
 
-    compile 'gov.nih.imagej:imagej:1.46'
     compile 'org.imgscalr:imgscalr-lib:4.2'
 
     compile 'commons-lang:commons-lang:2.6'
@@ -173,6 +172,7 @@ dependencies {
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
     testRuntime 'cglib:cglib-nodep:2.2.2'
+    compile fileTree(dir: 'libs', include: '*.jar')
 
     testUnitCompile sourceSets.main.output
     testUnitCompile configurations.testCompile
@@ -242,12 +242,16 @@ file('testProjects').traverse(nameFilter: ~/flow-(log|ota|tmp)/) { File dir ->
     }
 }
 
+jar {
+    from file('libs').listFiles().collect { zipTree(it) }
+}
+
 task fatJar(type: Jar, dependsOn: jar) {
     appendix = "standalone"
     from zipTree(jar.archivePath)
     from configurations.compile.collect {
-        it.isDirectory() ? it : zipTree(it).matching{
-            exclude{it.name.endsWith('RSA')|| it.name.endsWith('SF')|| it.name.endsWith ('DSA')}
+        it.isDirectory() ? it : zipTree(it).matching {
+            exclude { it.name.endsWith('RSA') || it.name.endsWith('SF') || it.name.endsWith('DSA') }
         }
     }
     manifest.attributes("Main-Class": "com.apphance.flow.plugins.android.apphance.Main")
