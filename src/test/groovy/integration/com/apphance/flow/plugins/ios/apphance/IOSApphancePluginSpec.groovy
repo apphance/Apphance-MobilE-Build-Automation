@@ -5,8 +5,6 @@ import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
-import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
-import com.apphance.flow.plugins.ios.release.IOSReleaseListener
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.QA
@@ -23,15 +21,10 @@ class IOSApphancePluginSpec extends Specification {
         def plugin = new IOSApphancePlugin()
         plugin.apphanceConf = GroovyStub(ApphanceConfiguration) { isEnabled() >> true }
         plugin.variantsConf = GroovyStub(IOSVariantsConfiguration) { getVariants() >> [] }
-        plugin.builder = new IOSSingleVariantBuilder()
-        plugin.listener = new IOSReleaseListener()
         plugin.apply(project)
 
         then: 'no build & upload tasks added'
         !project.tasks.any { it.name ==~ '(upload|build)-' }
-
-        then:
-        plugin.builder.buildListeners.size() > 0
     }
 
     def 'no tasks added when configuration disabled'() {
@@ -42,8 +35,6 @@ class IOSApphancePluginSpec extends Specification {
         def plugin = new IOSApphancePlugin()
         plugin.apphanceConf = GroovyMock(ApphanceConfiguration)
         plugin.apphanceConf.enabled >> false
-        plugin.builder = new IOSSingleVariantBuilder()
-        plugin.listener = new IOSReleaseListener()
 
         def v1 = new IOSVariant('id1')
         v1.apphanceMode.value = QA.toString()
@@ -55,9 +46,6 @@ class IOSApphancePluginSpec extends Specification {
 
         then: 'no build & upload tasks added'
         !project.tasks.any { it.name ==~ '(upload|build)-' }
-
-        then:
-        plugin.builder.buildListeners.size() == 0
     }
 
     def "plugin tasks' graph configured correctly when buildable variants exists"() {
@@ -71,8 +59,6 @@ class IOSApphancePluginSpec extends Specification {
         when:
         def plugin = new IOSApphancePlugin()
         plugin.apphanceConf = GroovyStub(ApphanceConfiguration) { isEnabled() >> true }
-        plugin.builder = new IOSSingleVariantBuilder()
-        plugin.listener = new IOSReleaseListener()
         plugin.variantsConf = GroovyStub(IOSVariantsConfiguration) {
             getVariants() >> [
                     GroovyMock(IOSVariant) {
@@ -105,8 +91,5 @@ class IOSApphancePluginSpec extends Specification {
         project.tasks['buildid2'].actions
         project.tasks['uploadid1'].actions
         project.tasks['uploadid2'].actions
-
-        then:
-        plugin.builder.buildListeners.size() > 0
     }
 }

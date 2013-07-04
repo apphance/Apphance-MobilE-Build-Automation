@@ -3,8 +3,6 @@ package com.apphance.flow.plugins.ios.apphance
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.apphance.tasks.IOSApphanceUploadTask
-import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
-import com.apphance.flow.plugins.ios.release.IOSReleaseListener
 import com.google.inject.Inject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -25,8 +23,6 @@ class IOSApphancePlugin implements Plugin<Project> {
     @Inject ApphanceConfiguration apphanceConf
     @Inject IOSVariantsConfiguration variantsConf
     @Inject IOSApphanceEnhancerFactory iosApphanceEnhancerFactory
-    @Inject IOSSingleVariantBuilder builder
-    @Inject IOSReleaseListener listener
 
     @Override
     void apply(Project project) {
@@ -51,8 +47,6 @@ class IOSApphancePlugin implements Plugin<Project> {
                     logger.info("Apphance is disabled for variant '$variant.name'")
                 }
             }
-
-            builder.registerListener(listener)
         }
     }
 }

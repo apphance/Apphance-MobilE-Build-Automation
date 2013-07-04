@@ -1,7 +1,6 @@
 package com.apphance.flow.plugins.ios.release
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.flow.plugins.ios.release.tasks.UpdateVersionTask
@@ -33,8 +32,6 @@ class IOSReleasePlugin implements Plugin<Project> {
     private logger = getLogger(getClass())
 
     @Inject IOSReleaseConfiguration releaseConf
-    @Inject IOSSingleVariantBuilder builder
-    @Inject IOSReleaseListener listener
 
     @Override
     void apply(Project project) {
@@ -46,8 +43,6 @@ class IOSReleasePlugin implements Plugin<Project> {
 
             project.task(AvailableArtifactsInfoTask.NAME,
                     type: AvailableArtifactsInfoTask)
-
-            builder.registerListener(listener)
 
             project.tasks.each {
                 if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME])) {

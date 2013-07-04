@@ -106,7 +106,7 @@ class IOSExecutor {
     }
 
     def buildTestVariant(File dir, IOSVariant variant, String outputFilePath) {
-        executor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd(),
+        executor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd,
                 environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: outputFilePath],
                 failOnError: false
         )

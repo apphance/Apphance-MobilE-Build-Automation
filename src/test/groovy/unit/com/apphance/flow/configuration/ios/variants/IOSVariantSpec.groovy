@@ -130,7 +130,7 @@ class IOSVariantSpec extends Specification {
         sVariant.mode.value = mode
 
         then:
-        sVariant.buildCmd().join(' ') == expected
+        sVariant.buildCmd.join(' ') == expected
 
         cleanup:
         tmpDir.deleteDir()

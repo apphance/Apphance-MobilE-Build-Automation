@@ -199,7 +199,7 @@ class IOSVariant extends AbstractVariant {
         schemeParser.configurationName(name)
     }
 
-    List<String> buildCmd() {
+    List<String> getBuildCmd() {
         conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + [buildDirCmd]
     }
 
