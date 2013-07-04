@@ -27,7 +27,6 @@ class CopyMobileProvisionTask extends DefaultTask {
         def userHome = System.getProperty('user.home')
         def mobileProvisionDir = "$userHome/Library/MobileDevice/Provisioning Profiles/"
         new File(mobileProvisionDir).mkdirs()
-
         variantsConf.variants.each { v ->
             def mobileprovision = v.mobileprovision.value
             validateBundleId(v, mobileprovision)

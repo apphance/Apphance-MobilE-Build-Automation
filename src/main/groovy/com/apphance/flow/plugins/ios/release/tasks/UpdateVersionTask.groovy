@@ -13,7 +13,7 @@ class UpdateVersionTask extends AbstractUpdateVersionTask {
 
     @Override
     void updateDescriptor(String versionCode, String versionString) {
-        variantsConf.variants*.plist.each {
+        variantsConf.variants*.plist.unique().each {
             parser.replaceVersion(it, versionCode, versionString)
         }
     }

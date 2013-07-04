@@ -151,11 +151,11 @@ class IOSVariant extends AbstractVariant {
         }
     }
 
-    protected List<String> getArchCmd() {
+    List<String> getArchCmd() {
         mode.value == SIMULATOR ? ['-arch', 'i386'] : []
     }
 
-    protected String getBuildDirCmd() {
+    String getBuildDirCmd() {
         "CONFIGURATION_BUILD_DIR=$buildDir.absolutePath"
     }
 
