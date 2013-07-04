@@ -30,6 +30,7 @@ class IOSArtifactProviderSpec extends Specification {
         builderInfo.target >> 'GradleXCode'
         builderInfo.configuration >> 'BasicConfiguration'
         builderInfo.filePrefix >> 'GradleXCode-BasicConfiguration-1.0.1_42'
+        builderInfo.id >> 'VariantName'
 
         releaseConf = GroovyMock(IOSReleaseConfiguration) {
             getBaseURL() >> 'http://ota.polidea.pl'.toURL()
@@ -92,8 +93,8 @@ class IOSArtifactProviderSpec extends Specification {
 
         expect:
         aa.name == 'Distribution ZIP'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0.1_42.zip'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0.1_42.zip')
+        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-BasicConfiguration-1.0.1_42.zip'
+        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/GradleXCode-BasicConfiguration-1.0.1_42.zip')
     }
 
     def 'dsym zip artifact is built well'() {
@@ -102,8 +103,8 @@ class IOSArtifactProviderSpec extends Specification {
 
         expect:
         aa.name == 'dSYM ZIP'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0.1_42_dSYM.zip'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0.1_42_dSYM.zip')
+        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-BasicConfiguration-1.0.1_42_dSYM.zip'
+        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/GradleXCode-BasicConfiguration-1.0.1_42_dSYM.zip')
     }
 
     def 'ahSYM artifact is built well'() {
@@ -112,8 +113,8 @@ class IOSArtifactProviderSpec extends Specification {
 
         expect:
         aa.name == 'ahSYM dir'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0.1_42_ahSYM'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0.1_42_ahSYM')
+        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-BasicConfiguration-1.0.1_42_ahSYM'
+        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/GradleXCode-BasicConfiguration-1.0.1_42_ahSYM')
     }
 
     def 'ipa artifact is built well'() {
@@ -122,8 +123,8 @@ class IOSArtifactProviderSpec extends Specification {
 
         expect:
         aa.name == 'IPA file'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0.1_42.ipa'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0.1_42.ipa')
+        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-BasicConfiguration-1.0.1_42.ipa'
+        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/GradleXCode-BasicConfiguration-1.0.1_42.ipa')
     }
 
     def 'manifest artifact is built well'() {
@@ -132,8 +133,8 @@ class IOSArtifactProviderSpec extends Specification {
 
         expect:
         aa.name == 'Manifest file'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/GradleXCode/BasicConfiguration/manifest.plist'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/GradleXCode/BasicConfiguration/manifest.plist')
+        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/manifest.plist'
+        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/manifest.plist')
     }
 
     def 'mobileprovision artifact is built well'() {
@@ -142,7 +143,7 @@ class IOSArtifactProviderSpec extends Specification {
 
         expect:
         aa.name == 'Mobile provision file'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0.1_42.mobileprovision'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/GradleXCode/BasicConfiguration/GradleXCode-BasicConfiguration-1.0.1_42.mobileprovision')
+        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-BasicConfiguration-1.0.1_42.mobileprovision'
+        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/GradleXCode-BasicConfiguration-1.0.1_42.mobileprovision')
     }
 }

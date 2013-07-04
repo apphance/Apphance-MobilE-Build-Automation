@@ -45,7 +45,7 @@ class ExecuteIosBuildsTest {
     @Test
     void testBuildOneVariant() {
         runGradleOneVariant('buildAllDevice')
-        def path = 'flow-ota/GradleXCode/1.0_32/GradleXCode/BasicConfiguration'
+        def path = 'flow-ota/GradleXCode/1.0_32/GradleXCode/'
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32.ipa").exists())
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32.mobileprovision").exists())
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32.zip").exists())
@@ -58,23 +58,23 @@ class ExecuteIosBuildsTest {
     @Test
     void testBuildMoreVariants() {
         runGradleMoreVariants('buildAllDevice')
-        def path = 'flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariants'
+        def path = 'flow-ota/ssasdadasdasd/1.0_32/'
 
-        assertTrue(new File(testProjectMoreVariants, "$path/Release/GradleXCodeMoreVariants-1.0_32.ipa").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/Release/GradleXCodeMoreVariants-1.0_32.mobileprovision").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/Release/GradleXCodeMoreVariants-1.0_32.zip").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/Release/GradleXCodeMoreVariants-1.0_32_dSYM.zip").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/Release/manifest.plist").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/Release/GradleXCodeMoreVariants-1.0_32_ahSYM").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/Release/GradleXCodeMoreVariants-1.0_32_ahSYM").listFiles().size() > 0)
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32.ipa").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32.mobileprovision").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32.zip").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32_dSYM.zip").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/manifest.plist").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32_ahSYM").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32_ahSYM").listFiles().size() > 0)
 
-        assertTrue(new File(testProjectMoreVariants, "$path/Debug/GradleXCodeMoreVariantsWithApphance-1.0_32.ipa").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/Debug/GradleXCodeMoreVariantsWithApphance-1.0_32.mobileprovision").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/Debug/GradleXCodeMoreVariantsWithApphance-1.0_32.zip").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/Debug/GradleXCodeMoreVariantsWithApphance-1.0_32_dSYM.zip").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/Debug/manifest.plist").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/Debug/GradleXCodeMoreVariantsWithApphance-1.0_32_ahSYM").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/Debug/GradleXCodeMoreVariantsWithApphance-1.0_32_ahSYM").listFiles().size() > 0)
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32.ipa").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32.mobileprovision").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32.zip").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32_dSYM.zip").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/manifest.plist").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32_ahSYM").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32_ahSYM").listFiles().size() > 0)
     }
 
     @Test
@@ -84,8 +84,9 @@ class ExecuteIosBuildsTest {
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/icon.png").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/plain_file_index.html").exists())
+        assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/message_file.html").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/qrcode-GradleXCodeMoreVariants-1.0_32.png").exists())
-        assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariants/Release/GradleXCodeMoreVariants-1.0_32.ipa").exists())
+        assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32.ipa").exists())
     }
 
     @Test
@@ -96,9 +97,10 @@ class ExecuteIosBuildsTest {
         assertTrue(new File(testProjectMoreVariants, "$path/icon.png").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/plain_file_index.html").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/message_file.html").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/qrcode-GradleXCodeMoreVariants-1.0_32.png").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/Debug/GradleXCodeMoreVariantsTests-1.0_32-iPad-simulator-image.dmg").exists())
-        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/Debug/GradleXCodeMoreVariantsTests-1.0_32-iPhone-simulator-image.dmg").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsTests/GradleXCodeMoreVariantsTests-1.0_32-iPad-simulator-image.dmg").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsTests/GradleXCodeMoreVariantsTests-1.0_32-iPhone-simulator-image.dmg").exists())
     }
 
     @Test
@@ -108,14 +110,15 @@ class ExecuteIosBuildsTest {
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/icon.png").exists())
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/index.html").exists())
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/plain_file_index.html").exists())
+        assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/message_file.html").exists())
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/qrcode-GradleXCode-1.0_32.png").exists())
-        assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/GradleXCode/BasicConfiguration/GradleXCode-1.0_32.ipa").exists())
+        assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/GradleXCode/GradleXCode-1.0_32.ipa").exists())
     }
 
     @Test
     void testBuildAllSimulators() {
         runGradleMoreVariants('buildAllSimulator')
-        def path = 'flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariants/Debug'
+        def path = 'flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariantsTests/'
 
         File fileIphone = new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsTests-1.0_32-iPhone-simulator-image.dmg")
         File fileIpad = new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsTests-1.0_32-iPad-simulator-image.dmg")

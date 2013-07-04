@@ -13,20 +13,19 @@ class IOSArtifactProvider {
     @Inject IOSVariantsConfiguration variantsConf
 
     IOSBuilderInfo builderInfo(IOSVariant v) {
-        def bi = new IOSBuilderInfo(
+        new IOSBuilderInfo(
                 id: v.name,
                 buildableName: v.buildableName,
                 target: v.target,
                 configuration: v.configuration,
                 mode: v.mode.value,
                 buildDir: v.buildDir,
-                fullReleaseName: "${v.name}-${v.fullVersionString}",
-                filePrefix: "${v.name}-${v.fullVersionString}",
+                fullReleaseName: "$v.name-$v.fullVersionString",
+                filePrefix: "$v.name-$v.fullVersionString",
                 mobileprovision: v.mobileprovision.value,
                 plist: v.plist,
                 versionString: v.versionString
         )
-        bi
     }
 
     FlowArtifact zipDistribution(IOSBuilderInfo bi) {
@@ -62,6 +61,6 @@ class IOSArtifactProvider {
     }
 
     String getFolderPrefix(IOSBuilderInfo bi) {
-        "${releaseConf.projectDirName}/${variantsConf.mainVariant.fullVersionString}/${bi.target}/${bi.configuration}"
+        "$releaseConf.projectDirName/$variantsConf.mainVariant.fullVersionString/$bi.id"
     }
 }

@@ -61,7 +61,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     String getFolderPrefix(IOSBuilderInfo bi) {
-        "${releaseConf.projectDirName}/${conf.fullVersionString}/${bi.target}/${bi.configuration}"
+        "$releaseConf.projectDirName/$conf.fullVersionString/$bi.id"
     }
 
     private rsyncTemplatePreservingExecutableFlag(File destDir) {
