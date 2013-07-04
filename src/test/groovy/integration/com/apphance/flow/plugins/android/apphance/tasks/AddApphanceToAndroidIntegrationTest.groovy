@@ -18,7 +18,7 @@ class AddApphanceToAndroidIntegrationTest extends Specification {
         def androidVariantConf = GroovySpy(AndroidVariantConfiguration, constructorArgs: ['test variant'])
         androidVariantConf.apphanceMode.value = ApphanceMode.QA
         androidVariantConf.apphanceAppKey.value = 'TestKey'
-        androidVariantConf.apphanceLibVersion.value = '1.9-RC1'
+        androidVariantConf.apphanceLibVersion.value = '1.9-RC2'
         androidVariantConf.getTmpDir() >> variantDir
 
         addApphanceToAndroid = new AddApphanceToAndroid(androidVariantConf)
@@ -27,7 +27,7 @@ class AddApphanceToAndroidIntegrationTest extends Specification {
     def 'test add apphance lib'() {
         expect:
         !addApphanceToAndroid.checkIfApphancePresent()
-        def version = '1.9-RC1'
+        def version = '1.9-RC2'
 
         when:
         addApphanceToAndroid.addApphanceLib()
