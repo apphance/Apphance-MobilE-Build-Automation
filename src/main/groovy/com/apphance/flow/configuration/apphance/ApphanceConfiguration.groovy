@@ -2,6 +2,7 @@ package com.apphance.flow.configuration.apphance
 
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ProjectConfiguration
+import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.google.inject.Singleton
 
@@ -33,5 +34,11 @@ class ApphanceConfiguration extends AbstractConfiguration {
     def pass = new StringProperty(
             name: 'apphance.pass',
             message: 'Apphance pass'
+    )
+
+    def enableShaking = new BooleanProperty(
+            name: 'apphance.enableShaking',
+            message: "Report bug to apphance by shaking device",
+            possibleValues: { ['false', 'true'] as List<String> }
     )
 }

@@ -22,7 +22,7 @@ class Main {
 
         println "Adding apphance in mode: $mode, key: $apphanceKey"
 
-        def apphance = new AddApphanceToAndroid(currentDir, apphanceKey, mode == 'prod' ? PROD : QA, '1.9-RC1')
+        def apphance = new AddApphanceToAndroid(currentDir, apphanceKey, mode == 'prod' ? PROD : QA, '1.9-RC2')
         apphance.addApphance()
     }
 

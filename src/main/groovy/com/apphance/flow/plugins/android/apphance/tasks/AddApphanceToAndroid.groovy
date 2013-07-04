@@ -8,7 +8,6 @@ import com.thoughtworks.qdox.JavaDocBuilder
 import com.thoughtworks.qdox.model.JavaClass
 import groovy.transform.PackageScope
 import groovy.util.slurpersupport.GPathResult
-import org.gradle.api.GradleException
 import org.gradle.api.logging.Logging
 
 import static android.Manifest.permission.*
@@ -27,6 +26,7 @@ class AddApphanceToAndroid {
     final File variantDir
     final String apphanceAppKey
     final ApphanceMode apphanceMode
+    final boolean shakeEnabled
 
     private static final String IMPORT_APPHANCE = 'com.apphance.android.Apphance'
     private static final String ON_START = 'onStart'
@@ -35,13 +35,13 @@ class AddApphanceToAndroid {
     AddApphanceToAndroid() {
     }
 
-    AddApphanceToAndroid(File variantDir, String apphanceAppKey, ApphanceMode apphanceMode, String libVersion) {
-        apphanceVersion = libVersion ?: '1.9-RC1'
-        ARTIFACTORY_URL = "https://dev.polidea.pl/artifactory/libs-releases-local/com/apphance/android.pre-production/${apphanceVersion}/android" +
-                ".pre-production-${apphanceVersion}.zip"
+    AddApphanceToAndroid(File variantDir, String apphanceAppKey, ApphanceMode apphanceMode, String libVersion, boolean shakeEnabled = false ) {
+        apphanceVersion = libVersion ?: '1.9-RC2'
+        ARTIFACTORY_URL = "https://dev.polidea.pl/artifactory/simple/libs-releases-local/com/utest/apphance/${apphanceVersion}/apphance-${apphanceVersion}.zip"
         this.variantDir = variantDir
         this.apphanceAppKey = apphanceAppKey
         this.apphanceMode = apphanceMode
+        this.shakeEnabled = shakeEnabled
 
         checkArgument variantDir.exists()
         checkNotNull apphanceAppKey
@@ -150,7 +150,7 @@ class AddApphanceToAndroid {
                     |    }""".stripMargin()
                 addMethodToClassFile(methodBody, file)
             } else {
-                addLineOfCodeToMethod(file, methodName, "    Apphance.$methodName(this);")
+                addCodeToMethod(file, methodName, "    Apphance.$methodName(this);")
             }
         }
     }
@@ -193,11 +193,17 @@ class AddApphanceToAndroid {
 
     def addApphanceInit(File mainFile, String apphanceAppKey, ApphanceMode apphanceMode) {
         logger.debug("Adding apphance init to file: $mainFile.absolutePath")
-        String startSession = """    Apphance.startNewSession(this, "$apphanceAppKey", ${mapApphanceMode(apphanceMode)});"""
+        String startSession = """Apphance.startNewSession(this, "$apphanceAppKey", ${mapApphanceMode(apphanceMode)});"""
+        String shakeEnablingLine = "Apphance.setReportOnShakeEnabled(true);"
         if (isMethodPresent(mainFile, 'onCreate')) {
-            addLineOfCodeToMethod(mainFile, 'onCreate', startSession)
+            addCodeToMethod(mainFile, 'onCreate', "\n        $startSession\n        $shakeEnablingLine")
         } else {
-            String body = "    public void onCreate(final Bundle savedInstanceState) {\n    super.onCreate(savedInstanceState);\n    $startSession\n}\n"
+            String body = "    public void onCreate(final Bundle savedInstanceState) {\n" +
+                    "    super.onCreate(savedInstanceState);\n" +
+                    "    $startSession\n"
+            if (shakeEnabled) {
+                    body += "    $shakeEnablingLine}\n"
+            }
             addMethodToClassFile(body, mainFile)
         }
     }
@@ -211,7 +217,7 @@ class AddApphanceToAndroid {
         (apphanceMode == ApphanceMode.QA) ? 'Apphance.Mode.QA' : 'Apphance.Mode.Silent'
     }
 
-    private void addLineOfCodeToMethod(File file, String methodName, String lineOfCode) {
+    private void addCodeToMethod(File file, String methodName, String code) {
         File temp = tempFile
 
         boolean lineAdded = false
@@ -222,7 +228,7 @@ class AddApphanceToAndroid {
                     searchingForOpeningBrace = true
                 }
                 if (!lineAdded && searchingForOpeningBrace && line.matches('.*\\{.*')) {
-                    out.println(line.replaceAll('\\{', "{\n$lineOfCode"))
+                    out.println(line.replaceAll('\\{', "{\n$code"))
                     lineAdded = true
                 } else {
                     out.println(line)
