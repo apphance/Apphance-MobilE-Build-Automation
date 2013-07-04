@@ -23,6 +23,7 @@ import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
 import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
+import static java.io.File.separator
 import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
@@ -183,17 +184,17 @@ class IOSVariant extends AbstractVariant {
     }()
 
     File getPlist() {
-        String confName = schemeParser.configurationName(name)
-        String blueprintId = schemeParser.blueprintIdentifier(name)
+        String confName = schemeParser.configurationName(schemeFile)
+        String blueprintId = schemeParser.blueprintIdentifier(schemeFile)
         new File(tmpDir, pbxJsonParser.plistForScheme(variantPbx, confName, blueprintId))
     }
 
     String getTarget() {
-        pbxJsonParser.targetForBlueprintId(variantPbx, schemeParser.blueprintIdentifier(name))
+        pbxJsonParser.targetForBlueprintId(variantPbx, schemeParser.blueprintIdentifier(schemeFile))
     }
 
     String getConfiguration() {
-        schemeParser.configurationName(name)
+        schemeParser.configurationName(schemeFile)
     }
 
     List<String> getBuildCmd() {
@@ -206,6 +207,10 @@ class IOSVariant extends AbstractVariant {
 
     List<String> getArchiveCmd() {
         conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + [buildDirCmd] + ['clean', 'build', 'archive']
+    }
+
+    private File getSchemeFile() {
+        new File("$tmpDir$separator$conf.xcodeDir.value", "xcshareddata${separator}xcschemes$separator${name}.xcscheme")
     }
 
     @Override

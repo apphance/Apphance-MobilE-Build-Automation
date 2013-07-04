@@ -11,7 +11,6 @@ import javax.inject.Inject
 import static com.apphance.flow.detection.ProjectType.IOS
 import static com.apphance.flow.util.file.FileManager.*
 import static groovy.io.FileType.DIRECTORIES
-import static java.io.File.separator
 
 @com.google.inject.Singleton
 class IOSConfiguration extends ProjectConfiguration {
@@ -51,10 +50,6 @@ class IOSConfiguration extends ProjectConfiguration {
         sp.value = variantsConf.mainVariant.projectName
         sp
     }
-
-    @Lazy File schemesDir = {
-        new File("$rootDir$separator$xcodeDir.value", "xcshareddata${separator}xcschemes")
-    }()
 
     def xcodeDir = new FileProperty(
             name: 'ios.dir.xcode',
