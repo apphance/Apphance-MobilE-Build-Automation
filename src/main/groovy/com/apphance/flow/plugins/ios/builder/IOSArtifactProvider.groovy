@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.builder
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.release.FlowArtifact
 
@@ -12,7 +12,7 @@ class IOSArtifactProvider {
     @Inject IOSReleaseConfiguration releaseConf
     @Inject IOSVariantsConfiguration variantsConf
 
-    IOSBuilderInfo builderInfo(AbstractIOSVariant v) {
+    IOSBuilderInfo builderInfo(IOSVariant v) {
         def bi = new IOSBuilderInfo(
                 id: v.name,
                 buildableName: v.buildableName,

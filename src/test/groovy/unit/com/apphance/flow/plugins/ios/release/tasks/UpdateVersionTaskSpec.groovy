@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.release.tasks
 
 import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import spock.lang.Specification
@@ -19,10 +19,10 @@ class UpdateVersionTaskSpec extends Specification {
 
         and:
         def variants = [
-                GroovySpy(AbstractIOSVariant) {
+                GroovySpy(IOSVariant) {
                     getPlist() >> GroovyMock(File)
                 },
-                GroovySpy(AbstractIOSVariant) {
+                GroovySpy(IOSVariant) {
                     getPlist() >> GroovyMock(File)
                 }
         ]

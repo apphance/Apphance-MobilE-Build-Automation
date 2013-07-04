@@ -79,8 +79,6 @@ class IOSConfiguration extends ProjectConfiguration {
         dirs
     }()
 
-    @Lazy List targetConfigurationMatrix = { [targets, configurations].combinations().sort() }()
-
     List<String> xcodebuildExecutionPath() {
         xcodeDir.value ? ['xcodebuild', '-project', xcodeDir.value as String] : ['xcodebuild']
     }
@@ -100,14 +98,6 @@ class IOSConfiguration extends ProjectConfiguration {
             validator: { it in executor.simulatorSdks },
             required: { true }
     )
-
-    List<String> getTargets() {
-        executor.targets
-    }
-
-    List<String> getConfigurations() {
-        executor.configurations
-    }
 
     List<String> getSchemes() {
         executor.schemes

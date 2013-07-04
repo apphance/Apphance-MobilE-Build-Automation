@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
-import com.apphance.flow.configuration.ios.variants.IOSSchemeVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -17,7 +17,7 @@ class ArchiveVariantTask extends DefaultTask {
     @Inject
     IOSExecutor executor
 
-    IOSSchemeVariant variant
+    IOSVariant variant
 
     @TaskAction
     void archiveVariant() {

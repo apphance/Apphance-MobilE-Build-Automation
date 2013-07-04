@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.buildplugin
 
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.parsers.PlistParser
@@ -33,7 +33,7 @@ class IOSSingleVariantBuilder {
         buildListeners << listener
     }
 
-    void buildVariant(AbstractIOSVariant variant) {
+    void buildVariant(IOSVariant variant) {
         def newBundleId = variant.bundleId.value
         if (isNotBlank(newBundleId)) {
             def oldBundleId = plistParser.bundleId(variant.plist)

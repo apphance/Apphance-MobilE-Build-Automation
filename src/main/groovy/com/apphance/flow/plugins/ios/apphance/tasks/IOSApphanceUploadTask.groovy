@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.apphance.tasks
 
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.plugins.apphance.ApphanceNetworkHelper
 import com.apphance.flow.util.Preconditions
@@ -32,7 +32,7 @@ class IOSApphanceUploadTask extends DefaultTask {
     @Inject IOSReleaseConfiguration releaseConf
     @Inject PropertyReader reader
 
-    AbstractIOSVariant variant
+    IOSVariant variant
     @Lazy(soft = true)
     @PackageScope
     ApphanceNetworkHelper networkHelper = {

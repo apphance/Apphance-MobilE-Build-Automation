@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 import com.apphance.flow.util.Preconditions
@@ -35,7 +35,7 @@ class CopyMobileProvisionTask extends DefaultTask {
         }
     }
 
-    private void validateBundleId(AbstractIOSVariant v, File mobileprovision) {
+    private void validateBundleId(IOSVariant v, File mobileprovision) {
         validate(v.effectiveBundleId == mpParser.bundleId(mobileprovision), {
             throw new GradleException("""|Bundle Id from variant: ${v.name} (${v.effectiveBundleId})
                                          |and from mobile provision file: ${mobileprovision.absolutePath}

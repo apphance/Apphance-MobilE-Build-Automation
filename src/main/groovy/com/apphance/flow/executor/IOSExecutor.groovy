@@ -1,7 +1,7 @@
 package com.apphance.flow.executor
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.ios.parsers.XCodeOutputParser
@@ -28,14 +28,6 @@ class IOSExecutor {
                 runDir: conf.rootDir,
                 cmd: conf.xcodebuildExecutionPath() + ['-showsdks'])).toList()*.trim()
     }
-
-    @Lazy List<String> targets = {
-        parser.readBaseTargets(list)
-    }()
-
-    @Lazy List<String> configurations = {
-        parser.readBaseConfigurations(list)
-    }()
 
     @Lazy List<String> schemes = {
         parser.readSchemes(list)
@@ -113,7 +105,7 @@ class IOSExecutor {
         executor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
     }
 
-    def buildTestVariant(File dir, AbstractIOSVariant variant, String outputFilePath) {
+    def buildTestVariant(File dir, IOSVariant variant, String outputFilePath) {
         executor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd(),
                 environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: outputFilePath],
                 failOnError: false

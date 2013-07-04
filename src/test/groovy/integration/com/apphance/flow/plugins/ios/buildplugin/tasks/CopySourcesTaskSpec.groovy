@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.google.common.io.Files
@@ -24,11 +24,11 @@ class CopySourcesTaskSpec extends Specification {
         and:
         def variantsConf = GroovySpy(IOSVariantsConfiguration)
         variantsConf.getVariants() >> [
-                GroovyStub(AbstractIOSVariant, {
+                GroovyStub(IOSVariant, {
                     getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
                     getTmpDir() >> new File(tmpDir, 'v1')
                 }),
-                GroovyStub(AbstractIOSVariant, {
+                GroovyStub(IOSVariant, {
                     getMode() >> new IOSBuildModeProperty(value: DEVICE)
                     getTmpDir() >> new File(tmpDir, 'v2')
                 })

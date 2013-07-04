@@ -2,37 +2,11 @@ package com.apphance.flow.plugins.ios.parsers
 
 import org.apache.commons.collections.CollectionUtils
 
-import static org.gradle.api.logging.Logging.getLogger
-
 /**
  * Parses xcodebuild output.
  *
  */
 class XCodeOutputParser {
-
-    def l = getLogger(getClass())
-
-    Collection readBuildableConfigurations(List trimmedOutput) {
-        return readBaseConfigurations(trimmedOutput, { it != "Debug" && it != "Release" })
-    }
-
-    Collection readBuildableTargets(List trimmedOutput) {
-        return readBaseTargets(trimmedOutput, { !it.endsWith('Tests') && !it.endsWith('Specs') })
-    }
-
-    Collection<String> readBaseConfigurations(List trimmed, Closure filter = { true }) {
-        def startConfigurations = trimmed.indexOf('Build Configurations:')
-        def configurations = trimmed[startConfigurations + 1..-1]
-        def onlyConfigurations = configurations[0..configurations.indexOf('') - 1]
-        return onlyConfigurations.findAll(filter) as Collection<String>
-    }
-
-    Collection<String> readBaseTargets(List trimmed, Closure filter = { true }) {
-        def startTargets = trimmed.indexOf('Targets:')
-        def targets = trimmed[startTargets + 1..-1]
-        def onlyTargets = targets[0..targets.indexOf('') - 1]
-        return onlyTargets.findAll(filter) as Collection<String>
-    }
 
     Collection<String> readSchemes(List trimmed) {
         def startSchemes = trimmed.indexOf('Schemes:')
@@ -66,12 +40,6 @@ class XCodeOutputParser {
             output << it[it.indexOf('-sdk ') + '-sdk '.length()..-1]
         }
         return output
-    }
-
-    String readProjectName(List trimmed) {
-        String firstLine = trimmed[0]
-        def matcher = firstLine =~ /.*"(.*)"/
-        return matcher[0][1]
     }
 
     Map<String, String> parseBuildSettings(List<String> trimmed) {

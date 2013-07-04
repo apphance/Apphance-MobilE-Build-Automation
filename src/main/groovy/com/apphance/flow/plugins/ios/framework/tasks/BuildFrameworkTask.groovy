@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.framework.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSFrameworkConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import org.gradle.api.DefaultTask
@@ -37,7 +37,7 @@ class BuildFrameworkTask extends DefaultTask {
     @Inject IOSConfiguration conf
     @Inject IOSFrameworkConfiguration frameworkConf
 
-    AbstractIOSVariant variant
+    IOSVariant variant
 
     @TaskAction
     void buildIOSFramework() {

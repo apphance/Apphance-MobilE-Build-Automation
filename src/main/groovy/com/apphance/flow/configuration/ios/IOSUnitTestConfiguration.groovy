@@ -1,7 +1,7 @@
 package com.apphance.flow.configuration.ios
 
 import com.apphance.flow.configuration.AbstractConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
 
@@ -40,7 +40,7 @@ class IOSUnitTestConfiguration extends AbstractConfiguration {
             required: { true }
     )
 
-    AbstractIOSVariant getVariant() {
+    IOSVariant getVariant() {
         iosVariantsConf.variants.find { it.name == this.@variant.value }
     }
 

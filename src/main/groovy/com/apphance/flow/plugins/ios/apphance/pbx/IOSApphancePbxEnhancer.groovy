@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.apphance.pbx
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.google.inject.assistedinject.Assisted
@@ -30,11 +30,11 @@ class IOSApphancePbxEnhancer {
     @Inject IOSExecutor iosExecutor
     @Inject PbxJsonParser pbxJsonParser
 
-    @PackageScope AbstractIOSVariant variant
+    @PackageScope IOSVariant variant
     private AtomicInteger hash = new AtomicInteger()
 
     @Inject
-    IOSApphancePbxEnhancer(@Assisted AbstractIOSVariant variant) {
+    IOSApphancePbxEnhancer(@Assisted IOSVariant variant) {
         this.variant = variant
     }
 

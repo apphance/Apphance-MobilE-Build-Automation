@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.apphance.pbx
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.executor.IOSExecutor
@@ -28,7 +28,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
 
     def 'basic pbx json objects found'() {
         given:
-        def enhancer = new IOSApphancePbxEnhancer(GroovyMock(AbstractIOSVariant) {
+        def enhancer = new IOSApphancePbxEnhancer(GroovyMock(IOSVariant) {
             getTarget() >> 'GradleXCode'
             getConfiguration() >> 'BasicConfiguration'
         })
@@ -78,7 +78,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         executor.executor = commandExecutor
 
         and:
-        def variant = GroovyMock(AbstractIOSVariant) {
+        def variant = GroovyMock(IOSVariant) {
             getTarget() >> 'GradleXCode'
             getConfiguration() >> 'BasicConfiguration'
             getApphanceMode() >> new ApphanceModeProperty(value: QA)

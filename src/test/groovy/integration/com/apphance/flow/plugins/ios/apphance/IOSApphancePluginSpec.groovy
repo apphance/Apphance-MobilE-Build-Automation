@@ -1,8 +1,7 @@
 package com.apphance.flow.plugins.ios.apphance
 
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
-import com.apphance.flow.configuration.ios.variants.IOSSchemeVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
@@ -46,7 +45,7 @@ class IOSApphancePluginSpec extends Specification {
         plugin.builder = new IOSSingleVariantBuilder()
         plugin.listener = new IOSReleaseListener()
 
-        def v1 = new IOSSchemeVariant('id1')
+        def v1 = new IOSVariant('id1')
         v1.apphanceMode.value = QA.toString()
         plugin.variantsConf = GroovyStub(IOSVariantsConfiguration) { getVariants() >> [v1] }
         plugin.apply(project)
@@ -76,7 +75,7 @@ class IOSApphancePluginSpec extends Specification {
         plugin.listener = new IOSReleaseListener()
         plugin.variantsConf = GroovyStub(IOSVariantsConfiguration) {
             getVariants() >> [
-                    GroovyMock(AbstractIOSVariant) {
+                    GroovyMock(IOSVariant) {
                         getName() >> 'id1'
                         getTarget() >> 't1'
                         getConfiguration() >> 'c1'
@@ -85,7 +84,7 @@ class IOSApphancePluginSpec extends Specification {
                         getUploadTaskName() >> 'uploadid1'
                         getMode() >> new IOSBuildModeProperty(value: DEVICE)
                     },
-                    GroovyMock(AbstractIOSVariant) {
+                    GroovyMock(IOSVariant) {
                         getName() >> 'id2'
                         getTarget() >> 't2'
                         getConfiguration() >> 'c2'

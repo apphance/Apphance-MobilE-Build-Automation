@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.release.tasks
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
@@ -34,7 +34,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     }
 
     @PackageScope
-    void prepareArtifacts(AbstractIOSVariant variant) {
+    void prepareArtifacts(IOSVariant variant) {
         def bi = artifactProvider.builderInfo(variant)
 
         def zipDist = artifactProvider.zipDistribution(bi)

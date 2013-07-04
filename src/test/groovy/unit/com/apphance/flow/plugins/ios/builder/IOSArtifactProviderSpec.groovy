@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.builder
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
@@ -38,7 +38,7 @@ class IOSArtifactProviderSpec extends Specification {
         }
 
         variantsConf = GroovyMock(IOSVariantsConfiguration) {
-            getMainVariant() >> GroovyMock(AbstractIOSVariant) {
+            getMainVariant() >> GroovyMock(IOSVariant) {
                 getFullVersionString() >> '1.0.1_42'
             }
         }
@@ -53,7 +53,7 @@ class IOSArtifactProviderSpec extends Specification {
 
     def 'builder info is created correctly from variant'() {
         given:
-        def variant = GroovyMock(AbstractIOSVariant)
+        def variant = GroovyMock(IOSVariant)
         variant.target >> 'GradleXCode'
         variant.configuration >> 'BasicConfiguration'
         variant.tmpDir >> new File(properties['java.io.tmpdir'])

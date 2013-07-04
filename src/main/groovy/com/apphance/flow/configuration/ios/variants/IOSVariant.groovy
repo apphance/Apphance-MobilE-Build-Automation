@@ -11,6 +11,7 @@ import com.apphance.flow.configuration.variants.AbstractVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.apphance.flow.plugins.ios.parsers.PlistParser
+import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
 
@@ -28,18 +29,19 @@ import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
-abstract class AbstractIOSVariant extends AbstractVariant {
+class IOSVariant extends AbstractVariant {
 
     @Inject IOSReleaseConfiguration releaseConf
     @Inject PlistParser plistParser
     @Inject PbxJsonParser pbxJsonParser
     @Inject PropertyReader reader
     @Inject IOSExecutor executor
+    @Inject XCSchemeParser schemeParser
 
     private bundle = getBundle('validation')
 
     @Inject
-    AbstractIOSVariant(@Assisted String name) {
+    IOSVariant(@Assisted String name) {
         super(name)
     }
 
@@ -183,13 +185,31 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         pbx.exists() ? pbx : new File("${conf.rootDir}/${conf.xcodeDir.value}", PROJECT_PBXPROJ)
     }()
 
-    abstract File getPlist()
+    File getPlist() {
+        String confName = schemeParser.configurationName(name)
+        String blueprintId = schemeParser.blueprintIdentifier(name)
+        new File(tmpDir, pbxJsonParser.plistForScheme(variantPbx, confName, blueprintId))
+    }
 
-    abstract String getConfiguration()
+    String getTarget() {
+        pbxJsonParser.targetForBlueprintId(variantPbx, schemeParser.blueprintIdentifier(name))
+    }
 
-    abstract String getTarget()
+    String getConfiguration() {
+        schemeParser.configurationName(name)
+    }
 
-    abstract List<String> buildCmd()
+    List<String> buildCmd() {
+        conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + [buildDirCmd]
+    }
+
+    String getArchiveTaskName() {
+        "archive$name".replaceAll('\\s', '')
+    }
+
+    List<String> archiveCmd() {
+        conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + [buildDirCmd] + ['archive']
+    }
 
     @Override
     void checkProperties() {

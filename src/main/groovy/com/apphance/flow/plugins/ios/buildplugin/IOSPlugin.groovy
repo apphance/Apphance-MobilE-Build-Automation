@@ -1,8 +1,7 @@
 package com.apphance.flow.plugins.ios.buildplugin
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
-import com.apphance.flow.configuration.ios.variants.IOSSchemeVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.buildplugin.tasks.*
@@ -74,7 +73,7 @@ class IOSPlugin implements Plugin<Project> {
                     description: 'Builds all variants and produces all artifacts (zip, ipa, messages, etc)')
 
             variantsConf.variants.each(this.&createBuildTask)
-            variantsConf.variants.findAll { it instanceof IOSSchemeVariant }.each(this.&createArchiveTask)
+            variantsConf.variants.each(this.&createArchiveTask)
 
             project.tasks.each {
                 if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME])) {
@@ -84,7 +83,7 @@ class IOSPlugin implements Plugin<Project> {
         }
     }
 
-    private void createBuildTask(AbstractIOSVariant variant) {
+    private void createBuildTask(IOSVariant variant) {
         def buildTask = project.task(variant.buildTaskName,
                 type: BuildVariantTask,
                 dependsOn: [CopyMobileProvisionTask.NAME]
@@ -95,7 +94,7 @@ class IOSPlugin implements Plugin<Project> {
         project.tasks[buildAllMode].dependsOn variant.buildTaskName
     }
 
-    private void createArchiveTask(IOSSchemeVariant variant) {
+    private void createArchiveTask(IOSVariant variant) {
         def archiveTask = project.task(variant.archiveTaskName,
                 type: ArchiveVariantTask,
                 dependsOn: [CopyMobileProvisionTask.NAME]

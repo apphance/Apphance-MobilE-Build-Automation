@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSSchemeVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import spock.lang.Specification
 
@@ -30,7 +30,7 @@ class ArchiveVariantTaskSpec extends Specification {
 
     def 'executor runs archive command when variant passed'() {
         given:
-        def variant = GroovySpy(IOSSchemeVariant) {
+        def variant = GroovySpy(IOSVariant) {
             getTmpDir() >> GroovyMock(File)
             getBuildDir() >> GroovyMock(File) {
                 getAbsolutePath() >> 'absolute'

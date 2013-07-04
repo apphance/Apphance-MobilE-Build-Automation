@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -16,7 +16,7 @@ class BuildVariantTask extends DefaultTask {
 
     @Inject IOSSingleVariantBuilder builder
 
-    AbstractIOSVariant variant
+    IOSVariant variant
 
     @TaskAction
     void buildVariant() {

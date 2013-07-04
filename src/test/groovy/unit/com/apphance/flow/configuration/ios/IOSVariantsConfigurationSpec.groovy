@@ -1,6 +1,6 @@
 package com.apphance.flow.configuration.ios
 
-import com.apphance.flow.configuration.ios.variants.IOSSchemeVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantFactory
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.reader.PropertyPersister
@@ -15,13 +15,8 @@ class IOSVariantsConfigurationSpec extends Specification {
 
     def setup() {
         conf = GroovyMock(IOSConfiguration)
-        def targets = ['Debug', 'Release', 'QAWithApphance', 'QAWithoutApphance']
-        def configurations = ['Some', 'UnitTests', 'SomeWithMonkey', 'RunMonkeyTests', 'SomeSpecs', 'OtherSomeSpecs']
-
-        conf.targetConfigurationMatrix >> [targets, configurations].combinations()
-
         def vf = GroovyMock(IOSVariantFactory)
-        vf.createSchemeVariant(_) >> new IOSSchemeVariant('scheme')
+        vf.createSchemeVariant(_) >> new IOSVariant('scheme')
 
         variantsConf = new IOSVariantsConfiguration()
         variantsConf.conf = conf
@@ -43,8 +38,8 @@ class IOSVariantsConfigurationSpec extends Specification {
         variantsConf.variants.every { it.class == variantClass }
 
         where:
-        expectedSize | variantClass     | schemes
-        3            | IOSSchemeVariant | ['v1', 'v2', 'v3']
+        expectedSize | variantClass | schemes
+        3            | IOSVariant   | ['v1', 'v2', 'v3']
     }
 
     @Unroll
@@ -56,8 +51,8 @@ class IOSVariantsConfigurationSpec extends Specification {
         variantsConf.possibleVariants.size() == expectedSize
 
         where:
-        expectedSize | variantClass     | schemes
-        3            | IOSSchemeVariant | ['v1', 'v2', 'v3']
+        expectedSize | variantClass | schemes
+        3            | IOSVariant   | ['v1', 'v2', 'v3']
     }
 
     def 'has schemes'() {

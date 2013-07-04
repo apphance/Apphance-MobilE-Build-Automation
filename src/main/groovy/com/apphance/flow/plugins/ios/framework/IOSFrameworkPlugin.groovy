@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.framework
 
 import com.apphance.flow.configuration.ios.IOSFrameworkConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
 import com.apphance.flow.plugins.ios.framework.tasks.BuildFrameworkTask
@@ -41,7 +41,7 @@ class IOSFrameworkPlugin implements Plugin<Project> {
         }
     }
 
-    private AbstractIOSVariant frameworkVariant() {
+    private IOSVariant frameworkVariant() {
         variantsConf.variants.find {
             it.name == frameworkConf.variantName.value
         }

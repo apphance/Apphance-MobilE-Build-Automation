@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -30,7 +30,7 @@ class SingleVariantTaskSpec extends Specification {
 
         where:
         variant                        | invocations
-        GroovyMock(AbstractIOSVariant) | 1
+        GroovyMock(IOSVariant) | 1
         null                           | 0
 
     }

@@ -39,11 +39,9 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     @Lazy
     @PackageScope
     List<String> possibleVariants = {
-        if (hasSchemes) {
-            conf.schemes.findAll { isNotBlank(it) && schemeParser.isBuildable(it) }
-        } else {
-            conf.targetConfigurationMatrix.collect { t, c -> "$t$c".toString() }
-        }
+        if (hasSchemes)
+            return conf.schemes.findAll { isNotBlank(it) && schemeParser.isBuildable(it) }
+        []
     }()
 
     @Lazy
@@ -52,17 +50,14 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         conf.schemes.any { isNotBlank(it) && schemeParser.isBuildable(it) }
     }()
 
-    private List<AbstractIOSVariant> variantsInternal() {
+    private List<IOSVariant> variantsInternal() {
         variantsNames.value.collect {
             schemeVariant.call(it)
-//            else
-//            TODO
-//            ;
         }
     }
 
     @PackageScope
-    Closure<IOSSchemeVariant> schemeVariant = { String name ->
+    Closure<IOSVariant> schemeVariant = { String name ->
         variantFactory.createSchemeVariant(name)
     }.memoize()
 
@@ -72,15 +67,15 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    Collection<AbstractIOSVariant> getSubConfigurations() {
+    Collection<IOSVariant> getSubConfigurations() {
         variantsInternal()
     }
 
-    Collection<AbstractIOSVariant> getVariants() {
+    Collection<IOSVariant> getVariants() {
         variantsInternal()
     }
 
-    AbstractIOSVariant getMainVariant() {
+    IOSVariant getMainVariant() {
         variantsInternal()[0]
     }
 

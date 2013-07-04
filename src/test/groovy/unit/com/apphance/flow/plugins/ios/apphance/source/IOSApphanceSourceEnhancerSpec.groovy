@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.apphance.source
 
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancer
 import org.gradle.api.GradleException
@@ -43,7 +43,7 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
 
         and:
         def sourceEnhancer = new IOSApphanceSourceEnhancer(
-                GroovyMock(AbstractIOSVariant) {
+                GroovyMock(IOSVariant) {
                     getTmpDir() >> tmpDir
                 },
                 GroovyMock(IOSApphancePbxEnhancer) {
@@ -71,7 +71,7 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
     def 'apphance is added to PCH file'() {
         given:
         def sourceEnhancer = new IOSApphanceSourceEnhancer(
-                GroovyMock(AbstractIOSVariant) {
+                GroovyMock(IOSVariant) {
                     getTmpDir() >> tmpDir
                     getApphanceMode() >> new ApphanceModeProperty(value: QA)
                 },
@@ -98,7 +98,7 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
     def 'apphance init section is added'() {
         given:
         def sourceEnhancer = new IOSApphanceSourceEnhancer(
-                GroovyMock(AbstractIOSVariant) {
+                GroovyMock(IOSVariant) {
                     getTmpDir() >> tmpDir
                     getApphanceMode() >> new ApphanceModeProperty(value: QA)
                     getApphanceAppKey() >> '3145abcd'
@@ -127,7 +127,7 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
     def 'exception is thrown when no UIApplicationDelegate file found'() {
         given:
         def sourceEnhancer = new IOSApphanceSourceEnhancer(
-                GroovyMock(AbstractIOSVariant) {
+                GroovyMock(IOSVariant) {
                     getTmpDir() >> tmpDir
                     getApphanceMode() >> new ApphanceModeProperty(value: QA)
                     getApphanceAppKey() >> '3145abcd'

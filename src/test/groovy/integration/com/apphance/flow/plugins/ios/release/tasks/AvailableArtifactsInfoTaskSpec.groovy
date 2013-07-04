@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.release.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSSchemeVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.*
 import com.apphance.flow.configuration.reader.PropertyReader
@@ -67,7 +67,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         releaseConf.reader = reader
 
         def variants = [
-                GroovyMock(IOSSchemeVariant) {
+                GroovyMock(IOSVariant) {
                     getTarget() >> 'GradleXCode'
                     getConfiguration() >> 'MainConf'
                     getMode() >> new IOSBuildModeProperty(value: DEVICE)
@@ -75,7 +75,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                     getFullVersionString() >> fullVersionString
                     getName() >> 'MainVariant'
                 },
-                GroovyMock(IOSSchemeVariant) {
+                GroovyMock(IOSVariant) {
                     getTarget() >> 'GradleXCode2'
                     getConfiguration() >> 'Conf2'
                     getMode() >> new IOSBuildModeProperty(value: DEVICE)

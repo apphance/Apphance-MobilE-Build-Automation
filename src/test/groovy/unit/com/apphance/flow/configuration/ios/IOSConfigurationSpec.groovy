@@ -1,6 +1,6 @@
 package com.apphance.flow.configuration.ios
 
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
 import org.gradle.api.Project
@@ -44,7 +44,7 @@ class IOSConfigurationSpec extends Specification {
 
     def 'version code and string are taken from main variant'() {
         given:
-        def variant = GroovyMock(AbstractIOSVariant) {
+        def variant = GroovyMock(IOSVariant) {
             getVersionCode() >> 'version code'
             getVersionString() >> 'version string'
         }
@@ -61,26 +61,11 @@ class IOSConfigurationSpec extends Specification {
         }
     }
 
-    def 'lazy evaluated variables'() {
-        given:
-        def iOSConf = GroovySpy(IOSConfiguration) {
-            getTargets() >> ['t1', 't2']
-            getConfigurations() >> ['c1', 'c2']
-        }
-        iOSConf.project = GroovyStub(Project) {
-            getRootDir() >> new File('testProjects/ios/GradleXCode')
-        }
-
-        expect:
-        iOSConf.targetConfigurationMatrix.sort() == [['t1', 'c1'], ['t1', 'c2'], ['t2', 'c1'], ['t2', 'c2']]
-        iOSConf.possibleXCodeDirs == ['GradleXCode.xcodeproj']
-    }
-
     def 'test get project name'() {
         given:
         def iOSConf = new IOSConfiguration(variantsConf:
                 GroovyMock(IOSVariantsConfiguration) {
-                    getMainVariant() >> GroovyMock(AbstractIOSVariant) { getProjectName() >> 'test project name' }
+                    getMainVariant() >> GroovyMock(IOSVariant) { getProjectName() >> 'test project name' }
                 }
         )
 
