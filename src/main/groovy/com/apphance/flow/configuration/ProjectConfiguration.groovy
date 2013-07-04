@@ -51,7 +51,13 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
     def buildTmpDir = new FileProperty(
             name: 'android.build.tmp.dir',
             interactive: { false },
-            validator: { isBlank(it) || new File(it).exists() }
+            validator: {
+                if (it instanceof String) {
+                    isBlank(it) || new File(it).exists()
+                } else if (it instanceof File) {
+                    it == null || it.exists()
+                } else false
+            }
     )
 
     File getTmpDir() {
