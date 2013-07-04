@@ -60,6 +60,9 @@ class IOSPluginSpec extends Specification {
         project.tasks[BUILD_ALL_DEVICE_TASK_NAME].group == FLOW_BUILD.name()
         project.tasks[BUILD_ALL_SIMULATOR_TASK_NAME].group == FLOW_BUILD.name()
         project.tasks[BUILD_ALL_TASK_NAME].group == FLOW_BUILD.name()
+        project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].group == FLOW_BUILD.name()
+        project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].group == FLOW_BUILD.name()
+        project.tasks[ARCHIVE_ALL_TASK_NAME].group == FLOW_BUILD.name()
         project.tasks['buildV1'].group == FLOW_BUILD.name()
         project.tasks['buildV2'].group == FLOW_BUILD.name()
         project.tasks['archiveV1'].group == FLOW_BUILD.name()
@@ -67,12 +70,15 @@ class IOSPluginSpec extends Specification {
 
         and:
         project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_SIMULATOR_TASK_NAME, BUILD_ALL_DEVICE_TASK_NAME)
+        project.tasks[ARCHIVE_ALL_TASK_NAME].dependsOn.flatten().containsAll(ARCHIVE_ALL_SIMULATOR_TASK_NAME, ARCHIVE_ALL_DEVICE_TASK_NAME)
         project.tasks['buildV1'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
         project.tasks['buildV2'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
         project.tasks['archiveV1'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
         project.tasks['archiveV2'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
         project.tasks[BUILD_ALL_SIMULATOR_TASK_NAME].dependsOn.flatten().contains('buildV2')
         project.tasks[BUILD_ALL_DEVICE_TASK_NAME].dependsOn.flatten().contains('buildV1')
+        project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].dependsOn.flatten().contains('archiveV2')
+        project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].dependsOn.flatten().contains('archiveV1')
     }
 
     def 'no tasks available when configuration is inactive'() {
@@ -80,24 +86,12 @@ class IOSPluginSpec extends Specification {
         def project = builder().build()
 
         and:
-        def conf = GroovyMock(IOSConfiguration)
-        conf.isEnabled() >> false
-
-        and:
-        def variantsConf = GroovyMock(IOSVariantsConfiguration)
-        variantsConf.variants >> [
-                GroovyMock(IOSVariant, { getBuildTaskName() >> 'buildV1' }),
-                GroovyMock(IOSVariant, { getBuildTaskName() >> 'buildV2' }),
-                GroovyMock(IOSVariant, {
-                    getBuildTaskName() >> 'buildV3'
-                    getArchiveTaskName() >> 'archiveV3'
-                })
-        ]
-
-        and:
         def plugin = new IOSPlugin()
-        plugin.conf = conf
-        plugin.variantsConf = variantsConf
+
+        and:
+        plugin.conf = GroovyMock(IOSConfiguration) {
+            isEnabled() >> false
+        }
 
         when:
         plugin.apply(project)
@@ -109,9 +103,14 @@ class IOSPluginSpec extends Specification {
         !project.getTasksByName(BUILD_ALL_TASK_NAME, false)
         !project.getTasksByName(BUILD_ALL_SIMULATOR_TASK_NAME, false)
         !project.getTasksByName(BUILD_ALL_DEVICE_TASK_NAME, false)
+        !project.getTasksByName(ARCHIVE_ALL_TASK_NAME, false)
+        !project.getTasksByName(ARCHIVE_ALL_SIMULATOR_TASK_NAME, false)
+        !project.getTasksByName(ARCHIVE_ALL_DEVICE_TASK_NAME, false)
         !project.getTasksByName('buildV1', false)
         !project.getTasksByName('buildV2', false)
         !project.getTasksByName('buildV3', false)
+        !project.getTasksByName('archiveV1', false)
+        !project.getTasksByName('archiveV2', false)
         !project.getTasksByName('archiveV3', false)
     }
 }

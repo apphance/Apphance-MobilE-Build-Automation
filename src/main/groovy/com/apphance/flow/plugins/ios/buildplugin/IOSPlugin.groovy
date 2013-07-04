@@ -26,9 +26,13 @@ import static org.gradle.api.logging.Logging.getLogger
  */
 class IOSPlugin implements Plugin<Project> {
 
-    static final String BUILD_ALL_TASK_NAME = 'buildAll'
-    static final String BUILD_ALL_DEVICE_TASK_NAME = 'buildAllDevice'
-    static final String BUILD_ALL_SIMULATOR_TASK_NAME = 'buildAllSimulator'
+    public static final String BUILD_ALL_TASK_NAME = 'buildAll'
+    public static final String BUILD_ALL_DEVICE_TASK_NAME = 'buildAllDevice'
+    public static final String BUILD_ALL_SIMULATOR_TASK_NAME = 'buildAllSimulator'
+    public static final String ARCHIVE_ALL_TASK_NAME = 'archiveAll'
+    public static final String ARCHIVE_ALL_DEVICE_TASK_NAME = 'archiveAllDevice'
+    public static final String ARCHIVE_ALL_SIMULATOR_TASK_NAME = 'archiveAllSimulator'
+
 
     private logger = getLogger(getClass())
 
@@ -70,9 +74,23 @@ class IOSPlugin implements Plugin<Project> {
             project.task(BUILD_ALL_TASK_NAME,
                     group: FLOW_BUILD,
                     dependsOn: [BUILD_ALL_DEVICE_TASK_NAME, BUILD_ALL_SIMULATOR_TASK_NAME],
-                    description: 'Builds all variants and produces all artifacts (zip, ipa, messages, etc)')
+                    description: 'Builds all variants')
 
             variantsConf.variants.each(this.&createBuildTask)
+
+            project.task(ARCHIVE_ALL_DEVICE_TASK_NAME,
+                    group: FLOW_BUILD,
+                    description: 'Archives all device variants')
+
+            project.task(ARCHIVE_ALL_SIMULATOR_TASK_NAME,
+                    group: FLOW_BUILD,
+                    description: 'Archives all simulator variants')
+
+            project.task(ARCHIVE_ALL_TASK_NAME,
+                    group: FLOW_BUILD,
+                    dependsOn: [ARCHIVE_ALL_DEVICE_TASK_NAME, ARCHIVE_ALL_SIMULATOR_TASK_NAME],
+                    description: 'Archives all variants and produces all artifacts (zip, ipa, messages, etc)')
+
             variantsConf.variants.each(this.&createArchiveTask)
 
             project.tasks.each {
@@ -100,5 +118,7 @@ class IOSPlugin implements Plugin<Project> {
                 dependsOn: [CopyMobileProvisionTask.NAME]
         ) as ArchiveVariantTask
         archiveTask.variant = variant
+        def archiveAllMode = "archiveAll${variant.mode.value.capitalize()}"
+        project.tasks[archiveAllMode].dependsOn variant.archiveTaskName
     }
 }

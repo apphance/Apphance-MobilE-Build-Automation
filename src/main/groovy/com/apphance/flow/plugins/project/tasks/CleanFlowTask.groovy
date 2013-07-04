@@ -19,7 +19,6 @@ class CleanFlowTask extends DefaultTask {
     @TaskAction
     void clean() {
         conf.buildDir.deleteDir()
-        conf.buildDir.mkdirs()
 
         conf.tmpDir.deleteDir()
         conf.tmpDir.mkdirs()

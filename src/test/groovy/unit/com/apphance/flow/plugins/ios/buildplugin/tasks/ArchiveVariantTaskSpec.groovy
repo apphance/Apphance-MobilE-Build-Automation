@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
+import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import spock.lang.Specification
@@ -22,13 +23,14 @@ class ArchiveVariantTaskSpec extends Specification {
         task.variant = null
 
         when:
-        task.archiveVariant()
+        task.build()
 
         then:
-        0 * _._
+        def e = thrown(NullPointerException)
+        e.message == 'Null variant passed to builder!'
     }
 
-    def 'executor runs archive command when variant passed'() {
+    def 'executor runs archive command when variant passed & release conf disabled'() {
         given:
         def variant = GroovySpy(IOSVariant) {
             getTmpDir() >> GroovyMock(File)
@@ -38,15 +40,17 @@ class ArchiveVariantTaskSpec extends Specification {
             getConf() >> GroovyMock(IOSConfiguration) {
                 xcodebuildExecutionPath() >> ['xcodebuild']
             }
-            getConfiguration() >> 'BasicConfiguration'
             getName() >> 'GradleXCode'
+        }
+        task.releaseConf = GroovyMock(IOSReleaseConfiguration) {
+            isEnabled() >> false
         }
         task.variant = variant
 
         when:
-        task.archiveVariant()
+        task.build()
 
         then:
-        1 * executor.archiveVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', 'CONFIGURATION_BUILD_DIR=absolute', 'archive'])
+        1 * executor.archiveVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', 'CONFIGURATION_BUILD_DIR=absolute', 'clean', 'build', 'archive'])
     }
 }

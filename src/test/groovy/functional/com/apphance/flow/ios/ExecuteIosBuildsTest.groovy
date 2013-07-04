@@ -44,7 +44,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildOneVariant() {
-        runGradleOneVariant('buildAllDevice')
+        runGradleOneVariant('archiveAllDevice')
         def path = 'flow-ota/GradleXCode/1.0_32/GradleXCode/'
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32.ipa").exists())
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32.mobileprovision").exists())
@@ -57,7 +57,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildMoreVariants() {
-        runGradleMoreVariants('buildAllDevice')
+        runGradleMoreVariants('archiveAllDevice')
         def path = 'flow-ota/ssasdadasdasd/1.0_32/'
 
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32.ipa").exists())
@@ -79,7 +79,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareMoreVariantsMailMessage() {
-        runGradleMoreVariants('cleanFlow', 'buildGradleXCodeMoreVariants', 'prepareImageMontage', 'prepareAvailableArtifactsInfo')
+        runGradleMoreVariants('cleanFlow', 'archiveGradleXCodeMoreVariants', 'prepareImageMontage', 'prepareAvailableArtifactsInfo')
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/icon.png").exists())
         assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/index.html").exists())
@@ -91,7 +91,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareMoreVariantsMailMessageWithSimulators() {
-        runGradleMoreVariants('cleanFlow', 'buildGradleXCodeMoreVariantsTests', 'prepareImageMontage', 'prepareAvailableArtifactsInfo')
+        runGradleMoreVariants('cleanFlow', 'archiveGradleXCodeMoreVariantsTests', 'prepareImageMontage', 'prepareAvailableArtifactsInfo')
         def path = 'flow-ota/ssasdadasdasd/1.0_32'
         assertTrue(new File(testProjectMoreVariants, "$path/file_index.html").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/icon.png").exists())
@@ -105,7 +105,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAndPrepareOneVariantMailMessage() {
-        runGradleOneVariant('cleanFlow', 'buildAllDevice', 'prepareAvailableArtifactsInfo', 'prepareImageMontage')
+        runGradleOneVariant('cleanFlow', 'archiveAllDevice', 'prepareAvailableArtifactsInfo', 'prepareImageMontage')
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/file_index.html").exists())
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/icon.png").exists())
         assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/index.html").exists())
@@ -117,7 +117,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAllSimulators() {
-        runGradleMoreVariants('buildAllSimulator')
+        runGradleMoreVariants('archiveAllSimulator')
         def path = 'flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariantsTests/'
 
         File fileIphone = new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsTests-1.0_32-iPhone-simulator-image.dmg")
