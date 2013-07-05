@@ -11,20 +11,9 @@ import static com.google.common.io.Files.createTempDir
 class XCSchemeParserSpec extends Specification {
 
     @Shared
-    def schemeName = 'GradleXCode'
-    @Shared
-    def schemeFile = new File("testProjects/ios/GradleXCode/GradleXCode.xcodeproj/xcshareddata/xcschemes/${schemeName}.xcscheme")
-    def tmpDir
+    def schemeFile = new File(getClass().getResource('GradleXCode.xcscheme').toURI())
+
     def parser = new XCSchemeParser()
-
-    def setup() {
-        tmpDir = createTempDir()
-        copy(schemeFile, new File(tmpDir, "${schemeName}.xcscheme"))
-    }
-
-    def cleanup() {
-        tmpDir.deleteDir()
-    }
 
     def 'configuration for scheme is read correctly'() {
         expect:
@@ -56,12 +45,38 @@ class XCSchemeParserSpec extends Specification {
     @Unroll
     def 'buildable scheme is recognized for scheme #scheme'() {
         expect:
-        def file = new File("testProjects/ios/GradleXCode/GradleXCode.xcodeproj/xcshareddata/xcschemes/${scheme}.xcscheme")
-        parser.isBuildable(file) == buildable
+        parser.isBuildable(scheme) == buildable
 
         where:
-        scheme                      | buildable
-        schemeName                  | true
-        'GradleXCodeNoLaunchAction' | false
+        scheme                                                            | buildable
+        schemeFile                                                        | true
+        new File(getClass().getResource('GradleXCode2.xcscheme').toURI()) | false
+    }
+
+    @Unroll
+    def 'archive post action is added in file: #filename'() {
+        given:
+        def tmpDir = createTempDir()
+        copy(new File(getClass().getResource("${filename}.xcscheme").toURI()), new File(tmpDir, "${filename}.xcscheme"))
+        def tmpFile = new File(tmpDir, "${filename}.xcscheme")
+
+        when:
+        parser.addPostArchiveAction(tmpFile)
+
+        then:
+        def xml = new XmlSlurper().parseText(tmpFile.text)
+        xml.ArchiveAction.PostActions.children().size() == actions
+        xml.ArchiveAction.PostActions.ExecutionAction.ActionContent.find {
+            it.@title.text() == 'ECHO_FLOW_ARCHIVE_PATH'
+        }
+        xml.ArchiveAction.@revealArchiveInOrganizer == 'YES'
+
+        cleanup:
+        tmpDir.deleteDir()
+
+        where:
+        filename       | actions
+        'GradleXCode'  | 1
+        'GradleXCode2' | 2
     }
 }
