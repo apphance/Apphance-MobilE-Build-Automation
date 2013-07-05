@@ -32,20 +32,16 @@ class IOSArtifactProviderSpec extends Specification {
         builderInfo.filePrefix >> 'GradleXCode-BasicConfiguration-1.0.1_42'
         builderInfo.id >> 'VariantName'
 
-        releaseConf = GroovyMock(IOSReleaseConfiguration) {
-            getBaseURL() >> 'http://ota.polidea.pl'.toURL()
-            getProjectDirName() >> 'TestIOSProject'
-            getOtaDir() >> tmpDir
-        }
-
         variantsConf = GroovyMock(IOSVariantsConfiguration) {
             getMainVariant() >> GroovyMock(IOSVariant) {
                 getFullVersionString() >> '1.0.1_42'
             }
         }
+        provider.releaseConf = GroovyMock(IOSReleaseConfiguration) {
+            getReleaseUrlVersioned() >> "http://ota.polidea.pl/TestIOSProject/1.0.1_42".toURL()
+            getReleaseDir() >> new File(tmpDir, "TestIOSProject/1.0.1_42")
+        }
 
-        provider.releaseConf = releaseConf
-        provider.variantsConf = variantsConf
     }
 
     def cleanup() {

@@ -2,15 +2,15 @@ package com.apphance.flow.plugins.ios.builder
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
-import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.release.FlowArtifact
 
 import javax.inject.Inject
 
+import static java.io.File.separator
+
 class IOSArtifactProvider {
 
     @Inject IOSReleaseConfiguration releaseConf
-    @Inject IOSVariantsConfiguration variantsConf
 
     IOSBuilderInfo builderInfo(IOSVariant v) {
         new IOSBuilderInfo(
@@ -55,12 +55,8 @@ class IOSArtifactProvider {
     private FlowArtifact artifact(String name, IOSBuilderInfo bi, String suffix) {
         new FlowArtifact(
                 name: name,
-                url: new URL(releaseConf.baseURL, "${getFolderPrefix(bi)}/$suffix"),
-                location: new File(releaseConf.otaDir, "${getFolderPrefix(bi)}/$suffix")
+                url: new URL("$releaseConf.releaseUrlVersioned$separator$bi.id$separator$suffix"),
+                location: new File(releaseConf.releaseDir, "$bi.id/$suffix")
         )
-    }
-
-    String getFolderPrefix(IOSBuilderInfo bi) {
-        "$releaseConf.projectDirName/$variantsConf.mainVariant.fullVersionString/$bi.id"
     }
 }

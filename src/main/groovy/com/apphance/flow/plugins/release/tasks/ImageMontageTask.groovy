@@ -21,6 +21,7 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
+import static java.io.File.separator
 import static org.imgscalr.Scalr.pad
 
 @Mixin(ImageNameFilter)
@@ -48,7 +49,7 @@ class ImageMontageTask extends DefaultTask {
 
         releaseConf.imageMontageFile = new FlowArtifact(
                 name: 'Image Montage',
-                url: new URL(releaseConf.baseURL, "${releaseConf.projectDirName}/${conf.fullVersionString}/${imageMontageFile.name}"),
+                url: new URL("$releaseConf.releaseUrlVersioned$separator$imageMontageFile.name"),
                 location: imageMontageFile)
     }
 
@@ -67,7 +68,7 @@ class ImageMontageTask extends DefaultTask {
 
     @PackageScope
     File outputMontageFile() {
-        def imageMontageFile = new File(releaseConf.targetDir, "${conf.projectName.value}-${conf.fullVersionString}-image-montage.png")
+        def imageMontageFile = new File(releaseConf.releaseDir, "${conf.projectName.value}-${conf.fullVersionString}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
         imageMontageFile
@@ -78,7 +79,6 @@ class ImageMontageTask extends DefaultTask {
         List<File> filesToMontage = []
 
         rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL, excludeFilter: EXCLUDE_FILTER]) { File file ->
-            //FIXME apply better filter
             if (isValid(rootDir, file) && [conf.tmpDir, releaseConf.otaDir]*.name.every { !file.absolutePath.contains(it) }) {
                 filesToMontage << file
             }

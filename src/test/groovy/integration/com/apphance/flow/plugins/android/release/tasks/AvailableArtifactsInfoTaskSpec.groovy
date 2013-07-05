@@ -33,7 +33,6 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
     def fullVersionString = '1.0.1_42'
     def mainVariant = 'MainVariant'
 
-    def otaFolderPrefix
     def releaseConf = new AndroidReleaseConfiguration()
     def variantsConf
 
@@ -60,7 +59,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         conf.reader = reader
 
         releaseConf.conf = conf
-        releaseConf.projectURL = new URLProperty(value: projectUrl)
+        releaseConf.releaseUrl = new URLProperty(value: projectUrl)
         releaseConf.iconFile = new FileProperty(value: 'res/drawable-hdpi/icon.png')
         releaseConf.reader = reader
 
@@ -80,8 +79,6 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                 }
         ]
         variantsConf.mainVariant >> mainVariant
-
-        otaFolderPrefix = "${releaseConf.projectDirName}/${conf.fullVersionString}"
 
         def artifactBuilder = new AndroidArtifactProvider(conf: conf, releaseConf: releaseConf)
 
@@ -121,7 +118,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
     def 'index.html is generated and validated'() {
         when:
         task.buildAPKArtifacts()
-        task.otaIndexFileArtifact(otaFolderPrefix)
+        task.otaIndexFileArtifact()
         task.prepareOTAIndexFile()
 
         then:
@@ -167,7 +164,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
 
         when:
         task.buildAPKArtifacts()
-        task.fileIndexArtifact(otaFolderPrefix)
+        task.fileIndexArtifact()
         task.prepareFileIndexFile()
 
         then:
@@ -209,7 +206,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
 
         when:
         task.buildAPKArtifacts()
-        task.plainFileIndexArtifact(otaFolderPrefix)
+        task.plainFileIndexArtifact()
         task.preparePlainFileIndexFile()
 
         then:

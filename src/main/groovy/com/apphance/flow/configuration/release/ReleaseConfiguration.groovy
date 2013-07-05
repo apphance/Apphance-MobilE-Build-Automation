@@ -9,6 +9,7 @@ import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.env.Environment
 import com.apphance.flow.plugins.release.FlowArtifact
+import groovy.transform.PackageScope
 import org.gradle.api.GradleException
 
 import javax.imageio.ImageIO
@@ -18,6 +19,7 @@ import java.util.regex.Pattern
 
 import static com.apphance.flow.env.Environment.JENKINS
 import static com.apphance.flow.util.file.FileManager.relativeTo
+import static java.io.File.separator
 import static org.apache.commons.lang.StringUtils.isBlank
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
@@ -73,6 +75,35 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
         new SimpleDateFormat("dd-MM-yyyy HH:mm zzz", locale).format(new Date())
     }
 
+    def releaseUrl = new URLProperty(
+            name: 'release.url',
+            message: 'Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as ' +
+                    'subdirectory of ota dir when artifacts are created locally.',
+            required: { true },
+            validator: {
+                try {
+                    (it as String).toURL()
+                    return true
+                } catch (Exception e) { return false }
+            },
+            validationMessage: "Should be a valid URL"
+    )
+
+    URL getReleaseUrlVersioned() {
+        new URL("$releaseUrl.value$separator$conf.fullVersionString")
+    }
+
+    @PackageScope
+    String getReleaseDirName() {
+        def url = releaseUrl.value
+        def split = url.path.split('/')
+        split[-1]
+    }
+
+    File getReleaseDir() {
+        new File(otaDir, "$releaseDirName$separator$conf.fullVersionString")
+    }
+
     File getOtaDir() {
         new File(conf.rootDir, OTA_DIR)
     }
@@ -93,33 +124,6 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     abstract File defaultIcon()
 
     abstract List<String> possibleIcons()
-
-    def projectURL = new URLProperty(
-            name: 'release.url',
-            message: 'Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as ' +
-                    'subdirectory of ota dir when artifacts are created locally.',
-            required: { true },
-            validator: {
-                try {
-                    (it as String).toURL()
-                    return true
-                } catch (Exception e) { return false }
-            },
-            validationMessage: "Should be a valid URL"
-
-    )
-
-    String getProjectDirName() {
-        def url = projectURL.value
-        def split = url.path.split('/')
-        split[-1]
-    }
-
-    URL getBaseURL() {
-        def url = projectURL.value
-        def split = url.path.split('/')
-        new URL(url.protocol, url.host, url.port, (split[0..-2]).join('/') + '/')
-    }
 
     def language = new StringProperty(
             name: 'release.language',
@@ -173,14 +177,6 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             message: 'Mail server'
     )
 
-    File getTargetDir() {
-        new File(new File(otaDir, projectDirName), conf.fullVersionString)
-    }
-
-    URL getVersionedApplicationUrl() {
-        new URL(baseURL, "${projectDirName}/${conf.fullVersionString}/")
-    }
-
     boolean isEnabled() {
         enabledInternal && conf.isEnabled()
     }
@@ -216,8 +212,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     @Override
     void checkProperties() {
-
-        check !checkException { baseURL }, "Property '${projectURL.name}' is not valid! Should be valid URL address!"
+        check !checkException { releaseDirName }, "Property '${releaseUrl.name}' is not valid! Should end with folder name where files are copied!"
         check language.validator(language.value), "Property '${language.name}' is not valid! Should be two letter lowercase!"
         check country.validator(country.value), "Property '${country.name}' is not valid! Should be two letter uppercase!"
         check releaseMailFrom.validator(releaseMailFrom.value), "Property '${releaseMailFrom.name}' is not valid! Should be valid " +
@@ -250,4 +245,3 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
            |It should be valid email address!""".stripMargin()
     }
 }
-

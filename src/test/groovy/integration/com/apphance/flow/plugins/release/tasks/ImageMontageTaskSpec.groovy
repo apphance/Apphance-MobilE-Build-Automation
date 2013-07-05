@@ -36,7 +36,7 @@ class ImageMontageTaskSpec extends Specification {
 
         def testDir = Files.createTempDir()
         testDir.deleteOnExit()
-        releaseConf.getTargetDir() >> testDir
+        releaseConf.getReleaseDir() >> testDir
         releaseConf.otaDir >> new File(OTA_DIR)
         conf.getProjectName() >> new StringProperty(value: 'testProjectName')
         conf.getVersionString() >> 'vs'

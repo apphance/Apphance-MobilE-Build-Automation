@@ -30,7 +30,6 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
     def projectUrl = "http://ota.polidea.pl/$projectName".toURL()
     def fullVersionString = '1.0_32'
 
-    def otaFolderPrefix
     def releaseConf = new IOSReleaseConfiguration()
     def variantsConf
 
@@ -56,7 +55,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         conf.reader = reader
 
         releaseConf.conf = conf
-        releaseConf.projectURL = new URLProperty(value: projectUrl)
+        releaseConf.releaseUrl = new URLProperty(value: projectUrl)
         releaseConf.iconFile = new FileProperty(value: 'icon_retina.png')
         releaseConf.releaseMailFlags = new ListStringProperty(value: ALL_EMAIL_FLAGS)
         releaseConf.manifestFiles = [
@@ -89,9 +88,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         variantsConf.mainVariant >> variants[0]
         conf.variantsConf = variantsConf
 
-        otaFolderPrefix = "${releaseConf.projectDirName}/${conf.fullVersionString}"
-
-        def artifactProvider = new IOSArtifactProvider(releaseConf: releaseConf, variantsConf: variantsConf)
+        def artifactProvider = new IOSArtifactProvider(releaseConf: releaseConf)
 
         task.mpParser = GroovyMock(MobileProvisionParser) {
             udids(_) >> ['a', 'b']
@@ -130,7 +127,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
 
     def 'index.html is generated and validated'() {
         when:
-        task.otaIndexFileArtifact(otaFolderPrefix)
+        task.otaIndexFileArtifact()
         task.prepareOTAIndexFile()
 
         then:
@@ -226,7 +223,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         ]
 
         when:
-        task.fileIndexArtifact(otaFolderPrefix)
+        task.fileIndexArtifact()
         task.prepareFileIndexFile(['MainVariant': ['a', 'b'], 'Variant2': ['c', 'd']])
 
         then:
@@ -358,7 +355,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         ]
 
         when:
-        task.plainFileIndexArtifact(otaFolderPrefix)
+        task.plainFileIndexArtifact()
         task.preparePlainFileIndexFile()
 
         then:

@@ -17,17 +17,12 @@ class ReleaseConfigurationSpec extends Specification {
     def releaseConf = GroovySpy(ReleaseConfiguration)
 
     def setup() {
-        releaseConf.projectURL.value = 'http://ota.polidea.pl/SATGuruAndroid-32DRDK64'
-    }
-
-    def 'base url is correct'() {
-        expect:
-        'http://ota.polidea.pl/'.toURL() == releaseConf.baseURL
+        releaseConf.releaseUrl.value = 'http://ota.polidea.pl/SATGuruAndroid-32DRDK64'
     }
 
     def 'project dir name is correct'() {
         expect:
-        'SATGuruAndroid-32DRDK64' == releaseConf.projectDirName
+        'SATGuruAndroid-32DRDK64' == releaseConf.releaseDirName
     }
 
     def 'locale is set correct'() {
@@ -158,7 +153,7 @@ class ReleaseConfigurationSpec extends Specification {
         fields.size() > 0
 
         and:
-        fields*.name.containsAll('iconFile', 'projectURL')
+        fields*.name.containsAll('iconFile', 'releaseUrl')
     }
 
 
