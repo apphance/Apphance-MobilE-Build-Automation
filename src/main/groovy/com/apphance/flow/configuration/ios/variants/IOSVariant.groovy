@@ -21,11 +21,13 @@ import static com.apphance.flow.configuration.ProjectConfiguration.BUILD_DIR
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
 import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
+import static com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask.getWHITESPACE_PATTERN
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
 import static java.io.File.separator
 import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotBlank
+import static org.apache.commons.lang.StringUtils.isNotEmpty
 
 class IOSVariant extends AbstractVariant {
 
@@ -217,10 +219,11 @@ class IOSVariant extends AbstractVariant {
     @Override
     void checkProperties() {
         super.checkProperties()
-        //TODO validate ext only
-        //TODO rest of the validation in ArchiveVariantTask
-        //check versionCode.matches('[0-9]+'), format(bundle.getString('exception.ios.version.code'), plist.absolutePath)
-        //check((isNotEmpty(versionString) && !WHITESPACE_PATTERN.matcher(versionString).find()),
-//                format(bundle.getString('exception.ios.version.string'), plist.absolutePath))
+        def ec = conf.extVersionCode
+        if (ec)
+            check ec.matches('[0-9]+'), bundle.getString('exception.ios.version.code.ext')
+        def es = conf.extVersionString
+        if (es)
+            check((isNotEmpty(es) && !WHITESPACE_PATTERN.matcher(es).find()), bundle.getString('exception.ios.version.string.ext'))
     }
 }

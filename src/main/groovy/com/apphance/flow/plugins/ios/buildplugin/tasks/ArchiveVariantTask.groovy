@@ -28,8 +28,8 @@ class ArchiveVariantTask extends AbstractBuildVariantTask {
         def output = executor.archiveVariant(variant.tmpDir, variant.archiveCmd)
         def archiveFile = findArchiveFile(output)
 
-        logger.info("Archive file found: $archiveFile.absolutePath")
-        checkArgument(archiveFile != null && archiveFile.exists(), "Impossible to find archive file: ${archiveFile?.absolutePath}")
+        logger.info("Archive file found: ${archiveFile?.absolutePath}")
+        checkArgument(archiveFile != null && archiveFile.exists(), "Impossible to find archive file: ${archiveFile?.absolutePath}, for variant: $variant.name")
 
         if (releaseConf.enabled) {
             def bi = artifactProvider.builderInfo(variant)
