@@ -51,16 +51,18 @@ class ImageMontageTask extends DefaultTask {
                 name: 'Image Montage',
                 url: new URL("$releaseConf.releaseUrlVersioned$separator$imageMontageFile.name"),
                 location: imageMontageFile)
+
+        logger.lifecycle "Created image montage $imageMontageFile.absolutePath"
     }
 
     @PackageScope
-    void addDescription(File image, String description) {
+    void addDescription(File image, String description, int x = 10, int y = 10) {
         BufferedImage img = ImageIO.read(image)
 
         Graphics2D graphics = img.createGraphics();
         graphics.setPaint(Color.BLACK);
         graphics.setFont(new Font("Monospaced", Font.BOLD, DESCRIPTION_FONT_SIZE));
-        graphics.drawString(description, 10, 10);
+        graphics.drawString(description, x, y);
         graphics.dispose();
 
         ImageIO.write(img, "png", image)
@@ -91,6 +93,12 @@ class ImageMontageTask extends DefaultTask {
         Collection<Image> images = resizeImages(inputs)
         logger.info "${images.size()} images"
 
+        if (images.size() == 0) {
+            logger.lifecycle "No images found in project"
+            createEmptyImage(ouput, "No images found in project", 10, 50)
+            return
+        }
+
         def processors = images.collect { new ColorProcessor(it) }
 
         ImageStack imageStack = new ImageStack(TILE_PX_SIZE, TILE_PX_SIZE)
@@ -102,6 +110,16 @@ class ImageMontageTask extends DefaultTask {
 
         ImagePlus montage = new MontageMaker().makeMontage2(imgPlus, columns, rows, getScale(images.size()), 1, images.size(), 1, 0, false)
         ImageIO.write(montage.bufferedImage, "png", ouput);
+    }
+
+    private void createEmptyImage(File ouput, String description, int x, int y) {
+        BufferedImage img = new BufferedImage(600, 100, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics2D = img.createGraphics();
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.fillRect(0, 0, img.getWidth(), img.getHeight());
+        graphics2D.dispose();
+        ImageIO.write(img, "png", ouput);
+        addDescription(ouput, description, x, y)
     }
 
     private double getScale(int size) {

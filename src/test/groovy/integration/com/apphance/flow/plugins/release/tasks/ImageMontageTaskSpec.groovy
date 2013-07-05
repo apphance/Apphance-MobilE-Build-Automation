@@ -5,6 +5,7 @@ import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
+import com.apphance.flow.util.FlowUtils
 import com.google.common.io.Files
 import ij.ImagePlus
 import org.gradle.api.Project
@@ -20,7 +21,7 @@ import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFil
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
 
-@Mixin(TestUtils)
+@Mixin([TestUtils, FlowUtils])
 class ImageMontageTaskSpec extends Specification {
 
     def imageMontageTask = create ImageMontageTask
@@ -129,6 +130,17 @@ class ImageMontageTaskSpec extends Specification {
 
         where:
         file << ['jpg', 'jpeg', 'gif', 'png', 'raw', 'bmp']
+    }
+
+    def 'create montage when no images'() {
+        given:
+        def output = tempFile
+
+        when:
+        imageMontageTask.createMontage(output, [])
+
+        then:
+        ImageIO.read(output)
     }
 
     @Ignore('This test should be run and verified manually')
