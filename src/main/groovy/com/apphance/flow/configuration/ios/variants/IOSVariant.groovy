@@ -20,6 +20,7 @@ import static com.apphance.flow.configuration.ProjectConfiguration.BUILD_DIR
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
 import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
+import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.LAUNCH_ACTION
 import static com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask.getWHITESPACE_PATTERN
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
@@ -180,7 +181,7 @@ class IOSVariant extends AbstractVariant {
     }()
 
     File getPlist() {
-        String confName = schemeParser.configurationName(schemeFile)
+        String confName = schemeParser.configuration(schemeFile, LAUNCH_ACTION)
         String blueprintId = schemeParser.blueprintIdentifier(schemeFile)
         new File(tmpDir, pbxJsonParser.plistForScheme(variantPbx, confName, blueprintId))
     }
@@ -190,7 +191,7 @@ class IOSVariant extends AbstractVariant {
     }
 
     String getConfiguration() {
-        schemeParser.configurationName(schemeFile)
+        schemeParser.configuration(schemeFile, LAUNCH_ACTION)
     }
 
     List<String> getBuildCmd() {

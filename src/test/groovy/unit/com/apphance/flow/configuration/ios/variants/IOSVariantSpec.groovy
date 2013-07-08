@@ -118,7 +118,7 @@ class IOSVariantSpec extends Specification {
 
         and:
         def schemeParser = GroovyStub(XCSchemeParser) {
-            configurationName(_) >> 'c1'
+            configuration(_, _) >> 'c1'
         }
 
         and:

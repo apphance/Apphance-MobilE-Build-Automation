@@ -5,6 +5,8 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
+import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.LAUNCH_ACTION
 import static com.google.common.io.Files.copy
 import static com.google.common.io.Files.createTempDir
 
@@ -15,9 +17,14 @@ class XCSchemeParserSpec extends Specification {
 
     def parser = new XCSchemeParser()
 
-    def 'configuration for scheme is read correctly'() {
+    def 'configuration for scheme is read and action correctly'() {
         expect:
-        parser.configurationName(schemeFile) == 'BasicConfiguration'
+        parser.configuration(schemeFile, LAUNCH_ACTION) == 'BasicConfiguration'
+
+        where:
+        action         | conf
+        LAUNCH_ACTION  | 'BasicConfiguration'
+        ARCHIVE_ACTION | 'Release'
     }
 
     def 'blueprintIdentifier for scheme is read correctly'() {
@@ -25,17 +32,12 @@ class XCSchemeParserSpec extends Specification {
         'D382B71014703FE500E9CC9B' == parser.blueprintIdentifier(schemeFile)
     }
 
-    def 'buildableName for scheme is read correctly'() {
-        expect:
-        parser.buildableName(schemeFile) == 'GradleXCode.app'
-    }
-
     def 'exception is thrown when no scheme file exists'() {
         given:
         def schemeFile = new File('random')
 
         when:
-        parser.configurationName(schemeFile)
+        parser.configuration(schemeFile, null)
 
         then:
         def e = thrown(GradleException)
