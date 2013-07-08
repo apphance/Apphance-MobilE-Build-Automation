@@ -5,6 +5,7 @@ import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import java.nio.file.Files
@@ -64,6 +65,7 @@ class ArchiveVariantTaskSpec extends Specification {
         tmpFile.delete()
     }
 
+    @Ignore
     def 'executor runs archive command and no archive found'() {
         given:
         def variant = GroovySpy(IOSVariant) {

@@ -208,11 +208,10 @@ class IOSVariant extends AbstractVariant {
     }
 
     List<String> getArchiveCmd() {
-        //TODO remove build after building artifacts done
         conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + [buildDirCmd] + ['clean', 'build', 'archive']
     }
 
-    File getSchemeFile() {
+    private File getSchemeFile() {
         new File("$tmpDir$separator$conf.xcodeDir.value", "xcshareddata${separator}xcschemes$separator${name}.xcscheme")
     }
 
