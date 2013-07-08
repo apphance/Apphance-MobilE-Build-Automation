@@ -5,7 +5,6 @@ import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
-import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.configuration.variants.AbstractVariant
 import com.apphance.flow.executor.IOSExecutor
@@ -51,7 +50,6 @@ class IOSVariant extends AbstractVariant {
 
         mobileprovision.name = "ios.variant.${name}.mobileprovision"
         mode.name = "ios.variant.${name}.mode"
-        bundleId.name = "ios.variant.${name}.bundleId"
 
         super.init()
     }
@@ -94,12 +92,8 @@ class IOSVariant extends AbstractVariant {
         IOSBuildMode.values()*.name() as List<String>
     }
 
-    def bundleId = new StringProperty(
-            message: "Bundle ID for variant defined. If present will be replaced during build process",
-    )
-
-    String getEffectiveBundleId() {
-        bundleId.value ?: plistParser.evaluate(plistParser.bundleId(plist), target, configuration) ?: ''
+    String getBundleId() {
+        plistParser.evaluate(plistParser.bundleId(plist), target, configuration) ?: ''
     }
 
     @Override

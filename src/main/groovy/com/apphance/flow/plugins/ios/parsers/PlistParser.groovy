@@ -57,17 +57,6 @@ class PlistParser {
         new JsonSlurper().parseText(text)
     }
 
-    void replaceBundledId(File plist, String oldBundleId, String newBundleId) {
-        logger.info("Replacing oldBundleId ($oldBundleId) with newBundleId ($newBundleId) in file: ${plist.absolutePath}")
-        def xml = new XmlSlurper().parse(plist)
-        def keyNode = xml.dict.key.find { it.text() == 'CFBundleIdentifier' }
-        def valueNode = nextNode(keyNode)
-        def value = valueNode.text()
-        String newResult = newBundleId + value.substring(oldBundleId.length())
-        valueNode.replaceBody(newResult)
-        plist.text = XmlUtil.serialize(xml)
-    }
-
     void replaceVersion(File plist, String versionCode, String versionString) {
         def xml = new XmlSlurper().parse(plist)
 

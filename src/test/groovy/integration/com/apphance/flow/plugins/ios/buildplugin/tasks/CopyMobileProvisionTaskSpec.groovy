@@ -31,7 +31,7 @@ class CopyMobileProvisionTaskSpec extends Specification {
                     GroovyStub(IOSVariant) {
                         getName() >> 'SampleVariant'
                         getMobileprovision() >> new FileProperty(value: mobileprovisionFile)
-                        getEffectiveBundleId() >> 'MT2B94Q7N6.com.apphance.flow'
+                        getBundleId() >> 'MT2B94Q7N6.com.apphance.flow'
                     }
             ]
         })
@@ -64,7 +64,7 @@ class CopyMobileProvisionTaskSpec extends Specification {
                     GroovyStub(IOSVariant) {
                         getName() >> 'SampleVariant'
                         getMobileprovision() >> new FileProperty(value: mobileprovisionFile)
-                        getEffectiveBundleId() >> 'MT2B94Q7N6.com.apphance.amebaa'
+                        getBundleId() >> 'MT2B94Q7N6.com.apphance.amebaa'
                     }
             ]
         })

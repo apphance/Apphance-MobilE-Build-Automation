@@ -35,8 +35,8 @@ class CopyMobileProvisionTask extends DefaultTask {
     }
 
     private void validateBundleId(IOSVariant v, File mobileprovision) {
-        validate(v.effectiveBundleId == mpParser.bundleId(mobileprovision), {
-            throw new GradleException("""|Bundle Id from variant: ${v.name} (${v.effectiveBundleId})
+        validate(v.bundleId == mpParser.bundleId(mobileprovision), {
+            throw new GradleException("""|Bundle Id from variant: ${v.name} (${v.bundleId})
                                          |and from mobile provision file: ${mobileprovision.absolutePath}
                                          |(${mpParser.bundleId(mobileprovision)}) do not match!""".stripMargin())
         })
