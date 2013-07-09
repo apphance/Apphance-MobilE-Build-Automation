@@ -13,13 +13,15 @@ import static com.google.common.io.Files.createTempDir
 class XCSchemeParserSpec extends Specification {
 
     @Shared
-    def schemeFile = new File(getClass().getResource('GradleXCode.xcscheme').toURI())
+    def scheme1 = new File(getClass().getResource('GradleXCode.xcscheme').toURI())
+    @Shared
+    def scheme2 = new File(getClass().getResource('GradleXCode2.xcscheme').toURI())
 
     def parser = new XCSchemeParser()
 
     def 'configuration for scheme is read and action correctly'() {
         expect:
-        parser.configuration(schemeFile, LAUNCH_ACTION) == 'BasicConfiguration'
+        parser.configuration(scheme1, LAUNCH_ACTION) == 'BasicConfiguration'
 
         where:
         action         | conf
@@ -29,7 +31,7 @@ class XCSchemeParserSpec extends Specification {
 
     def 'blueprintIdentifier for scheme is read correctly'() {
         expect:
-        'D382B71014703FE500E9CC9B' == parser.blueprintIdentifier(schemeFile)
+        'D382B71014703FE500E9CC9B' == parser.blueprintIdentifier(scheme1)
     }
 
     def 'exception is thrown when no scheme file exists'() {
@@ -50,9 +52,9 @@ class XCSchemeParserSpec extends Specification {
         parser.isBuildable(scheme) == buildable
 
         where:
-        scheme                                                            | buildable
-        schemeFile                                                        | true
-        new File(getClass().getResource('GradleXCode2.xcscheme').toURI()) | false
+        scheme  | buildable
+        scheme1 | true
+        scheme2 | false
     }
 
     @Unroll
@@ -80,5 +82,16 @@ class XCSchemeParserSpec extends Specification {
         filename       | actions
         'GradleXCode'  | 1
         'GradleXCode2' | 2
+    }
+
+    @Unroll
+    def 'scheme (#scheme) is recognized as having single target'() {
+        expect:
+        parser.hasSingleBuildableTarget(scheme) == hasSingleTarget
+
+        where:
+        scheme  | hasSingleBuildableTarget
+        scheme1 | true
+        scheme2 | false
     }
 }

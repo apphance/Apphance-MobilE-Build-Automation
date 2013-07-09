@@ -20,6 +20,20 @@
                ReferencedContainer = "container:GradleXCode.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+             buildForTesting = "YES"
+             buildForRunning = "YES"
+             buildForProfiling = "YES"
+             buildForArchiving = "YES"
+             buildForAnalyzing = "YES">
+             <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "D382B71014703FE500E9CC9B"
+                BuildableName = "GradleXCode.app"
+                BlueprintName = "GradleXCode"
+                ReferencedContainer = "container:GradleXCode.xcodeproj">
+             </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

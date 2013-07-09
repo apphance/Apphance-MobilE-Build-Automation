@@ -21,6 +21,11 @@ class XCSchemeParser {
         xml."$action.xmlNodeName".@buildConfiguration.text()
     }
 
+    boolean hasSingleBuildableTarget(File scheme) {
+        def xml = parseSchemeFile(scheme)
+        xml.BuildAction.BuildActionEntries.children().size() == 1
+    }
+
     boolean isBuildable(File scheme) {
         def xml
         try { xml = parseSchemeFile(scheme) } catch (e) { return false }
@@ -29,8 +34,7 @@ class XCSchemeParser {
 
     String blueprintIdentifier(File scheme) {
         def xml = parseSchemeFile(scheme)
-        def blueprintIdentifier = xml.LaunchAction.BuildableProductRunnable.BuildableReference.@BlueprintIdentifier
-        blueprintIdentifier
+        xml.LaunchAction.BuildableProductRunnable.BuildableReference.@BlueprintIdentifier
     }
 
     void addPostArchiveAction(File scheme) {
