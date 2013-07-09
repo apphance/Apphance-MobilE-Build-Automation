@@ -33,9 +33,14 @@ class XCSchemeParser {
     }
 
     String blueprintIdentifier(File scheme) {
+        blueprintIdentifierC.call(scheme)
+    }
+
+    @Lazy
+    private Closure<String> blueprintIdentifierC = { File scheme ->
         def xml = parseSchemeFile(scheme)
         xml.LaunchAction.BuildableProductRunnable.BuildableReference.@BlueprintIdentifier
-    }
+    }.memoize()
 
     void addPostArchiveAction(File scheme) {
         def xml = parseSchemeFile(scheme)
