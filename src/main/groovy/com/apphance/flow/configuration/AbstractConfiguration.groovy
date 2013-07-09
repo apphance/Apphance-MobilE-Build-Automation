@@ -93,7 +93,7 @@ abstract class AbstractConfiguration {
         return true
     }
 
-    String getMessage() {
+    String explainDisabled() {
         ""
     }
 

@@ -67,7 +67,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
     }
 
     @Override
-    String getMessage() {
+    String explainDisabled() {
         "To enable configuration you need to provide mobile provision file somewhere in project directory.\n" +
                 "File must match *.mobileprovision. Can be placed anywhere in project source."
     }

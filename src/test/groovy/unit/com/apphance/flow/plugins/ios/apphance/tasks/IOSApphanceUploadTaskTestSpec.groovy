@@ -46,7 +46,7 @@ class IOSApphanceUploadTaskTestSpec extends Specification {
         e.message == message
 
         where:
-        user   | pass   | message
+        user   | pass   | explainDisabled
         null   | null   | "Impossible to find user name for apphance.com! Define it in flow.properties configuration file or 'apphance.user' system property or 'APPHANCE_USER' environment variable!"
         'user' | null   | "Impossible to find password for apphance.com! Define it in flow.properties configuration file or 'apphance.pass' system property or 'APPHANCE_PASS' environment variable!"
         'user' | 'pass' | 'Impossible to find apphance key for variant: Variant1. Define it in appropriate section of flow.properties file!'

@@ -1,6 +1,5 @@
 package com.apphance.flow.plugins.ios.release
 
-import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.jython.JythonExecutor
 import com.apphance.flow.plugins.ios.builder.IOSArtifactProvider
@@ -20,7 +19,6 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
     @Inject IOSArtifactProvider artifactProvider
     @Inject org.gradle.api.AntBuilder ant
-    @Inject IOSExecutor iosExecutor
     @Inject PlistParser plistParser
 
     void buildArtifacts(IOSBuilderInfo bi) {
@@ -81,7 +79,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         releaseConf.ipaFiles.put(bi.id, aa)
         aa.location.parentFile.mkdirs()
         aa.location.delete()
-        def app = bi.buildDir.listFiles().find { it.name == iosExecutor.buildSettings(bi.target, bi.configuration)['FULL_PRODUCT_NAME'] }
+        def app = bi.buildDir.listFiles().find { it.name == bi.buildableName }
         def cmd = [
                 '/usr/bin/xcrun',
                 '-sdk',

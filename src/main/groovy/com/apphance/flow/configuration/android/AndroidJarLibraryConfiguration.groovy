@@ -42,13 +42,13 @@ class AndroidJarLibraryConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    String getMessage() {
+    String explainDisabled() {
         "'$configurationName' cannot be enabled because '${releaseConf.configurationName}' is enabled and those plugins are mutually exclusive.\n"
     }
 
     @Override
     void checkProperties() {
         check resourcePrefix.validator(resourcePrefix.value), "Property ${resourcePrefix.name} is not valid! Can not create '${new File(androidConf.tmpDir, "${resourcePrefix.value}-res")}' directory"
-        check !releaseConf.enabled, message
+        check !releaseConf.enabled, explainDisabled()
     }
 }

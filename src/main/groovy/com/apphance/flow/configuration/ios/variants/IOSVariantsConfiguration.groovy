@@ -9,7 +9,7 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static org.apache.commons.lang.StringUtils.isNotBlank
+import static java.io.File.separator
 
 @Singleton
 class IOSVariantsConfiguration extends AbstractConfiguration {
@@ -40,14 +40,10 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     @PackageScope
     List<String> possibleVariants = {
         if (hasSchemes)
-            return conf.schemes.findAll { isNotBlank(it) && schemeParser.isBuildable(it) }
+            return schemeFiles.findAll {
+                schemeShared(it) && schemeBuildable(it) && schemeHasSingleBuildableTarget(it)
+            }*.name
         []
-    }()
-
-    @Lazy
-    @PackageScope
-    boolean hasSchemes = {
-        conf.schemes.any { isNotBlank(it) && schemeParser.isBuildable(it) }
     }()
 
     private List<IOSVariant> variantsInternal() {
@@ -78,6 +74,69 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     IOSVariant getMainVariant() {
         variantsInternal()[0]
     }
+
+    @Override
+    boolean canBeEnabled() {
+        hasSchemes
+    }
+
+    @Lazy
+    @PackageScope
+    boolean hasSchemes = {
+        schemesDeclared() && schemesShared() && schemesBuildable() && schemesHasSingleBuildableTarget()
+    }()
+
+    @PackageScope
+    boolean schemesDeclared() {
+        conf.schemes.size() > 0
+    }
+
+    @PackageScope
+    boolean schemesShared() {
+        schemeFiles.any(this.&schemeShared)
+    }
+
+    @PackageScope
+    boolean schemeShared(File scheme) {
+        scheme.exists() && scheme.isFile() && scheme.size() > 0
+    }
+
+    @PackageScope
+    boolean schemesBuildable() {
+        schemeFiles.any(this.&schemeBuildable)
+    }
+
+    @PackageScope
+    boolean schemeBuildable(File scheme) {
+        schemeParser.isBuildable(scheme)
+    }
+
+    @PackageScope
+    boolean schemesHasSingleBuildableTarget() {
+        schemeFiles.any(this.&schemeHasSingleBuildableTarget)
+    }
+
+    @PackageScope
+    boolean schemeHasSingleBuildableTarget(File scheme) {
+        schemeParser.hasSingleBuildableTarget(scheme)
+    }
+
+    @PackageScope
+    @Lazy
+    List<File> schemeFiles = {
+        conf.schemes.collect { name -> schemeFile.call(name) }
+    }()
+
+    @PackageScope
+    Closure<File> schemeFile = { String name ->
+        new File(conf.xcodeDir.value, "xcshareddata${separator}xcschemes$separator${name}.xcscheme")
+    }.memoize()
+
+//        """To enable '${configurationName}' project:
+//           - must have shared schemes
+//           - schemes must be buildable (Executable set in scheme's 'Run Action')
+//           - schemes must have single buildable target
+//        """
 
     @Override
     void checkProperties() {

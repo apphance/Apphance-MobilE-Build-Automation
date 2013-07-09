@@ -11,7 +11,7 @@ import static org.gradle.api.logging.Logging.getLogger
 
 class ConfigurationWizard {
 
-    def log = getLogger(this.class)
+    def logger = getLogger(this.class)
     def static YELLOW = '\033[93m'
     def static END = '\033[0m'
     def static GREEN = '\033[92m'
@@ -40,8 +40,8 @@ class ConfigurationWizard {
             }
         }
 
-        log.info('All configurations resolved')
-        configurations.each { log.info(it.toString()) }
+        logger.info('All configurations resolved')
+        configurations.each { logger.info(it.toString()) }
     }
 
     @PackageScope
@@ -51,7 +51,7 @@ class ConfigurationWizard {
             out.flush()
             conf.enabled = reader.readLine()?.equalsIgnoreCase('y')
         } else {
-            print conf.message
+            print conf.explainDisabled()
             out.flush()
         }
     }
@@ -80,7 +80,6 @@ class ConfigurationWizard {
                 if (!interactiveMode) {
                     throw new GradleException("Cannot set value of property ${ap.name} in non-interacivte mode. No sensible default value")
                 }
-
                 println yellow(ap.failedValidationMessage)
                 out.flush()
             }
@@ -104,7 +103,7 @@ class ConfigurationWizard {
     @PackageScope
     void setPropertyValue(AbstractProperty ap, String input) {
         ap.value = isBlank(input) ? ap.effectiveDefaultValue() : input
-        log.info("Property '${ap.name}' value set to: ${ap.value}")
+        logger.info("Property '${ap.name}' value set to: ${ap.value}")
     }
 
     @PackageScope
