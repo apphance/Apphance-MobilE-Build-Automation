@@ -155,6 +155,10 @@ class IOSVariant extends AbstractVariant {
         "CONFIGURATION_BUILD_DIR=$buildDir.absolutePath"
     }
 
+    private File getBuildDir() {
+        new File(tmpDir, BUILD_DIR)
+    }
+
     String getFullVersionString() {
         "${versionString}_${versionCode}"
     }
@@ -165,14 +169,6 @@ class IOSVariant extends AbstractVariant {
                 """|Cant find 'CFBundleDisplayName' property in file $plist.absolutePath
                    |Is project configured well?""".stripMargin())
         plistParser.evaluate(bundleDisplayName, target, configuration)
-    }
-
-    String getBuildableName() {
-        executor.buildSettings(target, configuration)['FULL_PRODUCT_NAME']
-    }
-
-    File getBuildDir() {
-        new File(tmpDir, BUILD_DIR)
     }
 
     @Lazy
@@ -204,10 +200,10 @@ class IOSVariant extends AbstractVariant {
     }
 
     List<String> getArchiveCmd() {
-        conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + [buildDirCmd] + ['clean', 'build', 'archive']
+        conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + ['clean', 'archive']
     }
 
-    private File getSchemeFile() {
+    File getSchemeFile() {
         new File("$tmpDir$separator$conf.xcodeDir.value", "xcshareddata${separator}xcschemes$separator${name}.xcscheme")
     }
 

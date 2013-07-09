@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkNotNull
@@ -40,12 +41,10 @@ class ArchiveVariantTask extends DefaultTask {
         def archiveOutput = executor.archiveVariant(variant.tmpDir, variant.archiveCmd)
 
         if (releaseConf.enabled) {
-            def archive = findArchiveFile(archiveOutput)
-            logger.info("Found xcarchive file: $archive.absolutePath")
-            checkArgument(archive?.exists() && archive?.isDirectory(), "Xcarchive file: $archive.absolutePath does not exist or is not a directory")
-
             def bi = artifactProvider.builderInfo(variant)
-            bi.archiveDir = archive
+            bi.archiveDir = findArchiveFile(archiveOutput)
+            bi.appName = appName()
+            bi.productName = productName()
 
             switch (bi.mode) {
                 case DEVICE:
@@ -62,6 +61,17 @@ class ArchiveVariantTask extends DefaultTask {
 
     private File findArchiveFile(Iterator<String> compilerOutput) {
         def line = compilerOutput.find { it.contains('FLOW_ARCHIVE_PATH') }
-        line ? new File(line.split('=')[1].trim()) : null
+        def file = line ? new File(line.split('=')[1].trim()) : null
+        logger.info("Found xcarchive file: ${file?.absolutePath}")
+        checkArgument(file?.exists() && file?.isDirectory(), "Xcarchive file: $file.absolutePath does not exist or is not a directory")
+        file
+    }
+
+    private String appName() {
+        executor.buildSettings(variant.target, schemeParser.configuration(variant.schemeFile, ARCHIVE_ACTION))['FULL_PRODUCT_NAME']
+    }
+
+    private String productName() {
+        executor.buildSettings(variant.target, schemeParser.configuration(variant.schemeFile, ARCHIVE_ACTION))['PRODUCT_NAME']
     }
 }

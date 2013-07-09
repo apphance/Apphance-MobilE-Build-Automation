@@ -48,6 +48,13 @@
                         </a>
                     </li>
                     <% } %>
+                    <% if (releaseConf.xcArchiveZipFiles[v.name] != null) { %>
+                    <li>${rb.getString('XCArchive_file')}
+                        <a href="${releaseConf.xcArchiveZipFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                            ${releaseConf.xcArchiveZipFiles[v.name].url}
+                        </a>
+                    </li>
+                    <% } %>
                     <% if (releaseConf.ahSYMDirs[v.name] != null) { %>
                     <li>${rb.getString('ahSym_dir')}
                         <ul>

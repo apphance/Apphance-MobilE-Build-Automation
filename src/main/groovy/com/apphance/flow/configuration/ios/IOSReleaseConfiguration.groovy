@@ -15,6 +15,7 @@ import static groovy.io.FileType.FILES
 class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     Map<String, FlowArtifact> distributionZipFiles = [:]
+    Map<String, FlowArtifact> xcArchiveZipFiles = [:]
     Map<String, FlowArtifact> dSYMZipFiles = [:]
     Map<String, FlowArtifact> ipaFiles = [:]
     Map<String, FlowArtifact> manifestFiles = [:]

@@ -15,17 +15,16 @@ class IOSArtifactProvider {
     IOSBuilderInfo builderInfo(IOSVariant v) {
         new IOSBuilderInfo(
                 id: v.name,
-                buildableName: v.buildableName,
                 target: v.target,
-                configuration: v.configuration,
                 mode: v.mode.value,
-                buildDir: v.buildDir,
-                fullReleaseName: "$v.name-$v.fullVersionString",
                 filePrefix: "$v.name-$v.fullVersionString",
                 mobileprovision: v.mobileprovision.value,
-                plist: v.plist,
                 versionString: v.versionString
         )
+    }
+
+    FlowArtifact xcArchive(IOSBuilderInfo bi) {
+        artifact('XC Archive', bi, "${bi.filePrefix}_xcarchive.zip")
     }
 
     FlowArtifact zipDistribution(IOSBuilderInfo bi) {

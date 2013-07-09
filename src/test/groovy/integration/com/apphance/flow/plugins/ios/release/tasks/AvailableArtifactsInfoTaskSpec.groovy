@@ -205,6 +205,14 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                     getRelativeUrl(_) >> 'Variant2.mobileprovision'
                 }
         ]
+        releaseConf.xcArchiveZipFiles = [
+                'MainVariant': GroovyMock(FlowArtifact) {
+                    getRelativeUrl(_) >> 'MainVariant_xcarchive.zip'
+                },
+                'Variant2': GroovyMock(FlowArtifact) {
+                    getRelativeUrl(_) >> 'Variant2_xcarchive.zip'
+                }
+        ]
         releaseConf.ahSYMDirs = [
                 'MainVariant': GroovyMock(FlowArtifact) {
                     getRelativeUrl(_) >> 'MainVariant.ahsym'
@@ -245,14 +253,14 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         slurper.body.div[1].div[1].section.@id.text() == 'MainConf'
         slurper.body.div[1].div[1].section.header.h3.text() == 'Configuration: MainConf'
         slurper.body.div[1].div[1].section.p.ul.li.a.@href*.text().containsAll(
-                ['MainVariant.dist.zip', 'MainVariant.dsym.zip', 'MainVariant.ipa', 'MainVariant.manifest', 'MainVariant.mobileprovision', '#MainVariant-ahSYM']
+                ['MainVariant.dist.zip', 'MainVariant.dsym.zip', 'MainVariant.ipa', 'MainVariant.manifest', 'MainVariant.mobileprovision', '#MainVariant-ahSYM', 'MainVariant_xcarchive.zip']
         )
 
         slurper.body.div[2].div[0].text() == 'Variant2'
         slurper.body.div[2].div[1].section.@id.text() == 'Conf2'
         slurper.body.div[2].div[1].section.header.h3.text() == 'Configuration: Conf2'
         slurper.body.div[2].div[1].section.p.ul.li.a.@href*.text().containsAll(
-                ['Variant2.dist.zip', 'Variant2.dsym.zip', 'Variant2.ipa', 'Variant2.manifest', 'Variant2.mobileprovision', '#Variant2-ahSYM']
+                ['Variant2.dist.zip', 'Variant2.dsym.zip', 'Variant2.ipa', 'Variant2.manifest', 'Variant2.mobileprovision', '#Variant2-ahSYM', 'Variant2_xcarchive.zip']
         )
 
         slurper.body.div[3].@id.text() == 'MainVariant-ahSYM'
@@ -333,6 +341,16 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                     getUrl() >> 'http://Variant2.mobileprovision'.toURL()
                 }
         ]
+        releaseConf.xcArchiveZipFiles = [
+                'MainVariant': GroovyMock(FlowArtifact) {
+                    getRelativeUrl(_) >> 'MainVariant_xcarchive.zip'
+                    getUrl() >> 'http://MainVariant_xcarchive.zip'.toURL()
+                },
+                'Variant2': GroovyMock(FlowArtifact) {
+                    getRelativeUrl(_) >> 'Variant2_xcarchive.zip'
+                    getUrl() >> 'http://Variant2_xcarchive.zip'.toURL()
+                }
+        ]
         releaseConf.ahSYMDirs = [
                 'MainVariant': GroovyMock(FlowArtifact) {
                     getRelativeUrl(_) >> 'MainVariant.ahsym'
@@ -364,10 +382,10 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         slurper.head.title.text() == 'GradleXCode'
         slurper.body.h1[0].text() == 'GradleXCode'
         slurper.body.ul[0].li[0].ul.li.a*.text()*.trim().containsAll(
-                ['http://MainVariant.dist.zip', 'http://MainVariant.dsym.zip', 'http://MainVariant.ipa', 'http://MainVariant.manifest', 'http://MainVariant.mobileprovision']
+                ['http://MainVariant.dist.zip', 'http://MainVariant.dsym.zip', 'http://MainVariant.ipa', 'http://MainVariant.manifest', 'http://MainVariant.mobileprovision', 'http://MainVariant_xcarchive.zip']
         )
         slurper.body.ul[0].li[1].ul.li.a*.text()*.trim().containsAll(
-                ['http://Variant2.dist.zip', 'http://Variant2.dsym.zip', 'http://Variant2.ipa', 'http://Variant2.manifest', 'http://Variant2.mobileprovision']
+                ['http://Variant2.dist.zip', 'http://Variant2.dsym.zip', 'http://Variant2.ipa', 'http://Variant2.manifest', 'http://Variant2.mobileprovision', 'http://Variant2_xcarchive.zip']
         )
         slurper.body.ul.li.a*.text()*.trim().containsAll([
                 'http://mail_message', 'http://image_montage.png', 'http://qr.png'

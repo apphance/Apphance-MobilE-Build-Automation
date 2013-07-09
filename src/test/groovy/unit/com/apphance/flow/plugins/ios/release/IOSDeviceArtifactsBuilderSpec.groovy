@@ -32,7 +32,7 @@ class IOSDeviceArtifactsBuilderSpec extends Specification {
                     }]
                 },
                 plistParser: GroovyMock(PlistParser) {
-                    evaluate(_, _, _) >> 'com.flow.bundleId'
+                    bundleId(_) >> 'com.flow.bundleId'
                 }
         )
 

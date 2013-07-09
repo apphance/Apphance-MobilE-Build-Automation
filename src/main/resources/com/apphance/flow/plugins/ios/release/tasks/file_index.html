@@ -129,6 +129,13 @@
                                 </a>
                             </li>
                             <% } %>
+                            <% if (releaseConf.xcArchiveZipFiles[v.name] != null) { %>
+                            <li>
+                                <a href="${releaseConf.xcArchiveZipFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                                    <h3>${rb.getString('XCArchive_file')}</h3>
+                                </a>
+                            </li>
+                            <% } %>
                             <% if (releaseConf.ahSYMDirs[v.name] != null) { %>
                             <li>
                                 <a href="#${v.name}-ahSYM" rel="external">

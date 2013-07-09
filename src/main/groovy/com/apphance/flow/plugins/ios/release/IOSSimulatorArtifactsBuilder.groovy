@@ -41,7 +41,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         rsyncTemplatePreservingExecutableFlag(destDir)
         File embedDir = new File(destDir, "Contents/Resources/EmbeddedApp")
         embedDir.mkdirs()
-        File sourceApp = new File(bi.buildDir, "${bi.buildableName}")
+        File sourceApp = new File("$bi.archiveDir${separator}Products${separator}Applications", bi.appName)
         rsyncEmbeddedAppPreservingExecutableFlag(sourceApp, embedDir)
         updateBundleId(bi, destDir)
         resampleIcon(destDir)

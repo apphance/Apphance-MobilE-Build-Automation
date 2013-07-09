@@ -28,7 +28,6 @@ class IOSArtifactProviderSpec extends Specification {
     def setup() {
         builderInfo = GroovyMock(IOSBuilderInfo)
         builderInfo.target >> 'GradleXCode'
-        builderInfo.configuration >> 'BasicConfiguration'
         builderInfo.filePrefix >> 'GradleXCode-BasicConfiguration-1.0.1_42'
         builderInfo.id >> 'VariantName'
 
@@ -41,7 +40,6 @@ class IOSArtifactProviderSpec extends Specification {
             getReleaseUrlVersioned() >> "http://ota.polidea.pl/TestIOSProject/1.0.1_42".toURL()
             getReleaseDir() >> new File(tmpDir, "TestIOSProject/1.0.1_42")
         }
-
     }
 
     def cleanup() {
@@ -54,15 +52,12 @@ class IOSArtifactProviderSpec extends Specification {
         variant.target >> 'GradleXCode'
         variant.configuration >> 'BasicConfiguration'
         variant.tmpDir >> new File(properties['java.io.tmpdir'])
-        variant.buildDir >> new File(properties['java.io.tmpdir'], 'build')
         variant.mobileprovision >> new FileProperty(value: new File('sample.mobileprovision'))
         variant.versionString >> '1.0.1'
         variant.versionCode >> '42'
         variant.fullVersionString >> '1.0.1_42'
-        variant.plist >> new File('GradleXCode-Info.plist')
         variant.mode >> new IOSBuildModeProperty(value: DEVICE)
         variant.name >> 'V1'
-        variant.buildableName >> 'GradleXCode'
 
         and:
         def provider = new IOSArtifactProvider()
@@ -72,15 +67,20 @@ class IOSArtifactProviderSpec extends Specification {
 
         then:
         bi.target == 'GradleXCode'
-        bi.configuration == 'BasicConfiguration'
-        bi.buildDir == new File(properties['java.io.tmpdir'], 'build')
         bi.filePrefix == 'V1-1.0.1_42'
-        bi.fullReleaseName == 'V1-1.0.1_42'
         bi.id == 'V1'
-        bi.plist.name == 'GradleXCode-Info.plist'
         bi.mobileprovision.name == 'sample.mobileprovision'
         bi.mode == DEVICE
-        bi.buildableName == 'GradleXCode'
+    }
+
+    def 'xcarchive zip artifact is built well'() {
+        given:
+        def aa = provider.xcArchive(builderInfo)
+
+        expect:
+        aa.name == 'XC Archive'
+        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-BasicConfiguration-1.0.1_42_xcarchive.zip'
+        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/GradleXCode-BasicConfiguration-1.0.1_42_xcarchive.zip')
     }
 
     def 'zip distribution artifact is built well'() {

@@ -49,6 +49,7 @@ class ExecuteIosBuildsTest {
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32.ipa").exists())
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32.mobileprovision").exists())
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32.zip").exists())
+        assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32_xcarchive.zip").exists())
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32_dSYM.zip").exists())
         assertTrue(new File(testProjectOneVariant, "$path/manifest.plist").exists())
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32_ahSYM").exists())
@@ -63,6 +64,7 @@ class ExecuteIosBuildsTest {
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32.ipa").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32.mobileprovision").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32.zip").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32_xcarchive.zip").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32_dSYM.zip").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/manifest.plist").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32_ahSYM").exists())
@@ -71,16 +73,11 @@ class ExecuteIosBuildsTest {
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32.ipa").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32.mobileprovision").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32.zip").exists())
+        assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32_xcarchive.zip").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32_dSYM.zip").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/manifest.plist").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32_ahSYM").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsWithApphance/GradleXCodeMoreVariantsWithApphance-1.0_32_ahSYM").listFiles().size() > 0)
-    }
-
-    @Test
-    void testBuildAndPrepareMoreVariantsMailMessage() {
-        runGradleMoreVariants('cleanFlow', 'archiveGradleXCodeMoreVariants')
-        assertTrue(new File(testProjectMoreVariants, "flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32.ipa").exists())
     }
 
     @Test
@@ -89,12 +86,6 @@ class ExecuteIosBuildsTest {
         def path = 'flow-ota/ssasdadasdasd/1.0_32'
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsTests/GradleXCodeMoreVariantsTests-1.0_32-iPad-simulator-image.dmg").exists())
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsTests/GradleXCodeMoreVariantsTests-1.0_32-iPhone-simulator-image.dmg").exists())
-    }
-
-    @Test
-    void testBuildAndPrepareOneVariantMailMessage() {
-        runGradleOneVariant('cleanFlow', 'archiveAllDevice')
-        assertTrue(new File(testProjectOneVariant, "flow-ota/GradleXCode/1.0_32/GradleXCode/GradleXCode-1.0_32.ipa").exists())
     }
 
     @Test
