@@ -101,8 +101,8 @@ class IOSExecutor {
         executor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
     }
 
-    def archiveVariant(File dir, List<String> buildCmd) {
-        executor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
+    Iterator<String> archiveVariant(File dir, List<String> archiveCmd) {
+        executor.executeCommand(new Command(runDir: dir, cmd: archiveCmd))
     }
 
     def buildTestVariant(File dir, IOSVariant variant, String outputFilePath) {

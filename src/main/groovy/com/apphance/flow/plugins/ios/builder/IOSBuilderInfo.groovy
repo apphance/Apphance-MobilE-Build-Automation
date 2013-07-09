@@ -14,6 +14,7 @@ class IOSBuilderInfo {
     String buildableName
     IOSBuildMode mode
     File buildDir
+    File archiveDir
     String fullReleaseName
     String filePrefix
     String versionString

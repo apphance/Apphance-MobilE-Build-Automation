@@ -21,6 +21,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     @Inject org.gradle.api.AntBuilder ant
     @Inject PlistParser plistParser
 
+    @Override
     void buildArtifacts(IOSBuilderInfo bi) {
         prepareDistributionZipFile(bi)
         prepareDSYMZipFile(bi)

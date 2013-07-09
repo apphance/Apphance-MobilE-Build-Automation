@@ -11,6 +11,7 @@ import javax.inject.Inject
 import static com.apphance.flow.detection.ProjectType.IOS
 import static com.apphance.flow.util.file.FileManager.*
 import static groovy.io.FileType.DIRECTORIES
+import static java.io.File.separator
 
 @com.google.inject.Singleton
 class IOSConfiguration extends ProjectConfiguration {
@@ -97,6 +98,9 @@ class IOSConfiguration extends ProjectConfiguration {
     List<String> getSchemes() {
         executor.schemes
     }
+
+    @Lazy
+    Collection<String> sourceExcludes = { super.sourceExcludes + ["**${separator}$xcodeDir.value${separator}xcuserdata${separator}**"] }()
 
     @Override
     boolean isEnabled() {

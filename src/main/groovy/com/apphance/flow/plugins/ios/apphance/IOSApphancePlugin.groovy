@@ -26,7 +26,7 @@ class IOSApphancePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        if (apphanceConf.enabled) {
+        if (false) {//TODO
             logger.lifecycle("Applying plugin ${getClass().simpleName}")
 
             variantsConf.variants.each { variant ->

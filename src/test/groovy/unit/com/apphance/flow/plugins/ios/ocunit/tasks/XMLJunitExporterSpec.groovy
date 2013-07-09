@@ -34,7 +34,7 @@ class XMLJunitExporterSpec extends Specification {
             it.@name.text() == 'QWAddCommentMethodExecutor_ExecutingRequest_WhenRequestFailed_ShouldRevertPopularityOfPhoto'
         }
         failedTest.failure
-        failedTest.failure.@explainDisabled.text().contains('QWAddCommentMethodExecutor, executing request, when request failed, should revert popularity of photo')
+        failedTest.failure.@message.text().contains('QWAddCommentMethodExecutor, executing request, when request failed, should revert popularity of photo')
 
         def testQWAddCommentParserSpec = rootTestSuite.testsuite.find { it.@name.text() == 'QWAddCommentParserSpec' }
         testQWAddCommentParserSpec.@failures.text() == '0'

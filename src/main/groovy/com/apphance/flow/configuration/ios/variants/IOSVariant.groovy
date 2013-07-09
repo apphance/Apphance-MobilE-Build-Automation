@@ -112,6 +112,7 @@ class IOSVariant extends AbstractVariant {
 
     @PackageScope
     Collection<String> availableXCodeArchitectures() {
+        //TODO (both configurations)
         executor.buildSettings(target, configuration)['ARCHS'].split(' ')*.trim()
     }
 

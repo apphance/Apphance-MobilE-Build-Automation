@@ -44,7 +44,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildOneVariant() {
-        runGradleOneVariant('archiveAllDevice')
+        runGradleOneVariant('archiveGradleXCode')
         def path = 'flow-ota/GradleXCode/1.0_32/GradleXCode/'
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32.ipa").exists())
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32.mobileprovision").exists())

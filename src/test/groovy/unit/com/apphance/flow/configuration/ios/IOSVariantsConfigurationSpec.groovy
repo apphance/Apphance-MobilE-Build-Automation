@@ -42,61 +42,6 @@ class IOSVariantsConfigurationSpec extends Specification {
         3            | IOSVariant   | ['v1', 'v2', 'v3']
     }
 
-    @Unroll
-    def 'possible variants for class #variantClass'() {
-        given:
-        conf.schemes >> schemes
-
-        expect:
-        variantsConf.possibleVariants.size() == expectedSize
-
-        where:
-        expectedSize | variantClass | schemes
-        3            | IOSVariant   | ['v1', 'v2', 'v3']
-    }
-
-    def 'has schemes'() {
-        given:
-        conf.schemes >> schemes
-
-        when:
-        variantsConf.variantsNames.value.collect {
-            variantsConf.variantFactory.createSchemeVariant(it)
-        }
-
-        then:
-        variantsConf.hasSchemes == hasSchemes
-
-        where:
-        hasSchemes | schemes
-        true       | ['Some', 'SomeWithMonkey']
-        false      | ['', '  ']
-        false      | []
-    }
-
-    def 'has schemes when some are not buildable'() {
-        given:
-        conf.schemes >> [schemeName]
-
-        and:
-        variantsConf.schemeParser = GroovyMock(XCSchemeParser) {
-            isBuildable(schemeName) >> buildable
-        }
-
-        when:
-        variantsConf.variantsNames.value.collect {
-            variantsConf.variantFactory.createSchemeVariant(it)
-        }
-
-        then:
-        variantsConf.hasSchemes == hasSchemes
-
-        where:
-        hasSchemes | schemeName | buildable
-        false      | 'Some'     | false
-        true       | 'Some2'    | true
-    }
-
     def 'variantNames validator works'() {
         given:
         def variantsConf = new IOSVariantsConfiguration()

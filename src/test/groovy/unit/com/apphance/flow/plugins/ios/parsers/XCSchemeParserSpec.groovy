@@ -87,7 +87,7 @@ class XCSchemeParserSpec extends Specification {
     @Unroll
     def 'scheme (#scheme) is recognized as having single target'() {
         expect:
-        parser.hasSingleBuildableTarget(scheme) == hasSingleTarget
+        parser.hasSingleBuildableTarget(scheme) == hasSingleBuildableTarget
 
         where:
         scheme  | hasSingleBuildableTarget

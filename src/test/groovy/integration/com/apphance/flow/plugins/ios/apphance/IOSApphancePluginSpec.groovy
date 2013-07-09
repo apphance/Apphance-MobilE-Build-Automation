@@ -5,6 +5,7 @@ import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.DISABLED
@@ -13,6 +14,7 @@ import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
+@Ignore
 class IOSApphancePluginSpec extends Specification {
 
     def 'no tasks added when no buildable variants exist'() {

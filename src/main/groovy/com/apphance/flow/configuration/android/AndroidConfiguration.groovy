@@ -81,7 +81,7 @@ class AndroidConfiguration extends ProjectConfiguration {
         androidHome ? new File(androidHome) : null
     }
 
-    final Collection<String> sourceExcludes = super.sourceExcludes + ['**/*.class', '**/bin/**']
+    Collection<String> sourceExcludes = super.sourceExcludes + ['**/*.class', '**/bin/**']
 
     private Collection<File> sdkJarLibs = []
 
