@@ -149,7 +149,7 @@ class PluginMasterSpec extends Specification {
             IOSFrameworkPlugin,
             IOSReleasePlugin,
             IOSApphancePlugin,
-            IOSUnitTestPlugin,
+//            IOSUnitTestPlugin,//TODO restore after tests are implemented
     ]
 
     def createInjectorForPluginsMocks(mocks, file, projectType) {
