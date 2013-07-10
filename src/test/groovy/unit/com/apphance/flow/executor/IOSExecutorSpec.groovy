@@ -110,6 +110,11 @@ class IOSExecutorSpec extends Specification {
         xml.join('\n') == mobileprovisionXml
     }
 
+    def 'version is read correctly'() {
+        expect:
+        iosExecutor.version.matches('(\\d+\\.)+\\d+')
+    }
+
     def mobileprovisionXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
             "<plist version=\"1.0\">\n" +

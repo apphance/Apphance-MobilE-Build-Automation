@@ -111,4 +111,16 @@ class IOSExecutor {
                 failOnError: false
         )
     }
+
+    @Lazy
+    String version = {
+        def output = executor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: ['xcodebuild', '-version']
+        ))
+        def line = output.find {
+            it.matches('Xcode\\s+(\\d+\\.)+\\d+')
+        }
+        line ? line.split(' ')[1].trim() : null
+    }()
 }
