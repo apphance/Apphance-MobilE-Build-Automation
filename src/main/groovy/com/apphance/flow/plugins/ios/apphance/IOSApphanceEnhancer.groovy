@@ -100,7 +100,7 @@ class IOSApphanceEnhancer {
     @Lazy
     @PackageScope
     String apphanceLibDependency = {
-        "com.apphance:ios.${apphanceDependencyGroup}.${variant.apphanceDependencyArch()}:${variant.apphanceLibVersion.value}"
+        "com.apphance:ios.${apphanceDependencyGroup}.$variant.apphanceDependencyArch:$variant.apphanceLibVersion.value"
     }()
 
     @Lazy

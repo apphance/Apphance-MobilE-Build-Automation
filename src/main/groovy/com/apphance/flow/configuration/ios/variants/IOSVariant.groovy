@@ -103,19 +103,20 @@ class IOSVariant extends AbstractVariant {
         apphanceArtifactory.iOSLibraries(apphanceMode.value, apphanceDependencyArch())
     }
 
+    @Lazy
     @PackageScope
-    String apphanceDependencyArch() {
-        def xc = availableXCodeArchitectures()
+    String apphanceDependencyArch = {
         def af = apphanceArtifactory.iOSArchs(apphanceMode.value)
-        af.retainAll(xc)
+        af.retainAll(availableXCodeArchitectures)
         af.unique().sort()[-1]
-    }
+    }()
 
+    @Lazy
     @PackageScope
-    Collection<String> availableXCodeArchitectures() {
-        //TODO (both configurations)
-        executor.buildSettings(target, buildConfiguration)['ARCHS'].split(' ')*.trim()
-    }
+    Collection<String> availableXCodeArchitectures = {
+        (executor.buildSettings(target, buildConfiguration)['ARCHS'].split(' ').toList() +
+                executor.buildSettings(target, archiveConfiguration)['ARCHS'].split(' ').toList())*.trim()
+    }()
 
     @Lazy
     boolean apphanceEnabledForVariant = {

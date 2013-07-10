@@ -6,9 +6,7 @@ import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
-import com.apphance.flow.plugins.ios.parsers.PlistParser
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -50,6 +48,7 @@ class IOSVariantSpec extends Specification {
             getApphanceLibVersion() >> new StringProperty(value: '1.8.2')
             getTarget() >> 't'
             getBuildConfiguration() >> 'c'
+            getArchiveConfiguration() >> 'a'
         }
         variant.executor = GroovyMock(IOSExecutor) {
             buildSettings(_, _) >> ['ARCHS': 'armv6 armv7']
@@ -59,56 +58,13 @@ class IOSVariantSpec extends Specification {
         }
 
         expect:
-        variant.apphanceDependencyArch() == expectedDependency
+        variant.apphanceDependencyArch == expectedDependency
 
         where:
         apphanceMode | expectedDependency
         QA           | 'armv7'
         SILENT       | 'armv7'
         PROD         | 'armv7'
-    }
-
-    @Ignore("no validation for now - TODO")
-    def 'validates version code and version string when empty'() {
-        given:
-        def variant = GroovySpy(IOSVariant) {
-            getConf() >> GroovyMock(IOSConfiguration) {
-                getExtVersionCode() >> versionCode
-            }
-            getPlist() >> GroovyMock(File)
-            getTarget() >> ''
-            getBuildConfiguration() >> ''
-        }
-        variant.apphanceConf = GroovyMock(ApphanceConfiguration) {
-            isEnabled() >> false
-        }
-        variant.plistParser = GroovyMock(PlistParser) {
-            evaluate(_, _, _) >> ''
-            versionCode(_) >> ''
-        }
-
-        when:
-        def errors = variant.verify()
-
-        then:
-        noExceptionThrown()
-
-        and:
-        errors.size() == expectedSize
-        verifyErrors.call(errors)
-
-        where:
-        versionCode | expectedSize | verifyErrors
-        ''          | 2            | {
-            it.find { m -> m.contains("Property versionCode must have numerical value!") } && it.find { m ->
-                m.contains("Property versionString must not have whitespace characters!")
-            }
-        }
-        '3145'      | 1            | {
-            it.find { m ->
-                m.contains("Property versionString must not have whitespace characters!")
-            }
-        }
     }
 
     def 'build cmd is constructed correctly'() {

@@ -85,7 +85,7 @@ class IOSApphanceEnhancerSpec extends Specification {
         def enhancer = new IOSApphanceEnhancer(GroovyMock(IOSVariant) {
             getApphanceMode() >> new ApphanceModeProperty(value: apphanceMode)
             getApphanceLibVersion() >> new StringProperty(value: '1.8.2')
-            apphanceDependencyArch() >> 'armv7'
+            getApphanceDependencyArch() >> 'armv7'
         })
 
         expect:
