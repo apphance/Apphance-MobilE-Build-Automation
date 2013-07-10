@@ -26,14 +26,12 @@ class IOSApphancePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        if (false) {//TODO
+        if (apphanceConf.enabled) {
             logger.lifecycle("Applying plugin ${getClass().simpleName}")
 
             variantsConf.variants.each { variant ->
 
                 if (variant.apphanceMode.value in [QA, PROD, SILENT] && variant.mode.value == DEVICE) {
-                    logger.info("Adding apphance for variant '$variant.name'")
-
                     def enhance = { iosApphanceEnhancerFactory.create(variant).enhanceApphance() }
 
                     project.tasks[variant.buildTaskName].doFirst(enhance)

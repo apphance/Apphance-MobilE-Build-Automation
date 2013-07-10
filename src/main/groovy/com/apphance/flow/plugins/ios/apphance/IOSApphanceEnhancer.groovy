@@ -52,8 +52,9 @@ class IOSApphanceEnhancer {
     }
 
     void enhanceApphance() {
+        logger.info("Adding apphance for variant '$variant.name'")
         if (pbxJsonParser.isFrameworkDeclared(variant.variantPbx, APPHANCE_FRAMEWORK_NAME_PATTERN) || findApphanceInPath()) {
-            logger.warn("\n\nApphance framework found for variant: ${variant.name} in dir: ${variant.tmpDir.absolutePath}. Apphance will not be added!!\n\n")
+            logger.warn("\n\nApphance framework found for variant: $variant.name in dir: ${variant.tmpDir.absolutePath}. Apphance will not be added!!\n\n")
         } else {
             apphancePbxEnhancer.addApphanceToPbx()
             apphanceSourceEnhancer.addApphanceToSource()
@@ -82,13 +83,13 @@ class IOSApphanceEnhancer {
 
         addApphanceConfiguration(project, confName)
         project.dependencies {
-            "apphance$variant.name" apphanceLibDependency
+            "$confName" apphanceLibDependency
         }
 
         try {
             downloadApphance(confName, apphanceZip.name)
         } catch (e) {
-            logger.error("Error while resolving dependency: ${apphanceLibDependency}, error: $e.message")
+            logger.error("Error while resolving dependency: $apphanceLibDependency, error: $e.message")
             throw new GradleException(format(bundle.getString('exception.apphance.dependency'), apphanceLibDependency, variant.name))
         }
         unzip(apphanceZip)

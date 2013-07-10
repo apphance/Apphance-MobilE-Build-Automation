@@ -76,7 +76,7 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
                     getApphanceMode() >> new ApphanceModeProperty(value: QA)
                 },
                 GroovyMock(IOSApphancePbxEnhancer) {
-                    getGCCPrefixFilePath() >> 'GradleXCode/GradleXCode-Prefix.pch'
+                    getGCCPrefixFilePaths() >> ['GradleXCode/GradleXCode-Prefix.pch']
                 },
         )
 

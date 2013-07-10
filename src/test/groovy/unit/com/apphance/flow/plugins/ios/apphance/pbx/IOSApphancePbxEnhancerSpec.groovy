@@ -31,27 +31,28 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         def enhancer = new IOSApphancePbxEnhancer(GroovyMock(IOSVariant) {
             getTarget() >> 'GradleXCode'
             getBuildConfiguration() >> 'BasicConfiguration'
+            getArchiveConfiguration() >> 'Release'
         })
-        enhancer.iosExecutor = GroovyMock(IOSExecutor) {
+        enhancer.executor = GroovyMock(IOSExecutor) {
             pbxProjToJSON(_) >> pbxJSON.text.split('\n')
         }
 
         expect:
         enhancer.rootObject.isa == 'PBXProject'
         enhancer.target.name == 'GradleXCode'
-        enhancer.configuration.name == 'BasicConfiguration'
+        enhancer.configurations*.name.sort() == ['BasicConfiguration', 'Release']
         enhancer.frameworksBuildPhase.files.containsAll(
                 'D382B71614703FE500E9CC9B', 'D382B71814703FE500E9CC9B', 'D382B71A14703FE500E9CC9B'
         )
         enhancer.mainGroup.children.containsAll(
                 'D382B71B14703FE500E9CC9B', 'D382B73C14703FE500E9CC9B', 'D382B71414703FE500E9CC9B', 'D382B71214703FE500E9CC9B'
         )
-        enhancer.GCCPrefixFilePath == 'GradleXCode/GradleXCode-Prefix.pch'
+        enhancer.GCCPrefixFilePaths == ['GradleXCode/GradleXCode-Prefix.pch']
         enhancer.filesToReplaceLogs.size() > 0
         enhancer.mainGroupFrameworks.name == 'Frameworks'
     }
 
-    @Ignore('this test hangs in Jenkins ???')
+    @Ignore('This test hangs in Jenkins, INVESTIGATE!!')
     def 'apphance is added to pbx'() {
         given:
         def tmpDir = createTempDir()
@@ -81,14 +82,14 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         def variant = GroovyMock(IOSVariant) {
             getTarget() >> 'GradleXCode'
             getBuildConfiguration() >> 'BasicConfiguration'
+            getArchiveConfiguration() >> 'Release'
             getApphanceMode() >> new ApphanceModeProperty(value: QA)
             getTmpDir() >> tmpDir
-            getVariantPbx() >> GroovyMock(File)
+            getVariantPbx() >> new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj/project.pbxproj')
         }
         and:
         def enhancer = new IOSApphancePbxEnhancer(variant)
-        enhancer.conf = conf
-        enhancer.iosExecutor = executor
+        enhancer.executor = executor
         enhancer.pbxJsonParser = new PbxJsonParser(executor: executor)
 
         and:
@@ -121,14 +122,22 @@ class IOSApphancePbxEnhancerSpec extends Specification {
             it.key in rootObject.targets && it.value.isa == PBX_NATIVE_TARGET && it.value.name == variant.target
         }.value as Map
         def confHashes = json.objects[target.buildConfigurationList].buildConfigurations
-        def configuration = json.objects.find {
+        def buildConfiguration = json.objects.find {
             it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION && it.value.name == variant.buildConfiguration
+        }.value as Map
+        def archiveConfiguration = json.objects.find {
+            it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION && it.value.name == variant.archiveConfiguration
         }.value as Map
 
         and:
-        configuration.buildSettings.OTHER_LDFLAGS == ['-ObjC', '-all_load']
-        configuration.buildSettings.FRAMEWORK_SEARCH_PATHS == ['$(inherited)', '"$(SRCROOT)"']
-        configuration.buildSettings.LIBRARY_SEARCH_PATHS == ['$(inherited)', "\"\$(SRCROOT)/Apphance-Pre-Production.framework\""]
+        buildConfiguration.buildSettings.OTHER_LDFLAGS == ['-ObjC', '-all_load']
+        buildConfiguration.buildSettings.FRAMEWORK_SEARCH_PATHS == ['$(inherited)', '"$(SRCROOT)"']
+        buildConfiguration.buildSettings.LIBRARY_SEARCH_PATHS == ['$(inherited)', "\"\$(SRCROOT)/Apphance-Pre-Production.framework\""]
+
+        and:
+        archiveConfiguration.buildSettings.OTHER_LDFLAGS == ['-ObjC', '-all_load']
+        archiveConfiguration.buildSettings.FRAMEWORK_SEARCH_PATHS == ['$(inherited)', '"$(SRCROOT)"']
+        archiveConfiguration.buildSettings.LIBRARY_SEARCH_PATHS == ['$(inherited)', "\"\$(SRCROOT)/Apphance-Pre-Production.framework\""]
 
         and:
         def frameworks = json.objects.findAll { it.value.isa == PBX_FILE_REFERENCE }*.value.name

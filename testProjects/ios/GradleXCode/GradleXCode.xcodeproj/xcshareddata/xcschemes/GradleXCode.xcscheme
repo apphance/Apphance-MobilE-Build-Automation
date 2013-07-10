@@ -90,7 +90,7 @@
       buildConfiguration = "Debug">
    </AnalyzeAction>
    <ArchiveAction
-      buildConfiguration = "BasicConfiguration"
+      buildConfiguration = "Release"
       revealArchiveInOrganizer = "YES">
       <PostActions>
          <ExecutionAction

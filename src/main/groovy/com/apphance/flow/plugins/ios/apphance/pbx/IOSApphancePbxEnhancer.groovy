@@ -1,6 +1,5 @@
 package com.apphance.flow.plugins.ios.apphance.pbx
 
-import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
@@ -26,8 +25,7 @@ class IOSApphancePbxEnhancer {
 
     private logger = getLogger(getClass())
 
-    @Inject IOSConfiguration conf
-    @Inject IOSExecutor iosExecutor
+    @Inject IOSExecutor executor
     @Inject PbxJsonParser pbxJsonParser
 
     @PackageScope IOSVariant variant
@@ -51,6 +49,7 @@ class IOSApphancePbxEnhancer {
 
     @PackageScope
     void addFramework(Map frameworkDetails) {
+        logger.info("Adding framework '$frameworkDetails.name' to file $variant.variantPbx.absolutePath")
         def frameworkHash = hash()
         json.objects[frameworkHash] = [
                 isa: PBX_FILE_REFERENCE,
@@ -71,25 +70,27 @@ class IOSApphancePbxEnhancer {
 
     @PackageScope
     void addFlagsAndPaths() {
-        def bs = configuration.buildSettings as Map
+        configurations.each { c ->
+            logger.info("Adding compiler options to configuration '$c.name'")
+            Map bs = c.buildSettings
+            if (bs.OTHER_LDFLAGS) {
+                bs.OTHER_LDFLAGS << '-ObjC'
+                bs.OTHER_LDFLAGS << '-all_load'
+            } else {
+                bs.OTHER_LDFLAGS = ['-ObjC', '-all_load']
+            }
 
-        if (bs.OTHER_LDFLAGS) {
-            bs.OTHER_LDFLAGS << '-ObjC'
-            bs.OTHER_LDFLAGS << '-all_load'
-        } else {
-            bs.OTHER_LDFLAGS = ['-ObjC', '-all_load']
-        }
+            if (bs.FRAMEWORK_SEARCH_PATHS) {
+                bs.FRAMEWORK_SEARCH_PATHS << '"$(SRCROOT)"'
+            } else {
+                bs.FRAMEWORK_SEARCH_PATHS = ['$(inherited)', '"$(SRCROOT)"']
+            }
 
-        if (bs.FRAMEWORK_SEARCH_PATHS) {
-            bs.FRAMEWORK_SEARCH_PATHS << '\"$(SRCROOT)\"'
-        } else {
-            bs.FRAMEWORK_SEARCH_PATHS = ['$(inherited)', '\"$(SRCROOT)\"']
-        }
-
-        if (bs.LIBRARY_SEARCH_PATHS) {
-            bs.LIBRARY_SEARCH_PATHS << "\$(SRCROOT)/${frameworkName}.framework"
-        } else {
-            bs.LIBRARY_SEARCH_PATHS = ['$(inherited)', "\"\$(SRCROOT)/${frameworkName}.framework\""]
+            if (bs.LIBRARY_SEARCH_PATHS) {
+                bs.LIBRARY_SEARCH_PATHS << "\$(SRCROOT)/${frameworkName}.framework"
+            } else {
+                bs.LIBRARY_SEARCH_PATHS = ['$(inherited)', "\"\$(SRCROOT)/${frameworkName}.framework\""]
+            }
         }
     }
 
@@ -124,13 +125,13 @@ class IOSApphancePbxEnhancer {
     }
 
     @PackageScope
-    String getGCCPrefixFilePath() {
-        configuration.buildSettings.GCC_PREFIX_HEADER
+    List<String> getGCCPrefixFilePaths() {
+        configurations.buildSettings.GCC_PREFIX_HEADER.unique()
     }
 
     @Lazy
     private Map json = {
-        new JsonSlurper().parseText(iosExecutor.pbxProjToJSON(variant.variantPbx).join('\n')) as Map
+        new JsonSlurper().parseText(executor.pbxProjToJSON(variant.variantPbx).join('\n')) as Map
     }()
 
     @Lazy
@@ -147,13 +148,15 @@ class IOSApphancePbxEnhancer {
     }()
 
     @Lazy
-    @PackageScope Map configuration = {
+    @PackageScope List<Map> configurations = {
         def buildConfListHash = target.buildConfigurationList
         def confHashes = json.objects[buildConfListHash].buildConfigurations
+        def variantConfigurations = [variant.buildConfiguration, variant.archiveConfiguration].unique()
 
-        json.objects.find {
-            it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION && it.value.name == variant.buildConfiguration
-        }.value as Map
+        json.objects.findAll {
+            it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION &&
+                    it.value.name in variantConfigurations
+        }*.value.unique() as List<Map>
     }()
 
     @Lazy
@@ -179,11 +182,11 @@ class IOSApphancePbxEnhancer {
     }()
 
     private void saveModifiedPbx() {
-        def pbx = new File(variant.tmpDir, "${conf.xcodeDir.value}/project.pbxproj")
+        def pbx = variant.variantPbx
         logger.info("Saving PBX with Apphance added to file: $pbx.absolutePath")
         def tmpJson = createTempFile('pbx', 'json')
         tmpJson.text = toJson(json)
-        pbx.text = iosExecutor.plistToXML(tmpJson).join('\n')
+        pbx.text = executor.plistToXML(tmpJson).join('\n')
         tmpJson.delete()
     }
 

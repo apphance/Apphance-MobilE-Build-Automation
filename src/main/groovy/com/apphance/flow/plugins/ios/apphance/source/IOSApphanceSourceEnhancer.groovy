@@ -52,9 +52,11 @@ class IOSApphanceSourceEnhancer {
 
     @PackageScope
     void addApphanceToPch() {
-        def pch = new File(variant.tmpDir, apphancePbxEnhancer.GCCPrefixFilePath)
-        logger.info("Adding apphance to PCH file : $pch.absolutePath")
-        pch.text = pch.text.replace("#ifdef __OBJC__", "#ifdef __OBJC__\n#import <$apphanceFrameworkName/APHLogger.h>")
+        apphancePbxEnhancer.GCCPrefixFilePaths.each {
+            def pch = new File(variant.tmpDir, it)
+            logger.info("Adding apphance to PCH file : $pch.absolutePath")
+            pch.text = pch.text.replace("#ifdef __OBJC__", "#ifdef __OBJC__\n#import <$apphanceFrameworkName/APHLogger.h>")
+        }
     }
 
     private String getApphanceFrameworkName() {
@@ -97,7 +99,7 @@ class IOSApphanceSourceEnhancer {
         def bracketLine = splitLines[bracketLineIndex] as List
         def bracketIndex = bracketLine.findIndexOf { String token -> token.contains('{') }
         def bracketToken = bracketLine[bracketIndex] as String
-        bracketLine[bracketIndex] = bracketToken.replaceFirst('\\{', "\\{ $apphanceInit $apphanceExceptionHandler ")
+        bracketLine[bracketIndex] = bracketToken.replaceFirst('\\{', "\\{ $apphanceInit \n $apphanceExceptionHandler ")
         splitLines[bracketLineIndex] = bracketLine
         delegate.text = splitLines.collect { line -> line.join(' ') }.join('\n')
     }
