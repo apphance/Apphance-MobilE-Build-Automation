@@ -86,10 +86,10 @@
                 <h1>${v.name}</h1>
             </div>
             <div data-role="content">
-                <section id="${v.configuration}">
+                <section id="${v.archiveConfiguration}">
                     <header style="text-align:center;">
                         <h3>
-                            <div>${rb.getString('Configuration')} ${v.configuration}</div>
+                            <div>${rb.getString('Configuration')} ${v.archiveConfiguration}</div>
                         </h3>
                     </header>
                     <p>
@@ -180,10 +180,10 @@
                 <h1>${v.name}</h1>
             </div>
             <div data-role="content">
-                <section id="${v.configuration}-ahSYM">
+                <section id="${v.archiveConfiguration}-ahSYM">
                     <header style="text-align:center;">
                         <h3>
-                            <div>${rb.getString('Configuration')} ${v.configuration}</div>
+                            <div>${rb.getString('Configuration')} ${v.archiveConfiguration}</div>
                         </h3>
                     </header>
                     <% if (releaseConf.ahSYMDirs[v.name] != null) { %>

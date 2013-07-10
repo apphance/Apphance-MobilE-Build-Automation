@@ -20,6 +20,7 @@ import static com.apphance.flow.configuration.ProjectConfiguration.BUILD_DIR
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
 import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
+import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.LAUNCH_ACTION
 import static com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask.getWHITESPACE_PATTERN
 import static com.apphance.flow.util.file.FileManager.relativeTo
@@ -83,7 +84,7 @@ class IOSVariant extends AbstractVariant {
     def mode = new IOSBuildModeProperty(
             message: "Build mode for the variant, it describes the environment the artifact is built for: (DEVICE|SIMULATOR)",
             required: { true },
-            defaultValue: { (configuration.contains('debug') || configuration.contains('dev')) ? SIMULATOR : DEVICE },
+            defaultValue: { (buildConfiguration.contains('debug') || buildConfiguration.contains('dev')) ? SIMULATOR : DEVICE },
             possibleValues: { possibleBuildModeValues() },
             validator: { it in possibleBuildModeValues() }
     )
@@ -94,7 +95,7 @@ class IOSVariant extends AbstractVariant {
     }
 
     String getBundleId() {
-        plistParser.evaluate(plistParser.bundleId(plist), target, configuration) ?: ''
+        plistParser.evaluate(plistParser.bundleId(plist), target, buildConfiguration) ?: ''
     }
 
     @Override
@@ -113,7 +114,7 @@ class IOSVariant extends AbstractVariant {
     @PackageScope
     Collection<String> availableXCodeArchitectures() {
         //TODO (both configurations)
-        executor.buildSettings(target, configuration)['ARCHS'].split(' ')*.trim()
+        executor.buildSettings(target, buildConfiguration)['ARCHS'].split(' ')*.trim()
     }
 
     @Lazy
@@ -127,11 +128,11 @@ class IOSVariant extends AbstractVariant {
     }
 
     String getVersionCode() {
-        conf.extVersionCode ?: plistParser.evaluate(plistParser.versionCode(plist), target, configuration) ?: ''
+        conf.extVersionCode ?: plistParser.evaluate(plistParser.versionCode(plist), target, buildConfiguration) ?: ''
     }
 
     String getVersionString() {
-        conf.extVersionString ?: plistParser.evaluate(plistParser.versionString(plist), target, configuration) ?: ''
+        conf.extVersionString ?: plistParser.evaluate(plistParser.versionString(plist), target, buildConfiguration) ?: ''
     }
 
     protected List<String> getSdkCmd() {
@@ -168,7 +169,7 @@ class IOSVariant extends AbstractVariant {
         checkArgument(isNotBlank(bundleDisplayName),
                 """|Cant find 'CFBundleDisplayName' property in file $plist.absolutePath
                    |Is project configured well?""".stripMargin())
-        plistParser.evaluate(bundleDisplayName, target, configuration)
+        plistParser.evaluate(bundleDisplayName, target, buildConfiguration)
     }
 
     @Lazy
@@ -187,8 +188,12 @@ class IOSVariant extends AbstractVariant {
         pbxJsonParser.targetForBlueprintId(variantPbx, schemeParser.blueprintIdentifier(schemeFile))
     }
 
-    String getConfiguration() {
+    String getBuildConfiguration() {
         schemeParser.configuration(schemeFile, LAUNCH_ACTION)
+    }
+
+    String getArchiveConfiguration() {
+        schemeParser.configuration(schemeFile, ARCHIVE_ACTION)
     }
 
     List<String> getBuildCmd() {

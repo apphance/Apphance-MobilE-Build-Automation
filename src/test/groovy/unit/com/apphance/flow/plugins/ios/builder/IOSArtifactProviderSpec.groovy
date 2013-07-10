@@ -50,7 +50,7 @@ class IOSArtifactProviderSpec extends Specification {
         given:
         def variant = GroovyMock(IOSVariant)
         variant.target >> 'GradleXCode'
-        variant.configuration >> 'BasicConfiguration'
+        variant.buildConfiguration >> 'BasicConfiguration'
         variant.tmpDir >> new File(properties['java.io.tmpdir'])
         variant.mobileprovision >> new FileProperty(value: new File('sample.mobileprovision'))
         variant.versionString >> '1.0.1'

@@ -95,8 +95,8 @@ class BuildFrameworkTask extends DefaultTask {
 
     private setLinkLibraries() {
         logger.lifecycle('Set link libraries')
-        iphoneosLibrary = new File(project.buildDir, "${variant.configuration}-iphoneos/lib${variant.target}.a")
-        iphoneosSimulatorLibrary = new File(project.buildDir, "${variant.configuration}-iphonesimulator/lib${variant.target}.a")
+        iphoneosLibrary = new File(project.buildDir, "${variant.buildConfiguration}-iphoneos/lib${variant.target}.a")
+        iphoneosSimulatorLibrary = new File(project.buildDir, "${variant.buildConfiguration}-iphonesimulator/lib${variant.target}.a")
     }
 
     private createSymlinks() {
@@ -154,7 +154,7 @@ class BuildFrameworkTask extends DefaultTask {
                 '-target',
                 "\"$variant.target\"",
                 '-configuration',
-                "\"$variant.configuration\"",
+                "\"$variant.buildConfiguration\"",
                 '-sdk',
                 conf.simulatorSdk.value,
                 '-arch',
@@ -166,7 +166,7 @@ class BuildFrameworkTask extends DefaultTask {
                 '-target',
                 "\"$variant.target\"",
                 '-configuration',
-                "\"$variant.configuration\"",
+                "\"$variant.buildConfiguration\"",
                 '-sdk',
                 conf.sdk.value,
                 'clean',

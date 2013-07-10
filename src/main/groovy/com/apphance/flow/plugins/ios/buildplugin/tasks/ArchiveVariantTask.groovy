@@ -14,7 +14,6 @@ import javax.inject.Inject
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
-import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkNotNull
@@ -68,10 +67,10 @@ class ArchiveVariantTask extends DefaultTask {
     }
 
     private String appName() {
-        executor.buildSettings(variant.target, schemeParser.configuration(variant.schemeFile, ARCHIVE_ACTION))['FULL_PRODUCT_NAME']
+        executor.buildSettings(variant.target, variant.archiveConfiguration)['FULL_PRODUCT_NAME']
     }
 
     private String productName() {
-        executor.buildSettings(variant.target, schemeParser.configuration(variant.schemeFile, ARCHIVE_ACTION))['PRODUCT_NAME']
+        executor.buildSettings(variant.target, variant.archiveConfiguration)['PRODUCT_NAME']
     }
 }

@@ -30,7 +30,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         given:
         def enhancer = new IOSApphancePbxEnhancer(GroovyMock(IOSVariant) {
             getTarget() >> 'GradleXCode'
-            getConfiguration() >> 'BasicConfiguration'
+            getBuildConfiguration() >> 'BasicConfiguration'
         })
         enhancer.iosExecutor = GroovyMock(IOSExecutor) {
             pbxProjToJSON(_) >> pbxJSON.text.split('\n')
@@ -80,7 +80,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         and:
         def variant = GroovyMock(IOSVariant) {
             getTarget() >> 'GradleXCode'
-            getConfiguration() >> 'BasicConfiguration'
+            getBuildConfiguration() >> 'BasicConfiguration'
             getApphanceMode() >> new ApphanceModeProperty(value: QA)
             getTmpDir() >> tmpDir
             getVariantPbx() >> GroovyMock(File)
@@ -122,7 +122,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         }.value as Map
         def confHashes = json.objects[target.buildConfigurationList].buildConfigurations
         def configuration = json.objects.find {
-            it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION && it.value.name == variant.configuration
+            it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION && it.value.name == variant.buildConfiguration
         }.value as Map
 
         and:

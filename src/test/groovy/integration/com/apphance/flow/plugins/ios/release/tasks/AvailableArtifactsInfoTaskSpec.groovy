@@ -67,7 +67,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         def variants = [
                 GroovyMock(IOSVariant) {
                     getTarget() >> 'GradleXCode'
-                    getConfiguration() >> 'MainConf'
+                    getArchiveConfiguration() >> 'MainConf'
                     getMode() >> new IOSBuildModeProperty(value: DEVICE)
                     getMobileprovision() >> new FileProperty(value: 'sample.mobileprovision')
                     getFullVersionString() >> fullVersionString
@@ -75,7 +75,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                 },
                 GroovyMock(IOSVariant) {
                     getTarget() >> 'GradleXCode2'
-                    getConfiguration() >> 'Conf2'
+                    getArchiveConfiguration() >> 'Conf2'
                     getMode() >> new IOSBuildModeProperty(value: DEVICE)
                     getMobileprovision() >> new FileProperty(value: 'sample2.mobileprovision')
                     getFullVersionString() >> fullVersionString

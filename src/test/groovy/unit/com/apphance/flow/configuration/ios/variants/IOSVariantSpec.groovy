@@ -49,7 +49,7 @@ class IOSVariantSpec extends Specification {
             getApphanceMode() >> new ApphanceModeProperty(value: apphanceMode)
             getApphanceLibVersion() >> new StringProperty(value: '1.8.2')
             getTarget() >> 't'
-            getConfiguration() >> 'c'
+            getBuildConfiguration() >> 'c'
         }
         variant.executor = GroovyMock(IOSExecutor) {
             buildSettings(_, _) >> ['ARCHS': 'armv6 armv7']
@@ -77,7 +77,7 @@ class IOSVariantSpec extends Specification {
             }
             getPlist() >> GroovyMock(File)
             getTarget() >> ''
-            getConfiguration() >> ''
+            getBuildConfiguration() >> ''
         }
         variant.apphanceConf = GroovyMock(ApphanceConfiguration) {
             isEnabled() >> false

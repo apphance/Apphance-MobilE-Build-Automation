@@ -17,9 +17,14 @@ class XCSchemeParser {
 '''
 
     String configuration(File scheme, IOSXCodeAction action) {
+        configurationC.call(scheme, action)
+    }
+
+    @Lazy
+    private Closure<String> configurationC = { File scheme, IOSXCodeAction action ->
         def xml = parseSchemeFile(scheme)
         xml."$action.xmlNodeName".@buildConfiguration.text()
-    }
+    }.memoize()
 
     boolean hasSingleBuildableTarget(File scheme) {
         def xml = parseSchemeFile(scheme)

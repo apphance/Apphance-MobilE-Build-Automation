@@ -152,7 +152,7 @@ class IOSApphancePbxEnhancer {
         def confHashes = json.objects[buildConfListHash].buildConfigurations
 
         json.objects.find {
-            it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION && it.value.name == variant.configuration
+            it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION && it.value.name == variant.buildConfiguration
         }.value as Map
     }()
 
