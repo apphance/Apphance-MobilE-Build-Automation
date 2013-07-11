@@ -5,10 +5,10 @@ import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
-import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.AndroidExecutor
 import com.apphance.flow.executor.AntExecutor
+import com.apphance.flow.plugins.android.buildplugin.tasks.AndroidProjectUpdater
 import com.apphance.flow.plugins.android.buildplugin.tasks.SingleVariantTask
 import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.util.FlowUtils
@@ -28,8 +28,6 @@ class SingleVariantTaskUnitSpec extends Specification {
 
     def setup() {
 
-
-
         builderInfo = GroovyStub(AndroidBuilderInfo) {
             getTmpDir() >> tmpDir
             getMode() >> AndroidBuildMode.DEBUG
@@ -43,22 +41,21 @@ class SingleVariantTaskUnitSpec extends Specification {
                 }
             }
 
-            conf = GroovyStub(AndroidConfiguration) {
+            projectUpdater = GroovySpy(AndroidProjectUpdater)
+            projectUpdater.conf = GroovyStub(AndroidConfiguration) {
                 getTarget() >> new StringProperty(value: 'android-8')
                 getProjectName() >> new StringProperty(value: 'TestAndroidProject')
             }
+            projectUpdater.executor = GroovyMock(AndroidExecutor)
             releaseConf = GroovyStub(AndroidReleaseConfiguration)
             variant = GroovyStub(AndroidVariantConfiguration) {
                 getTmpDir() >> variantDir
                 getOldPackage() >> new StringProperty()
                 getNewPackage() >> new StringProperty()
             }
-            apphanceConf = GroovyStub(ApphanceConfiguration)
-            apphanceConf.enabled >> false
 
             ant = GroovyMock(AntBuilder)
             antExecutor = GroovyMock(AntExecutor)
-            androidExecutor = GroovyMock(AndroidExecutor)
         }
     }
 
@@ -73,10 +70,11 @@ class SingleVariantTaskUnitSpec extends Specification {
         with(task) {
             1 * antExecutor.executeTarget(tmpDir, CLEAN)
             1 * antExecutor.executeTarget(tmpDir, 'debug')
+            1 * projectUpdater.runRecursivelyInAllSubProjects(variantDir)
             0 * antExecutor.executeTarget(_, _)
-            1 * androidExecutor.updateProject(variantDir, 'android-8', 'TestAndroidProject')
             0 * ant.copy(_)
         }
+        1 * task.projectUpdater.executor.updateProject(variantDir, 'android-8', 'TestAndroidProject')
     }
 
     def 'test override files from variant dir'() {

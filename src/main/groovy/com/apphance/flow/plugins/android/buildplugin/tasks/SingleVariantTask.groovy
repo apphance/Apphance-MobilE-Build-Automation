@@ -1,16 +1,12 @@
 package com.apphance.flow.plugins.android.buildplugin.tasks
 
-import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
-import com.apphance.flow.configuration.apphance.ApphanceConfiguration
-import com.apphance.flow.executor.AndroidExecutor
 import com.apphance.flow.executor.AntExecutor
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
-import com.apphance.flow.plugins.android.builder.AndroidBuilderInfo
+import com.apphance.flow.plugins.release.FlowArtifact
 import org.gradle.api.AntBuilder as AntBuilder
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
@@ -22,22 +18,20 @@ class SingleVariantTask extends DefaultTask {
 
     String group = FLOW_BUILD
 
-    @Inject AndroidConfiguration conf
     @Inject AndroidReleaseConfiguration releaseConf
-    @Inject ApphanceConfiguration apphanceConf
     @Inject AntBuilder ant
     @Inject AndroidArtifactProvider artifactProvider
     @Inject AntExecutor antExecutor
-    @Inject AndroidExecutor androidExecutor
+    @Inject AndroidProjectUpdater projectUpdater
 
     AndroidVariantConfiguration variant
+    private FlowArtifact artifact
 
     @TaskAction
     void singleVariant() {
+        projectUpdater.runRecursivelyInAllSubProjects(variant.tmpDir)
 
-        runRecursivelyInAllSubProjects(variant.tmpDir, this.&runUpdateProject)
-
-        AndroidBuilderInfo builderInfo = artifactProvider.builderInfo(variant)
+        def builderInfo = artifactProvider.builderInfo(variant)
 
         logger.lifecycle("Building variant ${builderInfo.variant}")
         antExecutor.executeTarget builderInfo.tmpDir, CLEAN
@@ -69,8 +63,9 @@ class SingleVariantTask extends DefaultTask {
             logger.lifecycle("File created: ${builderInfo.originalFile}")
 
             if (releaseConf.enabled) {
-                logger.lifecycle("Copying file ${builderInfo.originalFile.absolutePath} to ${artifactProvider.artifact(builderInfo).location.absolutePath}")
-                ant.copy(file: builderInfo.originalFile, tofile: artifactProvider.artifact(builderInfo).location)
+                artifact = artifactProvider.artifact(builderInfo)
+                logger.lifecycle("Copying file ${builderInfo.originalFile.absolutePath} to ${artifact.location.absolutePath}")
+                ant.copy(file: builderInfo.originalFile, tofile: artifact.location)
             }
         } else {
             logger.lifecycle("File ${builderInfo.originalFile} was not created. Probably due to bad signing configuration in ant.properties")
@@ -80,28 +75,5 @@ class SingleVariantTask extends DefaultTask {
     @Override
     String getDescription() {
         "Builds ${name}"
-    }
-
-    void runRecursivelyInAllSubProjects(File currentDir, Closure method) {
-        method(currentDir)
-
-        def propFile = new File(currentDir, 'project.properties')
-
-        if (propFile.exists()) {
-            def prop = new Properties()
-            prop.load(new FileInputStream(propFile))
-            prop.each { String key, String value ->
-                if (key.startsWith('android.library.reference.')) {
-                    runRecursivelyInAllSubProjects(new File(currentDir, value), method)
-                }
-            }
-        }
-    }
-
-    void runUpdateProject(File directory) {
-        if (!directory.exists()) {
-            throw new GradleException("The directory $directory to execute the command, does not exist! Your configuration is wrong.")
-        }
-        androidExecutor.updateProject(directory, conf.target.value, conf.projectName.value)
     }
 }

@@ -10,6 +10,7 @@ import com.apphance.flow.executor.AntExecutor
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
+import com.apphance.flow.plugins.android.buildplugin.tasks.AndroidProjectUpdater
 import com.apphance.flow.plugins.android.buildplugin.tasks.SingleVariantTask
 import com.apphance.flow.plugins.release.FlowArtifact
 import spock.lang.Specification
@@ -47,13 +48,13 @@ class SingleVariantTaskSpec extends Specification {
     def executor = new CommandExecutor(fileLinker, logFileGenerator)
     def antExecutor = new AntExecutor(executor: executor)
     def androidExecutor = new AndroidExecutor(executor: executor, conf: conf)
+    def projectUpdater = new AndroidProjectUpdater(conf: conf, executor: androidExecutor)
 
     def setup() {
         task.antExecutor = antExecutor
+        task.projectUpdater = projectUpdater
         task.ant = project.ant
-        task.androidExecutor = androidExecutor
         task.releaseConf = Stub(AndroidReleaseConfiguration) { isEnabled() >> true }
-        task.conf = conf
         task.variant = GroovyMock(AndroidVariantConfiguration) {
             getTmpDir() >> new File(project.rootDir, variantTmpDir.toString())
             getOldPackage() >> new StringProperty()
