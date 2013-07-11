@@ -81,7 +81,7 @@ class ImageMontageTask extends DefaultTask {
         List<File> filesToMontage = []
 
         rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL, excludeFilter: EXCLUDE_FILTER]) { File file ->
-            if (isValid(rootDir, file) && [conf.tmpDir, releaseConf.otaDir]*.name.every { !file.absolutePath.contains(it) }) {
+            if (isValid(file) && [conf.tmpDir, releaseConf.otaDir]*.name.every { !file.absolutePath.contains(it) }) {
                 filesToMontage << file
             }
         }

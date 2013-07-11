@@ -19,29 +19,28 @@ class ImageNameFilter {
             '.webp'
     ]
 
-    private final String[] INVALID_PREFIXES = [
+    private final String[] INVALID_DIRS = [
             'build/',
             'bin/',
             'doc/',
             'log/',
+            'flow-log/',
             'documentation/',
-            'ota/',
+            'flow-ota/',
+            'flow-tmp/',
             'tmp/',
-            'External/'
-    ]
-
-    private final String[] INVALID_DIRS = [
+            'External/',
             '/Shared/External/'
     ]
 
-    final boolean isValid(File rootDirectory, File file) {
+    final boolean isValid(File file) {
+        if (file == null || !file?.exists()) {
+            return false
+        }
         if ((VALID_EXTENSIONS.findAll { file.name.toLowerCase().endsWith(it) }).size() == 0) {
             return false
         }
-        if (INVALID_PREFIXES.findAll { file.toString().startsWith(new File(rootDirectory, it).toString()) }.size() > 0) {
-            return false
-        }
-        if (INVALID_DIRS.findAll { file.toString().contains(it) }.size() > 0) {
+        if (INVALID_DIRS.findAll { file.absolutePath.contains(it) }.size() > 0) {
             return false
         }
         return true

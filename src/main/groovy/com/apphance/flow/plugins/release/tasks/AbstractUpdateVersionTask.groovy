@@ -19,7 +19,7 @@ abstract class AbstractUpdateVersionTask extends DefaultTask {
     String description = """Updates version stored in manifest file of the project.
            Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
 
-    final static Pattern WHITESPACE_PATTERN = Pattern.compile('\\s+')
+    public final static Pattern WHITESPACE_PATTERN = Pattern.compile('\\s+')
 
     @Inject ProjectConfiguration conf
 
