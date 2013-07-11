@@ -115,7 +115,8 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
 
         then:
         def mFileContent = new File(tmpDir, mFile).text
-        mFileContent.contains('[APHLogger startNewSessionWithApplicationKey:@"3145abcd" apphanceMode:kAPHApphanceModeQA];')
+        mFileContent.contains('[APHLogger startNewSessionWithApplicationKey:@"3145abcd"')
+        mFileContent.contains('[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeQA];')
         mFileContent.contains('NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);')
 
         where:

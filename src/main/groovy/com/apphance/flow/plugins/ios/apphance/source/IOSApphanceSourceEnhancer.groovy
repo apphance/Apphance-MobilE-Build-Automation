@@ -89,17 +89,17 @@ class IOSApphanceSourceEnhancer {
     @PackageScope
     void addApphanceToFile(File delegate) {
         logger.info("Adding apphance init in file: $delegate.absolutePath")
-        def apphanceInit = """[APHLogger startNewSessionWithApplicationKey:@"$variant.apphanceAppKey.value" $apphanceMode];"""
+        def apphanceInit = """[APHLogger startNewSessionWithApplicationKey:@"$variant.apphanceAppKey.value"];"""
         def apphanceExceptionHandler = 'NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);'
 
         def splitLines = delegate.inject([]) { list, line -> list << line.split('\\s+') } as List
         def didFinishLine = splitLines.find { line -> line.join(' ').matches('.*application.*[dD]idFinishLaunching.*') } as List
-        def didFinishLineIndex = splitLines.indexOf(didFinishLine)
+        def didFinishLineIndex = splitLines.findIndexOf { it == didFinishLine }
         def bracketLineIndex = splitLines.findIndexOf(didFinishLineIndex, { line -> line.find { String token -> token.contains('{') } })
         def bracketLine = splitLines[bracketLineIndex] as List
         def bracketIndex = bracketLine.findIndexOf { String token -> token.contains('{') }
         def bracketToken = bracketLine[bracketIndex] as String
-        bracketLine[bracketIndex] = bracketToken.replaceFirst('\\{', "\\{ $apphanceInit \n $apphanceExceptionHandler ")
+        bracketLine[bracketIndex] = bracketToken.replaceFirst('\\{', "\\{ \n $apphanceInit \n $apphanceMode \n $apphanceExceptionHandler ")
         splitLines[bracketLineIndex] = bracketLine
         delegate.text = splitLines.collect { line -> line.join(' ') }.join('\n')
     }
@@ -107,9 +107,9 @@ class IOSApphanceSourceEnhancer {
     String getApphanceMode() {
         switch (variant.apphanceMode.value) {
             case QA:
-                return 'apphanceMode:kAPHApphanceModeQA'
+                return """[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeQA];"""
             case SILENT:
-                return 'apphanceMode:kAPHApphanceModeSilent'
+                return """[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeSilent];"""
             case PROD:
                 return ''
             default:
