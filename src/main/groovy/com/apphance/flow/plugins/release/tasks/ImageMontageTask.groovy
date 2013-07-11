@@ -99,10 +99,12 @@ class ImageMontageTask extends DefaultTask {
             return
         }
 
-        def processors = images.collect { new ColorProcessor(it) }
-
         ImageStack imageStack = new ImageStack(TILE_PX_SIZE, TILE_PX_SIZE)
-        processors.each { imageStack.addSlice(it) }
+        images.each {
+            def processor = new ColorProcessor(it)
+            imageStack.addSlice(processor)
+            processor = null
+        }
 
         def imgPlus = new ImagePlus("stack", imageStack)
         int columns, rows
