@@ -49,7 +49,7 @@ class CommandExecutor {
 
         Integer exitValue = process?.waitFor()
 
-        handleExitValue(exitValue, c, commandLogs[STD].text)
+        handleExitValue(exitValue, c)
 
         if (commandLogs[ERR]?.text) {
             logger.warn("Command err: ${fileLinker.fileLink(commandLogs[ERR])}, contains some text. It may be info about" +
@@ -99,12 +99,10 @@ class CommandExecutor {
         inputFile
     }
 
-    private void handleExitValue(Integer exitValue, Command c, String output) {
+    private void handleExitValue(Integer exitValue, Command c) {
         throwIfConditionTrue(
                 (exitValue != 0 && c.failOnError),
-                "Error while executing: '${c.commandForPublic}', in dir: '${c.runDir}', " +
-                        "exit value: '${exitValue}'",
-                output
+                "Error while executing: '$c.commandForPublic', in dir: '$c.runDir', exit value: '$exitValue'"
         )
         if (exitValue != 0 && !c.failOnError) {
             logger.warn("Executor is set not to fail on error, but command exited with value not equal to '0': '$exitValue'." +
