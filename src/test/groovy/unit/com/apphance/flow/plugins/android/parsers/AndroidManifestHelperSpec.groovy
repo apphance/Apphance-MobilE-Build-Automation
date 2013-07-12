@@ -158,16 +158,6 @@ class AndroidManifestHelperSpec extends Specification {
         e.message == 'Main activity could not be found!'
     }
 
-    def 'application name is read correctly'() {
-        expect:
-        androidManifestHelper.getApplicationName(dir) == expectedName
-
-        where:
-        dir                   | expectedName
-        basic                 | ''
-        noApphanceApplication | 'com.apphance.flowTest.android.MainApplication'
-    }
-
     def 'apphance activity is not found'() {
         expect:
         !androidManifestHelper.isApphanceActivityPresent(basic)
