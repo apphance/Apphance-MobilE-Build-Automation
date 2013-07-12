@@ -4,9 +4,9 @@ import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.properties.AbstractProperty
 import com.apphance.flow.util.SortedProperties
 import com.google.common.io.Files
-import javax.inject.Inject
 import org.gradle.api.Project
 
+import javax.inject.Inject
 import java.text.SimpleDateFormat
 
 import static com.google.common.io.Files.newWriter
@@ -86,7 +86,7 @@ class GradlePropertiesPersister implements PropertyPersister {
 
         if (conf.enabled) {
             conf.flowProperties().each { AbstractProperty prop ->
-                writer.write("${prop.name}=${prop.persistentForm()}\n".toString())
+                writer.write("${prop.name.replaceAll('\\s', '\\\\u0020')}=${prop.persistentForm()}\n".toString())
             }
 
             conf.subConfigurations.each { saveConf(it, writer) }

@@ -1,74 +1,97 @@
 package com.apphance.flow.plugins.ios.parsers
 
-import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.google.common.io.Files
 import org.gradle.api.GradleException
+import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
+import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
+import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.LAUNCH_ACTION
+import static com.google.common.io.Files.copy
 import static com.google.common.io.Files.createTempDir
-import static java.lang.System.currentTimeMillis
 
 class XCSchemeParserSpec extends Specification {
 
-    def schemeName = 'GradleXCode'
-    def conf
-    def tmpDir
-    def parser
+    @Shared
+    def scheme1 = new File(getClass().getResource('GradleXCode.xcscheme').toURI())
+    @Shared
+    def scheme2 = new File(getClass().getResource('GradleXCode2.xcscheme').toURI())
 
-    def setup() {
-        tmpDir = createTempDir()
+    def parser = new XCSchemeParser()
 
-        conf = GroovyMock(IOSConfiguration)
-        conf.schemesDir >> tmpDir
-
-        parser = new XCSchemeParser()
-        parser.conf = conf
-    }
-
-    def cleanup() {
-        tmpDir.deleteDir()
-    }
-
-    def 'configuration for scheme is read correctly'() {
-        given:
-        def schemeFile = new File("testProjects/ios/GradleXCode/GradleXCode.xcodeproj/xcshareddata/xcschemes/${schemeName}.xcscheme")
-        Files.copy(schemeFile, new File(tmpDir, "${schemeName}.xcscheme"))
-
+    def 'configuration for scheme is read and action correctly'() {
         expect:
-        parser.configurationName(schemeName) == 'BasicConfiguration'
+        parser.configuration(scheme1, LAUNCH_ACTION) == 'BasicConfiguration'
+
+        where:
+        action         | conf
+        LAUNCH_ACTION  | 'BasicConfiguration'
+        ARCHIVE_ACTION | 'Release'
     }
 
     def 'blueprintIdentifier for scheme is read correctly'() {
-        given:
-        def schemeFile = new File("testProjects/ios/GradleXCode/GradleXCode.xcodeproj/xcshareddata/xcschemes/${schemeName}.xcscheme")
-        Files.copy(schemeFile, new File(tmpDir, "${schemeName}.xcscheme"))
-
-        when:
-        def id = parser.blueprintIdentifier(schemeName)
-
-        then:
-        id == 'D382B71014703FE500E9CC9B'
-    }
-
-    def 'buildableName for scheme is read correctly'() {
-        given:
-        def schemeFile = new File("testProjects/ios/GradleXCode/GradleXCode.xcodeproj/xcshareddata/xcschemes/${schemeName}.xcscheme")
-        Files.copy(schemeFile, new File(tmpDir, "${schemeName}.xcscheme"))
-
         expect:
-        parser.buildableName(schemeName) == 'GradleXCode.app'
+        'D382B71014703FE500E9CC9B' == parser.blueprintIdentifier(scheme1)
     }
 
     def 'exception is thrown when no scheme file exists'() {
         given:
-        def schemeName = "RandomScheme${currentTimeMillis()}"
+        def schemeFile = new File('random')
 
         when:
-        parser.configurationName(schemeName)
+        parser.configuration(schemeFile, null)
 
         then:
         def e = thrown(GradleException)
-        e.message == "Shemas must be shared!. Invalid scheme file: ${new File(conf.schemesDir, "${schemeName}.xcscheme").absolutePath}"
+        e.message == "Shemes must be shared! Invalid scheme file: ${schemeFile.absolutePath}"
     }
 
+    @Unroll
+    def 'buildable scheme is recognized for scheme #scheme'() {
+        expect:
+        parser.isBuildable(scheme) == buildable
+
+        where:
+        scheme  | buildable
+        scheme1 | true
+        scheme2 | false
+    }
+
+    @Unroll
+    def 'archive post action is added in file: #filename'() {
+        given:
+        def tmpDir = createTempDir()
+        copy(new File(getClass().getResource("${filename}.xcscheme").toURI()), new File(tmpDir, "${filename}.xcscheme"))
+        def tmpFile = new File(tmpDir, "${filename}.xcscheme")
+
+        when:
+        parser.addPostArchiveAction(tmpFile)
+
+        then:
+        def xml = new XmlSlurper().parseText(tmpFile.text)
+        xml.ArchiveAction.PostActions.children().size() == actions
+        xml.ArchiveAction.PostActions.ExecutionAction.ActionContent.find {
+            it.@title.text() == 'ECHO_FLOW_ARCHIVE_PATH'
+        }
+        xml.ArchiveAction.@revealArchiveInOrganizer == 'YES'
+
+        cleanup:
+        tmpDir.deleteDir()
+
+        where:
+        filename       | actions
+        'GradleXCode'  | 1
+        'GradleXCode2' | 2
+    }
+
+    @Unroll
+    def 'scheme (#scheme) is recognized as having single target'() {
+        expect:
+        parser.hasSingleBuildableTarget(scheme) == hasSingleBuildableTarget
+
+        where:
+        scheme  | hasSingleBuildableTarget
+        scheme1 | true
+        scheme2 | false
+    }
 }

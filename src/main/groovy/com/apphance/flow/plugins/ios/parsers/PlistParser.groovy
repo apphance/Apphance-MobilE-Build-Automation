@@ -15,7 +15,7 @@ import static org.gradle.api.logging.Logging.getLogger
 
 class PlistParser {
 
-    private l = getLogger(getClass())
+    private logger = getLogger(getClass())
 
     static final PLACEHOLDER = Pattern.compile('\\$\\{([A-Z0-9a-z]+_)*([A-Z0-9a-z])+(:rfc1034identifier)?\\}')
     static final IDENTIFIERS = [
@@ -55,21 +55,6 @@ class PlistParser {
     private Object parsedJson(File plist) {
         def text = executor.plistToJSON(plist).join('\n')
         new JsonSlurper().parseText(text)
-    }
-
-    void replaceBundledId(File plist, String oldBundleId, String newBundleId) {
-        l.info("Attempting to replace oldBundleId ($oldBundleId) with newBundleId ($newBundleId) in file: ${plist.absolutePath}")
-        def xml = new XmlSlurper().parse(plist)
-        def keyNode = xml.dict.key.find { it.text() == 'CFBundleIdentifier' }
-        def valueNode = nextNode(keyNode)
-        def value = valueNode.text()
-        if (newBundleId.startsWith(oldBundleId)) {
-            String newResult = newBundleId + value.substring(oldBundleId.length())
-            valueNode.replaceBody(newResult)
-        } else {
-            l.info("Bundle ID will not be replaced: newBundleId ($newBundleId) does not start with oldBundleId ($oldBundleId)")
-        }
-        plist.text = XmlUtil.serialize(xml)
     }
 
     void replaceVersion(File plist, String versionCode, String versionString) {

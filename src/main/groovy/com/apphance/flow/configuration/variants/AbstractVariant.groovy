@@ -2,12 +2,13 @@ package com.apphance.flow.configuration.variants
 
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ProjectConfiguration
-import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
+import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceMode
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.google.inject.assistedinject.Assisted
+import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
@@ -19,7 +20,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
 
     @Inject ProjectConfiguration conf
     @Inject ApphanceConfiguration apphanceConf
-    @Inject AndroidReleaseConfiguration androidReleaseConf
+    @Inject ApphanceArtifactory apphanceArtifactory
 
     @Inject
     AbstractVariant(@Assisted String name) {
@@ -41,17 +42,17 @@ abstract class AbstractVariant extends AbstractConfiguration {
     }
 
     def apphanceMode = new ApphanceModeProperty(
-            interactive: { apphanceConf.enabled },
+            interactive: { apphanceEnabled },
             required: { apphanceConf.enabled },
             possibleValues: { possibleApphanceModes() },
-            validator: { it in possibleApphanceModes() }
+            validator: { it -> it.toString() in possibleApphanceModes() }
     )
 
     def apphanceAppKey = new StringProperty(
-            interactive: { apphanceConf.enabled && !(DISABLED == apphanceMode.value) },
+            interactive: { apphanceEnabled && !(DISABLED == apphanceMode.value) },
             required: { apphanceConf.enabled },
             validator: { it?.matches('[a-z0-9]+') },
-            validationMessage: "key should match '[a-z0-9]+'"
+            validationMessage: "Key should match '[a-z0-9]+'"
     )
 
     List<String> possibleApphanceModes() {
@@ -59,16 +60,37 @@ abstract class AbstractVariant extends AbstractConfiguration {
     }
 
     def apphanceLibVersion = new StringProperty(
-            interactive: { apphanceConf.enabled && !(DISABLED == apphanceMode.value) },
-            validator: { it?.matches('([0-9]+\\.)*[0-9]+') }
+            interactive: { apphanceEnabled && !(DISABLED == apphanceMode.value) },
+            possibleValues: { possibleApphanceLibVersions() },
+            validator: { it?.matches('([0-9]+\\.)*[0-9]+(-[^-]*)?') }
     )
+
+    abstract List<String> possibleApphanceLibVersions()
+
+    @Lazy
+    @PackageScope
+    boolean apphanceEnabled = {
+        def enabled = apphanceConf.enabled && apphanceEnabledForVariant
+        if (!enabled)
+            apphanceMode.value = DISABLED
+        enabled
+    }()
+
+    @Lazy
+    boolean apphanceEnabledForVariant = {
+        true
+    }()
 
     String getName() {
         this.@name
     }
 
     String getBuildTaskName() {
-        "build$name"
+        "build$name".replaceAll('\\s', '')
+    }
+
+    String getUploadTaskName() {
+        "upload$name".replaceAll('\\s', '')
     }
 
     @Override
@@ -81,4 +103,15 @@ abstract class AbstractVariant extends AbstractConfiguration {
     }
 
     abstract String getPrefix()
+
+    @Override
+    void checkProperties() {
+        if (apphanceConf.enabled) {
+            defaultValidation apphanceMode
+
+            if (apphanceMode.value != DISABLED) {
+                defaultValidation apphanceAppKey, apphanceLibVersion
+            }
+        }
+    }
 }

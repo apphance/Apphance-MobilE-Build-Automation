@@ -3,7 +3,7 @@ package com.apphance.flow.plugins.ios.ocunit.tasks
 import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.ios.IOSUnitTestConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.google.common.io.Files
 import spock.lang.Specification
@@ -13,7 +13,7 @@ class RunUnitTestsTasksSpec extends Specification {
 
     def runUnitTestTask = create RunUnitTestsTasks
 
-    def variant = GroovyStub(AbstractIOSVariant)
+    def variant = GroovyStub(IOSVariant)
     def iosExecutor = GroovyMock(IOSExecutor)
     def unitTestConf = GroovyMock(IOSUnitTestConfiguration) { getVariant() >> variant }
 

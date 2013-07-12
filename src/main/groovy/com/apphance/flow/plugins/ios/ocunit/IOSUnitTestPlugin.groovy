@@ -7,6 +7,8 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static org.gradle.api.logging.Logging.getLogger
+
 /**
  * Unit test plugin - all unit tests are run here.
  *
@@ -17,11 +19,14 @@ import javax.inject.Inject
  */
 class IOSUnitTestPlugin implements Plugin<Project> {
 
+    private logger = getLogger(getClass())
+
     @Inject IOSUnitTestConfiguration unitTestConf
 
     @Override
     void apply(Project project) {
         if (unitTestConf.isEnabled()) {
+            logger.lifecycle("Applying plugin ${this.class.simpleName}")
             project.task(RunUnitTestsTasks.NAME, type: RunUnitTestsTasks)
         }
     }

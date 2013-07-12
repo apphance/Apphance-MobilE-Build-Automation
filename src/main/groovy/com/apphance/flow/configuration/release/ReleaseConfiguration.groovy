@@ -9,6 +9,7 @@ import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.env.Environment
 import com.apphance.flow.plugins.release.FlowArtifact
+import groovy.transform.PackageScope
 import org.gradle.api.GradleException
 
 import javax.imageio.ImageIO
@@ -18,6 +19,7 @@ import java.util.regex.Pattern
 
 import static com.apphance.flow.env.Environment.JENKINS
 import static com.apphance.flow.util.file.FileManager.relativeTo
+import static java.io.File.separator
 import static org.apache.commons.lang.StringUtils.isBlank
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
@@ -26,8 +28,8 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     final String configurationName = 'Release configuration'
 
     public static final String OTA_DIR = 'flow-ota'
-    def MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
-    def ALL_EMAIL_FLAGS = [
+    public static final MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
+    public static final ALL_EMAIL_FLAGS = [
             'installableSimulator',
             'qrCode',
             'imageMontage'
@@ -50,7 +52,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     String releaseMailSubject
 
     Collection<String> getReleaseNotes() {
-        (reader.systemProperty('release.notes') ?: reader.envVariable('RELEASE_NOTES') ?: '').split('\n').findAll {
+        (reader.envVariable('RELEASE_NOTES') ?: '').split('\n').findAll {
             isNotBlank(it)
         }
     }
@@ -73,28 +75,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
         new SimpleDateFormat("dd-MM-yyyy HH:mm zzz", locale).format(new Date())
     }
 
-    File getOtaDir() {
-        new File(conf.rootDir, OTA_DIR)
-    }
-
-    def iconFile = new FileProperty(
-            name: 'release.icon',
-            message: 'Path to project\'s icon file, must be relative to the root dir of project',
-            required: { true },
-            defaultValue: { relativeTo(conf.rootDir.absolutePath, defaultIcon().absolutePath) },
-            possibleValues: { possibleIcons() },
-            validator: {
-                if (!it) return false
-                def file = new File(conf.rootDir, it as String)
-                file?.absolutePath?.trim() ? (file.exists() && ImageIO.read(file)) : false
-            }
-    )
-
-    abstract File defaultIcon()
-
-    abstract List<String> possibleIcons()
-
-    def projectURL = new URLProperty(
+    def releaseUrl = new URLProperty(
             name: 'release.url',
             message: 'Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as ' +
                     'subdirectory of ota dir when artifacts are created locally.',
@@ -106,20 +87,43 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
                 } catch (Exception e) { return false }
             },
             validationMessage: "Should be a valid URL"
-
     )
 
-    String getProjectDirName() {
-        def url = projectURL.value
+    URL getReleaseUrlVersioned() {
+        new URL("$releaseUrl.value$separator$conf.fullVersionString")
+    }
+
+    @PackageScope
+    String getReleaseDirName() {
+        def url = releaseUrl.value
         def split = url.path.split('/')
         split[-1]
     }
 
-    URL getBaseURL() {
-        def url = projectURL.value
-        def split = url.path.split('/')
-        new URL(url.protocol, url.host, url.port, (split[0..-2]).join('/') + '/')
+    File getReleaseDir() {
+        new File(otaDir, "$releaseDirName$separator$conf.fullVersionString")
     }
+
+    File getOtaDir() {
+        new File(conf.rootDir, OTA_DIR)
+    }
+
+    def iconFile = new FileProperty(
+            name: 'release.icon',
+            message: 'Path to project\'s icon file, must be relative to the root dir of project',
+            required: { true },
+            defaultValue: { defaultIcon() ? relativeTo(conf.rootDir.absolutePath, defaultIcon().absolutePath) : null },
+            possibleValues: { possibleIcons() },
+            validator: {
+                if (!it) return false
+                def file = new File(conf.rootDir, it as String)
+                file?.absolutePath?.trim() ? (file.exists() && ImageIO.read(file)) : false
+            }
+    )
+
+    abstract File defaultIcon()
+
+    abstract List<String> possibleIcons()
 
     def language = new StringProperty(
             name: 'release.language',
@@ -151,7 +155,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             name: 'release.mail.flags',
             message: 'Flags for release email',
             defaultValue: { ['qrCode', 'imageMontage'] as List<String> },
-            validator: { it?.split(',')?.every { it?.trim() in ALL_EMAIL_FLAGS } }
+            validator: { it?.split(',')?.every { it?.trim() in ReleaseConfiguration.ALL_EMAIL_FLAGS } }
     )
 
     String getMailPort() {
@@ -172,14 +176,6 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             name: 'mail.server',
             message: 'Mail server'
     )
-
-    File getTargetDir() {
-        new File(new File(otaDir, projectDirName), conf.fullVersionString)
-    }
-
-    URL getVersionedApplicationUrl() {
-        new URL(baseURL, "${projectDirName}/${conf.fullVersionString}/")
-    }
 
     boolean isEnabled() {
         enabledInternal && conf.isEnabled()
@@ -216,8 +212,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     @Override
     void checkProperties() {
-
-        check !checkException { baseURL }, "Property '${projectURL.name}' is not valid! Should be valid URL address!"
+        check !checkException { releaseDirName }, "Property '${releaseUrl.name}' is not valid! Should end with folder name where files are copied!"
         check language.validator(language.value), "Property '${language.name}' is not valid! Should be two letter lowercase!"
         check country.validator(country.value), "Property '${country.name}' is not valid! Should be two letter uppercase!"
         check releaseMailFrom.validator(releaseMailFrom.value), "Property '${releaseMailFrom.name}' is not valid! Should be valid " +
@@ -250,4 +245,3 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
            |It should be valid email address!""".stripMargin()
     }
 }
-

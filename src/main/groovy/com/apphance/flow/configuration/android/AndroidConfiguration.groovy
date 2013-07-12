@@ -13,6 +13,7 @@ import static com.apphance.flow.detection.ProjectType.ANDROID
 import static com.apphance.flow.plugins.android.release.tasks.UpdateVersionTask.WHITESPACE_PATTERN
 import static com.google.common.base.Strings.isNullOrEmpty
 import static java.io.File.pathSeparator
+import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
 @com.google.inject.Singleton
@@ -26,6 +27,7 @@ class AndroidConfiguration extends ProjectConfiguration {
     @Inject ApphanceConfiguration apphanceConf
 
     private Properties androidProperties
+    private bundle = getBundle('validation')
 
     @Override
     @Inject
@@ -79,7 +81,7 @@ class AndroidConfiguration extends ProjectConfiguration {
         androidHome ? new File(androidHome) : null
     }
 
-    final Collection<String> sourceExcludes = super.sourceExcludes + ['**/*.class', '**/bin/**']
+    @Lazy Collection<String> sourceExcludes = { super.sourceExcludes + ['**/*.class', '**/bin/**'] }()
 
     private Collection<File> sdkJarLibs = []
 
@@ -197,16 +199,13 @@ class AndroidConfiguration extends ProjectConfiguration {
 
     @Override
     void checkProperties() {
+        super.checkProperties()
+
         check !isNullOrEmpty(reader.envVariable('ANDROID_HOME')), "Environment variable 'ANDROID_HOME' must be set!"
         check rootDir.canWrite(), "No write access to project root dir ${rootDir.absolutePath}, check file system permissions!"
         check !isNullOrEmpty(projectName.value), "Property ${projectName.name} must be set!"
-        check versionCode?.matches('[0-9]+'), """|Property 'versionCode' must have numerical value! Check 'version.code'
-                                                 |system property or 'VERSION_STRING' env variable
-                                                 |or AndroidManifest.xml file!""".stripMargin()
-        check((isNotEmpty(versionString) && !WHITESPACE_PATTERN.matcher(versionString).find()), """|Property 'versionString' must not have
-                                                                          |whitespace characters! Check 'version.string'
-                                                                          |system property or 'VERSION_STRING' env
-                                                                          |variable or AndroidManifest.xml file!""".stripMargin())
+        check versionCode?.matches('[0-9]+'), bundle.getString('exception.android.version.code')
+        check((isNotEmpty(versionString) && !WHITESPACE_PATTERN.matcher(versionString).find()), bundle.getString('exception.android.version.string'))
         check target.validator(target.value), "Property ${target.name} must be set!"
         check !isNullOrEmpty(mainPackage), "Property 'package' must be set! Check AndroidManifest.xml file!"
     }

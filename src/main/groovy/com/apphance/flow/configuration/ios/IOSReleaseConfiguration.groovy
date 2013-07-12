@@ -15,6 +15,7 @@ import static groovy.io.FileType.FILES
 class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     Map<String, FlowArtifact> distributionZipFiles = [:]
+    Map<String, FlowArtifact> xcArchiveZipFiles = [:]
     Map<String, FlowArtifact> dSYMZipFiles = [:]
     Map<String, FlowArtifact> ipaFiles = [:]
     Map<String, FlowArtifact> manifestFiles = [:]
@@ -28,8 +29,8 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     @Override
     File defaultIcon() {
-        relativeTo(conf.rootDir.absolutePath,
-                (iconFiles.find { it.name.toLowerCase().startsWith('icon') } ?: iconFiles.find()).absolutePath)
+        def icon = iconFiles.find { it.name.toLowerCase().startsWith('icon') } ?: iconFiles.find()
+        icon ? relativeTo(conf.rootDir.absolutePath, icon.absolutePath) : null
     }
 
     @Override
@@ -67,7 +68,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
     }
 
     @Override
-    String getMessage() {
+    String explainDisabled() {
         "To enable configuration you need to provide mobile provision file somewhere in project directory.\n" +
                 "File must match *.mobileprovision. Can be placed anywhere in project source."
     }

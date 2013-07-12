@@ -16,15 +16,15 @@ import static org.gradle.api.logging.Logging.getLogger
  */
 class AndroidTestPlugin implements Plugin<Project> {
 
-    def log = getLogger(this.class)
+    private logger = getLogger(getClass())
 
-    @Inject AndroidTestConfiguration testConf
     @Inject AndroidConfiguration conf
+    @Inject AndroidTestConfiguration testConf
 
     @Override
     void apply(Project project) {
         if (testConf.isEnabled()) {
-            log.lifecycle("Applying plugin ${this.class.simpleName}")
+            logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
             if (testConf.emmaEnabled.value) {
                 project.configurations.create('emma')

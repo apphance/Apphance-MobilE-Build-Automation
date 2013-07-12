@@ -1,8 +1,7 @@
 package com.apphance.flow.plugins.ios.release.tasks
 
-import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
@@ -18,9 +17,7 @@ import static java.net.URLEncoder.encode
 
 class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
 
-    @Inject IOSConfiguration conf
     @Inject IOSVariantsConfiguration variantsConf
-    @Inject IOSReleaseConfiguration releaseConf
     @Inject MobileProvisionParser mpParser
     @Inject IOSArtifactProvider artifactProvider
 
@@ -37,7 +34,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     }
 
     @PackageScope
-    void prepareArtifacts(AbstractIOSVariant variant) {
+    void prepareArtifacts(IOSVariant variant) {
         def bi = artifactProvider.builderInfo(variant)
 
         def zipDist = artifactProvider.zipDistribution(bi)
@@ -87,7 +84,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
                 fileIndexUrl: releaseConf.fileIndexFile?.url,
                 releaseNotes: releaseConf.releaseNotes,
                 installable: dmgImgFiles,
-                mainTarget: conf.iosVariantsConf.mainVariant.target,
+                mainTarget: conf.variantsConf.mainVariant.target,
                 families: FAMILIES,
                 fileSize: getHumanReadableSize(fileSize),
                 releaseMailFlags: releaseConf.releaseMailFlags,
@@ -130,7 +127,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
             if (releaseConf.manifestFiles[v.name]) {
                 logger.info("Preparing OTA configuration for ${v.name}")
                 def encodedUrl = encode(releaseConf.manifestFiles[v.name].url.toString(), "utf-8")
-                urlMap.put(v.name, "itms-services://?action=download-manifest&url=${encodedUrl}")
+                urlMap.put(v.name, "itms-services://?action=download-manifest&amp;url=${encodedUrl}")
             } else {
                 logger.warn("Skipping preparing OTA configuration for ${v.name} -> missing manifest")
             }

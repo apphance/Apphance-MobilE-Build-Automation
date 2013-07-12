@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
@@ -28,10 +28,10 @@ class CopyMobileProvisionTaskSpec extends Specification {
         given:
         task.variantsConf = GroovyStub(IOSVariantsConfiguration, {
             getVariants() >> [
-                    GroovyStub(AbstractIOSVariant) {
+                    GroovyStub(IOSVariant) {
                         getName() >> 'SampleVariant'
                         getMobileprovision() >> new FileProperty(value: mobileprovisionFile)
-                        getEffectiveBundleId() >> 'MT2B94Q7N6.com.apphance.flow'
+                        getBundleId() >> 'MT2B94Q7N6.com.apphance.flow'
                     }
             ]
         })
@@ -61,10 +61,10 @@ class CopyMobileProvisionTaskSpec extends Specification {
         given:
         task.variantsConf = GroovyStub(IOSVariantsConfiguration, {
             getVariants() >> [
-                    GroovyStub(AbstractIOSVariant) {
+                    GroovyStub(IOSVariant) {
                         getName() >> 'SampleVariant'
                         getMobileprovision() >> new FileProperty(value: mobileprovisionFile)
-                        getEffectiveBundleId() >> 'MT2B94Q7N6.com.apphance.amebaa'
+                        getBundleId() >> 'MT2B94Q7N6.com.apphance.amebaa'
                     }
             ]
         })

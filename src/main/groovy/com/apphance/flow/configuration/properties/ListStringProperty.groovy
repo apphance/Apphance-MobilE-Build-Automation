@@ -13,7 +13,7 @@ class ListStringProperty extends AbstractProperty<List<String>> {
         }
     }
 
-    private List<String> convert(String value) {
+    List<String> convert(String value) {
         value.trim().replaceAll('[\\[\\]]', '').split(SEPARATOR)*.trim().findAll { isNotBlank(it) }
     }
 

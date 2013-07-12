@@ -10,6 +10,7 @@ import com.apphance.flow.executor.AntExecutor
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
+import com.apphance.flow.plugins.android.buildplugin.tasks.AndroidProjectUpdater
 import com.apphance.flow.plugins.android.buildplugin.tasks.SingleVariantTask
 import com.apphance.flow.plugins.release.FlowArtifact
 import spock.lang.Specification
@@ -42,20 +43,22 @@ class SingleVariantTaskSpec extends Specification {
     def conf = GroovyStub(AndroidConfiguration) {
         getTarget() >> new StringProperty(value: 'android-7')
         getProjectName() >> new StringProperty(value: projectName)
-        getRootDir() >> new File('')
+        getRootDir() >> project.rootDir
     }
     def executor = new CommandExecutor(fileLinker, logFileGenerator)
     def antExecutor = new AntExecutor(executor: executor)
     def androidExecutor = new AndroidExecutor(executor: executor, conf: conf)
+    def projectUpdater = new AndroidProjectUpdater(conf: conf, executor: androidExecutor)
 
     def setup() {
         task.antExecutor = antExecutor
+        task.projectUpdater = projectUpdater
         task.ant = project.ant
-        task.androidExecutor = androidExecutor
         task.releaseConf = Stub(AndroidReleaseConfiguration) { isEnabled() >> true }
-        task.conf = conf
-        task.variant = GroovyStub(AndroidVariantConfiguration) {
-            getTmpDir() >> new File(variantTmpDir.toString())
+        task.variant = GroovyMock(AndroidVariantConfiguration) {
+            getTmpDir() >> new File(project.rootDir, variantTmpDir.toString())
+            getOldPackage() >> new StringProperty()
+            getNewPackage() >> new StringProperty()
         }
 
         assert project.file(TMP_DIR).deleteDir()

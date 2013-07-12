@@ -2,8 +2,9 @@ package com.apphance.flow.executor
 
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
-import javax.inject.Inject
 import org.gradle.api.GradleException
+
+import javax.inject.Inject
 
 /**
  * Executor of ant targets.
@@ -17,7 +18,7 @@ class AntExecutor {
     @Inject
     CommandExecutor executor
 
-    def executeTarget(File rootDir, String command, Map params = [:]) {
+    void executeTarget(File rootDir, String command, Map params = [:]) {
         try {
             executor.executeCommand(new Command([runDir: rootDir, cmd: "ant $command".split(), failOnError: true] + params))
         } catch (IOException e) {

@@ -4,10 +4,11 @@ import org.gradle.api.GradleException
 
 class Preconditions {
 
-    def throwIfCondition(Boolean condition, Class<? extends RuntimeException> c = GradleException, String msg) {
+    def throwIfConditionTrue(condition, String msg, String output = '') {
         validate(!condition) {
-            def constructor = c.getConstructor(String)
+            def constructor = GradleException.getConstructor(String)
             def re = (RuntimeException) constructor.newInstance(msg);
+            re.metaClass.output = output
             throw re;
         }
     }

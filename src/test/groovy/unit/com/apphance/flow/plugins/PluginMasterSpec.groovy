@@ -4,6 +4,7 @@ import com.apphance.flow.detection.ProjectTypeDetector
 import com.apphance.flow.di.CommandExecutorModule
 import com.apphance.flow.di.ConfigurationModule
 import com.apphance.flow.di.EnvironmentModule
+import com.apphance.flow.di.IOSModule
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.android.analysis.AndroidAnalysisPlugin
 import com.apphance.flow.plugins.android.apphance.AndroidApphancePlugin
@@ -17,7 +18,7 @@ import com.apphance.flow.plugins.ios.framework.IOSFrameworkPlugin
 import com.apphance.flow.plugins.ios.ocunit.IOSUnitTestPlugin
 import com.apphance.flow.plugins.ios.release.IOSReleasePlugin
 import com.apphance.flow.plugins.project.ProjectPlugin
-import com.apphance.flow.plugins.release.ProjectReleasePlugin
+import com.apphance.flow.plugins.release.ReleasePlugin
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import org.gradle.api.Project
@@ -93,8 +94,8 @@ class PluginMasterSpec extends Specification {
         where:
         before               | after
         ProjectPlugin        | AndroidPlugin
-        AndroidPlugin        | ProjectReleasePlugin
-        ProjectReleasePlugin | AndroidReleasePlugin
+        AndroidPlugin        | ReleasePlugin
+        ReleasePlugin | AndroidReleasePlugin
     }
 
     def 'test iOS plugins order'() {
@@ -124,15 +125,15 @@ class PluginMasterSpec extends Specification {
         where:
         before               | after
         ProjectPlugin        | IOSPlugin
-        IOSPlugin            | ProjectReleasePlugin
-        ProjectReleasePlugin | IOSReleasePlugin
+        IOSPlugin            | ReleasePlugin
+        ReleasePlugin | IOSReleasePlugin
     }
 
     final projectTypeDetectorMock = Mock(ProjectTypeDetector)
 
     def mockToMap = { [(it): Mock(it)] }
 
-    static commonPlugins = [ProjectPlugin, ProjectReleasePlugin]
+    static commonPlugins = [ProjectPlugin, ReleasePlugin]
 
     static androidPlugins = [
             AndroidPlugin,
@@ -148,7 +149,7 @@ class PluginMasterSpec extends Specification {
             IOSFrameworkPlugin,
             IOSReleasePlugin,
             IOSApphancePlugin,
-            IOSUnitTestPlugin,
+//            IOSUnitTestPlugin,//TODO restore after tests are implemented
     ]
 
     def createInjectorForPluginsMocks(mocks, file, projectType) {
@@ -165,6 +166,7 @@ class PluginMasterSpec extends Specification {
 
         return Guice.createInjector(
                 new EnvironmentModule(),
+                new IOSModule(project),
                 new CommandExecutorModule(project),
                 new ConfigurationModule(project),
                 new AbstractModule() {

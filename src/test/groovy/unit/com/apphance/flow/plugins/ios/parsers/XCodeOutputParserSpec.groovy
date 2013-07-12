@@ -58,27 +58,6 @@ class XCodeOutputParserSpec extends Specification {
         XCODE_LIST.size() == 27
     }
 
-    def 'reads buildable targets'() {
-        given:
-        def targets = parser.readBuildableTargets(XCODE_LIST)
-        expect:
-        ['Some', 'SomeWithMonkey'] == targets
-    }
-
-    def 'reads buildable configurations'() {
-        given:
-        def configurations = parser.readBuildableConfigurations(XCODE_LIST)
-        expect:
-        ['QAWithApphance', 'QAWithoutApphance'] == configurations
-    }
-
-    def 'reads project name'() {
-        given:
-        def projectName = parser.readProjectName(XCODE_LIST)
-        expect:
-        'Project name0' == projectName
-    }
-
     def 'reads iphone sdks'() {
         given:
         def sdks = parser.readIphoneSdks(XCODE_SHOWSDK)

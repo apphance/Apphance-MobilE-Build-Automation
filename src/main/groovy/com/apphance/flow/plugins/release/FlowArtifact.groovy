@@ -10,7 +10,7 @@ class FlowArtifact {
     URL url
     File location
 
-    final List<FlowArtifact> childArtifacts = []
+    List<FlowArtifact> childArtifacts = []
 
     String getRelativeUrl(def baseUrl) {
         l.info("Retrieving relative url from $url with base $baseUrl")

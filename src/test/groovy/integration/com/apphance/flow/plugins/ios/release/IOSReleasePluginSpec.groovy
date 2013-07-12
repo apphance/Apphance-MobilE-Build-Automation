@@ -1,7 +1,6 @@
 package com.apphance.flow.plugins.ios.release
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.flow.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask
 import spock.lang.Specification
@@ -23,8 +22,6 @@ class IOSReleasePluginSpec extends Specification {
         and:
         def irp = new IOSReleasePlugin()
         irp.releaseConf = irc
-        irp.builder = new IOSSingleVariantBuilder()
-        irp.listener = GroovyStub(IOSReleaseListener)
 
         when:
         irp.apply(project)
@@ -32,9 +29,6 @@ class IOSReleasePluginSpec extends Specification {
         then:
         project.tasks[AbstractUpdateVersionTask.NAME].group == FLOW_RELEASE.name()
         project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.name()
-
-        and:
-        irp.builder.buildListeners.size() > 0
     }
 
     def 'no tasks available when configuration is inactive'() {

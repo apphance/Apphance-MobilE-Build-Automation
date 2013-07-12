@@ -22,7 +22,7 @@ class IOSConfiguration extends ProjectConfiguration {
     public static final PROJECT_PBXPROJ = 'project.pbxproj'
 
     @Inject IOSExecutor executor
-    @Inject IOSVariantsConfiguration iosVariantsConf
+    @Inject IOSVariantsConfiguration variantsConf
 
     @Inject
     @Override
@@ -32,12 +32,12 @@ class IOSConfiguration extends ProjectConfiguration {
 
     @Override
     String getVersionCode() {
-        iosVariantsConf.mainVariant.versionCode
+        variantsConf.mainVariant.versionCode
     }
 
     @Override
     String getVersionString() {
-        iosVariantsConf.mainVariant.versionString
+        variantsConf.mainVariant.versionString
     }
 
     @Override
@@ -48,13 +48,9 @@ class IOSConfiguration extends ProjectConfiguration {
                 value
             }
         }
-        sp.value = iosVariantsConf.mainVariant.projectName
+        sp.value = variantsConf.mainVariant.projectName
         sp
     }
-
-    @Lazy File schemesDir = {
-        new File("$rootDir$separator$xcodeDir.value", "xcshareddata${separator}xcschemes")
-    }()
 
     def xcodeDir = new FileProperty(
             name: 'ios.dir.xcode',
@@ -79,8 +75,6 @@ class IOSConfiguration extends ProjectConfiguration {
         dirs
     }()
 
-    @Lazy List targetConfigurationMatrix = { [targets, configurations].combinations().sort() }()
-
     List<String> xcodebuildExecutionPath() {
         xcodeDir.value ? ['xcodebuild', '-project', xcodeDir.value as String] : ['xcodebuild']
     }
@@ -101,17 +95,12 @@ class IOSConfiguration extends ProjectConfiguration {
             required: { true }
     )
 
-    List<String> getTargets() {
-        executor.targets
-    }
-
-    List<String> getConfigurations() {
-        executor.configurations
-    }
-
     List<String> getSchemes() {
         executor.schemes
     }
+
+    @Lazy
+    Collection<String> sourceExcludes = { super.sourceExcludes + ["**${separator}$xcodeDir.value${separator}xcuserdata${separator}**"] }()
 
     @Override
     boolean isEnabled() {
@@ -120,6 +109,8 @@ class IOSConfiguration extends ProjectConfiguration {
 
     @Override
     void checkProperties() {
+        super.checkProperties()
+
         defaultValidation xcodeDir, sdk, simulatorSdk
     }
 }

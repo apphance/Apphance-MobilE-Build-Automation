@@ -6,6 +6,7 @@ import java.nio.file.Files
 
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static com.google.common.base.Preconditions.checkArgument
+import static java.io.File.createTempFile
 
 class FlowUtils {
 
@@ -39,5 +40,11 @@ class FlowUtils {
     File unzip(File zip, File destDir) {
         new AntBuilder().unzip(src: zip.absolutePath, dest: destDir.absolutePath)
         destDir
+    }
+
+    File getTempFile() {
+        File file = createTempFile('prefix', 'suffix')
+        file.deleteOnExit()
+        file
     }
 }

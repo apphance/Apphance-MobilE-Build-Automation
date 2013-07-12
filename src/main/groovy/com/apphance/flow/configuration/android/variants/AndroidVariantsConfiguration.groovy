@@ -15,7 +15,7 @@ import static org.gradle.api.logging.Logging.getLogger
 @com.google.inject.Singleton
 class AndroidVariantsConfiguration extends AbstractConfiguration {
 
-    def log = getLogger(getClass())
+    def logger = getLogger(getClass())
 
     String configurationName = 'Android Variants Configuration'
 
@@ -35,7 +35,11 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     def variantsNames = new ListStringProperty(
             name: 'android.variants',
             message: 'Variants',
-            possibleValues: { variantsNames.value ?: [] }
+            possibleValues: { variantsNames.value ?: [] },
+            validator: {
+                def list = variantsNames.convert(it.toString())
+                list.size() == list.unique().size() && !list.isEmpty()
+            }
     )
 
     private List<AndroidVariantConfiguration> buildVariantsList() {

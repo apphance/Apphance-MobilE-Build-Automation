@@ -1,7 +1,9 @@
 package com.apphance.flow.configuration.android.variants
 
 import com.apphance.flow.configuration.android.AndroidBuildMode
+import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
+import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.variants.AbstractVariant
 import com.google.common.io.Files
 import com.google.inject.assistedinject.Assisted
@@ -19,6 +21,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
 
     final String prefix = 'android'
 
+    @Inject AndroidReleaseConfiguration androidReleaseConf
     private File vDir
 
     @AssistedInject
@@ -51,6 +54,24 @@ class AndroidVariantConfiguration extends AbstractVariant {
             //validator: { it in releaseConf.findMobileProvisionFiles()*.name }TODO
     )
 
+    def oldPackage = new StringProperty(
+            name: "android.variant.${name}.replacePackage.oldPackage",
+            interactive: { false })
+    def newPackage = new StringProperty(
+            name: "android.variant.${name}.replacePackage.newPackage",
+            interactive: { false })
+    def newLabel = new StringProperty(
+            name: "android.variant.${name}.replacePackage.newLabel",
+            interactive: { false })
+    def newName = new StringProperty(
+            name: "android.variant.${name}.replacePackage.newName",
+            interactive: { false })
+
+    @Override
+    List<String> possibleApphanceLibVersions() {
+        apphanceArtifactory.androidLibraries(apphanceMode.value)
+    }
+
     @Override
     String getConfigurationName() {
         "Android Variant ${name}"
@@ -58,6 +79,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
 
     @Override
     void checkProperties() {
+        super.checkProperties()
         if (androidReleaseConf.enabled || apphanceConf.enabled) {
             checkSigningConfiguration()
         }

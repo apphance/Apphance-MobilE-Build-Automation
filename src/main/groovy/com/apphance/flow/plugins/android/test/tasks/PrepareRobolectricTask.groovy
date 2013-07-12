@@ -21,7 +21,7 @@ class PrepareRobolectricTask extends DefaultTask {
     void prepareRobolectric() {
         File path = new File(conf.rootDir.path, 'test/robolectric')
         if (path.exists()) {
-            println "Robolectric test directory exists, now I'm going to recreate the project (no source files are going to be touched)"
+            logger.info("Robolectric test directory exists, now I'm going to recreate the project (no source files are going to be touched)")
             setUpRobolectricProject(path)
         } else {
             setUpRobolectricProject(path)

@@ -45,12 +45,12 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
     }
 
     @Override
-    String getMessage() {
+    String explainDisabled() {
         "'$configurationName' cannot be enabled because '${jarLibraryConf.configurationName}' is enabled and those plugins are mutually exclusive.\n"
     }
 
     @Override
     void checkProperties() {
-        check !jarLibraryConf.enabled, message
+        check !jarLibraryConf.enabled, explainDisabled()
     }
 }

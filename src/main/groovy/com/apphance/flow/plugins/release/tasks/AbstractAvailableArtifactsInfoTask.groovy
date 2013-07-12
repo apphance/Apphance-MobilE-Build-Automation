@@ -11,6 +11,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.flow.util.file.FileDownloader.downloadFile
+import static java.io.File.separator
 import static java.net.URLEncoder.encode
 import static java.util.ResourceBundle.getBundle
 
@@ -33,12 +34,11 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     @TaskAction
     void availableArtifactsInfo() {
-        String otaFolderPrefix = "${releaseConf.projectDirName}/${conf.fullVersionString}"
 
         mailMsgArtifact()
-        fileIndexArtifact(otaFolderPrefix)
-        plainFileIndexArtifact(otaFolderPrefix)
-        otaIndexFileArtifact(otaFolderPrefix)
+        fileIndexArtifact()
+        plainFileIndexArtifact()
+        otaIndexFileArtifact()
         qrCodeArtifact()
 
         prepareOtherArtifacts()
@@ -53,46 +53,46 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     void mailMsgArtifact() {
         releaseConf.mailMessageFile = new FlowArtifact(
                 name: 'Mail message file',
-                url: new URL(releaseConf.versionedApplicationUrl, 'message_file.html'),
-                location: new File(releaseConf.targetDir, 'message_file.html'))
+                url: new URL("$releaseConf.releaseUrlVersioned${separator}message_file.html"),
+                location: new File(releaseConf.releaseDir, 'message_file.html'))
         releaseConf.mailMessageFile.location.parentFile.mkdirs()
         releaseConf.mailMessageFile.location.delete()
     }
 
-    void fileIndexArtifact(String otaFolderPrefix) {
+    void fileIndexArtifact() {
         releaseConf.fileIndexFile = new FlowArtifact(
                 name: "The file index file: ${conf.projectName.value}",
-                url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/file_index.html"),
-                location: new File(releaseConf.otaDir, "${otaFolderPrefix}/file_index.html")
+                url: new URL("$releaseConf.releaseUrlVersioned${separator}file_index.html"),
+                location: new File(releaseConf.releaseDir, 'file_index.html')
         )
         releaseConf.fileIndexFile.location.parentFile.mkdirs()
         releaseConf.fileIndexFile.location.delete()
     }
 
-    void plainFileIndexArtifact(String otaFolderPrefix) {
+    void plainFileIndexArtifact() {
         releaseConf.plainFileIndexFile = new FlowArtifact(
                 name: "The plain file index file: ${conf.projectName.value}",
-                url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/plain_file_index.html"),
-                location: new File(releaseConf.otaDir, "${otaFolderPrefix}/plain_file_index.html"))
+                url: new URL("$releaseConf.releaseUrlVersioned${separator}plain_file_index.html"),
+                location: new File(releaseConf.releaseDir, 'plain_file_index.html'))
         releaseConf.plainFileIndexFile.location.parentFile.mkdirs()
         releaseConf.plainFileIndexFile.location.delete()
     }
 
-    void otaIndexFileArtifact(String otaFolderPrefix) {
+    void otaIndexFileArtifact() {
         releaseConf.otaIndexFile = new FlowArtifact(
                 name: "The ota index file: ${conf.projectName.value}",
-                url: new URL(releaseConf.baseURL, "${otaFolderPrefix}/index.html"),
-                location: new File(releaseConf.otaDir, "${otaFolderPrefix}/index.html"))
+                url: new URL("$releaseConf.releaseUrlVersioned${separator}index.html"),
+                location: new File(releaseConf.releaseDir, 'index.html'))
         releaseConf.otaIndexFile.location.parentFile.mkdirs()
         releaseConf.otaIndexFile.location.delete()
     }
 
     void qrCodeArtifact() {
         def qrCodeFileName = "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"
-        def qrCodeFile = new File(releaseConf.targetDir, qrCodeFileName)
+        def qrCodeFile = new File(releaseConf.releaseDir, qrCodeFileName)
         releaseConf.QRCodeFile = new FlowArtifact(
                 name: 'QR Code',
-                url: new URL(releaseConf.versionedApplicationUrl, qrCodeFileName),
+                url: new URL("$releaseConf.releaseUrlVersioned$separator$qrCodeFileName"),
                 location: qrCodeFile)
         releaseConf.QRCodeFile.location.parentFile.mkdirs()
         releaseConf.QRCodeFile.location.delete()
@@ -109,7 +109,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     void prepareIconFile() {
         ant.copy(
                 file: new File(project.rootDir, releaseConf.iconFile.value.path),
-                tofile: new File(releaseConf.otaIndexFile.location.parentFile, releaseConf.iconFile.value.name)
+                tofile: new File(releaseConf.releaseDir, releaseConf.iconFile.value.name)
         )
     }
 

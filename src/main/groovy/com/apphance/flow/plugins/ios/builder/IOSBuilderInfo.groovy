@@ -9,16 +9,14 @@ import com.apphance.flow.configuration.ios.IOSBuildMode
 class IOSBuilderInfo {
 
     String id
-    String target
-    String configuration
-    String buildableName
+    String target //TODO to be removed and replaced with name?
+    String appName
+    String productName
     IOSBuildMode mode
-    File buildDir
-    String fullReleaseName
+    File archiveDir
     String filePrefix
+    String versionString
     File mobileprovision
-    File plist
-
 
     @Override
     public String toString() {

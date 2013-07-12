@@ -1,15 +1,13 @@
 package com.apphance.flow.executor
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.ios.parsers.XCodeOutputParser
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
-
-import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 
 class IOSExecutor {
 
@@ -26,16 +24,10 @@ class IOSExecutor {
     }()
 
     private List<String> showSdks() {
-        run('-showsdks')
+        executor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: conf.xcodebuildExecutionPath() + ['-showsdks'])).toList()*.trim()
     }
-
-    @Lazy List<String> targets = {
-        parser.readBaseTargets(list)
-    }()
-
-    @Lazy List<String> configurations = {
-        parser.readBaseConfigurations(list)
-    }()
 
     @Lazy List<String> schemes = {
         parser.readSchemes(list)
@@ -43,13 +35,22 @@ class IOSExecutor {
 
     @Lazy
     @PackageScope
-    List<String> list = { run('-list')*.trim() }()
-
-    @Lazy List<String> pbxProjToJSON = {
+    List<String> list = {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: "plutil -convert json ${conf.xcodeDir.value}/$PROJECT_PBXPROJ -o -".split()))
+                cmd: conf.xcodebuildExecutionPath() + ['-list'])).toList()*.trim()
     }()
+
+    List<String> pbxProjToJSON(File pbxproj) {
+        pbxProjToJSONC(pbxproj)
+    }
+
+    private Closure<List<String>> pbxProjToJSONC = { File pbxproj ->
+        executor.executeCommand(new Command(
+                runDir: pbxproj.parentFile,
+                cmd: ['plutil', '-convert', 'json', pbxproj.absolutePath, '-o', '-']
+        )).toList()
+    }.memoize()
 
     List<String> plistToJSON(File plist) {
         plistToJSONC(plist)
@@ -58,9 +59,16 @@ class IOSExecutor {
     private Closure<List<String>> plistToJSONC = { File plist ->
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: "plutil -convert json ${plist.absolutePath} -o -".split()
-        ))
+                cmd: ['plutil', '-convert', 'json', plist.absolutePath, '-o', '-']
+        )).toList()
     }.memoize()
+
+    List<String> plistToXML(File plistJSON) {
+        executor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: ['plutil', '-convert', 'xml1', plistJSON.absolutePath, '-o', '-']
+        )).toList()
+    }
 
     List<String> mobileprovisionToXml(File mobileprovision) {
         mobileProvisionToXmlC(mobileprovision)
@@ -69,8 +77,8 @@ class IOSExecutor {
     private Closure<List<String>> mobileProvisionToXmlC = { File mobileprovision ->
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: "security cms -D -i ${mobileprovision.absolutePath}".split()
-        ))
+                cmd: ['security', 'cms', '-D', '-i', mobileprovision.absolutePath]
+        )).toList()
     }.memoize()
 
     Map<String, String> buildSettings(String target, String configuration) {
@@ -80,8 +88,8 @@ class IOSExecutor {
     private Closure<Map<String, String>> buildSettingsC = { String target, String configuration ->
         def result = executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath() + "-target $target -configuration $configuration -showBuildSettings".split().flatten()
-        ))
+                cmd: conf.xcodebuildExecutionPath().toList() + ['-target', target, '-configuration', configuration, '-showBuildSettings']
+        )).toList()
         parser.parseBuildSettings(result)
     }.memoize()
 
@@ -93,14 +101,26 @@ class IOSExecutor {
         executor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
     }
 
-    def buildTestVariant(File dir, AbstractIOSVariant variant, String outputFilePath) {
-        executor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd(),
+    Iterator<String> archiveVariant(File dir, List<String> archiveCmd) {
+        executor.executeCommand(new Command(runDir: dir, cmd: archiveCmd))
+    }
+
+    def buildTestVariant(File dir, IOSVariant variant, String outputFilePath) {
+        executor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd,
                 environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: outputFilePath],
                 failOnError: false
         )
     }
 
-    List<String> run(String command) {
-        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: conf.xcodebuildExecutionPath() + command.split().flatten()))
-    }
+    @Lazy
+    String version = {
+        def output = executor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: ['xcodebuild', '-version']
+        ))
+        def line = output.find {
+            it.matches('Xcode\\s+(\\d+\\.)+\\d+')
+        }
+        line ? line.split(' ')[1].trim() : null
+    }()
 }

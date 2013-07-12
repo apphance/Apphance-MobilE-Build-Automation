@@ -73,11 +73,6 @@ class FileManager {
         }
     }
 
-    public static void mkdir(File dir) {
-        if (!(dir.exists() && dir.isDirectory()))
-            dir.mkdirs()
-    }
-
     public static File relativeTo(String from, String to) {
         Paths.get(from).relativize(Paths.get(to)).toFile()
     }

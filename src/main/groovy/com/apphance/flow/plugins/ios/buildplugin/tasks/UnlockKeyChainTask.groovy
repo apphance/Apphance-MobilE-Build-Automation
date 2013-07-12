@@ -34,8 +34,9 @@ class UnlockKeyChainTask extends DefaultTask {
                     'security',
                     'unlock-keychain',
                     '-p',
-                    pass,
-                    location]
+                    '$pass',
+                    location],
+                    secretParams: [pass: pass]
             ))
         } else {
             throw new GradleException("""|No keychain parameters provided. To unlock the keychain,

@@ -133,18 +133,9 @@ configure(install.repositories.mavenInstaller) {
 }
 
 sourceSets {
-    testUnit {
-        groovy.srcDirs = [file('src/test/groovy/unit')]
-        resources.srcDirs = [file('src/test/resources')]
-    }
-    testIntegration {
-        groovy.srcDirs = [file('src/test/groovy/integration')]
-        resources.srcDirs = [file('src/test/resources')]
-    }
-    testFunctional {
-        groovy.srcDirs = [file('src/test/groovy/functional')]
-        resources.srcDirs = [file('src/test/resources')]
-    }
+    testUnit.groovy.srcDirs = ['src/test/groovy/unit']
+    testIntegration.groovy.srcDirs = ['src/test/groovy/integration']
+    testFunctional.groovy.srcDirs = ['src/test/groovy/functional']
 }
 
 dependencies {
@@ -166,18 +157,22 @@ dependencies {
     }
     compile 'org.python:jython-standalone:2.7-b1'
 
-    compile 'gov.nih.imagej:imagej:1.46'
     compile 'org.imgscalr:imgscalr-lib:4.2'
 
     compile 'commons-lang:commons-lang:2.6'
     compile 'commons-collections:commons-collections:3.2.1'
     compile 'com.google.guava:guava:14.0.1'
+    compile 'com.thoughtworks.qdox:qdox:1.12.1'
+    compile('com.google.android:android:4.1.1.4') {
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+    }
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
     testRuntime 'cglib:cglib-nodep:2.2.2'
+    compile fileTree(dir: 'libs', include: '*.jar')
 
     testUnitCompile sourceSets.main.output
     testUnitCompile configurations.testCompile
@@ -193,12 +188,6 @@ dependencies {
     testFunctionalCompile configurations.testCompile
     testFunctionalCompile sourceSets.test.output
     testFunctionalRuntime configurations.testRuntime
-}
-
-file('tmp').mkdirs()
-
-task cleanTmp(type: Delete, description: 'Cleans tmp directory') {
-    delete 'tmp'
 }
 
 def beforeTestClosure = { descriptor ->
@@ -239,7 +228,31 @@ idea {
                 file('src/test/groovy/unit'),
                 file('src/test/groovy/integration'),
                 file('src/test/groovy/functional'),
-                file('src/test/resources'),
         ]
     }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}
+
+file('testProjects').traverse(nameFilter: ~/flow-(log|ota|tmp)/) { File dir ->
+    tasks['clean'] << {
+        ant.delete(dir: dir.absolutePath)
+    }
+}
+
+jar {
+    from file('libs').listFiles().collect { zipTree(it) }
+}
+
+task fatJar(type: Jar, dependsOn: jar) {
+    appendix = "standalone"
+    from zipTree(jar.archivePath)
+    from configurations.compile.collect {
+        it.isDirectory() ? it : zipTree(it).matching {
+            exclude { it.name.endsWith('RSA') || it.name.endsWith('SF') || it.name.endsWith('DSA') }
+        }
+    }
+    manifest.attributes("Main-Class": "com.apphance.flow.plugins.android.apphance.Main")
 }

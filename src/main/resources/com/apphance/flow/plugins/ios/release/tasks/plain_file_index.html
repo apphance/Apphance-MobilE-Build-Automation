@@ -1,17 +1,17 @@
 <!DOCTYPE html>
     <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title>${title}</title>
     </head>
     <body>
         <h1>${title}</h1>
-        ${rb.getString('Version')} ${version}<br>
+        ${rb.getString('Version')} ${version}<br/>
         ${rb.getString('Released')} ${currentDate}
         <h2>${rb.getString('Application_files')}</h2>
         <ul>
             <% variantsConf.variants.each { v -> %>
-            <li><b>${v.name}</b><br>
+            <li><b>${v.name}</b><br/>
                 <ul>
                     <% if (releaseConf.distributionZipFiles[v.name] != null) { %>
                     <li>${rb.getString('Application_zip')}
@@ -48,6 +48,13 @@
                         </a>
                     </li>
                     <% } %>
+                    <% if (releaseConf.xcArchiveZipFiles[v.name] != null) { %>
+                    <li>${rb.getString('XCArchive_file')}
+                        <a href="${releaseConf.xcArchiveZipFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                            ${releaseConf.xcArchiveZipFiles[v.name].url}
+                        </a>
+                    </li>
+                    <% } %>
                     <% if (releaseConf.ahSYMDirs[v.name] != null) { %>
                     <li>${rb.getString('ahSym_dir')}
                         <ul>
@@ -64,7 +71,7 @@
                 </ul>
 
                 <% if (!releaseConf.dmgImageFiles.isEmpty()) { %>
-                    ${rb.getString('Simulator_images')}</br>
+                    ${rb.getString('Simulator_images')}<br/>
                 <ul>
                     <% conf.FAMILIES.each { family -> %>
                     <% if (releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target] != null) { %>

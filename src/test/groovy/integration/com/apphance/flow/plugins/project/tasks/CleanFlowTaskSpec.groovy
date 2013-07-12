@@ -4,7 +4,8 @@ import com.apphance.flow.configuration.ProjectConfiguration
 import org.gradle.api.Project
 import spock.lang.Specification
 
-import static com.apphance.flow.configuration.ProjectConfiguration.*
+import static com.apphance.flow.configuration.ProjectConfiguration.LOG_DIR
+import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class CleanFlowTaskSpec extends Specification {
@@ -19,7 +20,6 @@ class CleanFlowTaskSpec extends Specification {
         pc.project = GroovyStub(Project) {
             file(TMP_DIR) >> project.file(TMP_DIR)
             file(LOG_DIR) >> project.file(LOG_DIR)
-            file(BUILD_DIR) >> project.file(BUILD_DIR)
         }
 
         and:
@@ -34,7 +34,5 @@ class CleanFlowTaskSpec extends Specification {
         project.file(TMP_DIR).list().size() == 0
         project.file(LOG_DIR).exists()
         project.file(LOG_DIR).list().size() == 0
-        project.file(BUILD_DIR).exists()
-        project.file(BUILD_DIR).list().size() == 0
     }
 }

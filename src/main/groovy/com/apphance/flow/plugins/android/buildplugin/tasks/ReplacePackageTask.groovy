@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.android.buildplugin.tasks
 
 import com.apphance.flow.configuration.android.AndroidConfiguration
+import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.plugins.android.parsers.AndroidBuildXmlHelper
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
@@ -26,32 +27,37 @@ class ReplacePackageTask extends DefaultTask {
     @TaskAction
     void replacePackage() {
         String oldPackage = reader.systemProperty('oldPackage')
-        logger.lifecycle("Old package $oldPackage")
         String newPackage = reader.systemProperty('newPackage')
-        logger.lifecycle("New package $newPackage")
         String newLabel = reader.systemProperty('newLabel')
-        logger.lifecycle("New label $newLabel")
-        String newName = reader.systemProperty('newLabel')
-        logger.lifecycle("New name $newName")
-        manifestHelper.replacePackage(conf.rootDir, oldPackage, newPackage, newLabel)
+        String newName = reader.systemProperty('newName')
+
+        replace(conf.rootDir, oldPackage, newPackage, newLabel, newName)
+    }
+
+    void replace(File dir, String oldPackage, String newPackage, String newLabel, String newName) {
+        logger.lifecycle("Old package $oldPackage. New package $newPackage. New label $newLabel. New name $newName")
+
+        manifestHelper.replacePackage(dir, oldPackage, newPackage, newLabel, newName)
         logger.lifecycle("Replaced the package from ${oldPackage} to ${newPackage}")
-        if (newLabel != null) {
-            logger.lifecycle("Also replaced label with ${newLabel}")
-        }
+
         if (newName != null) {
-            logger.lifecycle("Replacing name with ${newName}")
-            buildXMLHelper.replaceProjectName(conf.rootDir, newName)
+            logger.lifecycle("Replacing name with ${newName} in directory: $dir.absolutePath")
+            buildXMLHelper.replaceProjectName(dir, newName)
         }
-        File sourceFolder = project.file("src/" + oldPackage.replaceAll('\\.', '/'))
-        File targetFolder = project.file("src/" + newPackage.replaceAll('\\.', '/'))
+
+        File sourceFolder = new File(dir, "src/" + oldPackage.replaceAll('\\.', '/'))
+        File targetFolder = new File(dir, "src/" + newPackage.replaceAll('\\.', '/'))
+
         logger.lifecycle("Moving ${sourceFolder} to ${targetFolder}")
         ant.move(file: sourceFolder, tofile: targetFolder, failonerror: false)
+
         logger.lifecycle("Replacing remaining references in AndroidManifest ")
+
         ant.replace(casesensitive: 'true', token: "${oldPackage}",
                 value: "${newPackage}", summary: true) {
-            fileset(dir: 'src') { include(name: '**/*.java') }
-            fileset(dir: 'res') { include(name: '**/*.xml') }
-            fileset(dir: '.') { include(name: 'AndroidManifest.xml') }
+            fileset(dir: dir.absolutePath + '/src') { include(name: '**/*.java') }
+            fileset(dir: dir.absolutePath + '/res') { include(name: '**/*.xml') }
+            fileset(dir: dir.absolutePath) { include(name: 'AndroidManifest.xml') }
         }
     }
 }

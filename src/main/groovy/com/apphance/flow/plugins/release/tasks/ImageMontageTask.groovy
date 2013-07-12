@@ -21,6 +21,7 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
+import static java.io.File.separator
 import static org.imgscalr.Scalr.pad
 
 @Mixin(ImageNameFilter)
@@ -39,25 +40,29 @@ class ImageMontageTask extends DefaultTask {
 
     @TaskAction
     void imageMontage() {
+        logger.lifecycle "Preparing image montage"
         def filesToMontage = getFilesToMontage(conf.rootDir)
+        logger.lifecycle "Found ${filesToMontage.size()} files"
         File imageMontageFile = outputMontageFile()
         createMontage(imageMontageFile, filesToMontage)
         addDescription(imageMontageFile, "${conf.projectName.value} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}")
 
         releaseConf.imageMontageFile = new FlowArtifact(
                 name: 'Image Montage',
-                url: new URL(releaseConf.baseURL, "${releaseConf.projectDirName}/${conf.fullVersionString}/${imageMontageFile.name}"),
+                url: new URL("$releaseConf.releaseUrlVersioned$separator$imageMontageFile.name"),
                 location: imageMontageFile)
+
+        logger.lifecycle "Created image montage $imageMontageFile.absolutePath"
     }
 
     @PackageScope
-    void addDescription(File image, String description) {
+    void addDescription(File image, String description, int x = 10, int y = 10) {
         BufferedImage img = ImageIO.read(image)
 
         Graphics2D graphics = img.createGraphics();
         graphics.setPaint(Color.BLACK);
         graphics.setFont(new Font("Monospaced", Font.BOLD, DESCRIPTION_FONT_SIZE));
-        graphics.drawString(description, 10, 10);
+        graphics.drawString(description, x, y);
         graphics.dispose();
 
         ImageIO.write(img, "png", image)
@@ -65,7 +70,7 @@ class ImageMontageTask extends DefaultTask {
 
     @PackageScope
     File outputMontageFile() {
-        def imageMontageFile = new File(releaseConf.targetDir, "${conf.projectName.value}-${conf.fullVersionString}-image-montage.png")
+        def imageMontageFile = new File(releaseConf.releaseDir, "${conf.projectName.value}-${conf.fullVersionString}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
         imageMontageFile
@@ -76,8 +81,7 @@ class ImageMontageTask extends DefaultTask {
         List<File> filesToMontage = []
 
         rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL, excludeFilter: EXCLUDE_FILTER]) { File file ->
-            //FIXME apply better filter
-            if (isValid(rootDir, file) && [conf.tmpDir, releaseConf.otaDir]*.name.every { !file.absolutePath.contains(it) }) {
+            if (isValid(file) && [conf.tmpDir, releaseConf.otaDir]*.name.every { !file.absolutePath.contains(it) }) {
                 filesToMontage << file
             }
         }
@@ -87,11 +91,20 @@ class ImageMontageTask extends DefaultTask {
     @PackageScope
     void createMontage(File ouput, List<File> inputs) {
         Collection<Image> images = resizeImages(inputs)
+        logger.info "${images.size()} images"
 
-        def processors = images.collect { new ColorProcessor(it) }
+        if (images.size() == 0) {
+            logger.lifecycle "No images found in project"
+            createEmptyImage(ouput, "No images found in project", 10, 50)
+            return
+        }
 
         ImageStack imageStack = new ImageStack(TILE_PX_SIZE, TILE_PX_SIZE)
-        processors.each { imageStack.addSlice(it) }
+        images.each {
+            def processor = new ColorProcessor(it)
+            imageStack.addSlice(processor)
+            processor = null
+        }
 
         def imgPlus = new ImagePlus("stack", imageStack)
         int columns, rows
@@ -99,6 +112,16 @@ class ImageMontageTask extends DefaultTask {
 
         ImagePlus montage = new MontageMaker().makeMontage2(imgPlus, columns, rows, getScale(images.size()), 1, images.size(), 1, 0, false)
         ImageIO.write(montage.bufferedImage, "png", ouput);
+    }
+
+    private void createEmptyImage(File ouput, String description, int x, int y) {
+        BufferedImage img = new BufferedImage(600, 100, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics2D = img.createGraphics();
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.fillRect(0, 0, img.getWidth(), img.getHeight());
+        graphics2D.dispose();
+        ImageIO.write(img, "png", ouput);
+        addDescription(ouput, description, x, y)
     }
 
     private double getScale(int size) {

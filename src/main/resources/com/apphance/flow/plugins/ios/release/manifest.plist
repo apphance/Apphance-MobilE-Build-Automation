@@ -19,7 +19,7 @@
           <key>bundle-identifier</key>
           <string>${bundleId}</string>
           <key>bundle-version</key>
-          <string>test</string>
+          <string>${versionString}</string>
           <key>kind</key>
           <string>software</string>
           <key>title</key>

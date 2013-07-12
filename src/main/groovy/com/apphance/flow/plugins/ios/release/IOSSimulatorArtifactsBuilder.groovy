@@ -9,6 +9,7 @@ import com.apphance.flow.plugins.release.FlowArtifact
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.ios.IOSConfiguration.FAMILIES
+import static java.io.File.separator
 import static org.gradle.api.logging.Logging.getLogger
 
 class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
@@ -28,8 +29,8 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
         FlowArtifact file = new FlowArtifact()
         file.name = "Simulator build for ${family}"
-        file.url = new URL(releaseConf.baseURL, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
-        file.location = new File(releaseConf.otaDir, "${getFolderPrefix(bi)}/${bi.filePrefix}-${family}-simulator-image.dmg")
+        file.url = new URL("$releaseConf.releaseUrlVersioned$separator$bi.id$separator${bi.filePrefix}-${family}-simulator-image.dmg")
+        file.location = new File(releaseConf.releaseDir, "$bi.id$separator${bi.filePrefix}-${family}-simulator-image.dmg")
         file.location.parentFile.mkdirs()
         file.location.delete()
         def File tmpDir = File.createTempFile("${conf.projectName.value}-${bi.target}-${family}-simulator", ".tmp")
@@ -40,7 +41,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         rsyncTemplatePreservingExecutableFlag(destDir)
         File embedDir = new File(destDir, "Contents/Resources/EmbeddedApp")
         embedDir.mkdirs()
-        File sourceApp = new File(bi.buildDir, "${bi.buildableName}")
+        File sourceApp = new File("$bi.archiveDir${separator}Products${separator}Applications", bi.appName)
         rsyncEmbeddedAppPreservingExecutableFlag(sourceApp, embedDir)
         updateBundleId(bi, destDir)
         resampleIcon(destDir)
@@ -58,10 +59,6 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: cmd))
         releaseConf.dmgImageFiles.put("${family}-${variantsConf.mainVariant.target}" as String, file)
         l.lifecycle("Simulator zip file created: ${file.location} for ${family}-${variantsConf.mainVariant.target}")
-    }
-
-    String getFolderPrefix(IOSBuilderInfo bi) {
-        "${releaseConf.projectDirName}/${conf.fullVersionString}/${bi.target}/${bi.configuration}"
     }
 
     private rsyncTemplatePreservingExecutableFlag(File destDir) {

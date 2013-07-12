@@ -11,8 +11,14 @@ import spock.lang.Specification
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.configuration.android.AndroidBuildMode.DEBUG
 import static com.google.common.io.Files.createTempDir
+import static java.io.File.separator
 
 class AndroidArtifactProviderSpec extends Specification {
+
+    def tmpDir = createTempDir()
+    def otaDir = createTempDir()
+    def vTmpDir = createTempDir()
+    def variantDir = createTempDir()
 
     def projectName = 'SampleAndroidProject'
 
@@ -21,34 +27,27 @@ class AndroidArtifactProviderSpec extends Specification {
         getVersionCode() >> '42'
         getProjectName() >> new StringProperty(value: projectName)
     }
-    def arc = GroovyStub(AndroidReleaseConfiguration)
-    def avc = GroovyStub(AndroidVariantConfiguration)
-
-    def tmpDir = createTempDir()
+    def arc = GroovyMock(AndroidReleaseConfiguration) {
+        getOtaDir() >> otaDir
+        getReleaseUrlVersioned() >> "http://ota.polidea.pl/$projectName/$ac.fullVersionString".toURL()
+        getReleaseDir() >> new File(otaDir, "$projectName$separator$ac.fullVersionString")
+    }
+    def avc = GroovyMock(AndroidVariantConfiguration) {
+        getMode() >> DEBUG
+        getName() >> 'V1'
+        getTmpDir() >> vTmpDir
+        getVariantDir() >> new FileProperty(value: variantDir)
+    }
 
     def project = GroovyStub(Project) {
         file(TMP_DIR) >> tmpDir
     }
-    def otaDir = createTempDir()
-    def vTmpDir = createTempDir()
-    def variantDir = createTempDir()
     def binDir
 
     def aab = new AndroidArtifactProvider(conf: ac, releaseConf: arc)
 
     def setup() {
-
         ac.project = project
-
-        arc.otaDir >> otaDir
-        arc.baseURL >> new URL("http://ota.polidea.pl/$projectName")
-        arc.projectDirName >> projectName
-
-        avc.mode >> DEBUG
-        avc.name >> 'V1'
-        avc.tmpDir >> vTmpDir
-        avc.variantDir >> new FileProperty(value: variantDir)
-
         binDir = new File(new File(ac.tmpDir, avc.name), 'bin')
     }
 

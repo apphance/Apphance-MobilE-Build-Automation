@@ -1,5 +1,6 @@
 package com.apphance.flow
 
+import com.google.common.io.Files
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -14,7 +15,13 @@ class TestUtils {
         project.task(name, type: type) as T
     }
 
-    File createTempFile() {
-        createTempFile('prefix', 'suffix')
+    File getTemporaryDir() {
+        File file = Files.createTempDir()
+        file.deleteOnExit()
+        file
+    }
+
+    boolean contains(File file, String content) {
+        file.readLines()*.trim().contains(content)
     }
 }

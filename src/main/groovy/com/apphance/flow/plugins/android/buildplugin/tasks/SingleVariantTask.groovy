@@ -1,13 +1,10 @@
 package com.apphance.flow.plugins.android.buildplugin.tasks
 
-import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
-import com.apphance.flow.configuration.apphance.ApphanceConfiguration
-import com.apphance.flow.executor.AndroidExecutor
 import com.apphance.flow.executor.AntExecutor
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
-import com.apphance.flow.plugins.android.builder.AndroidBuilderInfo
+import com.apphance.flow.plugins.release.FlowArtifact
 import org.gradle.api.AntBuilder as AntBuilder
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -21,22 +18,20 @@ class SingleVariantTask extends DefaultTask {
 
     String group = FLOW_BUILD
 
-    @Inject AndroidConfiguration conf
     @Inject AndroidReleaseConfiguration releaseConf
-    @Inject ApphanceConfiguration apphanceConf
     @Inject AntBuilder ant
     @Inject AndroidArtifactProvider artifactProvider
     @Inject AntExecutor antExecutor
-    @Inject AndroidExecutor androidExecutor
+    @Inject AndroidProjectUpdater projectUpdater
 
     AndroidVariantConfiguration variant
+    private FlowArtifact artifact
 
     @TaskAction
     void singleVariant() {
+        projectUpdater.runRecursivelyInAllSubProjects(variant.tmpDir)
 
-        androidExecutor.updateProject(variant.tmpDir, conf.target.value, conf.projectName.value)
-
-        AndroidBuilderInfo builderInfo = artifactProvider.builderInfo(variant)
+        def builderInfo = artifactProvider.builderInfo(variant)
 
         logger.lifecycle("Building variant ${builderInfo.variant}")
         antExecutor.executeTarget builderInfo.tmpDir, CLEAN
@@ -47,16 +42,30 @@ class SingleVariantTask extends DefaultTask {
                 fileset(dir: builderInfo.variantDir, includes: '**/*')
             }
         } else {
-            logger.lifecycle("No files copied because directory ${builderInfo.variantDir} does not exists")
+            logger.lifecycle("No files copied because variant directory ${builderInfo.variantDir} does not exists")
         }
 
-        antExecutor.executeTarget builderInfo.tmpDir, builderInfo.mode.lowerCase()
+        if (variant.oldPackage.value && variant.newPackage.value) {
+            def replacePackageTask = project.tasks[ReplacePackageTask.NAME] as ReplacePackageTask
+            replacePackageTask.replace(variant.tmpDir, variant.oldPackage.value, variant.newPackage.value, variant.newLabel.value, variant.newName.value)
+        }
+
+        try {
+            antExecutor.executeTarget builderInfo.tmpDir, builderInfo.mode.lowerCase()
+        } catch (Exception exp) {
+            if (exp.hasProperty('output') && exp.output.contains('method onStart in class Apphance cannot be applied to given types')) {
+                logger.error "Error during source compilation. Probably some non-activity class was configured as activity in AndroidManifest.xml.\n" +
+                        "Make sure that all <activity> tags in your manifest points to some activity classes and not to other classes like Fragment."
+            }
+            throw exp
+        }
         if (builderInfo.originalFile.exists()) {
             logger.lifecycle("File created: ${builderInfo.originalFile}")
 
             if (releaseConf.enabled) {
-                logger.lifecycle("Copying file ${builderInfo.originalFile.absolutePath} to ${artifactProvider.artifact(builderInfo).location.absolutePath}")
-                ant.copy(file: builderInfo.originalFile, tofile: artifactProvider.artifact(builderInfo).location)
+                artifact = artifactProvider.artifact(builderInfo)
+                logger.lifecycle("Copying file ${builderInfo.originalFile.absolutePath} to ${artifact.location.absolutePath}")
+                ant.copy(file: builderInfo.originalFile, tofile: artifact.location)
             }
         } else {
             logger.lifecycle("File ${builderInfo.originalFile} was not created. Probably due to bad signing configuration in ant.properties")

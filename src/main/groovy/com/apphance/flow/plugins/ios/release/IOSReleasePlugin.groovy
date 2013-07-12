@@ -1,7 +1,6 @@
 package com.apphance.flow.plugins.ios.release
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.plugins.ios.buildplugin.IOSSingleVariantBuilder
 import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.flow.plugins.ios.release.tasks.UpdateVersionTask
@@ -12,6 +11,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
+
+import static org.gradle.api.logging.Logging.getLogger
 
 /**
  *
@@ -28,21 +29,20 @@ import javax.inject.Inject
  */
 class IOSReleasePlugin implements Plugin<Project> {
 
+    private logger = getLogger(getClass())
+
     @Inject IOSReleaseConfiguration releaseConf
-    @Inject IOSSingleVariantBuilder builder
-    @Inject IOSReleaseListener listener
 
     @Override
     void apply(Project project) {
         if (releaseConf.isEnabled()) {
+            logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
             project.task(UpdateVersionTask.NAME,
                     type: UpdateVersionTask)
 
             project.task(AvailableArtifactsInfoTask.NAME,
                     type: AvailableArtifactsInfoTask)
-
-            builder.registerListener(listener)
 
             project.tasks.each {
                 if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME])) {

@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.framework.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSFrameworkConfiguration
-import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
+import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import org.gradle.api.DefaultTask
@@ -37,7 +37,7 @@ class BuildFrameworkTask extends DefaultTask {
     @Inject IOSConfiguration conf
     @Inject IOSFrameworkConfiguration frameworkConf
 
-    AbstractIOSVariant variant
+    IOSVariant variant
 
     @TaskAction
     void buildIOSFramework() {
@@ -95,8 +95,8 @@ class BuildFrameworkTask extends DefaultTask {
 
     private setLinkLibraries() {
         logger.lifecycle('Set link libraries')
-        iphoneosLibrary = new File(project.buildDir, "${variant.configuration}-iphoneos/lib${variant.target}.a")
-        iphoneosSimulatorLibrary = new File(project.buildDir, "${variant.configuration}-iphonesimulator/lib${variant.target}.a")
+        iphoneosLibrary = new File(project.buildDir, "${variant.buildConfiguration}-iphoneos/lib${variant.target}.a")
+        iphoneosSimulatorLibrary = new File(project.buildDir, "${variant.buildConfiguration}-iphonesimulator/lib${variant.target}.a")
     }
 
     private createSymlinks() {
@@ -152,9 +152,9 @@ class BuildFrameworkTask extends DefaultTask {
     private xcodeBuilds() {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: conf.xcodebuildExecutionPath() + [
                 '-target',
-                variant.target,
+                "\"$variant.target\"",
                 '-configuration',
-                variant.configuration,
+                "\"$variant.buildConfiguration\"",
                 '-sdk',
                 conf.simulatorSdk.value,
                 '-arch',
@@ -164,9 +164,9 @@ class BuildFrameworkTask extends DefaultTask {
         ]))
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: conf.xcodebuildExecutionPath() + [
                 '-target',
-                variant.target,
+                "\"$variant.target\"",
                 '-configuration',
-                variant.configuration,
+                "\"$variant.buildConfiguration\"",
                 '-sdk',
                 conf.sdk.value,
                 'clean',

@@ -1,10 +1,8 @@
 package com.apphance.flow.android
 
-import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import org.gradle.tooling.ProjectConnection
 import org.junit.AfterClass
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Test
 
 import static org.gradle.tooling.GradleConnector.newConnector
@@ -148,60 +146,5 @@ class ExecuteAndroidBuildsTest {
         assertTrue(new File(testProject, "build/analysis/cpd-result.xml").exists())
         assertTrue(new File(testProject, "build/analysis/findbugs-result.xml").exists())
         assertTrue(new File(testProject, "build/analysis/pmd-result.xml").exists())
-    }
-
-    @Ignore('to be used after apphance rewritten')
-    void testDefaultApphanceDependency() {
-//        AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
-//        ProjectConfiguration projectConf = new ProjectConfiguration()
-//        try {
-//            Properties p = new Properties()
-//            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
-//            projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
-//        } finally {
-//            manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
-//        }
-//        def androidLib = new File("testProjects/android/android-no-apphance-application/${TMP_DIR}/TestDebug/libs/android.pre-production-1.8.2.jar")
-//        assertTrue(androidLib.exists())
-//        assertEquals('android.pre-production-1.8.2.jar', androidLib.name)
-    }
-
-    @Ignore('to be used after apphance rewritten')
-    void testCorrectApphanceDependencyFromProperty() {
-        AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
-//        ProjectConfiguration projectConf = new ProjectConfiguration()
-//        try {
-//            Properties p = new Properties()
-//            p.put('apphance.lib', "com.apphance:android.production:1.8.2")
-//            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
-//            projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
-//        } finally {
-//            manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
-//        }
-//        def androidLib = new File("testProjects/android/android-no-apphance-application/MarketDebug/libs/android.production-1.8.2.jar")
-//        assertTrue(androidLib.exists())
-//        assertEquals('android.production-1.8.2.jar', androidLib.name)
-    }
-
-    @Ignore('to be used after apphance rewritten')
-    void testIncorrectApphanceDependencyFromProperty() {
-        AndroidManifestHelper manifestHelper = new AndroidManifestHelper()
-//        ProjectConfiguration projectConf = new ProjectConfiguration()
-//        try {
-//            Properties p = new Properties()
-//            p.put('apphance.lib', "com.apphanc:android.production:1.8")
-//            runGradleWithProperties(p, testAndroidNoApphanceApplicationConnection, 'clean', 'buildAllDebug')
-//            projectConf.updateVersionDetails(manifestHelper.readVersion(testAndroidNoApphanceApplication))
-//        } catch (Exception e) {
-//
-//            def c = e.cause.cause.cause
-//            assertEquals("Error while resolving dependency: 'com.apphanc:android.production:1.8'", c.message)
-//
-//        } finally {
-//            manifestHelper.restoreOriginalManifest(testAndroidNoApphanceApplication)
-//        }
-//        def androidLibsDir = new File("testProjects/android/tmp-android-no-apphance-application-Debug/libs/")
-//        assertTrue(androidLibsDir.exists())
-//        assertTrue(androidLibsDir.list().length == 0)
     }
 }

@@ -1,6 +1,8 @@
 package com.apphance.flow.plugins.apphance
 
-import groovy.json.JsonBuilder
+import com.apphance.flow.util.Preconditions
+import groovy.json.JsonOutput
+import groovy.transform.EqualsAndHashCode
 import org.apache.http.HttpHost
 import org.apache.http.HttpResponse
 import org.apache.http.auth.AuthScope
@@ -15,85 +17,128 @@ import org.apache.http.impl.auth.BasicScheme
 import org.apache.http.impl.client.BasicAuthCache
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.protocol.BasicHttpContext
+import org.apache.http.util.EntityUtils
+import org.gradle.api.GradleException
+import org.gradle.api.logging.Logging
 
 import java.nio.charset.Charset
 
 import static org.apache.http.client.protocol.ClientContext.AUTH_CACHE
 import static org.apache.http.entity.mime.HttpMultipartMode.STRICT
 
+@Mixin(Preconditions)
+@EqualsAndHashCode
 class ApphanceNetworkHelper {
 
-    String username
-    String pass
-    DefaultHttpClient httpClient
-    HttpHost targetHost
-    BasicHttpContext localcontext
+    def static logger = Logging.getLogger(this.class)
 
-    public ApphanceNetworkHelper(String username, String pass) {
-        this.username = username
+    private String username
+    private String pass
+    private HttpHost targetHost
+    private DefaultHttpClient httpClient
+    private BasicHttpContext localContext
+
+    ApphanceNetworkHelper(String user, String pass) {
+        this.username = user
         this.pass = pass
-        targetHost = new HttpHost("apphance-app.appspot.com", 443, "https");
-        httpClient = new DefaultHttpClient()
+        this.targetHost = new HttpHost('apphance-app.appspot.com', 443, 'https')
+        this.httpClient = new DefaultHttpClient()
         httpClient.getCredentialsProvider().setCredentials(
                 new AuthScope(targetHost.getHostName(), targetHost.getPort()),
-                new UsernamePasswordCredentials("${username}", "${pass}")
+                new UsernamePasswordCredentials(user, pass)
         )
-        AuthCache authCache = new BasicAuthCache();
-        authCache.put(targetHost, new BasicScheme());
+        AuthCache authCache = new BasicAuthCache()
+        authCache.put(targetHost, new BasicScheme())
 
-        localcontext = new BasicHttpContext();
-        localcontext.setAttribute(AUTH_CACHE, authCache);
+        this.localContext = new BasicHttpContext()
+        localContext.setAttribute(AUTH_CACHE, authCache)
     }
 
-    HttpResponse updateArtifactQuery(String apphanceKey, String versionString, String versionNumber, boolean setAsCurrent, ArrayList resourcesToUpdate) {
-
-        HttpPost post = new HttpPost('/api/application.update_version')
-
-        String message = prepareUpdateArtifactJSON(apphanceKey, versionString, versionNumber, setAsCurrent, resourcesToUpdate)
-        StringEntity se = new StringEntity(message)
-        post.entity = se
-
-        post.setHeader("Accept", "application/json");
-        post.setHeader("Content-type", "application/json");
-        post.setHeader("Connection", "close")
-        post.setHeader("Host", targetHost.getHostName())
-
-        httpClient.execute(targetHost, post, localcontext)
+    HttpResponse updateArtifactQuery(String apphanceKey, String versionCode, String versionNumber, boolean setAsCurrent, List resourcesToUpdate) {
+        logger.lifecycle "Updating arfifact. Version string: $versionCode, version code: $versionCode"
+        def response = callApphanceApi('application.update_version', updateArtifactsJSONQuery(apphanceKey, versionCode, versionNumber, setAsCurrent,
+                resourcesToUpdate))
+        logger.lifecycle "Upload version query response: ${response.statusLine}"
+        throwIfConditionTrue !response.entity, "Error while uploading version query, empty response received"
+        response
     }
 
-    String prepareUpdateArtifactJSON(apphanceKey, versionString, versionNumber, setAsCurrent, resourcesToUpdate) {
-        def jsonBuilder = new JsonBuilder(
-                [
-                        api_key: apphanceKey,
-                        version: [
-                                name: versionString,
-                                number: versionNumber
-                        ],
-                        current: setAsCurrent,
-                        update_resources: resourcesToUpdate
-                ]
-        )
-        jsonBuilder.toString()
+    HttpResponse callApphanceApi(String endpoint, Map content) {
+        def post = new HttpPost("/api/$endpoint")
+        post.entity = new StringEntity(JsonOutput.toJson(content))
+        post.setHeader 'Accept', 'application/json'
+        post.setHeader 'Content-type', 'application/json'
+        post.setHeader 'Connection', 'close'
+        post.setHeader 'Host', targetHost.getHostName()
+
+        httpClient.execute(targetHost, post, localContext)
+    }
+
+    private Map updateArtifactsJSONQuery(apphanceKey, versionString, versionCode, setAsCurrent, resourcesToUpdate) {
+        [
+                api_key: apphanceKey,
+                version: [
+                        name: versionString,
+                        number: versionCode.toInteger()
+                ],
+                current: setAsCurrent,
+                update_resources: resourcesToUpdate
+        ]
     }
 
     HttpResponse uploadResource(File resource, String url, String formBodyPart) {
-        HttpPost uploadReq = new HttpPost(url.replace("https://apphance-app.appspot.com", ""))
+        logger.lifecycle "Updating arfifact  $resource.absolutePath"
+        HttpPost uploadReq = new HttpPost(url.replace('https://apphance-app.appspot.com', ''))
 
-        def boundary = "----------------------------90505c6cdd54"
+        def boundary = '----------------------------90505c6cdd54'
 
-        MultipartEntity reqEntity = new MultipartEntity(STRICT, boundary, Charset.forName("UTF-8"));
-        reqEntity.addPart(new FormBodyPart(formBodyPart, new FileBody(resource, "application/octet-stream")))
+        def reqEntity = new MultipartEntity(STRICT, boundary, Charset.forName('UTF-8'))
+        reqEntity.addPart(new FormBodyPart(formBodyPart, new FileBody(resource, 'application/octet-stream')))
         uploadReq.setEntity(reqEntity)
 
-        uploadReq.setHeader("Content-type", "multipart/form-data; boundary=" + boundary)
-        uploadReq.setHeader("Accept", "*/*")
-        uploadReq.setHeader("Connection", "close")
-        uploadReq.setHeader("Host", targetHost.getHostName())
+        uploadReq.setHeader('Content-type', "multipart/form-data; boundary=$boundary")
+        uploadReq.setHeader('Accept', '*/*')
+        uploadReq.setHeader('Connection', 'close')
+        uploadReq.setHeader('Host', targetHost.getHostName())
 
-        httpClient.execute(targetHost, uploadReq, localcontext)
+        def response = httpClient.execute(targetHost, uploadReq, localContext)
+        logger.lifecycle "Upload apk response: ${response.statusLine}"
+        response
     }
 
-    void closeConnection() {
-        httpClient.getConnectionManager().shutdown();
+    String updateArtifactJson(String apphanceKey, String versionString, String versionCode, boolean setAsCurrent, List resourcesToUpdate) {
+        toJson {
+            updateArtifactQuery(apphanceKey, versionString, versionCode, setAsCurrent, resourcesToUpdate)
+        }
+    }
+
+    String uploadResourceJson(File resource, String url, String formBodyPart) {
+        toJson {
+            uploadResource(resource, url, formBodyPart)
+        }
+    }
+
+    static String toJson(Closure<HttpResponse> action) {
+        HttpResponse response = action()
+        String json = response.entity.content.text
+        EntityUtils.consume(response.entity)
+        logger.info "Full response: $json"
+        json
+    }
+
+    void close() {
+        httpClient.getConnectionManager().shutdown()
+    }
+
+    void safeCall(Closure action) {
+        try {
+            action(this)
+        } catch (e) {
+            def msg = "Error while calling apphance api: ${e.message}"
+            logger.error(msg)
+            throw new GradleException(msg, e)
+        } finally {
+            this?.close()
+        }
     }
 }

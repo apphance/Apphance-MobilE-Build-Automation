@@ -3,12 +3,10 @@ package com.apphance.flow.configuration.release
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
-import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.validateMailPort
@@ -19,17 +17,12 @@ class ReleaseConfigurationSpec extends Specification {
     def releaseConf = GroovySpy(ReleaseConfiguration)
 
     def setup() {
-        releaseConf.projectURL.value = 'http://ota.polidea.pl/SATGuruAndroid-32DRDK64'
-    }
-
-    def 'base url is correct'() {
-        expect:
-        'http://ota.polidea.pl/'.toURL() == releaseConf.baseURL
+        releaseConf.releaseUrl.value = 'http://ota.polidea.pl/SATGuruAndroid-32DRDK64'
     }
 
     def 'project dir name is correct'() {
         expect:
-        'SATGuruAndroid-32DRDK64' == releaseConf.projectDirName
+        'SATGuruAndroid-32DRDK64' == releaseConf.releaseDirName
     }
 
     def 'locale is set correct'() {
@@ -160,7 +153,7 @@ class ReleaseConfigurationSpec extends Specification {
         fields.size() > 0
 
         and:
-        fields*.name.containsAll('iconFile', 'projectURL')
+        fields*.name.containsAll('iconFile', 'releaseUrl')
     }
 
 
@@ -239,18 +232,5 @@ class ReleaseConfigurationSpec extends Specification {
 
         where:
         mailServer << ['releaseString', 'release_String', 'relase_String_123_4']
-    }
-
-    @Ignore('TODO')
-    def 'mail-related verification errors raised on jenkins env'() {
-        given:
-        def rc = GroovySpy(ReleaseConfiguration) {
-            getProjectURL() >> new URLProperty(value: 'http://ota.polidea.pl')
-        }
-        when:
-        rc.check true, 'msg'
-
-        then:
-        noExceptionThrown()
     }
 }
