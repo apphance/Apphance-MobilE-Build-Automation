@@ -2,7 +2,6 @@ package com.apphance.flow.plugins.ios.release
 
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.Command
-import com.apphance.flow.executor.jython.JythonExecutor
 import com.apphance.flow.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.flow.plugins.ios.parsers.PlistParser
@@ -24,6 +23,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     @Inject IOSExecutor iosExecutor
     @Inject org.gradle.api.AntBuilder ant
     @Inject PlistParser plistParser
+    @Inject IOSDumpReducer dumpReducer
 
     @Override
     void buildArtifacts(IOSBuilderInfo bi) {
@@ -82,25 +82,14 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         releaseConf.ahSYMDirs.put(bi.id, aa)
         aa.location.delete()
         aa.location.mkdirs()
-        def je = new JythonExecutor()
 
-        def dest = new File("$bi.archiveDir${separator}dSYMs", "${bi.appName}.dSYM")
-        def output = new File(aa.location.canonicalPath, bi.filePrefix)
-        def plist = plistToXml(bi)
-        def args = ['-p', plist.canonicalPath, '-d', dest.canonicalPath, '-o', output.canonicalPath]
-        je.executeScript('dump_reduce3_flow.py', args)
-        dest.listFiles().each {
+        def dSYM = new File("$bi.archiveDir${separator}dSYMs", "${bi.appName}.dSYM")
+        dumpReducer.reduce(plist.call(bi), dSYM, aa.location, bi.filePrefix)
+
+        dSYM.listFiles().each {
             aa.childArtifacts << new FlowArtifact(name: it.name, location: it, url: "${aa.url.toString()}/${it.name}".toURL())
         }
-        plist.delete()
         logger.info("ahSYM files created: $aa.location")
-    }
-
-    private File plistToXml(IOSBuilderInfo bi) {
-        def output = iosExecutor.plistToXML(plist.call(bi))
-        def file = File.createTempFile('plist', 'xml')
-        file.text = output.join('\n')
-        file
     }
 
     @PackageScope

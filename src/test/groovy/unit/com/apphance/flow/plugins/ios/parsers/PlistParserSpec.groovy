@@ -22,12 +22,12 @@ class PlistParserSpec extends Specification {
 
     def 'version code is read correctly'() {
         expect:
-        parser.versionCode(Mock(File)) == '32'
+        parser.bundleVersion(Mock(File)) == '32'
     }
 
     def 'version string is read correctly'() {
         expect:
-        parser.versionString(Mock(File)) == '1.0'
+        parser.bundleShortVersionString(Mock(File)) == '1.0'
     }
 
     def 'bundle id is read correctly'() {
@@ -63,7 +63,7 @@ class PlistParserSpec extends Specification {
 
     def 'get icon files'() {
         when:
-        def iconFiles = parser.getIconFiles(Mock(File))
+        def iconFiles = parser.iconFiles(Mock(File))
 
         then:
         iconFiles == ['icon.png', 'icon_retina.png']

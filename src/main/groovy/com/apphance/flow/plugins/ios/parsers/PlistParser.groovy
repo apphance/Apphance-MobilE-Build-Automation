@@ -11,11 +11,8 @@ import java.util.regex.Pattern
 
 import static org.apache.commons.lang.StringUtils.isBlank
 import static org.apache.commons.lang.StringUtils.isNotBlank
-import static org.gradle.api.logging.Logging.getLogger
 
 class PlistParser {
-
-    private logger = getLogger(getClass())
 
     static final PLACEHOLDER = Pattern.compile('\\$\\{([A-Z0-9a-z]+_)*([A-Z0-9a-z])+(:rfc1034identifier)?\\}')
     static final IDENTIFIERS = [
@@ -27,12 +24,12 @@ class PlistParser {
 
     @Inject IOSExecutor executor
 
-    String versionCode(File plist) {
+    String bundleVersion(File plist) {
         def json = parsedJson(plist)
         json.CFBundleVersion
     }
 
-    String versionString(File plist) {
+    String bundleShortVersionString(File plist) {
         def json = parsedJson(plist)
         json.CFBundleShortVersionString
     }
@@ -47,7 +44,7 @@ class PlistParser {
         json.CFBundleDisplayName
     }
 
-    List<String> getIconFiles(File plist) {
+    List<String> iconFiles(File plist) {
         def json = parsedJson(plist)
         (json.CFBundleIconFiles + json.CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles)?.unique()?.sort()
     }

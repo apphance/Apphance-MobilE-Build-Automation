@@ -100,7 +100,7 @@ class IOSVariant extends AbstractVariant {
 
     @Override
     List<String> possibleApphanceLibVersions() {
-        apphanceArtifactory.iOSLibraries(apphanceMode.value, apphanceDependencyArch())
+        apphanceArtifactory.iOSLibraries(apphanceMode.value, apphanceDependencyArch)
     }
 
     @Lazy
@@ -129,11 +129,11 @@ class IOSVariant extends AbstractVariant {
     }
 
     String getVersionCode() {
-        conf.extVersionCode ?: plistParser.evaluate(plistParser.versionCode(plist), target, buildConfiguration) ?: ''
+        conf.extVersionCode ?: plistParser.evaluate(plistParser.bundleVersion(plist), target, buildConfiguration) ?: ''
     }
 
     String getVersionString() {
-        conf.extVersionString ?: plistParser.evaluate(plistParser.versionString(plist), target, buildConfiguration) ?: ''
+        conf.extVersionString ?: plistParser.evaluate(plistParser.bundleShortVersionString(plist), target, buildConfiguration) ?: ''
     }
 
     protected List<String> getSdkCmd() {

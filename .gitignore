@@ -16,9 +16,9 @@ tmp
 #testProjects - android
 bin/
 gen/
+testProjects/android/android-*/test
 local.properties
 proguard-project.txt
-test
 AndroidManifest.xml.orig
 
 #testProjects - iOS
