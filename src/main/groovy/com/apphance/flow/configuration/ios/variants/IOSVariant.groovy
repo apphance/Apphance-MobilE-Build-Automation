@@ -210,7 +210,9 @@ class IOSVariant extends AbstractVariant {
     }
 
     File getSchemeFile() {
-        new File("$tmpDir$separator$conf.xcodeDir.value", "xcshareddata${separator}xcschemes$separator${name}.xcscheme")
+        def filename = "xcshareddata${separator}xcschemes$separator${name}.xcscheme"
+        def tmpScheme = new File("$tmpDir$separator$conf.xcodeDir.value", filename)
+        tmpScheme?.exists() ? tmpScheme : new File(conf.xcodeDir.value, filename)
     }
 
     @Override

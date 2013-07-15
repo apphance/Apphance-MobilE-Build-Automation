@@ -9,6 +9,7 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
+import static com.google.common.io.Files.getNameWithoutExtension
 import static java.io.File.separator
 
 @Singleton
@@ -42,7 +43,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         if (hasSchemes)
             return schemeFiles.findAll {
                 schemeShared(it) && schemeBuildable(it) && schemeHasSingleBuildableTarget(it)
-            }*.name
+            }.collect { getNameWithoutExtension(it.name) }
         []
     }()
 
