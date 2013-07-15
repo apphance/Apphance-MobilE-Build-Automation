@@ -105,6 +105,20 @@ class IOSExecutor {
         executor.executeCommand(new Command(runDir: dir, cmd: archiveCmd))
     }
 
+    Iterator<String> dwarfdumpArch(File dSYM, String arch) {
+        executor.executeCommand(new Command(
+                runDir: dSYM.parentFile,
+                cmd: ['dwarfdump', '--arch', arch, dSYM.absoluteFile]
+        ))
+    }
+
+    Iterator<String> dwarfdumpUUID(File dSYM) {
+        executor.executeCommand(new Command(
+                runDir: dSYM.parentFile,
+                cmd: ['dwarfdump', '-u', dSYM.absolutePath]
+        ))
+    }
+
     def buildTestVariant(File dir, IOSVariant variant, String outputFilePath) {
         executor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd,
                 environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: outputFilePath],

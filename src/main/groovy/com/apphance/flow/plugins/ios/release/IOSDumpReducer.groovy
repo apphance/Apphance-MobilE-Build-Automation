@@ -1,7 +1,6 @@
 package com.apphance.flow.plugins.ios.release
 
-import com.apphance.flow.executor.command.Command
-import com.apphance.flow.executor.command.CommandExecutor
+import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import groovy.transform.PackageScope
 
@@ -25,7 +24,7 @@ class IOSDumpReducer {
     private logger = getLogger(getClass())
 
     @Inject PlistParser plistParser
-    @Inject CommandExecutor executor
+    @Inject IOSExecutor executor
 
     void reduce(File plist, File dSYM, File outputDir, String name) {
         validatePlist(plist)
@@ -36,6 +35,7 @@ class IOSDumpReducer {
         logger.info("Reducing files in $dSYM.absolutePath, with plist $plist.absolutePath")
 
         def uuidArchs = UUIDArchs(dSYM)
+
         uuidArchs.each { e ->
             def dsymUUID = e.dsymUUID
             def dsymArch = e.dsymArch
@@ -53,24 +53,8 @@ class IOSDumpReducer {
                     dsymArch: dsymArch,
             ]
 
-            //TODO refactor
-            def file = new File(outputDir, 'dsym.dict')
-            file.createNewFile()
-            file.text = toJson(['dsym_header': header, dsym_table: symTable])
-
-            //TODO refactor
-            def zipFile = new File(outputDir, "${name}_${dsymArch}.ahsym")
-            def zos = new ZipOutputStream(new FileOutputStream(zipFile))
-            zos.putNextEntry(new ZipEntry(file.name))
-            def buffer = new byte[2048]
-            file.withInputStream { i ->
-                def l = i.read(buffer)
-                if (l > 0) {
-                    zos.write(buffer, 0, l)
-                }
-            }
-            zos.closeEntry()
-            zos.close()
+            def dsymDict = createDsymDict(outputDir, toJson(['dsym_header': header, dsym_table: symTable]))
+            createZipFile(outputDir, "${name}_${dsymArch}", dsymDict)
         }
     }
 
@@ -101,11 +85,7 @@ class IOSDumpReducer {
     @PackageScope
     List<Map<String, String>> UUIDArchs(File dSYM) {
         def uuidArchs = []
-        //TODO to iOS executor
-        def output = executor.executeCommand(new Command(
-                runDir: dSYM.parentFile,
-                cmd: ['dwarfdump', '-u', dSYM.absolutePath]
-        ))
+        def output = executor.dwarfdumpUUID(dSYM)
         output.collect { it.trim() }.each { line ->
             def matcher = (line =~ UUID_ARCHS_PATTERN)
             if (matcher.find())
@@ -117,11 +97,7 @@ class IOSDumpReducer {
     @PackageScope
     List symTable(File dSYM, String dsymArch) {
         def result = []
-        //TODO to iOS executor
-        def output = executor.executeCommand(new Command(
-                runDir: dSYM.parentFile,
-                cmd: ['dwarfdump', '--arch', dsymArch, dSYM.absoluteFile]
-        ))
+        def output = executor.dwarfdumpArch(dSYM, dsymArch)
 
         def entry = [:]
         def entriesWithNoSpecifications = []
@@ -268,6 +244,28 @@ class IOSDumpReducer {
     @PackageScope
     List sortList(List table, String key) {
         table.sort { i, j -> i[key] <=> j[key] }
+    }
+
+    private File createDsymDict(File outputDir, String jsonContent) {
+        def dsymDict = new File(outputDir, 'dsym.dict')
+        dsymDict.createNewFile()
+        dsymDict.text = jsonContent
+        dsymDict
+    }
+
+    private void createZipFile(File outputDir, String filename, File dsymDict) {
+        def zipFile = new File(outputDir, "${filename}.ahsym")
+        def zos = new ZipOutputStream(new FileOutputStream(zipFile))
+        zos.putNextEntry(new ZipEntry(dsymDict.name))
+        def buffer = new byte[2048]
+        dsymDict.withInputStream { i ->
+            def l = i.read(buffer)
+            if (l > 0) {
+                zos.write(buffer, 0, l)
+            }
+        }
+        zos.closeEntry()
+        zos.close()
     }
 
     @PackageScope

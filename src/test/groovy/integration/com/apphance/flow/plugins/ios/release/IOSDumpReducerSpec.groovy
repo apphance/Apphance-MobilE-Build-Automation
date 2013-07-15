@@ -1,5 +1,6 @@
 package com.apphance.flow.plugins.ios.release
 
+import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
@@ -77,8 +78,8 @@ class IOSDumpReducerSpec extends Specification {
 
     def 'UUID archs are parsed well'() {
         given:
-        reducer.executor = GroovyMock(CommandExecutor) {
-            executeCommand(_) >> dwarfDumpUUIDOutput
+        reducer.executor = GroovyMock(IOSExecutor) {
+            dwarfdumpUUID(_) >> dwarfDumpUUIDOutput
         }
 
         when:
@@ -92,8 +93,8 @@ class IOSDumpReducerSpec extends Specification {
 
     def 'symTable built for architecture'() {
         given:
-        reducer.executor = GroovyMock(CommandExecutor) {
-            executeCommand(_) >> dwarfDumpArmv7Output
+        reducer.executor = GroovyMock(IOSExecutor) {
+            dwarfdumpArch(_, _) >> dwarfDumpArmv7Output
         }
 
         when:
@@ -112,7 +113,7 @@ class IOSDumpReducerSpec extends Specification {
         def logFileGenerator = GroovyMock(CommandLogFilesGenerator) {
             commandLogFiles() >> logFiles
         }
-        reducer.executor = new CommandExecutor(fileLinker, logFileGenerator)
+        reducer.executor = new IOSExecutor(executor: new CommandExecutor(fileLinker, logFileGenerator))
         and:
         reducer.plistParser = GroovyMock(PlistParser) {
             bundleShortVersionString(_) >> '3145'
