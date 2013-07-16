@@ -100,7 +100,7 @@ class IOSVariant extends AbstractVariant {
 
     @Override
     List<String> possibleApphanceLibVersions() {
-        apphanceArtifactory.iOSLibraries(apphanceMode.value, apphanceDependencyArch())
+        apphanceArtifactory.iOSLibraries(apphanceMode.value, apphanceDependencyArch)
     }
 
     @Lazy
