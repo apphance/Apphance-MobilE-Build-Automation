@@ -55,6 +55,7 @@ class IOSDumpReducer {
 
             def dsymDict = createDsymDict(outputDir, toJson(['dsym_header': header, dsym_table: symTable]))
             createZipFile(outputDir, "${name}_${dsymArch}", dsymDict)
+            dsymDict.delete()
         }
     }
 
