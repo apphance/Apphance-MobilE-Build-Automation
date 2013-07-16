@@ -44,7 +44,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildOneVariant() {
-        runGradleOneVariant('archiveGradleXCode')
+        runGradleOneVariant('cleanFlow', 'archiveGradleXCode')
         def path = 'flow-ota/GradleXCode/1.0_32/GradleXCode/'
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32.ipa").exists())
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32.mobileprovision").exists())
@@ -58,7 +58,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildMoreVariants() {
-        runGradleMoreVariants('archiveAllDevice')
+        runGradleMoreVariants('cleanFlow', 'archiveAllDevice')
         def path = 'flow-ota/ssasdadasdasd/1.0_32/'
 
         assertTrue(new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariants/GradleXCodeMoreVariants-1.0_32.ipa").exists())
@@ -90,7 +90,7 @@ class ExecuteIosBuildsTest {
 
     @Test
     void testBuildAllSimulators() {
-        runGradleMoreVariants('archiveAllSimulator')
+        runGradleMoreVariants('cleanFlow', 'archiveAllSimulator')
         def path = 'flow-ota/ssasdadasdasd/1.0_32/GradleXCodeMoreVariantsTests/'
 
         File fileIphone = new File(testProjectMoreVariants, "$path/GradleXCodeMoreVariantsTests-1.0_32-iPhone-simulator-image.dmg")

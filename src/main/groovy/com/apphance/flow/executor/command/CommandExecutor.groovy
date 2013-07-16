@@ -8,6 +8,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
+import static java.lang.ProcessBuilder.Redirect.appendTo
 import static java.lang.System.getProperties
 
 @Mixin(Preconditions)
@@ -72,7 +73,7 @@ class CommandExecutor {
             //out and err is redirected separately because xcodebuild for some commands returns '0' but display
             //warnings which are redirected to std, then parsing of output command fails
             //separate stream redirection solves this issue
-            if (commandLog[STD]) processBuilder.redirectOutput(commandLog[STD])
+            if (commandLog[STD]) processBuilder.redirectOutput(appendTo(commandLog[STD]))
             if (commandLog[ERR]) processBuilder.redirectError(commandLog[ERR])
 
             process = processBuilder.start()
