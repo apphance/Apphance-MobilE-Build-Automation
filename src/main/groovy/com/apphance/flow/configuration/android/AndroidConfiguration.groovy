@@ -9,7 +9,7 @@ import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 
 import javax.inject.Inject
 
-import static com.apphance.flow.detection.ProjectType.ANDROID
+import static com.apphance.flow.detection.project.ProjectType.ANDROID
 import static com.apphance.flow.plugins.android.release.tasks.UpdateVersionTask.WHITESPACE_PATTERN
 import static com.google.common.base.Strings.isNullOrEmpty
 import static java.io.File.pathSeparator

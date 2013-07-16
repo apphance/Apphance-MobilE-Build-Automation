@@ -9,6 +9,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
+import javax.inject.Named
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 
@@ -21,6 +22,10 @@ class StartEmulatorTask extends DefaultTask {
     @Inject CommandExecutor executor
     @Inject AndroidConfiguration conf
     @Inject AndroidTestConfiguration testConf
+    @Inject
+    @Named('executable.emulator') String executableEmulator
+    @Inject
+    @Named('executable.adb') String executableAdb
 
     private Process emulatorProcess
 
@@ -32,7 +37,7 @@ class StartEmulatorTask extends DefaultTask {
     private void startEmulator(boolean noWindow) {
         logger.lifecycle("Starting emulator ${testConf.emulatorName}")
         def emulatorCommand = [
-                'emulator',
+                executableEmulator,
                 '-avd',
                 testConf.emulatorName,
                 '-port',
@@ -52,7 +57,7 @@ class StartEmulatorTask extends DefaultTask {
     private void runLogCat() {
         logger.lifecycle("Starting logcat monitor on ${testConf.emulatorName}")
         String[] commandRunLogcat = [
-                testConf.getADBBinary(),
+                executableAdb,
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'logcat',
@@ -65,7 +70,7 @@ class StartEmulatorTask extends DefaultTask {
     private void waitUntilEmulatorReady() {
         logger.lifecycle("Waiting until emulator is ready ${testConf.emulatorName}")
         String[] commandRunShell = [
-                testConf.getADBBinary(),
+                executableAdb,
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'shell',

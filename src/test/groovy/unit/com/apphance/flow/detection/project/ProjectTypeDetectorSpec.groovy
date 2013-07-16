@@ -1,12 +1,12 @@
-package com.apphance.flow.detection
+package com.apphance.flow.detection.project
 
 import com.apphance.flow.android.ExecuteAndroidBuildsTest
 import com.apphance.flow.ios.ExecuteIosBuildsTest
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static ProjectType.ANDROID
-import static ProjectType.IOS
+import static com.apphance.flow.detection.project.ProjectType.ANDROID
+import static com.apphance.flow.detection.project.ProjectType.IOS
 
 class ProjectTypeDetectorSpec extends Specification {
 

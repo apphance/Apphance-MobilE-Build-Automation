@@ -9,10 +9,10 @@ import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import com.apphance.flow.util.file.FileManager
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
+import javax.inject.Named
 
 import static android.Manifest.permission.ACCESS_MOCK_LOCATION
 import static com.apphance.flow.executor.AntExecutor.CLEAN
@@ -32,6 +32,12 @@ class TestAndroidTask extends DefaultTask {
     @Inject CommandExecutor executor
     @Inject AntExecutor antExecutor
     @Inject AndroidManifestHelper manifestHelper
+    @Inject
+    @Named('executable.android') String executableAndroid
+    @Inject
+    @Named('executable.emulator') String executableEmulator
+    @Inject
+    @Named('executable.emulator') String executableAdb
 
     private Process emulatorProcess
     private Process logcatProcess
@@ -61,16 +67,15 @@ class TestAndroidTask extends DefaultTask {
             deleteNonEmptyDirectory(testConf.rawDir)
         }
         testConf.rawDir.mkdir()
-        def commandAndroid = [
-                'android',
+        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
+                executableAndroid,
                 'update',
                 'test-project',
                 '-p',
                 '.',
                 '-m',
                 '../../'
-        ]
-        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: commandAndroid))
+        ]))
         boolean useMockLocation = testConf.mockLocation.value
         if (useMockLocation) {
             manifestHelper.addPermissions(conf.rootDir, ACCESS_MOCK_LOCATION)
@@ -109,7 +114,7 @@ class TestAndroidTask extends DefaultTask {
     private void startEmulator(boolean noWindow) {
         logger.lifecycle("Starting emulator ${testConf.emulatorName}")
         def emulatorCommand = [
-                'emulator',
+                executableEmulator,
                 '-avd',
                 testConf.emulatorName,
                 '-port',
@@ -121,28 +126,27 @@ class TestAndroidTask extends DefaultTask {
         }
         emulatorProcess = executor.startCommand(new Command(runDir: conf.rootDir, cmd: emulatorCommand))
         Thread.sleep(4 * 1000) // sleep for some time.
-        runLogCat(project)
+        runLogCat()
         waitUntilEmulatorReady()
         logger.lifecycle("Started emulator ${testConf.emulatorName}")
     }
 
-    private void runLogCat(Project project) {
+    private void runLogCat() {
         logger.lifecycle("Starting logcat monitor on ${testConf.emulatorName}")
-        String[] commandRunLogcat = [
-                testConf.getADBBinary(),
+        logcatProcess = executor.startCommand(new Command(runDir: conf.rootDir, cmd: [
+                executableAdb,
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'logcat',
                 '-v',
                 'time'
-        ]
-        logcatProcess = executor.startCommand(new Command(runDir: conf.rootDir, cmd: commandRunLogcat))
+        ]))
     }
 
     private void waitUntilEmulatorReady() {
         logger.lifecycle("Waiting until emulator is ready ${testConf.emulatorName}")
         String[] commandRunShell = [
-                testConf.getADBBinary(),
+                executableAdb,
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'shell',
@@ -166,28 +170,28 @@ class TestAndroidTask extends DefaultTask {
 
     private void installTestBuilds() {
         executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
-                testConf.getADBBinary(),
+                executableAdb,
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'uninstall',
                 conf.mainPackage
         ], failOnError: false))
         executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
-                testConf.getADBBinary(),
+                executableAdb,
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'uninstall',
                 testConf.testProjectPackage
         ], failOnError: false))
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
-                testConf.getADBBinary(),
+                executableAdb,
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'install',
                 "bin/${conf.projectName.value}-debug.apk"
         ]))
         executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
-                testConf.getADBBinary(),
+                executableAdb,
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'install',
@@ -220,7 +224,7 @@ class TestAndroidTask extends DefaultTask {
 
     private String[] prepareTestCommandLine(String packageName) {
         def commandLine = [
-                testConf.getADBBinary(),
+                executableAdb,
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'shell',
@@ -251,15 +255,14 @@ class TestAndroidTask extends DefaultTask {
 
     private void extractEmmaCoverage() {
         logger.lifecycle("Extracting coverage report from ${testConf.emulatorName}")
-        String[] commandDownloadCoverageFile = [
-                testConf.getADBBinary(),
+        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
+                executableAdb,
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'pull',
                 testConf.emmaDumpFilePath,
                 testConf.coverageECFile
-        ]
-        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: commandDownloadCoverageFile))
+        ]))
         logger.lifecycle("Pulled coverage report from ${testConf.emulatorName} to ${testConf.coverageDir}...")
     }
 
@@ -282,14 +285,13 @@ class TestAndroidTask extends DefaultTask {
 
     private void extractXMLJUnitFiles() {
         logger.lifecycle("Extracting coverage report from ${testConf.emulatorName}")
-        String[] commandDownloadXmlFile = [
-                testConf.getADBBinary(),
+        executor.executeCommand(new Command(runDir: testConf.coverageDir, cmd: [
+                executableAdb,
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'pull',
                 testConf.XMLJUnitDirPath
-        ]
-        executor.executeCommand(new Command(runDir: testConf.coverageDir, cmd: commandDownloadXmlFile))
+        ]))
     }
 
     private void stopEmulator() {

@@ -172,10 +172,6 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             possibleValues: { BOOLEAN_VALUES }
     )
 
-    File getADBBinary() {
-        new File(conf.SDKDir, "platform${separator}tools")
-    }
-
     String getEmmaDumpFilePath() {
         "/data/data/${conf.mainPackage}/coverage.ec"
     }

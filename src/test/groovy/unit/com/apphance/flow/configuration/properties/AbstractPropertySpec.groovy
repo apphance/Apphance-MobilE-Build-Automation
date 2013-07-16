@@ -3,7 +3,7 @@ package com.apphance.flow.configuration.properties
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static com.apphance.flow.detection.ProjectType.ANDROID
+import static com.apphance.flow.detection.project.ProjectType.ANDROID
 import static java.lang.System.getProperties
 
 class AbstractPropertySpec extends Specification {

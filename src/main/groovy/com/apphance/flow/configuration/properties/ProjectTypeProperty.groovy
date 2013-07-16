@@ -1,6 +1,6 @@
 package com.apphance.flow.configuration.properties
 
-import com.apphance.flow.detection.ProjectType
+import com.apphance.flow.detection.project.ProjectType
 
 class ProjectTypeProperty extends AbstractProperty<ProjectType> {
 

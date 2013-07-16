@@ -8,7 +8,7 @@ import com.apphance.flow.executor.IOSExecutor
 
 import javax.inject.Inject
 
-import static com.apphance.flow.detection.ProjectType.IOS
+import static com.apphance.flow.detection.project.ProjectType.IOS
 import static com.apphance.flow.util.file.FileManager.*
 import static groovy.io.FileType.DIRECTORIES
 import static java.io.File.separator

@@ -1,13 +1,13 @@
 package com.apphance.flow.configuration.android
 
-import com.apphance.flow.detection.ProjectTypeDetector
+import com.apphance.flow.detection.project.ProjectTypeDetector
 import com.apphance.flow.plugins.android.parsers.AndroidBuildXmlHelper
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import org.gradle.api.Project
 import spock.lang.Specification
 
-import static com.apphance.flow.detection.ProjectType.ANDROID
-import static com.apphance.flow.detection.ProjectType.IOS
+import static com.apphance.flow.detection.project.ProjectType.ANDROID
+import static com.apphance.flow.detection.project.ProjectType.IOS
 import static com.google.common.io.Files.createTempDir
 
 class AndroidTestConfigurationSpec extends Specification {

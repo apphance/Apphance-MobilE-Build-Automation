@@ -45,7 +45,7 @@ class CreateAVDTaskSpec extends Specification {
         })
 
         and:
-        def ae = new AndroidExecutor(executor: ce, conf: ac)
+        def ae = new AndroidExecutor(executor: ce, conf: ac, executableAndroid: 'android')
 
 
         and:

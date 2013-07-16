@@ -46,8 +46,8 @@ class SingleVariantTaskSpec extends Specification {
         getRootDir() >> project.rootDir
     }
     def executor = new CommandExecutor(fileLinker, logFileGenerator)
-    def antExecutor = new AntExecutor(executor: executor)
-    def androidExecutor = new AndroidExecutor(executor: executor, conf: conf)
+    def antExecutor = new AntExecutor(executor: executor, executableAnt: 'ant')
+    def androidExecutor = new AndroidExecutor(executor: executor, conf: conf,executableAndroid: 'android')
     def projectUpdater = new AndroidProjectUpdater(conf: conf, executor: androidExecutor)
 
     def setup() {

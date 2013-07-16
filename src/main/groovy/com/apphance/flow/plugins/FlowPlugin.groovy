@@ -26,6 +26,7 @@ class FlowPlugin implements Plugin<Project> {
         def injector = Guice.createInjector(
                 new GradleModule(project),
                 new IOSModule(project),
+                new AndroidModule(project),
                 new ConfigurationModule(project),
                 new EnvironmentModule(),
                 new CommandExecutorModule(project),

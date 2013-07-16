@@ -1,10 +1,7 @@
 package com.apphance.flow.plugins
 
-import com.apphance.flow.detection.ProjectTypeDetector
-import com.apphance.flow.di.CommandExecutorModule
-import com.apphance.flow.di.ConfigurationModule
-import com.apphance.flow.di.EnvironmentModule
-import com.apphance.flow.di.IOSModule
+import com.apphance.flow.detection.project.ProjectTypeDetector
+import com.apphance.flow.di.*
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.android.analysis.AndroidAnalysisPlugin
 import com.apphance.flow.plugins.android.apphance.AndroidApphancePlugin
@@ -15,7 +12,6 @@ import com.apphance.flow.plugins.android.test.AndroidTestPlugin
 import com.apphance.flow.plugins.ios.apphance.IOSApphancePlugin
 import com.apphance.flow.plugins.ios.buildplugin.IOSPlugin
 import com.apphance.flow.plugins.ios.framework.IOSFrameworkPlugin
-import com.apphance.flow.plugins.ios.ocunit.IOSUnitTestPlugin
 import com.apphance.flow.plugins.ios.release.IOSReleasePlugin
 import com.apphance.flow.plugins.project.ProjectPlugin
 import com.apphance.flow.plugins.release.ReleasePlugin
@@ -28,8 +24,8 @@ import spock.lang.Unroll
 
 import static com.apphance.flow.configuration.ProjectConfiguration.LOG_DIR
 import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
-import static com.apphance.flow.detection.ProjectType.ANDROID
-import static com.apphance.flow.detection.ProjectType.IOS
+import static com.apphance.flow.detection.project.ProjectType.ANDROID
+import static com.apphance.flow.detection.project.ProjectType.IOS
 import static com.apphance.flow.di.ConfigurationModule.getVariantFactories
 import static com.apphance.flow.plugins.ios.parsers.XCodeOutputParserSpec.XCODE_LIST
 
@@ -92,9 +88,9 @@ class PluginMasterSpec extends Specification {
         1 * mocks[after].apply(project)
 
         where:
-        before               | after
-        ProjectPlugin        | AndroidPlugin
-        AndroidPlugin        | ReleasePlugin
+        before        | after
+        ProjectPlugin | AndroidPlugin
+        AndroidPlugin | ReleasePlugin
         ReleasePlugin | AndroidReleasePlugin
     }
 
@@ -123,9 +119,9 @@ class PluginMasterSpec extends Specification {
         1 * mocks[after].apply(project)
 
         where:
-        before               | after
-        ProjectPlugin        | IOSPlugin
-        IOSPlugin            | ReleasePlugin
+        before        | after
+        ProjectPlugin | IOSPlugin
+        IOSPlugin     | ReleasePlugin
         ReleasePlugin | IOSReleasePlugin
     }
 
@@ -167,6 +163,7 @@ class PluginMasterSpec extends Specification {
         return Guice.createInjector(
                 new EnvironmentModule(),
                 new IOSModule(project),
+                new AndroidModule(project),
                 new CommandExecutorModule(project),
                 new ConfigurationModule(project),
                 new AbstractModule() {

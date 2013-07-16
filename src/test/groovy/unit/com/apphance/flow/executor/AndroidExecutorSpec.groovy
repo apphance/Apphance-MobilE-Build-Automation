@@ -13,7 +13,7 @@ class AndroidExecutorSpec extends Specification {
         executeCommand(_) >> targets.split('\n').iterator()
     }
     def file = GroovyMock(File)
-    def androidExecutor = new AndroidExecutor(executor: commandExecutor, conf: conf)
+    def androidExecutor = new AndroidExecutor(executor: commandExecutor, conf: conf, executableAndroid: 'android')
 
     def 'test updateProject method'() {
         when: androidExecutor.updateProject(file, 'android-8', 'sample-name')
@@ -31,7 +31,7 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand({ it.commandForExecution.join(' ') == 'android list target' }) >> targets.split('\n').iterator()
 
         and:
-        def ae = new AndroidExecutor(executor: ce, conf: conf)
+        def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroid: 'android')
 
         when:
         def output = ae.targets
@@ -79,7 +79,7 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand(_) >> targets.split('\n').iterator()
 
         and:
-        def ae = new AndroidExecutor(executor: ce, conf: conf)
+        def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroid: 'android')
 
         expect:
         idForTarget == ae.idForTarget(target)

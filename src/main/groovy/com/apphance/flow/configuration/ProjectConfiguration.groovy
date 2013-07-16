@@ -2,7 +2,7 @@ package com.apphance.flow.configuration
 
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.reader.PropertyReader
-import com.apphance.flow.detection.ProjectTypeDetector
+import com.apphance.flow.detection.project.ProjectTypeDetector
 import org.gradle.api.Project
 
 import javax.inject.Inject

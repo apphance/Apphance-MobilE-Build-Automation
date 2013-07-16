@@ -54,7 +54,7 @@ class UpdateProjectTaskSpec extends Specification {
         }
 
         and:
-        def ae = new AndroidExecutor(executor: ce, conf: ac)
+        def ae = new AndroidExecutor(executor: ce, conf: ac, executableAndroid: 'android')
 
         and:
         def pu = new AndroidProjectUpdater(executor: ae, conf: ac)

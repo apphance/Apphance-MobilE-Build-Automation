@@ -10,6 +10,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
+import javax.inject.Named
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 
@@ -23,6 +24,8 @@ class PrepareRobotiumTask extends DefaultTask {
     @Inject AndroidConfiguration conf
     @Inject AndroidTestConfiguration testConf
     @Inject AndroidManifestHelper manifestHelper
+    @Inject
+    @Named('executable.android') String executableAndroid
 
     @TaskAction
     void prepareRobotium() {
@@ -39,7 +42,7 @@ class PrepareRobotiumTask extends DefaultTask {
         if (path.exists()) {
             logger.info("Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)")
             command = [
-                    'android',
+                    executableAndroid,
                     '-v',
                     'update',
                     'test-project',
@@ -52,7 +55,7 @@ class PrepareRobotiumTask extends DefaultTask {
             logger.info("No Robotium project detected, new one is going to be created")
             path.mkdirs()
             command = [
-                    'android',
+                    executableAndroid,
                     '-v',
                     'create',
                     'test-project',

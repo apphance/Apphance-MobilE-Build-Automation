@@ -1,7 +1,7 @@
-package com.apphance.flow.detection
+package com.apphance.flow.detection.project
 
-import static ProjectType.ANDROID
-import static ProjectType.IOS
+import static com.apphance.flow.detection.project.ProjectType.ANDROID
+import static com.apphance.flow.detection.project.ProjectType.IOS
 
 class ProjectTypeDetector {
 

@@ -1,12 +1,12 @@
 package com.apphance.flow.configuration.android
 
-import com.apphance.flow.detection.ProjectTypeDetector
+import com.apphance.flow.detection.project.ProjectTypeDetector
 import org.gradle.api.Project
 import spock.lang.Ignore
 import spock.lang.Specification
 
-import static com.apphance.flow.detection.ProjectType.ANDROID
-import static com.apphance.flow.detection.ProjectType.IOS
+import static com.apphance.flow.detection.project.ProjectType.ANDROID
+import static com.apphance.flow.detection.project.ProjectType.IOS
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class AndroidConfigurationSpec extends Specification {

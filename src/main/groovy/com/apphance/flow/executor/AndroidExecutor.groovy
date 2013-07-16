@@ -7,6 +7,7 @@ import com.google.inject.Singleton
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
+import javax.inject.Named
 
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
@@ -21,11 +22,13 @@ class AndroidExecutor {
 
     @Inject CommandExecutor executor
     @Inject AndroidConfiguration conf
+    @Inject
+    @Named('executable.android') String executableAndroid
 
     @Lazy List<String> listTargetOutput = {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: ['android', 'list', 'target']
+                cmd: [executableAndroid, 'list', 'target']
         )).toList()
     }()
 
@@ -36,9 +39,7 @@ class AndroidExecutor {
     def updateProject(File dir, String target, String name) {
         executor.executeCommand(new Command(
                 runDir: dir,
-                cmd: [
-                        'android', 'update', 'project', '-p', '.', '-t', "${idForTarget(target) ?: target}", '-n', "$name", '-s'
-                ]
+                cmd: [executableAndroid, 'update', 'project', '-p', '.', '-t', "${idForTarget(target) ?: target}", '-n', name, '-s']
         ))
     }
 
@@ -57,7 +58,7 @@ class AndroidExecutor {
     def listAvd() {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: ['android', 'list', 'avd', '-c']
+                cmd: [executableAndroid, 'list', 'avd', '-c']
         ))?.toList()
     }
 
@@ -99,7 +100,7 @@ class AndroidExecutor {
     def createAvdEmulator(File directory, String name, String target, String skin, String cardSize, File avdDir, boolean snapshotsEnabled) {
         executor.executeCommand(new Command(
                 runDir: directory,
-                cmd: ['android', '-v', 'create', 'avd', '-n', "$name", '-t', "${idForTarget(target) ?: target}", '-s', "$skin", '-c',
+                cmd: [executableAndroid, '-v', 'create', 'avd', '-n', "$name", '-t', "${idForTarget(target) ?: target}", '-s', "$skin", '-c',
                         "$cardSize", '-p', "$avdDir", '-f', snapshotsEnabled ? '-a' : ''
                 ],
                 input: ['no']

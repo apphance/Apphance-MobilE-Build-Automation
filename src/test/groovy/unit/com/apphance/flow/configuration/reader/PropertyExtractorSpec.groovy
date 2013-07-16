@@ -2,7 +2,7 @@ package com.apphance.flow.configuration.reader
 
 import spock.lang.Specification
 
-import static com.apphance.flow.detection.ProjectType.IOS
+import static com.apphance.flow.detection.project.ProjectType.IOS
 
 class PropertyExtractorSpec extends Specification {
 

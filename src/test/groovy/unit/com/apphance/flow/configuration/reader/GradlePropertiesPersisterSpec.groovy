@@ -2,7 +2,7 @@ package com.apphance.flow.configuration.reader
 
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.detection.ProjectTypeDetector
+import com.apphance.flow.detection.project.ProjectTypeDetector
 import com.apphance.flow.di.ConfigurationModule
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
@@ -10,12 +10,13 @@ import com.google.common.io.Files
 import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import com.google.inject.Injector
+import com.google.inject.name.Names
 import org.gradle.api.Project
 import spock.lang.Shared
 import spock.lang.Specification
 
-import static com.apphance.flow.detection.ProjectType.ANDROID
-import static com.apphance.flow.detection.ProjectType.IOS
+import static com.apphance.flow.detection.project.ProjectType.ANDROID
+import static com.apphance.flow.detection.project.ProjectType.IOS
 
 class GradlePropertiesPersisterSpec extends Specification {
 
@@ -40,6 +41,7 @@ class GradlePropertiesPersisterSpec extends Specification {
                 bind(CommandLogFilesGenerator).toInstance(logFileGenerator)
 
                 bind(Project).toInstance(project)
+                bindConstant().annotatedWith(Names.named('executable.android')).to('android')
             }
         }
     }

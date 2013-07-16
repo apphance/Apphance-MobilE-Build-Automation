@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins
 
-import com.apphance.flow.detection.ProjectType
-import com.apphance.flow.detection.ProjectTypeDetector
+import com.apphance.flow.detection.project.ProjectType
+import com.apphance.flow.detection.project.ProjectTypeDetector
 import com.apphance.flow.plugins.android.analysis.AndroidAnalysisPlugin
 import com.apphance.flow.plugins.android.apphance.AndroidApphancePlugin
 import com.apphance.flow.plugins.android.buildplugin.AndroidPlugin

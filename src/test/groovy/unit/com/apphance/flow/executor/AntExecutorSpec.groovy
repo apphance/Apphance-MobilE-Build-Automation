@@ -16,7 +16,7 @@ class AntExecutorSpec extends Specification {
 
     @Shared File rootDir = new File('src/test/resources/com/apphance/flow/executor/antTestProject')
 
-    def antExecutor = new AntExecutor()
+    def antExecutor = new AntExecutor(executableAnt: 'ant')
 
     def setup() {
         def fileLinker = Stub(FileLinker)
