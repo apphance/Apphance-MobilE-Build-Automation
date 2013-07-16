@@ -1,8 +1,7 @@
-package com.apphance.flow.configuration.ios
+package com.apphance.flow.configuration.ios.variants
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
-import com.apphance.flow.configuration.ios.variants.IOSVariantFactory
-import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
+import com.apphance.flow.configuration.ios.IOSConfiguration
+import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.reader.PropertyPersister
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import spock.lang.Specification
@@ -58,5 +57,32 @@ class IOSVariantsConfigurationSpec extends Specification {
         []           | false
         '[]'         | false
         ['\n']       | false
+    }
+
+    def 'possible variants found'() {
+        given:
+        def xcodeDir = new File(getClass().getResource('iosProject').toURI())
+
+        variantsConf.conf = GroovyMock(IOSConfiguration) {
+            getXcodeDir() >> new FileProperty(value: xcodeDir)
+            getSchemes() >> ['GradleXCode',
+                    'GradleXCode With Space',
+                    'GradleXCodeNoLaunchAction',
+                    'GradleXCodeWithApphance',
+                    'GradleXCodeWith2Targets',
+                    'GradleXCode 2']
+        }
+        variantsConf.schemeParser = new XCSchemeParser()
+
+        expect:
+        variantsConf.schemesDeclared()
+        variantsConf.schemesShared()
+        variantsConf.schemesBuildable()
+        variantsConf.schemesHasSingleBuildableTarget()
+        variantsConf.hasSchemes
+
+        and:
+        variantsConf.possibleVariants.sort() == ['GradleXCode', 'GradleXCode With Space', 'GradleXCodeWithApphance']
+
     }
 }

@@ -54,7 +54,6 @@ class FileManagerIntegrationSpec extends Specification {
                 'com.apphance.flow.ios.setup',
                 'com.apphance.flow.unit.android',
                 'integration.com.apphance.flow',
-                'integration.com.apphance.flow.executor.jython',
                 'integration.com.apphance.flow.util.file',
                 'unit.com.apphance.flow',
                 'unit.com.apphance.flow.detection',

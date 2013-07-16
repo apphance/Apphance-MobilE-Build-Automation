@@ -9,7 +9,7 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static com.google.common.io.Files.getNameWithoutExtension
+import static com.google.common.base.Preconditions.checkNotNull
 import static java.io.File.separator
 
 @Singleton
@@ -138,6 +138,15 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 //           - schemes must be buildable (Executable set in scheme's 'Run Action')
 //           - schemes must have single buildable target
 //        """
+
+    //gradle guava 11 workaround
+    @PackageScope
+    String getNameWithoutExtension(String file) {
+        checkNotNull(file)
+        String fileName = new File(file).getName()
+        int dotIndex = fileName.lastIndexOf('.')
+        (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex)
+    }
 
     @Override
     void checkProperties() {

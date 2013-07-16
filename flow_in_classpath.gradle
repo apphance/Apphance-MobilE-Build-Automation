@@ -25,7 +25,6 @@ rootProject.buildscript {
         classpath 'org.apache.httpcomponents:httpmime:4.1.3'
         classpath 'org.apache.httpcomponents:httpcore:4.1.3'
         classpath 'commons-collections:commons-collections:3.2.1'
-        classpath 'org.python:jython-standalone:2.7-b1'
         classpath 'com.google.inject:guice:3.0'
         classpath 'com.google.inject.extensions:guice-multibindings:3.0'
         classpath 'com.google.inject.extensions:guice-assistedinject:3.0'

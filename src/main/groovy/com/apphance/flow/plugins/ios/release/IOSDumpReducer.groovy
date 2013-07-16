@@ -246,14 +246,16 @@ class IOSDumpReducer {
         table.sort { i, j -> i[key] <=> j[key] }
     }
 
-    private File createDsymDict(File outputDir, String jsonContent) {
+    @PackageScope
+    File createDsymDict(File outputDir, String jsonContent) {
         def dsymDict = new File(outputDir, 'dsym.dict')
         dsymDict.createNewFile()
         dsymDict.text = jsonContent
         dsymDict
     }
 
-    private void createZipFile(File outputDir, String filename, File dsymDict) {
+    @PackageScope
+    void createZipFile(File outputDir, String filename, File dsymDict) {
         def zipFile = new File(outputDir, "${filename}.ahsym")
         def zos = new ZipOutputStream(new FileOutputStream(zipFile))
         zos.putNextEntry(new ZipEntry(dsymDict.name))
