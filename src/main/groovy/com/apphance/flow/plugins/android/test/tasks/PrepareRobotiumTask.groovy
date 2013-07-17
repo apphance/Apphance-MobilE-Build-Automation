@@ -29,7 +29,7 @@ class PrepareRobotiumTask extends DefaultTask {
 
     @Lazy
     List<String> executableAndroid = {
-        this.@executableAndroidCmd.split(' ') as List
+        executableAndroidCmd.split(' ') as List
     }()
 
     @TaskAction
