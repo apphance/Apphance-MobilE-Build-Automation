@@ -1,10 +1,12 @@
 package com.apphance.flow.plugins.release.tasks
 
-import com.apphance.flow.configuration.android.AndroidConfiguration
-import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
+import com.apphance.flow.configuration.ProjectConfiguration
+import com.apphance.flow.configuration.properties.StringProperty
+import com.apphance.flow.configuration.release.ReleaseConfiguration
 import spock.lang.Specification
 
-import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
+import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
+import static java.io.File.separator
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class BuildSourcesZipTaskSpec extends Specification {
@@ -20,21 +22,28 @@ class BuildSourcesZipTaskSpec extends Specification {
         def sourceZipName = srcZipName
 
         and:
-        def ac = GroovySpy(AndroidConfiguration, {
-            getProjectVersionedName() >> projectVersionedName
+        def pc = GroovySpy(ProjectConfiguration, {
+            getProjectName() >> new StringProperty(value: projectName)
+            getFullVersionString() >> fullVersionString
         })
-        ac.project = project
+        pc.project = project
+
+        and:
+        def rc = GroovySpy(ReleaseConfiguration) {
+            getOtaDir() >> new File(project.rootDir, OTA_DIR)
+            getReleaseDir() >> new File(OTA_DIR, "$projectName$separator$fullVersionString")
+        }
 
         and:
         def task = project.task(BuildSourcesZipTask.NAME, type: BuildSourcesZipTask) as BuildSourcesZipTask
-        task.releaseConf = new AndroidReleaseConfiguration()
-        task.conf = ac
+        task.releaseConf = rc
+        task.conf = pc
 
         when:
         task.buildSourcesZip()
 
         then:
-        def f = new File(projectDir, "${TMP_DIR}/${sourceZipName}")
+        def f = new File(projectDir, "${rc.releaseDir}/${sourceZipName}")
         f.exists()
         f.size() > 30000
 
@@ -42,8 +51,8 @@ class BuildSourcesZipTaskSpec extends Specification {
         f.delete()
 
         where:
-        projectPath                          | srcZipName                            | projectVersionedName
-        'testProjects/android/android-basic' | 'TestAndroidProject-1.0.1_42-src.zip' | 'TestAndroidProject-1.0.1_42'
-        'testProjects/ios/GradleXCode'       | 'GradleXCode-1.0_32-src.zip'          | 'GradleXCode-1.0_32'
+        projectPath                          | srcZipName                            | projectName          | fullVersionString
+        'testProjects/android/android-basic' | 'TestAndroidProject-1.0.1_42-src.zip' | 'TestAndroidProject' | '1.0.1_42'
+        'testProjects/ios/GradleXCode'       | 'GradleXCode-1.0_32-src.zip'          | 'GradleXCode'        | '1.0_32'
     }
 }

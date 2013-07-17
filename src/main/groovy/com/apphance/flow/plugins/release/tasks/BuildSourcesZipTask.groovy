@@ -8,8 +8,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ProjectConfiguration.BUILD_DIR
-import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
+import static com.apphance.flow.configuration.ProjectConfiguration.*
 import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
@@ -40,6 +39,7 @@ class BuildSourcesZipTask extends DefaultTask {
                 exclude(name: "${BUILD_DIR}/**")
                 exclude(name: "${OTA_DIR}/**")
                 exclude(name: "${TMP_DIR}/**")
+                exclude(name: "${LOG_DIR}/**")
                 exclude(name: '**/buildSrc/build/**')
                 exclude(name: '**/build.gradle')
                 exclude(name: '**/gradle.properties')
@@ -53,10 +53,9 @@ class BuildSourcesZipTask extends DefaultTask {
     }
 
     private void prepareSourcesAndDocumentationArtifacts() {
-        def sourceZipName = "$conf.projectVersionedName-src.zip"
         releaseConf.sourcesZip = new FlowArtifact(
-                name: "$conf.projectName.value-src",
+                name: 'Zipped project sources',
                 url: null, // we do not publish
-                location: new File(conf.tmpDir, sourceZipName))
+                location: new File(releaseConf.releaseDir, "${conf.projectName.value}-${conf.fullVersionString}-src.zip"))
     }
 }
