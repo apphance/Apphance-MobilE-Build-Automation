@@ -85,7 +85,7 @@ class GradlePropertiesPersister implements PropertyPersister {
         writer.write("${conf.enabledPropKey}=${conf.enabled}\n".toString())
 
         if (conf.enabled) {
-            conf.flowProperties().each { AbstractProperty prop ->
+            conf.propertyFields.each { AbstractProperty prop ->
                 writer.write("${prop.name.replaceAll('\\s', '\\\\u0020')}=${prop.persistentForm()}\n".toString())
             }
 

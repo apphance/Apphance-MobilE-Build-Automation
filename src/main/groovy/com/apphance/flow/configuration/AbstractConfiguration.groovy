@@ -14,9 +14,11 @@ abstract class AbstractConfiguration {
 
     private List<String> errors = []
 
+    abstract String getConfigurationName()
+
     @Inject
     void init() {
-        flowProperties().each {
+        propertyFields.each {
             it.value = propertyPersister.get(it.name)
         }
 
@@ -27,13 +29,7 @@ abstract class AbstractConfiguration {
         }
     }
 
-    void setEnabled(boolean enabled) {
-        throw new IllegalStateException("Cannot change '$configurationName' enabled status to: $enabled")
-    }
-
-    abstract boolean isEnabled()
-
-    List<Field> getPropertyFields() {
+    List<AbstractProperty> getPropertyFields() {
         List<Field> fields = []
         def findDeclaredFields
         findDeclaredFields = { Class c ->
@@ -45,23 +41,17 @@ abstract class AbstractConfiguration {
         fields.findAll {
             it.accessible = true
             it.get(this)?.class?.superclass == AbstractProperty
+        }.collect {
+            it.accessible = true
+            it.get(this) as AbstractProperty
         }
     }
 
-    List<AbstractProperty> flowProperties() {
-        propertyFields*.get(this)
+    void setEnabled(boolean enabled) {
+        throw new IllegalStateException("Cannot change '$configurationName' enabled status to: $enabled")
     }
 
-    abstract String getConfigurationName()
-
-    @Override
-    public String toString() {
-        "Configuration '$configurationName'" + (flowProperties() ? " \n${join(flowProperties(), '\n')}\n" : '');
-    }
-
-    Collection<? extends AbstractConfiguration> getSubConfigurations() {
-        []
-    }
+    abstract boolean isEnabled()
 
     String getEnabledPropKey() {
         configurationName.replace(' ', '.').toLowerCase() + '.enabled'
@@ -89,6 +79,12 @@ abstract class AbstractConfiguration {
         ''
     }
 
+    def defaultValidation(AbstractProperty... properties) {
+        properties.each {
+            check it.validator(it.value), "Incorrect value $it.value of $it.name property"
+        }
+    }
+
     boolean canBeEnabled() {
         return true
     }
@@ -97,9 +93,12 @@ abstract class AbstractConfiguration {
         ""
     }
 
-    def defaultValidation(AbstractProperty... properties) {
-        properties.each {
-            check it.validator(it.value), "Incorrect value $it.value of $it.name property"
-        }
+    Collection<? extends AbstractConfiguration> getSubConfigurations() {
+        []
+    }
+
+    @Override
+    public String toString() {
+        "Configuration '$configurationName'" + (propertyFields ? " \n${join(propertyFields, '\n')}\n" : '');
     }
 }

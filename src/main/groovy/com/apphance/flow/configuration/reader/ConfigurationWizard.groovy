@@ -58,7 +58,7 @@ class ConfigurationWizard {
 
     @PackageScope
     void readValues(AbstractConfiguration conf) {
-        conf.flowProperties().each {
+        conf.propertyFields.each {
             if (it.interactive()) readProperty(it)
         }
         if (!conf.subConfigurations?.empty) {

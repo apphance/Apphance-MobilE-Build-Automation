@@ -30,7 +30,6 @@ class ApphanceArtifactory {
         iosLibs.call(mode, arch)
     }
 
-
     @Lazy
     private Closure<List<String>> iosLibs = { ApphanceMode mode, String arch ->
         def response = readStreamFromUrl("$APPHANCE_ARTIFACTORY_REST_URL/com/apphance/ios.${libForMode(mode).groupName}.$arch")

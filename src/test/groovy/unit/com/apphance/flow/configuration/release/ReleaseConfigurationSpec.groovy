@@ -153,7 +153,7 @@ class ReleaseConfigurationSpec extends Specification {
         fields.size() > 0
 
         and:
-        fields*.name.containsAll('iconFile', 'releaseUrl')
+        fields*.name.containsAll('release.icon', 'release.url')
     }
 
 

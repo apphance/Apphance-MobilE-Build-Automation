@@ -17,12 +17,12 @@ class ConfigurationSpec extends Specification {
 
         then:
         fields.size() > 0
-        fields.every { f -> (f.accessible = true) && f.get(androidConf).class.superclass == AbstractProperty }
+        fields.every { it.class.superclass == AbstractProperty }
     }
 
     def 'return list of properties'() {
         when:
-        def props = androidConf.flowProperties()
+        def props = androidConf.propertyFields
         then:
         props*.name.containsAll(['android.project.name'])
     }
