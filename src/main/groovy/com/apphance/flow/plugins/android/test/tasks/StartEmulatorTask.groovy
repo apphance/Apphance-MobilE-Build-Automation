@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.android.test.tasks
 
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidTestConfiguration
+import com.apphance.flow.executor.ExecutableCommand
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import org.gradle.api.DefaultTask
@@ -23,19 +24,9 @@ class StartEmulatorTask extends DefaultTask {
     @Inject AndroidConfiguration conf
     @Inject AndroidTestConfiguration testConf
     @Inject
-    @Named('executable.emulator') String executableEmulatorCmd
+    @Named('executable.emulator') ExecutableCommand executableEmulator
     @Inject
-    @Named('executable.adb') String executableAdbCmd
-
-    @Lazy
-    List<String> executableEmulator = {
-        this.@executableEmulatorCmd.split(' ') as List
-    }()
-
-    @Lazy
-    List<String> executableAdb = {
-        this.@executableAdbCmd.split(' ') as List
-    }()
+    @Named('executable.adb') ExecutableCommand executableAdb
 
     private Process emulatorProcess
 
@@ -46,7 +37,7 @@ class StartEmulatorTask extends DefaultTask {
 
     private void startEmulator(boolean noWindow) {
         logger.lifecycle("Starting emulator ${testConf.emulatorName}")
-        def emulatorCommand = executableEmulator + [
+        def emulatorCommand = executableEmulator.cmd + [
                 '-avd',
                 testConf.emulatorName,
                 '-port',
@@ -65,7 +56,7 @@ class StartEmulatorTask extends DefaultTask {
 
     private void runLogCat() {
         logger.lifecycle("Starting logcat monitor on ${testConf.emulatorName}")
-        String[] commandRunLogcat = executableAdb + [
+        String[] commandRunLogcat = executableAdb.cmd + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'logcat',
@@ -77,7 +68,7 @@ class StartEmulatorTask extends DefaultTask {
 
     private void waitUntilEmulatorReady() {
         logger.lifecycle("Waiting until emulator is ready ${testConf.emulatorName}")
-        String[] commandRunShell = executableAdb + [
+        String[] commandRunShell = executableAdb.cmd + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'shell',

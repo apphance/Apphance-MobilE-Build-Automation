@@ -18,6 +18,8 @@ import spock.lang.Specification
 
 import javax.inject.Inject
 
+import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_ANDROID
+
 class ConfigurationModuleSpec extends Specification {
 
     @Inject AndroidConfiguration androidConf1
@@ -53,7 +55,7 @@ class ConfigurationModuleSpec extends Specification {
                 bind(CommandLogFilesGenerator).toInstance(logFileGenerator)
 
                 bind(ConfigurationModuleSpec).toInstance(ConfigurationModuleSpec.this)
-                bindConstant().annotatedWith(Names.named('executable.android')).to('android')
+                bindConstant().annotatedWith(Names.named('executable.android')).to(STD_EXECUTABLE_ANDROID)
             }
 
         }

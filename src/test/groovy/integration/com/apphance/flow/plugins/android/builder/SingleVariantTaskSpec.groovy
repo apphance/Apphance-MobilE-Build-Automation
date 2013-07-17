@@ -19,6 +19,8 @@ import spock.lang.Unroll
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
+import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_ANDROID
+import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_ANT
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
@@ -46,8 +48,8 @@ class SingleVariantTaskSpec extends Specification {
         getRootDir() >> project.rootDir
     }
     def executor = new CommandExecutor(fileLinker, logFileGenerator)
-    def antExecutor = new AntExecutor(executor: executor, executableAntCmd: 'ant')
-    def androidExecutor = new AndroidExecutor(executor: executor, conf: conf, executableAndroidCmd: 'android')
+    def antExecutor = new AntExecutor(executor: executor, executableAnt: STD_EXECUTABLE_ANT)
+    def androidExecutor = new AndroidExecutor(executor: executor, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
     def projectUpdater = new AndroidProjectUpdater(conf: conf, executor: androidExecutor)
 
     def setup() {

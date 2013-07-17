@@ -7,6 +7,7 @@ import com.apphance.flow.util.FlowUtils
 import spock.lang.Shared
 import spock.lang.Specification
 
+import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_ANT
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.nio.file.Files.deleteIfExists
@@ -16,7 +17,7 @@ class AntExecutorSpec extends Specification {
 
     @Shared File rootDir = new File('src/test/resources/com/apphance/flow/executor/antTestProject')
 
-    def antExecutor = new AntExecutor(executableAntCmd: 'ant')
+    def antExecutor = new AntExecutor(executableAnt: STD_EXECUTABLE_ANT)
 
     def setup() {
         def fileLinker = Stub(FileLinker)

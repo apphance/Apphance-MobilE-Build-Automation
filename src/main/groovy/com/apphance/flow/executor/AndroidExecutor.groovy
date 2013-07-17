@@ -23,17 +23,13 @@ class AndroidExecutor {
     @Inject CommandExecutor executor
     @Inject AndroidConfiguration conf
     @Inject
-    @Named('executable.android') String executableAndroidCmd
+    @Named('executable.android') ExecutableCommand executableAndroid
 
-    @Lazy
-    List<String> executableAndroid = {
-        this.@executableAndroidCmd.split(' ') as List
-    }()
 
     @Lazy List<String> listTargetOutput = {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: executableAndroid + ['list', 'target']
+                cmd: executableAndroid.cmd + ['list', 'target']
         )).toList()
     }()
 
@@ -44,7 +40,7 @@ class AndroidExecutor {
     def updateProject(File dir, String target, String name) {
         executor.executeCommand(new Command(
                 runDir: dir,
-                cmd: executableAndroid + ['update', 'project', '-p', '.', '-t', "${idForTarget(target) ?: target}", '-n', name, '-s']
+                cmd: executableAndroid.cmd + ['update', 'project', '-p', '.', '-t', "${idForTarget(target) ?: target}", '-n', name, '-s']
         ))
     }
 
@@ -63,7 +59,7 @@ class AndroidExecutor {
     def listAvd() {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: executableAndroid + ['list', 'avd', '-c']
+                cmd: executableAndroid.cmd + ['list', 'avd', '-c']
         ))?.toList()
     }
 
@@ -105,7 +101,7 @@ class AndroidExecutor {
     def createAvdEmulator(File directory, String name, String target, String skin, String cardSize, File avdDir, boolean snapshotsEnabled) {
         executor.executeCommand(new Command(
                 runDir: directory,
-                cmd: executableAndroid + ['-v', 'create', 'avd', '-n', "$name", '-t', "${idForTarget(target) ?: target}", '-s', "$skin", '-c',
+                cmd: executableAndroid.cmd + ['-v', 'create', 'avd', '-n', "$name", '-t', "${idForTarget(target) ?: target}", '-s', "$skin", '-c',
                         "$cardSize", '-p', "$avdDir", '-f', snapshotsEnabled ? '-a' : ''
                 ],
                 input: ['no']

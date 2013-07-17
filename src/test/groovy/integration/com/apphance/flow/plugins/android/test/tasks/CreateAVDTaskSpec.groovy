@@ -11,6 +11,7 @@ import com.apphance.flow.executor.linker.FileLinker
 import org.gradle.api.Project
 import spock.lang.Specification
 
+import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_ANDROID
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
@@ -45,7 +46,7 @@ class CreateAVDTaskSpec extends Specification {
         })
 
         and:
-        def ae = new AndroidExecutor(executor: ce, conf: ac, executableAndroidCmd: 'android')
+        def ae = new AndroidExecutor(executor: ce, conf: ac, executableAndroid: STD_EXECUTABLE_ANDROID)
 
 
         and:

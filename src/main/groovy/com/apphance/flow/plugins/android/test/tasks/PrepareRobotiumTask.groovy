@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.android.test.tasks
 
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidTestConfiguration
+import com.apphance.flow.executor.ExecutableCommand
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
@@ -25,12 +26,7 @@ class PrepareRobotiumTask extends DefaultTask {
     @Inject AndroidTestConfiguration testConf
     @Inject AndroidManifestHelper manifestHelper
     @Inject
-    @Named('executable.android') String executableAndroidCmd
-
-    @Lazy
-    List<String> executableAndroid = {
-        executableAndroidCmd.split(' ') as List
-    }()
+    @Named('executable.android') ExecutableCommand executableAndroid
 
     @TaskAction
     void prepareRobotium() {
@@ -46,7 +42,7 @@ class PrepareRobotiumTask extends DefaultTask {
         String[] command
         if (path.exists()) {
             logger.info("Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)")
-            command = executableAndroid + [
+            command = executableAndroid.cmd + [
                     '-v',
                     'update',
                     'test-project',
@@ -58,7 +54,7 @@ class PrepareRobotiumTask extends DefaultTask {
         } else {
             logger.info("No Robotium project detected, new one is going to be created")
             path.mkdirs()
-            command = executableAndroid + [
+            command = executableAndroid.cmd + [
                     '-v',
                     'create',
                     'test-project',

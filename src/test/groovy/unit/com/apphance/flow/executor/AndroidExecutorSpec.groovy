@@ -6,6 +6,8 @@ import org.gradle.api.Project
 import spock.lang.Shared
 import spock.lang.Specification
 
+import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_ANDROID
+
 class AndroidExecutorSpec extends Specification {
 
     def conf = new AndroidConfiguration(project: GroovyStub(Project))
@@ -13,7 +15,7 @@ class AndroidExecutorSpec extends Specification {
         executeCommand(_) >> targets.split('\n').iterator()
     }
     def file = GroovyMock(File)
-    def androidExecutor = new AndroidExecutor(executor: commandExecutor, conf: conf, executableAndroidCmd: 'android')
+    def androidExecutor = new AndroidExecutor(executor: commandExecutor, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
 
     def 'test updateProject method'() {
         when: androidExecutor.updateProject(file, 'android-8', 'sample-name')
@@ -31,7 +33,7 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand({ it.commandForExecution.join(' ') == 'android list target' }) >> targets.split('\n').iterator()
 
         and:
-        def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroidCmd: 'android')
+        def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
 
         when:
         def output = ae.targets
@@ -46,7 +48,7 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand(_) >> targets.split('\n').iterator()
 
         and:
-        def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroidCmd: 'android')
+        def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
 
         when:
         def output = ae.skinsForTarget('android-3')
@@ -61,7 +63,7 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand(_) >> targets.split('\n').iterator()
 
         and:
-        def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroidCmd: 'android')
+        def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
 
         expect:
         skin == ae.defaultSkinForTarget(target)
@@ -79,7 +81,7 @@ class AndroidExecutorSpec extends Specification {
         ce.executeCommand(_) >> targets.split('\n').iterator()
 
         and:
-        def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroidCmd: 'android')
+        def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
 
         expect:
         idForTarget == ae.idForTarget(target)

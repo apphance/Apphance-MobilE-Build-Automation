@@ -19,18 +19,13 @@ class AntExecutor {
     @Inject
     CommandExecutor executor
     @Inject
-    @Named('executable.ant') String executableAntCmd
+    @Named('executable.ant') ExecutableCommand executableAnt
 
     void executeTarget(File rootDir, String command, Map params = [:]) {
         try {
-            executor.executeCommand(new Command([runDir: rootDir, cmd: executableAnt + [command], failOnError: true] + params))
+            executor.executeCommand(new Command([runDir: rootDir, cmd: executableAnt.cmd + [command], failOnError: true] + params))
         } catch (IOException e) {
             throw new GradleException("Error during execution: ant $command, $params", e)
         }
     }
-
-    @Lazy
-    List<String> executableAnt = {
-        this.@executableAntCmd.split(' ') as List
-    }()
 }
