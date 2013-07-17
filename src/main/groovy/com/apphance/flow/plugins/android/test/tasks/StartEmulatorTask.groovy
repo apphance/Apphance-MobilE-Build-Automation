@@ -23,9 +23,19 @@ class StartEmulatorTask extends DefaultTask {
     @Inject AndroidConfiguration conf
     @Inject AndroidTestConfiguration testConf
     @Inject
-    @Named('executable.emulator') String executableEmulator
+    @Named('executable.emulator') String executableEmulatorCmd
     @Inject
-    @Named('executable.adb') String executableAdb
+    @Named('executable.adb') String executableAdbCmd
+
+    @Lazy
+    List<String> executableEmulator = {
+        this.@executableEmulatorCmd.split(' ') as List
+    }()
+
+    @Lazy
+    List<String> executableAdb = {
+        this.@executableAdbCmd.split(' ') as List
+    }()
 
     private Process emulatorProcess
 
@@ -36,8 +46,7 @@ class StartEmulatorTask extends DefaultTask {
 
     private void startEmulator(boolean noWindow) {
         logger.lifecycle("Starting emulator ${testConf.emulatorName}")
-        def emulatorCommand = [
-                executableEmulator,
+        def emulatorCommand = executableEmulator + [
                 '-avd',
                 testConf.emulatorName,
                 '-port',
@@ -56,8 +65,7 @@ class StartEmulatorTask extends DefaultTask {
 
     private void runLogCat() {
         logger.lifecycle("Starting logcat monitor on ${testConf.emulatorName}")
-        String[] commandRunLogcat = [
-                executableAdb,
+        String[] commandRunLogcat = executableAdb + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'logcat',
@@ -69,8 +77,7 @@ class StartEmulatorTask extends DefaultTask {
 
     private void waitUntilEmulatorReady() {
         logger.lifecycle("Waiting until emulator is ready ${testConf.emulatorName}")
-        String[] commandRunShell = [
-                executableAdb,
+        String[] commandRunShell = executableAdb + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'shell',

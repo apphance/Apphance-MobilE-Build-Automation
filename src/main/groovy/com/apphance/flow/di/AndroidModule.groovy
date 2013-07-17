@@ -16,10 +16,10 @@ class AndroidModule extends AbstractModule {
 
     private executables = [
             WIN: [
-                    'executable.android': 'android.bat',
-                    'executable.adb': 'adb.exe',
-                    'executable.emulator': 'emulator.exe',
-                    'executable.ant': 'ant.bat',
+                    'executable.android': 'cmd /c android.bat',
+                    'executable.adb': 'cmd /c adb.exe',
+                    'executable.emulator': 'cmd /c emulator.exe',
+                    'executable.ant': 'cmd /c ant.bat',
             ],
             OTHER: [
                     'executable.android': 'android',

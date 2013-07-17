@@ -25,7 +25,12 @@ class PrepareRobotiumTask extends DefaultTask {
     @Inject AndroidTestConfiguration testConf
     @Inject AndroidManifestHelper manifestHelper
     @Inject
-    @Named('executable.android') String executableAndroid
+    @Named('executable.android') String executableAndroidCmd
+
+    @Lazy
+    List<String> executableAndroid = {
+        this.@executableAndroidCmd.split(' ') as List
+    }()
 
     @TaskAction
     void prepareRobotium() {
@@ -41,8 +46,7 @@ class PrepareRobotiumTask extends DefaultTask {
         String[] command
         if (path.exists()) {
             logger.info("Robotium test directory exists, now I'm going to recreate the project (no source files are going to be touched)")
-            command = [
-                    executableAndroid,
+            command = executableAndroid + [
                     '-v',
                     'update',
                     'test-project',
@@ -54,8 +58,7 @@ class PrepareRobotiumTask extends DefaultTask {
         } else {
             logger.info("No Robotium project detected, new one is going to be created")
             path.mkdirs()
-            command = [
-                    executableAndroid,
+            command = executableAndroid + [
                     '-v',
                     'create',
                     'test-project',

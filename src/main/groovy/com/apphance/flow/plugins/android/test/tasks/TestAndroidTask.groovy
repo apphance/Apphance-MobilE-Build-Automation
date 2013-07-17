@@ -33,11 +33,26 @@ class TestAndroidTask extends DefaultTask {
     @Inject AntExecutor antExecutor
     @Inject AndroidManifestHelper manifestHelper
     @Inject
-    @Named('executable.android') String executableAndroid
+    @Named('executable.android') String executableAndroidCmd
     @Inject
-    @Named('executable.emulator') String executableEmulator
+    @Named('executable.emulator') String executableEmulatorCmd
     @Inject
-    @Named('executable.emulator') String executableAdb
+    @Named('executable.emulator') String executableAdbCmd
+
+    @Lazy
+    List<String> executableAndroid = {
+        this.@executableAndroidCmd.split(' ') as List
+    }()
+
+    @Lazy
+    List<String> executableEmulator = {
+        this.@executableEmulatorCmd.split(' ') as List
+    }()
+
+    @Lazy
+    List<String> executableAdb = {
+        this.@executableAdbCmd.split(' ') as List
+    }()
 
     private Process emulatorProcess
     private Process logcatProcess
@@ -67,8 +82,7 @@ class TestAndroidTask extends DefaultTask {
             deleteNonEmptyDirectory(testConf.rawDir)
         }
         testConf.rawDir.mkdir()
-        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
-                executableAndroid,
+        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: executableAndroid + [
                 'update',
                 'test-project',
                 '-p',
@@ -113,8 +127,7 @@ class TestAndroidTask extends DefaultTask {
 
     private void startEmulator(boolean noWindow) {
         logger.lifecycle("Starting emulator ${testConf.emulatorName}")
-        def emulatorCommand = [
-                executableEmulator,
+        def emulatorCommand = executableEmulator + [
                 '-avd',
                 testConf.emulatorName,
                 '-port',
@@ -133,8 +146,7 @@ class TestAndroidTask extends DefaultTask {
 
     private void runLogCat() {
         logger.lifecycle("Starting logcat monitor on ${testConf.emulatorName}")
-        logcatProcess = executor.startCommand(new Command(runDir: conf.rootDir, cmd: [
-                executableAdb,
+        logcatProcess = executor.startCommand(new Command(runDir: conf.rootDir, cmd: executableAdb + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'logcat',
@@ -145,8 +157,7 @@ class TestAndroidTask extends DefaultTask {
 
     private void waitUntilEmulatorReady() {
         logger.lifecycle("Waiting until emulator is ready ${testConf.emulatorName}")
-        String[] commandRunShell = [
-                executableAdb,
+        String[] commandRunShell = executableAdb + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'shell',
@@ -169,29 +180,25 @@ class TestAndroidTask extends DefaultTask {
     }
 
     private void installTestBuilds() {
-        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
-                executableAdb,
+        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: executableAdb + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'uninstall',
                 conf.mainPackage
         ], failOnError: false))
-        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
-                executableAdb,
+        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: executableAdb + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'uninstall',
                 testConf.testProjectPackage
         ], failOnError: false))
-        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
-                executableAdb,
+        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: executableAdb + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'install',
                 "bin/${conf.projectName.value}-debug.apk"
         ]))
-        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
-                executableAdb,
+        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: executableAdb + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'install',
@@ -223,8 +230,7 @@ class TestAndroidTask extends DefaultTask {
     }
 
     private String[] prepareTestCommandLine(String packageName) {
-        def commandLine = [
-                executableAdb,
+        def commandLine = executableAdb + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'shell',
@@ -255,8 +261,7 @@ class TestAndroidTask extends DefaultTask {
 
     private void extractEmmaCoverage() {
         logger.lifecycle("Extracting coverage report from ${testConf.emulatorName}")
-        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: [
-                executableAdb,
+        executor.executeCommand(new Command(runDir: testConf.testDir.value, cmd: executableAdb + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'pull',
@@ -285,8 +290,7 @@ class TestAndroidTask extends DefaultTask {
 
     private void extractXMLJUnitFiles() {
         logger.lifecycle("Extracting coverage report from ${testConf.emulatorName}")
-        executor.executeCommand(new Command(runDir: testConf.coverageDir, cmd: [
-                executableAdb,
+        executor.executeCommand(new Command(runDir: testConf.coverageDir, cmd: executableAdb + [
                 '-s',
                 "emulator-${testConf.emulatorPort}",
                 'pull',
