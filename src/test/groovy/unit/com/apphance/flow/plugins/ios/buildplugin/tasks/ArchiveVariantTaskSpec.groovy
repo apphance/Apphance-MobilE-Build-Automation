@@ -40,9 +40,6 @@ class ArchiveVariantTaskSpec extends Specification {
         and:
         def variant = GroovySpy(IOSVariant) {
             getTmpDir() >> GroovyMock(File)
-            getBuildDir() >> GroovyMock(File) {
-                getAbsolutePath() >> 'absolute'
-            }
             getConf() >> GroovyMock(IOSConfiguration) {
                 xcodebuildExecutionPath() >> ['xcodebuild']
             }
@@ -70,9 +67,6 @@ class ArchiveVariantTaskSpec extends Specification {
         given:
         def variant = GroovySpy(IOSVariant) {
             getTmpDir() >> GroovyMock(File)
-            getBuildDir() >> GroovyMock(File) {
-                getAbsolutePath() >> 'absolute'
-            }
             getConf() >> GroovyMock(IOSConfiguration) {
                 xcodebuildExecutionPath() >> ['xcodebuild']
             }

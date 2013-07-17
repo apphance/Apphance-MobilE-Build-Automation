@@ -6,7 +6,6 @@ import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
-import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -73,14 +72,8 @@ class IOSVariantSpec extends Specification {
         iosConf.getTmpDir() >> tmpDir
 
         and:
-        def schemeParser = GroovyStub(XCSchemeParser) {
-            configuration(_, _) >> 'c1'
-        }
-
-        and:
         def sVariant = new IOSVariant('scheme1')
         sVariant.conf = iosConf
-        sVariant.schemeParser = schemeParser
 
         when:
         sVariant.conf.sdk.value = sdk
@@ -95,9 +88,9 @@ class IOSVariantSpec extends Specification {
 
         where:
         mode      | sdk           | simulatorSdk         | expected
-        SIMULATOR | ''            | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -sdk iphonesimulator6.1 -arch i386 CONFIGURATION_BUILD_DIR=$tmpDir.absolutePath/scheme1/build clean build"
-        SIMULATOR | 'iphoneos6.1' | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -sdk iphonesimulator6.1 -arch i386 CONFIGURATION_BUILD_DIR=$tmpDir.absolutePath/scheme1/build clean build"
-        DEVICE    | ''            | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 CONFIGURATION_BUILD_DIR=$tmpDir.absolutePath/scheme1/build clean build"
-        DEVICE    | 'iphoneos6.1' | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -sdk iphoneos6.1 CONFIGURATION_BUILD_DIR=$tmpDir.absolutePath/scheme1/build clean build"
+        SIMULATOR | ''            | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -sdk iphonesimulator6.1 -arch i386 clean build"
+        SIMULATOR | 'iphoneos6.1' | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -sdk iphonesimulator6.1 -arch i386 clean build"
+        DEVICE    | ''            | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 clean build"
+        DEVICE    | 'iphoneos6.1' | 'iphonesimulator6.1' | "xcodebuild -scheme scheme1 -sdk iphoneos6.1 clean build"
     }
 }

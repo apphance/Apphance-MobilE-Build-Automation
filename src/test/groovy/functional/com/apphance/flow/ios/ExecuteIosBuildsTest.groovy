@@ -8,7 +8,7 @@ import org.junit.Test
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.assertTrue
 
-class ExecuteIosBuildsTest {
+class q {
 
     public static final List<String> GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
             '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]

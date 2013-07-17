@@ -36,10 +36,6 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
         "${versionString}_${versionCode}"
     }
 
-    String getProjectVersionedName() {
-        "${projectName.value}-$fullVersionString"
-    }
-
     abstract StringProperty getProjectName()
 
     File getBuildDir() {

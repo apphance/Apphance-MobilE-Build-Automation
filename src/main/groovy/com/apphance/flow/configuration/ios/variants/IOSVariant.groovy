@@ -16,7 +16,6 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ProjectConfiguration.BUILD_DIR
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
 import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
@@ -85,14 +84,15 @@ class IOSVariant extends AbstractVariant {
             message: "Build mode for the variant, it describes the environment the artifact is built for: (DEVICE|SIMULATOR)",
             required: { true },
             defaultValue: { (buildConfiguration.contains('debug') || buildConfiguration.contains('dev')) ? SIMULATOR : DEVICE },
-            possibleValues: { possibleBuildModeValues() },
-            validator: { it in possibleBuildModeValues() }
+            possibleValues: { possibleBuildModeValues },
+            validator: { it in possibleBuildModeValues }
     )
 
+    @Lazy
     @PackageScope
-    List<String> possibleBuildModeValues() {
+    List<String> possibleBuildModeValues = {
         IOSBuildMode.values()*.name() as List<String>
-    }
+    }()
 
     String getBundleId() {
         plistParser.evaluate(plistParser.bundleId(plist), target, buildConfiguration) ?: ''
@@ -153,14 +153,6 @@ class IOSVariant extends AbstractVariant {
         mode.value == SIMULATOR ? ['-arch', 'i386'] : []
     }
 
-    String getBuildDirCmd() {
-        "CONFIGURATION_BUILD_DIR=$buildDir.absolutePath"
-    }
-
-    private File getBuildDir() {
-        new File(tmpDir, BUILD_DIR)
-    }
-
     String getFullVersionString() {
         "${versionString}_${versionCode}"
     }
@@ -198,7 +190,7 @@ class IOSVariant extends AbstractVariant {
     }
 
     List<String> getBuildCmd() {
-        conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + [buildDirCmd] + ['clean', 'build']
+        conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + ['clean', 'build']
     }
 
     String getArchiveTaskName() {
