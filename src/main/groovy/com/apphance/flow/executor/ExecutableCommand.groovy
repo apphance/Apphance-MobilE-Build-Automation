@@ -3,9 +3,9 @@ package com.apphance.flow.executor
 enum ExecutableCommand {
 
     WIN_EXECUTABLE_ANDROID(['cmd', '/c', 'android.bat']),
-    WIN_EXECUTABLE_ANT(['cmd', '/c', 'android.bat']),
-    WIN_EXECUTABLE_ADB(['cmd', '/c', 'android.bat']),
-    WIN_EXECUTABLE_EMULATOR(['cmd', '/c', 'android.bat']),
+    WIN_EXECUTABLE_ANT(['cmd', '/c', 'ant.bat']),
+    WIN_EXECUTABLE_ADB(['cmd', '/c', 'adb.exe']),
+    WIN_EXECUTABLE_EMULATOR(['cmd', '/c', 'emulator.exe']),
 
     STD_EXECUTABLE_ANDROID(['android']),
     STD_EXECUTABLE_ANT(['ant']),
