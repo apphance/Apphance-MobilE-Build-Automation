@@ -137,4 +137,16 @@ class IOSExecutor {
         }
         line ? line.split(' ')[1].trim() : null
     }()
+
+    @Lazy
+    String iOSSimVersion = {
+        def output = executor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: ['ios-sim', '--version']
+        ))
+        def line = output.find {
+            it.matches('(\\d+\\.)+\\d+')
+        }
+        line ? line.trim() : ''
+    }()
 }

@@ -10,6 +10,8 @@ import com.google.inject.Singleton
 
 import javax.inject.Inject
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty
+
 @Singleton
 class IOSTestConfiguration extends AbstractConfiguration {
 
@@ -52,13 +54,16 @@ class IOSTestConfiguration extends AbstractConfiguration {
 
     @Override
     boolean canBeEnabled() {
-        new Version(executor.xCodeVersion).compareTo(BORDER_VERSION) < 0
+        new Version(executor.xCodeVersion).compareTo(BORDER_VERSION) < 0 &&
+                isNotEmpty(executor.iOSSimVersion)
     }
 
+    //TODO xcode version
+    //TODO ios-sim version
+    //TODO no test targets detected
     @Override
     String explainDisabled() {
-        "'$configurationName' cannot be enabled because testing is supported for xCode version lower than $BORDER_VERSION. " +
-                "Current version is: $executor.xCodeVersion"
+        "'${configurationName}' cannot be enabled because testing is supported for xCode version lower than 5. Current version is: ${executor.xCodeVersion}"
     }
 
     @Override

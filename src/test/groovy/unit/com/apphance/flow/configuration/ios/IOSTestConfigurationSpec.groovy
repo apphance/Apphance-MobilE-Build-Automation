@@ -29,17 +29,18 @@ class IOSTestConfigurationSpec extends Specification {
         given:
         def tc = new IOSTestConfiguration(executor: GroovyMock(IOSExecutor) {
             getxCodeVersion() >> xCodeVersion
+            getiOSSimVersion() >> iosSimVersion
         })
 
         expect:
         tc.canBeEnabled() == canBeEnabled
 
         where:
-        xCodeVersion | canBeEnabled
-        '5'          | false
-        '6.0.1'      | false
-        '4'          | true
-        '4.6.2'      | true
+        xCodeVersion | iosSimVersion || canBeEnabled
+        '5'          | ''            || false
+        '6.0.1'      | '1.5.2'       || false
+        '4'          | ''            || false
+        '4.6.2'      | '1.5.2'       || true
     }
 
     def 'disabled explained'() {
