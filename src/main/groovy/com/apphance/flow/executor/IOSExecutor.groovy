@@ -127,7 +127,7 @@ class IOSExecutor {
     }
 
     @Lazy
-    String version = {
+    String xCodeVersion = {
         def output = executor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: ['xcodebuild', '-version']

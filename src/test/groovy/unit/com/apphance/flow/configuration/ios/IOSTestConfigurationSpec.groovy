@@ -4,11 +4,12 @@ import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
+import com.apphance.flow.executor.IOSExecutor
 import spock.lang.Specification
 
 class IOSTestConfigurationSpec extends Specification {
 
-    def 'test getVariant'() {
+    def 'test variant'() {
         given:
         def iOSVariantsConf = GroovyMock(IOSVariantsConfiguration)
         def var1 = GroovyStub(IOSVariant) { getName() >> 'variantName1' }
@@ -22,5 +23,33 @@ class IOSTestConfigurationSpec extends Specification {
 
         expect:
         testConf.getVariant() == var1
+    }
+
+    def 'can be enabled according to version'() {
+        given:
+        def tc = new IOSTestConfiguration(executor: GroovyMock(IOSExecutor) {
+            getxCodeVersion() >> xCodeVersion
+        })
+
+        expect:
+        tc.canBeEnabled() == canBeEnabled
+
+        where:
+        xCodeVersion | canBeEnabled
+        '5'          | false
+        '6.0.1'      | false
+        '4'          | true
+        '4.6.2'      | true
+    }
+
+    def 'disabled explained'() {
+        given:
+        def tc = new IOSTestConfiguration(executor: GroovyMock(IOSExecutor) {
+            getxCodeVersion() >> '5.0.1'
+        })
+
+        expect:
+        tc.explainDisabled() == "'iOS Unit Test Configuration' cannot be enabled because testing is supported for" +
+                " xCode version lower than 5. Current version is: 5.0.1"
     }
 }

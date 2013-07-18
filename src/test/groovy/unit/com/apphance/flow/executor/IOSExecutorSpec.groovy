@@ -112,7 +112,7 @@ class IOSExecutorSpec extends Specification {
 
     def 'version is read correctly'() {
         expect:
-        iosExecutor.version.matches('(\\d+\\.)+\\d+')
+        iosExecutor.xCodeVersion.matches('(\\d+\\.)+\\d+')
     }
 
     def mobileprovisionXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
