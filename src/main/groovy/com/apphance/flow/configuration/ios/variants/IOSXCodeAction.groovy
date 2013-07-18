@@ -1,9 +1,11 @@
 package com.apphance.flow.configuration.ios.variants
 
-public enum IOSXCodeAction {
+enum IOSXCodeAction {
 
+    BUILD_ACTION('BuildAction'),
     LAUNCH_ACTION('LaunchAction'),
-    ARCHIVE_ACTION('ArchiveAction')
+    ARCHIVE_ACTION('ArchiveAction'),
+    TEST_ACTION('TestAction'),
 
     private String xmlNodeName
 

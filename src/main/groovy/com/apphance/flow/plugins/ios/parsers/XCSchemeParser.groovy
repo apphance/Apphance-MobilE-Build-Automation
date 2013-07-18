@@ -6,8 +6,12 @@ import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
 import org.gradle.api.GradleException
 
+import static org.gradle.api.logging.Logging.getLogger
+
 @Mixin(Preconditions)
 class XCSchemeParser {
+
+    private logger = getLogger(getClass())
 
     private static final POST_ARCHIVE_ACTION_ECHO_DIR = '''
     <ExecutionAction ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
@@ -22,19 +26,27 @@ class XCSchemeParser {
 
     @Lazy
     private Closure<String> configurationC = { File scheme, IOSXCodeAction action ->
-        def xml = parseSchemeFile(scheme)
+        def xml = parseSchemeFile.call(scheme)
         xml."$action.xmlNodeName".@buildConfiguration.text()
     }.memoize()
 
     boolean hasSingleBuildableTarget(File scheme) {
-        def xml = parseSchemeFile(scheme)
+        def xml = parseSchemeFile.call(scheme)
         xml.BuildAction.BuildActionEntries.children().size() == 1
     }
 
     boolean isBuildable(File scheme) {
         def xml
-        try { xml = parseSchemeFile(scheme) } catch (e) { return false }
+        try { xml = parseSchemeFile.call(scheme) } catch (e) { return false }
         xml.LaunchAction.BuildableProductRunnable.size() != 0
+    }
+
+    boolean hasEnabledTestTargets(File scheme) {
+        def xml = parseSchemeFile.call(scheme)
+        def skipped = xml.TestAction.Testables.TestableReference.findAll { it.@skipped.text() == 'YES' }.size()
+        def enabled = xml.TestAction.Testables.TestableReference.findAll { it.@skipped.text() == 'NO' }.size()
+        logger.info("$enabled/${enabled + skipped} tests enabled in scheme: $scheme.absolutePath")
+        enabled > 0
     }
 
     String blueprintIdentifier(File scheme) {
@@ -43,12 +55,12 @@ class XCSchemeParser {
 
     @Lazy
     private Closure<String> blueprintIdentifierC = { File scheme ->
-        def xml = parseSchemeFile(scheme)
+        def xml = parseSchemeFile.call(scheme)
         xml.LaunchAction.BuildableProductRunnable.BuildableReference.@BlueprintIdentifier
     }.memoize()
 
     void addPostArchiveAction(File scheme) {
-        def xml = parseSchemeFile(scheme)
+        def xml = parseSchemeFile.call(scheme)
         if (xml.ArchiveAction.PostActions.size() == 0) {
             xml.ArchiveAction.appendNode { PostActions() }
             xml = new XmlSlurper().parseText(XmlUtil.serialize(xml))
@@ -58,10 +70,10 @@ class XCSchemeParser {
         scheme.text = XmlUtil.serialize(xml)
     }
 
-    private GPathResult parseSchemeFile(File scheme) {
+    private Closure<GPathResult> parseSchemeFile = { File scheme ->
         validate(scheme.exists() && scheme.isFile() && scheme.size() > 0, {
             throw new GradleException("Shemes must be shared! Invalid scheme file: $scheme.absolutePath")
         })
         new XmlSlurper().parse(scheme)
-    }
+    }.memoize()
 }
