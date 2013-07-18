@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.ocunit.tasks
 
 import com.apphance.flow.configuration.ProjectConfiguration
-import com.apphance.flow.configuration.ios.IOSUnitTestConfiguration
+import com.apphance.flow.configuration.ios.IOSTestConfiguration
 import com.apphance.flow.executor.IOSExecutor
 import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
@@ -19,7 +19,7 @@ class RunUnitTestsTasks extends DefaultTask {
 
     @Inject IOSExecutor iosExecutor
     @Inject ProjectConfiguration conf
-    @Inject IOSUnitTestConfiguration unitTestConf
+    @Inject IOSTestConfiguration unitTestConf
 
     @TaskAction
     void runUnitTests() {

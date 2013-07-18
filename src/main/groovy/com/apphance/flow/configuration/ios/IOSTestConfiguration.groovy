@@ -4,11 +4,12 @@ import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
+import com.google.inject.Singleton
 
 import javax.inject.Inject
 
-@com.google.inject.Singleton
-class IOSUnitTestConfiguration extends AbstractConfiguration {
+@Singleton
+class IOSTestConfiguration extends AbstractConfiguration {
 
     String configurationName = 'iOS Unit Test Configuration'
     private enabledInternal = false

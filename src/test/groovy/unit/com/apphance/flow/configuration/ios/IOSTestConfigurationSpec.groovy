@@ -6,7 +6,7 @@ import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import spock.lang.Specification
 
-class IOSUnitTestConfigurationSpec extends Specification {
+class IOSTestConfigurationSpec extends Specification {
 
     def 'test getVariant'() {
         given:
@@ -16,7 +16,7 @@ class IOSUnitTestConfigurationSpec extends Specification {
         iOSVariantsConf.getVariants() >> [var1, var2]
         iOSVariantsConf.getVariantsNames() >> new ListStringProperty(value: ['variantName1', 'variantName2'])
 
-        def testConf = new IOSUnitTestConfiguration()
+        def testConf = new IOSTestConfiguration()
         testConf.iosVariantsConf = iOSVariantsConf
         testConf.variant = new StringProperty(value: 'variantName1')
 

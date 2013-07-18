@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.ocunit
 
-import com.apphance.flow.configuration.ios.IOSUnitTestConfiguration
+import com.apphance.flow.configuration.ios.IOSTestConfiguration
 import com.apphance.flow.plugins.ios.ocunit.tasks.RunUnitTestsTasks
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -17,11 +17,11 @@ import static org.gradle.api.logging.Logging.getLogger
  * More description needed ....
  *
  */
-class IOSUnitTestPlugin implements Plugin<Project> {
+class IOSTestPlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())
 
-    @Inject IOSUnitTestConfiguration unitTestConf
+    @Inject IOSTestConfiguration unitTestConf
 
     @Override
     void apply(Project project) {

@@ -9,6 +9,7 @@ import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSFrameworkConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
+import com.apphance.flow.configuration.ios.IOSTestConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariantFactory
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.reader.GradlePropertiesPersister
@@ -42,7 +43,7 @@ class ConfigurationModule extends AbstractModule {
                     IOSReleaseConfiguration,
                     IOSVariantsConfiguration,
                     IOSFrameworkConfiguration,
-//                    IOSUnitTestConfiguration,
+                    IOSTestConfiguration,
             ],
     ]
 

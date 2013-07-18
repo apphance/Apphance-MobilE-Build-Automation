@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.ocunit.tasks
 
 import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.ProjectConfiguration
-import com.apphance.flow.configuration.ios.IOSUnitTestConfiguration
+import com.apphance.flow.configuration.ios.IOSTestConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.google.common.io.Files
@@ -15,7 +15,7 @@ class RunUnitTestsTasksSpec extends Specification {
 
     def variant = GroovyStub(IOSVariant)
     def iosExecutor = GroovyMock(IOSExecutor)
-    def unitTestConf = GroovyMock(IOSUnitTestConfiguration) { getVariant() >> variant }
+    def unitTestConf = GroovyMock(IOSTestConfiguration) { getVariant() >> variant }
 
     private File dir = Files.createTempDir()
 

@@ -12,6 +12,7 @@ import com.apphance.flow.plugins.android.test.AndroidTestPlugin
 import com.apphance.flow.plugins.ios.apphance.IOSApphancePlugin
 import com.apphance.flow.plugins.ios.buildplugin.IOSPlugin
 import com.apphance.flow.plugins.ios.framework.IOSFrameworkPlugin
+import com.apphance.flow.plugins.ios.ocunit.IOSTestPlugin
 import com.apphance.flow.plugins.ios.release.IOSReleasePlugin
 import com.apphance.flow.plugins.project.ProjectPlugin
 import com.apphance.flow.plugins.release.ReleasePlugin
@@ -145,7 +146,7 @@ class PluginMasterSpec extends Specification {
             IOSFrameworkPlugin,
             IOSReleasePlugin,
             IOSApphancePlugin,
-//            IOSUnitTestPlugin,//TODO restore after tests are implemented
+            IOSTestPlugin,
     ]
 
     def createInjectorForPluginsMocks(mocks, file, projectType) {
