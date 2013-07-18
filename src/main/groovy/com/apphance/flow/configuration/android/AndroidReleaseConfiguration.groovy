@@ -51,6 +51,7 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
 
     @Override
     void checkProperties() {
+        super.checkProperties()
         check !jarLibraryConf.enabled, explainDisabled()
     }
 }
