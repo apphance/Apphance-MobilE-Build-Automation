@@ -25,7 +25,7 @@ import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.F
 
 class PluginMaster {
 
-    def log = Logging.getLogger(getClass())
+    def logger = Logging.getLogger(getClass())
 
     @Inject ProjectTypeDetector projectTypeDetector
     @Inject Injector injector
@@ -59,7 +59,7 @@ class PluginMaster {
         ProjectType projectType = projectTypeDetector.detectProjectType(project.rootDir)
 
         def installPlugin = {
-            log.info("Applying plugin $it")
+            logger.info("Applying plugin $it")
 
             Plugin<Project> plugin = (Plugin<Project>) injector.getInstance(it)
 
