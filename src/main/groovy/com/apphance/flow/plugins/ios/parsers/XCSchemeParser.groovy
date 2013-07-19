@@ -42,7 +42,8 @@ class XCSchemeParser {
     }
 
     boolean hasEnabledTestTargets(File scheme) {
-        def xml = parseSchemeFile.call(scheme)
+        def xml
+        try { xml = parseSchemeFile.call(scheme) } catch (e) { return false }
         def skipped = xml.TestAction.Testables.TestableReference.findAll { it.@skipped.text() == 'YES' }.size()
         def enabled = xml.TestAction.Testables.TestableReference.findAll { it.@skipped.text() == 'NO' }.size()
         logger.info("$enabled/${enabled + skipped} tests enabled in scheme: $scheme.absolutePath")

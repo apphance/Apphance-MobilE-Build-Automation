@@ -23,22 +23,32 @@
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      buildConfiguration = "BasicConfiguration">
-      <Testables>
-      </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D382B71014703FE500E9CC9B"
-            BuildableName = "GradleXCode.app"
-            BlueprintName = "GradleXCode"
-            ReferencedContainer = "container:GradleXCode.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
-   </TestAction>
+         selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+         selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+         shouldUseLaunchSchemeArgsEnv = "YES"
+         buildConfiguration = "Debug">
+         <Testables>
+            <TestableReference
+               skipped = "YES">
+               <BuildableReference
+                  BuildableIdentifier = "primary"
+                  BlueprintIdentifier = "D382B73414703FE500E9CC9B"
+                  BuildableName = "GradleXCodeTests.octest"
+                  BlueprintName = "GradleXCodeTests"
+                  ReferencedContainer = "container:GradleXCode.xcodeproj">
+               </BuildableReference>
+            </TestableReference>
+         </Testables>
+         <MacroExpansion>
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D382B71014703FE500E9CC9B"
+               BuildableName = "GradleXCode.app"
+               BlueprintName = "GradleXCode"
+               ReferencedContainer = "container:GradleXCode.xcodeproj">
+            </BuildableReference>
+         </MacroExpansion>
+      </TestAction>
    <LaunchAction
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
