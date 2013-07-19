@@ -1,5 +1,6 @@
 package com.apphance.flow.configuration.ios
 
+import com.apphance.flow.configuration.ios.variants.IOSSchemeInfo
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
@@ -27,30 +28,104 @@ class IOSTestConfigurationSpec extends Specification {
 
     def 'can be enabled according to version'() {
         given:
-        def tc = new IOSTestConfiguration(executor: GroovyMock(IOSExecutor) {
-            getxCodeVersion() >> xCodeVersion
-            getiOSSimVersion() >> iosSimVersion
-        })
+        def tc = new IOSTestConfiguration(
+                executor: GroovyMock(IOSExecutor) {
+                    getxCodeVersion() >> xCodeVersion
+                    getiOSSimVersion() >> iosSimVersion
+                },
+                schemeInfo: GroovyMock(IOSSchemeInfo) {
+                    schemesHasEnabledTestTargets() >> hasTestTargets
+                }
+        )
 
         expect:
         tc.canBeEnabled() == canBeEnabled
 
         where:
-        xCodeVersion | iosSimVersion || canBeEnabled
-        '5'          | ''            || false
-        '6.0.1'      | '1.5.2'       || false
-        '4'          | ''            || false
-        '4.6.2'      | '1.5.2'       || true
+        xCodeVersion | iosSimVersion | hasTestTargets || canBeEnabled
+        '4.6.2'      | '1.5.3'       | true           || true
+        '4'          | '1.5.4'       | false          || false
+        '3'          | ''            | true           || false
+        '4.5.7'      | ''            | false          || false
+        '5'          | '2.3.4'       | true           || false
+        '6.0.1'      | '1.5.2'       | false          || false
+        '5.0.1'      | ''            | true           || false
+        '7'          | ''            | false          || false
     }
 
-    def 'disabled explained'() {
+    def 'xCode version lower than the border'() {
         given:
         def tc = new IOSTestConfiguration(executor: GroovyMock(IOSExecutor) {
-            getxCodeVersion() >> '5.0.1'
+            getxCodeVersion() >> xCodeVersion
         })
 
         expect:
-        tc.explainDisabled() == "'iOS Unit Test Configuration' cannot be enabled because testing is supported for" +
-                " xCode version lower than 5. Current version is: 5.0.1"
+        tc.xCodeVersionLowerThanBorder == lower
+
+        where:
+        xCodeVersion || lower
+        '4.6.2'      || true
+        '5'          || false
+        '6.2.3'      || false
+    }
+
+    def 'ios-sim is installed'() {
+        given:
+        def tc = new IOSTestConfiguration(executor: GroovyMock(IOSExecutor) {
+            getiOSSimVersion() >> iosSimVersion
+        })
+
+        expect:
+        tc.iosSimInstalled == installed
+
+        where:
+        iosSimVersion || installed
+        '1.5.2'       || true
+        ''            || false
+    }
+
+    def 'no test targets explanation'() {
+        given:
+        def tc = new IOSTestConfiguration(schemeInfo: GroovyMock(IOSSchemeInfo) {
+            schemesHasEnabledTestTargets() >> enabled
+        })
+
+        expect:
+        explanation == tc.explainNoTestTargets()
+
+        where:
+        enabled || explanation
+        true    || ''
+        false   || 'No schemes with test targets enabled detected. '
+    }
+
+    def 'wrong xcode version explanation'() {
+        given:
+        def tc = new IOSTestConfiguration(executor: GroovyMock(IOSExecutor) {
+            getxCodeVersion() >> version
+        })
+
+        expect:
+        explanation == tc.explainXCodeVersion()
+
+        where:
+        version || explanation
+        '4.6.2' || ''
+        '5'     || "Testing is supported for xCode version lower than 5. "
+    }
+
+    def 'no ios-sim explanation'() {
+        given:
+        def tc = new IOSTestConfiguration(executor: GroovyMock(IOSExecutor) {
+            getiOSSimVersion() >> version
+        })
+
+        expect:
+        explanation == tc.explainIOSSim()
+
+        where:
+        version || explanation
+        '1.5.3' || ''
+        ''      || 'Ios-sim is not installed. '
     }
 }
