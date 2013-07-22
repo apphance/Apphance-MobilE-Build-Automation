@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils
 import spock.lang.Specification
 
 import static android.Manifest.permission.*
+import static com.apphance.flow.configuration.apphance.ApphanceMode.QA
 import static org.apache.commons.io.FileUtils.copyFile
 
 @Mixin([FlowUtils, TestUtils])
@@ -26,9 +27,9 @@ class AddApphanceToAndroidSpec extends Specification {
         variantDir.deleteOnExit()
         FileUtils.copyDirectory(new File('testProjects/android/android-basic'), variantDir)
 
-        androidVariantConf.apphanceMode.value = ApphanceMode.QA
+        androidVariantConf.apphanceMode.value = QA
         androidVariantConf.apphanceAppKey.value = 'TestKey'
-        androidVariantConf.apphanceLibVersion.value = '1.9-RC1'
+        androidVariantConf.apphanceLibVersion.value = '1.9-RC4'
         androidVariantConf.getTmpDir() >> variantDir
 
         addApphanceToAndroid = new AddApphanceToAndroid(androidVariantConf)
@@ -119,7 +120,7 @@ class AddApphanceToAndroidSpec extends Specification {
         !mainActivity.text.contains(startSession)
 
         when:
-        addApphanceToAndroid.addApphanceInit(mainActivity, "TestKey", ApphanceMode.QA)
+        addApphanceToAndroid.addApphanceInit(mainActivity, "TestKey", QA)
         println mainActivity.text
 
         then:
@@ -180,7 +181,7 @@ class AddApphanceToAndroidSpec extends Specification {
         def testActivity = tempFile << TEST_ACTIVITY.text
 
         when:
-        addApphanceToAndroid.convertLogToApphance(testActivity)
+        addApphanceToAndroid.convertLogToApphanceInFile(testActivity)
 
         then:
         contains(testActivity, APPHANCE_LOG_IMPORT)
@@ -189,13 +190,13 @@ class AddApphanceToAndroidSpec extends Specification {
 
     def 'test addApphanceLibToProjectProperties'() {
         expect:
-        !contains(new File(variantDir, 'project.properties'), 'libs/apphance-library-1.9-RC1')
+        !contains(new File(variantDir, 'project.properties'), 'libs/apphance-library-1.9-RC4')
 
         when:
         addApphanceToAndroid.addApphanceLibraryReferenceToProjectProperties()
 
         then:
-        contains(new File(variantDir, 'project.properties'), 'android.library.reference.2=libs/apphance-library-1.9-RC1')
+        contains(new File(variantDir, 'project.properties'), 'android.library.reference.2=libs/apphance-library-1.9-RC4')
     }
 
     def 'test adding problem activity after addStartStopInvocations'() {
@@ -209,6 +210,7 @@ class AddApphanceToAndroidSpec extends Specification {
         1 * addApphance.checkIfApphancePresent() >> false
         1 * addApphance.addApphanceImportsAndStartStopMethodsInAllActivities() >> null
         1 * addApphance.addStartNewSessionToAllMainActivities() >> null
+        1 * addApphance.convertLogToApphance() >> null
 
         then:
         1 * addApphance.addProblemActivityToManifest() >> null
@@ -267,5 +269,14 @@ class AddApphanceToAndroidSpec extends Specification {
         0 * addApphance.addPermissions()
         0 * addApphance.addApphanceLib()
         0 * addApphance.addApphanceLibraryReferenceToProjectProperties()
+    }
+
+    def 'test send log calls to apphance'() {
+        when:
+        addApphanceToAndroid.convertLogToApphance()
+
+        then:
+        !new File(variantDir, 'src/com/apphance/flowTest/android/SomeClass.java').text.contains('android.util.Log')
+        new File(variantDir, 'src/com/apphance/flowTest/android/SomeClass.java').text.contains 'import com.apphance.android.Log;'
     }
 }

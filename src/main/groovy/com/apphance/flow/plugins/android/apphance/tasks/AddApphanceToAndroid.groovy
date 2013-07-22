@@ -6,6 +6,7 @@ import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import com.apphance.flow.util.FlowUtils
 import com.thoughtworks.qdox.JavaDocBuilder
 import com.thoughtworks.qdox.model.JavaClass
+import groovy.io.FileType
 import groovy.transform.PackageScope
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.logging.Logging
@@ -35,7 +36,7 @@ class AddApphanceToAndroid {
     AddApphanceToAndroid() {
     }
 
-    AddApphanceToAndroid(File variantDir, String apphanceAppKey, ApphanceMode apphanceMode, String libVersion, boolean shakeEnabled = false ) {
+    AddApphanceToAndroid(File variantDir, String apphanceAppKey, ApphanceMode apphanceMode, String libVersion, boolean shakeEnabled = false) {
         apphanceVersion = libVersion ?: '1.9-RC2'
         ARTIFACTORY_URL = "https://dev.polidea.pl/artifactory/simple/libs-releases-local/com/utest/apphance/${apphanceVersion}/apphance-${apphanceVersion}.zip"
         this.variantDir = variantDir
@@ -63,6 +64,7 @@ class AddApphanceToAndroid {
 
         addStartNewSessionToAllMainActivities()
         addApphanceImportsAndStartStopMethodsInAllActivities()
+        convertLogToApphance()
         addProblemActivityToManifest()
         addPermissions()
         addApphanceLib()
@@ -130,7 +132,6 @@ class AddApphanceToAndroid {
         Set<String> activityNames = getActivities(getManifest(variantDir))
         List<File> activityFiles = getSourcesOf(variantDir, activityNames)
         activityFiles.each {
-            convertLogToApphance(it)
             addApphanceImportTo(it)
             addStartStopInvocations(it)
         }
@@ -171,9 +172,12 @@ class AddApphanceToAndroid {
     }
 
     @PackageScope
-    void convertLogToApphance(File file) {
-        logger.info "Adding Apphance logger to ${file.name}"
+    void convertLogToApphance() {
+        new File(variantDir, 'src').traverse(type: FileType.FILES, nameFilter: ~/.*\.java/) { convertLogToApphanceInFile(it) }
+    }
 
+    private void convertLogToApphanceInFile(File file) {
+        logger.info "Adding Apphance logger to ${file.absolutePath}"
         file.setText file.text.replaceAll(/\s*import\s*android.util.Log\s*;/, '\nimport com.apphance.android.Log;')
     }
 
@@ -202,7 +206,7 @@ class AddApphanceToAndroid {
                     "    super.onCreate(savedInstanceState);\n" +
                     "    $startSession\n"
             if (shakeEnabled) {
-                    body += "    $shakeEnablingLine}\n"
+                body += "    $shakeEnablingLine}\n"
             }
             addMethodToClassFile(body, mainFile)
         }
@@ -213,7 +217,8 @@ class AddApphanceToAndroid {
         file.readLines().any { it.matches(".*void.*$methodName\\(.*") }
     }
 
-    private String mapApphanceMode(ApphanceMode apphanceMode) {
+    @PackageScope
+    String mapApphanceMode(ApphanceMode apphanceMode) {
         (apphanceMode == ApphanceMode.QA) ? 'Apphance.Mode.QA' : 'Apphance.Mode.Silent'
     }
 
