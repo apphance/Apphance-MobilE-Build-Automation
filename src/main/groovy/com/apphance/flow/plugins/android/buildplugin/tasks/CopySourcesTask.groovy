@@ -8,6 +8,9 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
+import static com.apphance.flow.configuration.ProjectConfiguration.LOG_DIR
+import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
+import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static com.apphance.flow.plugins.project.ProjectPlugin.COPY_SOURCES_TASK_NAME
 import static com.apphance.flow.util.file.FileManager.relativeTo
@@ -26,17 +29,16 @@ class CopySourcesTask extends DefaultTask {
     //http://ant.apache.org/manual/dirtasks.html#defaultexcludes
     void copySources() {
         def absoluteRoot = conf.rootDir.absolutePath
-        variantsConf.variants.each { v ->
-            v.tmpDir.deleteDir()
-            logger.lifecycle("Copying sources from : ${conf.rootDir.absolutePath} to $v.tmpDir")
-            ant.sync(toDir: v.tmpDir, overwrite: true, failonerror: true, verbose: logger.isDebugEnabled()) {
+        variantsConf.variants.each { variantConf ->
+            variantConf.tmpDir.deleteDir()
+            logger.lifecycle("Copying sources from : ${conf.rootDir.absolutePath} to $variantConf.tmpDir")
+            ant.sync(toDir: variantConf.tmpDir, overwrite: true, failonerror: true, verbose: logger.isDebugEnabled(), includeEmptyDirs: true) {
                 fileset(dir: "${conf.rootDir.absolutePath}/") {
                     exclude(name: relativeTo(absoluteRoot, conf.tmpDir.absolutePath).name + '/**/*')
                     exclude(name: relativeTo(absoluteRoot, variantsConf.variantsDir.absolutePath).name + '/**/*')
                     exclude(name: relativeTo(absoluteRoot, releaseConf.otaDir.absolutePath).name + '/**/*')
                     exclude(name: relativeTo(absoluteRoot, conf.logDir.absolutePath).name + '/**/*')
-                    exclude(name: 'log/**/*')
-                    conf.sourceExcludes.each { exclude(name: it) }
+                    (conf.sourceExcludes + ['log/**/*', LOG_DIR, TMP_DIR, OTA_DIR]).each { exclude(name: it) }
                 }
             }
         }

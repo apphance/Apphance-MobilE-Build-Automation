@@ -66,8 +66,6 @@ class CopySourcesTaskSpec extends Specification {
         marketDir.exists() && marketDir.isDirectory() && marketDir.list().size() > 0
         testDir.exists() && testDir.isDirectory() && testDir.list().size() > 0
 
-        !(new File(marketDir, 'variants')).exists()
-        !(new File(testDir, 'variants')).exists()
         !(new File(marketDir, TMP_DIR)).exists()
         !(new File(marketDir, TMP_DIR)).exists()
         !(new File(marketDir, OTA_DIR)).exists()
