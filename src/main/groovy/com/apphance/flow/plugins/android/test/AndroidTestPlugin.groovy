@@ -6,6 +6,7 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantConfigurat
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.android.test.tasks.RunRobolectricTestsTask
+import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -39,6 +40,7 @@ class AndroidTestPlugin implements Plugin<Project> {
                         dependsOn: CopySourcesTask.NAME).variantConf = variantConf
 
                 project.testAll.dependsOn testTaskName
+                project."$testTaskName".mustRunAfter VerifySetupTask.NAME
             }
         }
     }
