@@ -2,9 +2,9 @@ package com.apphance.flow.plugins.android.test
 
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidTestConfiguration
+import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
+import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.configuration.properties.BooleanProperty
-import com.apphance.flow.plugins.android.buildplugin.tasks.CompileAndroidTask
-import com.apphance.flow.plugins.android.test.tasks.*
 import com.google.common.io.Files
 import spock.lang.Specification
 
@@ -17,44 +17,37 @@ class AndroidTestPluginSpec extends Specification {
         def project = builder().build()
 
         and:
-        def atp = new AndroidTestPlugin()
+        def plugin = new AndroidTestPlugin()
 
         and:
         def atc = GroovyStub(AndroidTestConfiguration)
         atc.isEnabled() >> true
         atc.emmaEnabled >> new BooleanProperty(value: true)
-        atp.testConf = atc
+        plugin.testConf = atc
 
         and:
         def ac = GroovyStub(AndroidConfiguration)
         ac.SDKDir >> Files.createTempDir()
-        atp.conf = ac
+        plugin.conf = ac
+
+        and:
+        def variantsConf = GroovyStub(AndroidVariantsConfiguration)
+        variantsConf.variants >> [
+                GroovyStub(AndroidVariantConfiguration) { getName() >> 'release' },
+                GroovyStub(AndroidVariantConfiguration) { getName() >> 'debug' }
+        ]
+        plugin.variantsConf = variantsConf
 
         when:
-        atp.apply(project)
+        plugin.apply(project)
 
-        then: 'every single task is in correct group'
-        project.tasks[CreateAVDTask.NAME]
-        project.tasks[CleanAVDTask.NAME]
-        project.tasks[TestAndroidTask.NAME]
-        project.tasks[StopAllEmulatorsTask.NAME]
-        project.tasks[StartEmulatorTask.NAME]
-        project.tasks[TestRobolectricTask.NAME]
-        project.tasks[PrepareRobotiumTask.NAME]
-        project.tasks[PrepareRobolectricTask.NAME]
+        then: 'test tasks added'
+        project.tasks['testAll']
+        project.tasks['testRelease']
+        project.tasks['testDebug']
 
         then: 'every task has correct dependencies'
-        project.tasks[TestAndroidTask.NAME].dependsOn.flatten().contains(CreateAVDTask.NAME)
-        project.tasks[PrepareRobolectricTask.NAME].dependsOn.flatten().contains(CompileAndroidTask.NAME)
-        project.tasks[TestRobolectricTask.NAME].dependsOn.flatten().contains(PrepareRobolectricTask.NAME)
-
-        then: 'robotium configuration and dependencies added'
-        project.configurations.robotium
-        project.dependencies.configurationContainer.robotium.allDependencies.size() == 1
-
-        then: 'robolectric configuration and dependencies added'
-        project.configurations.robolectric
-        project.dependencies.configurationContainer.robolectric.allDependencies.size() == 2
+        project.testAll.dependsOn.flatten()*.toString().containsAll(['testRelease', 'testDebug'])
     }
 
     def 'no tasks available when configuration is inactive'() {
@@ -73,14 +66,9 @@ class AndroidTestPluginSpec extends Specification {
         atp.apply(project)
 
         then:
-        !project.tasks.findByName(CreateAVDTask.NAME)
-        !project.tasks.findByName(CleanAVDTask.NAME)
-        !project.tasks.findByName(TestAndroidTask.NAME)
-        !project.tasks.findByName(StopAllEmulatorsTask.NAME)
-        !project.tasks.findByName(StartEmulatorTask.NAME)
-        !project.tasks.findByName(TestRobolectricTask.NAME)
-        !project.tasks.findByName(PrepareRobotiumTask.NAME)
-        !project.tasks.findByName(PrepareRobolectricTask.NAME)
+        !project.tasks.findByName('testAll')
+        !project.tasks.findByName('testRelease')
+        !project.tasks.findByName('testDebug')
 
         then:
         !project.configurations.findByName('robotium')

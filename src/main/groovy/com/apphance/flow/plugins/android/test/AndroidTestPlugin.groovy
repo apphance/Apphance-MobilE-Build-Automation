@@ -2,13 +2,16 @@ package com.apphance.flow.plugins.android.test
 
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidTestConfiguration
-import com.apphance.flow.plugins.android.buildplugin.tasks.CompileAndroidTask
-import com.apphance.flow.plugins.android.test.tasks.*
+import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
+import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
+import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
+import com.apphance.flow.plugins.android.test.tasks.RunRobolectricTestsTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -20,57 +23,23 @@ class AndroidTestPlugin implements Plugin<Project> {
 
     @Inject AndroidConfiguration conf
     @Inject AndroidTestConfiguration testConf
+    @Inject AndroidVariantsConfiguration variantsConf
 
     @Override
     void apply(Project project) {
         if (testConf.isEnabled()) {
             logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
-            if (testConf.emmaEnabled.value) {
-                project.configurations.create('emma')
-                project.dependencies.add('emma', project.files([
-                        new File(conf.SDKDir, 'tools/lib/emma.jar')
-                ]))
-                project.dependencies.add('emma', project.files([
-                        new File(conf.SDKDir, 'tools/lib/emma_ant.jar')
-                ]))
+            project.task('testAll', group: FLOW_TEST, description: "Run all android tests")
+
+            variantsConf.variants.each { AndroidVariantConfiguration variantConf ->
+                def testTaskName = "test${variantConf.name.capitalize()}"
+                project.task(testTaskName,
+                        type: RunRobolectricTestsTask,
+                        dependsOn: CopySourcesTask.NAME).variantConf = variantConf
+
+                project.testAll.dependsOn testTaskName
             }
-
-            project.task(CreateAVDTask.NAME,
-                    type: CreateAVDTask
-            )
-
-            project.task(CleanAVDTask.NAME,
-                    type: CleanAVDTask
-            )
-
-            project.task(TestAndroidTask.NAME,
-                    type: TestAndroidTask,
-                    dependsOn: CreateAVDTask.NAME)
-
-            project.task(StopAllEmulatorsTask.NAME,
-                    type: StopAllEmulatorsTask)
-
-            project.task(StartEmulatorTask.NAME,
-                    type: StartEmulatorTask)
-
-            project.configurations.create('robolectric')
-            project.dependencies.add('robolectric', 'com.pivotallabs:robolectric:1.1')
-            project.dependencies.add('robolectric', 'junit:junit:4.10')
-            project.task(PrepareRobolectricTask.NAME,
-                    type: PrepareRobolectricTask,
-                    dependsOn: CompileAndroidTask.NAME)
-
-            project.task(TestRobolectricTask.NAME,
-                    type: TestRobolectricTask,
-                    dependsOn: [PrepareRobolectricTask.NAME])
-
-            project.configurations.create('robotium')
-            project.dependencies.add('robotium', 'com.jayway.android.robotium:robotium-solo:3.1')
-            project.task(PrepareRobotiumTask.NAME,
-                    type: PrepareRobotiumTask)
-
-
         }
     }
 }
