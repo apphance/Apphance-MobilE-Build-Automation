@@ -37,8 +37,12 @@ class RunRobolectricTestsTask extends DefaultTask {
         }
     }
 
-    @Lazy def robolectricTasks = """
-        <property name="test.absolute.dir" location="test"/>
+    @Lazy
+    def robolectricTestPath = (androidTestConf?.testDir?.value?.toString() ?: 'test') + '/robolectric'
+
+    @Lazy
+    def robolectricTasks = """
+        <property name="test.absolute.dir" location="$robolectricTestPath"/>
         <property name="out.test-classes.dir" value="\${out.absolute.dir}/testClasses"/>
         <property name="out.test-classes.absolute.dir" value="\${out.test-classes.dir}"/>
         <property name="publish.dir" location="\${out.absolute.dir}/publish"/>
@@ -52,7 +56,7 @@ class RunRobolectricTestsTask extends DefaultTask {
         <target name="-pre-compile">
             <property name="tested.project.absolute.dir" location="." />
             <property name="tested.project.test.absolute.dir"
-                location="\${tested.project.absolute.dir}/${androidTestConf?.testDir?.value ?: 'test/robolectric'}"/>
+                location="\${tested.project.absolute.dir}/$robolectricTestPath"/>
             <property name="out.test.classes.absolute.dir" location="\${out.dir}/testClasses" />
         </target>
 
