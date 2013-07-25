@@ -40,7 +40,8 @@ class AndroidTestPlugin implements Plugin<Project> {
                         dependsOn: CopySourcesTask.NAME).variantConf = variantConf
 
                 project.testAll.dependsOn testTaskName
-                project."$testTaskName".mustRunAfter VerifySetupTask.NAME
+                project.tasks.findByName(variantConf.buildTaskName)?.dependsOn testTaskName
+                project.tasks.findByName(testTaskName).mustRunAfter VerifySetupTask.NAME
             }
         }
     }
