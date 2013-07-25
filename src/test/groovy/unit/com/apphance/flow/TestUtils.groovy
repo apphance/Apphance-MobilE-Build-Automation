@@ -5,8 +5,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 
-import static java.io.File.createTempFile
-
 class TestUtils {
 
     public <T extends DefaultTask> T create(Class<T> type, Project project = null) {

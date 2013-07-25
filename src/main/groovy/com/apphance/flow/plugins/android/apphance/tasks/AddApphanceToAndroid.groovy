@@ -14,14 +14,17 @@ import org.gradle.api.logging.Logging
 import static android.Manifest.permission.*
 import static com.apphance.flow.configuration.apphance.ApphanceLibType.PRE_PROD
 import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
+import static com.apphance.flow.configuration.apphance.ApphanceMode.*
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkNotNull
+import static org.apache.commons.io.FileUtils.copyURLToFile
 
 @Mixin([FlowUtils, AndroidManifestHelper])
 class AddApphanceToAndroid {
 
     String apphanceVersion
-    public final String ARTIFACTORY_URL
+    public final String APPHANCE_PROD_URL
+    public final String APPHANCE_PREPROD_URL
     def logger = Logging.getLogger(this.class)
 
     final File variantDir
@@ -37,8 +40,9 @@ class AddApphanceToAndroid {
     }
 
     AddApphanceToAndroid(File variantDir, String apphanceAppKey, ApphanceMode apphanceMode, String libVersion, boolean shakeEnabled = false) {
-        apphanceVersion = libVersion ?: '1.9-RC2'
-        ARTIFACTORY_URL = "https://dev.polidea.pl/artifactory/simple/libs-releases-local/com/utest/apphance/${apphanceVersion}/apphance-${apphanceVersion}.zip"
+        apphanceVersion = libVersion ?: '1.9'
+        APPHANCE_PROD_URL = "http://repo1.maven.org/maven2/com/utest/apphance-prod/${apphanceVersion}/apphance-prod-${apphanceVersion}.jar"
+        APPHANCE_PREPROD_URL = "http://repo1.maven.org/maven2/com/utest/apphance-preprod/${apphanceVersion}/apphance-preprod-${apphanceVersion}.zip"
         this.variantDir = variantDir
         this.apphanceAppKey = apphanceAppKey
         this.apphanceMode = apphanceMode
@@ -74,9 +78,15 @@ class AddApphanceToAndroid {
     @PackageScope
     boolean checkIfApphancePresent() {
         def startNewSession = { File it -> it.name.endsWith('.java') && it.text.contains('Apphance.startNewSession') }
-        def apphanceLib = { File it -> it.name ==~ /.*apphance-library.*/ }
+        def apphanceLib = { File it -> it.name ==~ /(.*apphance-library.*|apphance-prod.*jar)/ }
 
-        allFiles(dir: variantDir, where: { startNewSession(it) || apphanceLib(it) }) || isApphanceActivityPresent(variantDir)
+        def apphanceFiles = allFiles(dir: variantDir, where: { startNewSession(it) || apphanceLib(it) })
+        def foundApphanceActivity = isApphanceActivityPresent(variantDir)
+
+        if (apphanceFiles) logger.info "Apphance was already added. Found following files: ${apphanceFiles*.absolutePath}"
+        if (foundApphanceActivity) logger.info "Found Apphance activity"
+
+        apphanceFiles || foundApphanceActivity
     }
 
     @PackageScope
@@ -183,8 +193,12 @@ class AddApphanceToAndroid {
 
     @PackageScope
     def addApphanceLib() {
-        logger.info('Downloading apphance')
-        unzip downloadToTempFile(ARTIFACTORY_URL), new File("$variantDir.absolutePath/libs")
+        logger.info "Downloading apphance in mode: $apphanceMode"
+        if (apphanceMode in [QA, SILENT]) {
+            unzip downloadToTempFile(APPHANCE_PREPROD_URL), new File("$variantDir.absolutePath/libs")
+        } else if (apphanceMode == PROD) {
+            copyURLToFile APPHANCE_PROD_URL.toURL(), new File("$variantDir.absolutePath/libs/apphance-prod-${apphanceVersion}.jar")
+        }
     }
 
     @PackageScope
@@ -219,7 +233,7 @@ class AddApphanceToAndroid {
 
     @PackageScope
     String mapApphanceMode(ApphanceMode apphanceMode) {
-        (apphanceMode == ApphanceMode.QA) ? 'Apphance.Mode.QA' : 'Apphance.Mode.Silent'
+        (apphanceMode == QA) ? 'Apphance.Mode.QA' : 'Apphance.Mode.Silent'
     }
 
     private void addCodeToMethod(File file, String methodName, String code) {

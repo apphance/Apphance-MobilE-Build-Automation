@@ -1,39 +1,52 @@
 package com.apphance.flow.plugins.android.apphance.tasks
 
+import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
-import com.apphance.flow.configuration.apphance.ApphanceMode
-import com.google.common.io.Files
 import org.apache.commons.io.FileUtils
 import spock.lang.Specification
 
+import static com.apphance.flow.configuration.apphance.ApphanceMode.PROD
+import static com.apphance.flow.configuration.apphance.ApphanceMode.QA
+
+@Mixin(TestUtils)
 class AddApphanceToAndroidIntegrationTest extends Specification {
 
-    def variantDir = Files.createTempDir()
+    def variantDir
     AddApphanceToAndroid addApphanceToAndroid
+    private AndroidVariantConfiguration androidVariantConf
+    static def version = '1.9'
 
     def setup() {
-        variantDir.deleteOnExit()
+        variantDir = temporaryDir
         FileUtils.copyDirectory(new File('testProjects/android/android-basic'), variantDir)
 
-        def androidVariantConf = GroovySpy(AndroidVariantConfiguration, constructorArgs: ['test variant'])
-        androidVariantConf.apphanceMode.value = ApphanceMode.QA
+        androidVariantConf = GroovySpy(AndroidVariantConfiguration, constructorArgs: ['test variant'])
         androidVariantConf.apphanceAppKey.value = 'TestKey'
-        androidVariantConf.apphanceLibVersion.value = '1.9-RC2'
+        androidVariantConf.apphanceLibVersion.value = '1.9'
         androidVariantConf.getTmpDir() >> variantDir
-
-        addApphanceToAndroid = new AddApphanceToAndroid(androidVariantConf)
     }
 
     def 'test add apphance lib'() {
+        given:
+        androidVariantConf.apphanceMode.value = mode
+        addApphanceToAndroid = new AddApphanceToAndroid(androidVariantConf)
+
         expect:
         !addApphanceToAndroid.checkIfApphancePresent()
-        def version = '1.9-RC2'
 
         when:
         addApphanceToAndroid.addApphanceLib()
 
         then:
         addApphanceToAndroid.checkIfApphancePresent()
-        new File(variantDir, "/libs/apphance-library-${version}/libs/apphance-library-${version}.jar").exists()
+        expectedFiles.each {
+            new File(variantDir, "/libs/$it").exists()
+        }
+
+        where:
+        mode | expectedFiles
+        QA   | ["apphance-library-${version}/libs/apphance-library-${version}.jar", "apphance-library-${version}/libs/AndroidManifest.xml"]
+        PROD | ["apphance-prod-${version}.jar"]
     }
 }
+
