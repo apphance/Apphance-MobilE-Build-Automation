@@ -99,4 +99,27 @@ class SingleVariantTaskUnitSpec extends Specification {
         then:
         1 * task.ant.copy(* _)
     }
+
+    def 'test manifest merge'() {
+        given:
+        def main = tempFile << new File('src/test/resources/com/apphance/flow/android/AndroidManifestToMergeMain.xml').text
+        def variantA = new File('src/test/resources/com/apphance/flow/android/AndroidManifestToMergeVariantA.xml')
+        def variantB = new File('src/test/resources/com/apphance/flow/android/AndroidManifestToMergeVariantB.xml')
+
+        expect:
+        main.exists() && variantA.exists() && variantB.exists()
+        permissions(main) == []
+        permissions(variantA) == ['android.permission.INTERNET']
+        permissions(variantB) == ['android.permission.READ_CALENDAR']
+
+        when:
+        task.mergeManifest(main, main, variantA, variantB)
+
+        then:
+        permissions(main) == ['android.permission.INTERNET', 'android.permission.READ_CALENDAR']
+    }
+
+    List<String> permissions(File manifest) {
+        new XmlSlurper().parse(manifest).'uses-permission'.@'android:name'*.text()
+    }
 }
