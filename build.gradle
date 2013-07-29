@@ -158,6 +158,7 @@ dependencies {
     compile 'org.imgscalr:imgscalr-lib:4.2'
 
     compile 'commons-lang:commons-lang:2.6'
+    compile 'commons-io:commons-io:2.4'
     compile 'commons-collections:commons-collections:3.2.1'
     compile 'com.google.guava:guava:13.0.1'
     compile 'com.thoughtworks.qdox:qdox:1.12.1'
