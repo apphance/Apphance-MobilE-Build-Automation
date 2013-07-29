@@ -19,6 +19,6 @@ class UpdateProjectTask extends DefaultTask {
 
     @TaskAction
     void runUpdate() {
-        projectUpdater.runRecursivelyInAllSubProjects(conf.rootDir)
+        projectUpdater.updateRecursively(conf.rootDir)
     }
 }

@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.android.buildplugin.tasks
 
 import com.android.manifmerger.ManifestMerger
 import com.android.utils.StdLogger
+import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.executor.AntExecutor
@@ -29,13 +30,14 @@ class SingleVariantTask extends DefaultTask {
     @Inject AndroidArtifactProvider artifactProvider
     @Inject AntExecutor antExecutor
     @Inject AndroidProjectUpdater projectUpdater
+    @Inject AndroidConfiguration conf
 
     AndroidVariantConfiguration variant
     private FlowArtifact artifact
 
     @TaskAction
     void singleVariant() {
-        projectUpdater.runRecursivelyInAllSubProjects(variant.tmpDir)
+        projectUpdater.updateRecursively variant.tmpDir, conf.target.value, conf.projectName.value
 
         def builderInfo = artifactProvider.builderInfo(variant)
 

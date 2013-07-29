@@ -38,9 +38,11 @@ class AndroidExecutor {
     }()
 
     def updateProject(File dir, String target, String name) {
+        def targetParam = target ? ['-t', "${idForTarget(target) ?: target}"] : []
+        def nameParam = name ? ['-n', name] : []
         executor.executeCommand(new Command(
                 runDir: dir,
-                cmd: executableAndroid.cmd + ['update', 'project', '-p', '.', '-t', "${idForTarget(target) ?: target}", '-n', name, '-s']
+                cmd: executableAndroid.cmd + ['update', 'project', '-p', '.', '-s'] + targetParam + nameParam
         ))
     }
 

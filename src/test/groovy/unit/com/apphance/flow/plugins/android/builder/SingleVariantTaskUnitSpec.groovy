@@ -72,7 +72,7 @@ class SingleVariantTaskUnitSpec extends Specification {
         with(task) {
             1 * antExecutor.executeTarget(tmpDir, CLEAN)
             1 * antExecutor.executeTarget(tmpDir, 'debug')
-            1 * projectUpdater.runRecursivelyInAllSubProjects(variantDir)
+            1 * projectUpdater.updateRecursively(variantDir)
             0 * antExecutor.executeTarget(_, _)
             0 * ant.copy(_)
         }
