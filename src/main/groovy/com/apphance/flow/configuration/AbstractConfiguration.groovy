@@ -7,8 +7,11 @@ import javax.inject.Inject
 import java.lang.reflect.Field
 
 import static org.apache.commons.lang.StringUtils.join
+import static org.gradle.api.logging.Logging.getLogger
 
 abstract class AbstractConfiguration {
+
+    def logger = getLogger(this.class)
 
     @Inject PropertyPersister propertyPersister
 
@@ -19,6 +22,7 @@ abstract class AbstractConfiguration {
     @Inject
     void init() {
         propertyFields.each {
+            logger.debug "Initializing property $it.name to value: ${propertyPersister.get(it.name)}"
             it.value = propertyPersister.get(it.name)
         }
 

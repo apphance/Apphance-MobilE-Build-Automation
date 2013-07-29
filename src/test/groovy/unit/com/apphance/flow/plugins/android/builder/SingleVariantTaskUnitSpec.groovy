@@ -5,6 +5,7 @@ import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
+import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.AndroidExecutor
 import com.apphance.flow.executor.AntExecutor
@@ -28,7 +29,6 @@ class SingleVariantTaskUnitSpec extends Specification {
     AndroidBuilderInfo builderInfo
 
     def setup() {
-
         builderInfo = GroovyStub(AndroidBuilderInfo) {
             getTmpDir() >> tmpDir
             getMode() >> AndroidBuildMode.DEBUG
@@ -53,6 +53,7 @@ class SingleVariantTaskUnitSpec extends Specification {
                 getTmpDir() >> variantDir
                 getOldPackage() >> new StringProperty()
                 getNewPackage() >> new StringProperty()
+                getMergeManifest() >> new BooleanProperty(value: 'true')
             }
 
             ant = GroovyMock(AntBuilder)
@@ -123,16 +124,16 @@ class SingleVariantTaskUnitSpec extends Specification {
     def 'test manifest merge throws exception'() {
         given:
         def main = tempFile << new File('src/test/resources/com/apphance/flow/android/AndroidManifestToMergeMain.xml').text
-        def damagedManifest = tempFile << new File('src/test/resources/com/apphance/flow/android/AndroidManifestToMergeVariantA.xml').
+        def incorrectManifest = tempFile << new File('src/test/resources/com/apphance/flow/android/AndroidManifestToMergeVariantA.xml').
                 text.replace('android:minSdkVersion="7"', 'android:minSdkVersion="1000"')
 
         expect:
-        main.exists() && damagedManifest.exists()
+        main.exists() && incorrectManifest.exists()
         permissions(main) == []
-        permissions(damagedManifest) == ['android.permission.INTERNET']
+        permissions(incorrectManifest) == ['android.permission.INTERNET']
 
         when:
-        task.mergeManifest(main, main, damagedManifest)
+        task.mergeManifest(main, main, incorrectManifest)
 
         then:
         GradleException ex = thrown()

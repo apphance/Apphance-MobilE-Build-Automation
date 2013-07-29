@@ -2,6 +2,7 @@ package com.apphance.flow.configuration.android.variants
 
 import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
+import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.variants.AbstractVariant
@@ -39,6 +40,12 @@ class AndroidVariantConfiguration extends AbstractVariant {
     @Inject
     void init() {
         variantDir.name = "android.variant.${name}.dir"
+        oldPackage.name = "${prefix}.variant.${name}.replacePackage.oldPackage"
+        newPackage.name = "${prefix}.variant.${name}.replacePackage.newPackage"
+        newLabel.name = "${prefix}.variant.${name}.replacePackage.newLabel"
+        newName.name = "${prefix}.variant.${name}.replacePackage.newName"
+        mergeManifest.name = "${prefix}.variant.${name}.mergeManifest"
+
         super.init()
 
         if (!variantDir.value && vDir)
@@ -54,18 +61,11 @@ class AndroidVariantConfiguration extends AbstractVariant {
             //validator: { it in releaseConf.findMobileProvisionFiles()*.name }TODO
     )
 
-    def oldPackage = new StringProperty(
-            name: "android.variant.${name}.replacePackage.oldPackage",
-            interactive: { false })
-    def newPackage = new StringProperty(
-            name: "android.variant.${name}.replacePackage.newPackage",
-            interactive: { false })
-    def newLabel = new StringProperty(
-            name: "android.variant.${name}.replacePackage.newLabel",
-            interactive: { false })
-    def newName = new StringProperty(
-            name: "android.variant.${name}.replacePackage.newName",
-            interactive: { false })
+    def oldPackage = new StringProperty(interactive: { false })
+    def newPackage = new StringProperty(interactive: { false })
+    def newLabel = new StringProperty(interactive: { false })
+    def newName = new StringProperty(interactive: { false })
+    def mergeManifest = new BooleanProperty(interactive: { false })
 
     @Override
     List<String> possibleApphanceLibVersions() {

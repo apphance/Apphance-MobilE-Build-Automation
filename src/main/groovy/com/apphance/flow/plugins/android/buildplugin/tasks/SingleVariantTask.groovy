@@ -1,7 +1,6 @@
 package com.apphance.flow.plugins.android.buildplugin.tasks
 
 import com.android.manifmerger.ManifestMerger
-import com.android.manifmerger.MergerLog
 import com.android.utils.StdLogger
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
@@ -19,6 +18,7 @@ import static com.android.manifmerger.MergerLog.wrapSdkLog
 import static com.android.utils.StdLogger.Level.VERBOSE
 import static com.apphance.flow.executor.AntExecutor.CLEAN
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
+import static com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST
 
 class SingleVariantTask extends DefaultTask {
 
@@ -47,6 +47,12 @@ class SingleVariantTask extends DefaultTask {
             ant.copy(todir: builderInfo.tmpDir, failonerror: true, overwrite: true, verbose: true) {
                 fileset(dir: builderInfo.variantDir, includes: '**/*')
             }
+
+            def variantManifest = new File(builderInfo.variantDir, ANDROID_MANIFEST)
+            logger.info "Variant manifest exist: ${variantManifest.exists()}, merging enabled: ${variant.mergeManifest.value}"
+            if (variant.mergeManifest.value && variantManifest.exists()) {
+                mergeManifest(new File(variant.tmpDir, ANDROID_MANIFEST), project.file(ANDROID_MANIFEST), variantManifest)
+            }
         } else {
             logger.lifecycle("No files copied because variant directory ${builderInfo.variantDir} does not exists")
         }
@@ -65,6 +71,7 @@ class SingleVariantTask extends DefaultTask {
             }
             throw exp
         }
+
         if (builderInfo.originalFile.exists()) {
             logger.lifecycle("File created: ${builderInfo.originalFile}")
 
@@ -80,6 +87,7 @@ class SingleVariantTask extends DefaultTask {
 
     @groovy.transform.PackageScope
     def mergeManifest(File out, File main, File... manifestsToMerge) {
+        logger.lifecycle "Merging manifests. Output: $out.absolutePath, main manifest: $main.absolutePath, to be merged: ${manifestsToMerge*.absolutePath}"
         def merger = new ManifestMerger(wrapSdkLog(new StdLogger(VERBOSE)), null);
         boolean ok = merger.process(out, main, manifestsToMerge, null, null);
         if (!ok) throw new GradleException("Error during merging manifests.")

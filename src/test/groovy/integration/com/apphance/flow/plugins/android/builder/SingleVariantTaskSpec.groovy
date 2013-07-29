@@ -4,6 +4,7 @@ import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
+import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.AndroidExecutor
 import com.apphance.flow.executor.AntExecutor
@@ -61,6 +62,7 @@ class SingleVariantTaskSpec extends Specification {
             getTmpDir() >> new File(project.rootDir, variantTmpDir.toString())
             getOldPackage() >> new StringProperty()
             getNewPackage() >> new StringProperty()
+            getMergeManifest() >> new BooleanProperty(value: 'true')
         }
 
         assert project.file(TMP_DIR).deleteDir()
