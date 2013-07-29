@@ -13,6 +13,7 @@ import com.apphance.flow.plugins.android.buildplugin.tasks.SingleVariantTask
 import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.util.FlowUtils
 import org.gradle.api.AntBuilder as AntBuilder
+import org.gradle.api.GradleException
 import spock.lang.Specification
 
 import static com.apphance.flow.executor.AntExecutor.CLEAN
@@ -117,6 +118,25 @@ class SingleVariantTaskUnitSpec extends Specification {
 
         then:
         permissions(main) == ['android.permission.INTERNET', 'android.permission.READ_CALENDAR']
+    }
+
+    def 'test manifest merge throws exception'() {
+        given:
+        def main = tempFile << new File('src/test/resources/com/apphance/flow/android/AndroidManifestToMergeMain.xml').text
+        def damagedManifest = tempFile << new File('src/test/resources/com/apphance/flow/android/AndroidManifestToMergeVariantA.xml').
+                text.replace('android:minSdkVersion="7"', 'android:minSdkVersion="1000"')
+
+        expect:
+        main.exists() && damagedManifest.exists()
+        permissions(main) == []
+        permissions(damagedManifest) == ['android.permission.INTERNET']
+
+        when:
+        task.mergeManifest(main, main, damagedManifest)
+
+        then:
+        GradleException ex = thrown()
+        ex.message == 'Error during merging manifests.'
     }
 
     List<String> permissions(File manifest) {
