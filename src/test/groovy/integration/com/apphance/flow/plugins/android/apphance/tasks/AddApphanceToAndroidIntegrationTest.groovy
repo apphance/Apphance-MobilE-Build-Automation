@@ -43,6 +43,8 @@ class AddApphanceToAndroidIntegrationTest extends Specification {
             new File(variantDir, "/libs/$it").exists()
         }
 
+        (mode == PROD) ^ new File(variantDir, 'project.properties').text.contains("libs/apphance-library-${version}")
+
         where:
         mode | expectedFiles
         QA   | ["apphance-library-${version}/libs/apphance-library-${version}.jar", "apphance-library-${version}/libs/AndroidManifest.xml"]

@@ -72,7 +72,6 @@ class AddApphanceToAndroid {
         addProblemActivityToManifest()
         addPermissions()
         addApphanceLib()
-        addApphanceLibraryReferenceToProjectProperties()
     }
 
     @PackageScope
@@ -196,6 +195,7 @@ class AddApphanceToAndroid {
         logger.info "Downloading apphance in mode: $apphanceMode"
         if (apphanceMode in [QA, SILENT]) {
             unzip downloadToTempFile(APPHANCE_PREPROD_URL), new File("$variantDir.absolutePath/libs")
+            addApphanceLibraryReferenceToProjectProperties()
         } else if (apphanceMode == PROD) {
             copyURLToFile APPHANCE_PROD_URL.toURL(), new File("$variantDir.absolutePath/libs/apphance-prod-${apphanceVersion}.jar")
         }
@@ -212,16 +212,14 @@ class AddApphanceToAndroid {
     def addApphanceInit(File mainFile, String apphanceAppKey, ApphanceMode apphanceMode) {
         logger.debug("Adding apphance init to file: $mainFile.absolutePath")
         String startSession = """Apphance.startNewSession(this, "$apphanceAppKey", ${mapApphanceMode(apphanceMode)});"""
-        String shakeEnablingLine = "Apphance.setReportOnShakeEnabled(true);"
+        String shakeEnablingLine = (shakeEnabled && (apphanceMode in [QA, SILENT])) ? "Apphance.setReportOnShakeEnabled(true);" : ''
         if (isMethodPresent(mainFile, 'onCreate')) {
             addCodeToMethod(mainFile, 'onCreate', "\n        $startSession\n        $shakeEnablingLine")
         } else {
             String body = "    public void onCreate(final Bundle savedInstanceState) {\n" +
                     "    super.onCreate(savedInstanceState);\n" +
-                    "    $startSession\n"
-            if (shakeEnabled) {
-                body += "    $shakeEnablingLine}\n"
-            }
+                    "    $startSession\n" +
+                    "    $shakeEnablingLine}\n"
             addMethodToClassFile(body, mainFile)
         }
     }
