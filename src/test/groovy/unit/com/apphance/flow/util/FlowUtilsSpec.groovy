@@ -7,12 +7,9 @@ class FlowUtilsSpec extends Specification {
 
     private File rootSearchDir = new File('src/test/resources/com/apphance/flow/util')
 
-    def 'check argument'() {
-        when:
-        allFiles dir: new File('/some-nonexisting-directory')
-
-        then:
-        thrown(IllegalArgumentException)
+    def 'test allFiles for non existing directory'() {
+        expect:
+        allFiles(dir: new File('/some-nonexisting-directory')) == []
     }
 
     def 'search without filter'() {

@@ -5,7 +5,6 @@ import groovy.io.FileType
 import java.nio.file.Files
 
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
-import static com.google.common.base.Preconditions.checkArgument
 import static java.io.File.createTempFile
 
 class FlowUtils {
@@ -13,11 +12,11 @@ class FlowUtils {
     List<File> allFiles(Map options) {
         def files = []
         File dir = options.dir
-        checkArgument(dir.exists())
-
-        Closure where = options.where ?: { true }
-        dir.traverse(type: FileType.FILES, maxDepth: MAX_RECURSION_LEVEL, filter: where) {
-            files << it
+        if (dir.exists()) {
+            Closure where = options.where ?: { true }
+            dir.traverse(type: FileType.FILES, maxDepth: MAX_RECURSION_LEVEL, filter: where) {
+                files << it
+            }
         }
         files
     }
