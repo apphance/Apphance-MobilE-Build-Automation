@@ -78,8 +78,8 @@ class AddApphanceToAndroid {
     boolean checkIfApphancePresent() {
         def startNewSession = { File it -> it.name.endsWith('.java') && it.text.contains('Apphance.startNewSession') }
         def apphanceLib = { File it -> it.name ==~ /(.*apphance-library.*|apphance-prod.*jar)/ }
-
-        def apphanceFiles = allFiles(dir: variantDir, where: { startNewSession(it) || apphanceLib(it) })
+        def apphanceFiles = allFiles(dir: new File(variantDir, 'src'), where: { startNewSession(it) })
+        apphanceFiles += allFiles(dir: new File(variantDir, 'libs'), where: { apphanceLib(it) })
         def foundApphanceActivity = isApphanceActivityPresent(variantDir)
 
         if (apphanceFiles) logger.info "Apphance was already added. Found following files: ${apphanceFiles*.absolutePath}"
