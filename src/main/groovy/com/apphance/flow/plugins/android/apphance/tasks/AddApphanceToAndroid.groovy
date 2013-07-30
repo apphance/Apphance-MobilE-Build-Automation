@@ -194,11 +194,19 @@ class AddApphanceToAndroid {
     def addApphanceLib() {
         logger.info "Downloading apphance in mode: $apphanceMode"
         if (apphanceMode in [QA, SILENT]) {
-            unzip downloadToTempFile(APPHANCE_PREPROD_URL), new File("$variantDir.absolutePath/libs")
+            downloadZipAndUnzip APPHANCE_PREPROD_URL, new File("$variantDir.absolutePath/libs")
             addApphanceLibraryReferenceToProjectProperties()
         } else if (apphanceMode == PROD) {
-            copyURLToFile APPHANCE_PROD_URL.toURL(), new File("$variantDir.absolutePath/libs/apphance-prod-${apphanceVersion}.jar")
+            download APPHANCE_PROD_URL, new File("$variantDir.absolutePath/libs/apphance-prod-${apphanceVersion}.jar")
         }
+    }
+
+    void download(String url, File destFile) {
+        copyURLToFile url.toURL(), destFile
+    }
+
+    void downloadZipAndUnzip(String url, File destDir) {
+        unzip downloadToTempFile(url), destDir
     }
 
     @PackageScope

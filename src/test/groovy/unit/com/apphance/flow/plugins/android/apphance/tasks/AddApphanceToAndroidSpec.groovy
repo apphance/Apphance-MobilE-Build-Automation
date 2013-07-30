@@ -201,7 +201,7 @@ class AddApphanceToAndroidSpec extends Specification {
 
     def 'test adding problem activity after addStartStopInvocations'() {
         given:
-        def addApphance = Spy(AddApphanceToAndroid)
+        def addApphance = Spy(AddApphanceToAndroid, constructorArgs: [temporaryDir, 'KEY', QA, '1.9', false])
 
         when:
         addApphance.addApphance()
@@ -215,7 +215,8 @@ class AddApphanceToAndroidSpec extends Specification {
         then:
         1 * addApphance.addProblemActivityToManifest() >> null
         1 * addApphance.addPermissions() >> null
-        1 * addApphance.addApphanceLib() >> null
+        1 * addApphance.addApphanceLib()
+        1 * addApphance.downloadZipAndUnzip(*_) >> null
         1 * addApphance.addApphanceLibraryReferenceToProjectProperties() >> null
     }
 
