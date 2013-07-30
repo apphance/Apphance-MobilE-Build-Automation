@@ -280,4 +280,15 @@ class AddApphanceToAndroidSpec extends Specification {
         !new File(variantDir, 'src/com/apphance/flowTest/android/SomeClass.java').text.contains('android.util.Log')
         new File(variantDir, 'src/com/apphance/flowTest/android/SomeClass.java').text.contains 'import com.apphance.android.Log;'
     }
+
+    def 'test maxLibNumber'() {
+        given:
+        def lines = """
+            |android.library.reference.1=../libs/cocos2d/cocos2dx/platform/android/java
+            |android.library.reference.4=libs/facebook-android-sdk/facebook
+            |android.library.reference.10=libs/google-play-services_lib""".stripMargin().split('\n')*.trim()
+
+        expect:
+        addApphanceToAndroid.maxLibNumber(lines) == 10
+    }
 }
