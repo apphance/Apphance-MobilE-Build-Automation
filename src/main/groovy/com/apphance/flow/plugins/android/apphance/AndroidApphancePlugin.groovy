@@ -5,7 +5,6 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantsConfigura
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.plugins.android.apphance.tasks.AddApphanceToAndroid
 import com.apphance.flow.plugins.android.apphance.tasks.UploadAndroidArtifactTask
-import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -47,7 +46,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
                         new AddApphanceToAndroid(variantConf).addApphance()
                     }
                     buildVariantTask.dependsOn addApphanceTask
-                    addApphanceTask.mustRunAfter project.tasks.getByName(CopySourcesTask.NAME), project.tasks.getByName(VerifySetupTask.NAME)
+                    addApphanceTask.dependsOn project.tasks.getByName(VerifySetupTask.NAME)
                     project.task(variantConf.uploadTaskName, type: UploadAndroidArtifactTask, dependsOn: buildVariantTask?.name).variant = variantConf
                 } else {
                     logger.lifecycle("Not adding apphance to ${variantConf.name} because it is not in debug mode")

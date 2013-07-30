@@ -5,6 +5,7 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantsConfigura
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceMode
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
+import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.*
@@ -55,10 +56,11 @@ class AndroidApphancePluginSpec extends Specification {
         ]
         aap.variantsConf = avc
 
-        and: 'add tasks that AndroidPlugin creates'
+        and: 'add required tasks'
         project.task('buildV1')
         project.task('buildV2')
         project.task('buildV3')
+        project.task(VerifySetupTask.NAME)
 
         when:
         aap.apply(project)
@@ -67,6 +69,9 @@ class AndroidApphancePluginSpec extends Specification {
         project.tasks['uploadV1'].dependsOn.flatten().contains('buildV1')
         !project.tasks.findByName('uploadV2')
         project.tasks['uploadV3'].dependsOn.flatten().contains('buildV3')
+        project.tasks.findByName('addApphanceV1')
+        !project.tasks.findByName('addApphanceV2')
+        project.tasks.findByName('addApphanceV3')
     }
 
     private AndroidVariantConfiguration createVariant(String name, ApphanceMode mode) {
