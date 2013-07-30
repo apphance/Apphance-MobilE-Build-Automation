@@ -51,12 +51,13 @@ class SingleVariantTaskSpec extends Specification {
     def executor = new CommandExecutor(fileLinker, logFileGenerator)
     def antExecutor = new AntExecutor(executor: executor, executableAnt: STD_EXECUTABLE_ANT)
     def androidExecutor = new AndroidExecutor(executor: executor, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
-    def projectUpdater = new AndroidProjectUpdater(conf: conf, executor: androidExecutor)
+    def projectUpdater = new AndroidProjectUpdater(executor: androidExecutor)
 
     def setup() {
         task.antExecutor = antExecutor
         task.projectUpdater = projectUpdater
         task.ant = project.ant
+        task.conf = conf
         task.releaseConf = Stub(AndroidReleaseConfiguration) { isEnabled() >> true }
         task.variant = GroovyMock(AndroidVariantConfiguration) {
             getTmpDir() >> new File(project.rootDir, variantTmpDir.toString())

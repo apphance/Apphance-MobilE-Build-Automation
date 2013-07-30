@@ -43,7 +43,7 @@ class SingleVariantTaskUnitSpec extends Specification {
             }
 
             projectUpdater = GroovySpy(AndroidProjectUpdater)
-            projectUpdater.conf = GroovyStub(AndroidConfiguration) {
+            conf = GroovyStub(AndroidConfiguration) {
                 getTarget() >> new StringProperty(value: 'android-8')
                 getProjectName() >> new StringProperty(value: 'TestAndroidProject')
             }
@@ -72,7 +72,7 @@ class SingleVariantTaskUnitSpec extends Specification {
         with(task) {
             1 * antExecutor.executeTarget(tmpDir, CLEAN)
             1 * antExecutor.executeTarget(tmpDir, 'debug')
-            1 * projectUpdater.updateRecursively(variantDir)
+            1 * projectUpdater.updateRecursively(variantDir, 'android-8', 'TestAndroidProject')
             0 * antExecutor.executeTarget(_, _)
             0 * ant.copy(_)
         }
