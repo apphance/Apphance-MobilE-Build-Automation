@@ -54,7 +54,7 @@ class AddApphanceToAndroid {
         checkNotNull apphanceVersion
     }
 
-    AddApphanceToAndroid(AndroidVariantConfiguration androidVariantConf, boolean shakeEnabled = false) {
+    AddApphanceToAndroid(AndroidVariantConfiguration androidVariantConf, Boolean shakeEnabled = false) {
         this(androidVariantConf.tmpDir, androidVariantConf.apphanceAppKey.value, androidVariantConf.apphanceMode.value,
                 androidVariantConf.apphanceLibVersion.value, shakeEnabled)
     }
