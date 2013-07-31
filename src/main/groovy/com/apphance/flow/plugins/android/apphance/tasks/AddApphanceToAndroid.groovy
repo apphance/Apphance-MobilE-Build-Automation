@@ -54,9 +54,9 @@ class AddApphanceToAndroid {
         checkNotNull apphanceVersion
     }
 
-    AddApphanceToAndroid(AndroidVariantConfiguration androidVariantConf) {
+    AddApphanceToAndroid(AndroidVariantConfiguration androidVariantConf, boolean shakeEnabled = false) {
         this(androidVariantConf.tmpDir, androidVariantConf.apphanceAppKey.value, androidVariantConf.apphanceMode.value,
-                androidVariantConf.apphanceLibVersion.value)
+                androidVariantConf.apphanceLibVersion.value, shakeEnabled)
     }
 
     public void addApphance() {
@@ -222,7 +222,6 @@ class AddApphanceToAndroid {
         def nums = [0]
         def libRefRegex = /android.library.reference.(\d+).*/
         lines.findAll { (it =~ libRefRegex).matches() }.each {
-            println it
             def matcher = it =~ libRefRegex
             def num = matcher[0][1]
             try {
@@ -235,9 +234,10 @@ class AddApphanceToAndroid {
     }
 
     def addApphanceInit(File mainFile, String apphanceAppKey, ApphanceMode apphanceMode) {
-        logger.debug("Adding apphance init to file: $mainFile.absolutePath")
+        logger.debug "Adding apphance init to file: $mainFile.absolutePath"
         String startSession = """Apphance.startNewSession(this, "$apphanceAppKey", ${mapApphanceMode(apphanceMode)});"""
         String shakeEnablingLine = (shakeEnabled && (apphanceMode in [QA, SILENT])) ? "Apphance.setReportOnShakeEnabled(true);" : ''
+        logger.info "Shake enabled: $shakeEnabled. Apphance mode: $apphanceMode. Shake enabling line: $shakeEnablingLine"
         if (isMethodPresent(mainFile, 'onCreate')) {
             addCodeToMethod(mainFile, 'onCreate', "\n        $startSession\n        $shakeEnablingLine")
         } else {

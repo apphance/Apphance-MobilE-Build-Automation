@@ -43,7 +43,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
                     def buildVariantTask = project.tasks.findByName(variantConf.buildTaskName)
                     def addApphanceTask = project.task("addApphance$variantConf.name")
                     addApphanceTask.doFirst {
-                        new AddApphanceToAndroid(variantConf).addApphance()
+                        new AddApphanceToAndroid(variantConf, apphanceConf.enableShaking.value).addApphance()
                     }
                     buildVariantTask.dependsOn addApphanceTask
                     addApphanceTask.dependsOn project.tasks.getByName(VerifySetupTask.NAME)
