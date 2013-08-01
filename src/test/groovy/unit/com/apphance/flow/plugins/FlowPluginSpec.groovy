@@ -23,4 +23,21 @@ class FlowPluginSpec extends Specification {
         def e = thrown(GradleException)
         e.message == 'Invalid JRE version: 1.6.23! Minimal JRE version is: 1.7'
     }
+
+    def 'version from filename'() {
+        expect:
+        version == FlowPlugin.getVersion(fileName)
+
+        where:
+        fileName                         | version
+        'apphance-flow-1.0.3.jar'        | '1.0.3'
+        'apphance-flow-1.0.jar'          | '1.0'
+        'apphance-flow-1.0-RC1.jar'      | '1.0-RC1'
+        'apphance-flow-1.0-SNAPSHOT.jar' | '1.0-SNAPSHOT'
+        'apphance-flow-1.0.3.4.5-M4.jar' | '1.0.3.4.5-M4'
+        'ameba-1.0.3.4.5-M4.jar'         | '1.0.3.4.5-M4'
+        'ameba-.jar'                     | ''
+        ''                               | ''
+        null                             | ''
+    }
 }
