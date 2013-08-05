@@ -22,6 +22,8 @@ class AndroidTestPlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())
 
+    static final String TEST_ALL_TASK_NAME = 'testAll'
+
     @Inject AndroidConfiguration conf
     @Inject AndroidTestConfiguration testConf
     @Inject AndroidVariantsConfiguration variantsConf
@@ -29,9 +31,9 @@ class AndroidTestPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         if (testConf.isEnabled()) {
-            logger.lifecycle("Applying plugin ${this.class.simpleName}")
+            logger.lifecycle("Applying plugin ${getClass().simpleName}")
 
-            project.task('testAll', group: FLOW_TEST, description: "Run all android tests")
+            project.task(TEST_ALL_TASK_NAME, group: FLOW_TEST, description: 'Run all android tests')
 
             variantsConf.variants.each { AndroidVariantConfiguration variantConf ->
                 def testTaskName = "test${variantConf.name.capitalize()}"
@@ -39,7 +41,7 @@ class AndroidTestPlugin implements Plugin<Project> {
                         type: RunRobolectricTestsTask,
                         dependsOn: CopySourcesTask.NAME).variantConf = variantConf
 
-                project.testAll.dependsOn testTaskName
+                project.tasks.findByName(TEST_ALL_TASK_NAME).dependsOn testTaskName
                 project.tasks.findByName(variantConf.buildTaskName)?.dependsOn testTaskName
                 project.tasks.findByName(testTaskName).mustRunAfter VerifySetupTask.NAME
             }
