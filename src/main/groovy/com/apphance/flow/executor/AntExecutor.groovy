@@ -14,7 +14,6 @@ class AntExecutor {
 
     public static String DEBUG = 'debug'
     public static String CLEAN = 'clean'
-    public static String INSTRUMENT = 'instrument'
 
     @Inject
     CommandExecutor executor
