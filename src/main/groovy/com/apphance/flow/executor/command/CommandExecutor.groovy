@@ -8,7 +8,6 @@ import javax.inject.Inject
 
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
-import static java.lang.ProcessBuilder.Redirect.appendTo
 import static java.lang.System.getProperties
 
 @Mixin(Preconditions)
@@ -50,9 +49,7 @@ class CommandExecutor {
 
         Integer exitValue = process?.waitFor()
 
-        String output = "\n\n${commandLogs[STD]?.text}\n${commandLogs[ERR]?.text}\n"
-
-        handleExitValue exitValue, c, output
+        handleExitValue exitValue, c, commandLogs
 
         if (commandLogs[ERR]?.text) {
             logger.warn("Command err: ${fileLinker.fileLink(commandLogs[ERR])}, contains some text. It may be info about" +
@@ -102,14 +99,16 @@ class CommandExecutor {
         inputFile
     }
 
-    private void handleExitValue(Integer exitValue, Command c, String output) {
+    private void handleExitValue(Integer exitValue, Command c, Map<CommandLogFilesGenerator.LogFile, File> commandLogs) {
         throwIfConditionTrue(
                 (exitValue != 0 && c.failOnError),
-                "Error while executing: '$c.commandForPublic', in dir: '$c.runDir', exit value: '$exitValue'\n$output"
+                "Error while executing: '$c.commandForPublic', in dir: '$c.runDir', exit value: '$exitValue'. " +
+                        "Output log: ${fileLinker.fileLink(commandLogs[STD])} " +
+                        "Error log: ${fileLinker.fileLink(commandLogs[ERR])}"
         )
         if (exitValue != 0 && !c.failOnError) {
             logger.warn("Executor is set not to fail on error, but command exited with value not equal to '0': '$exitValue'." +
-                    " Might be potential problem, investigate error logs")
+                    " Might be potential problem, investigate error log: ${fileLinker.fileLink(commandLogs[ERR])}")
         }
     }
 }
