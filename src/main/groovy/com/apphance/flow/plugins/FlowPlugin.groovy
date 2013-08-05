@@ -40,7 +40,7 @@ class FlowPlugin implements Plugin<Project> {
 
     String flowVersion(Project project) {
         File flowJar = project.buildscript.configurations.classpath.find { it.name.contains('apphance-flow') } as File
-        getVersion(flowJar.name)
+        getVersion(flowJar?.name)
     }
 
     @PackageScope
