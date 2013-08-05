@@ -20,8 +20,8 @@ class FlowPlugin implements Plugin<Project> {
     void apply(Project project) {
         logger.lifecycle FLOW_ASCII_ART
 
-        File flowJar = project.buildscript.configurations.classpath.find { it.name.contains('apphance-flow') } as File
-        logger.lifecycle "Apphance Flow version: ${getVersion(flowJar.name)}\n"
+        String version = flowVersion(project)
+        logger.lifecycle "Apphance Flow version: ${version}\n"
 
         validateJavaRuntimeVersion()
 
@@ -36,6 +36,11 @@ class FlowPlugin implements Plugin<Project> {
         injector.getInstance(PluginMaster).enhanceProject(project)
 
         project.tasks.each { injector.injectMembers(it) }
+    }
+
+    String flowVersion(Project project) {
+        File flowJar = project.buildscript.configurations.classpath.find { it.name.contains('apphance-flow') } as File
+        getVersion(flowJar.name)
     }
 
     @PackageScope

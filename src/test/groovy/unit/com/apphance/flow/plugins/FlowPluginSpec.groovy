@@ -14,7 +14,9 @@ class FlowPluginSpec extends Specification {
         System.properties['java.version'] = '1.6.23_10'
 
         and:
-        def plugin = new FlowPlugin()
+        def plugin = GroovySpy(FlowPlugin) {
+            flowVersion(_) >> '1.0'
+        }
 
         when:
         plugin.apply(proj)
