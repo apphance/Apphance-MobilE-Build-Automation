@@ -222,4 +222,26 @@ class AndroidManifestHelper {
     List<File> getSourcesOf(File projDir, Collection<String> classes) {
         classes.collect { new File(projDir, "src/${it.replace('.', '/')}.java") }
     }
+
+    void addLibrary(File projectProperties, String lib) {
+        assert projectProperties.exists()
+        List<String> lines = projectProperties.readLines()
+        int libSize = maxLibNumber(lines)
+        projectProperties << "android.library.reference.${libSize + 1}=$lib"
+    }
+
+    int maxLibNumber(List<String> lines) {
+        def nums = [0]
+        def libRefRegex = /android.library.reference.(\d+).*/
+        lines.findAll { (it =~ libRefRegex).matches() }.each {
+            def matcher = it =~ libRefRegex
+            def num = matcher[0][1]
+            try {
+                nums += num as Integer
+            } catch (NumberFormatException ex) {
+                logger.error "Error during etracting lib number from $it"
+            }
+        }
+        nums.max()
+    }
 }

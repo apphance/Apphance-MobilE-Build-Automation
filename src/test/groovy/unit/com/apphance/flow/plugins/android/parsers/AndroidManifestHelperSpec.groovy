@@ -187,6 +187,18 @@ class AndroidManifestHelperSpec extends Specification {
 
     }
 
+
+    def 'test maxLibNumber'() {
+        given:
+        def lines = """
+            |android.library.reference.1=../libs/cocos2d/cocos2dx/platform/android/java
+            |android.library.reference.4=libs/facebook-android-sdk/facebook
+            |android.library.reference.10=libs/google-play-services_lib""".stripMargin().split('\n')*.trim()
+
+        expect:
+        androidManifestHelper.maxLibNumber(lines) == 10
+    }
+
     private GPathResult parsedManifest(File manifest) {
         new XmlSlurper().parse(manifest)
     }
