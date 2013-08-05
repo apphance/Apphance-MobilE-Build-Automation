@@ -19,7 +19,7 @@ class IOSTestConfigurationSpec extends Specification {
         iOSVariantsConf.getVariantsNames() >> new ListStringProperty(value: ['variantName1', 'variantName2'])
 
         def testConf = new IOSTestConfiguration()
-        testConf.iosVariantsConf = iOSVariantsConf
+        testConf.variantsConf = iOSVariantsConf
         testConf.variant = new StringProperty(value: 'variantName1')
 
         expect:

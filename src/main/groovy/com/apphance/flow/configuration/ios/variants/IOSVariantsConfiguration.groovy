@@ -3,14 +3,14 @@ package com.apphance.flow.configuration.ios.variants
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
+import com.apphance.flow.util.FlowUtils
 import com.google.inject.Singleton
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static com.google.common.base.Preconditions.checkNotNull
-
 @Singleton
+@Mixin(FlowUtils)
 class IOSVariantsConfiguration extends AbstractConfiguration {
 
     String configurationName = 'iOS Variants Configuration'
@@ -41,8 +41,8 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         if (schemeInfo.hasSchemes)
             return schemeInfo.schemeFiles.findAll {
                 schemeInfo.schemeShared(it) &&
-                schemeInfo.schemeBuildable(it) &&
-                schemeInfo.schemeHasSingleBuildableTarget(it)
+                        schemeInfo.schemeBuildable(it) &&
+                        schemeInfo.schemeHasSingleBuildableTarget(it)
             }.collect { getNameWithoutExtension(it.name) }
         []
     }()
@@ -87,14 +87,6 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 //           - schemes must have single buildable target
 //        """
 
-    //gradle guava 11 workaround
-    @PackageScope
-    String getNameWithoutExtension(String file) {
-        checkNotNull(file)
-        String fileName = new File(file).getName()
-        int dotIndex = fileName.lastIndexOf('.')
-        (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex)
-    }
 
     @Override
     void checkProperties() {

@@ -22,7 +22,7 @@ class IOSTestConfiguration extends AbstractConfiguration {
     private enabledInternal = false
 
     @Inject IOSConfiguration conf
-    @Inject IOSVariantsConfiguration iosVariantsConf
+    @Inject IOSVariantsConfiguration variantsConf
     @Inject IOSSchemeInfo schemeInfo
     @Inject IOSExecutor executor
     private final BORDER_VERSION = new Version('5')
@@ -47,13 +47,13 @@ class IOSTestConfiguration extends AbstractConfiguration {
     def variant = new StringProperty(
             name: 'ios.unit.test.variant',
             message: 'IOS unit test variant',
-            possibleValues: { iosVariantsConf.variantsNames.value },
-            validator: { it in iosVariantsConf.variantsNames.value },
+            possibleValues: { variantsConf.variantsNames.value },
+            validator: { it in variantsConf.variantsNames.value },
             required: { true }
     )
 
     IOSVariant getVariant() {
-        iosVariantsConf.variants.find { it.name == this.@variant.value }
+        variantsConf.variants.find { it.name == this.@variant.value }
     }
 
     @Override

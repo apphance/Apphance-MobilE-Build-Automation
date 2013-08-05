@@ -5,6 +5,8 @@ import groovy.io.FileType
 import java.nio.file.Files
 
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
+import static com.google.common.base.Preconditions.checkArgument
+import static com.google.common.base.Preconditions.checkNotNull
 import static java.io.File.createTempFile
 
 class FlowUtils {
@@ -45,5 +47,13 @@ class FlowUtils {
         File file = createTempFile('prefix', 'suffix')
         file.deleteOnExit()
         file
+    }
+
+    //gradle guava 11 workaround
+    String getNameWithoutExtension(String file) {
+        checkNotNull(file)
+        String fileName = new File(file).getName()
+        int dotIndex = fileName.lastIndexOf('.')
+        (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex)
     }
 }
