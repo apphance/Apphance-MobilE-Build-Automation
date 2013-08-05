@@ -48,7 +48,6 @@ class IOSSchemeInfoSpec extends Specification {
         !schemeInfo.schemesHasEnabledTestTargets()
     }
 
-
     @Unroll
     def 'scheme #scheme is buildable #buildable'() {
         expect:
@@ -76,6 +75,6 @@ class IOSSchemeInfoSpec extends Specification {
 
         where:
         scheme << schemes
-        enabled << [true, false, false, false, false, false]
+        enabled << [true, false, false, true, false, false]
     }
 }

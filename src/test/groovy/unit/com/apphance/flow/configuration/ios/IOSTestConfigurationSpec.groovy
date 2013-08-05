@@ -3,11 +3,15 @@ package com.apphance.flow.configuration.ios
 import com.apphance.flow.configuration.ios.variants.IOSSchemeInfo
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
+import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
+import com.apphance.flow.util.FlowUtils
 import spock.lang.Specification
 
+@Mixin(FlowUtils)
 class IOSTestConfigurationSpec extends Specification {
 
     def 'test variant'() {
@@ -127,5 +131,40 @@ class IOSTestConfigurationSpec extends Specification {
         version || explanation
         '1.5.3' || ''
         ''      || 'Ios-sim is not installed. '
+    }
+
+    def 'possible test variants found'() {
+        given:
+        def projectDir = new File(IOSVariantsConfiguration.class.getResource('iOSProject/xcshareddata/xcschemes').toURI())
+        def tc = new IOSTestConfiguration(
+                variantsConf: GroovyMock(IOSVariantsConfiguration) {
+                    getVariants() >> projectDir.listFiles().collect { file ->
+                        GroovyMock(IOSVariant) {
+                            getSchemeFile() >> file
+                            getName() >> getNameWithoutExtension(file.name)
+                        }
+                    }
+                },
+                schemeInfo: new IOSSchemeInfo(schemeParser: new XCSchemeParser())
+        )
+
+        expect:
+        tc.possibleTestVariants == ['GradleXCode', 'GradleXCodeWithApphance']
+    }
+
+    def 'possible test variants validator works correctly'() {
+        given:
+        def tc = GroovySpy(IOSTestConfiguration)
+        tc.possibleTestVariants >> ['Variant1', 'Variant2']
+
+        expect:
+        tc.testVariants.validator(tv) == valid
+
+        where:
+        tv                       || valid
+        ['Variant1']             || true
+        ['Variant1', 'Variant1'] || false
+        ['Variant1', 'Variant3'] || false
+        []                       || false
     }
 }

@@ -21,10 +21,6 @@ class FileManager {
         return getFilesOrDirectories(project, FILES, filter)
     }
 
-    public static List getDirectories(Project project, Closure filter) {
-        return getFilesOrDirectories(project, DIRECTORIES, filter)
-    }
-
     public static List getFilesOrDirectories(Project project, FileType type, Closure filter) {
         List paths = [
                 project.file('bin').absolutePath,

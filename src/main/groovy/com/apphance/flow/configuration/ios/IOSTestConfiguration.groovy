@@ -4,8 +4,10 @@ import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSSchemeInfo
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
+import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.util.FlowUtils
 import com.apphance.flow.util.Version
 import com.google.inject.Singleton
 import groovy.transform.PackageScope
@@ -16,6 +18,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
 @Singleton
+@Mixin(FlowUtils)
 class IOSTestConfiguration extends AbstractConfiguration {
 
     String configurationName = 'iOS Unit Test Configuration'
@@ -51,6 +54,26 @@ class IOSTestConfiguration extends AbstractConfiguration {
             validator: { it in variantsConf.variantsNames.value },
             required: { true }
     )
+
+    def testVariants = new ListStringProperty(
+            name: 'ios.test.variants',
+            message: 'iOS test variants',
+            possibleValues: { possibleTestVariants },
+            validator: {
+                def list = testVariants.convert(it.toString())
+                list.size() == list.unique().size() && !list.isEmpty() && list.every { it in possibleTestVariants }
+            },
+            required: { true }
+    )
+
+    @Lazy
+    @PackageScope
+    List<String> possibleTestVariants = {
+        variantsConf.variants.findAll {
+            schemeInfo.schemeHasEnabledTestTargets(it.schemeFile)
+        }*.name
+    }()
+
 
     IOSVariant getVariant() {
         variantsConf.variants.find { it.name == this.@variant.value }

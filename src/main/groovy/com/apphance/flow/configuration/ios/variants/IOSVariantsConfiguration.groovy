@@ -31,7 +31,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
             possibleValues: { possibleVariants },
             validator: {
                 def list = variantsNames.convert(it.toString())
-                list.size() == list.unique().size() && !list.isEmpty()
+                list.size() == list.unique().size() && !list.isEmpty() && list.every { it in possibleVariants }
             }
     )
 

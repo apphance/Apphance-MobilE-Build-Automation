@@ -40,7 +40,8 @@ class IOSVariantsConfigurationSpec extends Specification {
 
     def 'variantNames validator works'() {
         given:
-        def variantsConf = new IOSVariantsConfiguration()
+        def variantsConf = GroovySpy(IOSVariantsConfiguration)
+        variantsConf.possibleVariants >> ['v1', 'v2']
 
         expect:
         variantsConf.variantsNames.validator(input) == expected
