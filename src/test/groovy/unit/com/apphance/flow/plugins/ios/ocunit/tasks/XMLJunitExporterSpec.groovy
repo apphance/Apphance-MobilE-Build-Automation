@@ -38,6 +38,6 @@ class XMLJunitExporterSpec extends Specification {
 
         def testQWAddCommentParserSpec = rootTestSuite.testsuite.find { it.@name.text() == 'QWAddCommentParserSpec' }
         testQWAddCommentParserSpec.@failures.text() == '0'
-        testQWAddCommentParserSpec.testcase.findAll {it.@classname.text() == 'QWAddCommentParserSpec'}.size() == 6
+        testQWAddCommentParserSpec.testcase.findAll { it.@classname.text() == 'QWAddCommentParserSpec' }.size() == 6
     }
 }

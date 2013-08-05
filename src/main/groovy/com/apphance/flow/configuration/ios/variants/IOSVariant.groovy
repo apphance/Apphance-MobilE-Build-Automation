@@ -197,6 +197,10 @@ class IOSVariant extends AbstractVariant {
         "archive$name".replaceAll('\\s', '')
     }
 
+    String getTestTaskName() {
+        "test$name".replaceAll('\\s', '')
+    }
+
     List<String> getArchiveCmd() {
         conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + ['clean', 'archive']
     }

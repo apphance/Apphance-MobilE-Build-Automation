@@ -1,12 +1,13 @@
 package com.apphance.flow.plugins.ios.ocunit
 
 import com.apphance.flow.configuration.ios.IOSTestConfiguration
-import com.apphance.flow.plugins.ios.ocunit.tasks.RunUnitTestsTasks
+import com.apphance.flow.plugins.ios.ocunit.tasks.IOSTestTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
+import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
@@ -21,13 +22,28 @@ class IOSTestPlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())
 
-    @Inject IOSTestConfiguration unitTestConf
+    public static final String TEST_ALL_TASK_NAME = 'testAll'
+
+    @Inject IOSTestConfiguration testConf
 
     @Override
     void apply(Project project) {
-        if (unitTestConf.isEnabled()) {
-            logger.lifecycle("Applying plugin ${this.class.simpleName}")
-            project.task(RunUnitTestsTasks.NAME, type: RunUnitTestsTasks)
+        if (testConf.isEnabled()) {
+            logger.lifecycle("Applying plugin ${getClass().simpleName}")
+
+            if (testConf.testVariants.size() > 0) {
+
+                project.task(TEST_ALL_TASK_NAME, group: FLOW_TEST)
+
+                testConf.testVariants.each { variant ->
+                    def testTask = project.task(variant.testTaskName,
+                            type: IOSTestTask
+                    ) as IOSTestTask
+                    testTask.variant = variant
+                    project.tasks[TEST_ALL_TASK_NAME].dependsOn variant.testTaskName
+                    //TODO archive and build dependency
+                }
+            }
         }
     }
 }

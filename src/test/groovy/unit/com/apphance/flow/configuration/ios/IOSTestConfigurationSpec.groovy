@@ -14,22 +14,6 @@ import spock.lang.Specification
 @Mixin(FlowUtils)
 class IOSTestConfigurationSpec extends Specification {
 
-    def 'test variant'() {
-        given:
-        def iOSVariantsConf = GroovyMock(IOSVariantsConfiguration)
-        def var1 = GroovyStub(IOSVariant) { getName() >> 'variantName1' }
-        def var2 = GroovyStub(IOSVariant) { getName() >> 'variantName2' }
-        iOSVariantsConf.getVariants() >> [var1, var2]
-        iOSVariantsConf.getVariantsNames() >> new ListStringProperty(value: ['variantName1', 'variantName2'])
-
-        def testConf = new IOSTestConfiguration()
-        testConf.variantsConf = iOSVariantsConf
-        testConf.variant = new StringProperty(value: 'variantName1')
-
-        expect:
-        testConf.getVariant() == var1
-    }
-
     def 'can be enabled according to version'() {
         given:
         def tc = new IOSTestConfiguration(
@@ -158,7 +142,7 @@ class IOSTestConfigurationSpec extends Specification {
         tc.possibleTestVariants >> ['Variant1', 'Variant2']
 
         expect:
-        tc.testVariants.validator(tv) == valid
+        tc.testVariantsNames.validator(tv) == valid
 
         where:
         tv                       || valid

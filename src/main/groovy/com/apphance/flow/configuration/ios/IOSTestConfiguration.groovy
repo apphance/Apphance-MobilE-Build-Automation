@@ -30,7 +30,6 @@ class IOSTestConfiguration extends AbstractConfiguration {
     @Inject IOSExecutor executor
     private final BORDER_VERSION = new Version('5')
 
-
     @Inject
     @Override
     void init() {
@@ -47,20 +46,12 @@ class IOSTestConfiguration extends AbstractConfiguration {
         enabledInternal = enabled
     }
 
-    def variant = new StringProperty(
-            name: 'ios.unit.test.variant',
-            message: 'IOS unit test variant',
-            possibleValues: { variantsConf.variantsNames.value },
-            validator: { it in variantsConf.variantsNames.value },
-            required: { true }
-    )
-
-    def testVariants = new ListStringProperty(
+    def testVariantsNames = new ListStringProperty(
             name: 'ios.test.variants',
             message: 'iOS test variants',
             possibleValues: { possibleTestVariants },
             validator: {
-                def list = testVariants.convert(it.toString())
+                def list = testVariantsNames.convert(it.toString())
                 list.size() == list.unique().size() && !list.isEmpty() && list.every { it in possibleTestVariants }
             },
             required: { true }
@@ -74,10 +65,11 @@ class IOSTestConfiguration extends AbstractConfiguration {
         }*.name
     }()
 
-
-    IOSVariant getVariant() {
-        variantsConf.variants.find { it.name == this.@variant.value }
-    }
+    @Lazy
+    @PackageScope
+    List<IOSVariant> testVariants = {
+        variantsConf.variants.findAll { it.name in testVariantsNames.value }
+    }()
 
     @Override
     boolean canBeEnabled() {
@@ -126,6 +118,6 @@ class IOSTestConfiguration extends AbstractConfiguration {
     @Override
     void checkProperties() {
         super.checkProperties()
-        defaultValidation variant
+        defaultValidation testVariantsNames
     }
 }
