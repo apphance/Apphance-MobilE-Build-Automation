@@ -12,7 +12,7 @@ import com.apphance.flow.plugins.android.test.AndroidTestPlugin
 import com.apphance.flow.plugins.ios.apphance.IOSApphancePlugin
 import com.apphance.flow.plugins.ios.buildplugin.IOSPlugin
 import com.apphance.flow.plugins.ios.framework.IOSFrameworkPlugin
-import com.apphance.flow.plugins.ios.ocunit.IOSTestPlugin
+import com.apphance.flow.plugins.ios.test.IOSTestPlugin
 import com.apphance.flow.plugins.ios.release.IOSReleasePlugin
 import com.apphance.flow.plugins.project.ProjectPlugin
 import com.apphance.flow.plugins.release.ReleasePlugin

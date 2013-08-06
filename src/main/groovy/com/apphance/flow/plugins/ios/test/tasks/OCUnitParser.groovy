@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.ocunit.tasks
+package com.apphance.flow.plugins.ios.test.tasks
 
 import static org.gradle.api.logging.Logging.getLogger
 

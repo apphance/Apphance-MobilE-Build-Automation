@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.ocunit
+package com.apphance.flow.plugins.ios.test
 
 import com.apphance.flow.configuration.ios.IOSTestConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
@@ -6,7 +6,7 @@ import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
 import spock.lang.Specification
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
-import static com.apphance.flow.plugins.ios.ocunit.IOSTestPlugin.TEST_ALL_TASK_NAME
+import static com.apphance.flow.plugins.ios.test.IOSTestPlugin.TEST_ALL_TASK_NAME
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSTestPluginSpec extends Specification {

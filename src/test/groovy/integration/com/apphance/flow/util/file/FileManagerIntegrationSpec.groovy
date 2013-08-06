@@ -63,7 +63,7 @@ class FileManagerIntegrationSpec extends Specification {
                 'unit.com.apphance.flow.ios.plugins',
                 'unit.com.apphance.flow.plugins.ios.apphance',
                 'unit.com.apphance.flow.plugins.ios.buildplugin',
-                'unit.com.apphance.flow.plugins.ios.ocunit',
+                'unit.com.apphance.flow.plugins.ios.test',
                 'unit.com.apphance.flow.plugins', 'unit.com.apphance.flow.plugins.release',
         ]
 

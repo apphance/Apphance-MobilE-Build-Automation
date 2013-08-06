@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.ocunit.tasks
+package com.apphance.flow.plugins.ios.test.tasks
 
 import com.apphance.flow.TestUtils
 import spock.lang.Specification
@@ -8,7 +8,7 @@ class XMLJunitExporterSpec extends Specification {
 
     def 'generate export'() {
         given:
-        File testResults = new File('src/test/resources/com/apphance/flow/plugins/ios/ocunit/tasks/test_output.txt')
+        File testResults = new File('src/test/resources/com/apphance/flow/plugins/ios/test/tasks/test_output.txt')
         File outputUnitTestFile = File.createTempFile('prefix', 'suffix')
         outputUnitTestFile.deleteOnExit()
 
