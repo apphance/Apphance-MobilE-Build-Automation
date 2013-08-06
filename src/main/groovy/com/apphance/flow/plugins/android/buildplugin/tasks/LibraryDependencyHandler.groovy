@@ -1,84 +1,86 @@
 package com.apphance.flow.plugins.android.buildplugin.tasks
 
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
-import com.google.common.io.Files
+import groovy.transform.PackageScope
 import org.gradle.api.logging.Logging
 
-import static java.nio.charset.StandardCharsets.UTF_8
+import static com.apphance.flow.util.file.FileManager.*
 
+@Mixin(AndroidManifestHelper)
 class LibraryDependencyHandler {
 
     def logger = Logging.getLogger(this.class)
 
-    File root
-    @Lazy File propFile = new File(root, 'project.properties')
-    @Lazy File buildFile = new File(root, 'build.xml')
-    def androidManifestHelper = new AndroidManifestHelper()
-
-    @Lazy Properties projectProperties = {
-        def projectProperties = new Properties()
-        assert root?.exists()
-        assert propFile.exists()
-        projectProperties.load(Files.newReader(propFile, UTF_8))
-        projectProperties
-    }()
+    File projectRoot
 
     void handleLibraryDependencies() {
-        List<File> libraryProjects = findLibraries(root)
-        logger.info "Handle library dependencies in $root.absolutePath. Libraries: ${libraryProjects*.absolutePath}"
+        List<File> libraryProjects = findLibraries(projectRoot)
+        logger.info "Handle library dependencies in $projectRoot.absolutePath. Libraries: ${libraryProjects*.absolutePath}"
 
         libraryProjects.each {
-            new LibraryDependencyHandler(root: it).handleLibraryDependencies()
+            new LibraryDependencyHandler(projectRoot: it).handleLibraryDependencies()
         }
 
-        if (libraryProjects && Boolean.valueOf(projectProperties.getProperty('android.library'))) {
+        if (libraryProjects && isAndroidLibrary(projectRoot)) {
             logger.info "android.library is true. Modifying build.xml"
-            modifyBuildXml(libraryProjects)
+            modifyBuildXml libraryProjects
         }
     }
 
+    @PackageScope
     void modifyBuildXml(List<File> libraryProjects) {
-        def fileSet = libraryProjects.collect { """ <fileset dir="${root.toPath().relativize(it.toPath())}/gen/"/> """ }.join(' ')
-        addTarget("""
-            <target name="-pre-compile">
-                <copy todir="gen">
-                    $fileSet
-                </copy>
-            </target>""")
+        def fileSets = libraryProjects.collect { """ <fileset dir="${relativeTo(projectRoot, it)}/gen/"/> """ }.join(' ')
+        addTarget preCompile(fileSets)
 
-        def packages = libraryProjects.collect { androidManifestHelper.androidPackage(it).replace('.', '/') }
+        def packages = libraryProjects.collect { androidPackage(it).replace('.', '/') }
         def excludes = packages.collect { " $it/R.class $it/R\$*.class $it/BuildConfig.class " }.join(' ')
-
-        addTarget(postCompile.replace('excludesPlaceholder', excludes))
+        addTarget postCompile(excludes)
     }
 
+    @PackageScope
     void addTarget(String target) {
+        def buildFile = new File(projectRoot, 'build.xml')
         logger.info "Modifying $buildFile.absolutePath. Adding target: $target"
-        buildFile.text = buildFile.text.replace('</project>', target + '</project>')
+        replace(buildFile, '</project>', target + '\n</project>')
     }
 
+    @PackageScope
     List<File> findLibraries(File root) {
-        List<String> libNames = projectProperties.findAll { it.key.startsWith('android.library.reference') }.collect { it.value } as List<String>
-        libNames.collect { new File(root, it) }.findAll { it }
+        def propFile = new File(projectRoot, 'project.properties')
+        def references = asProperties(propFile).findAll { it.key.startsWith('android.library.reference') }
+        def libNames = references.collect { it.value } as List<String>
+        libNames.collect { new File(root, it) }.findAll { it.exists() }
     }
 
-    String postCompile = """
+    String preCompile(String replacement) {
+        """
+        <target name="-pre-compile">
+            <copy todir="gen">
+                $replacement
+            </copy>
+        </target>
+        """
+    }
+
+    String postCompile(String replacement) {
+        """
         <target name="-post-compile">
             <if condition="\${project.is.library}">
-            <then>
-                <echo level="info">Creating library output jar file.</echo>
-                <delete file="bin/classes.jar"/>
+                <then>
+                    <echo level="info">Creating library output jar file.</echo>
+                    <delete file="bin/classes.jar"/>
 
-                <propertybyreplace name="project.app.package.path" input="\${project.app.package}" replace="." with="/" />
+                    <propertybyreplace name="project.app.package.path" input="\${project.app.package}" replace="." with="/" />
 
-                <jar destfile="\${out.library.jar.file}">
-                    <fileset dir="\${out.classes.absolute.dir}" includes="**/*.class"
-                    excludes="\${project.app.package.path}/R.class \${project.app.package.path}/R\$*.class \${project.app.package.path}/BuildConfig.class
-                    excludesPlaceholder
-                    "/>
-                    <fileset dir="\${source.absolute.dir}" excludes="**/*.java \${android.package.excludes}" />
-                </jar>
-            </then>
+                    <jar destfile="\${out.library.jar.file}">
+                        <fileset dir="\${out.classes.absolute.dir}" includes="**/*.class"
+                        excludes="\${project.app.package.path}/R.class \${project.app.package.path}/R\$*.class \${project.app.package.path}/BuildConfig.class
+                        $replacement "/>
+                        <fileset dir="\${source.absolute.dir}" excludes="**/*.java \${android.package.excludes}" />
+                    </jar>
+                </then>
             </if>
-        </target>"""
+        </target>
+        """
+    }
 }

@@ -56,7 +56,7 @@ class SingleVariantTask extends DefaultTask {
             replacePackageTask.replace(variant.tmpDir, variant.oldPackage.value, variant.newPackage.value, variant.newLabel.value, variant.newName.value)
         }
 
-        new LibraryDependencyHandler(root: variant.tmpDir).handleLibraryDependencies()
+        new LibraryDependencyHandler(projectRoot: variant.tmpDir).handleLibraryDependencies()
 
         try {
             antExecutor.executeTarget builderInfo.tmpDir, builderInfo.mode.lowerCase()
