@@ -7,6 +7,7 @@ import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.executor.AntExecutor
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
+import com.apphance.flow.plugins.android.builder.AndroidBuilderInfo
 import com.apphance.flow.plugins.release.FlowArtifact
 import org.gradle.api.AntBuilder as AntBuilder
 import org.gradle.api.DefaultTask
@@ -45,16 +46,7 @@ class SingleVariantTask extends DefaultTask {
         antExecutor.executeTarget builderInfo.tmpDir, CLEAN
 
         if (builderInfo.variantDir?.exists()) {
-            logger.lifecycle("Overriding files in ${builderInfo.tmpDir} with variant files from ${builderInfo.variantDir}")
-            ant.copy(todir: builderInfo.tmpDir, failonerror: true, overwrite: true, verbose: true) {
-                fileset(dir: builderInfo.variantDir, includes: '**/*')
-            }
-
-            def variantManifest = new File(builderInfo.variantDir, ANDROID_MANIFEST)
-            logger.info "Variant manifest exist: ${variantManifest.exists()}, merging enabled: ${variant.mergeManifest.value}"
-            if (variant.mergeManifest.value && variantManifest.exists()) {
-                mergeManifest(new File(variant.tmpDir, ANDROID_MANIFEST), project.file(ANDROID_MANIFEST), variantManifest)
-            }
+            overriteVariantFilesAndMergeManifest(builderInfo)
         } else {
             logger.lifecycle("No files copied because variant directory ${builderInfo.variantDir} does not exists")
         }
@@ -63,6 +55,8 @@ class SingleVariantTask extends DefaultTask {
             def replacePackageTask = project.tasks[ReplacePackageTask.NAME] as ReplacePackageTask
             replacePackageTask.replace(variant.tmpDir, variant.oldPackage.value, variant.newPackage.value, variant.newLabel.value, variant.newName.value)
         }
+
+        new LibraryDependencyHandler(root: variant.tmpDir).handleLibraryDependencies()
 
         try {
             antExecutor.executeTarget builderInfo.tmpDir, builderInfo.mode.lowerCase()
@@ -84,6 +78,19 @@ class SingleVariantTask extends DefaultTask {
             }
         } else {
             logger.lifecycle("File ${builderInfo.originalFile} was not created. Probably due to bad signing configuration in ant.properties")
+        }
+    }
+
+    void overriteVariantFilesAndMergeManifest(AndroidBuilderInfo builderInfo) {
+        logger.lifecycle("Overriding files in ${builderInfo.tmpDir} with variant files from ${builderInfo.variantDir}")
+        ant.copy(todir: builderInfo.tmpDir, failonerror: true, overwrite: true, verbose: true) {
+            fileset(dir: builderInfo.variantDir, includes: '**/*')
+        }
+
+        def variantManifest = new File(builderInfo.variantDir, ANDROID_MANIFEST)
+        logger.info "Variant manifest exist: ${variantManifest.exists()}, merging enabled: ${variant.mergeManifest.value}"
+        if (variant.mergeManifest.value && variantManifest.exists()) {
+            mergeManifest(new File(variant.tmpDir, ANDROID_MANIFEST), project.file(ANDROID_MANIFEST), variantManifest)
         }
     }
 

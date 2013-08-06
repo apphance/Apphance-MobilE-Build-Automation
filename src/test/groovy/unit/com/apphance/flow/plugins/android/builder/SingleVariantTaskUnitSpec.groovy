@@ -29,6 +29,7 @@ class SingleVariantTaskUnitSpec extends Specification {
     AndroidBuilderInfo builderInfo
 
     def setup() {
+        new File(variantDir, 'project.properties').createNewFile()
         builderInfo = GroovyStub(AndroidBuilderInfo) {
             getTmpDir() >> tmpDir
             getMode() >> AndroidBuildMode.DEBUG
