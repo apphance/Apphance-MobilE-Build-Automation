@@ -106,4 +106,13 @@ class XCSchemeParserSpec extends Specification {
         scheme2 | false
     }
 
+    def 'testable targets found for given scheme file'() {
+        expect:
+        parser.findActiveTestableBlueprintIds(scheme) == targets
+
+        where:
+        scheme  | targets
+        scheme1 | ['D382B73414703FE500E9CC9B']
+        scheme2 | []
+    }
 }
