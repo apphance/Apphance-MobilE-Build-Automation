@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.ios.ocunit
 
 import com.apphance.flow.configuration.ios.IOSTestConfiguration
+import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.ios.ocunit.tasks.IOSTestTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,7 +38,8 @@ class IOSTestPlugin implements Plugin<Project> {
 
                 testConf.testVariants.each { variant ->
                     def testTask = project.task(variant.testTaskName,
-                            type: IOSTestTask
+                            type: IOSTestTask,
+                            dependsOn: CopySourcesTask.NAME,
                     ) as IOSTestTask
                     testTask.variant = variant
                     project.tasks[TEST_ALL_TASK_NAME].dependsOn variant.testTaskName

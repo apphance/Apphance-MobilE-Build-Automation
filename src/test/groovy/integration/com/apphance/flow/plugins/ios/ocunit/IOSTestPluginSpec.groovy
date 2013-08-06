@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.ios.ocunit
 
 import com.apphance.flow.configuration.ios.IOSTestConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
 import spock.lang.Specification
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
@@ -33,6 +34,10 @@ class IOSTestPluginSpec extends Specification {
         project.tasks['testV1'].group == FLOW_TEST.name()
         project.tasks['testV2'].group == FLOW_TEST.name()
         project.tasks[TEST_ALL_TASK_NAME].group == FLOW_TEST.name()
+
+        and:
+        project.tasks['testV1'].dependsOn.flatten().containsAll(CopySourcesTask.NAME)
+        project.tasks['testV2'].dependsOn.flatten().containsAll(CopySourcesTask.NAME)
 
         and:
         project.tasks[TEST_ALL_TASK_NAME].dependsOn.flatten().containsAll('testV1', 'testV2')
