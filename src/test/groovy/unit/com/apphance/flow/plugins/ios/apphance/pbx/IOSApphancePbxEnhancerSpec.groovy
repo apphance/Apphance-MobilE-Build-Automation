@@ -85,7 +85,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
             getArchiveConfiguration() >> 'Release'
             getApphanceMode() >> new ApphanceModeProperty(value: QA)
             getTmpDir() >> tmpDir
-            getVariantPbx() >> new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj/project.pbxproj')
+            getPbxFile() >> new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj/project.pbxproj')
         }
         and:
         def enhancer = new IOSApphancePbxEnhancer(variant)

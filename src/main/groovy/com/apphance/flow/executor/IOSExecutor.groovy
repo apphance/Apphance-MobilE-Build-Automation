@@ -1,7 +1,6 @@
 package com.apphance.flow.executor
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.ios.parsers.XCodeOutputParser
@@ -119,9 +118,11 @@ class IOSExecutor {
         ))
     }
 
-    def buildTestVariant(File dir, IOSVariant variant, String outputFilePath) {
-        executor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd,
-                environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: outputFilePath],
+    def runTests(File runDir, String target, String configuration, String testResultPath) {
+        executor.executeCommand new Command(runDir: runDir,
+                cmd: conf.xcodebuildExecutionPath() +
+                        ['-target', target, '-configuration', configuration, '-sdk', 'iphonesimulator', 'clean', 'build'],
+                environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: testResultPath],
                 failOnError: false
         )
     }

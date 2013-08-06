@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.ios.ocunit.tasks
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
@@ -10,6 +11,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
+import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.TEST_ACTION
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 
 class IOSTestTask extends DefaultTask {
@@ -21,22 +23,38 @@ class IOSTestTask extends DefaultTask {
     @Inject IOSExecutor executor
     @Inject IOSTestPbxEnhancer testPbxEnhancer
     @Inject XCSchemeParser schemeParser
+    @Inject PbxJsonParser pbxJsonParser
 
     IOSVariant variant
 
     @TaskAction
     void test() {
-        logger.lifecycle "Running unit tests with variant: $variant.name"
+        logger.info("Running unit tests with variant: $variant.name")
 
-        def testTargets = schemeParser.findActiveTestableBlueprintIds(variant.schemeFile)
-        testPbxEnhancer.addShellScriptToBuildPhase(variant, testTargets)
+        def testBlueprintIds = schemeParser.findActiveTestableBlueprintIds(variant.schemeFile)
+        testPbxEnhancer.addShellScriptToBuildPhase(variant, testBlueprintIds)
 
-        def testResults = new File(variant.tmpDir, "test-${variant.name}.txt")
-        testResults.createNewFile()
+        def testTargets = testBlueprintIds.collect { pbxJsonParser.targetForBlueprintId(variant.pbxFile, it) }
+        def testConf = schemeParser.configuration(variant.schemeFile, TEST_ACTION)
 
-        executor.buildTestVariant(variant.tmpDir, variant, testResults.canonicalPath)
+        testTargets.each { String testTarget ->
+            def testResults = createNewTestResultFile(testTarget)
+            executor.runTests(variant.tmpDir, testTarget, testConf, testResults.absolutePath)
+            parseAndExport(testResults, new File(variant.tmpDir, "${filename(testTarget)}.xml"))
+        }
+    }
 
-        parseAndExport(testResults, new File(conf.tmpDir, 'TEST-all.xml'))
+    @PackageScope
+    File createNewTestResultFile(String target) {
+        def results = new File(variant.tmpDir, "${filename(target)}.log")
+        results.delete()
+        results.createNewFile()
+        results
+    }
+
+    @PackageScope
+    String filename(String target) {
+        "test-${variant.name}-${target}"
     }
 
     @PackageScope

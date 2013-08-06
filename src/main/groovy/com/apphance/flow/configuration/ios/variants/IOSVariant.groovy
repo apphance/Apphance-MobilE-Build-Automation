@@ -166,7 +166,7 @@ class IOSVariant extends AbstractVariant {
     }
 
     @Lazy
-    File variantPbx = {
+    File pbxFile = {
         def pbx = new File("$tmpDir.absolutePath/$conf.xcodeDir.value", PROJECT_PBXPROJ)
         pbx.exists() ? pbx : new File("${conf.rootDir}/${conf.xcodeDir.value}", PROJECT_PBXPROJ)
     }()
@@ -174,11 +174,11 @@ class IOSVariant extends AbstractVariant {
     File getPlist() {
         String confName = schemeParser.configuration(schemeFile, LAUNCH_ACTION)
         String blueprintId = schemeParser.blueprintIdentifier(schemeFile)
-        new File(tmpDir, pbxJsonParser.plistForScheme(variantPbx, confName, blueprintId))
+        new File(tmpDir, pbxJsonParser.plistForScheme(pbxFile, confName, blueprintId))
     }
 
     String getTarget() {
-        pbxJsonParser.targetForBlueprintId(variantPbx, schemeParser.blueprintIdentifier(schemeFile))
+        pbxJsonParser.targetForBlueprintId(pbxFile, schemeParser.blueprintIdentifier(schemeFile))
     }
 
     String getBuildConfiguration() {

@@ -25,7 +25,7 @@ class IOSTestPbxEnhancer {
         def json = jsonC.call(variant)
         def buildPhaseHash = addNewBuildPhase(json)
         addBuildPhaseToTargets(json, blueprintIds, buildPhaseHash)
-        saveModifiedPbx(variant.variantPbx, json)
+        saveModifiedPbx(variant.pbxFile, json)
     }
 
     private String addNewBuildPhase(Map json) {
@@ -66,6 +66,6 @@ class IOSTestPbxEnhancer {
 
     @Lazy
     private Closure<Map> jsonC = { IOSVariant variant ->
-        new JsonSlurper().parseText(executor.pbxProjToJSON(variant.variantPbx).join('\n')) as Map
+        new JsonSlurper().parseText(executor.pbxProjToJSON(variant.pbxFile).join('\n')) as Map
     }.memoize()
 }

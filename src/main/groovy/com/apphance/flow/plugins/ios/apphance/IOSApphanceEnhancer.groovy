@@ -53,7 +53,7 @@ class IOSApphanceEnhancer {
 
     void enhanceApphance() {
         logger.info("Adding apphance for variant '$variant.name'")
-        if (pbxJsonParser.isFrameworkDeclared(variant.variantPbx, APPHANCE_FRAMEWORK_NAME_PATTERN) || findApphanceInPath()) {
+        if (pbxJsonParser.isFrameworkDeclared(variant.pbxFile, APPHANCE_FRAMEWORK_NAME_PATTERN) || findApphanceInPath()) {
             logger.warn("\n\nApphance framework found for variant: $variant.name in dir: ${variant.tmpDir.absolutePath}. Apphance will not be added!!\n\n")
         } else {
             apphancePbxEnhancer.addApphanceToPbx()

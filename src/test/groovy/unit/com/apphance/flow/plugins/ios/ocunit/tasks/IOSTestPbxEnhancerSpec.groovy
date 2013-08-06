@@ -51,7 +51,7 @@ class IOSTestPbxEnhancerSpec extends Specification {
         def variant = GroovyMock(IOSVariant) {
             getTarget() >> 'GradleXCode'
             getTmpDir() >> tmpDir
-            getVariantPbx() >> new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj/project.pbxproj')
+            getPbxFile() >> new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj/project.pbxproj')
         }
         and:
         def enhancer = new IOSTestPbxEnhancer()

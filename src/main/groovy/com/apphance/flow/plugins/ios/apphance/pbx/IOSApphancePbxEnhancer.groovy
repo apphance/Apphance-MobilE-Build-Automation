@@ -39,12 +39,12 @@ class IOSApphancePbxEnhancer {
 
     @PackageScope
     void addFrameworks() {
-        frameworksToAdd.findAll { !pbxJsonParser.isFrameworkDeclared(variant.variantPbx, ~/${it.name}/) }.each(this.&addFramework)
+        frameworksToAdd.findAll { !pbxJsonParser.isFrameworkDeclared(variant.pbxFile, ~/${it.name}/) }.each(this.&addFramework)
     }
 
     @PackageScope
     void addFramework(Map frameworkDetails) {
-        logger.info("Adding framework '$frameworkDetails.name' to file $variant.variantPbx.absolutePath")
+        logger.info("Adding framework '$frameworkDetails.name' to file $variant.pbxFile.absolutePath")
         def frameworkHash = hash()
         json.objects[frameworkHash] = [
                 isa: PBX_FILE_REFERENCE,
@@ -126,7 +126,7 @@ class IOSApphancePbxEnhancer {
 
     @Lazy
     private Map json = {
-        new JsonSlurper().parseText(executor.pbxProjToJSON(variant.variantPbx).join('\n')) as Map
+        new JsonSlurper().parseText(executor.pbxProjToJSON(variant.pbxFile).join('\n')) as Map
     }()
 
     @Lazy
@@ -177,7 +177,7 @@ class IOSApphancePbxEnhancer {
     }()
 
     private void saveModifiedPbx() {
-        def pbx = variant.variantPbx
+        def pbx = variant.pbxFile
         logger.info("Saving PBX with Apphance added to file: $pbx.absolutePath")
         def tmpJson = createTempFile('pbx', 'json')
         tmpJson.text = toJson(json)
