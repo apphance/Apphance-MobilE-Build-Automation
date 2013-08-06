@@ -21,7 +21,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty
 @Mixin(FlowUtils)
 class IOSTestConfiguration extends AbstractConfiguration {
 
-    String configurationName = 'iOS Unit Test Configuration'
+    String configurationName = 'iOS Test Configuration'
     private enabledInternal = false
 
     @Inject IOSConfiguration conf
