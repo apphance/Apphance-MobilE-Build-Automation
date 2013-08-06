@@ -50,8 +50,8 @@ class XCSchemeParser {
         enabled > 0
     }
 
-    List<String> findActiveTestableBlueprintIds(File file) {
-        def xml = parseSchemeFile.call(file)
+    List<String> findActiveTestableBlueprintIds(File scheme) {
+        def xml = parseSchemeFile.call(scheme)
         xml.TestAction.Testables.TestableReference.findAll {
             it.@skipped.text() == 'NO'
         }*.BuildableReference*.@BlueprintIdentifier*.text()

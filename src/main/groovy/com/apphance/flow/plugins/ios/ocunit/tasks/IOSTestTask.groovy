@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.ios.ocunit.tasks
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -14,10 +15,12 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 class IOSTestTask extends DefaultTask {
 
     String group = FLOW_TEST
-    String description = 'Build and executes Unit tests'
+    String description = 'Build and executes iOS tests'
 
     @Inject IOSConfiguration conf
     @Inject IOSExecutor executor
+    @Inject IOSTestPbxEnhancer testPbxEnhancer
+    @Inject XCSchemeParser schemeParser
 
     IOSVariant variant
 
@@ -25,13 +28,15 @@ class IOSTestTask extends DefaultTask {
     void test() {
         logger.lifecycle "Running unit tests with variant: $variant.name"
 
+        def testTargets = schemeParser.findActiveTestableBlueprintIds(variant.schemeFile)
+        testPbxEnhancer.addShellScriptToBuildPhase(variant, testTargets)
+
         def testResults = new File(variant.tmpDir, "test-${variant.name}.txt")
         testResults.createNewFile()
 
-        executor.buildTestVariant variant.tmpDir, variant, "${testResults.canonicalPath}".toString()
+        executor.buildTestVariant(variant.tmpDir, variant, testResults.canonicalPath)
 
-        File outputUnitTestFile = new File(conf.tmpDir, 'TEST-all.xml')
-        parseAndExport(testResults, outputUnitTestFile)
+        parseAndExport(testResults, new File(conf.tmpDir, 'TEST-all.xml'))
     }
 
     @PackageScope

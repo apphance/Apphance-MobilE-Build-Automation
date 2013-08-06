@@ -2,25 +2,21 @@ package com.apphance.flow.plugins.ios.apphance.pbx
 
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.parsers.PbxHashGenerator
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.google.inject.assistedinject.Assisted
 import groovy.json.JsonSlurper
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
-import java.util.concurrent.atomic.AtomicInteger
 
 import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
 import static com.apphance.flow.plugins.ios.parsers.PbxJsonParser.*
 import static groovy.json.JsonOutput.toJson
 import static java.io.File.createTempFile
-import static java.security.MessageDigest.getInstance
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- * Helper parsing PBX project file.
- *
- */
+@Mixin(PbxHashGenerator)
 class IOSApphancePbxEnhancer {
 
     private logger = getLogger(getClass())
@@ -29,7 +25,6 @@ class IOSApphancePbxEnhancer {
     @Inject PbxJsonParser pbxJsonParser
 
     @PackageScope IOSVariant variant
-    private AtomicInteger hash = new AtomicInteger()
 
     @Inject
     IOSApphancePbxEnhancer(@Assisted IOSVariant variant) {
@@ -188,16 +183,6 @@ class IOSApphancePbxEnhancer {
         tmpJson.text = toJson(json)
         pbx.text = executor.plistToXML(tmpJson).join('\n')
         tmpJson.delete()
-    }
-
-    private String hash() {
-        md5(hash.incrementAndGet().toString()).toUpperCase()
-    }
-
-    private String md5(String s) {
-        def digest = getInstance('MD5')
-        digest.update(s.bytes);
-        new BigInteger(1, digest.digest()).toString(16).padLeft(32, '0')
     }
 
     @Lazy
