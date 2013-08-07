@@ -120,6 +120,105 @@ class IOSExecutorSpec extends Specification {
         iosExecutor.iOSSimVersion.matches('(\\d+\\.)+\\d+')
     }
 
+    def 'archive command is executed well'() {
+        given:
+        def ce = GroovyMock(CommandExecutor)
+
+        and:
+        def rootDir = new File('rootDir')
+
+        and:
+        def iose = new IOSExecutor(executor: ce, conf: GroovySpy(IOSConfiguration) {
+            getRootDir() >> rootDir
+        })
+
+        when:
+        iose.archiveVariant(rootDir, ['xcodebuild', '-project', 'Sample.xcodeproj', '-scheme', 's1', 'clean', 'archive'])
+
+        then:
+        1 * ce.executeCommand({ it.commandForExecution.join(' ') == 'xcodebuild -project Sample.xcodeproj -scheme s1 clean archive' && it.runDir.name == 'rootDir' })
+
+        cleanup:
+        rootDir.delete()
+    }
+
+    def 'running tests is executed well'() {
+        given:
+        def ce = GroovyMock(CommandExecutor)
+
+        and:
+        def rootDir = new File('rootDir')
+
+        and:
+        def iose = new IOSExecutor(executor: ce, conf: GroovySpy(IOSConfiguration) {
+            getRootDir() >> rootDir
+            xcodebuildExecutionPath() >> ['xcodebuild', '-project', 'Sample.xcodeproj']
+        })
+
+        when:
+        iose.runTests(rootDir, 't1', 'c1', 'somePath')
+
+        then:
+        1 * ce.executeCommand(
+                {
+                    it.commandForExecution.join(' ') == 'xcodebuild -project Sample.xcodeproj -target t1 -configuration c1 -sdk iphonesimulator clean build' &&
+                            it.runDir.name == 'rootDir' &&
+                            it.failOnError == false &&
+                            it.environment.RUN_UNIT_TEST_WITH_IOS_SIM == 'YES' &&
+                            it.environment.UNIT_TEST_OUTPUT_FILE == 'somePath'
+                })
+
+        cleanup:
+        rootDir.delete()
+    }
+
+    def 'dwarfdump arch is executed well'() {
+        given:
+        def ce = GroovyMock(CommandExecutor)
+
+        and:
+        def dSYM = new File('dSYM')
+
+        and:
+        def iose = new IOSExecutor(executor: ce)
+
+        when:
+        iose.dwarfdumpArch(dSYM, 'armv7')
+
+        then:
+        1 * ce.executeCommand({
+            it.commandForExecution.join(' ') == "dwarfdump --arch armv7 ${dSYM.absolutePath}" &&
+                    it.runDir == dSYM.parentFile
+        })
+
+        cleanup:
+        dSYM.delete()
+    }
+
+    def 'dwarfdump UUID is executed well'() {
+        given:
+        def ce = GroovyMock(CommandExecutor)
+
+        and:
+        def dSYM = new File('dSYM')
+
+        and:
+        def iose = new IOSExecutor(executor: ce)
+
+        when:
+        iose.dwarfdumpUUID(dSYM)
+
+        then:
+        1 * ce.executeCommand({
+            it.commandForExecution.join(' ') == "dwarfdump -u ${dSYM.absolutePath}" &&
+                    it.runDir == dSYM.parentFile
+        })
+
+        cleanup:
+        dSYM.delete()
+
+    }
+
     def mobileprovisionXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
             "<plist version=\"1.0\">\n" +

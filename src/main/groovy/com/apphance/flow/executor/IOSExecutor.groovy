@@ -104,6 +104,15 @@ class IOSExecutor {
         executor.executeCommand(new Command(runDir: dir, cmd: archiveCmd))
     }
 
+    def runTests(File runDir, String target, String configuration, String testResultPath) {
+        executor.executeCommand new Command(runDir: runDir,
+                cmd: conf.xcodebuildExecutionPath() +
+                        ['-target', target, '-configuration', configuration, '-sdk', 'iphonesimulator', 'clean', 'build'],
+                environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: testResultPath],
+                failOnError: false
+        )
+    }
+
     Iterator<String> dwarfdumpArch(File dSYM, String arch) {
         executor.executeCommand(new Command(
                 runDir: dSYM.parentFile,
@@ -116,15 +125,6 @@ class IOSExecutor {
                 runDir: dSYM.parentFile,
                 cmd: ['dwarfdump', '-u', dSYM.absolutePath]
         ))
-    }
-
-    def runTests(File runDir, String target, String configuration, String testResultPath) {
-        executor.executeCommand new Command(runDir: runDir,
-                cmd: conf.xcodebuildExecutionPath() +
-                        ['-target', target, '-configuration', configuration, '-sdk', 'iphonesimulator', 'clean', 'build'],
-                environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: testResultPath],
-                failOnError: false
-        )
     }
 
     @Lazy
