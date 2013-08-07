@@ -3,8 +3,10 @@ package com.apphance.flow.plugins.ios.test.tasks
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.executor.linker.FileLinker
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
+import com.apphance.flow.util.Preconditions
 import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -14,6 +16,7 @@ import javax.inject.Inject
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.TEST_ACTION
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 
+@Mixin(Preconditions)
 class IOSTestTask extends DefaultTask {
 
     String group = FLOW_TEST
@@ -24,6 +27,7 @@ class IOSTestTask extends DefaultTask {
     @Inject IOSTestPbxEnhancer testPbxEnhancer
     @Inject XCSchemeParser schemeParser
     @Inject PbxJsonParser pbxJsonParser
+    @Inject FileLinker fileLinker
 
     IOSVariant variant
 
@@ -38,15 +42,22 @@ class IOSTestTask extends DefaultTask {
         def testConf = schemeParser.configuration(variant.schemeFile, TEST_ACTION)
 
         testTargets.each { String testTarget ->
-            def testResults = createNewTestResultFile(testTarget)
-            executor.runTests(variant.tmpDir, testTarget, testConf, testResults.absolutePath)
-            parseAndExport(testResults, new File(variant.tmpDir, "${filename(testTarget)}.xml"))
+
+            def testResultsLog = createNewTestResultFile(testTarget, 'log')
+            executor.runTests(variant.tmpDir, testTarget, testConf, testResultsLog.absolutePath)
+
+            Collection<OCUnitTestSuite> parsedResults = parseResults(testResultsLog)
+
+            def testResultsXml = createNewTestResultFile(testTarget, 'xml')
+            parseAndExport(parsedResults, testResultsXml)
+
+            verifyTestResults(parsedResults, errorMessage(testTarget, testConf, testResultsXml))
         }
     }
 
     @PackageScope
-    File createNewTestResultFile(String target) {
-        def results = new File(variant.tmpDir, "${filename(target)}.log")
+    File createNewTestResultFile(String target, String extension) {
+        def results = new File(variant.tmpDir, "${filename(target)}.$extension")
         results.delete()
         results.createNewFile()
         results
@@ -58,10 +69,25 @@ class IOSTestTask extends DefaultTask {
     }
 
     @PackageScope
-    void parseAndExport(File testResults, File outputUnitTestFile) {
+    Collection<OCUnitTestSuite> parseResults(File testResults) {
         OCUnitParser parser = new OCUnitParser()
         parser.parse testResults.text.split('\n').toList()
+        parser.testSuites
+    }
 
-        new XMLJunitExporter(outputUnitTestFile, parser.testSuites).export()
+    @PackageScope
+    void parseAndExport(Collection<OCUnitTestSuite> testSuites, File outputFile) {
+        new XMLJunitExporter(outputFile, testSuites).export()
+    }
+
+    @PackageScope
+    void verifyTestResults(Collection<OCUnitTestSuite> ocUnitTestSuites, String errorMessage) {
+        throwIfConditionTrue(ocUnitTestSuites.any { it.failureCount > 0 }, errorMessage)
+    }
+
+    @PackageScope
+    String errorMessage(String target, String configuration, File parsedResults) {
+        "Error while executing tests for variant: $variant.name, target: $target, configuration $configuration. " +
+                "For further details investigate test results: ${fileLinker.fileLink(parsedResults)}"
     }
 }

@@ -1,8 +1,8 @@
 package com.apphance.flow.plugins.ios.test.tasks
-/**
- * Test suite POJO.
- *
- */
+
+import static com.apphance.flow.plugins.ios.test.tasks.OCUnitTestResult.FAILURE
+import static com.apphance.flow.plugins.ios.test.tasks.OCUnitTestResult.SUCCESS
+
 class OCUnitTestSuite {
     String name
     String startTimestamp
@@ -13,13 +13,13 @@ class OCUnitTestSuite {
     int getFailureCount() {
         int count = 0;
         testSuites.each { testSuite -> count += testSuite.failureCount }
-        return count + testCases.findAll { it.result == OCUnitTestResult.FAILURE }.size()
+        return count + testCases.findAll { it.result == FAILURE }.size()
     }
 
     int getSuccessCount() {
         int count = 0;
         testSuites.each { testSuite -> count += testSuite.successCount }
-        return count + testCases.findAll { it.result == OCUnitTestResult.SUCCESS }.size()
+        return count + testCases.findAll { it.result == SUCCESS }.size()
     }
 
     double getDuration() {

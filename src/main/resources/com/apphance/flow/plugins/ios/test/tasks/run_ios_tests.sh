@@ -9,5 +9,3 @@ if [ "$RUN_UNIT_TEST_WITH_IOS_SIM" = "YES" ]; then
 else
     "${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests"
 fi
-
-exit 0

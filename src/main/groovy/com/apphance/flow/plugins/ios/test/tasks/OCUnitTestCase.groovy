@@ -1,8 +1,5 @@
 package com.apphance.flow.plugins.ios.test.tasks
-/**
- * Test Case POJO.
- *
- */
+
 class OCUnitTestCase {
     String name
     double duration

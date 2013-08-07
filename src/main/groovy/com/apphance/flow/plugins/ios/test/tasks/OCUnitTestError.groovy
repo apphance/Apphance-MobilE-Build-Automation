@@ -1,9 +1,6 @@
 package com.apphance.flow.plugins.ios.test.tasks
 
-/**
- * Test Error POJO.
- *
- */
+
 class OCUnitTestError {
     String file
     int line
