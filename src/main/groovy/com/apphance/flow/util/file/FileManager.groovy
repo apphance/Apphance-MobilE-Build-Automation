@@ -80,6 +80,7 @@ class FileManager {
     }
 
     static String replace(final File file, final String placeholder, final String replacement) {
+        assert file.exists()
         file.text = file.text.replace(placeholder, replacement)
     }
 

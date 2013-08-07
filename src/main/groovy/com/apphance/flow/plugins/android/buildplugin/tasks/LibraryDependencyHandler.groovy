@@ -11,34 +11,31 @@ class LibraryDependencyHandler {
 
     def logger = Logging.getLogger(this.class)
 
-    File projectRoot
-
-    void handleLibraryDependencies() {
+    void handleLibraryDependencies(File projectRoot) {
         List<File> libraryProjects = findLibraries(projectRoot)
         logger.info "Handle library dependencies in $projectRoot.absolutePath. Libraries: ${libraryProjects*.absolutePath}"
 
-        libraryProjects.each {
-            new LibraryDependencyHandler(projectRoot: it).handleLibraryDependencies()
-        }
+        libraryProjects.each { handleLibraryDependencies(it) }
 
         if (libraryProjects && isAndroidLibrary(projectRoot)) {
             logger.info "android.library is true. Modifying build.xml"
-            modifyBuildXml libraryProjects
+            def relativePaths = libraryProjects.collect { relativeTo(projectRoot, it) }
+            def packages = libraryProjects.collect { androidPackage(it).replace('.', '/') }
+            modifyBuildXml projectRoot, relativePaths, packages
         }
     }
 
     @PackageScope
-    void modifyBuildXml(List<File> libraryProjects) {
-        def fileSets = libraryProjects.collect { """ <fileset dir="${relativeTo(projectRoot, it)}/gen/"/> """ }.join(' ')
-        addTarget preCompile(fileSets)
+    void modifyBuildXml(File projectRoot, List<String> relativePaths, List<String> packages) {
+        def fileSets = relativePaths.collect { """ <fileset dir="$it/gen/"/> """ }.join(' ')
+        addTarget projectRoot, preCompile(fileSets)
 
-        def packages = libraryProjects.collect { androidPackage(it).replace('.', '/') }
         def excludes = packages.collect { " $it/R.class $it/R\$*.class $it/BuildConfig.class " }.join(' ')
-        addTarget postCompile(excludes)
+        addTarget projectRoot, postCompile(excludes)
     }
 
     @PackageScope
-    void addTarget(String target) {
+    void addTarget(File projectRoot, String target) {
         def buildFile = new File(projectRoot, 'build.xml')
         logger.info "Modifying $buildFile.absolutePath. Adding target: $target"
         replace(buildFile, '</project>', target + '\n</project>')
@@ -46,7 +43,7 @@ class LibraryDependencyHandler {
 
     @PackageScope
     List<File> findLibraries(File root) {
-        def propFile = new File(projectRoot, 'project.properties')
+        def propFile = new File(root, 'project.properties')
         def references = asProperties(propFile).findAll { it.key.startsWith('android.library.reference') }
         def libNames = references.collect { it.value } as List<String>
         libNames.collect { new File(root, it) }.findAll { it.exists() }
