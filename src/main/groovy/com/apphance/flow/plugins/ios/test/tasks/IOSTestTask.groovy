@@ -47,12 +47,12 @@ class IOSTestTask extends DefaultTask {
 
         testTargets.each { String testTarget ->
 
-            def testResultsLog = createNewTestResultFile(testTarget, 'log')
+            def testResultsLog = newFile(testTarget, 'log')
             executor.runTests(variant.tmpDir, testTarget, testConf, testResultsLog.absolutePath)
 
             Collection<OCUnitTestSuite> parsedResults = parseResults(testResultsLog)
 
-            def testResultsXml = createNewTestResultFile(testTarget, 'xml')
+            def testResultsXml = newFile(testTarget, 'xml')
             parseAndExport(parsedResults, testResultsXml)
 
             verifyTestResults(parsedResults, errorMessage(testTarget, testConf, testResultsXml))
@@ -60,7 +60,7 @@ class IOSTestTask extends DefaultTask {
     }
 
     @PackageScope
-    File createNewTestResultFile(String target, String extension) {
+    File newFile(String target, String extension) {
         def results = new File(variant.tmpDir, "${filename(target)}.$extension")
         results.delete()
         results.createNewFile()
@@ -69,13 +69,13 @@ class IOSTestTask extends DefaultTask {
 
     @PackageScope
     String filename(String target) {
-        "test-${variant.name}-${target}"
+        "test-$variant.name-$target"
     }
 
     @PackageScope
     Collection<OCUnitTestSuite> parseResults(File testResults) {
         OCUnitParser parser = new OCUnitParser()
-        parser.parse testResults.text.split('\n').toList()
+        parser.parse testResults.readLines()
         parser.testSuites
     }
 
