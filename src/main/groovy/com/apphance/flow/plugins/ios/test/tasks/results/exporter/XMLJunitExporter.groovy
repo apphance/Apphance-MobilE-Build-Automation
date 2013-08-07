@@ -1,5 +1,7 @@
-package com.apphance.flow.plugins.ios.test.tasks
+package com.apphance.flow.plugins.ios.test.tasks.results.exporter
 
+import com.apphance.flow.plugins.ios.test.tasks.results.parser.OCUnitTestResult
+import com.apphance.flow.plugins.ios.test.tasks.results.parser.OCUnitTestSuite
 import groovy.xml.MarkupBuilder
 
 /**

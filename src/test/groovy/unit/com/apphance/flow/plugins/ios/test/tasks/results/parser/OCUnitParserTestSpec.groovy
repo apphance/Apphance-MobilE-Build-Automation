@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.test.tasks
+package com.apphance.flow.plugins.ios.test.tasks.results.parser
 
 import spock.lang.Shared
 import spock.lang.Specification

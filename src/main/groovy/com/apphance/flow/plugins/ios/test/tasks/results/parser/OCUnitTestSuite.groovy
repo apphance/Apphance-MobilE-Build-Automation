@@ -1,7 +1,7 @@
-package com.apphance.flow.plugins.ios.test.tasks
+package com.apphance.flow.plugins.ios.test.tasks.results.parser
 
-import static com.apphance.flow.plugins.ios.test.tasks.OCUnitTestResult.FAILURE
-import static com.apphance.flow.plugins.ios.test.tasks.OCUnitTestResult.SUCCESS
+import static OCUnitTestResult.FAILURE
+import static OCUnitTestResult.SUCCESS
 
 class OCUnitTestSuite {
     String name

@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.test.tasks
+package com.apphance.flow.plugins.ios.test.tasks.pbx
 
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor

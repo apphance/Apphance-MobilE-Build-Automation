@@ -6,6 +6,10 @@ import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.linker.FileLinker
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
+import com.apphance.flow.plugins.ios.test.tasks.pbx.IOSTestPbxEnhancer
+import com.apphance.flow.plugins.ios.test.tasks.results.exporter.XMLJunitExporter
+import com.apphance.flow.plugins.ios.test.tasks.results.parser.OCUnitParser
+import com.apphance.flow.plugins.ios.test.tasks.results.parser.OCUnitTestSuite
 import com.apphance.flow.util.Preconditions
 import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask

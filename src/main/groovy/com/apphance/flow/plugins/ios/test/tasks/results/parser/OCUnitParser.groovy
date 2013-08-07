@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.test.tasks
+package com.apphance.flow.plugins.ios.test.tasks.results.parser
 
 import static org.gradle.api.logging.Logging.getLogger
 
