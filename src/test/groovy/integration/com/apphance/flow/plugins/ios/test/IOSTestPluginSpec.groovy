@@ -63,9 +63,6 @@ class IOSTestPluginSpec extends Specification {
         and:
         project.tasks[TEST_ALL_TASK_NAME].dependsOn.flatten().containsAll('testV1', 'testV2')
         project.tasks[TEST_ALL_TASK_NAME].getMustRunAfter().find { it.values.contains(VerifySetupTask.NAME) }
-
-        and:
-        project.tasks[TEST_ALL_TASK_NAME].getMustRunAfter().hashCode()
     }
 
     def 'no tasks available when configuration is inactive'() {

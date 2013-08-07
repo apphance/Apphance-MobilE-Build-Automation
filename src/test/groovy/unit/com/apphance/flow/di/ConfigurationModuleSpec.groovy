@@ -72,7 +72,6 @@ class ConfigurationModuleSpec extends Specification {
 
     def 'multibinder loads configuration in correct order'() {
         expect:
-        configurations.hashCode()
         configurations.size() > 0
         configurations.sort().values().toArray()[0].class == AndroidConfiguration
     }

@@ -65,7 +65,6 @@ class IOSTestPbxEnhancerSpec extends Specification {
 
         then:
         def pbx = new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj/project.pbxproj')
-        pbx.hashCode()
         pbx.exists()
         pbx.size() > 0
 
@@ -95,7 +94,7 @@ class IOSTestPbxEnhancerSpec extends Specification {
         script.value.outputPaths == []
         script.value.runOnlyForDeploymentPostprocessing == 0
         script.value.shellPath == '/bin/sh'
-        script.value.showEnvVarsInLog == 0
+        script.value.showEnvVarsInLog == 1
         script.value.shellScript == getClass().getResource('run_ios_tests.sh').text
 
         cleanup:
