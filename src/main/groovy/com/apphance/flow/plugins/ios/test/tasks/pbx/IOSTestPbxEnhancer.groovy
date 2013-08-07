@@ -39,7 +39,7 @@ class IOSTestPbxEnhancer {
                 runOnlyForDeploymentPostprocessing: 0,
                 shellPath: '/bin/sh',
                 shellScript: shellScript(),
-                showEnvVarsInLog: 0
+                showEnvVarsInLog: 1
         ]
         buildPhaseHash
     }

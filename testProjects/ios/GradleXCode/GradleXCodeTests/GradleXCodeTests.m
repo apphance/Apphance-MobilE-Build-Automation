@@ -25,7 +25,7 @@
 
 - (void)testExample
 {
-    STFail(@"Unit tests are not implemented yet in GradleXCodeTests");
+    STAssertTrue(0==0, @"0 is equals to zero");
 }
 
 @end

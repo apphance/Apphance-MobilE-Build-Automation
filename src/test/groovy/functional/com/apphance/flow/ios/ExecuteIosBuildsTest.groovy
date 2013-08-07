@@ -7,6 +7,7 @@ import org.junit.Test
 
 import static org.gradle.tooling.GradleConnector.newConnector
 import static org.junit.Assert.assertTrue
+import static org.junit.Assert.fail
 
 class ExecuteIosBuildsTest {
 
@@ -54,6 +55,18 @@ class ExecuteIosBuildsTest {
         assertTrue(new File(testProjectOneVariant, "$path/manifest.plist").exists())
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32_ahSYM").exists())
         assertTrue(new File(testProjectOneVariant, "$path/GradleXCode-1.0_32_ahSYM").listFiles().size() > 0)
+    }
+
+    @Test
+    void testBuildOneVariantWithFailingTest() {
+        try {
+            runGradleOneVariant('cleanFlow', 'testGradleXCodeWithSpace')
+            fail("Test exception should be thrown")
+        } catch (Exception e) {
+            def msg = e.cause.cause.cause.message
+            assertTrue(msg.startsWith("Error while executing tests for variant: GradleXCode With Space, target: GradleXCodeFailingTests, configuration Debug. For further details investigate test results:"))
+            assertTrue(msg.endsWith("test-GradleXCode With Space-GradleXCodeFailingTests.xml"))
+        }
     }
 
     @Test
