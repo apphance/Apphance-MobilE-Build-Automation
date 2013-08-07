@@ -5,7 +5,6 @@ import groovy.io.FileType
 import java.nio.file.Files
 
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
-import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkNotNull
 import static java.io.File.createTempFile
 
