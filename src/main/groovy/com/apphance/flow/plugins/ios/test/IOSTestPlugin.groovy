@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.ios.test
 import com.apphance.flow.configuration.ios.IOSTestConfiguration
 import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.ios.test.tasks.IOSTestTask
+import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -16,7 +17,6 @@ import static org.gradle.api.logging.Logging.getLogger
  *
  * This plugins provides functionality of standard test testing for iOS.
  * It executes all tests which are build using test test framework.
- * More description needed ....
  *
  */
 class IOSTestPlugin implements Plugin<Project> {
@@ -34,16 +34,24 @@ class IOSTestPlugin implements Plugin<Project> {
 
             if (testConf.testVariants.size() > 0) {
 
-                project.task(TEST_ALL_TASK_NAME, group: FLOW_TEST)
+                project.task(TEST_ALL_TASK_NAME, group: FLOW_TEST, description: 'Runs all iOS tests')
+                project.tasks[TEST_ALL_TASK_NAME].mustRunAfter VerifySetupTask.NAME
 
                 testConf.testVariants.each { variant ->
+
                     def testTask = project.task(variant.testTaskName,
                             type: IOSTestTask,
                             dependsOn: CopySourcesTask.NAME,
                     ) as IOSTestTask
+
                     testTask.variant = variant
+
                     project.tasks[TEST_ALL_TASK_NAME].dependsOn variant.testTaskName
-                    //TODO archive and build dependency
+
+                    project.tasks.findByName(variant.buildTaskName)?.dependsOn variant.testTaskName
+                    project.tasks.findByName(variant.archiveTaskName)?.dependsOn variant.testTaskName
+
+                    project.tasks.findByName(variant.testTaskName).mustRunAfter VerifySetupTask.NAME
                 }
             }
         }
