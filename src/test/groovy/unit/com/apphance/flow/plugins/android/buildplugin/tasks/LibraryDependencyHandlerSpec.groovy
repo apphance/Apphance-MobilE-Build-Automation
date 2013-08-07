@@ -117,19 +117,4 @@ class LibraryDependencyHandlerSpec extends Specification {
                 ' pl/com/company/R.class pl/com/company/R$*.class pl/com/company/BuildConfig.class   pl/org/linux/R.class pl/org/linux/R$*.class ' +
                         'pl/org/linux/BuildConfig.class ')) >> null
     }
-
-    File newFile(File root, String name, String content) {
-        assert root.exists()
-        File file = new File(root, name)
-        file.createNewFile()
-        file.text = content
-        file
-    }
-
-    File newDir(File root, String name) {
-        assert root.exists()
-        File dir = new File(root, name)
-        assert dir.mkdirs()
-        dir
-    }
 }
