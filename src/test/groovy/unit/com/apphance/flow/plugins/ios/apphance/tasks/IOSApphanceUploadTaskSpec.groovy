@@ -16,7 +16,7 @@ import spock.lang.Specification
 
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
-class IOSApphanceUploadTaskTestSpec extends Specification {
+class IOSApphanceUploadTaskSpec extends Specification {
 
     def project = builder().build()
     def task = project.task('UploadTask', type: IOSApphanceUploadTask) as IOSApphanceUploadTask
