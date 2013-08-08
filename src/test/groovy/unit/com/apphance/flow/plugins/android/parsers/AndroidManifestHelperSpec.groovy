@@ -16,8 +16,6 @@ class AndroidManifestHelperSpec extends Specification {
     @Shared
     def basic = new File('testProjects/android/android-basic')
     @Shared
-    def noApphanceApplication = new File('testProjects/android/android-no-apphance-application')
-    @Shared
     def androidManifestHelper = new AndroidManifestHelper()
 
     def 'package is read correctly'() {
@@ -125,11 +123,6 @@ class AndroidManifestHelperSpec extends Specification {
         parsedManifest(tmpManifest).'uses-permission'.@'android:name'.find {
             it.text() == 'android.permission.ACCESS_MOCK_LOCATION'
         }
-    }
-
-    def 'main activity name is read correctly deprecated method'() {
-        expect:
-        androidManifestHelper.getMainActivityName(new File('testProjects/apphance-updates/')) == 'pl.morizon.client.ui.HomeActivity'
     }
 
     def 'main activity name is read correctly'() {

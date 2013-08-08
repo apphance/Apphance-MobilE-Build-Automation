@@ -119,12 +119,6 @@ class AndroidManifestHelper {
         }
     }
 
-    @Deprecated
-    // TODO remove this method and replace invocations with getMainActivities
-    String getMainActivityName(File projectDir) {
-        getMainActivitiesFromProject(projectDir).find()
-    }
-
     Collection<String> getMainActivitiesFromProject(File projectDir, String manifestName = ANDROID_MANIFEST) {
         def manifestFile = new File(projectDir, manifestName)
         getActivities(manifestFile, MAIN_ACTIVITY_FILTER)
@@ -205,18 +199,6 @@ class AndroidManifestHelper {
             activityName.equals('com.apphance.android.ui.loginactivity') ||
                     activityName.equals('com.apphance.android.ui.problemactivity')
         }
-    }
-
-    void restoreOriginalManifest(File projectDir) {
-        def file = new File(projectDir, ANDROID_MANIFEST)
-        def originalFile = new File(projectDir, "${file.name}.orig")
-        if (!originalFile.exists()) {
-            logger.warn("Could not restore original file. It's missing!")
-            return
-        }
-        file.delete()
-        file << originalFile.text
-        originalFile.delete()
     }
 
     List<File> getSourcesOf(File projDir, Collection<String> classes) {
