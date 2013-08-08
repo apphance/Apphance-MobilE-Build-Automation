@@ -1,7 +1,5 @@
 package com.apphance.flow.detection.project
 
-import com.apphance.flow.android.ExecuteAndroidBuildsTest
-import com.apphance.flow.ios.ExecuteIosBuildsTest
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -20,8 +18,8 @@ class ProjectTypeDetectorSpec extends Specification {
 
         where:
         expectedType | path
-        ANDROID      | ExecuteAndroidBuildsTest.testProject
-        IOS          | ExecuteIosBuildsTest.testProjectOneVariant
+        ANDROID      | new File("testProjects/android/android-basic")
+        IOS          | new File('testProjects/ios/GradleXCode')
     }
 
     def 'should yield on bi-detection'() {
