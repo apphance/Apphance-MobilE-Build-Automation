@@ -13,7 +13,7 @@ class CopyMobileProvisionTaskSpec extends Specification {
 
     def projectDir = 'testProjects/ios/GradleXCode'
     def project = builder().withProjectDir(new File(projectDir)).build()
-    def mobileprovisionFile = new File(projectDir, 'release/distribution_resources/Ameba_Test_Project.mobileprovision')
+    def mobileprovisionFile = new File(projectDir, 'release/distribution_resources/GradleXCode.mobileprovision')
     def mobileProvisionDir = new File("${System.getProperty('user.home')}/Library/MobileDevice/Provisioning Profiles/")
 
     def task = project.task(CopyMobileProvisionTask.NAME, type: CopyMobileProvisionTask) as CopyMobileProvisionTask
@@ -64,7 +64,7 @@ class CopyMobileProvisionTaskSpec extends Specification {
                     GroovyStub(IOSVariant) {
                         getName() >> 'SampleVariant'
                         getMobileprovision() >> new FileProperty(value: mobileprovisionFile)
-                        getBundleId() >> 'MT2B94Q7N6.com.apphance.amebaa'
+                        getBundleId() >> 'MT2B94Q7N6.com.apphance.flowa'
                     }
             ]
         })
@@ -75,10 +75,9 @@ class CopyMobileProvisionTaskSpec extends Specification {
         then:
         def e = thrown(GradleException)
         println e.message
-        e.message.startsWith('Bundle Id from variant: SampleVariant (MT2B94Q7N6.com.apphance.amebaa)')
-        e.message.contains('(MT2B94Q7N6.com.apphance.amebaa)')
+        e.message.startsWith('Bundle Id from variant: SampleVariant (MT2B94Q7N6.com.apphance.flowa)')
+        e.message.contains('(MT2B94Q7N6.com.apphance.flowa)')
         e.message.contains('(MT2B94Q7N6.com.apphance.flow)')
-        e.message.contains('Ameba_Test_Project.mobileprovision')
-
+        e.message.contains('GradleXCode.mobileprovision')
     }
 }

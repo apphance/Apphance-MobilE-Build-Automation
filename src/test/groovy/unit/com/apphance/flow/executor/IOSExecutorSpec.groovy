@@ -104,7 +104,7 @@ class IOSExecutorSpec extends Specification {
     def 'mobileprovision is converted to xml well'() {
         when:
         def xml = iosExecutor.mobileprovisionToXml(
-                new File(conf.rootDir, 'release/distribution_resources/Ameba_Test_Project.mobileprovision'))
+                new File(conf.rootDir, 'release/distribution_resources/GradleXCode.mobileprovision'))
 
         then:
         xml.join('\n') == mobileprovisionXml

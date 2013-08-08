@@ -57,8 +57,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
     }
 
     def variantDir = new FileProperty(
-            interactive: { false },
-            //validator: { it in releaseConf.findMobileProvisionFiles()*.name }TODO
+            interactive: { false }
     )
 
     def oldPackage = new StringProperty(interactive: { false })
@@ -86,7 +85,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
     }
 
     void checkSigningConfiguration() {
-        def file = new File(tmpDir, 'ant.properties')//project.file('ant.properties')
+        def file = new File(tmpDir, 'ant.properties')
         check file.exists(), "If release or apphance plugin is enabled ant.properties should be present in ${tmpDir.absolutePath}"
 
         if (file.exists()) {

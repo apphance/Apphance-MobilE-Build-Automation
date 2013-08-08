@@ -53,7 +53,7 @@ class IOSReleaseConfigurationSpec extends Specification {
 
         then:
         files.size() == 1
-        'Ameba_Test_Project.mobileprovision' in files*.name
+        'GradleXCode.mobileprovision' in files*.name
 
     }
 
