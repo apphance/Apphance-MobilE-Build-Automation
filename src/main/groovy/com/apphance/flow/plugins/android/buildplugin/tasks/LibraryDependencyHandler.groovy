@@ -11,18 +11,20 @@ class LibraryDependencyHandler {
 
     def logger = Logging.getLogger(this.class)
 
-    void handleLibraryDependencies(File projectRoot) {
+    List<File> handleLibraryDependencies(File projectRoot) {
         List<File> libraryProjects = findLibraries(projectRoot)
         logger.info "Handle library dependencies in $projectRoot.absolutePath. Libraries: ${libraryProjects*.absolutePath}"
 
-        libraryProjects.each { handleLibraryDependencies(it) }
+        def allLibraries = libraryProjects
+        libraryProjects.each { allLibraries += handleLibraryDependencies(it) }
 
         if (libraryProjects && isAndroidLibrary(projectRoot)) {
             logger.info "android.library is true. Modifying build.xml"
             def relativePaths = libraryProjects.collect { relativeTo(projectRoot, it) }
-            def packages = libraryProjects.collect { androidPackage(it).replace('.', '/') }
+            def packages = allLibraries.collect { androidPackage(it).replace('.', '/') }
             modifyBuildXml projectRoot, relativePaths, packages
         }
+        allLibraries
     }
 
     @PackageScope

@@ -4,6 +4,8 @@ import com.apphance.flow.TestUtils
 import com.apphance.flow.util.FlowUtils
 import spock.lang.Specification
 
+import static com.apphance.flow.util.file.FileManager.relativeTo
+
 @Mixin([TestUtils, FlowUtils])
 class LibraryDependencyHandlerSpec extends Specification {
 
@@ -35,7 +37,7 @@ class LibraryDependencyHandlerSpec extends Specification {
         def handler = GroovySpy(LibraryDependencyHandler)
 
         when:
-        handler.handleLibraryDependencies(root)
+        def allLibraries = handler.handleLibraryDependencies(root)
 
         then:
         1 * handler.handleLibraryDependencies(root)
@@ -44,11 +46,12 @@ class LibraryDependencyHandlerSpec extends Specification {
         1 * handler.handleLibraryDependencies(wawa)
         1 * handler.handleLibraryDependencies(wola)
 
-        0 * handler.modifyBuildXml(root, _, _) >> null
-        0 * handler.modifyBuildXml(uk, _, _) >> null
-        1 * handler.modifyBuildXml(pl, ['libs/Warsaw'], ['com/wawa']) >> null
+        1 * handler.modifyBuildXml(pl, ['libs/Warsaw'], ['com/wawa', 'com/wola']) >> null
         1 * handler.modifyBuildXml(wawa, ['libs/Wola'], ['com/wola']) >> null
-        0 * handler.modifyBuildXml(wola, _, _) >> null
+        0 * handler.modifyBuildXml(_, _, _) >> null
+
+        allLibraries.collect { relativeTo(root, it) }.sort() == ['libs/Poland', 'libs/Poland/libs/Warsaw', 'libs/Poland/libs/Warsaw/libs/Wola', 'libs/UK']
+
     }
 
     def 'test find libraries'() {
