@@ -1,4 +1,4 @@
-package com.apphance.amebaTest323;
+package com.apphance.flowTest323;
 
 import android.app.Activity;
 import android.os.Bundle;

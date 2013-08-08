@@ -8,16 +8,16 @@
 0x0000000b: TAG_compile_unit [1] *
              AT_producer( "Apple LLVM version 4.2 (clang-425.0.28) (based on LLVM 3.2svn)" )
              AT_language( DW_LANG_ObjC )
-             AT_name( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/main.m" )
+             AT_name( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/main.m" )
              AT_low_pc( 0x0000249c )
              AT_stmt_list( 0x00000000 )
-             AT_comp_dir( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode" )
+             AT_comp_dir( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode" )
              AT_APPLE_optimized( 0x01 )
              AT_APPLE_major_runtime_vers( 0x02 )
 
 0x00000024:     TAG_subprogram [2] *
                  AT_name( "main" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/main.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/main.m" )
                  AT_decl_line( 12 )
                  AT_prototyped( 0x01 )
                  AT_type( {0x0000005b} ( int ) )
@@ -29,7 +29,7 @@
 
 0x0000003c:         TAG_formal_parameter [3]  
                      AT_name( "argc" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/main.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/main.m" )
                      AT_decl_line( 12 )
                      AT_type( {0x0000005b} ( int ) )
                      AT_location( 0x00000000
@@ -39,7 +39,7 @@
 
 0x0000004b:         TAG_formal_parameter [3]  
                      AT_name( "argv" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/main.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/main.m" )
                      AT_decl_line( 12 )
                      AT_type( {0x0000006e} ( char** ) )
                      AT_location( 0x00000029
@@ -72,16 +72,16 @@
 0x0000007f: TAG_compile_unit [1] *
              AT_producer( "Apple LLVM version 4.2 (clang-425.0.28) (based on LLVM 3.2svn)" )
              AT_language( DW_LANG_ObjC )
-             AT_name( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+             AT_name( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
              AT_low_pc( 0x000024f8 )
              AT_stmt_list( 0x000000b2 )
-             AT_comp_dir( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode" )
+             AT_comp_dir( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode" )
              AT_APPLE_optimized( 0x01 )
              AT_APPLE_major_runtime_vers( 0x02 )
 
 0x00000098:     TAG_subprogram [6] *
                  AT_name( "-[gradleXCodeAppDelegate application:didFinishLaunchingWithOptions:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                  AT_decl_line( 14 )
                  AT_prototyped( 0x01 )
                  AT_type( {0x000000f9} ( BOOL ) )
@@ -93,7 +93,7 @@
 
 0x000000b3:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 14 )
                      AT_type( {0x00006255} ( const gradleXCodeAppDelegate* ) )
                      AT_artificial( 0x01 )
@@ -102,7 +102,7 @@
 
 0x000000c3:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 14 )
                      AT_type( {0x0000625a} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -111,7 +111,7 @@
 
 0x000000d3:         TAG_formal_parameter [3]  
                      AT_name( "application" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 14 )
                      AT_type( {0x00007174} ( UIApplication* ) )
                      AT_location( 0x00000078
@@ -119,7 +119,7 @@
 
 0x000000e2:         TAG_formal_parameter [3]  
                      AT_name( "launchOptions" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 14 )
                      AT_type( {0x00000ccf} ( NSDictionary* ) )
                      AT_location( 0x0000008b
@@ -135,12 +135,12 @@
 0x000000f9:     TAG_typedef [8]  
                  AT_type( {0x000000f2} ( signed char ) )
                  AT_name( "BOOL" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                  AT_decl_line( 52 )
 
 0x00000104:     TAG_subprogram [9] *
                  AT_name( "-[gradleXCodeAppDelegate applicationWillResignActive:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                  AT_decl_line( 23 )
                  AT_prototyped( 0x01 )
                  AT_APPLE_isa( 0x01 )
@@ -151,7 +151,7 @@
 
 0x0000011b:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 23 )
                      AT_type( {0x00006255} ( const gradleXCodeAppDelegate* ) )
                      AT_artificial( 0x01 )
@@ -160,7 +160,7 @@
 
 0x0000012b:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 23 )
                      AT_type( {0x0000625a} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -169,7 +169,7 @@
 
 0x0000013b:         TAG_formal_parameter [3]  
                      AT_name( "application" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 23 )
                      AT_type( {0x00007174} ( UIApplication* ) )
                      AT_location( 0x000000c4
@@ -179,7 +179,7 @@
 
 0x0000014b:     TAG_subprogram [9] *
                  AT_name( "-[gradleXCodeAppDelegate applicationDidEnterBackground:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                  AT_decl_line( 31 )
                  AT_prototyped( 0x01 )
                  AT_APPLE_isa( 0x01 )
@@ -190,7 +190,7 @@
 
 0x00000162:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 31 )
                      AT_type( {0x00006255} ( const gradleXCodeAppDelegate* ) )
                      AT_artificial( 0x01 )
@@ -199,7 +199,7 @@
 
 0x00000172:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 31 )
                      AT_type( {0x0000625a} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -208,7 +208,7 @@
 
 0x00000182:         TAG_formal_parameter [3]  
                      AT_name( "application" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 31 )
                      AT_type( {0x00007174} ( UIApplication* ) )
                      AT_location( 0x000000fd
@@ -218,7 +218,7 @@
 
 0x00000192:     TAG_subprogram [9] *
                  AT_name( "-[gradleXCodeAppDelegate applicationWillEnterForeground:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                  AT_decl_line( 39 )
                  AT_prototyped( 0x01 )
                  AT_APPLE_isa( 0x01 )
@@ -229,7 +229,7 @@
 
 0x000001a9:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 39 )
                      AT_type( {0x00006255} ( const gradleXCodeAppDelegate* ) )
                      AT_artificial( 0x01 )
@@ -238,7 +238,7 @@
 
 0x000001b9:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 39 )
                      AT_type( {0x0000625a} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -247,7 +247,7 @@
 
 0x000001c9:         TAG_formal_parameter [3]  
                      AT_name( "application" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 39 )
                      AT_type( {0x00007174} ( UIApplication* ) )
                      AT_location( 0x00000136
@@ -257,7 +257,7 @@
 
 0x000001d9:     TAG_subprogram [9] *
                  AT_name( "-[gradleXCodeAppDelegate applicationDidBecomeActive:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                  AT_decl_line( 46 )
                  AT_prototyped( 0x01 )
                  AT_APPLE_isa( 0x01 )
@@ -268,7 +268,7 @@
 
 0x000001f0:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 46 )
                      AT_type( {0x00006255} ( const gradleXCodeAppDelegate* ) )
                      AT_artificial( 0x01 )
@@ -277,7 +277,7 @@
 
 0x00000200:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 46 )
                      AT_type( {0x0000625a} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -286,7 +286,7 @@
 
 0x00000210:         TAG_formal_parameter [3]  
                      AT_name( "application" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 46 )
                      AT_type( {0x00007174} ( UIApplication* ) )
                      AT_location( 0x0000016f
@@ -296,7 +296,7 @@
 
 0x00000220:     TAG_subprogram [9] *
                  AT_name( "-[gradleXCodeAppDelegate applicationWillTerminate:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                  AT_decl_line( 53 )
                  AT_prototyped( 0x01 )
                  AT_APPLE_isa( 0x01 )
@@ -307,7 +307,7 @@
 
 0x00000237:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 53 )
                      AT_type( {0x00006255} ( const gradleXCodeAppDelegate* ) )
                      AT_artificial( 0x01 )
@@ -316,7 +316,7 @@
 
 0x00000247:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 53 )
                      AT_type( {0x0000625a} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -325,7 +325,7 @@
 
 0x00000257:         TAG_formal_parameter [3]  
                      AT_name( "application" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 53 )
                      AT_type( {0x00007174} ( UIApplication* ) )
                      AT_location( 0x000001a8
@@ -335,7 +335,7 @@
 
 0x00000267:     TAG_subprogram [10] *
                  AT_name( "-[gradleXCodeAppDelegate window]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                  AT_decl_line( 12 )
                  AT_prototyped( 0x01 )
                  AT_type( {0x0000612b} ( UIWindow* ) )
@@ -348,7 +348,7 @@
 
 0x00000283:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                      AT_decl_line( 12 )
                      AT_type( {0x00006255} ( const gradleXCodeAppDelegate* ) )
                      AT_artificial( 0x01 )
@@ -357,7 +357,7 @@
 
 0x00000293:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                      AT_decl_line( 12 )
                      AT_type( {0x0000625a} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -376,7 +376,7 @@
 0x000002af:     TAG_typedef [8]  
                  AT_type( {0x000002aa} ( objc_class* ) )
                  AT_name( "Class" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                  AT_decl_line( 14 )
 
 0x000002ba:     TAG_structure_type [12] *
@@ -1277,7 +1277,7 @@
 0x0000087a:     TAG_typedef [8]  
                  AT_type( {0x00000875} ( objc_selector* ) )
                  AT_name( "SEL" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                  AT_decl_line( 14 )
 
 0x00000885:     TAG_structure_type [25] *
@@ -11635,7 +11635,7 @@
 0x00004db4:     TAG_typedef [8]  
                  AT_type( {0x00004daf} ( __CFArray* ) )
                  AT_name( "CFMutableArrayRef" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                  AT_decl_line( 114 )
 
 0x00004dbf:     TAG_enumeration_type [21] *
@@ -12140,7 +12140,7 @@
 0x0000510a:     TAG_typedef [8]  
                  AT_type( {0x000050e9} ( UIInterfaceOrientation ) )
                  AT_name( "UIInterfaceOrientation" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                  AT_decl_line( 32 )
 
 0x00005115:     TAG_base_type [4]  
@@ -12152,7 +12152,7 @@
                  AT_APPLE_block( 0x01 )
                  AT_name( "__block_descriptor" )
                  AT_byte_size( 0x08 )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                  AT_decl_line( 14 )
 
 0x00005125:         TAG_member [15]  
@@ -12176,7 +12176,7 @@
                  AT_APPLE_block( 0x01 )
                  AT_name( "__block_literal_generic" )
                  AT_byte_size( 0x14 )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                  AT_decl_line( 14 )
 
 0x0000514e:         TAG_member [15]  
@@ -12206,7 +12206,7 @@
 0x00005182:         TAG_member [13]  
                      AT_name( "__descriptor" )
                      AT_type( {0x00005140} ( __block_descriptor* ) )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                      AT_decl_line( 14 )
                      AT_data_member_location( +16 )
                      AT_accessibility( DW_ACCESS_public )
@@ -14567,7 +14567,7 @@
 
 0x00006130:     TAG_subprogram [38] *
                  AT_name( "-[gradleXCodeAppDelegate setWindow:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                  AT_decl_line( 12 )
                  AT_prototyped( 0x01 )
                  AT_artificial( 0x01 )
@@ -14579,7 +14579,7 @@
 
 0x00006148:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                      AT_decl_line( 12 )
                      AT_type( {0x00006255} ( const gradleXCodeAppDelegate* ) )
                      AT_artificial( 0x01 )
@@ -14589,7 +14589,7 @@
 
 0x00006158:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                      AT_decl_line( 12 )
                      AT_type( {0x0000625a} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -14598,7 +14598,7 @@
 
 0x00006168:         TAG_formal_parameter [3]  
                      AT_name( "window" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                      AT_decl_line( 12 )
                      AT_type( {0x0000612b} ( UIWindow* ) )
                      AT_location( 0x00000212
@@ -14609,7 +14609,7 @@
 
 0x00006178:     TAG_subprogram [38] *
                  AT_name( "-[gradleXCodeAppDelegate .cxx_destruct]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                  AT_decl_line( 10 )
                  AT_prototyped( 0x01 )
                  AT_artificial( 0x01 )
@@ -14621,7 +14621,7 @@
 
 0x00006190:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 10 )
                      AT_type( {0x00006255} ( const gradleXCodeAppDelegate* ) )
                      AT_artificial( 0x01 )
@@ -14630,7 +14630,7 @@
 
 0x000061a0:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 10 )
                      AT_type( {0x0000625a} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -14723,7 +14723,7 @@
                  AT_APPLE_objc_complete_type( 0x01 )
                  AT_name( "gradleXCodeAppDelegate" )
                  AT_byte_size( 0x08 )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                  AT_decl_line( 10 )
                  AT_APPLE_runtime_class( 0x10 )
 
@@ -14735,14 +14735,14 @@
 0x00006230:         TAG_APPLE_Property [27]  
                      AT_APPLE_property_name( "window" )
                      AT_type( {0x0000612b} ( UIWindow* ) )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.h" )
                      AT_decl_line( 12 )
                      AT_APPLE_property_attribute( 0x08 ( DW_APPLE_PROPERTY_retain )  )
 
 0x0000623c:         TAG_member [40]  
                      AT_name( "_window" )
                      AT_type( {0x0000612b} ( UIWindow* ) )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                      AT_decl_line( 12 )
                      AT_data_member_location( +0 )
                      AT_accessibility( DW_ACCESS_private )
@@ -14759,7 +14759,7 @@
 0x0000625a:     TAG_typedef [8]  
                  AT_type( {0x00000875} ( objc_selector* ) )
                  AT_name( "SEL" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeAppDelegate.m" )
                  AT_decl_line( 14 )
 
 0x00006265:     TAG_typedef [8]  
@@ -17048,16 +17048,16 @@
 0x00007185: TAG_compile_unit [1] *
              AT_producer( "Apple LLVM version 4.2 (clang-425.0.28) (based on LLVM 3.2svn)" )
              AT_language( DW_LANG_ObjC )
-             AT_name( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+             AT_name( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
              AT_low_pc( 0x0000257c )
              AT_stmt_list( 0x00000882 )
-             AT_comp_dir( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode" )
+             AT_comp_dir( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode" )
              AT_APPLE_optimized( 0x01 )
              AT_APPLE_major_runtime_vers( 0x02 )
 
 0x0000719e:     TAG_subprogram [9] *
                  AT_name( "-[gradleXCodeViewController didReceiveMemoryWarning]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 12 )
                  AT_prototyped( 0x01 )
                  AT_APPLE_isa( 0x01 )
@@ -17068,7 +17068,7 @@
 
 0x000071b5:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 12 )
                      AT_type( {0x0000d264} ( const gradleXCodeViewController* ) )
                      AT_artificial( 0x01 )
@@ -17077,7 +17077,7 @@
 
 0x000071c5:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 12 )
                      AT_type( {0x00008269} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -17088,7 +17088,7 @@
 
 0x000071d6:     TAG_subprogram [9] *
                  AT_name( "-[gradleXCodeViewController viewDidLoad]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 20 )
                  AT_prototyped( 0x01 )
                  AT_APPLE_isa( 0x01 )
@@ -17099,7 +17099,7 @@
 
 0x000071ed:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 20 )
                      AT_type( {0x0000d264} ( const gradleXCodeViewController* ) )
                      AT_artificial( 0x01 )
@@ -17108,7 +17108,7 @@
 
 0x000071fd:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 20 )
                      AT_type( {0x00008269} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -17119,7 +17119,7 @@
 
 0x0000720e:     TAG_subprogram [9] *
                  AT_name( "-[gradleXCodeViewController viewDidUnload]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 26 )
                  AT_prototyped( 0x01 )
                  AT_APPLE_isa( 0x01 )
@@ -17130,7 +17130,7 @@
 
 0x00007225:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 26 )
                      AT_type( {0x0000d264} ( const gradleXCodeViewController* ) )
                      AT_artificial( 0x01 )
@@ -17139,7 +17139,7 @@
 
 0x00007235:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 26 )
                      AT_type( {0x00008269} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -17150,7 +17150,7 @@
 
 0x00007246:     TAG_subprogram [9] *
                  AT_name( "-[gradleXCodeViewController viewWillAppear:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 33 )
                  AT_prototyped( 0x01 )
                  AT_APPLE_isa( 0x01 )
@@ -17161,7 +17161,7 @@
 
 0x0000725d:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 33 )
                      AT_type( {0x0000d264} ( const gradleXCodeViewController* ) )
                      AT_artificial( 0x01 )
@@ -17170,7 +17170,7 @@
 
 0x0000726d:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 33 )
                      AT_type( {0x00008269} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -17179,7 +17179,7 @@
 
 0x0000727d:         TAG_formal_parameter [3]  
                      AT_name( "animated" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 33 )
                      AT_type( {0x000073b4} ( BOOL ) )
                      AT_location( 0x000002ee
@@ -17189,7 +17189,7 @@
 
 0x0000728d:     TAG_subprogram [9] *
                  AT_name( "-[gradleXCodeViewController viewDidAppear:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 38 )
                  AT_prototyped( 0x01 )
                  AT_APPLE_isa( 0x01 )
@@ -17200,7 +17200,7 @@
 
 0x000072a4:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 38 )
                      AT_type( {0x0000d264} ( const gradleXCodeViewController* ) )
                      AT_artificial( 0x01 )
@@ -17209,7 +17209,7 @@
 
 0x000072b4:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 38 )
                      AT_type( {0x00008269} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -17218,7 +17218,7 @@
 
 0x000072c4:         TAG_formal_parameter [3]  
                      AT_name( "animated" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 38 )
                      AT_type( {0x000073b4} ( BOOL ) )
                      AT_location( 0x00000327
@@ -17228,7 +17228,7 @@
 
 0x000072d4:     TAG_subprogram [9] *
                  AT_name( "-[gradleXCodeViewController viewWillDisappear:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 43 )
                  AT_prototyped( 0x01 )
                  AT_APPLE_isa( 0x01 )
@@ -17239,7 +17239,7 @@
 
 0x000072eb:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 43 )
                      AT_type( {0x0000d264} ( const gradleXCodeViewController* ) )
                      AT_artificial( 0x01 )
@@ -17248,7 +17248,7 @@
 
 0x000072fb:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 43 )
                      AT_type( {0x00008269} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -17257,7 +17257,7 @@
 
 0x0000730b:         TAG_formal_parameter [3]  
                      AT_name( "animated" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 43 )
                      AT_type( {0x000073b4} ( BOOL ) )
                      AT_location( 0x00000360
@@ -17267,7 +17267,7 @@
 
 0x0000731b:     TAG_subprogram [9] *
                  AT_name( "-[gradleXCodeViewController viewDidDisappear:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 48 )
                  AT_prototyped( 0x01 )
                  AT_APPLE_isa( 0x01 )
@@ -17278,7 +17278,7 @@
 
 0x00007332:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 48 )
                      AT_type( {0x0000d264} ( const gradleXCodeViewController* ) )
                      AT_artificial( 0x01 )
@@ -17287,7 +17287,7 @@
 
 0x00007342:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 48 )
                      AT_type( {0x00008269} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -17296,7 +17296,7 @@
 
 0x00007352:         TAG_formal_parameter [3]  
                      AT_name( "animated" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 48 )
                      AT_type( {0x000073b4} ( BOOL ) )
                      AT_location( 0x00000399
@@ -17306,7 +17306,7 @@
 
 0x00007362:     TAG_subprogram [6] *
                  AT_name( "-[gradleXCodeViewController shouldAutorotateToInterfaceOrientation:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 53 )
                  AT_prototyped( 0x01 )
                  AT_type( {0x000073b4} ( BOOL ) )
@@ -17318,7 +17318,7 @@
 
 0x0000737d:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 53 )
                      AT_type( {0x0000d264} ( const gradleXCodeViewController* ) )
                      AT_artificial( 0x01 )
@@ -17329,7 +17329,7 @@
 
 0x0000738d:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 53 )
                      AT_type( {0x00008269} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -17339,7 +17339,7 @@
 
 0x0000739d:         TAG_formal_parameter [3]  
                      AT_name( "interfaceOrientation" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 53 )
                      AT_type( {0x0000a2af} ( UIInterfaceOrientation ) )
                      AT_location( 0x000003f3
@@ -18234,7 +18234,7 @@
 0x00007887:     TAG_typedef [8]  
                  AT_type( {0x00007882} ( objc_class* ) )
                  AT_name( "Class" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 12 )
 
 0x00007892:     TAG_structure_type [12] *
@@ -19751,7 +19751,7 @@
 0x00008269:     TAG_typedef [8]  
                  AT_type( {0x00008264} ( objc_selector* ) )
                  AT_name( "SEL" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 12 )
 
 0x00008274:     TAG_structure_type [25] *
@@ -30216,7 +30216,7 @@
 0x0000c92c:     TAG_typedef [8]  
                  AT_type( {0x0000c927} ( __CFArray* ) )
                  AT_name( "CFMutableArrayRef" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 114 )
 
 0x0000c937:     TAG_typedef [8]  
@@ -30671,7 +30671,7 @@
                  AT_APPLE_block( 0x01 )
                  AT_name( "__block_descriptor" )
                  AT_byte_size( 0x08 )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 12 )
 
 0x0000cc44:         TAG_member [15]  
@@ -30695,7 +30695,7 @@
                  AT_APPLE_block( 0x01 )
                  AT_name( "__block_literal_generic" )
                  AT_byte_size( 0x14 )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                  AT_decl_line( 12 )
 
 0x0000cc6d:         TAG_member [15]  
@@ -30725,7 +30725,7 @@
 0x0000cca1:         TAG_member [13]  
                      AT_name( "__descriptor" )
                      AT_type( {0x0000cc5f} ( __block_descriptor* ) )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.m" )
                      AT_decl_line( 12 )
                      AT_data_member_location( +16 )
                      AT_accessibility( DW_ACCESS_public )
@@ -31563,7 +31563,7 @@
                  AT_APPLE_objc_complete_type( 0x01 )
                  AT_name( "gradleXCodeViewController" )
                  AT_byte_size( 0x9c )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.h" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/gradleXCodeViewController.h" )
                  AT_decl_line( 10 )
                  AT_APPLE_runtime_class( 0x10 )
 
@@ -31587,16 +31587,16 @@
 0x0000d275: TAG_compile_unit [1] *
              AT_producer( "Apple LLVM version 4.2 (clang-425.0.28) (based on LLVM 3.2svn)" )
              AT_language( DW_LANG_ObjC )
-             AT_name( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
+             AT_name( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
              AT_low_pc( 0x00002708 )
              AT_stmt_list( 0x00001015 )
-             AT_comp_dir( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode" )
+             AT_comp_dir( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode" )
              AT_APPLE_optimized( 0x01 )
              AT_APPLE_major_runtime_vers( 0x02 )
 
 0x0000d28e:     TAG_subprogram [6] *
                  AT_name( "-[emptyPathView initWithFrame:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
                  AT_decl_line( 13 )
                  AT_prototyped( 0x01 )
                  AT_type( {0x0000d2f9} ( id ) )
@@ -31608,7 +31608,7 @@
 
 0x0000d2a9:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
                      AT_decl_line( 13 )
                      AT_type( {0x00013187} ( emptyPathView* ) )
                      AT_artificial( 0x01 )
@@ -31617,7 +31617,7 @@
 
 0x0000d2b9:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
                      AT_decl_line( 13 )
                      AT_type( {0x0000dcea} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -31627,7 +31627,7 @@
 
 0x0000d2c9:         TAG_formal_parameter [42]  
                      AT_name( "frame" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
                      AT_decl_line( 13 )
                      AT_type( {0x0000fb88} ( CGRect ) )
 
@@ -31658,7 +31658,7 @@
 0x0000d2f9:     TAG_typedef [8]  
                  AT_type( {0x0000d2f4} ( objc_object* ) )
                  AT_name( "id" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
                  AT_decl_line( 13 )
 
 0x0000d304:     TAG_enumeration_type [21] *
@@ -32531,7 +32531,7 @@
 0x0000d7c6:     TAG_typedef [8]  
                  AT_type( {0x0000d7c1} ( objc_class* ) )
                  AT_name( "Class" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
                  AT_decl_line( 13 )
 
 0x0000d7d1:     TAG_structure_type [12] *
@@ -33315,7 +33315,7 @@
 0x0000dcea:     TAG_typedef [8]  
                  AT_type( {0x0000dce5} ( objc_selector* ) )
                  AT_name( "SEL" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
                  AT_decl_line( 13 )
 
 0x0000dcf5:     TAG_structure_type [25] *
@@ -43780,7 +43780,7 @@
 0x000123ad:     TAG_typedef [8]  
                  AT_type( {0x000123a8} ( __CFArray* ) )
                  AT_name( "CFMutableArrayRef" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
                  AT_decl_line( 114 )
 
 0x000123b8:     TAG_typedef [8]  
@@ -44235,7 +44235,7 @@
                  AT_APPLE_block( 0x01 )
                  AT_name( "__block_descriptor" )
                  AT_byte_size( 0x08 )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
                  AT_decl_line( 13 )
 
 0x000126c5:         TAG_member [15]  
@@ -44259,7 +44259,7 @@
                  AT_APPLE_block( 0x01 )
                  AT_name( "__block_literal_generic" )
                  AT_byte_size( 0x14 )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
                  AT_decl_line( 13 )
 
 0x000126ee:         TAG_member [15]  
@@ -44289,7 +44289,7 @@
 0x00012722:         TAG_member [13]  
                      AT_name( "__descriptor" )
                      AT_type( {0x000126e0} ( __block_descriptor* ) )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.m" )
                      AT_decl_line( 13 )
                      AT_data_member_location( +16 )
                      AT_accessibility( DW_ACCESS_public )
@@ -45847,7 +45847,7 @@
                  AT_APPLE_objc_complete_type( 0x01 )
                  AT_name( "emptyPathView" )
                  AT_byte_size( 0x30 )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.h" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/emptyPathView.h" )
                  AT_decl_line( 11 )
                  AT_APPLE_runtime_class( 0x10 )
 
@@ -45868,16 +45868,16 @@
 0x00013198: TAG_compile_unit [1] *
              AT_producer( "Apple LLVM version 4.2 (clang-425.0.28) (based on LLVM 3.2svn)" )
              AT_language( DW_LANG_ObjC )
-             AT_name( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
+             AT_name( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
              AT_low_pc( 0x00002758 )
              AT_stmt_list( 0x00001738 )
-             AT_comp_dir( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode" )
+             AT_comp_dir( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode" )
              AT_APPLE_optimized( 0x01 )
              AT_APPLE_major_runtime_vers( 0x02 )
 
 0x000131b1:     TAG_subprogram [6] *
                  AT_name( "-[NonEmptyPathView initWithFrame:]" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
                  AT_decl_line( 13 )
                  AT_prototyped( 0x01 )
                  AT_type( {0x0001321c} ( id ) )
@@ -45889,7 +45889,7 @@
 
 0x000131cc:         TAG_formal_parameter [7]  
                      AT_name( "self" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
                      AT_decl_line( 13 )
                      AT_type( {0x000190aa} ( NonEmptyPathView* ) )
                      AT_artificial( 0x01 )
@@ -45898,7 +45898,7 @@
 
 0x000131dc:         TAG_formal_parameter [7]  
                      AT_name( "_cmd" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
                      AT_decl_line( 13 )
                      AT_type( {0x00013c0d} ( SEL ) )
                      AT_artificial( 0x01 )
@@ -45908,7 +45908,7 @@
 
 0x000131ec:         TAG_formal_parameter [42]  
                      AT_name( "frame" )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
                      AT_decl_line( 13 )
                      AT_type( {0x00015aab} ( CGRect ) )
 
@@ -45939,7 +45939,7 @@
 0x0001321c:     TAG_typedef [8]  
                  AT_type( {0x00013217} ( objc_object* ) )
                  AT_name( "id" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
                  AT_decl_line( 13 )
 
 0x00013227:     TAG_enumeration_type [21] *
@@ -46812,7 +46812,7 @@
 0x000136e9:     TAG_typedef [8]  
                  AT_type( {0x000136e4} ( objc_class* ) )
                  AT_name( "Class" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
                  AT_decl_line( 13 )
 
 0x000136f4:     TAG_structure_type [12] *
@@ -47596,7 +47596,7 @@
 0x00013c0d:     TAG_typedef [8]  
                  AT_type( {0x00013c08} ( objc_selector* ) )
                  AT_name( "SEL" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
                  AT_decl_line( 13 )
 
 0x00013c18:     TAG_structure_type [25] *
@@ -58061,7 +58061,7 @@
 0x000182d0:     TAG_typedef [8]  
                  AT_type( {0x000182cb} ( __CFArray* ) )
                  AT_name( "CFMutableArrayRef" )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
                  AT_decl_line( 114 )
 
 0x000182db:     TAG_typedef [8]  
@@ -58516,7 +58516,7 @@
                  AT_APPLE_block( 0x01 )
                  AT_name( "__block_descriptor" )
                  AT_byte_size( 0x08 )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
                  AT_decl_line( 13 )
 
 0x000185e8:         TAG_member [15]  
@@ -58540,7 +58540,7 @@
                  AT_APPLE_block( 0x01 )
                  AT_name( "__block_literal_generic" )
                  AT_byte_size( 0x14 )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
                  AT_decl_line( 13 )
 
 0x00018611:         TAG_member [15]  
@@ -58570,7 +58570,7 @@
 0x00018645:         TAG_member [13]  
                      AT_name( "__descriptor" )
                      AT_type( {0x00018603} ( __block_descriptor* ) )
-                     AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
+                     AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.m" )
                      AT_decl_line( 13 )
                      AT_data_member_location( +16 )
                      AT_accessibility( DW_ACCESS_public )
@@ -60128,7 +60128,7 @@
                  AT_APPLE_objc_complete_type( 0x01 )
                  AT_name( "NonEmptyPathView" )
                  AT_byte_size( 0x30 )
-                 AT_decl_file( "/Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.h" )
+                 AT_decl_file( "/Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/flow-tmp/GradleXCode/GradleXCode/subdir/NonEmptyPathView.h" )
                  AT_decl_line( 11 )
                  AT_APPLE_runtime_class( 0x10 )
 

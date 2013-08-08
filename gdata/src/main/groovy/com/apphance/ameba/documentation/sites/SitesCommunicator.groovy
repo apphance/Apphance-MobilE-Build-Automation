@@ -33,7 +33,6 @@ class SitesCommunicator {
     }
 
     public loggingIn() {
-        println "Logging in to Ameba's sites"
         service.setUserCredentials(username, password)
     }
 
