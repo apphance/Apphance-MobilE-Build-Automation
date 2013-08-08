@@ -41,6 +41,27 @@ class ExecuteIosBuildsSpec extends Specification {
         new File(testProject, "$path/GradleXCode-1.0_32_ahSYM").listFiles().size() > 0
     }
 
+    def 'single device variant with apphance is archived'() {
+        when:
+        runGradleOneVariant('cleanFlow', 'archiveGradleXCodeWithApphance')
+
+        then:
+        noExceptionThrown()
+
+        then:
+        def path = 'flow-ota/GradleXCode/1.0_32/GradleXCodeWithApphance/'
+        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32.ipa").exists()
+        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32.mobileprovision").exists()
+        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32.zip").exists()
+        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32_xcarchive.zip").exists()
+        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32_dSYM.zip").exists()
+        new File(testProject, "$path/manifest.plist").exists()
+        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32_ahSYM").exists()
+        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32_ahSYM").listFiles().size() > 0
+        new File(testProject, "flow-tmp/GradleXCodeWithApphance/Apphance-Pre-Production.framework").exists()
+    }
+
+
     def 'exception is raised on test fail during build'() {
         when:
         runGradleOneVariant('cleanFlow', 'testGradleXCodeWithSpace')
