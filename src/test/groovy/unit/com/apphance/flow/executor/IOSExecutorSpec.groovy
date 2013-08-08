@@ -64,7 +64,7 @@ class IOSExecutorSpec extends Specification {
 
     def 'plist is converted to json format well'() {
         when:
-        def json = iosExecutor.plistToJSON(new File(conf.rootDir, 'GradleXCode/GradleXCode-Info.plist'))
+        def json = iosExecutor.plistToJSON(new File(getClass().getResource('Test.plist').toURI()))
         json = json.join('\n')
 
         then:
@@ -72,8 +72,8 @@ class IOSExecutorSpec extends Specification {
 
         and:
         def slurped = new JsonSlurper().parseText(json)
-        slurped.CFBundleName == '${PRODUCT_NAME}'
-        slurped.CFBundleIdentifier == 'com.apphance.ameba'
+        slurped.CFBundleName == 'Some'
+        slurped.CFBundleIdentifier == 'com.apphance.flow'
     }
 
     def 'build settings got for target and configuration'() {

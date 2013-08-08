@@ -4,6 +4,7 @@ import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PlistParser
+import com.apphance.flow.plugins.ios.parsers.PlistParserSpec
 import com.google.common.io.Files
 import org.gradle.api.Project
 import spock.lang.Specification
@@ -22,13 +23,13 @@ class IOSReleaseConfigurationSpec extends Specification {
 
         def variantsConf = GroovyStub(IOSVariantsConfiguration)
         variantsConf.mainVariant >> GroovyStub(IOSVariant) {
-            getPlist() >> new File('testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist.json')
+            getPlist() >> new File(PlistParserSpec.class.getResource('Test.plist.json').toURI())
         }
 
         def parser = new PlistParser()
 
         parser.executor = GroovyMock(IOSExecutor) {
-            plistToJSON(_) >> new File('testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist.json').text.split('\n')
+            plistToJSON(_) >> new File(PlistParserSpec.class.getResource('Test.plist.json').toURI()).text.split('\n')
         }
 
         iosReleaseConf.conf = iosConf
