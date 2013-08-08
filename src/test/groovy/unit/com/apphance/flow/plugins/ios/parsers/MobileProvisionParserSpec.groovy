@@ -5,7 +5,7 @@ import spock.lang.Specification
 
 class MobileProvisionParserSpec extends Specification {
 
-    def input = new File('testProjects/ios/GradleXCode/release/distribution_resources/Ameba_Test_Project.mobileprovision.xml')
+    def input = new File(getClass().getResource('test.mobileprovision.xml').toURI())
     def executor = GroovySpy(IOSExecutor) {
         mobileprovisionToXml(_) >> input.text.split('\n')
     }
@@ -13,7 +13,7 @@ class MobileProvisionParserSpec extends Specification {
 
     def 'bundle id is read correctly'() {
         expect:
-        parser.bundleId(Mock(File)) == 'com.apphance.ameba'
+        parser.bundleId(Mock(File)) == 'com.apphance.flow'
     }
 
     def 'udids are read correctly'() {

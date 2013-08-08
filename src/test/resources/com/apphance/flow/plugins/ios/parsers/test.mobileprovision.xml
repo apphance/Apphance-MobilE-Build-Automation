@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>AppIDName</key>
-	<string>Ameba Test project</string>
+	<string>Flow Test project</string>
 	<key>ApplicationIdentifierPrefix</key>
 	<array>
 		<string>MT2B94Q7N6</string>
@@ -50,7 +50,7 @@
 	<key>Entitlements</key>
 	<dict>
 		<key>application-identifier</key>
-		<string>MT2B94Q7N6.com.apphance.ameba</string>
+		<string>MT2B94Q7N6.com.apphance.flow</string>
 		<key>get-task-allow</key>
 		<false/>
 		<key>keychain-access-groups</key>
@@ -61,7 +61,7 @@
 	<key>ExpirationDate</key>
 	<date>2013-05-06T12:08:10Z</date>
 	<key>Name</key>
-	<string>Ameba Test Project Ad Hoc</string>
+	<string>Flow Test Project Ad Hoc</string>
 	<key>ProvisionedDevices</key>
 	<array>
 		<string>c66f6b79a8473d858a73908ee08c41a0a9400a64</string>
