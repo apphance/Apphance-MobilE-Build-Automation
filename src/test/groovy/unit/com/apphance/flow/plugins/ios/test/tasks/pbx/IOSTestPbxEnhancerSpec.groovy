@@ -4,11 +4,11 @@ import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
 import groovy.json.JsonSlurper
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -23,7 +23,6 @@ class IOSTestPbxEnhancerSpec extends Specification {
     @Shared
     def pbxJSON = new File('testProjects/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
 
-    @Ignore('This test hangs in Jenkins, INVESTIGATE!!')
     def 'shell script is added to pbx'() {
         given:
         def tmpDir = createTempDir()
@@ -77,13 +76,10 @@ class IOSTestPbxEnhancerSpec extends Specification {
         noExceptionThrown()
 
         when:
-        def baos = new ByteArrayOutputStream()
-        def p = "plutil -convert json $pbx -o -".split().execute()
-        p.waitFor()
-        p.consumeProcessOutputStream(baos)
+        def pbxJson = commandExecutor.executeCommand(new Command(runDir: pbx.parentFile, cmd: ['plutil', '-convert', 'json', pbx, '-o', '-']))
 
         then:
-        def json = new JsonSlurper().parseText(baos.toString()) as Map
+        def json = new JsonSlurper().parseText(pbxJson.join('\n')) as Map
         def scripts = json.objects.findAll { it.value.isa == PBX_SHELL_SCRIPT_BUILD_PHASE && it.key.size() > 24 }
         scripts.size() == 1
         def script = scripts.iterator().next()
