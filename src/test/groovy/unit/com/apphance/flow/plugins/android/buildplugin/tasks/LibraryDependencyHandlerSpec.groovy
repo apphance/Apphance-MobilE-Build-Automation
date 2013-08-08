@@ -116,8 +116,8 @@ class LibraryDependencyHandlerSpec extends Specification {
 
         then:
         1 * handler.addTarget(dir, handler.preCompile(' <fileset dir="../somePath/gen/"/>   <fileset dir="other/path/../to/library/gen/"/> ')) >> null
-        1 * handler.addTarget(dir, handler.postCompile(
-                ' pl/com/company/R.class pl/com/company/R$*.class pl/com/company/BuildConfig.class   pl/org/linux/R.class pl/org/linux/R$*.class ' +
-                        'pl/org/linux/BuildConfig.class ')) >> null
+        1 * handler.addTarget(dir, handler.postCompile(' pl/com/company/*   pl/org/linux/* ')) >> null
+
+        0 * handler.addTarget(_, _) >> null
     }
 }

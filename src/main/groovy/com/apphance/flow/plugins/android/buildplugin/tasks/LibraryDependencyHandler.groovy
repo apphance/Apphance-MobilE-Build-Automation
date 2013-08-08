@@ -32,7 +32,7 @@ class LibraryDependencyHandler {
         def fileSets = relativePaths.collect { """ <fileset dir="$it/gen/"/> """ }.join(' ')
         addTarget projectRoot, preCompile(fileSets)
 
-        def excludes = packages.collect { " $it/R.class $it/R\$*.class $it/BuildConfig.class " }.join(' ')
+        def excludes = packages.collect { " $it/* " }.join(' ')
         addTarget projectRoot, postCompile(excludes)
     }
 
