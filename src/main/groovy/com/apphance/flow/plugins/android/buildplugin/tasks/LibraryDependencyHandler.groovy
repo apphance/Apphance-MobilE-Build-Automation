@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.android.buildplugin.tasks
 
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
+import groovy.io.FileType
 import groovy.transform.PackageScope
 import org.gradle.api.logging.Logging
 
@@ -22,17 +23,39 @@ class LibraryDependencyHandler {
             logger.info "android.library is true. Modifying build.xml"
             def relativePaths = libraryProjects.collect { relativeTo(projectRoot, it) }
             def packages = allLibraries.collect { androidPackage(it).replace('.', '/') }
-            modifyBuildXml projectRoot, relativePaths, packages
+            String classNames = ''
+            allLibraries.each { File file ->
+                logger.info "Searching for AIDL files in: $file.absolutePath"
+                new File(file, 'src').traverse(type: FileType.FILES, nameFilter: ~/.*\.aidl/) {
+                    logger.info "Found AIDL file: $it.absolutePath. Name: $it.name, package: ${getPackage(it)}"
+                    String aidlPackage = getPackage(it).replace('.', '/')
+                    String aidlName = it.name.replaceAll("(?i).aidl", '')
+                    String fullName = aidlPackage + '/' +aidlName
+                    classNames += " ${fullName}.class ${fullName}\$*.class ${fullName}.aidl "
+                }
+            }
+            modifyBuildXml projectRoot, relativePaths, packages, classNames
         }
         allLibraries
     }
 
+    String getPackage(File javaFile) {
+        def packageRegex = /\s*package\s+(\S+)\s*;.*/
+        javaFile.readLines().collect {
+            def matcher = it =~ packageRegex
+            if (matcher.matches()) {
+                matcher[0][1]
+            } else ''
+        }.find() ?: ''
+    }
+
     @PackageScope
-    void modifyBuildXml(File projectRoot, List<String> relativePaths, List<String> packages) {
+    void modifyBuildXml(File projectRoot, List<String> relativePaths, List<String> packages, String classNames) {
         def fileSets = relativePaths.collect { """ <fileset dir="$it/gen/"/> """ }.join(' ')
         addTarget projectRoot, preCompile(fileSets)
 
         def excludes = packages.collect { " $it/* " }.join(' ')
+        excludes += classNames
         addTarget projectRoot, postCompile(excludes)
     }
 

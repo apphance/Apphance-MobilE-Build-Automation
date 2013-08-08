@@ -2,10 +2,12 @@ package com.apphance.flow.plugins.android.buildplugin.tasks
 
 import com.apphance.flow.TestUtils
 import com.apphance.flow.util.FlowUtils
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import static com.apphance.flow.util.file.FileManager.relativeTo
 
+@Ignore
 @Mixin([TestUtils, FlowUtils])
 class LibraryDependencyHandlerSpec extends Specification {
 
@@ -119,5 +121,19 @@ class LibraryDependencyHandlerSpec extends Specification {
         1 * handler.addTarget(dir, handler.postCompile(' pl/com/company/*   pl/org/linux/* ')) >> null
 
         0 * handler.addTarget(_, _) >> null
+    }
+
+    def 'test getPackage'() {
+        expect:
+        handler.getPackage(file) == expectedPackage
+
+        where:
+        file                                                   | expectedPackage
+        tempFile << 'package com.polidea;'                     | 'com.polidea'
+        tempFile << 'com.polidea;'                             | ''
+        tempFile << '\n\npackage com.polidea;\n'               | 'com.polidea'
+        tempFile << '\n\npackage \tcom.polidea  ;  \n'         | 'com.polidea'
+        tempFile << '\n\n   \tpackage \t com.polidea \t ;  \n' | 'com.polidea'
+
     }
 }
