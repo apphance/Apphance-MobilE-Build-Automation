@@ -1,16 +1,17 @@
 package com.apphance.flow.executor.command
 
 import com.apphance.flow.executor.linker.FileLinker
+import com.apphance.flow.util.FlowUtils
 import com.apphance.flow.util.Preconditions
 import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
+import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
-import static java.lang.System.getProperties
 
-@Mixin(Preconditions)
+@Mixin([Preconditions, FlowUtils])
 class CommandExecutor {
 
     def logger = Logging.getLogger(getClass())
@@ -35,26 +36,18 @@ class CommandExecutor {
         Process process = runCommand(c, commandLogs)
 
         Integer exitValue = process?.waitFor()
-
-        handleExitValue exitValue, c, commandLogs
-
-        if (commandLogs[ERR]?.text) {
-            logger.warn("Command err: ${fileLinker.fileLink(commandLogs[ERR])}, contains some text. It may be info about" +
-                    " potential problems")
-        }
+        handleProcessResult exitValue, c, commandLogs[STD], commandLogs[ERR]
 
         commandLogs[STD]?.newInputStream()?.newReader()?.iterator()
     }
 
-    private Process runCommand(Command c, Map<CommandLogFilesGenerator.LogFile, File> commandLog) {
-        Process process = null
-
+    private Process runCommand(Command command, Map<LogFile, File> commandLog) {
         try {
-            def processBuilder = new ProcessBuilder(c.commandForExecution)
+            def processBuilder = new ProcessBuilder(command.commandForExecution)
             processBuilder.
-                    directory(c.runDir).
-                    redirectInput(prepareInputFile(c.input)).
-                    environment().putAll(c.environment)
+                    directory(command.runDir).
+                    redirectInput(tempFile << (command?.input*.trim()?.join('\n') ?: '')).
+                    environment().putAll(command.environment)
 
             //out and err is redirected separately because xcodebuild for some commands returns '0' but display
             //warnings which are redirected to std, then parsing of output command fails
@@ -62,40 +55,29 @@ class CommandExecutor {
             if (commandLog[STD]) processBuilder.redirectOutput(commandLog[STD])
             if (commandLog[ERR]) processBuilder.redirectError(commandLog[ERR])
 
-            process = processBuilder.start()
+            processBuilder.start()
 
         } catch (Exception e) {
-            if (c.failOnError) {
-                throw new CommandFailedException(e.message, c)
-            } else {
-                logger.error("Error while executing command: ${c.commandForPublic}, in dir: ${c.runDir}, error: ${e.message}")
+            if (command.failOnError) {
+                throw new CommandFailedException(e.message, command, commandLog[STD], commandLog[ERR])
             }
+            logger.error("Error while executing command: ${command.commandForPublic}, in dir: ${command.runDir}, error: ${e.message}")
+            null
         }
-
-        process
     }
 
-    private File prepareInputFile(Collection<String> input) {
-        def inputFile = new File(properties['java.io.tmpdir'].toString(), 'cmd-input')
-        inputFile.delete()
-        inputFile.createNewFile()//empty file is returned if no input passed
-        if (input) {
-            input.each { inputFile << "${it.trim()}\n" }
-        }
-        inputFile.deleteOnExit()
-        inputFile
-    }
-
-    private void handleExitValue(Integer exitValue, Command c, Map<CommandLogFilesGenerator.LogFile, File> commandLogs) {
-        throwIfConditionTrue(
-                (exitValue != 0 && c.failOnError),
-                "Error while executing: '$c.commandForPublic', in dir: '$c.runDir', exit value: '$exitValue'. " +
-                        "Output log: ${fileLinker.fileLink(commandLogs[STD])} " +
-                        "Error log: ${fileLinker.fileLink(commandLogs[ERR])}"
-        )
-        if (exitValue != 0 && !c.failOnError) {
+    void handleProcessResult(Integer exitValue, Command command, File stdoutLog, File stderrLog) {
+        if (exitValue != 0) {
+            if (command.failOnError) {
+                throw new CommandFailedException("Error while executing: '$command.commandForPublic', in dir: '$command.runDir', exit value: '$exitValue'.",
+                        command, stdoutLog, stderrLog)
+            }
             logger.warn("Executor is set not to fail on error, but command exited with value not equal to '0': '$exitValue'." +
-                    " Might be potential problem, investigate error log: ${fileLinker.fileLink(commandLogs[ERR])}")
+                    " Might be potential problem, investigate error log: ${fileLinker.fileLink(stderrLog)}")
+        }
+
+        if (stderrLog?.size()) {
+            logger.warn("Command err: ${fileLinker.fileLink(stderrLog)}, contains some text. It may be info about potential problems")
         }
     }
 }

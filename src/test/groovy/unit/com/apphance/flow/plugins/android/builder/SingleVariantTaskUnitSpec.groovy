@@ -9,12 +9,14 @@ import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.AndroidExecutor
 import com.apphance.flow.executor.AntExecutor
+import com.apphance.flow.executor.command.CommandFailedException
 import com.apphance.flow.plugins.android.buildplugin.tasks.AndroidProjectUpdater
 import com.apphance.flow.plugins.android.buildplugin.tasks.SingleVariantTask
 import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.util.FlowUtils
 import org.gradle.api.AntBuilder as AntBuilder
 import org.gradle.api.GradleException
+import org.gradle.api.logging.Logger
 import spock.lang.Specification
 
 import static com.apphance.flow.executor.AntExecutor.CLEAN
@@ -139,6 +141,30 @@ class SingleVariantTaskUnitSpec extends Specification {
         then:
         GradleException ex = thrown()
         ex.message == 'Error during merging manifests.'
+    }
+
+    def 'test incorrect android manifest hint'() {
+        given:
+        task.logger = GroovyMock(Logger)
+        task.antExecutor = GroovyStub(AntExecutor) {
+            executeTarget(_, _) >> {
+                throw new CommandFailedException(null, null, tempFile << content)
+            }
+        }
+
+        when:
+        task.executeBuildTarget(null, null)
+
+        then:
+        thrown(CommandFailedException)
+        1 * task.logger.info(* _)
+        number * task.logger.error("Error during source compilation. Probably some non-activity class was configured as activity in AndroidManifest.xml.\n" +
+                "Make sure that all <activity> tags in your manifest points to some activity classes and not to other classes like Fragment.")
+
+        where:
+        number | content
+        0      | "simple output"
+        1      | 'method onStart in class Apphance cannot be applied to given types'
     }
 
     List<String> permissions(File manifest) {
