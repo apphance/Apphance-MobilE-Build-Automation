@@ -9,7 +9,6 @@ import com.apphance.flow.configuration.ios.IOSBuildMode
 class IOSBuilderInfo {
 
     String id
-    String target //TODO to be removed and replaced with name?
     String appName
     String productName
     IOSBuildMode mode

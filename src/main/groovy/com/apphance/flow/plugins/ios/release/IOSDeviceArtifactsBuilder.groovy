@@ -1,8 +1,6 @@
 package com.apphance.flow.plugins.ios.release
 
-import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.Command
-import com.apphance.flow.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import com.apphance.flow.plugins.release.FlowArtifact
@@ -19,8 +17,6 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
     private logger = getLogger(getClass())
 
-    @Inject IOSArtifactProvider artifactProvider
-    @Inject IOSExecutor iosExecutor
     @Inject org.gradle.api.AntBuilder ant
     @Inject PlistParser plistParser
     @Inject IOSDumpReducer dumpReducer
@@ -124,7 +120,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         def bundleId = plistParser.bundleId(plist.call(bi))
         def binding = [
                 ipaUrl: releaseConf.ipaFiles.get(bi.id).url,
-                title: bi.target,
+                title: bi.productName,
                 bundleId: bundleId,
                 versionString: bi.versionString
         ]
@@ -147,9 +143,4 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     private Closure<File> plist = { IOSBuilderInfo bi ->
         new File("$bi.archiveDir${separator}Products${separator}Applications${separator}$bi.appName", 'Info.plist')
     }.memoize()
-
-    private void mkdirs(FlowArtifact fa) {
-        fa.location.parentFile.mkdirs()
-        fa.location.delete()
-    }
 }

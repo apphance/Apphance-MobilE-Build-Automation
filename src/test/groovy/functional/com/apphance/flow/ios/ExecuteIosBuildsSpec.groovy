@@ -61,7 +61,6 @@ class ExecuteIosBuildsSpec extends Specification {
         new File(testProject, "flow-tmp/GradleXCodeWithApphance/Apphance-Pre-Production.framework").exists()
     }
 
-
     def 'exception is raised on test fail during build'() {
         when:
         runGradleOneVariant('cleanFlow', 'testGradleXCodeWithSpace')
@@ -82,8 +81,8 @@ class ExecuteIosBuildsSpec extends Specification {
 
         then:
         def path = 'flow-ota/GradleXCode/1.0_32/GradleXCodeSimulator'
-        def iPadSim = new File(testProject, "$path/GradleXCodeSimulator-1.0_32-iPad-simulator-image.dmg")
-        def iPhoneSim = new File(testProject, "$path/GradleXCodeSimulator-1.0_32-iPhone-simulator-image.dmg")
+        def iPadSim = new File(testProject, "$path/GradleXCodeSimulator-1.0_32-iPad-sim-img.dmg")
+        def iPhoneSim = new File(testProject, "$path/GradleXCodeSimulator-1.0_32-iPhone-sim-img.dmg")
         iPhoneSim.exists()
         iPadSim.exists()
         iPhoneSim.size() > 30000

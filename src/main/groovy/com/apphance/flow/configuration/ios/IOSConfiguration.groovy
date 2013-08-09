@@ -19,7 +19,6 @@ class IOSConfiguration extends ProjectConfiguration {
 
     String configurationName = 'iOS Configuration'
 
-    public static final List<String> FAMILIES = ['iPad', 'iPhone']
     public static final PROJECT_PBXPROJ = 'project.pbxproj'
 
     @Inject IOSExecutor executor

@@ -156,12 +156,12 @@
                     </header>
                     <p>
                         <ul data-role="listview" data-inset="true" data-theme="a">
-                            <% conf.FAMILIES.each { family -> %>
-                            <% if (releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target] != null) { %>
+                            <% families.each { family -> %>
+                            <% if (releaseConf.dmgImageFiles[family.iFormat() + '-' + variantsConf.mainVariant.target] != null) { %>
                             <li>
-                                <a href="${releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target].getRelativeUrl(baseUrl)}"
+                                <a href="${releaseConf.dmgImageFiles[family.iFormat() + '-' + variantsConf.mainVariant.target].getRelativeUrl(baseUrl)}"
                                    rel="external">
-                                    <h3>${java.text.MessageFormat.format(rb.getString('Family_simulator'),family)}</h3>
+                                    <h3>${java.text.MessageFormat.format(rb.getString('Family_simulator'),family.iFormat())}</h3>
                                 </a>
                             </li>
                             <% } %>

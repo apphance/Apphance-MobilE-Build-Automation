@@ -39,8 +39,8 @@ class IOSDeviceArtifactsBuilderSpec extends Specification {
         when:
         deviceArtifactsBuilder.prepareManifestFile(GroovyMock(IOSBuilderInfo) {
             getId() >> 'variantId'
-            getTarget() >> 'sampleTarget'
             getVersionString() >> '3.1.45'
+            getProductName() >> 'SampleProduct'
         })
 
         then:
@@ -48,7 +48,7 @@ class IOSDeviceArtifactsBuilderSpec extends Specification {
         manifestFile.size() > 0
         manifestFile.text.contains('<string>http://ota.flow.com</string>')
         manifestFile.text.contains('<string>com.flow.bundleId</string>')
-        manifestFile.text.contains('<string>sampleTarget</string>')
+        manifestFile.text.contains('<string>SampleProduct</string>')
         manifestFile.text.contains('<string>3.1.45</string>')
 
         cleanup:
