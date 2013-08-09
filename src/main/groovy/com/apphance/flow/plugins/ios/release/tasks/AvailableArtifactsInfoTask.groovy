@@ -84,7 +84,6 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
                 fileIndexUrl: releaseConf.fileIndexFile?.url,
                 releaseNotes: releaseConf.releaseNotes,
                 installable: dmgImgFiles,
-                mainTarget: variantsConf.mainVariant.target,
                 families: IOSFamily.values(),
                 fileSize: getHumanReadableSize(fileSize),
                 releaseMailFlags: releaseConf.releaseMailFlags,

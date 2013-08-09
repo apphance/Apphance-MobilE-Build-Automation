@@ -251,14 +251,14 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
 
         slurper.body.div[1].div[0].text() == 'MainVariant'
         slurper.body.div[1].div[1].section.@id.text() == 'MainConf'
-        slurper.body.div[1].div[1].section.header.h3.text() == 'Configuration: MainConf'
+        slurper.body.div[1].div[1].header.h3.text() == 'Configuration: MainConf'
         slurper.body.div[1].div[1].section.p.ul.li.a.@href*.text().containsAll(
                 ['MainVariant.dist.zip', 'MainVariant.dsym.zip', 'MainVariant.ipa', 'MainVariant.manifest', 'MainVariant.mobileprovision', '#MainVariant-ahSYM', 'MainVariant_xcarchive.zip']
         )
 
         slurper.body.div[2].div[0].text() == 'Variant2'
         slurper.body.div[2].div[1].section.@id.text() == 'Conf2'
-        slurper.body.div[2].div[1].section.header.h3.text() == 'Configuration: Conf2'
+        slurper.body.div[2].div[1].header.h3.text() == 'Configuration: Conf2'
         slurper.body.div[2].div[1].section.p.ul.li.a.@href*.text().containsAll(
                 ['Variant2.dist.zip', 'Variant2.dsym.zip', 'Variant2.ipa', 'Variant2.manifest', 'Variant2.mobileprovision', '#Variant2-ahSYM', 'Variant2_xcarchive.zip']
         )

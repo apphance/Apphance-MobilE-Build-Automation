@@ -1,7 +1,6 @@
 package com.apphance.flow.plugins.ios.release
 
 import com.apphance.flow.configuration.ios.IOSFamily
-import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
@@ -15,7 +14,6 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
     def logger = getLogger(getClass())
 
-    @Inject IOSVariantsConfiguration variantsConf
     @Inject MobileProvisionParser mpParser
 
     void buildArtifacts(IOSBuilderInfo bi) {
@@ -49,8 +47,9 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
                 '-volname',
                 "$bi.appName-${family.iFormat()}"
         ]))
-        releaseConf.dmgImageFiles.put("${family.iFormat()}-${variantsConf.mainVariant.target}" as String, fa)
+        releaseConf.dmgImageFiles.put("${family.iFormat()}-$bi.id" as String, fa)
         logger.info("Simulator zip file created: $fa.location")
+        destDir.deleteDir()
     }
 
     private File destDir(IOSBuilderInfo bi, IOSFamily family) {

@@ -1,5 +1,6 @@
 package com.apphance.flow.ios
 
+import com.apphance.flow.configuration.ios.IOSFamily
 import org.gradle.tooling.ProjectConnection
 import spock.lang.Shared
 import spock.lang.Specification
@@ -80,13 +81,12 @@ class ExecuteIosBuildsSpec extends Specification {
         noExceptionThrown()
 
         then:
-        def path = 'flow-ota/GradleXCode/1.0_32/GradleXCodeSimulator'
-        def iPadSim = new File(testProject, "$path/GradleXCodeSimulator-1.0_32-iPad-sim-img.dmg")
-        def iPhoneSim = new File(testProject, "$path/GradleXCodeSimulator-1.0_32-iPhone-sim-img.dmg")
-        iPhoneSim.exists()
-        iPadSim.exists()
-        iPhoneSim.size() > 30000
-        iPadSim.size() > 30000
+
+        IOSFamily.values().every {
+            def f = new File(testProject,
+                    "flow-ota/GradleXCode/1.0_32/GradleXCodeSimulator/GradleXCodeSimulator-1.0_32-${it.iFormat()}-sim-img.dmg")
+            f.exists() && f.size() > 30000
+        }
     }
 
     def runGradleOneVariant(String... tasks) {
