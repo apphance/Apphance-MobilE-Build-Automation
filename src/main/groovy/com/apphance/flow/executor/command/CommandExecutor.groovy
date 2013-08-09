@@ -24,19 +24,6 @@ class CommandExecutor {
         this.logFileGenerator = logFileGenerator
     }
 
-    Process startCommand(Command c) {
-
-        def commandLogs = logFileGenerator.commandLogFiles()
-
-        logger.lifecycle("Starting command: '${c.commandForPublic}', in dir: '${c.runDir}' in background")
-        logger.lifecycle("Command std: ${fileLinker.fileLink(commandLogs[STD])}")
-        logger.lifecycle("Command err: ${fileLinker.fileLink(commandLogs[ERR])}")
-
-        Process process = runCommand(c, commandLogs)
-
-        process
-    }
-
     Iterator<String> executeCommand(Command c) {
 
         def commandLogs = logFileGenerator.commandLogFiles()

@@ -65,24 +65,6 @@ class CommandExecutorSpec extends Specification {
         output == []
     }
 
-    def 'executor starts command in background'() {
-        given:
-        def command = new Command(cmd: ['pwd'], runDir: '.' as File)
-
-        when:
-        def process = executor.startCommand(command)
-        def exitValue = process.waitFor()
-
-        then:
-        process instanceof Process
-        exitValue == 0
-
-        then:
-        logFiles[STD].exists()
-        logFiles[STD].text
-        new File(logFiles[STD].text.trim()).exists()
-    }
-
     //this test may by potentially unsafe on windows workstations
     def "executor invokes 'ls' command with dir passed through env variable"() {
 
