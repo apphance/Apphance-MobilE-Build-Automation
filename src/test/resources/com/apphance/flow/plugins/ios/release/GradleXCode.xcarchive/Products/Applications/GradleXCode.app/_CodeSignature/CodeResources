@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>files</key>
+	<dict>
+		<key>PkgInfo</key>
+		<data>
+		n57qDP4tZfLD1rCS43W0B4LQjzE=
+		</data>
+		<key>archived-expanded-entitlements.xcent</key>
+		<data>
+		gAelfbwLVozmE7EcmBrPZrZM3SU=
+		</data>
+		<key>embedded.mobileprovision</key>
+		<data>
+		ufxo+UF9zmTfJQu9dXkGm8o7Qh0=
+		</data>
+		<key>en.lproj/InfoPlist.strings</key>
+		<data>
+		zmV6UqBSo6r1NOz798vd5O4zTBA=
+		</data>
+		<key>en.lproj/MainStoryboard_iPad.storyboardc/2-view-5.nib</key>
+		<data>
+		qgmzw2kqVwlAV6wzHKoG9VBUyIw=
+		</data>
+		<key>en.lproj/MainStoryboard_iPad.storyboardc/UIViewController-2.nib</key>
+		<data>
+		Gm1xejREHVS8w7Zon4KUR4yNYNQ=
+		</data>
+		<key>en.lproj/MainStoryboard_iPhone.storyboardc/2-view-3.nib</key>
+		<data>
+		jfHywYRSpdyuunGvdnv0vhKaBj0=
+		</data>
+		<key>en.lproj/MainStoryboard_iPhone.storyboardc/UIViewController-2.nib</key>
+		<data>
+		K9XKzQy6q0ULHOjsGQDHi4evmdw=
+		</data>
+	</dict>
+	<key>rules</key>
+	<dict>
+		<key>.*</key>
+		<true/>
+		<key>Info.plist</key>
+		<dict>
+			<key>omit</key>
+			<true/>
+			<key>weight</key>
+			<real>10</real>
+		</dict>
+		<key>ResourceRules.plist</key>
+		<dict>
+			<key>omit</key>
+			<true/>
+			<key>weight</key>
+			<real>100</real>
+		</dict>
+	</dict>
+</dict>
+</plist>
