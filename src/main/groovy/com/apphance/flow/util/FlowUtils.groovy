@@ -55,4 +55,12 @@ class FlowUtils {
         int dotIndex = fileName.lastIndexOf('.')
         (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex)
     }
+
+    String getPackage(File javaFile) {
+        def packageRegex = /\s*package\s+(\S+)\s*;.*/
+        javaFile.readLines().collect {
+            def matcher = it =~ packageRegex
+            matcher.matches() ? matcher[0][1] : ''
+        }.find() ?: ''
+    }
 }

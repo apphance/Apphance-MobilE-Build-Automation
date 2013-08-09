@@ -94,6 +94,6 @@ class FileManager {
     static Boolean isAndroidLibrary(final File file) {
         assert file?.exists() && file.isDirectory()
         File propFile = new File(file, 'project.properties')
-        Boolean.valueOf(asProperties(propFile).getProperty('android.library'))
+        propFile.exists() && Boolean.valueOf(asProperties(propFile).getProperty('android.library'))
     }
 }

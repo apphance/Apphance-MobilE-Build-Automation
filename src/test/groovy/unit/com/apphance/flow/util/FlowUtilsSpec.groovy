@@ -36,4 +36,18 @@ class FlowUtilsSpec extends Specification {
         equalsIgnoreWhitespace('a b c', 'abc')
         equalsIgnoreWhitespace("\n\na b c\n", 'abc    ')
     }
+
+
+    def 'test getPackage'() {
+        expect:
+        getPackage(file) == expectedPackage
+
+        where:
+        file                                                   | expectedPackage
+        tempFile << 'package com.polidea;'                     | 'com.polidea'
+        tempFile << 'com.polidea;'                             | ''
+        tempFile << '\n\npackage com.polidea;\n'               | 'com.polidea'
+        tempFile << '\n\npackage \tcom.polidea  ;  \n'         | 'com.polidea'
+        tempFile << '\n\n   \tpackage \t com.polidea \t ;  \n' | 'com.polidea'
+    }
 }

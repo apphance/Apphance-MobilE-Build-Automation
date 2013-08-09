@@ -1,13 +1,14 @@
 package com.apphance.flow.plugins.android.buildplugin.tasks
 
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
-import groovy.io.FileType
+import com.apphance.flow.util.FlowUtils
 import groovy.transform.PackageScope
 import org.gradle.api.logging.Logging
 
 import static com.apphance.flow.util.file.FileManager.*
+import static groovy.io.FileType.FILES
 
-@Mixin(AndroidManifestHelper)
+@Mixin([AndroidManifestHelper, FlowUtils])
 class LibraryDependencyHandler {
 
     def logger = Logging.getLogger(this.class)
@@ -21,42 +22,59 @@ class LibraryDependencyHandler {
 
         if (libraryProjects && isAndroidLibrary(projectRoot)) {
             logger.info "android.library is true. Modifying build.xml"
+
             def relativePaths = libraryProjects.collect { relativeTo(projectRoot, it) }
-            def packages = allLibraries.collect { androidPackage(it).replace('.', '/') }
-            String classNames = ''
-            allLibraries.each { File file ->
-                logger.info "Searching for AIDL files in: $file.absolutePath"
-                new File(file, 'src').traverse(type: FileType.FILES, nameFilter: ~/.*\.aidl/) {
-                    logger.info "Found AIDL file: $it.absolutePath. Name: $it.name, package: ${getPackage(it)}"
-                    String aidlPackage = getPackage(it).replace('.', '/')
-                    String aidlName = it.name.replaceAll("(?i).aidl", '')
-                    String fullName = aidlPackage + '/' +aidlName
-                    classNames += " ${fullName}.class ${fullName}\$*.class ${fullName}.aidl "
-                }
-            }
-            modifyBuildXml projectRoot, relativePaths, packages, classNames
+            def excludes = getExcludes(allLibraries)
+            modifyBuildXml projectRoot, relativePaths, excludes
         }
         allLibraries
     }
 
-    String getPackage(File javaFile) {
-        def packageRegex = /\s*package\s+(\S+)\s*;.*/
-        javaFile.readLines().collect {
-            def matcher = it =~ packageRegex
-            if (matcher.matches()) {
-                matcher[0][1]
-            } else ''
-        }.find() ?: ''
+    @PackageScope
+    List<String> getExcludes(List<File> allLibraries) {
+        libPackageExcludes(allLibraries) + aidlExcludes(allLibraries)
+    }
+
+    List<String> libPackageExcludes(List<File> allLibraries) {
+        def packages = allLibraries.collect { androidPackage(it).replace('.', '/') }
+        packages.collect { "$it/*" } as List<String>
     }
 
     @PackageScope
-    void modifyBuildXml(File projectRoot, List<String> relativePaths, List<String> packages, String classNames) {
+    List<String> aidlExcludes(List<File> allLibraries) {
+        aidlFiles(allLibraries).collect { excludesFromAidlFile(it) }.flatten()
+    }
+
+    @PackageScope
+    List<File> aidlFiles(List<File> allLibraries) {
+        List<File> files = []
+        allLibraries.each { File lib ->
+            File src = new File(lib, 'src')
+            logger.info "Searching for AIDL files in: ${src.absolutePath}"
+            if (!src.exists()) {
+                logger.info "No src dir. Continue in next lib"
+                return
+            }
+            src.traverse(type: FILES, nameFilter: ~/(?i).*\.aidl/) {
+                logger.info "Found AIDL file: $it.absolutePath. Name: $it.name, package: ${getPackage(it)}"
+                files += it
+            }
+        }
+        files
+    }
+
+    @PackageScope
+    List<String> excludesFromAidlFile(File aidlFile) {
+        String aidlPackage = getPackage(aidlFile).replace('.', '/')
+        String fullName = aidlPackage + '/' + aidlFile.name.replaceAll("(?i).aidl", '')
+        ["${fullName}.class".toString(), "${fullName}\$*.class", "${aidlPackage}/$aidlFile.name"]
+    }
+
+    @PackageScope
+    void modifyBuildXml(File projectRoot, List<String> relativePaths, List<String> excludes) {
         def fileSets = relativePaths.collect { """ <fileset dir="$it/gen/"/> """ }.join(' ')
         addTarget projectRoot, preCompile(fileSets)
-
-        def excludes = packages.collect { " $it/* " }.join(' ')
-        excludes += classNames
-        addTarget projectRoot, postCompile(excludes)
+        addTarget projectRoot, postCompile(excludes.join(' '))
     }
 
     @PackageScope

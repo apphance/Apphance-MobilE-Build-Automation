@@ -2,12 +2,10 @@ package com.apphance.flow.plugins.android.buildplugin.tasks
 
 import com.apphance.flow.TestUtils
 import com.apphance.flow.util.FlowUtils
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import static com.apphance.flow.util.file.FileManager.relativeTo
 
-@Ignore
 @Mixin([TestUtils, FlowUtils])
 class LibraryDependencyHandlerSpec extends Specification {
 
@@ -48,9 +46,12 @@ class LibraryDependencyHandlerSpec extends Specification {
         1 * handler.handleLibraryDependencies(wawa)
         1 * handler.handleLibraryDependencies(wola)
 
-        1 * handler.modifyBuildXml(pl, ['libs/Warsaw'], ['com/wawa', 'com/wola']) >> null
-        1 * handler.modifyBuildXml(wawa, ['libs/Wola'], ['com/wola']) >> null
+        1 * handler.modifyBuildXml(pl, ['libs/Warsaw'], ['com/wawa/*', 'com/wola/*']) >> null
+        1 * handler.modifyBuildXml(wawa, ['libs/Wola'], ['com/wola/*']) >> null
         0 * handler.modifyBuildXml(_, _, _) >> null
+        1 * handler.getExcludes([wola])
+        1 * handler.getExcludes([wawa, wola])
+        0 * handler.getExcludes(_)
 
         allLibraries.collect { relativeTo(root, it) }.sort() == ['libs/Poland', 'libs/Poland/libs/Warsaw', 'libs/Poland/libs/Warsaw/libs/Wola', 'libs/UK']
 
@@ -111,29 +112,67 @@ class LibraryDependencyHandlerSpec extends Specification {
         def handler = GroovySpy(LibraryDependencyHandler)
         def dir = temporaryDir
         def relativePaths = ['../somePath', 'other/path/../to/library']
-        def packages = ['pl/com/company', 'pl/org/linux']
+        def excludes = ['pl/com/company/*', 'pl/org/linux/*']
 
         when:
-        handler.modifyBuildXml(dir, relativePaths, packages)
+        handler.modifyBuildXml(dir, relativePaths, excludes)
 
         then:
         1 * handler.addTarget(dir, handler.preCompile(' <fileset dir="../somePath/gen/"/>   <fileset dir="other/path/../to/library/gen/"/> ')) >> null
-        1 * handler.addTarget(dir, handler.postCompile(' pl/com/company/*   pl/org/linux/* ')) >> null
+        1 * handler.addTarget(dir, handler.postCompile('pl/com/company/* pl/org/linux/*')) >> null
 
         0 * handler.addTarget(_, _) >> null
     }
 
-    def 'test getPackage'() {
-        expect:
-        handler.getPackage(file) == expectedPackage
+    def 'test search aidl file'() {
+        given:
+        File lib1 = temporaryDir
+        File src1 = new File(lib1, 'src')
+        src1.mkdir()
+        new File(src1, '1.aidl').createNewFile()
 
-        where:
-        file                                                   | expectedPackage
-        tempFile << 'package com.polidea;'                     | 'com.polidea'
-        tempFile << 'com.polidea;'                             | ''
-        tempFile << '\n\npackage com.polidea;\n'               | 'com.polidea'
-        tempFile << '\n\npackage \tcom.polidea  ;  \n'         | 'com.polidea'
-        tempFile << '\n\n   \tpackage \t com.polidea \t ;  \n' | 'com.polidea'
+        File lib2 = temporaryDir
+        File src2 = new File(lib2, 'src/some/sub/dir')
+        src2.mkdirs()
+        new File(src2, '2.aidl').createNewFile()
+
+        expect:
+        handler.aidlFiles([lib1, lib2])*.name.sort() == ['1.aidl', '2.aidl']
+    }
+
+    def 'test excludesFromAidlFile'() {
+        given:
+        File aidl = new File(temporaryDir, 'SomeName.aidl') << 'package com.google.package;'
+
+        expect:
+        handler.excludesFromAidlFile(aidl) == ['com/google/package/SomeName.class', 'com/google/package/SomeName$*.class', 'com/google/package/SomeName.aidl']
+    }
+
+    def 'test aidlExcludes'() {
+        given:
+        def handler = GroovySpy(LibraryDependencyHandler)
+        handler.aidlFiles(_) >> [
+                new File(temporaryDir, 'SomeName.aidl') << 'package com.google.package;',
+                new File(temporaryDir, 'Other.aidl') << 'package com.google.other;']
+
+        expect:
+        handler.aidlExcludes([]) ==
+                ['com/google/package/SomeName.class', 'com/google/package/SomeName$*.class', 'com/google/package/SomeName.aidl',
+                        'com/google/other/Other.class', 'com/google/other/Other$*.class', 'com/google/other/Other.aidl']
+    }
+
+    def 'test getExcludes call aidl excludes'() {
+        given:
+        def handler = GroovySpy(LibraryDependencyHandler)
+        def allLibraries = [tempFile]
+
+        when:
+        handler.getExcludes(allLibraries)
+
+        then:
+        1 * handler.libPackageExcludes(allLibraries) >> []
+        1 * handler.aidlExcludes(allLibraries) >> []
 
     }
+
 }
