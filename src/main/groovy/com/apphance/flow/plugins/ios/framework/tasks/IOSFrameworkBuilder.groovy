@@ -12,10 +12,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 
-/**
- * Builds iOS framework.
- */
-class BuildFrameworkTask extends DefaultTask {
+class IOSFrameworkBuilder extends DefaultTask {
 
     static String NAME = 'buildFramework'
     String group = FLOW_BUILD

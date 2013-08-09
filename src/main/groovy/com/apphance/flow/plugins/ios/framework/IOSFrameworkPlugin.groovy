@@ -4,7 +4,7 @@ import com.apphance.flow.configuration.ios.IOSFrameworkConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
-import com.apphance.flow.plugins.ios.framework.tasks.BuildFrameworkTask
+import com.apphance.flow.plugins.ios.framework.tasks.IOSFrameworkBuilder
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -33,9 +33,9 @@ class IOSFrameworkPlugin implements Plugin<Project> {
         if (frameworkConf.isEnabled()) {
             logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
-            def task = project.task(BuildFrameworkTask.NAME,
-                    type: BuildFrameworkTask,
-                    dependsOn: [CopyMobileProvisionTask.NAME]) as BuildFrameworkTask
+            def task = project.task(IOSFrameworkBuilder.NAME,
+                    type: IOSFrameworkBuilder,
+                    dependsOn: [CopyMobileProvisionTask.NAME]) as IOSFrameworkBuilder
 
             task.variant = frameworkVariant()
         }
