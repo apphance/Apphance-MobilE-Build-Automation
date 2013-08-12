@@ -209,7 +209,7 @@ class AndroidManifestHelper {
         assert projectProperties.exists()
         List<String> lines = projectProperties.readLines()
         int libSize = maxLibNumber(lines)
-        projectProperties << "android.library.reference.${libSize + 1}=$lib"
+        projectProperties << "\nandroid.library.reference.${libSize + 1}=$lib"
     }
 
     int maxLibNumber(List<String> lines) {
