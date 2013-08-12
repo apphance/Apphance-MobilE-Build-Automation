@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('com.apphance.flow:apphance-flow:1.0+')
+        classpath('com.apphance.flow:apphance-flow:1.0.4')
     }
 }
 
