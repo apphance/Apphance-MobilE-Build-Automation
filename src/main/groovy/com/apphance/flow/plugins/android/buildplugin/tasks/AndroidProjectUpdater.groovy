@@ -15,6 +15,10 @@ class AndroidProjectUpdater {
 
     void updateRecursively(File dir, String target = null, String name = null) {
         updateProject(dir, target, name)
+        def src = new File(dir, 'src')
+        if (!src.exists()) {
+            src.mkdir()
+        }
         def propFile = new File(dir, 'project.properties')
 
         if (propFile.exists()) {
