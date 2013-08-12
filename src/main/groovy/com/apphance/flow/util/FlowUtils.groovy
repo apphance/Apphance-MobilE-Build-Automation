@@ -1,13 +1,15 @@
 package com.apphance.flow.util
 
 import groovy.io.FileType
-
-import java.nio.file.Files
+import org.gradle.api.logging.Logging
 
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
+import static com.google.common.base.Preconditions.checkNotNull
 import static java.io.File.createTempFile
 
 class FlowUtils {
+
+    private def logger = Logging.getLogger(this.class)
 
     List<File> allFiles(Map options) {
         def files = []
@@ -30,7 +32,8 @@ class FlowUtils {
     }
 
     File downloadToTempFile(String url) {
-        File file = Files.createTempFile('tempFile', '.ext').toFile()
+        File file = tempFile
+        logger.info "Downloading $url to file: $file.absolutePath"
         file.append(url.toURL().newInputStream())
         assert file.size() > 0, "Empty downloaded file: $url"
         file
@@ -45,5 +48,21 @@ class FlowUtils {
         File file = createTempFile('prefix', 'suffix')
         file.deleteOnExit()
         file
+    }
+
+    //gradle guava 11 workaround
+    String getNameWithoutExtension(String file) {
+        checkNotNull(file)
+        String fileName = new File(file).getName()
+        int dotIndex = fileName.lastIndexOf('.')
+        (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex)
+    }
+
+    String getPackage(File javaFile) {
+        def packageRegex = /\s*package\s+(\S+)\s*;.*/
+        javaFile.readLines().collect {
+            def matcher = it =~ packageRegex
+            matcher.matches() ? matcher[0][1] : ''
+        }.find() ?: ''
     }
 }

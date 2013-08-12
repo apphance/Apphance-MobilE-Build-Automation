@@ -2,10 +2,12 @@ package com.apphance.flow.configuration.android.variants
 
 import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
+import com.apphance.flow.configuration.apphance.ApphanceMode
 import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.variants.AbstractVariant
+import com.apphance.flow.util.FlowUtils
 import com.google.common.io.Files
 import com.google.inject.assistedinject.Assisted
 import com.google.inject.assistedinject.AssistedInject
@@ -15,12 +17,15 @@ import java.nio.file.Paths
 
 import static com.apphance.flow.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.flow.configuration.android.AndroidBuildMode.RELEASE
+import static com.apphance.flow.configuration.apphance.ApphanceMode.PROD
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static java.nio.charset.StandardCharsets.UTF_8
 
+@Mixin(FlowUtils)
 class AndroidVariantConfiguration extends AbstractVariant {
 
     final String prefix = 'android'
+    static def APPHANCE_MAVEN = 'http://repo1.maven.org/maven2/com/utest/'
 
     @Inject AndroidReleaseConfiguration androidReleaseConf
     private File vDir
@@ -57,8 +62,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
     }
 
     def variantDir = new FileProperty(
-            interactive: { false },
-            //validator: { it in releaseConf.findMobileProvisionFiles()*.name }TODO
+            interactive: { false }
     )
 
     def oldPackage = new StringProperty(interactive: { false })
@@ -69,7 +73,18 @@ class AndroidVariantConfiguration extends AbstractVariant {
 
     @Override
     List<String> possibleApphanceLibVersions() {
-        apphanceArtifactory.androidLibraries(apphanceMode.value)
+        parseVersionsFromMavenMetadata(apphanceMode.value)
+    }
+
+    List<String> parseVersionsFromMavenMetadata(ApphanceMode mode) {
+        try {
+            def file = downloadToTempFile APPHANCE_MAVEN + "apphance-${mode == PROD ? 'prod' : 'preprod'}/maven-metadata.xml"
+            def metadata = new XmlSlurper().parse(file)
+            metadata.versioning.versions.version.collect { it.text() }
+        } catch (Exception exp) {
+            logger.warn "error during parsing apphance lib versions from maven: $exp.message"
+            []
+        }
     }
 
     @Override
@@ -86,7 +101,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
     }
 
     void checkSigningConfiguration() {
-        def file = new File(tmpDir, 'ant.properties')//project.file('ant.properties')
+        def file = new File(tmpDir, 'ant.properties')
         check file.exists(), "If release or apphance plugin is enabled ant.properties should be present in ${tmpDir.absolutePath}"
 
         if (file.exists()) {

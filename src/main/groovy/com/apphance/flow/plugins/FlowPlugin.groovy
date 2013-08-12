@@ -14,12 +14,14 @@ class FlowPlugin implements Plugin<Project> {
 
     static final Version BORDER_VERSION = new Version('1.7')
 
-    def l = getLogger(getClass())
-
+    def logger = getLogger(getClass())
 
     @Override
     void apply(Project project) {
-        l.lifecycle(FLOW_ASCII_ART)
+        logger.lifecycle FLOW_ASCII_ART
+
+        String version = flowVersion(project)
+        logger.lifecycle "Apphance Flow version: ${version}\n"
 
         validateJavaRuntimeVersion()
 
@@ -34,6 +36,11 @@ class FlowPlugin implements Plugin<Project> {
         injector.getInstance(PluginMaster).enhanceProject(project)
 
         project.tasks.each { injector.injectMembers(it) }
+    }
+
+    String flowVersion(Project project) {
+        File flowJar = project.buildscript.configurations.classpath.find { it.name.contains('apphance-flow') } as File
+        getVersion(flowJar?.name)
     }
 
     @PackageScope
@@ -51,12 +58,17 @@ class FlowPlugin implements Plugin<Project> {
         version.substring(0, underscore >= 0 ? underscore : version.length()).trim()
     }
 
+    static String getVersion(String fileName) {
+        def regex = /.*-(\d.*).jar/
+        def matcher = (fileName =~ regex)
+        matcher.matches() ? (matcher.getAt(0) as List)?.get(1) : ''
+    }
+
     static String FLOW_ASCII_ART = """
         |    _             _                       ___ _
         |   /_\\  _ __ _ __| |_  __ _ _ _  __ ___  | __| |_____ __ __
         |  / _ \\| '_ \\ '_ \\ ' \\/ _` | ' \\/ _/ -_) | _|| / _ \\ V  V /
         | /_/ \\_\\ .__/ .__/_||_\\__,_|_||_\\__\\___| |_| |_\\___/\\_/\\_/
         |       |_|  |_|
-        |
         |""".stripMargin()
 }

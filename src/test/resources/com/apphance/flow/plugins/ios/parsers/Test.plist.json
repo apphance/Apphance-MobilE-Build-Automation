@@ -1,0 +1,42 @@
+{
+    "CFBundleDevelopmentRegion": "en", 
+    "CFBundleDisplayName": "${PRODUCT_NAME}", 
+    "CFBundleExecutable": "${EXECUTABLE_NAME}", 
+    "CFBundleIconFiles": [
+        "icon.png", 
+        "icon_retina.png"
+    ], 
+    "CFBundleIcons": {
+        "CFBundlePrimaryIcon": {
+            "CFBundleIconFiles": [
+                "icon.png", 
+                "icon_retina.png"
+            ], 
+            "UIPrerenderedIcon": false
+        }
+    }, 
+    "CFBundleIdentifier": "com.apphance.flow",
+    "CFBundleInfoDictionaryVersion": "6.0", 
+    "CFBundleName": "${PRODUCT_NAME}", 
+    "CFBundlePackageType": "APPL", 
+    "CFBundleShortVersionString": "1.0", 
+    "CFBundleSignature": "????", 
+    "CFBundleVersion": "32", 
+    "LSRequiresIPhoneOS": true, 
+    "UIMainStoryboardFile": "MainStoryboard_iPhone", 
+    "UIMainStoryboardFile~ipad": "MainStoryboard_iPad", 
+    "UIRequiredDeviceCapabilities": [
+        "armv7"
+    ], 
+    "UISupportedInterfaceOrientations": [
+        "UIInterfaceOrientationPortrait", 
+        "UIInterfaceOrientationLandscapeLeft", 
+        "UIInterfaceOrientationLandscapeRight"
+    ], 
+    "UISupportedInterfaceOrientations~ipad": [
+        "UIInterfaceOrientationPortrait", 
+        "UIInterfaceOrientationPortraitUpsideDown", 
+        "UIInterfaceOrientationLandscapeLeft", 
+        "UIInterfaceOrientationLandscapeRight"
+    ]
+}

@@ -15,8 +15,10 @@ class PbxJsonParser {
     public static final String PBX_GROUP = 'PBXGroup'
     public static final String PBX_FRAMEWORKS_BUILD_PHASE = 'PBXFrameworksBuildPhase'
     public static final String PBX_SOURCES_BUILD_PHASE = 'PBXSourcesBuildPhase'
+    public static final String PBX_SHELL_SCRIPT_BUILD_PHASE = 'PBXShellScriptBuildPhase'
     public static final String INFOPLIST_FILE = 'INFOPLIST_FILE'
     public static final String XCBUILD_CONFIGURATION = 'XCBuildConfiguration'
+
 
     @Inject IOSExecutor executor
 

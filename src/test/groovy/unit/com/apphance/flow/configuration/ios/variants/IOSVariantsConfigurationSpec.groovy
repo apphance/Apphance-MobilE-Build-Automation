@@ -21,9 +21,6 @@ class IOSVariantsConfigurationSpec extends Specification {
         variantsConf.conf = conf
         variantsConf.propertyPersister = Stub(PropertyPersister, { get(_) >> '' })
         variantsConf.variantFactory = vf
-        variantsConf.schemeParser = GroovyMock(XCSchemeParser) {
-            isBuildable(_) >> true
-        }
     }
 
     @Unroll
@@ -43,7 +40,8 @@ class IOSVariantsConfigurationSpec extends Specification {
 
     def 'variantNames validator works'() {
         given:
-        def variantsConf = new IOSVariantsConfiguration()
+        def variantsConf = GroovySpy(IOSVariantsConfiguration)
+        variantsConf.possibleVariants >> ['v1', 'v2']
 
         expect:
         variantsConf.variantsNames.validator(input) == expected
@@ -63,7 +61,8 @@ class IOSVariantsConfigurationSpec extends Specification {
         given:
         def xcodeDir = new File(getClass().getResource('iosProject').toURI())
 
-        variantsConf.conf = GroovyMock(IOSConfiguration) {
+        and:
+        def conf = GroovyMock(IOSConfiguration) {
             getXcodeDir() >> new FileProperty(value: xcodeDir)
             getSchemes() >> ['GradleXCode',
                     'GradleXCode With Space',
@@ -72,17 +71,15 @@ class IOSVariantsConfigurationSpec extends Specification {
                     'GradleXCodeWith2Targets',
                     'GradleXCode 2']
         }
-        variantsConf.schemeParser = new XCSchemeParser()
-
-        expect:
-        variantsConf.schemesDeclared()
-        variantsConf.schemesShared()
-        variantsConf.schemesBuildable()
-        variantsConf.schemesHasSingleBuildableTarget()
-        variantsConf.hasSchemes
 
         and:
-        variantsConf.possibleVariants.sort() == ['GradleXCode', 'GradleXCode With Space', 'GradleXCodeWithApphance']
+        def schemeInfo = new IOSSchemeInfo(schemeParser: new XCSchemeParser(), conf: conf)
 
+        and:
+        variantsConf.conf = conf
+        variantsConf.schemeInfo = schemeInfo
+
+        expect:
+        variantsConf.possibleVariants.sort() == ['GradleXCode', 'GradleXCode With Space', 'GradleXCodeWithApphance']
     }
 }

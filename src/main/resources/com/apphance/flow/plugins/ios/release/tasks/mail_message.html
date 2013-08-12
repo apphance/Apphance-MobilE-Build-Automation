@@ -31,14 +31,6 @@
         <p>
             <b>${rb.getString('Extras')}</b>
             <ul>
-                <% if (releaseMailFlags.value.contains('installableSimulator') && installable.size() > 0 ) { %>
-                    <% families.each { family -> %>
-                        <% artifact = installable["${family}-${mainTarget}"] %>
-                        <li>
-                            <a href="${artifact.url}">${java.text.MessageFormat.format(rb.getString('Download_for_simulator'), family) }</a>
-                        </li>
-                    <% } %>
-                <% } %>
                 <li><a href="${fileIndexUrl}">${rb.getString('More_information_and_files_to_download')}</a></li>
             </ul>
         </p>

@@ -16,8 +16,6 @@ class AndroidManifestHelperSpec extends Specification {
     @Shared
     def basic = new File('testProjects/android/android-basic')
     @Shared
-    def noApphanceApplication = new File('testProjects/android/android-no-apphance-application')
-    @Shared
     def androidManifestHelper = new AndroidManifestHelper()
 
     def 'package is read correctly'() {
@@ -127,11 +125,6 @@ class AndroidManifestHelperSpec extends Specification {
         }
     }
 
-    def 'main activity name is read correctly deprecated method'() {
-        expect:
-        androidManifestHelper.getMainActivityName(new File('testProjects/apphance-updates/')) == 'pl.morizon.client.ui.HomeActivity'
-    }
-
     def 'main activity name is read correctly'() {
         expect:
         androidManifestHelper.getMainActivitiesFromProject(new File('testProjects/apphance-updates/')) == ['pl.morizon.client.ui.HomeActivity'] as Set
@@ -185,6 +178,18 @@ class AndroidManifestHelperSpec extends Specification {
         'com.polidea.Activity'  | 'com.polidea' | 'com.polidea.Activity'
         'com.facebook.Activity' | 'com.polidea' | 'com.facebook.Activity'
 
+    }
+
+
+    def 'test maxLibNumber'() {
+        given:
+        def lines = """
+            |android.library.reference.1=../libs/cocos2d/cocos2dx/platform/android/java
+            |android.library.reference.4=libs/facebook-android-sdk/facebook
+            |android.library.reference.10=libs/google-play-services_lib""".stripMargin().split('\n')*.trim()
+
+        expect:
+        androidManifestHelper.maxLibNumber(lines) == 10
     }
 
     private GPathResult parsedManifest(File manifest) {

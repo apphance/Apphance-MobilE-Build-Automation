@@ -43,13 +43,23 @@
       buildConfiguration = "Debug">
       <Testables>
          <TestableReference
-            skipped = "NO">
+            skipped = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D382B73414703FE500E9CC9B"
                BuildableName = "GradleXCodeTests.octest"
                BlueprintName = "GradleXCodeTests"
                ReferencedContainer = "container:GradleXCode.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "YES">
+            <BuildableReference
+                BuildableIdentifier = "primary"
+                BlueprintIdentifier = "D382B73414703FE500E9CC9C"
+                BuildableName = "GradleXCodeTests.octest"
+                BlueprintName = "GradleXCodeTests"
+                ReferencedContainer = "container:GradleXCode.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

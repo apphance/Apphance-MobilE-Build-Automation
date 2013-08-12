@@ -50,4 +50,9 @@ class Version implements Comparable<Version> {
             return false
         this.compareTo((Version) that) == 0
     }
+
+    @Override
+    String toString() {
+        version
+    }
 }

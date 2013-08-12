@@ -203,13 +203,13 @@ Build settings for action build and target GradleXCode:
     PRESERVE_DEAD_CODE_INITS_AND_TERMS = NO
     PRIVATE_HEADERS_FOLDER_PATH = GradleXCode.app/PrivateHeaders
     PRODUCT_NAME = GradleXCode
-    PRODUCT_SETTINGS_PATH = /Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist
+    PRODUCT_SETTINGS_PATH = /Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist
     PRODUCT_TYPE = com.apple.product-type.application
     PROFILING_CODE = NO
     PROJECT = GradleXCode
     PROJECT_DERIVED_FILE_DIR = /Users/opal/Library/Developer/Xcode/DerivedData/GradleXCode-dqoeizjiirykyqfwdumupjtrbwkt/Build/Intermediates/GradleXCode.build/DerivedSources
-    PROJECT_DIR = /Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode
-    PROJECT_FILE_PATH = /Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode/GradleXCode.xcodeproj
+    PROJECT_DIR = /Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode
+    PROJECT_FILE_PATH = /Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode/GradleXCode.xcodeproj
     PROJECT_NAME = GradleXCode
     PROJECT_TEMP_DIR = /Users/opal/Library/Developer/Xcode/DerivedData/GradleXCode-dqoeizjiirykyqfwdumupjtrbwkt/Build/Intermediates/GradleXCode.build
     PROJECT_TEMP_ROOT = /Users/opal/Library/Developer/Xcode/DerivedData/GradleXCode-dqoeizjiirykyqfwdumupjtrbwkt/Build/Intermediates
@@ -242,8 +242,8 @@ Build settings for action build and target GradleXCode:
     SHARED_PRECOMPS_DIR = /Users/opal/Library/Developer/Xcode/DerivedData/GradleXCode-dqoeizjiirykyqfwdumupjtrbwkt/Build/Intermediates/PrecompiledHeaders
     SHARED_SUPPORT_FOLDER_PATH = GradleXCode.app/SharedSupport
     SKIP_INSTALL = NO
-    SOURCE_ROOT = /Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode
-    SRCROOT = /Users/opal/workspace/polidea/projects/ameba/testProjects/ios/GradleXCode
+    SOURCE_ROOT = /Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode
+    SRCROOT = /Users/opal/workspace/polidea/projects/flow/testProjects/ios/GradleXCode
     STRINGS_FILE_OUTPUT_ENCODING = binary
     STRIP_INSTALLED_PRODUCT = YES
     STRIP_STYLE = all

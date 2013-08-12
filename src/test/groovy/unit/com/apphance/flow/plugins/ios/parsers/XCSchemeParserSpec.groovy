@@ -5,8 +5,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
-import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.LAUNCH_ACTION
+import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.*
 import static com.google.common.io.Files.copy
 import static com.google.common.io.Files.createTempDir
 
@@ -27,6 +26,7 @@ class XCSchemeParserSpec extends Specification {
         action         | conf
         LAUNCH_ACTION  | 'BasicConfiguration'
         ARCHIVE_ACTION | 'Release'
+        TEST_ACTION    | 'Debug'
     }
 
     def 'blueprintIdentifier for scheme is read correctly'() {
@@ -93,5 +93,26 @@ class XCSchemeParserSpec extends Specification {
         scheme  | hasSingleBuildableTarget
         scheme1 | true
         scheme2 | false
+    }
+
+    @Unroll
+    def 'scheme (#scheme) has test targets as expected'() {
+        expect:
+        parser.hasEnabledTestTargets(scheme) == hasSingleBuildableTarget
+
+        where:
+        scheme  | hasSingleBuildableTarget
+        scheme1 | true
+        scheme2 | false
+    }
+
+    def 'testable targets found for given scheme file'() {
+        expect:
+        parser.findActiveTestableBlueprintIds(scheme) == targets
+
+        where:
+        scheme  | targets
+        scheme1 | ['D382B73414703FE500E9CC9B']
+        scheme2 | []
     }
 }

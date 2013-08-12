@@ -1,5 +1,6 @@
 package com.apphance.flow.plugins.ios.release.tasks
 
+import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
@@ -11,7 +12,6 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ios.IOSConfiguration.FAMILIES
 import static com.apphance.flow.util.file.FileManager.getHumanReadableSize
 import static java.net.URLEncoder.encode
 
@@ -84,8 +84,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
                 fileIndexUrl: releaseConf.fileIndexFile?.url,
                 releaseNotes: releaseConf.releaseNotes,
                 installable: dmgImgFiles,
-                mainTarget: conf.variantsConf.mainVariant.target,
-                families: FAMILIES,
+                families: IOSFamily.values(),
                 fileSize: getHumanReadableSize(fileSize),
                 releaseMailFlags: releaseConf.releaseMailFlags,
                 rb: bundle('mail_message')
@@ -100,7 +99,8 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
                 releaseConf: releaseConf,
                 variantsConf: variantsConf,
                 udids: udids,
-                rb: bundle('file_index')
+                rb: bundle('file_index'),
+                families: IOSFamily.values()
         ] + basicBinding
         def result = fillTemplate(loadTemplate('file_index.html'), binding)
         templateToFile(releaseConf.fileIndexFile.location, result)
@@ -115,6 +115,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
                 conf: conf,
                 variantsConf: variantsConf,
                 releaseConf: releaseConf,
+                families: IOSFamily.values(),
                 rb: bundle('plain_file_index')
         ]
     }

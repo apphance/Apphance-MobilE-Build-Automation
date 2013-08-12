@@ -1,5 +1,6 @@
 package com.apphance.flow.plugins.ios.builder
 
+import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.plugins.release.FlowArtifact
@@ -15,7 +16,6 @@ class IOSArtifactProvider {
     IOSBuilderInfo builderInfo(IOSVariant v) {
         new IOSBuilderInfo(
                 id: v.name,
-                target: v.target,
                 mode: v.mode.value,
                 filePrefix: "$v.name-$v.fullVersionString",
                 mobileprovision: v.mobileprovision.value,
@@ -49,6 +49,11 @@ class IOSArtifactProvider {
 
     FlowArtifact mobileprovision(IOSBuilderInfo bi) {
         artifact('Mobile provision file', bi, "${bi.filePrefix}.mobileprovision")
+    }
+
+    FlowArtifact simulator(IOSBuilderInfo bi, IOSFamily family) {
+        artifact("Simulator build for ${family.iFormat()}", bi,
+                "${bi.filePrefix}-${family.iFormat()}-sim-img.dmg")
     }
 
     private FlowArtifact artifact(String name, IOSBuilderInfo bi, String suffix) {

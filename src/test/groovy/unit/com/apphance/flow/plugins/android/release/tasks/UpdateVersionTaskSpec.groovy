@@ -1,6 +1,9 @@
 package com.apphance.flow.plugins.android.release.tasks
 
+import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.android.AndroidConfiguration
+import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
+import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import org.gradle.api.GradleException
@@ -8,9 +11,9 @@ import spock.lang.Specification
 
 import static AndroidManifestHelper.ANDROID_MANIFEST
 import static com.google.common.io.Files.copy
-import static com.google.common.io.Files.createTempDir
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
+@Mixin(TestUtils)
 class UpdateVersionTaskSpec extends Specification {
 
     def projectDir = new File('testProjects/android/android-basic')
@@ -68,6 +71,7 @@ class UpdateVersionTaskSpec extends Specification {
         def ac = GroovySpy(AndroidConfiguration) {
             getRootDir() >> projectDir
         }
+        def variantDir = temporaryDir
         ac.reader = GroovyStub(PropertyReader) {
             systemProperty('version.code') >> '3145'
             systemProperty('version.string') >> '31.4.5'
@@ -79,21 +83,21 @@ class UpdateVersionTaskSpec extends Specification {
         and:
         uvt.conf = ac
         uvt.manifestHelper = amh
+        uvt.variantsConf = GroovyStub(AndroidVariantsConfiguration) {
+            getVariants() >> [GroovyStub(AndroidVariantConfiguration) {
+                getTmpDir() >> variantDir
+            }]
+        }
 
         and:
-        def tmpDir = createTempDir()
-        copy(new File(projectDir, ANDROID_MANIFEST), new File(tmpDir, ANDROID_MANIFEST))
+        copy(new File(projectDir, ANDROID_MANIFEST), new File(variantDir, ANDROID_MANIFEST))
 
         when:
         uvt.updateVersion()
 
         then:
-        def version = amh.readVersion(projectDir)
+        def version = amh.readVersion(variantDir)
         '3145' == version.versionCode
         '31.4.5' == version.versionString
-
-        cleanup:
-        copy(new File(tmpDir, ANDROID_MANIFEST), new File(projectDir, ANDROID_MANIFEST))
-        tmpDir.deleteDir()
     }
 }

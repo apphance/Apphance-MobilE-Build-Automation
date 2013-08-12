@@ -1,15 +1,17 @@
 package com.apphance.flow.executor.command
 
-class CommandFailedException extends RuntimeException {
+import org.gradle.api.GradleException
 
-    private Command c
+class CommandFailedException extends GradleException {
 
-    CommandFailedException(String message, Command c) {
+    final Command command
+    final File stdoutLog
+    final File stderrLog
+
+    CommandFailedException(String message, Command c, File stdoutLog = null, File stderrLog = null) {
         super(message)
-        this.c = c
-    }
-
-    Command getCommand() {
-        return c
+        this.command = c
+        this.stdoutLog = stdoutLog
+        this.stderrLog = stderrLog
     }
 }

@@ -1,8 +1,6 @@
 package com.apphance.flow.plugins.ios.release
 
-import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.Command
-import com.apphance.flow.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import com.apphance.flow.plugins.release.FlowArtifact
@@ -12,15 +10,12 @@ import groovy.transform.PackageScope
 import javax.inject.Inject
 
 import static com.google.common.io.Files.createTempDir
-import static java.io.File.separator
 import static org.gradle.api.logging.Logging.getLogger
 
 class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
     private logger = getLogger(getClass())
 
-    @Inject IOSArtifactProvider artifactProvider
-    @Inject IOSExecutor iosExecutor
     @Inject org.gradle.api.AntBuilder ant
     @Inject PlistParser plistParser
     @Inject IOSDumpReducer dumpReducer
@@ -60,7 +55,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         mkdirs(aa)
         ant.zip(destfile: aa.location) {
             zipfileset(dir: bi.mobileprovision.parent, includes: bi.mobileprovision)
-            zipfileset(dir: "$bi.archiveDir${separator}Products${separator}Applications", includes: "${bi.appName}/**")
+            zipfileset(dir: "$bi.archiveDir/Products/Applications", includes: "${bi.appName}/**")
         }
         logger.info("Distribution zip file created: $aa.location")
     }
@@ -71,7 +66,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         releaseConf.dSYMZipFiles.put(bi.id, aa)
         mkdirs(aa)
         ant.zip(destfile: aa.location) {
-            zipfileset(dir: "$bi.archiveDir${separator}dSYMs", includes: "${bi.appName}.dSYM/**")
+            zipfileset(dir: "$bi.archiveDir/dSYMs", includes: "${bi.appName}.dSYM/**")
         }
         logger.info("dSYM zip file created: $aa.location")
     }
@@ -83,7 +78,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         aa.location.delete()
         aa.location.mkdirs()
 
-        def dSYM = new File("$bi.archiveDir${separator}dSYMs", "${bi.appName}.dSYM")
+        def dSYM = new File("$bi.archiveDir/dSYMs", "${bi.appName}.dSYM")
         dumpReducer.reduce(plist.call(bi), dSYM, aa.location, bi.filePrefix)
 
         dSYM.listFiles().each {
@@ -97,8 +92,8 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         def aa = artifactProvider.ipa(bi)
         releaseConf.ipaFiles.put(bi.id, aa)
         mkdirs(aa)
-        def app = new File("$bi.archiveDir${separator}Products${separator}Applications", bi.appName)
-        def cmd = [
+        def app = new File("$bi.archiveDir/Products/Applications", bi.appName)
+        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
                 '/usr/bin/xcrun',
                 '-sdk',
                 conf.sdk.value,
@@ -109,8 +104,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
                 aa.location.canonicalPath,
                 '--embed',
                 bi.mobileprovision.canonicalPath
-        ]
-        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: cmd))
+        ]))
         logger.info("IPA file created: $aa.location")
     }
 
@@ -124,7 +118,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         def bundleId = plistParser.bundleId(plist.call(bi))
         def binding = [
                 ipaUrl: releaseConf.ipaFiles.get(bi.id).url,
-                title: bi.target,
+                title: bi.productName,
                 bundleId: bundleId,
                 versionString: bi.versionString
         ]
@@ -145,11 +139,6 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
     @Lazy
     private Closure<File> plist = { IOSBuilderInfo bi ->
-        new File("$bi.archiveDir${separator}Products${separator}Applications${separator}$bi.appName", 'Info.plist')
+        new File("$bi.archiveDir/Products/Applications/$bi.appName", 'Info.plist')
     }.memoize()
-
-    private void mkdirs(FlowArtifact fa) {
-        fa.location.parentFile.mkdirs()
-        fa.location.delete()
-    }
 }

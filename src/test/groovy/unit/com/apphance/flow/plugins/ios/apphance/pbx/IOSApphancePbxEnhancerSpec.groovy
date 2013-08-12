@@ -5,12 +5,12 @@ import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import groovy.json.JsonSlurper
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -52,7 +52,6 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         enhancer.mainGroupFrameworks.name == 'Frameworks'
     }
 
-    @Ignore('This test hangs in Jenkins, INVESTIGATE!!')
     def 'apphance is added to pbx'() {
         given:
         def tmpDir = createTempDir()
@@ -85,7 +84,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
             getArchiveConfiguration() >> 'Release'
             getApphanceMode() >> new ApphanceModeProperty(value: QA)
             getTmpDir() >> tmpDir
-            getVariantPbx() >> new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj/project.pbxproj')
+            getPbxFile() >> new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj/project.pbxproj')
         }
         and:
         def enhancer = new IOSApphancePbxEnhancer(variant)
@@ -110,13 +109,10 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         noExceptionThrown()
 
         when:
-        def baos = new ByteArrayOutputStream()
-        def p = "plutil -convert json $pbx -o -".split().execute()
-        p.waitFor()
-        p.consumeProcessOutputStream(baos)
+        def pbxJson = commandExecutor.executeCommand(new Command(runDir: pbx.parentFile, cmd: ['plutil', '-convert', 'json', pbx, '-o', '-']))
 
         then:
-        def json = new JsonSlurper().parseText(baos.toString()) as Map
+        def json = new JsonSlurper().parseText(pbxJson.join('\n')) as Map
         def rootObject = json.objects[json.rootObject] as Map
         def target = json.objects.find {
             it.key in rootObject.targets && it.value.isa == PBX_NATIVE_TARGET && it.value.name == variant.target

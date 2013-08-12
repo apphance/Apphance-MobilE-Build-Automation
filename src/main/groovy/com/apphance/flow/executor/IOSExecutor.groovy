@@ -1,7 +1,6 @@
 package com.apphance.flow.executor
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.ios.parsers.XCodeOutputParser
@@ -105,6 +104,15 @@ class IOSExecutor {
         executor.executeCommand(new Command(runDir: dir, cmd: archiveCmd))
     }
 
+    def runTests(File runDir, String target, String configuration, String testResultPath) {
+        executor.executeCommand new Command(runDir: runDir,
+                cmd: conf.xcodebuildExecutionPath() +
+                        ['-target', target, '-configuration', configuration, '-sdk', 'iphonesimulator', 'clean', 'build'],
+                environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: testResultPath],
+                failOnError: false
+        )
+    }
+
     Iterator<String> dwarfdumpArch(File dSYM, String arch) {
         executor.executeCommand(new Command(
                 runDir: dSYM.parentFile,
@@ -119,15 +127,8 @@ class IOSExecutor {
         ))
     }
 
-    def buildTestVariant(File dir, IOSVariant variant, String outputFilePath) {
-        executor.executeCommand new Command(runDir: dir, cmd: variant.buildCmd,
-                environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: outputFilePath],
-                failOnError: false
-        )
-    }
-
     @Lazy
-    String version = {
+    String xCodeVersion = {
         def output = executor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: ['xcodebuild', '-version']
@@ -136,5 +137,17 @@ class IOSExecutor {
             it.matches('Xcode\\s+(\\d+\\.)+\\d+')
         }
         line ? line.split(' ')[1].trim() : null
+    }()
+
+    @Lazy
+    String iOSSimVersion = {
+        def output = executor.executeCommand(new Command(
+                runDir: conf.rootDir,
+                cmd: ['ios-sim', '--version']
+        ))
+        def line = output.find {
+            it.matches('(\\d+\\.)+\\d+')
+        }
+        line ? line.trim() : ''
     }()
 }

@@ -12,7 +12,7 @@ class PlistParserSpec extends Specification {
 
     def setup() {
         parser.executor = GroovyMock(IOSExecutor) {
-            plistToJSON(_) >> new File('testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist.json').text.split('\n')
+            plistToJSON(_) >> new File(getClass().getResource('Test.plist.json').toURI()).text.split('\n')
             buildSettings(_, _) >> [
                     VALUE: 'value',
                     VALUE2: 'value_2'
@@ -32,7 +32,7 @@ class PlistParserSpec extends Specification {
 
     def 'bundle id is read correctly'() {
         expect:
-        parser.bundleId(Mock(File)) == 'com.apphance.ameba'
+        parser.bundleId(Mock(File)) == 'com.apphance.flow'
     }
 
     def 'versionCode and versionString are replaced correctly'() {

@@ -36,7 +36,7 @@ class AndroidConfigurationSpec extends Specification {
     }
 
 
-    @Ignore('FIXME works only on compiled projects')
+    @Ignore('works only on compiled projects')
     def 'linkedLibraryJars and libraryJars are filled correctly'() {
         given:
         def project = GroovyStub(Project)

@@ -28,6 +28,16 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "6A131F7917B24344003E5388"
+               BuildableName = "GradleXCodeFailingTests.octest"
+               BlueprintName = "GradleXCodeFailingTests"
+               ReferencedContainer = "container:GradleXCode.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

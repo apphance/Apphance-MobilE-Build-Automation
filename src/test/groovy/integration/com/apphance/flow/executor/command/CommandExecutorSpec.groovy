@@ -1,12 +1,14 @@
 package com.apphance.flow.executor.command
 
 import com.apphance.flow.executor.linker.FileLinker
+import com.apphance.flow.util.FlowUtils
 import spock.lang.Specification
 
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
 
+@Mixin(FlowUtils)
 class CommandExecutorSpec extends Specification {
 
     def fileLinker = Mock(FileLinker)
@@ -28,7 +30,6 @@ class CommandExecutorSpec extends Specification {
     }
 
     def "executor invokes 'ls' command"() {
-
         given:
         def command = new Command(cmd: cmd, runDir: runDir)
 
@@ -41,7 +42,6 @@ class CommandExecutorSpec extends Specification {
     }
 
     def 'executor fails with invalid command'() {
-
         given:
         def command = new Command(cmd: ['ASDAFSFAG'], runDir: new File('src', 'test'))
 
@@ -65,27 +65,8 @@ class CommandExecutorSpec extends Specification {
         output == []
     }
 
-    def 'executor starts command in background'() {
-        given:
-        def command = new Command(cmd: ['pwd'], runDir: '.' as File)
-
-        when:
-        def process = executor.startCommand(command)
-        def exitValue = process.waitFor()
-
-        then:
-        process instanceof Process
-        exitValue == 0
-
-        then:
-        logFiles[STD].exists()
-        logFiles[STD].text
-        new File(logFiles[STD].text.trim()).exists()
-    }
-
     //this test may by potentially unsafe on windows workstations
     def "executor invokes 'ls' command with dir passed through env variable"() {
-
         expect:
         def command = new Command(cmd: cmd, runDir: runDir, environment: env, failOnError: false)
         expectedOutput == executor.executeCommand(command).toList()
@@ -104,5 +85,19 @@ class CommandExecutorSpec extends Specification {
 
         then:
         output == ['10']
+    }
+
+    def 'command output file in exception'() {
+        given:
+        def out = tempFile
+        def err = tempFile
+
+        when:
+        executor.handleProcessResult(1, new Command(), out, err)
+
+        then:
+        def exp = thrown(CommandFailedException)
+        exp.stdoutLog == out
+        exp.stderrLog == err
     }
 }

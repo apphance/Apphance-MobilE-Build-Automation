@@ -5,6 +5,7 @@ import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.google.inject.Singleton
 
 import javax.inject.Inject
 
@@ -13,12 +14,11 @@ import static com.apphance.flow.util.file.FileManager.*
 import static groovy.io.FileType.DIRECTORIES
 import static java.io.File.separator
 
-@com.google.inject.Singleton
+@Singleton
 class IOSConfiguration extends ProjectConfiguration {
 
     String configurationName = 'iOS Configuration'
 
-    public static final List<String> FAMILIES = ['iPad', 'iPhone']
     public static final PROJECT_PBXPROJ = 'project.pbxproj'
 
     @Inject IOSExecutor executor

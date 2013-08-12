@@ -6,11 +6,15 @@ import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.executor.AntExecutor
+import com.apphance.flow.executor.command.CommandFailedException
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
+import com.apphance.flow.plugins.android.builder.AndroidBuilderInfo
 import com.apphance.flow.plugins.release.FlowArtifact
 import org.gradle.api.AntBuilder as AntBuilder
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
@@ -24,6 +28,8 @@ import static com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.AN
 class SingleVariantTask extends DefaultTask {
 
     String group = FLOW_BUILD
+
+    Logger logger = Logging.getLogger(getClass())
 
     @Inject AndroidReleaseConfiguration releaseConf
     @Inject AntBuilder ant
@@ -45,16 +51,7 @@ class SingleVariantTask extends DefaultTask {
         antExecutor.executeTarget builderInfo.tmpDir, CLEAN
 
         if (builderInfo.variantDir?.exists()) {
-            logger.lifecycle("Overriding files in ${builderInfo.tmpDir} with variant files from ${builderInfo.variantDir}")
-            ant.copy(todir: builderInfo.tmpDir, failonerror: true, overwrite: true, verbose: true) {
-                fileset(dir: builderInfo.variantDir, includes: '**/*')
-            }
-
-            def variantManifest = new File(builderInfo.variantDir, ANDROID_MANIFEST)
-            logger.info "Variant manifest exist: ${variantManifest.exists()}, merging enabled: ${variant.mergeManifest.value}"
-            if (variant.mergeManifest.value && variantManifest.exists()) {
-                mergeManifest(new File(variant.tmpDir, ANDROID_MANIFEST), project.file(ANDROID_MANIFEST), variantManifest)
-            }
+            overriteVariantFilesAndMergeManifest(builderInfo)
         } else {
             logger.lifecycle("No files copied because variant directory ${builderInfo.variantDir} does not exists")
         }
@@ -64,15 +61,9 @@ class SingleVariantTask extends DefaultTask {
             replacePackageTask.replace(variant.tmpDir, variant.oldPackage.value, variant.newPackage.value, variant.newLabel.value, variant.newName.value)
         }
 
-        try {
-            antExecutor.executeTarget builderInfo.tmpDir, builderInfo.mode.lowerCase()
-        } catch (Exception exp) {
-            if (exp.hasProperty('output') && exp.output.contains('method onStart in class Apphance cannot be applied to given types')) {
-                logger.error "Error during source compilation. Probably some non-activity class was configured as activity in AndroidManifest.xml.\n" +
-                        "Make sure that all <activity> tags in your manifest points to some activity classes and not to other classes like Fragment."
-            }
-            throw exp
-        }
+        new LibraryDependencyHandler().handleLibraryDependencies(variant.tmpDir)
+
+        executeBuildTarget builderInfo.tmpDir, builderInfo.mode.lowerCase()
 
         if (builderInfo.originalFile.exists()) {
             logger.lifecycle("File created: ${builderInfo.originalFile}")
@@ -84,6 +75,33 @@ class SingleVariantTask extends DefaultTask {
             }
         } else {
             logger.lifecycle("File ${builderInfo.originalFile} was not created. Probably due to bad signing configuration in ant.properties")
+        }
+    }
+
+    void executeBuildTarget(File rootDir, String command) {
+        try {
+            antExecutor.executeTarget rootDir, command
+        } catch (CommandFailedException exp) {
+            logger.info "****"
+            def output = (exp.stdoutLog && exp.stdoutLog.size() < 1000 * 1000) ? exp.stdoutLog?.text : ''
+            if (output.contains('method onStart in class Apphance cannot be applied to given types')) {
+                logger.error "Error during source compilation. Probably some non-activity class was configured as activity in AndroidManifest.xml.\n" +
+                        "Make sure that all <activity> tags in your manifest points to some activity classes and not to other classes like Fragment."
+            }
+            throw exp
+        }
+    }
+
+    void overriteVariantFilesAndMergeManifest(AndroidBuilderInfo builderInfo) {
+        logger.lifecycle("Overriding files in ${builderInfo.tmpDir} with variant files from ${builderInfo.variantDir}")
+        ant.copy(todir: builderInfo.tmpDir, failonerror: true, overwrite: true, verbose: true) {
+            fileset(dir: builderInfo.variantDir, includes: '**/*')
+        }
+
+        def variantManifest = new File(builderInfo.variantDir, ANDROID_MANIFEST)
+        logger.info "Variant manifest exist: ${variantManifest.exists()}, merging enabled: ${variant.mergeManifest.value}"
+        if (variant.mergeManifest.value && variantManifest.exists()) {
+            mergeManifest(new File(variant.tmpDir, ANDROID_MANIFEST), project.file(ANDROID_MANIFEST), variantManifest)
         }
     }
 

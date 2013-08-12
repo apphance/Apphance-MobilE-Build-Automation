@@ -34,11 +34,13 @@ class PbxJsonParserSpec extends Specification {
     }
 
     def 'target name is found for blueprint id'() {
-        given:
-        def blueprintId = 'D382B71014703FE500E9CC9B'
-
         expect:
-        parser.targetForBlueprintId(GroovyMock(File), blueprintId) == 'GradleXCode'
+        parser.targetForBlueprintId(GroovyMock(File), blueprintId) == target
+
+        where:
+        target             | blueprintId
+        'GradleXCode'      | 'D382B71014703FE500E9CC9B'
+        'GradleXCodeTests' | 'D382B73414703FE500E9CC9B'
     }
 
     def 'placeholder is recognized correctly'() {

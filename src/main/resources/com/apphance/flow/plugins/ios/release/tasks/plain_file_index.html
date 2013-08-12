@@ -12,6 +12,7 @@
         <ul>
             <% variantsConf.variants.each { v -> %>
             <li><b>${v.name}</b><br/>
+                <% if(v.mode.value.name() == 'DEVICE') { %>
                 <ul>
                     <% if (releaseConf.distributionZipFiles[v.name] != null) { %>
                     <li>${rb.getString('Application_zip')}
@@ -69,20 +70,23 @@
                     </li>
                     <% } %>
                 </ul>
+                <% } %>
 
+                <% if(v.mode.value.name() == 'SIMULATOR') { %>
                 <% if (!releaseConf.dmgImageFiles.isEmpty()) { %>
                     ${rb.getString('Simulator_images')}<br/>
                 <ul>
-                    <% conf.FAMILIES.each { family -> %>
-                    <% if (releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target] != null) { %>
-                    <li>${java.text.MessageFormat.format(rb.getString('family_image'),family)}
-                        <a href="${releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target].getRelativeUrl(baseUrl)}" rel="external">
-                            ${releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target].url}
+                    <% families.each { family -> %>
+                    <% if (releaseConf.dmgImageFiles[family.iFormat() + '-' + v.name] != null) { %>
+                    <li>${java.text.MessageFormat.format(rb.getString('family_image'),family.iFormat())}
+                        <a href="${releaseConf.dmgImageFiles[family.iFormat() + '-' + v.name].getRelativeUrl(baseUrl)}" rel="external">
+                            ${releaseConf.dmgImageFiles[family.iFormat() + '-' + v.name].url}
                         </a>
                     </li>
                     <% } %>
                     <% } %>
                 </ul>
+                <% } %>
                 <% } %>
             </li>
             <% } %>

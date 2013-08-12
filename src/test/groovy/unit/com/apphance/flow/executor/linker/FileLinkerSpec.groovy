@@ -16,7 +16,7 @@ class FileLinkerSpec extends Specification {
         logfile.absolutePath == simpleFileLinker.fileLink(logfile)
     }
 
-    def 'jenkins file linker return url file link'(){
+    def 'jenkins file linker returns url file link'(){
         given:
         def logfile = new File('log')
 

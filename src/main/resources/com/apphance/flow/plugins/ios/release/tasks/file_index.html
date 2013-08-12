@@ -86,12 +86,14 @@
                 <h1>${v.name}</h1>
             </div>
             <div data-role="content">
+                <header style="text-align:center;">
+                    <h3>
+                        <div>${rb.getString('Configuration')} ${v.archiveConfiguration}</div>
+                    </h3>
+                </header>
+
+                <% if(v.mode.value.name() == 'DEVICE') { %>
                 <section id="${v.archiveConfiguration}">
-                    <header style="text-align:center;">
-                        <h3>
-                            <div>${rb.getString('Configuration')} ${v.archiveConfiguration}</div>
-                        </h3>
-                    </header>
                     <p>
                         <ul data-role="listview" data-inset="true" data-theme="a">
                             <% if (releaseConf.distributionZipFiles[v.name] != null) { %>
@@ -146,8 +148,9 @@
                         </ul>
                     </p>
                 </section>
+                <% } %>
 
-                <% if (!releaseConf.dmgImageFiles.isEmpty()) { %>
+                <% if(v.mode.value.name() == 'SIMULATOR') { %>
                 <section id="simulatorImages">
                     <header style="text-align:center;">
                         <h3>
@@ -156,12 +159,12 @@
                     </header>
                     <p>
                         <ul data-role="listview" data-inset="true" data-theme="a">
-                            <% conf.FAMILIES.each { family -> %>
-                            <% if (releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target] != null) { %>
+                            <% families.each { family -> %>
+                            <% if (releaseConf.dmgImageFiles[family.iFormat() + '-' + v.name] != null) { %>
                             <li>
-                                <a href="${releaseConf.dmgImageFiles[family + '-' + variantsConf.mainVariant.target].getRelativeUrl(baseUrl)}"
+                                <a href="${releaseConf.dmgImageFiles[family.iFormat() + '-' + v.id].getRelativeUrl(baseUrl)}"
                                    rel="external">
-                                    <h3>${java.text.MessageFormat.format(rb.getString('Family_simulator'),family)}</h3>
+                                    <h3>${java.text.MessageFormat.format(rb.getString('Family_simulator'),family.iFormat())}</h3>
                                 </a>
                             </li>
                             <% } %>

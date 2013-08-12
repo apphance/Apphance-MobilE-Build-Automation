@@ -12,6 +12,7 @@ import com.apphance.flow.plugins.android.test.AndroidTestPlugin
 import com.apphance.flow.plugins.ios.apphance.IOSApphancePlugin
 import com.apphance.flow.plugins.ios.buildplugin.IOSPlugin
 import com.apphance.flow.plugins.ios.framework.IOSFrameworkPlugin
+import com.apphance.flow.plugins.ios.test.IOSTestPlugin
 import com.apphance.flow.plugins.ios.release.IOSReleasePlugin
 import com.apphance.flow.plugins.project.ProjectPlugin
 import com.apphance.flow.plugins.release.ReleasePlugin
@@ -40,9 +41,9 @@ class PluginMasterSpec extends Specification {
         and:
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
-        def amebaProperties = Mock(File)
-        amebaProperties.exists() >> true
-        project.file(FLOW_PROP_FILENAME) >> amebaProperties
+        def flowProperties = Mock(File)
+        flowProperties.exists() >> true
+        project.file(FLOW_PROP_FILENAME) >> flowProperties
 
         and:
         projectTypeDetectorMock.detectProjectType(_) >> type
@@ -71,9 +72,9 @@ class PluginMasterSpec extends Specification {
         and:
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
-        def amebaProperties = Mock(File)
-        amebaProperties.exists() >> true
-        project.file(FLOW_PROP_FILENAME) >> amebaProperties
+        def flowProperties = Mock(File)
+        flowProperties.exists() >> true
+        project.file(FLOW_PROP_FILENAME) >> flowProperties
 
         and: 'tell that project is Android'
         projectTypeDetectorMock.detectProjectType(_) >> ANDROID
@@ -102,9 +103,9 @@ class PluginMasterSpec extends Specification {
         and:
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
-        def amebaProperties = Mock(File)
-        amebaProperties.exists() >> true
-        project.file(FLOW_PROP_FILENAME) >> amebaProperties
+        def flowProperties = Mock(File)
+        flowProperties.exists() >> true
+        project.file(FLOW_PROP_FILENAME) >> flowProperties
 
         and: 'tell that project is iOS'
         projectTypeDetectorMock.detectProjectType(_) >> IOS
@@ -145,7 +146,7 @@ class PluginMasterSpec extends Specification {
             IOSFrameworkPlugin,
             IOSReleasePlugin,
             IOSApphancePlugin,
-//            IOSUnitTestPlugin,//TODO restore after tests are implemented
+            IOSTestPlugin,
     ]
 
     def createInjectorForPluginsMocks(mocks, file, projectType) {

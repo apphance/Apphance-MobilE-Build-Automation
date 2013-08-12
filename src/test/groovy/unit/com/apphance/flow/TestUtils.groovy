@@ -22,4 +22,19 @@ class TestUtils {
     boolean contains(File file, String content) {
         file.readLines()*.trim().contains(content)
     }
+
+    File newFile(File root = temporaryDir, String name, String content) {
+        assert root.exists()
+        File file = new File(root, name)
+        file.createNewFile()
+        file.text = content
+        file
+    }
+
+    File newDir(File root, String name) {
+        assert root.exists()
+        File dir = new File(root, name)
+        assert dir.mkdirs()
+        dir
+    }
 }
