@@ -68,10 +68,10 @@ class UpdateVersionTaskSpec extends Specification {
 
     def 'version is updated correctly'() {
         given:
+        def tmpDir = temporaryDir
         def ac = GroovySpy(AndroidConfiguration) {
-            getRootDir() >> projectDir
+            getRootDir() >> tmpDir
         }
-        def variantDir = temporaryDir
         ac.reader = GroovyStub(PropertyReader) {
             systemProperty('version.code') >> '3145'
             systemProperty('version.string') >> '31.4.5'
@@ -83,20 +83,15 @@ class UpdateVersionTaskSpec extends Specification {
         and:
         uvt.conf = ac
         uvt.manifestHelper = amh
-        uvt.variantsConf = GroovyStub(AndroidVariantsConfiguration) {
-            getVariants() >> [GroovyStub(AndroidVariantConfiguration) {
-                getTmpDir() >> variantDir
-            }]
-        }
 
         and:
-        copy(new File(projectDir, ANDROID_MANIFEST), new File(variantDir, ANDROID_MANIFEST))
+        copy(new File(projectDir, ANDROID_MANIFEST), new File(tmpDir, ANDROID_MANIFEST))
 
         when:
         uvt.updateVersion()
 
         then:
-        def version = amh.readVersion(variantDir)
+        def version = amh.readVersion(tmpDir)
         '3145' == version.versionCode
         '31.4.5' == version.versionString
     }
