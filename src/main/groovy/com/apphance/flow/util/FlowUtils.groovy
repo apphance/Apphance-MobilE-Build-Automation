@@ -1,14 +1,15 @@
 package com.apphance.flow.util
 
 import groovy.io.FileType
-
-import java.nio.file.Files
+import org.gradle.api.logging.Logging
 
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static com.google.common.base.Preconditions.checkNotNull
 import static java.io.File.createTempFile
 
 class FlowUtils {
+
+    private def logger = Logging.getLogger(this.class)
 
     List<File> allFiles(Map options) {
         def files = []
@@ -31,7 +32,8 @@ class FlowUtils {
     }
 
     File downloadToTempFile(String url) {
-        File file = Files.createTempFile('tempFile', '.ext').toFile()
+        File file = tempFile
+        logger.info "Downloading $url to file: $file.absolutePath"
         file.append(url.toURL().newInputStream())
         assert file.size() > 0, "Empty downloaded file: $url"
         file

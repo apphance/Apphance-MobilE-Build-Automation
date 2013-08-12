@@ -12,6 +12,7 @@ import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.logging.Logging
 
 import static android.Manifest.permission.*
+import static com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration.APPHANCE_MAVEN
 import static com.apphance.flow.configuration.apphance.ApphanceLibType.PRE_PROD
 import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
 import static com.apphance.flow.configuration.apphance.ApphanceMode.*
@@ -43,8 +44,8 @@ class AddApphanceToAndroid {
 
     AddApphanceToAndroid(File variantDir, String apphanceAppKey, ApphanceMode apphanceMode, String libVersion, boolean shakeEnabled = false) {
         apphanceVersion = libVersion ?: '1.9'
-        APPHANCE_PROD_URL = "http://repo1.maven.org/maven2/com/utest/apphance-prod/${apphanceVersion}/apphance-prod-${apphanceVersion}.jar"
-        APPHANCE_PREPROD_URL = "http://repo1.maven.org/maven2/com/utest/apphance-preprod/${apphanceVersion}/apphance-preprod-${apphanceVersion}.zip"
+        APPHANCE_PROD_URL = APPHANCE_MAVEN + "apphance-prod/${apphanceVersion}/apphance-prod-${apphanceVersion}.jar"
+        APPHANCE_PREPROD_URL = APPHANCE_MAVEN + "apphance-preprod/${apphanceVersion}/apphance-preprod-${apphanceVersion}.zip"
         this.variantDir = variantDir
         this.apphanceAppKey = apphanceAppKey
         this.apphanceMode = apphanceMode
