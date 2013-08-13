@@ -12,12 +12,11 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_SETUP
 
 /**
  * Verifies all properties.
- *
  */
 class VerifySetupTask extends DefaultTask {
 
     static String NAME = 'verifySetup'
-    String description = 'Verifies if the project can be built properly'
+    String description = 'Run validation over all required properties from flow.properties'
     String group = FLOW_SETUP
 
     @Inject Map<Integer, AbstractConfiguration> configurations
