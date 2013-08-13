@@ -16,12 +16,10 @@ class AndroidExecutor {
 
     static final TARGET_HEADER_PATTERN = /id: ([0-9]+) or "([A-Za-z:\-\. 0-9]+)"/
 
-    private Map<String, List<String>> skinsForTarget = [:]
-    private Map<String, String> defaultSkinForTarget = [:]
     private Map<String, String> idForTarget = [:]
 
-    @Inject CommandExecutor executor
     @Inject AndroidConfiguration conf
+    @Inject CommandExecutor executor
     @Inject
     @Named('executable.android') ExecutableCommand executableAndroid
 
@@ -58,13 +56,6 @@ class AndroidExecutor {
         idForTarget[target]
     }
 
-    def listAvd() {
-        executor.executeCommand(new Command(
-                runDir: conf.rootDir,
-                cmd: executableAndroid.cmd + ['list', 'avd', '-c']
-        ))?.toList()
-    }
-
     private List<String> parseResult(input, regex) {
         def result = []
         input.each {
@@ -75,28 +66,5 @@ class AndroidExecutor {
             }
         }
         result
-    }
-
-    List<String> skinsForTarget(String target) {
-        if (!skinsForTarget[target]) {
-            def targetIdx = listTargetOutput.findIndexOf { it?.contains(target) }
-            def skinsIdx = listTargetOutput.findIndexOf(targetIdx) { it?.contains('Skins:') }
-            def skinsRaw = listTargetOutput[skinsIdx]
-            def skinsProcessed = skinsRaw.substring(skinsRaw.indexOf(':') + 1).replaceAll('\\(default\\)', '')
-            skinsForTarget[target] = skinsProcessed.split(',').collect { it.trim() }.sort()
-        }
-        skinsForTarget[target]
-    }
-
-    @PackageScope
-    String defaultSkinForTarget(String target) {
-        if (!defaultSkinForTarget[target]) {
-            def targetIdx = listTargetOutput.findIndexOf { it?.contains(target) }
-            def skinsIdx = listTargetOutput.findIndexOf(targetIdx) { it?.contains('Skins:') }
-            def skinsRaw = listTargetOutput[skinsIdx]
-            def skinForTarget = skinsRaw.substring(skinsRaw.indexOf(':') + 1).split(',').find { it.contains('default') }.replaceAll('\\(default\\)', '').trim()
-            defaultSkinForTarget[target] = skinForTarget
-        }
-        defaultSkinForTarget[target]
     }
 }

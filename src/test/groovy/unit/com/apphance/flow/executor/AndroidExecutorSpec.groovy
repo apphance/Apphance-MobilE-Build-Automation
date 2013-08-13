@@ -22,11 +22,6 @@ class AndroidExecutorSpec extends Specification {
         then: 1 * commandExecutor.executeCommand({ it.commandForExecution.join(' ') == "android update project -p . -s -t android-8 -n sample-name" })
     }
 
-    def 'test listAvd'() {
-        when: androidExecutor.listAvd()
-        then: 1 * commandExecutor.executeCommand({ it.commandForExecution.join(' ') == 'android list avd -c' })
-    }
-
     def 'test list targets'() {
         given:
         def ce = Mock(CommandExecutor)
@@ -40,39 +35,6 @@ class AndroidExecutorSpec extends Specification {
 
         then:
         output == ['Google Inc.:Google APIs:3', 'Google Inc.:Google APIs:4', 'android-17', 'android-3', 'android-4']
-    }
-
-    def 'test list skins'() {
-        given:
-        def ce = Mock(CommandExecutor)
-        ce.executeCommand(_) >> targets.split('\n').iterator()
-
-        and:
-        def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
-
-        when:
-        def output = ae.skinsForTarget('android-3')
-
-        then:
-        ['HVGA', 'HVGA-L', 'HVGA-P', 'QVGA-L', 'QVGA-P'] == output
-    }
-
-    def 'test default skin for target'() {
-        given:
-        def ce = Mock(CommandExecutor)
-        ce.executeCommand(_) >> targets.split('\n').iterator()
-
-        and:
-        def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
-
-        expect:
-        skin == ae.defaultSkinForTarget(target)
-
-        where:
-        skin      | target
-        'HVGA'    | 'android-3'
-        'WVGA800' | 'android-4'
-        'WVGA800' | 'Google Inc.:Google APIs:4'
     }
 
     def 'id for target'() {
