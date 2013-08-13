@@ -99,14 +99,4 @@ class AndroidExecutor {
         }
         defaultSkinForTarget[target]
     }
-
-    def createAvdEmulator(File directory, String name, String target, String skin, String cardSize, File avdDir, boolean snapshotsEnabled) {
-        executor.executeCommand(new Command(
-                runDir: directory,
-                cmd: executableAndroid.cmd + ['-v', 'create', 'avd', '-n', "$name", '-t', "${idForTarget(target) ?: target}", '-s', "$skin", '-c',
-                        "$cardSize", '-p', "$avdDir", '-f', snapshotsEnabled ? '-a' : ''
-                ],
-                input: ['no']
-        ))
-    }
 }

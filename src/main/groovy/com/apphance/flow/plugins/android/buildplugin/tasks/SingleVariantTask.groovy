@@ -51,7 +51,7 @@ class SingleVariantTask extends DefaultTask {
         antExecutor.executeTarget builderInfo.tmpDir, CLEAN
 
         if (builderInfo.variantDir?.exists()) {
-            overriteVariantFilesAndMergeManifest(builderInfo)
+            overrideVariantFilesAndMergeManifest(builderInfo)
         } else {
             logger.lifecycle("No files copied because variant directory ${builderInfo.variantDir} does not exists")
         }
@@ -92,7 +92,7 @@ class SingleVariantTask extends DefaultTask {
         }
     }
 
-    void overriteVariantFilesAndMergeManifest(AndroidBuilderInfo builderInfo) {
+    void overrideVariantFilesAndMergeManifest(AndroidBuilderInfo builderInfo) {
         logger.lifecycle("Overriding files in ${builderInfo.tmpDir} with variant files from ${builderInfo.variantDir}")
         ant.copy(todir: builderInfo.tmpDir, failonerror: true, overwrite: true, verbose: true) {
             fileset(dir: builderInfo.variantDir, includes: '**/*')

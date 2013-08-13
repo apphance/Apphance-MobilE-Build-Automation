@@ -76,17 +76,6 @@ class CommandExecutorSpec extends Specification {
         ['main', 'test'] | new File('src', 'test') | ['bash', '-c', 'ls \\$DIR_TO_LS'] | [DIR_TO_LS: new File('src', 'test').parentFile.canonicalPath]
     }
 
-    def 'executor handles input correctly'() {
-        given:
-        def command = new Command(cmd: ['/bin/bash', '-c', 'read V; echo $V'], runDir: '.' as File, input: ['10'], params: [V: '$V'])
-
-        when:
-        def output = executor.executeCommand(command).toList()
-
-        then:
-        output == ['10']
-    }
-
     def 'command output file in exception'() {
         given:
         def out = tempFile

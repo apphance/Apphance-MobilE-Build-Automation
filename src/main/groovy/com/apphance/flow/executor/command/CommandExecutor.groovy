@@ -46,7 +46,6 @@ class CommandExecutor {
             def processBuilder = new ProcessBuilder(command.commandForExecution)
             processBuilder.
                     directory(command.runDir).
-                    redirectInput(tempFile << (command?.input*.trim()?.join('\n') ?: '')).
                     environment().putAll(command.environment)
 
             //out and err is redirected separately because xcodebuild for some commands returns '0' but display
