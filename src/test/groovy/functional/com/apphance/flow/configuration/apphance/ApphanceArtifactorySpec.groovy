@@ -15,19 +15,19 @@ class ApphanceArtifactorySpec extends Specification {
         def libs = apphanceArtifactory.androidLibraries(QA)
 
         then:
-        libs.containsAll('1.8.2', '1.9-RC1')
+        libs.containsAll('1.9', '1.9.1', '1.9.2', '1.9.3')
 
         when:
         libs = apphanceArtifactory.androidLibraries(SILENT)
 
         then:
-        libs.containsAll('1.8.2', '1.9-RC1')
+        libs.containsAll('1.9', '1.9.1', '1.9.2', '1.9.3')
 
         when:
         libs = apphanceArtifactory.androidLibraries(PROD)
 
         then:
-        libs.contains('1.8.2')
+        libs.contains('1.9')
     }
 
     def 'exception thrown when bad mode passed for android libs'() {

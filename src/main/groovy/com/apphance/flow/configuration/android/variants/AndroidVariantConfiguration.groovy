@@ -2,7 +2,7 @@ package com.apphance.flow.configuration.android.variants
 
 import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
-import com.apphance.flow.configuration.apphance.ApphanceMode
+import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
@@ -16,7 +16,6 @@ import java.nio.file.Paths
 
 import static com.apphance.flow.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.flow.configuration.android.AndroidBuildMode.RELEASE
-import static com.apphance.flow.configuration.apphance.ApphanceMode.PROD
 import static com.apphance.flow.util.file.FileManager.asProperties
 import static com.apphance.flow.util.file.FileManager.relativeTo
 
@@ -24,9 +23,9 @@ import static com.apphance.flow.util.file.FileManager.relativeTo
 class AndroidVariantConfiguration extends AbstractVariant {
 
     final String prefix = 'android'
-    static def APPHANCE_MAVEN = 'http://repo1.maven.org/maven2/com/utest/'
 
     @Inject AndroidReleaseConfiguration androidReleaseConf
+    @Inject ApphanceArtifactory apphanceArtifactory
     private File vDir
 
     @AssistedInject
@@ -72,18 +71,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
 
     @Override
     List<String> possibleApphanceLibVersions() {
-        parseVersionsFromMavenMetadata(apphanceMode.value)
-    }
-
-    List<String> parseVersionsFromMavenMetadata(ApphanceMode mode) {
-        try {
-            def file = downloadToTempFile APPHANCE_MAVEN + "apphance-${mode == PROD ? 'prod' : 'preprod'}/maven-metadata.xml"
-            def metadata = new XmlSlurper().parse(file)
-            metadata.versioning.versions.version.collect { it.text() }
-        } catch (Exception exp) {
-            logger.warn "error during parsing apphance lib versions from maven: $exp.message"
-            []
-        }
+        apphanceArtifactory.androidLibraries(apphanceMode.value)
     }
 
     @Override

@@ -4,13 +4,17 @@ import groovy.json.JsonSlurper
 
 import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
 import static com.apphance.flow.configuration.apphance.ApphanceMode.DISABLED
+import static com.apphance.flow.configuration.apphance.ApphanceMode.PROD
 import static com.google.common.base.Preconditions.checkArgument
 import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.apache.commons.lang.StringUtils.isNotEmpty
+import static org.gradle.api.logging.Logging.getLogger
 
 class ApphanceArtifactory {
 
-    public static final String APPHANCE_ARTIFACTORY_URL = 'https://dev.polidea.pl/artifactory/libs-releases-local/'
+    private logger = getLogger(getClass())
+
+    public static final String ANDROID_APPHANCE_ARTIFACTORY = 'http://repo1.maven.org/maven2/com/utest/'
     public static final String APPHANCE_ARTIFACTORY_REST_URL = 'https://dev.polidea.pl/artifactory/api/storage/libs-releases-local/'
 
     List<String> androidLibraries(ApphanceMode mode) {
@@ -20,8 +24,14 @@ class ApphanceArtifactory {
 
     @Lazy
     private Closure<List<String>> androidLibs = { ApphanceMode mode ->
-        def response = readStreamFromUrl("$APPHANCE_ARTIFACTORY_REST_URL/com/apphance/android.${libForMode(mode).groupName}")
-        getParsedVersions(response)
+        try {
+            def url = "${ANDROID_APPHANCE_ARTIFACTORY}apphance-${mode == PROD ? 'prod' : 'preprod'}/maven-metadata.xml".toURL()
+            def metadata = new XmlSlurper().parseText(url.text)
+            metadata.versioning.versions.version.collect { it.text() } as List<String>
+        } catch (Exception exp) {
+            logger.warn "error during parsing apphance lib versions from maven: $exp.message"
+            []
+        }
     }.memoize()
 
     List<String> iOSLibraries(ApphanceMode mode, String arch) {
