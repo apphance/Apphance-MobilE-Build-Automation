@@ -75,25 +75,29 @@ class LibraryDependencyHandlerSpec extends Specification {
 
     def 'test postCompile returns correct target'() {
         expect:
-        handler.postCompile('replacement')*.trim() == """
+        handler.postCompile('replacement').split('\n')*.trim() == """
         <target name="-post-compile">
             <if condition="\${project.is.library}">
                 <then>
                     <echo level="info">Creating library output jar file.</echo>
                     <delete file="bin/classes.jar"/>
 
+                    <delete>
+                        <fileset dir="\${out.classes.absolute.dir}" includes="replacement" />
+                    </delete>
+
                     <propertybyreplace name="project.app.package.path" input="\${project.app.package}" replace="." with="/" />
 
                     <jar destfile="\${out.library.jar.file}">
                         <fileset dir="\${out.classes.absolute.dir}" includes="**/*.class"
-                        excludes="\${project.app.package.path}/R.class \${project.app.package.path}/R\$*.class \${project.app.package.path}/BuildConfig.class
-                        replacement "/>
+                        excludes="\${project.app.package.path}/R.class \${project.app.package.path}/R\$*.class \${project.app.package.path}/BuildConfig.class"/>
+
                         <fileset dir="\${source.absolute.dir}" excludes="**/*.java \${android.package.excludes}" />
                     </jar>
                 </then>
             </if>
         </target>
-        """*.trim()
+        """.split('\n')*.trim()
     }
 
     def 'test add target'() {
