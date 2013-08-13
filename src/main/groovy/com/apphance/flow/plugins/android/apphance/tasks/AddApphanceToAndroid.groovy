@@ -44,8 +44,8 @@ class AddApphanceToAndroid {
 
     AddApphanceToAndroid(File variantDir, String apphanceAppKey, ApphanceMode apphanceMode, String libVersion, boolean shakeEnabled = false) {
         apphanceVersion = libVersion ?: '1.9'
-        APPHANCE_PROD_URL = ANDROID_APPHANCE_ARTIFACTORY + "apphance-prod/${apphanceVersion}/apphance-prod-${apphanceVersion}.jar"
-        APPHANCE_PREPROD_URL = ANDROID_APPHANCE_ARTIFACTORY + "apphance-preprod/${apphanceVersion}/apphance-preprod-${apphanceVersion}.zip"
+        APPHANCE_PROD_URL = "${ANDROID_APPHANCE_ARTIFACTORY}apphance-prod/${apphanceVersion}/apphance-prod-${apphanceVersion}.jar"
+        APPHANCE_PREPROD_URL = "${ANDROID_APPHANCE_ARTIFACTORY}apphance-preprod/${apphanceVersion}/apphance-preprod-${apphanceVersion}.zip"
         this.variantDir = variantDir
         this.apphanceAppKey = apphanceAppKey
         this.apphanceMode = apphanceMode

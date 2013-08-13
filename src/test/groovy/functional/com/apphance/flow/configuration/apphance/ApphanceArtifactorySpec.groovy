@@ -40,41 +40,11 @@ class ApphanceArtifactorySpec extends Specification {
     }
 
     def 'iOS lib versions are filled'() {
-        when:
-        def libs = apphanceArtifactory.iOSLibraries(QA, 'armv6')
+        expect:
+        apphanceArtifactory.iOSLibraries(mode, 'armv7') == ['1.8.11', '1.8.8']
 
-        then:
-        libs.contains('1.7')
-
-        when:
-        libs = apphanceArtifactory.iOSLibraries(SILENT, 'armv6')
-
-        then:
-        libs.contains('1.7')
-
-        when:
-        libs = apphanceArtifactory.iOSLibraries(QA, 'armv7')
-
-        then:
-        libs.containsAll('1.8.2', '1.8.8')
-
-        when:
-        libs = apphanceArtifactory.iOSLibraries(SILENT, 'armv7')
-
-        then:
-        libs.containsAll('1.8.2', '1.8.8')
-
-        when:
-        libs = apphanceArtifactory.iOSLibraries(PROD, 'armv6')
-
-        then:
-        libs.contains('1.7')
-
-        when:
-        libs = apphanceArtifactory.iOSLibraries(PROD, 'armv7')
-
-        then:
-        libs.containsAll('1.8.2', '1.8.8')
+        where:
+        mode << [QA, SILENT, PROD]
     }
 
     def 'exception thrown when bad mode passed for iOS libs'() {
@@ -110,8 +80,8 @@ class ApphanceArtifactorySpec extends Specification {
 
         where:
         mode   | archs
-        QA     | ['armv6', 'armv7']
-        SILENT | ['armv6', 'armv7']
-        PROD   | ['armv6', 'armv7']
+        QA     | ['armv7']
+        SILENT | ['armv7']
+        PROD   | ['armv7']
     }
 }
