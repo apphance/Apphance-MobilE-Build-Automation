@@ -8,7 +8,6 @@ import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.variants.AbstractVariant
 import com.apphance.flow.util.FlowUtils
-import com.google.common.io.Files
 import com.google.inject.assistedinject.Assisted
 import com.google.inject.assistedinject.AssistedInject
 
@@ -18,8 +17,8 @@ import java.nio.file.Paths
 import static com.apphance.flow.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.flow.configuration.android.AndroidBuildMode.RELEASE
 import static com.apphance.flow.configuration.apphance.ApphanceMode.PROD
+import static com.apphance.flow.util.file.FileManager.asProperties
 import static com.apphance.flow.util.file.FileManager.relativeTo
-import static java.nio.charset.StandardCharsets.UTF_8
 
 @Mixin(FlowUtils)
 class AndroidVariantConfiguration extends AbstractVariant {
@@ -105,12 +104,13 @@ class AndroidVariantConfiguration extends AbstractVariant {
         check file.exists(), "If release or apphance plugin is enabled ant.properties should be present in ${tmpDir.absolutePath}"
 
         if (file.exists()) {
-            Properties antProperties = new Properties()
-            antProperties.load(Files.newReader(file, UTF_8))
+            Properties antProperties = asProperties(file)
             String keyStorePath = antProperties.getProperty('key.store')
             check keyStorePath, "key.store value in ant.properties file is not correctly configured: ${keyStorePath}"
-            def keyStore = Paths.get(tmpDir.absolutePath).resolve(keyStorePath).toFile()
-            check keyStore.exists(), "Keystore path is not correctly configured: File ${keyStore.absolutePath} doesn't exist."
+            if (keyStorePath) {
+                def keyStore = Paths.get(tmpDir.absolutePath).resolve(keyStorePath).toFile()
+                check keyStore?.exists(), "Keystore path is not correctly configured: File ${keyStore.absolutePath} doesn't exist."
+            }
         }
     }
 }
