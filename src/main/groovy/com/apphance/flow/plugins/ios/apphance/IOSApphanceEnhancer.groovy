@@ -22,7 +22,6 @@ import static java.text.MessageFormat.format
 import static java.util.ResourceBundle.getBundle
 import static org.gradle.api.logging.Logging.getLogger
 
-@Mixin(ApphancePluginCommons)
 class IOSApphanceEnhancer {
 
     static final APPHANCE_FRAMEWORK_NAME_PATTERN = ~/.*[aA]pphance.*\.framework/
@@ -96,6 +95,20 @@ class IOSApphanceEnhancer {
         checkFrameworkFolders(apphanceLibDependency)
         apphanceZip.delete()
     }
+
+    @PackageScope
+    void addApphanceConfiguration(Project project, String confName) {
+        project.configurations.create(confName)
+        project.configurations.getByName(confName) {
+            resolutionStrategy.cacheDynamicVersionsFor 0, 'minutes'
+        }
+
+        project.repositories {
+            maven { url 'https://dev.polidea.pl/artifactory/libs-releases-local/' }
+            maven { url 'https://dev.polidea.pl/artifactory/libs-snapshots-local/' }
+        }
+    }
+
 
     @Lazy
     @PackageScope
