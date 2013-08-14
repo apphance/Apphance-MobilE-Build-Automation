@@ -35,7 +35,6 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         def embedDir = embedDir(destDir)
 
         rsyncEmbeddedAppPreservingExecutableFlag(sourceApp(bi), embedDir)
-        updateVersions(embedDir, bi)
         updateDeviceFamily(family, embedDir, bi)
 
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
@@ -117,14 +116,6 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         runPlistBuddy('Delete UIDeviceFamily', targetPlistFile, false)
         runPlistBuddy('Add UIDeviceFamily array', targetPlistFile)
         runPlistBuddy("Add UIDeviceFamily:0 integer $family.UIDDeviceFamily", targetPlistFile)
-    }
-
-    private void updateVersions(File embedDir, IOSBuilderInfo bi) {
-        File targetPlistFile = new File(embedDir, "$bi.appName/Info.plist")
-        runPlistBuddy('Delete CFBundleVersion', targetPlistFile, false)
-        runPlistBuddy("Add CFBundleVersion string $conf.versionCode", targetPlistFile)
-        runPlistBuddy('Delete CFBundleShortVersionString', targetPlistFile, false)
-        runPlistBuddy("Add CFBundleShortVersionString string $conf.versionString", targetPlistFile)
     }
 
     private void runPlistBuddy(String command, File targetPlistFile, boolean failOnError = true) {
