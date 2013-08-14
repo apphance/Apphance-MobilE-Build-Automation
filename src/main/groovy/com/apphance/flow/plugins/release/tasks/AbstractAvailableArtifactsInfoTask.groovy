@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.release.tasks
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.plugins.release.FlowArtifact
+import com.apphance.flow.util.FlowUtils
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
@@ -10,7 +11,6 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
-import static com.apphance.flow.util.file.FileDownloader.downloadFile
 import static java.io.File.separator
 import static java.net.URLEncoder.encode
 import static java.util.ResourceBundle.getBundle
@@ -23,6 +23,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     @Inject ProjectConfiguration conf
     @Inject ReleaseConfiguration releaseConf
+    @Inject FlowUtils flowUtils
 
     private SimpleTemplateEngine templateEngine = new SimpleTemplateEngine()
 
@@ -102,7 +103,9 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     void prepareQRCode() {
         def urlEncoded = encode(releaseConf.otaIndexFile.url.toString(), 'utf-8')
-        downloadFile(new URL("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=${urlEncoded}"), releaseConf.QRCodeFile.location)
+        def qr = flowUtils.downloadToTempFile("https://chart.googleapis.com/chart?cht=qr&chs=256x256&chl=$urlEncoded")
+        (new AntBuilder()).copy(file: qr.absolutePath, tofile: releaseConf.QRCodeFile.location.absolutePath)
+        qr.delete()
         logger.lifecycle("QRCode created: ${releaseConf.QRCodeFile.location}")
     }
 

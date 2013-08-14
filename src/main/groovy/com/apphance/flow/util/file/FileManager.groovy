@@ -9,7 +9,6 @@ import java.nio.file.Paths
 import static com.apphance.flow.configuration.ProjectConfiguration.BUILD_DIR
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
-import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
 import static java.lang.String.format
 import static java.nio.charset.StandardCharsets.UTF_8

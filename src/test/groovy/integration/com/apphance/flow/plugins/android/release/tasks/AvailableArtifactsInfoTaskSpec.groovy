@@ -10,6 +10,7 @@ import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
 import com.apphance.flow.plugins.release.FlowArtifact
+import com.apphance.flow.util.FlowUtils
 import org.gradle.api.Project
 import spock.lang.Specification
 
@@ -86,6 +87,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         task.releaseConf = releaseConf
         task.variantsConf = variantsConf
         task.artifactBuilder = artifactBuilder
+        task.flowUtils = new FlowUtils()
     }
 
     def cleanup() {
