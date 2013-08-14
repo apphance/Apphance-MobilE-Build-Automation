@@ -7,7 +7,7 @@ import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 
 import javax.inject.Inject
 
-import static java.io.File.createTempFile
+import static com.google.common.io.Files.createTempDir
 import static org.gradle.api.logging.Logging.getLogger
 
 class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
@@ -26,13 +26,13 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         def fa = artifactProvider.simulator(bi, family)
         mkdirs(fa)
 
-        def destDir = destDir(bi, family)
+        def tmpDir = this.tmpDir(bi, family)
 
-        rsyncTemplatePreservingExecutableFlag(destDir)
-        updateBundleId(bi, destDir)
-        resampleIcon(destDir)
+        rsyncTemplatePreservingExecutableFlag(tmpDir)
+        updateBundleId(bi, tmpDir)
+        resampleIcon(tmpDir)
 
-        def embedDir = embedDir(destDir)
+        def embedDir = embedDir(tmpDir)
 
         rsyncEmbeddedAppPreservingExecutableFlag(sourceApp(bi), embedDir)
         updateDeviceFamily(family, embedDir, bi)
@@ -42,27 +42,21 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
                 'create',
                 fa.location.canonicalPath,
                 '-srcfolder',
-                destDir,
+                tmpDir,
                 '-volname',
                 "$bi.appName-${family.iFormat()}"
         ]))
         releaseConf.dmgImageFiles.put("${family.iFormat()}-$bi.id" as String, fa)
         logger.info("Simulator zip file created: $fa.location")
-        destDir.deleteDir()
-    }
-
-    private File destDir(IOSBuilderInfo bi, IOSFamily family) {
-        def tmpDir = tmpDir(bi, family)
-        def destDir = new File(tmpDir, "$bi.productName (${family.iFormat()}_Simulator) ${conf.versionString}_${conf.versionCode}.app")
-        destDir.mkdir()
-        destDir
+        tmpDir.deleteDir()
     }
 
     private File tmpDir(IOSBuilderInfo bi, IOSFamily family) {
-        def tmpDir = createTempFile("$bi.productName-$family-sim", '.tmp')
-        tmpDir.delete()
-        tmpDir.mkdir()
-        tmpDir
+        def tmpDir = createTempDir()
+        tmpDir.deleteOnExit()
+        def appDir = new File(tmpDir, "$bi.productName (${family.iFormat()}_Simulator) ${conf.versionString}_${conf.versionCode}.app")
+        appDir.mkdirs()
+        appDir
     }
 
     private void rsyncTemplatePreservingExecutableFlag(File destDir) {
