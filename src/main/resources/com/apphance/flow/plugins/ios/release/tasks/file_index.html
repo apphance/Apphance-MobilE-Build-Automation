@@ -162,7 +162,7 @@
                             <% families.each { family -> %>
                             <% if (releaseConf.dmgImageFiles[family.iFormat() + '-' + v.name] != null) { %>
                             <li>
-                                <a href="${releaseConf.dmgImageFiles[family.iFormat() + '-' + v.id].getRelativeUrl(baseUrl)}"
+                                <a href="${releaseConf.dmgImageFiles[family.iFormat() + '-' + v.name].getRelativeUrl(baseUrl)}"
                                    rel="external">
                                     <h3>${java.text.MessageFormat.format(rb.getString('Family_simulator'),family.iFormat())}</h3>
                                 </a>
