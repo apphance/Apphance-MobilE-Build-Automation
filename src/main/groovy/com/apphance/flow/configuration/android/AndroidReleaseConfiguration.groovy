@@ -8,6 +8,7 @@ import groovy.transform.PackageScope
 import javax.inject.Inject
 
 import static com.apphance.flow.util.file.FileManager.relativeTo
+import static org.apache.commons.io.FilenameUtils.removeExtension
 
 /**
  * Keeps configuration for android release.
@@ -25,12 +26,17 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
     @Inject AndroidConfiguration androidConf
     @Inject AndroidJarLibraryConfiguration jarLibraryConf
 
+    static Closure ICON_ORDER = {
+        ['ldpi', 'mdpi', 'hdpi', 'xhdpi'].findIndexOf { dpi -> it.contains(dpi) }
+    }
+
     @Lazy def files = super.&getFiles.curry(androidConf.resDir, DRAWABLE_DIR_PATTERN)
 
     @PackageScope
     File defaultIcon() {
         def icon = manifestHelper.readIcon(androidConf.rootDir)?.trim()
-        icon ? files { it.name.startsWith(icon) }.find() : null
+        List<File> icons = files { File it -> removeExtension(it.name) == icon }
+        icon ? icons.sort { ICON_ORDER(it.absolutePath) }.reverse().find() : null
     }
 
     @PackageScope
