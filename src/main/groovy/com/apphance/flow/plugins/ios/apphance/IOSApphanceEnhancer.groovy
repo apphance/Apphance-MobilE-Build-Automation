@@ -14,7 +14,7 @@ import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
 import org.gradle.api.GradleException
 
-import static com.apphance.flow.configuration.apphance.ApphanceArtifactory.IOS_APPHANCE_ARTIFACTORY
+import static com.apphance.flow.configuration.apphance.ApphanceArtifactory.IOS_APPHANCE_REPO
 import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.DIRECTORIES
@@ -92,7 +92,7 @@ class IOSApphanceEnhancer {
     String apphanceUrl = {
         def suffix = "apphance-$variant.apphanceMode.value.repoSuffix"
         def lib = variant.apphanceLibVersion.value
-        "$IOS_APPHANCE_ARTIFACTORY/com/utest/$suffix/$lib/$suffix-$lib-${variant.apphanceDependencyArch}.zip"
+        "$IOS_APPHANCE_REPO/com/utest/$suffix/$lib/$suffix-$lib-${variant.apphanceDependencyArch}.zip"
     }()
 
     @Lazy

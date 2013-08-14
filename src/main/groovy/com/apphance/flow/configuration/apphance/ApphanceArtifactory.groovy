@@ -11,10 +11,10 @@ class ApphanceArtifactory {
 
     private logger = getLogger(getClass())
 
-    public static final String ANDROID_APPHANCE_ARTIFACTORY = 'http://repo1.maven.org/maven2/com/utest/'
+    public static final String ANDROID_APPHANCE_REPO = 'http://repo1.maven.org/maven2/com/utest/'
     public static final String POLIDEA_ARTIFACTORY = 'https://dev.polidea.pl/artifactory'
     public static final String POLIDEA_REPO_NAME = 'libs-releases-local'
-    public static final String IOS_APPHANCE_ARTIFACTORY = "$POLIDEA_ARTIFACTORY/$POLIDEA_REPO_NAME"
+    public static final String IOS_APPHANCE_REPO = "$POLIDEA_ARTIFACTORY/$POLIDEA_REPO_NAME"
 
     List<String> androidLibraries(ApphanceMode mode) {
         checkArgument(mode && mode != DISABLED, "Invalid apphance mode: $mode")
@@ -24,7 +24,7 @@ class ApphanceArtifactory {
     @Lazy
     private Closure<List<String>> androidLibs = { ApphanceMode mode ->
         try {
-            def url = "${ANDROID_APPHANCE_ARTIFACTORY}apphance-$mode.repoSuffix/maven-metadata.xml".toURL()
+            def url = "${ANDROID_APPHANCE_REPO}apphance-$mode.repoSuffix/maven-metadata.xml".toURL()
             def metadata = new XmlSlurper().parseText(url.text)
             metadata.versioning.versions.version.collect { it.text() } as List<String>
         } catch (Exception exp) {
