@@ -9,7 +9,6 @@ import spock.lang.Specification
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.*
 import static com.google.common.io.Files.createTempDir
-import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSApphanceEnhancerSpec extends Specification {
 
@@ -81,22 +80,22 @@ class IOSApphanceEnhancerSpec extends Specification {
         PROD         | 'production'
     }
 
-    def 'apphance lib dependency is constructed correctly'() {
+    def 'apphance zip url is constructed correctly'() {
         given:
         def enhancer = new IOSApphanceEnhancer(GroovyMock(IOSVariant) {
             getApphanceMode() >> new ApphanceModeProperty(value: apphanceMode)
-            getApphanceLibVersion() >> new StringProperty(value: '1.8.2')
+            getApphanceLibVersion() >> new StringProperty(value: '1.8.8')
             getApphanceDependencyArch() >> 'armv7'
         })
 
         expect:
-        enhancer.apphanceLibDependency == expectedDependency
+        enhancer.apphanceUrl == expectedUrl
 
         where:
-        apphanceMode | expectedDependency
-        QA           | 'com.apphance:ios.pre-production.armv7:1.8.2'
-        SILENT       | 'com.apphance:ios.pre-production.armv7:1.8.2'
-        PROD         | 'com.apphance:ios.production.armv7:1.8.2'
+        apphanceMode | expectedUrl
+        QA           | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8-armv7.zip'
+        SILENT       | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8-armv7.zip'
+        PROD         | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-prod/1.8.8/apphance-prod-1.8.8-armv7.zip'
     }
 
     def 'framework folders are checked when exist'() {
@@ -106,13 +105,14 @@ class IOSApphanceEnhancerSpec extends Specification {
         def enhancer = new IOSApphanceEnhancer(GroovyMock(IOSVariant) {
             getTmpDir() >> tmpDir
             getApphanceMode() >> new ApphanceModeProperty(value: mode)
+            getApphanceLibVersion() >> new StringProperty(value: '1.8.')
         })
 
         and:
         new File(tmpDir, folderName).mkdirs()
 
         when:
-        enhancer.checkFrameworkFolders(dependency)
+        enhancer.checkFrameworkFolders()
 
         then:
         noExceptionThrown()
@@ -121,30 +121,9 @@ class IOSApphanceEnhancerSpec extends Specification {
         tmpDir.deleteDir()
 
         where:
-        dependency                                    | folderName                          | mode
-        'com.apphance:ios.pre-production.armv7:1.8.2' | 'Apphance-Pre-Production.framework' | QA
-        'com.apphance:ios.pre-production.armv7:1.8.2' | 'Apphance-Pre-Production.framework' | SILENT
-        'com.apphance:ios.production.armv7:1.8.2'     | 'Apphance-Production.framework'     | PROD
-    }
-
-    def 'apphance configuration is added'() {
-        given:
-        def project = builder().build()
-
-        expect:
-        !project.configurations.asMap['apphance']
-        !project.repositories
-
-        when:
-        new IOSApphanceEnhancer(null).addApphanceConfiguration(project, 'apphance')
-
-        then:
-        project.configurations.asMap['apphance']
-        [
-                'https://dev.polidea.pl/artifactory/libs-releases-local/',
-                'https://dev.polidea.pl/artifactory/libs-snapshots-local/'
-        ].sort() ==
-                project.repositories*.url*.toString().sort()
-
+        folderName                          | mode
+        'Apphance-Pre-Production.framework' | QA
+        'Apphance-Pre-Production.framework' | SILENT
+        'Apphance-Production.framework'     | PROD
     }
 }

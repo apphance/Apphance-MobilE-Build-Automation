@@ -13,8 +13,6 @@ import com.apphance.flow.plugins.release.FlowArtifact
 import org.gradle.api.AntBuilder as AntBuilder
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
@@ -28,8 +26,6 @@ import static com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.AN
 class SingleVariantTask extends DefaultTask {
 
     String group = FLOW_BUILD
-
-    Logger logger = Logging.getLogger(getClass())
 
     @Inject AndroidReleaseConfiguration releaseConf
     @Inject AntBuilder ant
