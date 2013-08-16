@@ -73,7 +73,7 @@
                 </ul>
                 <% } %>
 
-                <% def other = variantsConf.variants.findAll { it.name != variantsConf.mainVariant.name } %>
+                <% def other = variantsConf.variants.findAll { it.name != variantsConf.mainVariant.name && it.mode.value.name() == 'DEVICE'} %>
                 <% if(other) { %>
                 <div>
                     <section id="other_instalation">

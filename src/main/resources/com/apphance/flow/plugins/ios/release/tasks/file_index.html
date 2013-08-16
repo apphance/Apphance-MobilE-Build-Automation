@@ -159,6 +159,7 @@
                     </header>
                     <p>
                         <ul data-role="listview" data-inset="true" data-theme="a">
+
                             <% families.each { family -> %>
                             <% if (releaseConf.dmgImageFiles[family.iFormat() + '-' + v.name] != null) { %>
                             <li>
@@ -177,7 +178,7 @@
         </div>
         <% } %>
 
-        <% variantsConf.variants.each { v -> %>
+        <% variantsConf.variants.findAll { it.mode.value.name() == 'DEVICE' }.each { v -> %>
         <div data-role="page" id="${v.name}-ahSYM" data-add-back-btn="true">
             <div data-role="header">
                 <h1>${v.name}</h1>
@@ -214,7 +215,7 @@
             <div data-role="content">
                 <div>${rb.getString('List_of_valid_UDIDs')}</div>
                 <div style="word-wrap: break-word">
-                    <% variantsConf.variants.each { v -> %>
+                    <% variantsConf.variants.findAll { it.mode.value.name() == 'DEVICE' }.each { v -> %>
                     <h2>${v.name}</h2>
                     <ul>
                         <% udids[v.name].each { udid -> %>

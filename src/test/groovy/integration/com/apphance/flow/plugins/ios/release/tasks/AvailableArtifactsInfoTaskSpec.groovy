@@ -15,6 +15,9 @@ import spock.lang.Specification
 
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
+import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.flow.configuration.ios.IOSFamily.IPAD
+import static com.apphance.flow.configuration.ios.IOSFamily.IPHONE
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.ALL_EMAIL_FLAGS
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.google.common.io.Files.createTempDir
@@ -81,7 +84,16 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                     getMobileprovision() >> new FileProperty(value: 'sample2.mobileprovision')
                     getFullVersionString() >> fullVersionString
                     getName() >> 'Variant2'
+                },
+                GroovyMock(IOSVariant) {
+                    getTarget() >> 'GradleXCode3'
+                    getArchiveConfiguration() >> 'Conf3'
+                    getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
+                    getMobileprovision() >> new FileProperty(value: 'sample3.mobileprovision')
+                    getFullVersionString() >> fullVersionString
+                    getName() >> 'Variant3'
                 }
+
         ]
 
         variantsConf = GroovyMock(IOSVariantsConfiguration)
@@ -231,6 +243,14 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                     }]
                 }
         ]
+        releaseConf.dmgImageFiles = [
+                ("${IPAD.iFormat()}-Variant3".toString()): GroovyMock(FlowArtifact) {
+                    getRelativeUrl(_) >> 'Variant3-iPad.dmg'
+                },
+                ("${IPHONE.iFormat()}-Variant3".toString()): GroovyMock(FlowArtifact) {
+                    getRelativeUrl(_) >> 'Variant3-iPhone.dmg'
+                }
+        ]
 
         when:
         task.fileIndexArtifact()
@@ -265,18 +285,24 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                 ['Variant2.dist.zip', 'Variant2.dsym.zip', 'Variant2.ipa', 'Variant2.manifest', 'Variant2.mobileprovision', '#Variant2-ahSYM', 'Variant2_xcarchive.zip']
         )
 
-        slurper.body.div[3].@id.text() == 'MainVariant-ahSYM'
-        slurper.body.div[3].div[0].text() == 'MainVariant'
-        slurper.body.div[3].div[1].section.header.text() == 'Configuration: MainConf'
-        slurper.body.div[3].div[1].section.p.ul.li*.text().contains('ahSym1')
+        slurper.body.div[3].@id.text() == 'Variant3'
+        slurper.body.div[3].div[0].text() == 'Variant3'
+        slurper.body.div[3].div[1].section.header.text() == 'Simulator images'
+        slurper.body.div[3].div[1].section.p.ul.li*.text().containsAll(['iPhone simulator', 'iPad simulator'])
 
-        slurper.body.div[4].@id.text() == 'Variant2-ahSYM'
-        slurper.body.div[4].div[0].text() == 'Variant2'
-        slurper.body.div[4].div[1].section.header.text() == 'Configuration: Conf2'
-        slurper.body.div[4].div[1].section.p.ul.li*.text().contains('ahSym2')
+        slurper.body.div[4].@id.text() == 'MainVariant-ahSYM'
+        slurper.body.div[4].div[0].text() == 'MainVariant'
+        slurper.body.div[4].div[1].section.header.text() == 'Configuration: MainConf'
+        slurper.body.div[4].div[1].section.p.ul.li*.text().contains('ahSym1')
 
-        slurper.body.div[5].div[1].div[1].h2*.text().containsAll(['MainVariant', 'Variant2'])
-        slurper.body.div[5].div[1].div[1].ul.li*.text().containsAll(['a', 'b', 'c', 'd'])
+        slurper.body.div[5].@id.text() == 'Variant2-ahSYM'
+        slurper.body.div[5].div[0].text() == 'Variant2'
+        slurper.body.div[5].div[1].section.header.text() == 'Configuration: Conf2'
+        slurper.body.div[5].div[1].section.p.ul.li*.text().contains('ahSym2')
+
+        slurper.body.div[6].div[1].div[1].h2*.text().containsAll(['MainVariant', 'Variant2'])
+        !slurper.body.div[6].div[1].div[1].h2*.text().containsAll('Variant3')
+        slurper.body.div[6].div[1].div[1].ul.li*.text().containsAll(['a', 'b', 'c', 'd'])
     }
 
     def 'plain_file_index.html is generated and validated'() {
@@ -373,21 +399,37 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                     }]
                 }
         ]
+        releaseConf.dmgImageFiles = [
+                ("${IPAD.iFormat()}-Variant3".toString()): GroovyMock(FlowArtifact) {
+                    getRelativeUrl(_) >> 'Variant3-iPad.dmg'
+                    getUrl() >> 'http://Variant3-iPad.dmg'.toURL()
+                },
+                ("${IPHONE.iFormat()}-Variant3".toString()): GroovyMock(FlowArtifact) {
+                    getRelativeUrl(_) >> 'Variant3-iPhone.dmg'
+                    getUrl() >> 'http://Variant3-iPhone.dmg'.toURL()
+                }
+        ]
 
         when:
         task.plainFileIndexArtifact()
         task.preparePlainFileIndexFile()
 
         then:
+        println releaseConf.plainFileIndexFile.location
+        'lol'.hashCode()
         def slurper = new XmlSlurper().parse(releaseConf.plainFileIndexFile.location)
         !releaseConf.plainFileIndexFile.location.text.contains('null')
         slurper.head.title.text() == 'GradleXCode'
         slurper.body.h1[0].text() == 'GradleXCode'
+        slurper.body.ul[0].li.b*.text() == ['MainVariant', 'Variant2', 'Variant3']
         slurper.body.ul[0].li[0].ul.li.a*.text()*.trim().containsAll(
                 ['http://MainVariant.dist.zip', 'http://MainVariant.dsym.zip', 'http://MainVariant.ipa', 'http://MainVariant.manifest', 'http://MainVariant.mobileprovision', 'http://MainVariant_xcarchive.zip']
         )
         slurper.body.ul[0].li[1].ul.li.a*.text()*.trim().containsAll(
                 ['http://Variant2.dist.zip', 'http://Variant2.dsym.zip', 'http://Variant2.ipa', 'http://Variant2.manifest', 'http://Variant2.mobileprovision', 'http://Variant2_xcarchive.zip']
+        )
+        slurper.body.ul[0].li[2].ul.li.a*.text()*.trim().containsAll(
+                ['http://Variant3-iPhone.dmg', 'http://Variant3-iPad.dmg']
         )
         slurper.body.ul.li.a*.text()*.trim().containsAll([
                 'http://mail_message', 'http://image_montage.png', 'http://qr.png'
