@@ -57,7 +57,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     File tmpDir(IOSBuilderInfo bi, IOSFamily family) {
         def tmpDir = createTempDir()
         tmpDir.deleteOnExit()
-        def appDir = new File(tmpDir, "$bi.productName (${family.iFormat()}_Simulator) ${conf.versionString}_${conf.versionCode}.app")
+        def appDir = new File(tmpDir, "$bi.productName (${family.iFormat()}_Simulator) ${conf.fullVersionString}.app")
         appDir.mkdirs()
         logger.info("Temp dir for iOS simulator artifact created: $tmpDir.absolutePath")
         appDir

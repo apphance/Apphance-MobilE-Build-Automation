@@ -81,7 +81,6 @@ class ExecuteIosBuildsSpec extends Specification {
         noExceptionThrown()
 
         then:
-
         IOSFamily.values().every {
             def f = new File(testProject,
                     "flow-ota/GradleXCode/1.0_32/GradleXCodeSimulator/GradleXCodeSimulator-1.0_32-${it.iFormat()}-sim-img.dmg")

@@ -1,11 +1,11 @@
 package com.apphance.flow.configuration.android
 
 import com.apphance.flow.configuration.ProjectConfiguration
-import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.AndroidExecutor
 import com.apphance.flow.plugins.android.parsers.AndroidBuildXmlHelper
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
+import com.google.inject.Singleton
 
 import javax.inject.Inject
 
@@ -16,7 +16,7 @@ import static java.io.File.pathSeparator
 import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
-@com.google.inject.Singleton
+@Singleton
 class AndroidConfiguration extends ProjectConfiguration {
 
     String configurationName = 'Android Configuration'
@@ -24,7 +24,6 @@ class AndroidConfiguration extends ProjectConfiguration {
     @Inject AndroidBuildXmlHelper buildXmlHelper
     @Inject AndroidManifestHelper manifestHelper
     @Inject AndroidExecutor androidExecutor
-    @Inject ApphanceConfiguration apphanceConf
 
     private Properties androidProperties
     private bundle = getBundle('validation')

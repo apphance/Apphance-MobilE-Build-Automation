@@ -9,6 +9,7 @@ import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
 import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
+import spock.lang.Shared
 import spock.lang.Specification
 
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
@@ -18,6 +19,7 @@ import static java.io.File.createTempFile
 
 class IOSSimulatorArtifactsBuilderSpec extends Specification {
 
+    @Shared
     def executor = new CommandExecutor(
             Mock(FileLinker) {
                 fileLink(_) >> ''
@@ -26,11 +28,11 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
                 commandLogFiles() >> [(STD): createTempFile('tmp', 'out'), (ERR): createTempFile('tmp', 'err')]
             }
     )
+    @Shared
     def builder = new IOSSimulatorArtifactsBuilder(
             conf: GroovyMock(IOSConfiguration) {
                 getRootDir() >> new File('.')
-                getVersionCode() >> '3.1.45'
-                getVersionString() >> '101'
+                getFullVersionString() >> '3.1.45_101'
             },
             executor: executor
     )
@@ -62,11 +64,7 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
     def 'source app is synced'() {
         given:
         def xcArchive = new File(getClass().getResource('GradleXCode.xcarchive').toURI())
-        def srcApp = builder.sourceApp(GroovyMock(IOSBuilderInfo) {
-            getArchiveDir() >> xcArchive
-            getAppName() >> 'GradleXCode.app'
-        })
-
+        def srcApp = builder.sourceApp(new IOSBuilderInfo(archiveDir: xcArchive, appName: 'GradleXCode.app'))
         and:
         def tmpDir = createTempDir()
         tmpDir.deleteOnExit()
@@ -86,13 +84,11 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
 
     def 'tmpDir is created with appDir inside'() {
         when:
-        def tmpDir = builder.tmpDir(GroovyMock(IOSBuilderInfo) {
-            getProductName() >> 'Some Application'
-        }, family)
+        def tmpDir = builder.tmpDir(new IOSBuilderInfo(productName: 'Some Application'), family)
 
         then:
         tmpDir.isDirectory()
-        tmpDir.name == "Some Application (${family.iFormat()}_Simulator) 101_3.1.45.app"
+        tmpDir.name == "Some Application (${family.iFormat()}_Simulator) 3.1.45_101.app"
 
         where:
         family << IOSFamily.values()
