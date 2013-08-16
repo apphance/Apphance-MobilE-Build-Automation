@@ -58,18 +58,6 @@ class FileManager {
         byteSize >= MEGABYTE ? format("%.2f", byteSize * 1.0 / 1024.0 / 1024.0) + " MB" : format("%.2f", byteSize * 1.0 / 1024.0) + " kB"
     }
 
-    public static void findAllPackages(String currentPackage, File directory, currentPackageList) {
-        boolean empty = true
-        directory.eachFile(FILES, { empty = false })
-        if (!empty) {
-            currentPackageList << currentPackage
-        }
-        boolean rootDirectory = (currentPackage == '')
-        directory.eachDir {
-            findAllPackages(rootDirectory ? it.name : (currentPackage + '.' + it.name), it, currentPackageList)
-        }
-    }
-
     public static File relativeTo(String from, String to) {
         Paths.get(from).relativize(Paths.get(to)).toFile()
     }
