@@ -4,6 +4,7 @@ import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
+import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
@@ -27,8 +28,9 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         mkdirs(fa)
 
         def tmpDir = this.tmpDir(bi, family)
+        def tmplDir = new File(getClass().getResource('ios_sim_tmpl').toURI())
 
-        rsyncTemplatePreservingExecutableFlag(tmpDir)
+        syncSimAppTemplateToTmpDir(tmplDir, tmpDir)
         updateBundleId(bi, tmpDir)
         resampleIcon(tmpDir)
 
@@ -59,14 +61,10 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         appDir
     }
 
-    private void rsyncTemplatePreservingExecutableFlag(File destDir) {
+    @PackageScope
+    void syncSimAppTemplateToTmpDir(File tmplDir, File tmpDir) {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
-                'rsync',
-                '-aE',
-                '--exclude',
-                'Contents/Resources/EmbeddedApp',
-                '/Applications/Simulator Bundler.app/Contents/Resources/Launcher.app/',
-                destDir
+                'rsync', '-alE', "${tmplDir}/", tmpDir
         ]))
     }
 
