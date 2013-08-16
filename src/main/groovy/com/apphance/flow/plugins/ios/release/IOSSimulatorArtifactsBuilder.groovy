@@ -17,6 +17,12 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
     @Inject MobileProvisionParser mpParser
 
+    @Lazy
+    private File tmplDir = {
+        new File(getClass().getResource('ios_sim_tmpl').toURI())
+    }()
+
+    @Override
     void buildArtifacts(IOSBuilderInfo bi) {
         IOSFamily.values().each {
             prepareSimulatorBundleFile(bi, it)
@@ -27,38 +33,38 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         def fa = artifactProvider.simulator(bi, family)
         mkdirs(fa)
 
-        def tmpDir = this.tmpDir(bi, family)
-        def tmplDir = new File(getClass().getResource('ios_sim_tmpl').toURI())
+        def tmpDir = tmpDir(bi, family)
+        def embedDir = embedDir(tmpDir)
+        def contentsPlist = new File(tmpDir, 'Contents/Info.plist')
+        def icon = new File(tmpDir, 'Contents/Resources/Launcher.icns')
+        def embedPlist = new File(embedDir, "$bi.appName/Info.plist")
 
         syncSimAppTemplateToTmpDir(tmplDir, tmpDir)
-        updateBundleId(bi, tmpDir)
-        resampleIcon(tmpDir)
+        syncAppToTmpDir(sourceApp(bi), embedDir)
 
-        def embedDir = embedDir(tmpDir)
+        updateBundleId(bi.mobileprovision, contentsPlist)
+        resampleIcon(icon)
+        updateDeviceFamily(family, embedPlist)
 
-        rsyncEmbeddedAppPreservingExecutableFlag(sourceApp(bi), embedDir)
-        updateDeviceFamily(family, embedDir, bi)
+        createSimAppDmg(fa.location, tmpDir, "$bi.appName-${family.iFormat()}")
 
-        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
-                'hdiutil',
-                'create',
-                fa.location.canonicalPath,
-                '-srcfolder',
-                tmpDir,
-                '-volname',
-                "$bi.appName-${family.iFormat()}"
-        ]))
-        releaseConf.dmgImageFiles.put("${family.iFormat()}-$bi.id" as String, fa)
+        releaseConf.dmgImageFiles.put("${family.iFormat()}-$bi.id", fa)
         logger.info("Simulator zip file created: $fa.location")
-        tmpDir.deleteDir()
     }
 
-    private File tmpDir(IOSBuilderInfo bi, IOSFamily family) {
+    @PackageScope
+    File tmpDir(IOSBuilderInfo bi, IOSFamily family) {
         def tmpDir = createTempDir()
         tmpDir.deleteOnExit()
         def appDir = new File(tmpDir, "$bi.productName (${family.iFormat()}_Simulator) ${conf.versionString}_${conf.versionCode}.app")
         appDir.mkdirs()
         appDir
+    }
+
+    private File embedDir(File tmpDir) {
+        def embedDir = new File(tmpDir, 'Contents/Resources/EmbeddedApp')
+        embedDir.mkdirs()
+        embedDir
     }
 
     @PackageScope
@@ -68,46 +74,35 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         ]))
     }
 
-    private File embedDir(File destDir) {
-        File embedDir = new File(destDir, "Contents/Resources/EmbeddedApp")
-        embedDir.mkdirs()
-        embedDir
-    }
-
     private File sourceApp(IOSBuilderInfo bi) {
         new File("$bi.archiveDir/Products/Applications", bi.appName)
     }
 
-    private void rsyncEmbeddedAppPreservingExecutableFlag(File sourceAppDir, File embedDir) {
+    private void syncAppToTmpDir(File sourceAppDir, File embedDir) {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
-                'rsync',
-                '-aE',
-                sourceAppDir,
-                embedDir
+                'rsync', '-alE', sourceAppDir, embedDir
         ]))
     }
 
-    private void updateBundleId(IOSBuilderInfo bi, File tmpDir) {
-        def bundleId = mpParser.bundleId(bi.mobileprovision)
-        File contentsPlist = new File(tmpDir, "Contents/Info.plist")
-        runPlistBuddy("Set :CFBundleIdentifier ${bundleId}.launchsim", contentsPlist)
+    private void updateBundleId(File mobileprovision, File plist) {
+        def bundleId = mpParser.bundleId(mobileprovision)
+        runPlistBuddy("Set :CFBundleIdentifier ${bundleId}.launchsim", plist)
     }
 
-    private void resampleIcon(File tmpDir) {
+    private void resampleIcon(File icon) {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
                 '/opt/local/bin/convert',
-                new File(conf.rootDir, releaseConf.iconFile.value.path).canonicalPath,
+                releaseConf.iconFile.value.canonicalPath,
                 '-resample',
                 '128x128',
-                new File(tmpDir, "Contents/Resources/Launcher.icns").canonicalPath
+                icon.canonicalPath
         ]))
     }
 
-    private void updateDeviceFamily(IOSFamily family, File embedDir, IOSBuilderInfo bi) {
-        File targetPlistFile = new File(embedDir, "$bi.appName/Info.plist")
-        runPlistBuddy('Delete UIDeviceFamily', targetPlistFile, false)
-        runPlistBuddy('Add UIDeviceFamily array', targetPlistFile)
-        runPlistBuddy("Add UIDeviceFamily:0 integer $family.UIDDeviceFamily", targetPlistFile)
+    private void updateDeviceFamily(IOSFamily family, File plist) {
+        runPlistBuddy('Delete UIDeviceFamily', plist, false)
+        runPlistBuddy('Add UIDeviceFamily array', plist)
+        runPlistBuddy("Add UIDeviceFamily:0 integer $family.UIDDeviceFamily", plist)
     }
 
     private void runPlistBuddy(String command, File targetPlistFile, boolean failOnError = true) {
@@ -117,5 +112,17 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
                 command,
                 targetPlistFile
         ], failOnError: failOnError))
+    }
+
+    private void createSimAppDmg(File destDir, File srcDir, String name) {
+        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
+                'hdiutil',
+                'create',
+                destDir.canonicalPath,
+                '-srcfolder',
+                srcDir,
+                '-volname',
+                name
+        ]))
     }
 }

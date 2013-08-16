@@ -1,9 +1,11 @@
 package com.apphance.flow.plugins.ios.release
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
+import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
+import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import spock.lang.Specification
 
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
@@ -22,8 +24,10 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
             }
     )
     def builder = new IOSSimulatorArtifactsBuilder(
-            conf: Mock(IOSConfiguration) {
+            conf: GroovyMock(IOSConfiguration) {
                 getRootDir() >> new File('.')
+                getVersionCode() >> '3.1.45'
+                getVersionString() >> '101'
             },
             executor: executor
     )
@@ -52,7 +56,7 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
         tmpDir.deleteDir()
     }
 
-    def long folderSize(File directory) {
+    long folderSize(File directory) {
         long length = 0
         for (File file : directory.listFiles()) {
             if (file.isFile())
@@ -61,5 +65,19 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
                 length += folderSize(file)
         }
         length
+    }
+
+    def 'tmpDir is created with appDir inside'() {
+        when:
+        def tmpDir = builder.tmpDir(GroovyMock(IOSBuilderInfo) {
+            getProductName() >> 'Some Application'
+        }, family)
+
+        then:
+        tmpDir.isDirectory()
+        tmpDir.name == "Some Application (${family.iFormat()}_Simulator) 101_3.1.45.app"
+
+        where:
+        family << IOSFamily.values()
     }
 }

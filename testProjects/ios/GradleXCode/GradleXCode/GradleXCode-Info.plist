@@ -22,8 +22,6 @@
 				<string>icon.png</string>
 				<string>icon_retina.png</string>
 			</array>
-			<key>UIPrerenderedIcon</key>
-			<false/>
 		</dict>
 	</dict>
 	<key>CFBundleIdentifier</key>
