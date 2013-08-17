@@ -74,44 +74,6 @@ class PlistParserSpec extends Specification {
         parser.bundleDisplayName(Mock(File)) == '${PRODUCT_NAME}'
     }
 
-    def 'placeholder is recognized correctly'() {
-        expect:
-        PlistParser.isPlaceholder(placeholder) == expected
-
-        where:
-        placeholder | expected
-        '${}'       | false
-        ''          | false
-        '  \t'      | false
-        '$${}'      | false
-        '${{}'      | false
-        '${}}'      | false
-        '${_}'      | false
-        '${AA_}'    | false
-        '${AA_D}'   | true
-        '${AA_D_}'  | false
-        '${_AA_D_}' | false
-    }
-
-    def 'not a placeholder is recognized correctly'() {
-        expect:
-        PlistParser.isNotPlaceHolder(placeholder) == expected
-
-        where:
-        placeholder | expected
-        '${}'       | true
-        ''          | true
-        '  \t'      | true
-        '$${}'      | true
-        '${{}'      | true
-        '${}}'      | true
-        '${_}'      | true
-        '${AA_}'    | true
-        '${AA_D}'   | false
-        '${AA_D_}'  | true
-        '${_AA_D_}' | true
-    }
-
     def 'placeholders are evaluated correctly'() {
         expect:
         expected == parser.evaluate(value, 'target', 'conf')

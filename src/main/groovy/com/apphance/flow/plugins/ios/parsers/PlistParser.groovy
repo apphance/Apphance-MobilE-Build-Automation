@@ -99,12 +99,4 @@ class PlistParser {
     static String unfoldPlaceholder(String value) {
         isBlank(value) ? '' : value.replaceAll('[}{$]', '')
     }
-
-    static boolean isPlaceholder(String value) {
-        isNotBlank(value) && value.matches('\\$\\{([A-Z]+_)*([A-Z])+\\}')
-    }
-
-    static boolean isNotPlaceHolder(String value) {
-        !isPlaceholder(value)
-    }
 }

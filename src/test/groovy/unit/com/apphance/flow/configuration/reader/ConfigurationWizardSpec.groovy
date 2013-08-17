@@ -2,12 +2,10 @@ package com.apphance.flow.configuration.reader
 
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
-import com.apphance.flow.configuration.properties.ProjectTypeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.detection.project.ProjectType
 import spock.lang.Specification
 
-import static ProjectType.ANDROID
 import static org.apache.commons.lang.StringUtils.isBlank
 
 class ConfigurationWizardSpec extends Specification {
@@ -23,10 +21,9 @@ class ConfigurationWizardSpec extends Specification {
         removeColor(cm.promptPossible(p)) == expectedString
 
         where:
-        p                                                                                                | expectedString
-        new StringProperty()                                                                             | ''
-        new StringProperty(possibleValues: { ['a', 'b'] as List<String> })                               | ', possible: [a, b]'
-        new ProjectTypeProperty(possibleValues: { ProjectType.values()*.name().sort() as List<String> }) | ', possible: [ANDROID, IOS]'
+        p                                                                  | expectedString
+        new StringProperty()                                               | ''
+        new StringProperty(possibleValues: { ['a', 'b'] as List<String> }) | ', possible: [a, b]'
     }
 
     def 'default value string is formatted correctly'() {
@@ -34,12 +31,11 @@ class ConfigurationWizardSpec extends Specification {
         p.effectiveDefaultValue() == expectedString
 
         where:
-        p                                                  | expectedString
-        new StringProperty()                               | ''
-        new StringProperty(defaultValue: { null })         | ''
-        new StringProperty(defaultValue: { '' })           | ''
-        new StringProperty(defaultValue: { 'a' })          | 'a'
-        new ProjectTypeProperty(defaultValue: { ANDROID }) | 'ANDROID'
+        p                                          | expectedString
+        new StringProperty()                       | ''
+        new StringProperty(defaultValue: { null }) | ''
+        new StringProperty(defaultValue: { '' })   | ''
+        new StringProperty(defaultValue: { 'a' })  | 'a'
     }
 
     def 'prompt is displayed well'() {

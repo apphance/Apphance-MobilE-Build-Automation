@@ -24,7 +24,6 @@ class AndroidTestPlugin implements Plugin<Project> {
 
     static final String TEST_ALL_TASK_NAME = 'testAll'
 
-    @Inject AndroidConfiguration conf
     @Inject AndroidTestConfiguration testConf
     @Inject AndroidVariantsConfiguration variantsConf
 

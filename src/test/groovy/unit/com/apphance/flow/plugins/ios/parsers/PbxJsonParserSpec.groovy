@@ -24,15 +24,6 @@ class PbxJsonParserSpec extends Specification {
         parser.plistForScheme(GroovyMock(File), configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
     }
 
-    def 'plist for target and configuration is found correctly'() {
-        given:
-        def target = 'GradleXCode'
-        def configuration = 'BasicConfiguration'
-
-        expect:
-        parser.plistForTC(GroovyMock(File), target, configuration) == 'GradleXCode/GradleXCode-Info.plist'
-    }
-
     def 'target name is found for blueprint id'() {
         expect:
         parser.targetForBlueprintId(GroovyMock(File), blueprintId) == target
@@ -41,25 +32,6 @@ class PbxJsonParserSpec extends Specification {
         target             | blueprintId
         'GradleXCode'      | 'D382B71014703FE500E9CC9B'
         'GradleXCodeTests' | 'D382B73414703FE500E9CC9B'
-    }
-
-    def 'placeholder is recognized correctly'() {
-        expect:
-        PbxJsonParser.isPlaceholder(placeholder) == expected
-
-        where:
-        placeholder | expected
-        '$()'       | false
-        ''          | false
-        '  \t'      | false
-        '$$()'      | false
-        '$(()'      | false
-        '$())'      | false
-        '$(_)'      | false
-        '$(AA_)'    | false
-        '$(AA_D)'   | true
-        '$(AA_D_)'  | false
-        '$(_AA_D_)' | false
     }
 
     def 'apphance framework is found correctly'() {

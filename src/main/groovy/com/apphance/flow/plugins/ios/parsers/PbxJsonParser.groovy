@@ -33,17 +33,6 @@ class PbxJsonParser {
         conf.buildSettings[INFOPLIST_FILE]
     }
 
-    String plistForTC(File pbx, String target, String configuration) {
-        def json = parsedPBX(pbx)
-        def objects = json.objects
-
-        def targetObject = objects.find { it.value.isa == PBX_NATIVE_TARGET && it.value.name == target }.value as Map
-        def buildConfigurationListKey = targetObject.buildConfigurationList
-        def conf = findConfiguration(objects, buildConfigurationListKey, configuration)
-
-        conf.buildSettings[INFOPLIST_FILE]
-    }
-
     private Map findConfiguration(Map objects, String buildConfigurationListKey, String configuration) {
 
         def buildConfigurationList = objects.find { it.key == buildConfigurationListKey }.value as Map
@@ -70,9 +59,5 @@ class PbxJsonParser {
 
     private Map parsedPBX(File pbx) {
         new JsonSlurper().parseText(executor.pbxProjToJSON(pbx).join('\n')) as Map
-    }
-
-    static boolean isPlaceholder(String value) {
-        isNotBlank(value) && value.matches('\\$\\(([A-Z]+_)*([A-Z])+\\)')
     }
 }
