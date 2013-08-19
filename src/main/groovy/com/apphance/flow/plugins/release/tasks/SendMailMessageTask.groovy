@@ -57,7 +57,7 @@ class SendMailMessageTask extends DefaultTask {
                 from: releaseConf.releaseMailFrom.value,
                 message: releaseConf.mailMessageFile?.location?.text,
                 messageMimeType: 'text/html',
-                files: attachments.toString().replaceAll('[\\[\\]]', '')
+                files: attachments.join(',')
         )
     }
 }
