@@ -18,7 +18,8 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     @Inject MobileProvisionParser mpParser
 
     @Lazy
-    private File tmplDir = {
+    @PackageScope
+    File tmplDir = {
         new File('/Applications/Simulator Bundler.app/Contents/Resources/Launcher.app/')
     }()
 

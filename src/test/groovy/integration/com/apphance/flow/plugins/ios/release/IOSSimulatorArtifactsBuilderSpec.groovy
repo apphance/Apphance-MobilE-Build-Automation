@@ -12,10 +12,13 @@ import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 import spock.lang.Shared
 import spock.lang.Specification
 
+import java.nio.file.Paths
+
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static com.google.common.io.Files.createTempDir
 import static java.io.File.createTempFile
+import static java.nio.file.Files.isSymbolicLink
 
 class IOSSimulatorArtifactsBuilderSpec extends Specification {
 
@@ -39,11 +42,10 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
 
     def 'ios_sim_template is synced'() {
         given:
-        def tmplDir = new File(getClass().getResource('ios_sim_tmpl').toURI())
         def tmpDir = createTempDir()
 
         when:
-        builder.syncSimAppTemplateToTmpDir(tmplDir, tmpDir)
+        builder.syncSimAppTemplateToTmpDir(builder.tmplDir, tmpDir)
 
         then:
         def contents = new File(tmpDir, 'Contents')
@@ -56,6 +58,10 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
         launcher.exists()
         launcher.isFile()
         launcher.canExecute()
+
+        and:
+        def plSimulator = new File(contents, 'Frameworks/PLSimulator.framework/PLSimulator')
+        isSymbolicLink(Paths.get(plSimulator.toURI()))
 
         cleanup:
         tmpDir.deleteDir()
