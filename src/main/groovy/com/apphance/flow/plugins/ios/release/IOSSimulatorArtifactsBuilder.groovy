@@ -74,7 +74,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     void syncSimAppTemplateToTmpDir(File tmplDir, File tmpDir) {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
                 'rsync',
-                '-aE',
+                '-alE',
                 '--exclude',
                 'Contents/Resources/EmbeddedApp',
                 "$tmplDir.canonicalPath/",
