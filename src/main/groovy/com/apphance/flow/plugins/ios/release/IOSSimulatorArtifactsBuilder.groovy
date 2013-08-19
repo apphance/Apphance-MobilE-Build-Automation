@@ -13,13 +13,13 @@ import static org.gradle.api.logging.Logging.getLogger
 
 class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
-    def logger = getLogger(getClass())
+    private logger = getLogger(getClass())
 
     @Inject MobileProvisionParser mpParser
 
     @Lazy
     private File tmplDir = {
-        new File(getClass().getResource('ios_sim_tmpl').toURI())
+        new File(Thread.currentThread().getContextClassLoader().getResource('com/apphance/flow/plugins/ios/release/ios_sim_tmpl').getFile())
     }()
 
     @Override
