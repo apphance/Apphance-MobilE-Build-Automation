@@ -57,7 +57,7 @@ class SendMailMessageTaskSpec extends Specification {
                 'from': 'release@mail.from',
                 'message': 'msg',
                 'messageMimeType': 'text/html',
-                'files': '[]'
+                'files': ''
         ])
     }
 }
