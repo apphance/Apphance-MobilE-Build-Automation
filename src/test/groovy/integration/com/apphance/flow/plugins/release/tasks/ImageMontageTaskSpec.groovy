@@ -143,6 +143,14 @@ class ImageMontageTaskSpec extends Specification {
         ImageIO.read(output)
     }
 
+    def 'test read invalid png'() {
+        given:
+        def ihdrBadLength = new File('src/test/resources/com/apphance/flow/plugins/release/tasks/bad_length_ihdr.png')
+
+        expect:
+        imageMontageTask.getImageFrom(ihdrBadLength) == null
+    }
+
     @Ignore('This test should be run and verified manually')
     def 'manually verify generated montage'() {
         when:

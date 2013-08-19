@@ -150,6 +150,7 @@ class ImageMontageTask extends DefaultTask {
                 image.getScaledInstance(TILE_PX_SIZE, TILE_PX_SIZE, Image.SCALE_DEFAULT)
             } else {
                 logger.error("Problem during converting ${it.absolutePath}")
+                null
             }
         }
 
@@ -160,6 +161,11 @@ class ImageMontageTask extends DefaultTask {
     @PackageScope
     BufferedImage getImageFrom(File file) {
         logger.info("Reading file: $file.absolutePath")
-        ImageIO.read(file)
+        try {
+            ImageIO.read(file)
+        } catch (Exception ex) {
+            logger.error "Error during file read: $ex.message"
+            null
+        }
     }
 }
