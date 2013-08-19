@@ -19,7 +19,7 @@ class SendMailMessageTask extends DefaultTask {
              or corresponding MAIL_SERVER, MAIL_PORT env variables (no authentication).
              It also uses certain properties to send mails:
              release.mail.from, release.mail.to, release.mail.flags
-             flags are one of: qrCode, imageMontage, installableSimulator"""
+             flags are one of: qrCode, imageMontage"""
 
     @Inject ReleaseConfiguration releaseConf
     @Inject AntBuilder ant
@@ -33,28 +33,31 @@ class SendMailMessageTask extends DefaultTask {
         validateMail(releaseConf.releaseMailFrom)
         validateMail(releaseConf.releaseMailTo)
 
-        Properties props = System.getProperties()
-        props.put('mail.smtp.host', releaseConf.mailServer)
-        props.put('mail.smtp.port', releaseConf.mailPort)
+        System.properties['mail.smtp.host'] = releaseConf.mailServer
+        System.properties['mail.smtp.port'] = releaseConf.mailPort
 
         project.configurations.mail.each {
             Project.class.classLoader.addURL(it.toURI().toURL())
+        }
+
+        def attachments = []
+        if (releaseConf.releaseMailFlags.value.contains('qrCode')) {
+            attachments << releaseConf.QRCodeFile.location
+        }
+        if (releaseConf.releaseMailFlags.value.contains('imageMontage') && releaseConf.imageMontageFile != null) {
+            attachments << releaseConf.imageMontageFile.location
         }
 
         ant.mail(
                 mailhost: releaseConf.mailServer,
                 mailport: releaseConf.mailPort,
                 subject: releaseConf.releaseMailSubject,
-                charset: 'utf-8',
-                tolist: releaseConf.releaseMailTo.value) {
-            from(address: releaseConf.releaseMailFrom.value)
-            message(mimetype: 'text/html', releaseConf.mailMessageFile?.location?.text)
-            if (releaseConf.releaseMailFlags.value.contains("qrCode")) {
-                fileset(file: releaseConf.QRCodeFile.location)
-            }
-            if (releaseConf.releaseMailFlags.value.contains("imageMontage") && releaseConf.imageMontageFile != null) {
-                fileset(file: releaseConf.imageMontageFile.location)
-            }
-        }
+                charset: 'UTF-8',
+                tolist: releaseConf.releaseMailTo.value,
+                from: releaseConf.releaseMailFrom.value,
+                message: releaseConf.mailMessageFile?.location?.text,
+                messageMimeType: 'text/html',
+                files: attachments.toString()
+        )
     }
 }

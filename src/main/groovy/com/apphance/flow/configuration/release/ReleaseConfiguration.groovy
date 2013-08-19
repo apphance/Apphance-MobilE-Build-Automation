@@ -30,7 +30,6 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     public static final String OTA_DIR = 'flow-ota'
     public static final MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
     public static final ALL_EMAIL_FLAGS = [
-            'installableSimulator',
             'qrCode',
             'imageMontage'
     ]
