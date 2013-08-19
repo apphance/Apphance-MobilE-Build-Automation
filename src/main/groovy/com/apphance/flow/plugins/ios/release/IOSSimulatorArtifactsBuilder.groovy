@@ -19,7 +19,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
     @Lazy
     private File tmplDir = {
-        new File(Thread.currentThread().getContextClassLoader().getResource('com/apphance/flow/plugins/ios/release/ios_sim_tmpl').getFile())
+        new File('/Applications/Simulator Bundler.app/Contents/Resources/Launcher.app/')
     }()
 
     @Override
@@ -72,7 +72,12 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     @PackageScope
     void syncSimAppTemplateToTmpDir(File tmplDir, File tmpDir) {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
-                'rsync', '-alE', "${tmplDir}/", tmpDir
+                'rsync',
+                '-aE',
+                '--exclude',
+                'Contents/Resources/EmbeddedApp',
+                "$tmplDir.canonicalPath/",
+                tmpDir
         ]))
     }
 
