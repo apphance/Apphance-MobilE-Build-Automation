@@ -5,6 +5,7 @@ import com.apphance.flow.executor.command.Command
 import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 import groovy.transform.PackageScope
+import org.apache.commons.io.IOUtils
 
 import javax.inject.Inject
 
@@ -20,7 +21,16 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     @Lazy
     @PackageScope
     File tmplDir = {
-        new File('/Applications/Simulator Bundler.app/Contents/Resources/Launcher.app/')
+        def resName = 'ios_sim_tmpl.zip'
+        def resStream = getClass().getResourceAsStream(resName)
+        def tmpDir = createTempDir()
+        def tmpDirZip = new File(tmpDir, resName)
+        tmpDir.deleteOnExit()
+        def os = new FileOutputStream(tmpDirZip)
+        IOUtils.copy(resStream, os)
+        IOUtils.closeQuietly(os)
+        executor.executeCommand(new Command(runDir: tmpDir, cmd: ['unzip', tmpDirZip.canonicalPath, '-d', tmpDir]))
+        new File(tmpDir, 'Contents')
     }()
 
     @Override
@@ -44,8 +54,8 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         syncSimAppTemplateToTmpDir(tmplDir, tmpDir)
         syncAppToTmpDir(sourceApp(bi), embedDir)
 
-        updateBundleId(bi.mobileprovision, contentsPlist)
         resampleIcon(icon)
+        updateBundleId(bi.mobileprovision, contentsPlist)
         updateDeviceFamily(family, embedPlist)
 
         createSimAppDmg(fa.location, tmpDir, "$bi.appName-${family.iFormat()}")
@@ -73,12 +83,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     @PackageScope
     void syncSimAppTemplateToTmpDir(File tmplDir, File tmpDir) {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
-                'rsync',
-                '-alE',
-                '--exclude',
-                'Contents/Resources/EmbeddedApp',
-                "$tmplDir.canonicalPath/",
-                tmpDir
+                'rsync', '-alE', "$tmplDir.canonicalPath", tmpDir
         ]))
     }
 
@@ -95,12 +100,6 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     @PackageScope
-    void updateBundleId(File mobileprovision, File plist) {
-        def bundleId = mpParser.bundleId(mobileprovision)
-        runPlistBuddy("Set :CFBundleIdentifier ${bundleId}.launchsim", plist)
-    }
-
-    @PackageScope
     void resampleIcon(File icon) {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
                 '/opt/local/bin/convert',
@@ -109,6 +108,12 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
                 '128x128',
                 icon.canonicalPath
         ]))
+    }
+
+    @PackageScope
+    void updateBundleId(File mobileprovision, File plist) {
+        def bundleId = mpParser.bundleId(mobileprovision)
+        runPlistBuddy("Set :CFBundleIdentifier ${bundleId}.launchsim", plist)
     }
 
     @PackageScope
