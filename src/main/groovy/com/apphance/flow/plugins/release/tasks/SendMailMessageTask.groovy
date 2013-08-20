@@ -21,8 +21,8 @@ class SendMailMessageTask extends DefaultTask {
              release.mail.from, release.mail.to, release.mail.flags
              flags are one of: qrCode, imageMontage"""
 
-    @Inject ReleaseConfiguration releaseConf
     @Inject AntBuilder ant
+    @Inject ReleaseConfiguration releaseConf
 
     @TaskAction
     void sendMailMessage() {
@@ -40,13 +40,12 @@ class SendMailMessageTask extends DefaultTask {
             Project.class.classLoader.addURL(it.toURI().toURL())
         }
 
-        def attachments = []
-        if (releaseConf.releaseMailFlags.value.contains('qrCode')) {
-            attachments << releaseConf.QRCodeFile.location
-        }
-        if (releaseConf.releaseMailFlags.value.contains('imageMontage') && releaseConf.imageMontageFile != null) {
-            attachments << releaseConf.imageMontageFile.location
-        }
+        def flags = releaseConf.releaseMailFlags.value
+        def attachments = [
+                (flags.contains('qrCode') && releaseConf.QRCodeFile?.location?.exists() ? releaseConf.QRCodeFile.location : null),
+                (flags.contains('imageMontage') && releaseConf.imageMontageFile?.location?.exists() ? releaseConf.imageMontageFile.location : null)
+        ]
+        attachments.removeAll([null])
 
         ant.mail(
                 mailhost: releaseConf.mailServer,
