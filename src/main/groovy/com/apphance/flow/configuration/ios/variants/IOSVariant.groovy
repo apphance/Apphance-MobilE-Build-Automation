@@ -136,23 +136,6 @@ class IOSVariant extends AbstractVariant {
         conf.extVersionString ?: plistParser.evaluate(plistParser.bundleShortVersionString(plist), target, buildConfiguration) ?: ''
     }
 
-    protected List<String> getSdkCmd() {
-        switch (mode.value) {
-            case SIMULATOR:
-                conf.simulatorSdk.value ? ['-sdk', conf.simulatorSdk.value] : []
-                break
-            case DEVICE:
-                conf.sdk.value ? ['-sdk', conf.sdk.value] : []
-                break
-            default:
-                []
-        }
-    }
-
-    List<String> getArchCmd() {
-        mode.value == SIMULATOR ? ['-arch', 'i386'] : []
-    }
-
     String getFullVersionString() {
         "${versionString}_${versionCode}"
     }
@@ -189,20 +172,12 @@ class IOSVariant extends AbstractVariant {
         schemeParser.configuration(schemeFile, ARCHIVE_ACTION)
     }
 
-    List<String> getBuildCmd() {
-        conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + ['clean', 'build']
-    }
-
     String getArchiveTaskName() {
         "archive$name".replaceAll('\\s', '')
     }
 
     String getTestTaskName() {
         "test$name".replaceAll('\\s', '')
-    }
-
-    List<String> getArchiveCmd() {
-        conf.xcodebuildExecutionPath() + ['-scheme', name] + sdkCmd + archCmd + ['clean', 'archive']
     }
 
     File getSchemeFile() {
@@ -222,4 +197,3 @@ class IOSVariant extends AbstractVariant {
             check((isNotEmpty(es) && !WHITESPACE_PATTERN.matcher(es).find()), bundle.getString('exception.ios.version.string.ext'))
     }
 }
-

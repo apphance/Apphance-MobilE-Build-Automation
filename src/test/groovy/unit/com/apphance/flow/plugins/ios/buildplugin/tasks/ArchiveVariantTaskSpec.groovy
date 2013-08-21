@@ -3,13 +3,19 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.properties.IOSBuildModeProperty
+import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
-import spock.lang.Ignore
+import com.apphance.flow.plugins.ios.release.IOSDeviceArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.IOSSimulatorArtifactsBuilder
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.nio.file.Files
 
+import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
+import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class ArchiveVariantTaskSpec extends Specification {
@@ -45,9 +51,14 @@ class ArchiveVariantTaskSpec extends Specification {
             }
             getName() >> 'GradleXCode'
             getSchemeFile() >> tmpFile
+            getMode() >> new IOSBuildModeProperty(value: DEVICE)
         }
         task.releaseConf = GroovyMock(IOSReleaseConfiguration) {
             isEnabled() >> false
+        }
+        task.conf = GroovyMock(IOSConfiguration) {
+            xcodebuildExecutionPath() >> ['xcodebuild']
+            getSdk() >> new StringProperty(value: 'iphoneos')
         }
         task.variant = variant
         task.schemeParser = GroovyMock(XCSchemeParser)
@@ -56,35 +67,55 @@ class ArchiveVariantTaskSpec extends Specification {
         task.build()
 
         then:
-        1 * task.executor.archiveVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', 'clean', 'archive']) >> ["FLOW_ARCHIVE_PATH=$tmpFile.absolutePath"].iterator()
+        noExceptionThrown()
+        1 * task.executor.archiveVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', '-sdk', 'iphoneos', 'clean', 'archive']) >> ["FLOW_ARCHIVE_PATH=$tmpFile.absolutePath"].iterator()
 
         cleanup:
         tmpFile.delete()
     }
 
-    @Ignore
-    def 'executor runs archive command and no archive found'() {
-        given:
-        def variant = GroovySpy(IOSVariant) {
-            getTmpDir() >> GroovyMock(File)
-            getConf() >> GroovyMock(IOSConfiguration) {
-                xcodebuildExecutionPath() >> ['xcodebuild']
-            }
-            getName() >> 'GradleXCode'
-            getSchemeFile() >> GroovyMock(File)
-        }
-        task.releaseConf = GroovyMock(IOSReleaseConfiguration) {
-            isEnabled() >> false
-        }
-        task.variant = variant
-        task.schemeParser = GroovyMock(XCSchemeParser)
-
+    def 'exception thrown when no archive found'() {
         when:
-        task.build()
+        task.findArchiveFile(["FLOW_ARCHIVE_PATH=none"].iterator())
 
         then:
         def e = thrown(IllegalArgumentException)
-        e.message.startsWith('Impossible to find archive file:')
-        e.message.endsWith("for variant: $variant.name")
+        e.message.startsWith('Xcarchive file: ')
+        e.message.endsWith('none does not exist or is not a directory')
+    }
+
+    @Unroll
+    def 'correct instance of builder is returned for mode #mode'() {
+        given:
+        task.simulatorArtifactsBuilder = GroovyMock(IOSSimulatorArtifactsBuilder)
+        task.deviceArtifactsBuilder = GroovyMock(IOSDeviceArtifactsBuilder)
+
+        and:
+        task.variant = GroovyMock(IOSVariant) {
+            getMode() >> new IOSBuildModeProperty(value: mode)
+        }
+
+        expect:
+        task.builder.call().class.name.contains(name)
+
+        where:
+        mode      | name
+        DEVICE    | 'Device'
+        SIMULATOR | 'Simulator'
+    }
+
+    def 'no builder found for bad variant'() {
+        given:
+        task.variant = GroovyMock(IOSVariant) {
+            getMode() >> new IOSBuildModeProperty(value: '')
+            getName() >> 'V1'
+        }
+
+        when:
+        task.builder.call()
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == 'Unknown build mode \'null\' for variant \'V1\''
     }
 }
