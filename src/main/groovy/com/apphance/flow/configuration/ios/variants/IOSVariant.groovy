@@ -61,6 +61,20 @@ class IOSVariant extends AbstractVariant {
         super.@conf as IOSConfiguration
     }
 
+    def mode = new IOSBuildModeProperty(
+            message: "Build mode for the variant, it describes " +
+                    "the environment the artifact is built for: (${IOSBuildMode.values().join('|')})",
+            required: { true },
+            possibleValues: { possibleBuildModeValues },
+            validator: { it in possibleBuildModeValues }
+    )
+
+    @Lazy
+    @PackageScope
+    List<String> possibleBuildModeValues = {
+        IOSBuildMode.values()*.name() as List<String>
+    }()
+
     private FileProperty mobileprovision = new FileProperty(
             message: "Mobile provision file for variant defined",
             interactive: { releaseConf.enabled },
@@ -78,20 +92,6 @@ class IOSVariant extends AbstractVariant {
         def mp = releaseConf.findMobileProvisionFiles()
         mp ? mp.collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath) } : []
     }
-
-    def mode = new IOSBuildModeProperty(
-            message: "Build mode for the variant, it describes " +
-                    "the environment the artifact is built for: (${IOSBuildMode.values().join('|')})",
-            required: { true },
-            possibleValues: { possibleBuildModeValues },
-            validator: { it in possibleBuildModeValues }
-    )
-
-    @Lazy
-    @PackageScope
-    List<String> possibleBuildModeValues = {
-        IOSBuildMode.values()*.name() as List<String>
-    }()
 
     String getBundleId() {
         plistParser.evaluate(plistParser.bundleId(plist), target, buildConfiguration) ?: ''
