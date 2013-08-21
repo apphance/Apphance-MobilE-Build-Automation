@@ -16,7 +16,6 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
 import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
@@ -81,9 +80,9 @@ class IOSVariant extends AbstractVariant {
     }
 
     def mode = new IOSBuildModeProperty(
-            message: "Build mode for the variant, it describes the environment the artifact is built for: (DEVICE|SIMULATOR)",
+            message: "Build mode for the variant, it describes " +
+                    "the environment the artifact is built for: (${IOSBuildMode.values().join('|')})",
             required: { true },
-            defaultValue: { (buildConfiguration.contains('debug') || buildConfiguration.contains('dev')) ? SIMULATOR : DEVICE },
             possibleValues: { possibleBuildModeValues },
             validator: { it in possibleBuildModeValues }
     )
