@@ -5,6 +5,8 @@ import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
+import com.apphance.flow.configuration.properties.ListStringProperty
+import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.configuration.variants.AbstractVariant
 import com.apphance.flow.executor.IOSExecutor
@@ -49,8 +51,12 @@ class IOSVariant extends AbstractVariant {
     @Inject
     void init() {
 
-        mobileprovision.name = "ios.variant.${name}.mobileprovision"
         mode.name = "ios.variant.${name}.mode"
+        mobileprovision.name = "ios.variant.${name}.mobileprovision"
+
+        frameworkVersion.name = "ios.variant.${name}.framework.version"
+        frameworkHeaders.name = "ios.variant.${name}.framework.headers"
+        frameworkResources.name = "ios.variant.${name}.framework.resources"
 
         super.init()
     }
@@ -102,6 +108,23 @@ class IOSVariant extends AbstractVariant {
         def mp = releaseConf.findMobileProvisionFiles()
         mp ? mp.collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath) } : []
     }
+
+    //TODO how to handle required, interactive during 'prepareSetup'
+    //TODO how to handle validation
+    //TODO are all of the props really required?
+    //TODO what about name?
+
+    def frameworkVersion = new StringProperty(
+            message: 'Framework version',
+    )
+
+    def frameworkHeaders = new ListStringProperty(
+            message: 'Framework headers',
+    )
+
+    def frameworkResources = new ListStringProperty(
+            message: 'Framework resources',
+    )
 
     String getBundleId() {
         plistParser.evaluate(plistParser.bundleId(plist), target, buildConfiguration) ?: ''
