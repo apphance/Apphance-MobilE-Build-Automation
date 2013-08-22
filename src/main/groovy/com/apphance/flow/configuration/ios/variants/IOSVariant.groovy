@@ -54,6 +54,7 @@ class IOSVariant extends AbstractVariant {
         mode.name = "ios.variant.${name}.mode"
         mobileprovision.name = "ios.variant.${name}.mobileprovision"
 
+        frameworkName.name = "ios.variant.${name}.framework.name"
         frameworkVersion.name = "ios.variant.${name}.framework.version"
         frameworkHeaders.name = "ios.variant.${name}.framework.headers"
         frameworkResources.name = "ios.variant.${name}.framework.resources"
@@ -114,6 +115,10 @@ class IOSVariant extends AbstractVariant {
     //TODO are all of the props really required?
     //TODO what about name?
     //TODO should plugin have an build & archive action also?
+
+    def frameworkName = new StringProperty(
+            message: 'Framework name',
+    )
 
     def frameworkVersion = new StringProperty(
             message: 'Framework version',

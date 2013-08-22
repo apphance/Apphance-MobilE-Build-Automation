@@ -31,7 +31,7 @@ class ArchiveVariantTask extends AbstractBuildVariantTask {
         checkNotNull(variant, 'Null variant passed to builder!')
         logger.info("Adding post archive action to scheme file: $variant.schemeFile.absolutePath")
         schemeParser.addPostArchiveAction(variant.schemeFile)
-        def archiveOutput = executor.archiveVariant(variant.tmpDir, cmd)
+        def archiveOutput = executor.buildVariant(variant.tmpDir, cmd)
 
         if (releaseConf.enabled) {
             def bi = artifactProvider.builderInfo(variant)

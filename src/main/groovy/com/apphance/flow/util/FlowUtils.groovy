@@ -5,6 +5,7 @@ import org.gradle.api.logging.Logging
 
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static com.google.common.base.Preconditions.checkNotNull
+import static com.google.common.io.Files.createTempDir
 import static java.io.File.createTempFile
 
 class FlowUtils {
@@ -45,7 +46,7 @@ class FlowUtils {
     }
 
     File getTempFile() {
-        File file = createTempFile('prefix', 'suffix')
+        def file = createTempFile('prefix', 'suffix')
         file.deleteOnExit()
         file
     }

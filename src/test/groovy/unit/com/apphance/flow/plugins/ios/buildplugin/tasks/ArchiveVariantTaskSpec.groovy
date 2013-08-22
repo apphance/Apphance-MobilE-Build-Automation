@@ -68,7 +68,7 @@ class ArchiveVariantTaskSpec extends Specification {
 
         then:
         noExceptionThrown()
-        1 * task.executor.archiveVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', '-sdk', 'iphoneos', 'clean', 'archive']) >> ["FLOW_ARCHIVE_PATH=$tmpFile.absolutePath"].iterator()
+        1 * task.executor.buildVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', '-sdk', 'iphoneos', 'clean', 'archive']) >> ["FLOW_ARCHIVE_PATH=$tmpFile.absolutePath"].iterator()
 
         cleanup:
         tmpFile.delete()
