@@ -10,8 +10,7 @@ import com.apphance.flow.plugins.ios.buildplugin.tasks.UnlockKeyChainTask
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
 import spock.lang.Specification
 
-import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
-import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static com.apphance.flow.plugins.ios.buildplugin.IOSPlugin.*
 import static org.gradle.testfixtures.ProjectBuilder.builder
@@ -43,6 +42,10 @@ class IOSPluginSpec extends Specification {
                     getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
                     getArchiveTaskName() >> 'archiveV2'
                 }),
+                GroovyMock(IOSVariant, {
+                    getFrameworkTaskName() >> 'frameworkV3'
+                    getMode() >> new IOSBuildModeProperty(value: FRAMEWORK)
+                })
         ]
 
         and:
@@ -57,28 +60,42 @@ class IOSPluginSpec extends Specification {
         project.tasks[CopySourcesTask.NAME].group == FLOW_BUILD.name()
         project.tasks[CopyMobileProvisionTask.NAME].group == FLOW_BUILD.name()
         project.tasks[UnlockKeyChainTask.NAME].group == FLOW_BUILD.name()
+
+        and:
         project.tasks[BUILD_ALL_DEVICE_TASK_NAME].group == FLOW_BUILD.name()
         project.tasks[BUILD_ALL_SIMULATOR_TASK_NAME].group == FLOW_BUILD.name()
         project.tasks[BUILD_ALL_TASK_NAME].group == FLOW_BUILD.name()
+        project.tasks['buildV1'].group == FLOW_BUILD.name()
+        project.tasks['buildV2'].group == FLOW_BUILD.name()
+
+        and:
         project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].group == FLOW_BUILD.name()
         project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].group == FLOW_BUILD.name()
         project.tasks[ARCHIVE_ALL_TASK_NAME].group == FLOW_BUILD.name()
-        project.tasks['buildV1'].group == FLOW_BUILD.name()
-        project.tasks['buildV2'].group == FLOW_BUILD.name()
         project.tasks['archiveV1'].group == FLOW_BUILD.name()
         project.tasks['archiveV2'].group == FLOW_BUILD.name()
 
         and:
+        project.tasks[FRAMEWORK_ALL].group == FLOW_BUILD.name()
+        project.tasks['frameworkV3'].group == FLOW_BUILD.name()
+
+        and:
         project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_SIMULATOR_TASK_NAME, BUILD_ALL_DEVICE_TASK_NAME)
-        project.tasks[ARCHIVE_ALL_TASK_NAME].dependsOn.flatten().containsAll(ARCHIVE_ALL_SIMULATOR_TASK_NAME, ARCHIVE_ALL_DEVICE_TASK_NAME)
         project.tasks['buildV1'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
         project.tasks['buildV2'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
-        project.tasks['archiveV1'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
-        project.tasks['archiveV2'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
         project.tasks[BUILD_ALL_SIMULATOR_TASK_NAME].dependsOn.flatten().contains('buildV2')
         project.tasks[BUILD_ALL_DEVICE_TASK_NAME].dependsOn.flatten().contains('buildV1')
+
+        and:
+        project.tasks[ARCHIVE_ALL_TASK_NAME].dependsOn.flatten().containsAll(ARCHIVE_ALL_SIMULATOR_TASK_NAME, ARCHIVE_ALL_DEVICE_TASK_NAME)
+        project.tasks['archiveV1'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
+        project.tasks['archiveV2'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
         project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].dependsOn.flatten().contains('archiveV2')
         project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].dependsOn.flatten().contains('archiveV1')
+
+        and:
+        project.tasks[FRAMEWORK_ALL].dependsOn.flatten().containsAll('frameworkV3')
+        project.tasks['frameworkV3'].dependsOn.flatten().containsAll(CopySourcesTask.NAME)
     }
 
     def 'no tasks available when configuration is inactive'() {
@@ -106,11 +123,6 @@ class IOSPluginSpec extends Specification {
         !project.getTasksByName(ARCHIVE_ALL_TASK_NAME, false)
         !project.getTasksByName(ARCHIVE_ALL_SIMULATOR_TASK_NAME, false)
         !project.getTasksByName(ARCHIVE_ALL_DEVICE_TASK_NAME, false)
-        !project.getTasksByName('buildV1', false)
-        !project.getTasksByName('buildV2', false)
-        !project.getTasksByName('buildV3', false)
-        !project.getTasksByName('archiveV1', false)
-        !project.getTasksByName('archiveV2', false)
-        !project.getTasksByName('archiveV3', false)
+        !project.getTasksByName(FRAMEWORK_ALL, false)
     }
 }

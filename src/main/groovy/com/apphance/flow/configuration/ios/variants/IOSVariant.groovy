@@ -113,6 +113,7 @@ class IOSVariant extends AbstractVariant {
     //TODO how to handle validation
     //TODO are all of the props really required?
     //TODO what about name?
+    //TODO should plugin have an build & archive action also?
 
     def frameworkVersion = new StringProperty(
             message: 'Framework version',
@@ -210,6 +211,10 @@ class IOSVariant extends AbstractVariant {
 
     String getTestTaskName() {
         "test$name".replaceAll('\\s', '')
+    }
+
+    String getFrameworkTaskName() {
+        "framework$name".replaceAll('\\s', '')
     }
 
     File getSchemeFile() {
