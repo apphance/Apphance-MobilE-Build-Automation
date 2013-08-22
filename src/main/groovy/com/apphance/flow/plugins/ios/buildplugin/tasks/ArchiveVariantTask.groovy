@@ -13,14 +13,12 @@ import javax.inject.Inject
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
-import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkNotNull
 
-class ArchiveVariantTask extends AbstractActionVariantTask {
+class ArchiveVariantTask extends AbstractBuildVariantTask {
 
     String description = "Executes 'archive' action for single variant"
-    String group = FLOW_BUILD
 
     @Inject IOSReleaseConfiguration releaseConf
     @Inject IOSArtifactProvider artifactProvider
@@ -28,6 +26,7 @@ class ArchiveVariantTask extends AbstractActionVariantTask {
     @Inject IOSSimulatorArtifactsBuilder simulatorArtifactsBuilder
     @Inject XCSchemeParser schemeParser
 
+    @Override
     void build() {
         checkNotNull(variant, 'Null variant passed to builder!')
         logger.info("Adding post archive action to scheme file: $variant.schemeFile.absolutePath")
