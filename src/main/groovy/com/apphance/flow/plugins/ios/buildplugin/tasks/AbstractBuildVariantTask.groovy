@@ -17,7 +17,7 @@ abstract class AbstractBuildVariantTask extends DefaultTask {
     String group = FLOW_BUILD
 
     @Inject IOSConfiguration conf
-    @Inject IOSExecutor executor
+    @Inject IOSExecutor iosExecutor
 
     IOSVariant variant
 

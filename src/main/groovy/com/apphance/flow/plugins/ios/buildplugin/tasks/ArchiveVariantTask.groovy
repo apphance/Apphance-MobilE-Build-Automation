@@ -31,7 +31,7 @@ class ArchiveVariantTask extends AbstractBuildVariantTask {
         checkNotNull(variant, 'Null variant passed to builder!')
         logger.info("Adding post archive action to scheme file: $variant.schemeFile.absolutePath")
         schemeParser.addPostArchiveAction(variant.schemeFile)
-        def archiveOutput = executor.buildVariant(variant.tmpDir, cmd)
+        def archiveOutput = iosExecutor.buildVariant(variant.tmpDir, cmd)
 
         if (releaseConf.enabled) {
             def bi = artifactProvider.builderInfo(variant)
@@ -58,11 +58,11 @@ class ArchiveVariantTask extends AbstractBuildVariantTask {
     }
 
     private String appName() {
-        executor.buildSettings(variant.target, variant.archiveConfiguration)['FULL_PRODUCT_NAME']
+        iosExecutor.buildSettings(variant.target, variant.archiveConfiguration)['FULL_PRODUCT_NAME']
     }
 
     private String productName() {
-        executor.buildSettings(variant.target, variant.archiveConfiguration)['PRODUCT_NAME']
+        iosExecutor.buildSettings(variant.target, variant.archiveConfiguration)['PRODUCT_NAME']
     }
 
     protected Closure<AbstractIOSArtifactsBuilder> builder = {

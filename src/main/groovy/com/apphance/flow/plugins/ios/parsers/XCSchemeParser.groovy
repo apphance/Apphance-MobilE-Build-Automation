@@ -31,7 +31,8 @@ class XCSchemeParser {
     }.memoize()
 
     boolean hasSingleBuildableTarget(File scheme) {
-        def xml = parseSchemeFile.call(scheme)
+        def xml
+        try { xml = parseSchemeFile.call(scheme) } catch (e) { return false }
         xml.BuildAction.BuildActionEntries.children().size() == 1
     }
 

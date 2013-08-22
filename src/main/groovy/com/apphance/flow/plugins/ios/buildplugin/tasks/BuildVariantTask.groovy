@@ -9,7 +9,7 @@ class BuildVariantTask extends AbstractBuildVariantTask {
     @Override
     void build() {
         Preconditions.checkNotNull(variant, 'Null variant passed to builder!')
-        executor.buildVariant(variant.tmpDir, cmd)
+        iosExecutor.buildVariant(variant.tmpDir, cmd)
     }
 
     @Lazy

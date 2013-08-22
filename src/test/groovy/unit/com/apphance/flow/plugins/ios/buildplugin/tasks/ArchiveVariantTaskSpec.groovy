@@ -24,7 +24,7 @@ class ArchiveVariantTaskSpec extends Specification {
     def task = project.task('archiveTask', type: ArchiveVariantTask) as ArchiveVariantTask
 
     def setup() {
-        task.executor = GroovyMock(IOSExecutor)
+        task.iosExecutor = GroovyMock(IOSExecutor)
     }
 
     def 'no archive when null variant passed'() {
@@ -68,7 +68,7 @@ class ArchiveVariantTaskSpec extends Specification {
 
         then:
         noExceptionThrown()
-        1 * task.executor.buildVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', '-sdk', 'iphoneos', 'clean', 'archive']) >> ["FLOW_ARCHIVE_PATH=$tmpFile.absolutePath"].iterator()
+        1 * task.iosExecutor.buildVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', '-sdk', 'iphoneos', 'clean', 'archive']) >> ["FLOW_ARCHIVE_PATH=$tmpFile.absolutePath"].iterator()
 
         cleanup:
         tmpFile.delete()

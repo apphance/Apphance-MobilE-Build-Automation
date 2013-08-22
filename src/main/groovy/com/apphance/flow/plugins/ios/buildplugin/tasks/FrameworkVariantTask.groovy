@@ -1,11 +1,14 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
+import com.apphance.flow.executor.command.Command
+import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.util.FlowUtils
 
 import javax.inject.Inject
 
 import static com.google.common.io.Files.createTempDir
+import static java.nio.file.Files.copy
 import static java.nio.file.Files.createSymbolicLink
 import static java.nio.file.Paths.get as path
 
@@ -15,6 +18,7 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
     String description = "Prepares 'framework' file for given variant"
 
     @Inject IOSReleaseConfiguration releaseConf
+    @Inject CommandExecutor executor
 
     @Lazy
     File simTmpDir = { tempDir }()
@@ -31,11 +35,15 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
 
     @Override
     void build() {
-        executor.buildVariant(simTmpDir, cmdSim)
-        executor.buildVariant(deviceTmpDir, cmdDevice)
+        iosExecutor.buildVariant(variant.tmpDir, cmdSim)
+        iosExecutor.buildVariant(variant.tmpDir, cmdDevice)
 
         if (releaseConf.isEnabled()) {
+            logger.info("Temp framework dir: $frameworkDir.absolutePath")
             buildFrameworkStructure()
+            linkLibraries()
+            copyHeaders()
+            copyResources()
         }
     }
 
@@ -43,7 +51,9 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
     List<String> cmdSim = {
         conf.xcodebuildExecutionPath() + ['-scheme', variant.name] +
                 ['-sdk', conf.simulatorSdk.value ?: 'iphonesimulator'] + ['-arch', 'i386'] +
+                ['-configuration', variant.archiveConfiguration] +
                 ["CONFIGURATION_BUILD_DIR=${simTmpDir.absolutePath}"] +
+                ['PRODUCT_NAME=sim'] +
                 ['clean', 'build']
     }()
 
@@ -51,13 +61,16 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
     List<String> cmdDevice = {
         conf.xcodebuildExecutionPath() + ['-scheme', variant.name] +
                 ['-sdk', conf.sdk.value ?: 'iphoneos'] +
+                ['-configuration', variant.archiveConfiguration] +
                 ["CONFIGURATION_BUILD_DIR=${deviceTmpDir.absolutePath}"] +
+                ['PRODUCT_NAME=device'] +
                 ['clean', 'build']
     }()
 
     void buildFrameworkStructure() {
         mkdirs()
         createSymbolicLinks()
+        linkLibraries()
     }
 
     void mkdirs() {
@@ -75,11 +88,30 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
                 path("Versions/Current/${variant.frameworkName.value}"))
     }
 
+    void copyHeaders() {
+        variant.frameworkHeaders.value?.each {
+            copy(new File(variant.tmpDir, it), headersDir)
+        }
+    }
+
+    void copyResources() {
+        variant.frameworkResources.value?.each {
+            copy(new File(variant.tmpDir, it), resourcesDir)
+        }
+    }
+
+    void linkLibraries() {
+        def deviceLib = new File(deviceTmpDir, 'libdevice.a')
+        def simLib = new File(simTmpDir, 'libsim.a')
+        executor.executeCommand(new Command(runDir: conf.rootDir,
+                cmd: ['lipo', '-create', deviceLib.absolutePath, simLib.absolutePath,
+                        '-output', new File(frameworkDir, "Versions/Current/${variant.frameworkName.value}")
+                ]))
+    }
+
     File getTempDir() {
         def dir = createTempDir()
         dir.deleteOnExit()
         dir
     }
-
-
 }
