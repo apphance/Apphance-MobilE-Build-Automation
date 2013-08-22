@@ -3,14 +3,13 @@ package com.apphance.flow.configuration.reader
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
-import com.apphance.flow.detection.project.ProjectType
 import spock.lang.Specification
 
 import static org.apache.commons.lang.StringUtils.isBlank
 
 class ConfigurationWizardSpec extends Specification {
 
-    def cm = new ConfigurationWizard()
+    def wizard = new ConfigurationWizard()
 
     static String removeColor(String str) {
         str.replaceAll(/\033\[[0-9;]*m/, '')
@@ -18,7 +17,7 @@ class ConfigurationWizardSpec extends Specification {
 
     def 'possible value string is formatted correctly'() {
         expect:
-        removeColor(cm.promptPossible(p)) == expectedString
+        removeColor(wizard.promptPossible(p)) == expectedString
 
         where:
         p                                                                  | expectedString
@@ -28,7 +27,7 @@ class ConfigurationWizardSpec extends Specification {
 
     def 'default value string is formatted correctly'() {
         expect:
-        p.effectiveDefaultValue() == expectedString
+        wizard.effectiveDefaultValue(p) == expectedString
 
         where:
         p                                          | expectedString
@@ -40,7 +39,7 @@ class ConfigurationWizardSpec extends Specification {
 
     def 'prompt is displayed well'() {
         expect:
-        removeColor(cm.prompt(p)) == expectedString
+        removeColor(wizard.prompt(p)) == expectedString
 
         where:
         p                                                                                                  | expectedString
@@ -52,7 +51,7 @@ class ConfigurationWizardSpec extends Specification {
 
     def 'empty input validation works well.'() {
         expect:
-        cm.validateInput(input, p) == validationResult
+        wizard.validateInput(input, p) == validationResult
 
         where:
         p                                                                                  | input  | validationResult
@@ -68,7 +67,7 @@ class ConfigurationWizardSpec extends Specification {
 
     def 'input validation works well'() {
         expect:
-        cm.validateInput(input, p) == validationResult
+        wizard.validateInput(input, p) == validationResult
 
         where:
         p                                                                                   | input | validationResult
@@ -84,7 +83,7 @@ class ConfigurationWizardSpec extends Specification {
 
     def 'property value is set well'() {
         when:
-        cm.setPropertyValue(p, input)
+        wizard.setPropertyValue(p, input)
 
         then:
         p.value == expectedValue
