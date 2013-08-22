@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.android.analysis.tasks
 
 import org.gradle.api.internal.project.IsolatedAntBuilder
 import org.gradle.api.plugins.quality.Pmd
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.reflect.Instantiator
 
@@ -17,18 +18,20 @@ class CPDTask extends Pmd {
         super(instantiator, antBuilder)
     }
 
+    @OutputFile
+    File report = new File('build/reports/cpd/cpd-result.xml')
+
     @TaskAction
     @Override
     public void run() {
         logger.lifecycle "Running CPD task"
 
         def cp = project.configurations.pmd.asPath
-        def reportDir = 'build/reports/cpd/'
-        new File(reportDir).mkdirs()
+        report.parentFile.mkdirs()
 
         project.ant {
             taskdef(name: 'cpd', classname: 'net.sourceforge.pmd.cpd.CPDTask', classpath: cp)
-            cpd(minimumTokenCount: '100', format: 'xml', encoding: 'UTF-8', outputFile: reportDir + 'cpd-result.xml') {
+            cpd(minimumTokenCount: '100', format: 'xml', encoding: 'UTF-8', outputFile: report.path) {
                 fileset(dir: 'src', includes: '**/*.java')
             }
         }
