@@ -1,8 +1,8 @@
 package com.apphance.flow.plugins.android.analysis
 
 import com.apphance.flow.configuration.android.AndroidAnalysisConfiguration
-import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
+import com.apphance.flow.plugins.android.analysis.tasks.CPDTask
 import com.apphance.flow.util.file.FileManager
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,12 +37,18 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
 
                 [compileJava, compileTestJava, processResources, processTestResources].each { it.enabled = false }
                 [checkstyle, findbugs, pmd].each { it.ignoreFailures = true }
+                pmd.toolVersion = '5.0.4'
 
                 findbugsMain.dependsOn mainVariant.buildTaskName
                 findbugsTest.dependsOn mainVariant.buildTaskName
 
-                sourceSets.main.java.srcDirs = ['src', 'variants', 'test']
+                sourceSets.main.java.srcDirs = ['src', 'variants']
+                sourceSets.test.java.srcDirs = ['test']
                 sourceSets.main.output.classesDir = variantDir + '/bin/classes'
+
+                def cpd = task(CPDTask.NAME, type: CPDTask) as CPDTask
+                cpd.source(sourceSets.main.java.srcDirs)
+                cpd.ignoreFailures = true
             }
         }
     }
