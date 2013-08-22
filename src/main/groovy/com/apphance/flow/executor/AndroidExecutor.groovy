@@ -3,6 +3,7 @@ package com.apphance.flow.executor
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
+import com.apphance.flow.util.FlowUtils
 import com.google.inject.Singleton
 import groovy.transform.PackageScope
 
@@ -22,6 +23,8 @@ class AndroidExecutor {
     @Inject CommandExecutor executor
     @Inject
     @Named('executable.android') ExecutableCommand executableAndroid
+    @Inject
+    @Named('executable.lint') ExecutableCommand lint
 
 
     @Lazy List<String> listTargetOutput = {
@@ -42,6 +45,14 @@ class AndroidExecutor {
                 runDir: dir,
                 cmd: executableAndroid.cmd + ['update', 'project', '-p', '.', '-s'] + targetParam + nameParam
         ))
+    }
+
+    File runLint(File dir, File report) {
+        executor.executeCommand(new Command(
+                runDir: dir,
+                cmd: lint.cmd + ['--html', report.absolutePath, '.']
+        ))
+        report
     }
 
     @PackageScope

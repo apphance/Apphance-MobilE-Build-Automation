@@ -21,12 +21,14 @@ class AndroidModule extends AbstractModule {
                     'executable.adb': WIN_EXECUTABLE_ADB,
                     'executable.emulator': WIN_EXECUTABLE_EMULATOR,
                     'executable.ant': WIN_EXECUTABLE_ANT,
+                    'executable.lint': WIN_EXECUTABLE_LINT,
             ],
             OTHER: [
                     'executable.android': STD_EXECUTABLE_ANDROID,
                     'executable.adb': STD_EXECUTABLE_ADB,
                     'executable.emulator': STD_EXECUTABLE_EMULATOR,
                     'executable.ant': STD_EXECUTABLE_ANT,
+                    'executable.lint': STD_EXECUTABLE_LINT,
             ]
     ]
 
