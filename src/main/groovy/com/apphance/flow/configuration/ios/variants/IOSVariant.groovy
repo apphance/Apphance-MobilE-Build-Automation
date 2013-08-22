@@ -16,7 +16,8 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
+import static com.apphance.flow.configuration.ios.IOSBuildMode.FRAMEWORK
 import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.LAUNCH_ACTION
@@ -77,11 +78,20 @@ class IOSVariant extends AbstractVariant {
 
     private FileProperty mobileprovision = new FileProperty(
             message: "Mobile provision file for variant defined",
-            interactive: { releaseConf.enabled },
-            required: { releaseConf.enabled },
+            interactive: { mobileprovisionEnabled },
+            required: { mobileprovisionEnabled },
             possibleValues: { possibleMobileProvisionFiles()*.path as List<String> },
             validator: { it in (possibleMobileProvisionFiles()*.path as List<String>) }
     )
+
+    @Lazy
+    @PackageScope
+    boolean mobileprovisionEnabled = {
+        def enabled = releaseConf.enabled && mode.value != FRAMEWORK
+        if (!enabled)
+            this.@mobileprovision.resetValue()
+        enabled
+    }()
 
     FileProperty getMobileprovision() {
         new FileProperty(value: new File(tmpDir, this.@mobileprovision.value.path))
@@ -119,7 +129,7 @@ class IOSVariant extends AbstractVariant {
 
     @Lazy
     boolean apphanceEnabledForVariant = {
-        mode.value != SIMULATOR
+        mode.value == DEVICE
     }()
 
     @Override
