@@ -26,28 +26,24 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         if (analysisConf.isEnabled()) {
             logger.lifecycle "Applying plugin ${this.class.simpleName}"
 
-            project.apply plugin: 'java'
-            project.apply plugin: 'pmd'
-            project.apply plugin: 'checkstyle'
-            project.apply plugin: 'findbugs'
-
-            project.compileJava.enabled = false
-            project.compileTestJava.enabled = false
-            project.processResources.enabled = false
-            project.processTestResources.enabled = false
-
-            project.checkstyleMain.ignoreFailures = true
-            project.findbugsMain.ignoreFailures = true
-            project.pmd.ignoreFailures = true
-
             def mainVariant = androidVariantsConf.variants.find { it.name == androidVariantsConf.mainVariant }
-
-            project.findbugsMain.dependsOn mainVariant.buildTaskName
-            project.findbugsTest.dependsOn mainVariant.buildTaskName
-
-            project.sourceSets.main.java { srcDir 'src' }
             def variantDir = FileManager.relativeTo(project.rootDir, mainVariant.tmpDir)
-            project.sourceSets.main.output.classesDir = variantDir + '/bin/classes'
+
+            project.with {
+                apply plugin: 'java'
+                apply plugin: 'pmd'
+                apply plugin: 'checkstyle'
+                apply plugin: 'findbugs'
+
+                [compileJava, compileTestJava, processResources, processTestResources].each { it.enabled = false }
+                [checkstyle, findbugs, pmd].each { it.ignoreFailures = true }
+
+                findbugsMain.dependsOn mainVariant.buildTaskName
+                findbugsTest.dependsOn mainVariant.buildTaskName
+
+                sourceSets.main.java.srcDirs = ['src', 'variants', 'test']
+                sourceSets.main.output.classesDir = variantDir + '/bin/classes'
+            }
         }
     }
 }
