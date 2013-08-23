@@ -19,7 +19,6 @@ class FrameworkVariantTaskSpec extends Specification {
         def frameworkName = 'Some'
         task.variant = GroovyMock(IOSVariant) {
             getFrameworkName() >> new StringProperty(value: frameworkName)
-            getFrameworkVersion() >> new StringProperty(value: 'A')
         }
 
         when:

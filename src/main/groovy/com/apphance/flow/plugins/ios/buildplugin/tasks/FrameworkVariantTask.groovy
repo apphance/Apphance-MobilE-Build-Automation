@@ -27,7 +27,7 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
     @Lazy
     File frameworkDir = { new File(tempDir, "${variant.frameworkName.value}.framework") }()
     @Lazy
-    File versionsDir = { new File(frameworkDir, "Versions/${variant.frameworkVersion.value}") }()
+    File versionsDir = { new File(frameworkDir, 'Versions/A') }()
     @Lazy
     File resourcesDir = { new File(versionsDir, 'Resources') }()
     @Lazy

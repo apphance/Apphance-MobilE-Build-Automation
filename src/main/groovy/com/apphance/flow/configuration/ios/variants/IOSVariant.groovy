@@ -55,7 +55,6 @@ class IOSVariant extends AbstractVariant {
         mobileprovision.name = "ios.variant.${name}.mobileprovision"
 
         frameworkName.name = "ios.variant.${name}.framework.name"
-        frameworkVersion.name = "ios.variant.${name}.framework.version"
         frameworkHeaders.name = "ios.variant.${name}.framework.headers"
         frameworkResources.name = "ios.variant.${name}.framework.resources"
 
@@ -118,10 +117,6 @@ class IOSVariant extends AbstractVariant {
 
     def frameworkName = new StringProperty(
             message: 'Framework name',
-    )
-
-    def frameworkVersion = new StringProperty(
-            message: 'Framework version',
     )
 
     def frameworkHeaders = new ListStringProperty(
