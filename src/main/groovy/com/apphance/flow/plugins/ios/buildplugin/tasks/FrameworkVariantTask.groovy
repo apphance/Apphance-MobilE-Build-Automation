@@ -96,13 +96,21 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
 
     void copyHeaders() {
         variant.frameworkHeaders.value?.each {
-            Files.copy(new File(variant.tmpDir, it), headersDir)
+            def header = new File(it)
+            def source = new File(variant.tmpDir, it)
+            def target = new File(headersDir, header.name)
+            logger.info("Copying ${source.absolutePath} to ${target.absolutePath}")
+            Files.copy(source, target)
         }
     }
 
     void copyResources() {
         variant.frameworkResources.value?.each {
-            Files.copy(new File(variant.tmpDir, it), resourcesDir)
+            def resource = new File(it)
+            def source = new File(variant.tmpDir, it)
+            def target = new File(resourcesDir, resource.name)
+            logger.info("Copying ${source.absolutePath} to ${target.absolutePath}")
+            Files.copy(source, target)
         }
     }
 

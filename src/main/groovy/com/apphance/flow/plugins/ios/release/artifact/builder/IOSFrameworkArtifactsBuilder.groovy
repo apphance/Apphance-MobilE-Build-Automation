@@ -21,8 +21,8 @@ class IOSFrameworkArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSFramew
         releaseConf.frameworkFiles.put(info.id, fa)
         mkdirs(fa)
         executor.executeCommand(new Command(
-                runDir: info.frameworkDir,
-                cmd: ['zip', '-r', '-y', fa.location.absolutePath, info.frameworkDir.absolutePath]
+                runDir: new File(info.frameworkDir.parent),
+                cmd: ['zip', '-r', '-y', fa.location.absolutePath, info.frameworkDir.name]
         ))
         logger.info("Framework zip file created: $fa.location.absolutePath")
     }

@@ -116,7 +116,6 @@ class IOSVariant extends AbstractVariant {
     //TODO are all of the props really required?
     //TODO what about name?
     //TODO should plugin have an build & archive action also?
-
     def frameworkName = new StringProperty(
             message: 'Framework name',
     )
