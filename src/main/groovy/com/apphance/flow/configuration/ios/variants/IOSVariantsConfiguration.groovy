@@ -38,13 +38,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     @Lazy
     @PackageScope
     List<String> possibleVariants = {
-        if (schemeInfo.hasSchemes)
-            return schemeInfo.schemeFiles.findAll {
-                schemeInfo.schemeShared(it) &&
-                        schemeInfo.schemeBuildable(it) &&
-                        schemeInfo.schemeHasSingleBuildableTarget(it)
-            }.collect { getNameWithoutExtension(it.name) }
-        []
+        schemeInfo.schemeFiles.findAll { schemeInfo.schemeShared(it) }.collect { getNameWithoutExtension(it.name) }
     }()
 
     private List<IOSVariant> variantsInternal() {
@@ -80,13 +74,6 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     boolean canBeEnabled() {
         schemeInfo.hasSchemes
     }
-
-//        """To enable '${configurationName}' project:
-//           - must have shared schemes
-//           - schemes must be buildable (Executable set in scheme's 'Run Action')
-//           - schemes must have single buildable target
-//        """
-
 
     @Override
     void checkProperties() {

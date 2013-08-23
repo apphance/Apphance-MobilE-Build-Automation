@@ -15,9 +15,7 @@ class IOSSchemeInfo {
 
     @Lazy
     @PackageScope
-    boolean hasSchemes = {
-        schemesDeclared() && schemesShared() && schemesBuildable() && schemesHasSingleBuildableTarget()
-    }()
+    boolean hasSchemes = { schemesDeclared() && schemesShared() }()
 
     @PackageScope
     boolean schemesDeclared() {
