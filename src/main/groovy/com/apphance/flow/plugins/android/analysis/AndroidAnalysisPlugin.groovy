@@ -4,7 +4,6 @@ import com.apphance.flow.configuration.android.AndroidAnalysisConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.analysis.tasks.CPDTask
 import com.apphance.flow.plugins.android.analysis.tasks.LintTask
-import com.apphance.flow.util.FlowUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -16,7 +15,6 @@ import static org.gradle.api.logging.Logging.getLogger
 /**
  * Provides static code analysis.
  */
-@Mixin(FlowUtils)
 class AndroidAnalysisPlugin implements Plugin<Project> {
 
     def logger = getLogger(this.class)
@@ -38,13 +36,9 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                 apply plugin: 'checkstyle'
                 apply plugin: 'findbugs'
 
-                def stream = this.class.getResourceAsStream('/com/apphance/flow/plugins/android/analysis/tasks/pmd-rules.xml')
+                File rules = pmdRules()
 
-                File customRules = analysisConf.pmdRules.value
-                File defaultPmdRules = getTempFile('.xml') << stream.text
-
-                logger.lifecycle "Pmd rules custom: ${customRules?.absolutePath}, default: ${defaultPmdRules.absolutePath}"
-                pmd.ruleSetFiles = files(customRules ?: defaultPmdRules)
+                pmd.ruleSetFiles = files(rules)
 
                 sourceSets.main.java.srcDirs = ['src', 'variants']
                 sourceSets.test.java.srcDirs = ['test']
@@ -62,5 +56,15 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                 [checkstyle, findbugs, pmd, cpd].each { it.ignoreFailures = true }
             }
         }
+    }
+
+    File pmdRules() {
+        def stream = this.class.getResourceAsStream('/com/apphance/flow/plugins/android/analysis/tasks/pmd-rules.xml')
+
+        File customRules = analysisConf.pmdRules.value
+        File defaultPmdRules = new File('build/pmdrules/pmd-rules.xml')
+        defaultPmdRules.parentFile.mkdirs()
+        defaultPmdRules << stream.text
+        customRules ?: defaultPmdRules
     }
 }
