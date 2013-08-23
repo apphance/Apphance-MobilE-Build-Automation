@@ -44,8 +44,8 @@ class FlowUtils {
         destDir
     }
 
-    File getTempFile() {
-        File file = createTempFile('prefix', 'suffix')
+    File getTempFile(String suffix = 'suffix') {
+        File file = createTempFile('prefix', suffix)
         file.deleteOnExit()
         file
     }

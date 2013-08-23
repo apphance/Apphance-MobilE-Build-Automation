@@ -1,6 +1,7 @@
 package com.apphance.flow.configuration.android
 
 import com.apphance.flow.configuration.AbstractConfiguration
+import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.URLProperty
 
 import javax.inject.Inject
@@ -26,6 +27,11 @@ class AndroidAnalysisConfiguration extends AbstractConfiguration {
     def analysisConfigUrl = new URLProperty(
             name: 'android.analysis.config.url',
             message: 'Android analysis config URL',
+    )
+
+    def pmdRules = new FileProperty(
+            name: 'android.analysis.pmd.rules',
+            message: 'Path to pmd rules config file'
     )
 
     @Override
