@@ -3,158 +3,131 @@ package com.apphance.flow.plugins.ios.release.artifact.info
 import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
-import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
-import com.apphance.flow.configuration.properties.IOSBuildModeProperty
-import spock.lang.Ignore
+import com.apphance.flow.configuration.properties.StringProperty
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.google.common.io.Files.createTempDir
-import static java.lang.System.getProperties
 
-@Ignore('TODO to be refactored later')
 class IOSArtifactProviderSpec extends Specification {
 
-    @Shared
-    def builderInfo
-    @Shared
-    def releaseConf
-    @Shared
-    def tmpDir = createTempDir()
-    @Shared
-    def variantsConf
-    @Shared
-    def provider = new IOSArtifactProvider()
-
-    def setup() {
-        builderInfo.filePrefix >> 'GradleXCode-1.0.1_42'
-        builderInfo.id >> 'VariantName'
-
-        variantsConf = GroovyMock(IOSVariantsConfiguration) {
-            getMainVariant() >> GroovyMock(IOSVariant) {
-                getFullVersionString() >> '1.0.1_42'
-            }
-        }
-        provider.releaseConf = GroovyMock(IOSReleaseConfiguration) {
-            getReleaseUrlVersioned() >> "http://ota.polidea.pl/TestIOSProject/1.0.1_42".toURL()
-            getReleaseDir() >> new File(tmpDir, "TestIOSProject/1.0.1_42")
-        }
+    @Shared projectName = 'TestIOS'
+    @Shared fullVersionString = '1.0.1_42'
+    @Shared variantName = 'V1'
+    @Shared filePrefix = "$variantName-$fullVersionString"
+    @Shared tmpDir = createTempDir()
+    @Shared variant = GroovyMock(IOSVariant) {
+        getName() >> variantName
+        getFullVersionString() >> fullVersionString
+        getMobileprovision() >> new FileProperty()
+        getFrameworkName() >> new StringProperty(value: 'Flow-Framework')
     }
+    @Shared releaseConf = GroovyMock(IOSReleaseConfiguration) {
+        getReleaseUrlVersioned() >> "http://ota.polidea.pl/$projectName/$fullVersionString".toURL()
+        getReleaseDir() >> new File(tmpDir, "$projectName/$fullVersionString")
+    }
+    @Shared provider = new IOSArtifactProvider(releaseConf: releaseConf)
+    @Shared deviceInfo = provider.deviceInfo(variant)
 
-    def cleanup() {
+    def cleanupSpec() {
         tmpDir.deleteDir()
-    }
-
-    def 'builder info is created correctly from variant'() {
-        given:
-        def variant = GroovyMock(IOSVariant)
-        variant.target >> 'GradleXCode'
-        variant.buildConfiguration >> 'BasicConfiguration'
-        variant.tmpDir >> new File(properties['java.io.tmpdir'])
-        variant.mobileprovision >> new FileProperty(value: new File('sample.mobileprovision'))
-        variant.versionString >> '1.0.1'
-        variant.versionCode >> '42'
-        variant.fullVersionString >> '1.0.1_42'
-        variant.mode >> new IOSBuildModeProperty(value: DEVICE)
-        variant.name >> 'V1'
-
-        and:
-        def provider = new IOSArtifactProvider()
-
-        when:
-//        def bi = provider.builderInfo(variant)
-        def bi
-
-        then:
-        bi.filePrefix == 'V1-1.0.1_42'
-        bi.id == 'V1'
-        bi.mobileprovision.name == 'sample.mobileprovision'
     }
 
     def 'xcarchive zip artifact is built well'() {
         given:
-        def aa = provider.xcArchive(builderInfo)
+        def aa = provider.xcArchive(deviceInfo)
 
         expect:
         aa.name == 'XC Archive'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42_xcarchive.zip'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42_xcarchive.zip')
+        aa.url.toString() == "${releaseConf.releaseUrlVersioned}/${variant.name}/${filePrefix}_xcarchive.zip"
+        aa.location == new File(tmpDir, "$projectName/$fullVersionString/$variantName/${filePrefix}_xcarchive.zip")
     }
 
     def 'zip distribution artifact is built well'() {
         given:
-        def aa = provider.zipDistribution(builderInfo)
+        def aa = provider.zipDistribution(deviceInfo)
 
         expect:
         aa.name == 'Distribution ZIP'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42.zip'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42.zip')
+        aa.url.toString() == "${releaseConf.releaseUrlVersioned}/${variant.name}/${filePrefix}.zip"
+        aa.location == new File(tmpDir, "$projectName/$fullVersionString/$variantName/${filePrefix}.zip")
     }
 
     def 'dsym zip artifact is built well'() {
         given:
-        def aa = provider.dSYMZip(builderInfo)
+        def aa = provider.dSYMZip(deviceInfo)
 
         expect:
         aa.name == 'dSYM ZIP'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42_dSYM.zip'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42_dSYM.zip')
+        aa.url.toString() == "${releaseConf.releaseUrlVersioned}/${variant.name}/${filePrefix}_dSYM.zip"
+        aa.location == new File(tmpDir, "$projectName/$fullVersionString/$variantName/${filePrefix}_dSYM.zip")
     }
 
     def 'ahSYM artifact is built well'() {
         given:
-        def aa = provider.ahSYM(builderInfo)
+        def aa = provider.ahSYM(deviceInfo)
 
         expect:
         aa.name == 'ahSYM dir'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42_ahSYM'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42_ahSYM')
+        aa.url.toString() == "${releaseConf.releaseUrlVersioned}/${variant.name}/${filePrefix}_ahSYM"
+        aa.location == new File(tmpDir, "$projectName/$fullVersionString/$variantName/${filePrefix}_ahSYM")
     }
 
     def 'ipa artifact is built well'() {
         given:
-        def aa = provider.ipa(builderInfo)
+        def aa = provider.ipa(deviceInfo)
 
         expect:
         aa.name == 'IPA file'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42.ipa'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42.ipa')
+        aa.url.toString() == "${releaseConf.releaseUrlVersioned}/${variant.name}/${filePrefix}.ipa"
+        aa.location == new File(tmpDir, "$projectName/$fullVersionString/$variantName/${filePrefix}.ipa")
     }
 
     def 'manifest artifact is built well'() {
         given:
-        def aa = provider.manifest(builderInfo)
+        def aa = provider.manifest(deviceInfo)
 
         expect:
         aa.name == 'Manifest file'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/manifest.plist'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/manifest.plist')
+        aa.url.toString() == "${releaseConf.releaseUrlVersioned}/${variant.name}/manifest.plist"
+        aa.location == new File(tmpDir, "$projectName/$fullVersionString/$variantName/manifest.plist")
     }
 
     def 'mobileprovision artifact is built well'() {
         given:
-        def aa = provider.mobileprovision(builderInfo)
+        def aa = provider.mobileprovision(deviceInfo)
 
         expect:
         aa.name == 'Mobile provision file'
-        aa.url.toString() == 'http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42.mobileprovision'
-        aa.location == new File(tmpDir, 'TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42.mobileprovision')
+        aa.url.toString() == "${releaseConf.releaseUrlVersioned}/${variant.name}/${filePrefix}.mobileprovision"
+        aa.location == new File(tmpDir, "$projectName/$fullVersionString/$variantName/${filePrefix}.mobileprovision")
     }
 
     @Unroll
-    def 'simulator artifact for family #family is built well'() {
+    def 'simulator a for family #family is built well'() {
         given:
-        def aa = provider.simulator(builderInfo, family)
+        def info = provider.simInfo(variant)
+        def aa = provider.simulator(info, family)
 
         expect:
-        aa.name == "Simulator build ${family.iFormat()}"
-        aa.url.toString() == "http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42-${family.iFormat()}-sim-img.dmg"
-        aa.location == new File(tmpDir, "TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42-${family.iFormat()}-sim-img.dmg")
+        aa.name == "Simulator build for ${family.iFormat()}"
+        aa.url.toString() == "${releaseConf.releaseUrlVersioned}/${variant.name}/${filePrefix}-${family.iFormat()}-sim-img.dmg"
+        aa.location == new File(tmpDir, "$projectName/$fullVersionString/$variantName/$filePrefix-${family.iFormat()}-sim-img.dmg")
 
         where:
         family << IOSFamily.values()
+    }
+
+    def 'framework artifact is built'() {
+        given:
+        def info = provider.frameworkInfo(variant)
+        def aa = provider.framework(info)
+
+        expect:
+        aa.name == "Framework zip for ${variant.frameworkName.value}"
+        aa.url.toString() == "${releaseConf.releaseUrlVersioned}/${variant.name}/${filePrefix}-${variant.frameworkName.value}.zip"
+        aa.location == new File(tmpDir, "$projectName/$fullVersionString/$variantName/$filePrefix-${variant.frameworkName.value}.zip")
     }
 }

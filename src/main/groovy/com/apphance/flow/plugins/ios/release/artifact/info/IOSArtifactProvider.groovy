@@ -29,47 +29,55 @@ class IOSArtifactProvider {
     }
 
     IOSFrameworkArtifactInfo frameworkInfo(IOSVariant v) {
-        null
+        new IOSFrameworkArtifactInfo(
+                id: v.name,
+                filePrefix: "$v.name-$v.fullVersionString",
+                frameworkName: v.frameworkName.value
+        )
     }
 
-    FlowArtifact xcArchive(IOSDeviceArtifactInfo bi) {
-        artifact('XC Archive', bi, "${bi.filePrefix}_xcarchive.zip")
+    FlowArtifact xcArchive(IOSDeviceArtifactInfo info) {
+        artifact('XC Archive', info, "${info.filePrefix}_xcarchive.zip")
     }
 
-    FlowArtifact zipDistribution(IOSDeviceArtifactInfo bi) {
-        artifact('Distribution ZIP', bi, "${bi.filePrefix}.zip")
+    FlowArtifact zipDistribution(IOSDeviceArtifactInfo info) {
+        artifact('Distribution ZIP', info, "${info.filePrefix}.zip")
     }
 
-    FlowArtifact dSYMZip(IOSDeviceArtifactInfo bi) {
-        artifact('dSYM ZIP', bi, "${bi.filePrefix}_dSYM.zip")
+    FlowArtifact dSYMZip(IOSDeviceArtifactInfo info) {
+        artifact('dSYM ZIP', info, "${info.filePrefix}_dSYM.zip")
     }
 
-    FlowArtifact ahSYM(IOSDeviceArtifactInfo bi) {
-        artifact('ahSYM dir', bi, "${bi.filePrefix}_ahSYM")
+    FlowArtifact ahSYM(IOSDeviceArtifactInfo info) {
+        artifact('ahSYM dir', info, "${info.filePrefix}_ahSYM")
     }
 
-    FlowArtifact ipa(IOSDeviceArtifactInfo bi) {
-        artifact('IPA file', bi, "${bi.filePrefix}.ipa")
+    FlowArtifact ipa(IOSDeviceArtifactInfo info) {
+        artifact('IPA file', info, "${info.filePrefix}.ipa")
     }
 
-    FlowArtifact manifest(IOSDeviceArtifactInfo bi) {
-        artifact('Manifest file', bi, 'manifest.plist')
+    FlowArtifact manifest(IOSDeviceArtifactInfo info) {
+        artifact('Manifest file', info, 'manifest.plist')
     }
 
-    FlowArtifact mobileprovision(IOSDeviceArtifactInfo bi) {
-        artifact('Mobile provision file', bi, "${bi.filePrefix}.mobileprovision")
+    FlowArtifact mobileprovision(IOSDeviceArtifactInfo info) {
+        artifact('Mobile provision file', info, "${info.filePrefix}.mobileprovision")
     }
 
-    FlowArtifact simulator(IOSSimArtifactInfo bi, IOSFamily family) {
-        artifact("Simulator build ${family.iFormat()}", bi,
-                "${bi.filePrefix}-${family.iFormat()}-sim-img.dmg")
+    FlowArtifact simulator(IOSSimArtifactInfo info, IOSFamily family) {
+        artifact("Simulator build for ${family.iFormat()}", info,
+                "${info.filePrefix}-${family.iFormat()}-sim-img.dmg")
     }
 
-    private FlowArtifact artifact(String name, AbstractIOSArtifactInfo bi, String suffix) {
+    FlowArtifact framework(IOSFrameworkArtifactInfo info) {
+        artifact("Framework zip for $info.frameworkName", info, "${info.filePrefix}-${info.frameworkName}.zip")
+    }
+
+    private FlowArtifact artifact(String name, AbstractIOSArtifactInfo info, String suffix) {
         new FlowArtifact(
                 name: name,
-                url: new URL("$releaseConf.releaseUrlVersioned/$bi.id/$suffix"),
-                location: new File(releaseConf.releaseDir, "$bi.id/$suffix")
+                url: new URL("$releaseConf.releaseUrlVersioned/$info.id/$suffix"),
+                location: new File(releaseConf.releaseDir, "$info.id/$suffix")
         )
     }
 }

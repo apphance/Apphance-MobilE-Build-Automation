@@ -3,22 +3,24 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
-import com.apphance.flow.util.FlowUtils
+import com.apphance.flow.plugins.ios.release.artifact.builder.IOSFrameworkArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
+import com.google.common.io.Files
 
 import javax.inject.Inject
 
 import static com.google.common.io.Files.createTempDir
-import static java.nio.file.Files.copy
 import static java.nio.file.Files.createSymbolicLink
 import static java.nio.file.Paths.get as path
 
-@Mixin(FlowUtils)
 class FrameworkVariantTask extends AbstractBuildVariantTask {
 
     String description = "Prepares 'framework' file for given variant"
 
     @Inject IOSReleaseConfiguration releaseConf
     @Inject CommandExecutor executor
+    @Inject IOSFrameworkArtifactsBuilder frameworkArtifactsBuilder
+    @Inject IOSArtifactProvider artifactProvider
 
     @Lazy
     File simTmpDir = { tempDir }()
@@ -44,6 +46,9 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
             linkLibraries()
             copyHeaders()
             copyResources()
+            def info = artifactProvider.frameworkInfo(variant)
+            info.frameworkDir = frameworkDir
+            frameworkArtifactsBuilder.buildArtifacts(info)
         }
     }
 
@@ -89,13 +94,13 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
 
     void copyHeaders() {
         variant.frameworkHeaders.value?.each {
-            copy(new File(variant.tmpDir, it), headersDir)
+            Files.copy(new File(variant.tmpDir, it), headersDir)
         }
     }
 
     void copyResources() {
         variant.frameworkResources.value?.each {
-            copy(new File(variant.tmpDir, it), resourcesDir)
+            Files.copy(new File(variant.tmpDir, it), resourcesDir)
         }
     }
 
