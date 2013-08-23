@@ -33,18 +33,8 @@ class IOSSchemeInfo {
     }
 
     @PackageScope
-    boolean schemesBuildable() {
-        schemeFiles.any(this.&schemeBuildable)
-    }
-
-    @PackageScope
     boolean schemeBuildable(File scheme) {
         schemeParser.isBuildable(scheme)
-    }
-
-    @PackageScope
-    boolean schemesHasSingleBuildableTarget() {
-        schemeFiles.any(this.&schemeHasSingleBuildableTarget)
     }
 
     @PackageScope

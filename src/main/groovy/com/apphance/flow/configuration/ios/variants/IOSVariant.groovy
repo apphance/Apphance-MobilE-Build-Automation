@@ -1,6 +1,5 @@
 package com.apphance.flow.configuration.ios.variants
 
-import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
@@ -18,15 +17,13 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
-import static com.apphance.flow.configuration.ios.IOSBuildMode.FRAMEWORK
+import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.LAUNCH_ACTION
 import static com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask.WHITESPACE_PATTERN
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
-import static java.io.File.separator
 import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.apache.commons.lang.StringUtils.isNotEmpty
@@ -39,6 +36,7 @@ class IOSVariant extends AbstractVariant {
     @Inject PropertyReader reader
     @Inject IOSExecutor executor
     @Inject XCSchemeParser schemeParser
+    @Inject IOSSchemeInfo schemeInfo
 
     private bundle = getBundle('validation')
 
@@ -69,17 +67,21 @@ class IOSVariant extends AbstractVariant {
     }
 
     def mode = new IOSBuildModeProperty(
-            message: "Build mode for the variant, it describes " +
-                    "the environment the artifact is built for: (${IOSBuildMode.values().join('|')})",
+            message: "Build mode for the variant",
             required: { true },
-            possibleValues: { possibleBuildModeValues },
-            validator: { it in possibleBuildModeValues }
+            possibleValues: { possibleBuildModes },
+            validator: { it in possibleBuildModes }
     )
 
     @Lazy
     @PackageScope
-    List<String> possibleBuildModeValues = {
-        IOSBuildMode.values()*.name() as List<String>
+    //TODO test
+    List<String> possibleBuildModes = {
+        if (schemeInfo.schemeBuildable(schemeFile) && schemeInfo.schemeHasSingleBuildableTarget(schemeFile))
+            return [DEVICE, SIMULATOR]*.name()
+        else if (!schemeInfo.schemeBuildable(schemeFile))
+            return [FRAMEWORK]*.name()
+        []
     }()
 
     private FileProperty mobileprovision = new FileProperty(
@@ -218,8 +220,8 @@ class IOSVariant extends AbstractVariant {
     }
 
     File getSchemeFile() {
-        def filename = "xcshareddata${separator}xcschemes$separator${name}.xcscheme"
-        def tmpScheme = new File("$tmpDir$separator$conf.xcodeDir.value", filename)
+        def filename = "xcshareddata/xcschemes/${name}.xcscheme"
+        def tmpScheme = new File("$tmpDir/$conf.xcodeDir.value", filename)
         tmpScheme?.exists() ? tmpScheme : new File(conf.xcodeDir.value, filename)
     }
 
