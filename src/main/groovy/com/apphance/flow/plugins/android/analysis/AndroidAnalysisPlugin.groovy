@@ -45,10 +45,8 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                 apply plugin: 'findbugs'
 
                 pmd.ruleSetFiles = files(pmdRules)
-
-                tasks.withType(FindBugs) {
-                    excludeFilter = findbugsExclude
-                }
+                findbugs.excludeFilter = findbugsExclude
+                checkstyle.configFile = checkstyleConfigFile
 
                 sourceSets.main.java.srcDirs = ['src', 'variants']
                 sourceSets.test.java.srcDirs = ['test']
@@ -73,6 +71,9 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         pmdRules = prepareConfigFile(analysisConf.pmdRules.value, 'pmd-rules.xml')
         findbugsExclude = prepareConfigFile(analysisConf.findbugsExclude.value, 'findbugs-exclude.xml')
         checkstyleConfigFile = prepareConfigFile(analysisConf.checkstyleConfigFile.value, 'checkstyle.xml')
+
+        logger.lifecycle "Pmd rules file: $pmdRules.absolutePath findbugs exclude file: $findbugsExclude.absolutePath " +
+                "checkstyle config file: $checkstyleConfigFile.absolutePath"
     }
 
     File prepareConfigFile(File valueFormConf, String filename) {
