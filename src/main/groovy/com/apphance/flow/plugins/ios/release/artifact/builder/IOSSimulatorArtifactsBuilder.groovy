@@ -43,6 +43,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSSimArt
     @PackageScope
     void prepareSimulatorBundleFile(IOSSimArtifactInfo bi, IOSFamily family) {
         def fa = artifactProvider.simulator(bi, family)
+        releaseConf.dmgImageFiles.put("${family.iFormat()}-$bi.id" as String, fa)//TODO simplify
         mkdirs(fa)
 
         def tmpDir = tmpDir(bi, family)
@@ -60,7 +61,6 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSSimArt
 
         createSimAppDmg(fa.location, tmpDir, "$bi.appName-${family.iFormat()}")
 
-        releaseConf.dmgImageFiles.put("${family.iFormat()}-$bi.id" as String, fa)//TODO simplify
         logger.info("Simulator zip file created: $fa.location")
     }
 

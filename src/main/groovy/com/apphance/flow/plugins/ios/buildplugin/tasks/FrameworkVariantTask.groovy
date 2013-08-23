@@ -13,6 +13,8 @@ import static com.google.common.io.Files.createTempDir
 import static java.nio.file.Files.createSymbolicLink
 import static java.nio.file.Paths.get as path
 
+
+//TODO move to framework artifacts builder ??
 class FrameworkVariantTask extends AbstractBuildVariantTask {
 
     String description = "Prepares 'framework' file for given variant"
