@@ -1,12 +1,8 @@
-package com.apphance.flow.plugins.ios.builder
+package com.apphance.flow.plugins.ios.release.artifact
 
 import com.apphance.flow.configuration.ios.IOSBuildMode
 
-/**
- * Information for single artifact being built. Useful information grouped together needed
- * by various artifacts generated along the way.
- */
-class IOSBuilderInfo {
+class IOSArtifactInfo {
 
     String id
     String appName

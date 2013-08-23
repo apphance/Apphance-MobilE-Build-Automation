@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.release
 
 import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.executor.command.Command
-import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
+import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactInfo
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 import groovy.transform.PackageScope
 import org.apache.commons.io.IOUtils
@@ -34,14 +34,14 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }()
 
     @Override
-    void buildArtifacts(IOSBuilderInfo bi) {
+    void buildArtifacts(IOSArtifactInfo bi) {
         IOSFamily.values().each {
             prepareSimulatorBundleFile(bi, it)
         }
     }
 
     @PackageScope
-    void prepareSimulatorBundleFile(IOSBuilderInfo bi, IOSFamily family) {
+    void prepareSimulatorBundleFile(IOSArtifactInfo bi, IOSFamily family) {
         def fa = artifactProvider.simulator(bi, family)
         mkdirs(fa)
 
@@ -65,7 +65,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     @PackageScope
-    File tmpDir(IOSBuilderInfo bi, IOSFamily family) {
+    File tmpDir(IOSArtifactInfo bi, IOSFamily family) {
         def tmpDir = createTempDir()
         tmpDir.deleteOnExit()
         def appDir = new File(tmpDir, "$bi.productName (${family.iFormat()}_Simulator) ${conf.fullVersionString}.app")
@@ -88,7 +88,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     @PackageScope
-    File sourceApp(IOSBuilderInfo bi) {
+    File sourceApp(IOSArtifactInfo bi) {
         new File("$bi.archiveDir/Products/Applications", bi.appName)
     }
 

@@ -4,7 +4,7 @@ import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
-import com.apphance.flow.plugins.ios.builder.IOSArtifactProvider
+import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.plugins.release.tasks.AbstractAvailableArtifactsInfoTask

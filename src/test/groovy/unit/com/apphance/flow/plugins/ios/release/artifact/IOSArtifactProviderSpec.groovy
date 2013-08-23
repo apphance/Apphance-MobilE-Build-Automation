@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.builder
+package com.apphance.flow.plugins.ios.release.artifact
 
 import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
@@ -28,7 +28,7 @@ class IOSArtifactProviderSpec extends Specification {
     def provider = new IOSArtifactProvider()
 
     def setup() {
-        builderInfo = GroovyMock(IOSBuilderInfo)
+        builderInfo = GroovyMock(IOSArtifactInfo)
         builderInfo.filePrefix >> 'GradleXCode-1.0.1_42'
         builderInfo.id >> 'VariantName'
 
@@ -149,7 +149,7 @@ class IOSArtifactProviderSpec extends Specification {
         def aa = provider.simulator(builderInfo, family)
 
         expect:
-        aa.name == "Simulator build for ${family.iFormat()}"
+        aa.name == "Simulator build ${family.iFormat()}"
         aa.url.toString() == "http://ota.polidea.pl/TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42-${family.iFormat()}-sim-img.dmg"
         aa.location == new File(tmpDir, "TestIOSProject/1.0.1_42/VariantName/GradleXCode-1.0.1_42-${family.iFormat()}-sim-img.dmg")
 

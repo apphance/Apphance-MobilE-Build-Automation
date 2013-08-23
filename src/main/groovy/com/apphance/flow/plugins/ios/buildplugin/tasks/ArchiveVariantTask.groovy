@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.plugins.ios.builder.IOSArtifactProvider
+import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.apphance.flow.plugins.ios.release.AbstractIOSArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.IOSDeviceArtifactsBuilder

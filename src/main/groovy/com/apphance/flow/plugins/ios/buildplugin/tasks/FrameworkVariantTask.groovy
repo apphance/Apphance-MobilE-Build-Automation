@@ -70,7 +70,6 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
     void buildFrameworkStructure() {
         mkdirs()
         createSymbolicLinks()
-        linkLibraries()
     }
 
     void mkdirs() {
