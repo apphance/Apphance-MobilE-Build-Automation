@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.release
+package com.apphance.flow.plugins.ios.release.artifact.builder
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSFamily
@@ -8,7 +8,7 @@ import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
-import com.apphance.flow.plugins.ios.release.artifact.IOSSimArtifactInfo
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSSimArtifactInfo
 import spock.lang.Shared
 import spock.lang.Specification
 

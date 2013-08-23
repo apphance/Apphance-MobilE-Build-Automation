@@ -1,9 +1,9 @@
-package com.apphance.flow.plugins.ios.release
+package com.apphance.flow.plugins.ios.release.artifact.builder
 
 import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
-import com.apphance.flow.plugins.ios.release.artifact.IOSSimArtifactInfo
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSSimArtifactInfo
 import groovy.transform.PackageScope
 import org.apache.commons.io.IOUtils
 

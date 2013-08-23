@@ -6,7 +6,7 @@ import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.*
 import com.apphance.flow.configuration.reader.PropertyReader
-import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactProvider
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.util.FlowUtils

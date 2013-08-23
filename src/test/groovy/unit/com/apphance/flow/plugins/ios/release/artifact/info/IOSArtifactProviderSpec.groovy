@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.release.artifact
+package com.apphance.flow.plugins.ios.release.artifact.info
 
 import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration

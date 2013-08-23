@@ -3,10 +3,10 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
-import com.apphance.flow.plugins.ios.release.AbstractIOSArtifactsBuilder
-import com.apphance.flow.plugins.ios.release.IOSDeviceArtifactsBuilder
-import com.apphance.flow.plugins.ios.release.IOSSimulatorArtifactsBuilder
-import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactProvider
+import com.apphance.flow.plugins.ios.release.artifact.builder.AbstractIOSArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.artifact.builder.IOSDeviceArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.artifact.builder.IOSSimulatorArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import groovy.transform.PackageScope
 
 import javax.inject.Inject

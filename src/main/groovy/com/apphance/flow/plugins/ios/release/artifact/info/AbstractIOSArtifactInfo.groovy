@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.release.artifact
+package com.apphance.flow.plugins.ios.release.artifact.info
 
 abstract class AbstractIOSArtifactInfo {
     String id

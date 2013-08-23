@@ -1,8 +1,8 @@
-package com.apphance.flow.plugins.ios.release
+package com.apphance.flow.plugins.ios.release.artifact.builder
 
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.plugins.ios.parsers.PlistParser
-import com.apphance.flow.plugins.ios.release.artifact.IOSDeviceArtifactInfo
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSDeviceArtifactInfo
 import com.apphance.flow.plugins.release.FlowArtifact
 import groovy.text.SimpleTemplateEngine
 import groovy.transform.PackageScope

@@ -1,6 +1,7 @@
-package com.apphance.flow.plugins.ios.release
+package com.apphance.flow.plugins.ios.release.artifact.builder
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
+import com.apphance.flow.plugins.ios.release.IOSReleasePlugin
 import com.apphance.flow.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask
 import spock.lang.Specification

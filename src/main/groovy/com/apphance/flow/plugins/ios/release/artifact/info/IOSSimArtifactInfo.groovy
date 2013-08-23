@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.release.artifact
+package com.apphance.flow.plugins.ios.release.artifact.info
 
 class IOSSimArtifactInfo extends AbstractIOSArtifactInfo {
     String appName

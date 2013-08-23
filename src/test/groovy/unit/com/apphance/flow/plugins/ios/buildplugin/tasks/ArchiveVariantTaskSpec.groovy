@@ -7,8 +7,8 @@ import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
-import com.apphance.flow.plugins.ios.release.IOSDeviceArtifactsBuilder
-import com.apphance.flow.plugins.ios.release.IOSSimulatorArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.artifact.builder.IOSDeviceArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.artifact.builder.IOSSimulatorArtifactsBuilder
 import spock.lang.Specification
 import spock.lang.Unroll
 
