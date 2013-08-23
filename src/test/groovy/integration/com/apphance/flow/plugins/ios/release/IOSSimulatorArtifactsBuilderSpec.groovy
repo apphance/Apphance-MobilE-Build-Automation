@@ -7,8 +7,8 @@ import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
-import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactInfo
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
+import com.apphance.flow.plugins.ios.release.artifact.IOSSimArtifactInfo
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -70,7 +70,7 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
     def 'source app is synced'() {
         given:
         def xcArchive = new File(getClass().getResource('GradleXCode.xcarchive').toURI())
-        def srcApp = builder.sourceApp(new IOSArtifactInfo(archiveDir: xcArchive, appName: 'GradleXCode.app'))
+        def srcApp = builder.sourceApp(new IOSSimArtifactInfo(archiveDir: xcArchive, appName: 'GradleXCode.app'))
         and:
         def tmpDir = createTempDir()
         tmpDir.deleteOnExit()
@@ -90,7 +90,7 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
 
     def 'tmpDir is created with appDir inside'() {
         when:
-        def tmpDir = builder.tmpDir(new IOSArtifactInfo(productName: 'Some Application'), family)
+        def tmpDir = builder.tmpDir(new IOSSimArtifactInfo(productName: 'Some Application'), family)
 
         then:
         tmpDir.isDirectory()

@@ -1,8 +1,8 @@
 package com.apphance.flow.plugins.ios.release
 
 import com.apphance.flow.executor.command.Command
-import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactInfo
 import com.apphance.flow.plugins.ios.parsers.PlistParser
+import com.apphance.flow.plugins.ios.release.artifact.IOSDeviceArtifactInfo
 import com.apphance.flow.plugins.release.FlowArtifact
 import groovy.text.SimpleTemplateEngine
 import groovy.transform.PackageScope
@@ -12,7 +12,7 @@ import javax.inject.Inject
 import static com.google.common.io.Files.createTempDir
 import static org.gradle.api.logging.Logging.getLogger
 
-class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
+class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSDeviceArtifactInfo> {
 
     private logger = getLogger(getClass())
 
@@ -21,7 +21,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     @Inject IOSDumpReducer dumpReducer
 
     @Override
-    void buildArtifacts(IOSArtifactInfo bi) {
+    void buildArtifacts(IOSDeviceArtifactInfo bi) {
         prepareXCArchiveZip(bi)
         prepareDistributionZipFile(bi)
         prepareDSYMZipFile(bi)
@@ -32,7 +32,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     @PackageScope
-    void prepareXCArchiveZip(IOSArtifactInfo bi) {
+    void prepareXCArchiveZip(IOSDeviceArtifactInfo bi) {
         def aa = artifactProvider.xcArchive(bi)
         releaseConf.xcArchiveZipFiles.put(bi.id, aa)
         mkdirs(aa)
@@ -49,7 +49,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     @PackageScope
-    void prepareDistributionZipFile(IOSArtifactInfo bi) {
+    void prepareDistributionZipFile(IOSDeviceArtifactInfo bi) {
         def aa = artifactProvider.zipDistribution(bi)
         releaseConf.distributionZipFiles.put(bi.id, aa)
         mkdirs(aa)
@@ -61,7 +61,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     @PackageScope
-    void prepareDSYMZipFile(IOSArtifactInfo bi) {
+    void prepareDSYMZipFile(IOSDeviceArtifactInfo bi) {
         def aa = artifactProvider.dSYMZip(bi)
         releaseConf.dSYMZipFiles.put(bi.id, aa)
         mkdirs(aa)
@@ -72,7 +72,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     @PackageScope
-    void prepareAhSYMFiles(IOSArtifactInfo bi) {
+    void prepareAhSYMFiles(IOSDeviceArtifactInfo bi) {
         def aa = artifactProvider.ahSYM(bi)
         releaseConf.ahSYMDirs.put(bi.id, aa)
         aa.location.delete()
@@ -88,7 +88,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     @PackageScope
-    void prepareIpaFile(IOSArtifactInfo bi) {
+    void prepareIpaFile(IOSDeviceArtifactInfo bi) {
         def aa = artifactProvider.ipa(bi)
         releaseConf.ipaFiles.put(bi.id, aa)
         mkdirs(aa)
@@ -109,7 +109,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     @PackageScope
-    void prepareManifestFile(IOSArtifactInfo bi) {
+    void prepareManifestFile(IOSDeviceArtifactInfo bi) {
         def aa = artifactProvider.manifest(bi)
         releaseConf.manifestFiles.put(bi.id, aa)
         mkdirs(aa)
@@ -129,7 +129,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     @PackageScope
-    void prepareMobileProvisionFile(IOSArtifactInfo bi) {
+    void prepareMobileProvisionFile(IOSDeviceArtifactInfo bi) {
         def aa = artifactProvider.mobileprovision(bi)
         releaseConf.mobileProvisionFiles.put(bi.id, aa)
         mkdirs(aa)
@@ -138,7 +138,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     @Lazy
-    private Closure<File> plist = { IOSArtifactInfo bi ->
+    private Closure<File> plist = { IOSDeviceArtifactInfo bi ->
         new File("$bi.archiveDir/Products/Applications/$bi.appName", 'Info.plist')
     }.memoize()
 }

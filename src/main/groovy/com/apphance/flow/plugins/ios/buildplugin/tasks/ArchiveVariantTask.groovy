@@ -2,11 +2,11 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.apphance.flow.plugins.ios.release.AbstractIOSArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.IOSDeviceArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.IOSSimulatorArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactProvider
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
@@ -29,17 +29,25 @@ class ArchiveVariantTask extends AbstractBuildVariantTask {
     @Override
     void build() {
         checkNotNull(variant, 'Null variant passed to builder!')
+        //TODO check variant mode ??? != FRAMEWORK
+
         logger.info("Adding post archive action to scheme file: $variant.schemeFile.absolutePath")
         schemeParser.addPostArchiveAction(variant.schemeFile)
         def archiveOutput = iosExecutor.buildVariant(variant.tmpDir, cmd)
 
         if (releaseConf.enabled) {
-            def bi = artifactProvider.builderInfo(variant)
-            bi.archiveDir = findArchiveFile(archiveOutput)
-            bi.appName = appName()
-            bi.productName = productName()
+            //TODO strategy pattern + simplify
+            def info
+            if (variant.mode.value == DEVICE) {
+                info = artifactProvider.deviceInfo(variant)
+            } else if (variant.mode.value == SIMULATOR) {
+                info = artifactProvider.simInfo(variant)
+            }
+            info.archiveDir = findArchiveFile(archiveOutput)
+            info.appName = appName()
+            info.productName = productName()
 
-            builder.call().buildArtifacts(bi)
+            builder.call().buildArtifacts(info)
         }
     }
 
@@ -66,6 +74,7 @@ class ArchiveVariantTask extends AbstractBuildVariantTask {
     }
 
     protected Closure<AbstractIOSArtifactsBuilder> builder = {
+        //TODO DEVICE, SIMULATOR
         checkArgument(variant.mode?.value in IOSBuildMode.values(), "Unknown build mode '${variant.mode?.value}' for variant '$variant.name'")
         [(DEVICE): deviceArtifactsBuilder, (SIMULATOR): simulatorArtifactsBuilder].get(variant.mode.value)
     }.memoize()

@@ -4,8 +4,8 @@ import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
-import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
+import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactProvider
 import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.plugins.release.tasks.AbstractAvailableArtifactsInfoTask
 import groovy.transform.PackageScope
@@ -35,7 +35,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
 
     @PackageScope
     void prepareArtifacts(IOSVariant variant) {
-        def bi = artifactProvider.builderInfo(variant)
+        def bi = artifactProvider.deviceInfo(variant)
 
         def zipDist = artifactProvider.zipDistribution(bi)
         if (zipDist.location.exists())
@@ -64,6 +64,8 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
         def mobileprovision = artifactProvider.mobileprovision(bi)
         if (mobileprovision.location.exists())
             releaseConf.mobileProvisionFiles.put(bi.id, mobileprovision)
+
+        //TODO simulator & frameworks
     }
 
     @Override

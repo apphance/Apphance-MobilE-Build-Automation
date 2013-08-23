@@ -7,10 +7,10 @@ import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
-import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactProvider
-import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactInfo
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParserSpec
 import com.apphance.flow.plugins.ios.parsers.PlistParser
+import com.apphance.flow.plugins.ios.release.artifact.IOSArtifactProvider
+import com.apphance.flow.plugins.ios.release.artifact.IOSDeviceArtifactInfo
 import com.apphance.flow.plugins.release.FlowArtifact
 import spock.lang.Specification
 
@@ -22,7 +22,7 @@ import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class IOSDeviceArtifactsBuilderSpec extends Specification {
 
-    def builderInfo = GroovyMock(IOSArtifactInfo) {
+    def builderInfo = GroovyMock(IOSDeviceArtifactInfo) {
         getId() >> 'variantId'
         getVersionString() >> '3.1.45'
         getAppName() >> 'GradleXCode.app'
