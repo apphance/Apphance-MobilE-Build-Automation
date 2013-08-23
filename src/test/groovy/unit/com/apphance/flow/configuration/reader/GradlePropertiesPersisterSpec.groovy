@@ -4,7 +4,6 @@ import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.detection.project.ProjectTypeDetector
 import com.apphance.flow.di.ConfigurationModule
-import com.apphance.flow.executor.ExecutableCommand
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
 import com.google.common.io.Files
@@ -19,6 +18,7 @@ import spock.lang.Specification
 import static com.apphance.flow.detection.project.ProjectType.ANDROID
 import static com.apphance.flow.detection.project.ProjectType.IOS
 import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_ANDROID
+import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_LINT
 
 class GradlePropertiesPersisterSpec extends Specification {
 
@@ -44,6 +44,7 @@ class GradlePropertiesPersisterSpec extends Specification {
 
                 bind(Project).toInstance(project)
                 bindConstant().annotatedWith(Names.named('executable.android')).to(STD_EXECUTABLE_ANDROID)
+                bindConstant().annotatedWith(Names.named('executable.lint')).to(STD_EXECUTABLE_LINT)
             }
         }
     }

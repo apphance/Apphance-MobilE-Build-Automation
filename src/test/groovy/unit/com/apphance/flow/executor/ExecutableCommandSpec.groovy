@@ -12,7 +12,7 @@ class ExecutableCommandSpec extends Specification {
         WIN_EXECUTABLE_ANT.cmd == ['cmd', '/c', 'ant.bat']
         WIN_EXECUTABLE_ADB.cmd == ['cmd', '/c', 'adb.exe']
         WIN_EXECUTABLE_EMULATOR.cmd == ['cmd', '/c', 'emulator.exe']
-        WIN_EXECUTABLE_LINT.cmd == ['cmd', '/c', 'lint.exe']
+        WIN_EXECUTABLE_LINT.cmd == ['cmd', '/c', 'lint.bat']
 
         and:
         STD_EXECUTABLE_ANDROID.cmd == ['android']
