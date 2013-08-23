@@ -6,6 +6,7 @@ import com.apphance.flow.plugins.android.analysis.tasks.CPDTask
 import com.apphance.flow.plugins.android.analysis.tasks.LintTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.quality.FindBugs
 
 import javax.inject.Inject
 
@@ -22,10 +23,17 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
     @Inject AndroidAnalysisConfiguration analysisConf
     @Inject AndroidVariantsConfiguration androidVariantsConf
 
+    File rulesDir = new File('build/analysis-rules')
+    File pmdRules
+    File findbugsExclude
+    File checkstyleConfigFile
+
     @Override
     void apply(Project project) {
         if (analysisConf.isEnabled()) {
             logger.lifecycle "Applying plugin ${this.class.simpleName}"
+
+            prepareRuleFiles()
 
             def mainVariant = androidVariantsConf.variants.find { it.name == androidVariantsConf.mainVariant }
             def mainVariantDir = relativeTo(project.rootDir, mainVariant.tmpDir)
@@ -36,9 +44,11 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                 apply plugin: 'checkstyle'
                 apply plugin: 'findbugs'
 
-                File rules = pmdRules()
+                pmd.ruleSetFiles = files(pmdRules)
 
-                pmd.ruleSetFiles = files(rules)
+                tasks.withType(FindBugs) {
+                    excludeFilter = findbugsExclude
+                }
 
                 sourceSets.main.java.srcDirs = ['src', 'variants']
                 sourceSets.test.java.srcDirs = ['test']
@@ -52,19 +62,25 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                 check.dependsOn cpd, lint
                 [findbugsMain, findbugsTest, lint]*.dependsOn(mainVariant.buildTaskName)
 
-                [compileJava, compileTestJava, processResources, processTestResources].each { it.enabled = false }
+                [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses].each { it.enabled = false }
                 [checkstyle, findbugs, pmd, cpd].each { it.ignoreFailures = true }
             }
         }
     }
 
-    File pmdRules() {
-        def stream = this.class.getResourceAsStream('/com/apphance/flow/plugins/android/analysis/tasks/pmd-rules.xml')
+    void prepareRuleFiles() {
+        rulesDir.mkdirs()
+        pmdRules = prepareConfigFile(analysisConf.pmdRules.value, 'pmd-rules.xml')
+        findbugsExclude = prepareConfigFile(analysisConf.findbugsExclude.value, 'findbugs-exclude.xml')
+        checkstyleConfigFile = prepareConfigFile(analysisConf.checkstyleConfigFile.value, 'checkstyle.xml')
+    }
 
-        File customRules = analysisConf.pmdRules.value
-        File defaultPmdRules = new File('build/pmdrules/pmd-rules.xml')
-        defaultPmdRules.parentFile.mkdirs()
-        defaultPmdRules << stream.text
-        customRules ?: defaultPmdRules
+    File prepareConfigFile(File valueFormConf, String filename) {
+        valueFormConf ?: {
+            def stream = this.class.getResourceAsStream("/com/apphance/flow/plugins/android/analysis/tasks/$filename")
+            File rules = new File(rulesDir, filename)
+            rules.text = stream.text
+            rules
+        }()
     }
 }

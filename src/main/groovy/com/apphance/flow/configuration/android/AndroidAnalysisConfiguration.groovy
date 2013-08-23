@@ -34,6 +34,16 @@ class AndroidAnalysisConfiguration extends AbstractConfiguration {
             message: 'Path to pmd rules config file'
     )
 
+    def findbugsExclude = new FileProperty(
+            name: 'android.analysis.findbugs.exclude',
+            message: 'Path to findbugs exclude file'
+    )
+
+    def checkstyleConfigFile = new FileProperty(
+            name: 'android.analysis.checkstyle.config',
+            message: 'Path to checkstyle config file'
+    )
+
     @Override
     void checkProperties() {
         if (analysisConfigUrl.isSet()) {
