@@ -1,21 +1,17 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSFrameworkArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.util.FlowUtils
 
 import javax.inject.Inject
 
-import static com.google.common.io.Files.createTempDir
-
 class FrameworkVariantTask extends AbstractBuildVariantTask {
 
     String description = "Prepares 'framework' file for given variant"
 
     @Inject IOSReleaseConfiguration releaseConf
-    @Inject CommandExecutor executor
     @Inject IOSFrameworkArtifactsBuilder frameworkArtifactsBuilder
     @Inject IOSArtifactProvider artifactProvider
 
@@ -43,7 +39,7 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
         conf.xcodebuildExecutionPath() + ['-scheme', variant.name] +
                 ['-sdk', conf.simulatorSdk.value ?: 'iphonesimulator'] + ['-arch', 'i386'] +
                 ['-configuration', variant.archiveConfiguration] +
-                ["CONFIGURATION_BUILD_DIR=${simTmpDir.absolutePath}"] +
+                ["CONFIGURATION_BUILD_DIR=${simTmpDir.absolutePath}".toString()] +
                 ['PRODUCT_NAME=sim'] +
                 ['clean', 'build']
     }()
@@ -53,7 +49,7 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
         conf.xcodebuildExecutionPath() + ['-scheme', variant.name] +
                 ['-sdk', conf.sdk.value ?: 'iphoneos'] +
                 ['-configuration', variant.archiveConfiguration] +
-                ["CONFIGURATION_BUILD_DIR=${deviceTmpDir.absolutePath}"] +
+                ["CONFIGURATION_BUILD_DIR=${deviceTmpDir.absolutePath}".toString()] +
                 ['PRODUCT_NAME=device'] +
                 ['clean', 'build']
     }()
