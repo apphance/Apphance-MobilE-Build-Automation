@@ -10,8 +10,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.*
-import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
-import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static com.google.common.io.Files.createTempDir
 
 class IOSVariantSpec extends Specification {
@@ -37,6 +36,7 @@ class IOSVariantSpec extends Specification {
         mode      | expected
         DEVICE    | true
         SIMULATOR | false
+        FRAMEWORK | false
     }
 
     def 'apphance lib dependency is constructed correctly'() {

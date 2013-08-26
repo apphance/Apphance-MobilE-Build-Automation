@@ -75,7 +75,6 @@ class IOSVariant extends AbstractVariant {
 
     @Lazy
     @PackageScope
-    //TODO test
     List<String> possibleBuildModes = {
         if (schemeInfo.schemeBuildable(schemeFile) && schemeInfo.schemeHasSingleBuildableTarget(schemeFile))
             return [DEVICE, SIMULATOR]*.name()
@@ -111,22 +110,14 @@ class IOSVariant extends AbstractVariant {
         mp ? mp.collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath) } : []
     }
 
-    //TODO how to handle required, interactive during 'prepareSetup'
-    //TODO how to handle validation
-    //TODO are all of the props really required?
-    //TODO what about name?
-    //TODO should plugin have an build & archive action also?
     def frameworkName = new StringProperty(
             message: 'Framework name',
+            required: { mode.value == FRAMEWORK },
+            interactive: { mode.value == FRAMEWORK },
+            validator: { isNotEmpty(it) }
     )
-
-    def frameworkHeaders = new ListStringProperty(
-            message: 'Framework headers',
-    )
-
-    def frameworkResources = new ListStringProperty(
-            message: 'Framework resources',
-    )
+    def frameworkHeaders = new ListStringProperty(interactive: { false }, required: { false })
+    def frameworkResources = new ListStringProperty(interactive: { false }, required: { false })
 
     String getBundleId() {
         plistParser.evaluate(plistParser.bundleId(plist), target, buildConfiguration) ?: ''
@@ -227,11 +218,19 @@ class IOSVariant extends AbstractVariant {
     @Override
     void checkProperties() {
         super.checkProperties()
+
         def ec = conf.extVersionCode
         if (ec)
             check ec.matches('[0-9]+'), bundle.getString('exception.ios.version.code.ext')
+
         def es = conf.extVersionString
         if (es)
             check((isNotEmpty(es) && !WHITESPACE_PATTERN.matcher(es).find()), bundle.getString('exception.ios.version.string.ext'))
+
+        if (mode.value == FRAMEWORK) {
+            defaultValidation frameworkName
+            check(frameworkHeaders.value.every { new File(conf.rootDir, it).exists() }, bundle.getString('exception.ios.framework.invalid.headers'))
+            check(frameworkResources.value.every { new File(conf.rootDir, it).exists() }, bundle.getString('exception.ios.framework.invalid.resources'))
+        }
     }
 }
