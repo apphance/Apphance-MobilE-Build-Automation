@@ -28,9 +28,17 @@ class IOSFrameworkArtifactsBuilderSpec extends Specification {
         isSymbolicLink(get(new File(dir, 'Resources').toURI()))
         isSymbolicLink(get(new File(dir, frameworkName).toURI()))
         isSymbolicLink(get(new File(dir, 'Versions/Current').toURI()))
+
+        and:
         readSymbolicLink(get(new File(dir, 'Headers').toURI())).toString() == 'Versions/Current/Headers'
         readSymbolicLink(get(new File(dir, 'Resources').toURI())).toString() == 'Versions/Current/Resources'
         readSymbolicLink(get(new File(dir, frameworkName).toURI())).toString() == "Versions/Current/$frameworkName"
         readSymbolicLink(get(new File(dir, 'Versions/Current').toURI())).toString() == 'A'
+
+        and:
+        ['Headers', 'Resources'].every {
+            new File(info.frameworkDir, "Versions/A/$it/README").text ==
+                    'This file is here because git ignores empty folders and some symlink point to this folder'
+        }
     }
 }

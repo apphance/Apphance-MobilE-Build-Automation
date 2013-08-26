@@ -26,6 +26,8 @@ class IOSFrameworkArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSFramew
         logger.info("Temp framework dir: $info.frameworkDir.absolutePath")
         mkdirs(info)
         createSymbolicLinks(info)
+        addReadmeFileToPotentiallyEmptyDir(info.resourcesDir)
+        addReadmeFileToPotentiallyEmptyDir(info.headersDir)
     }
 
     void mkdirs(IOSFrameworkArtifactInfo info) {
@@ -43,29 +45,35 @@ class IOSFrameworkArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSFramew
                 path("Versions/Current/${info.frameworkName}"))
     }
 
-    void copyHeaders(IOSFrameworkArtifactInfo info) {
-        info.headers?.each { copyClosure(it, info.variantDir, info.headersDir) }
-    }
-
-    void copyResources(IOSFrameworkArtifactInfo info) {
-        info.resources?.each { copyClosure(it, info.variantDir, info.resourcesDir) }
-    }
-
-    Closure copyClosure = { String path, File variantDir, File sourceDir ->
-        def toCopy = new File(path)
-        def source = new File(variantDir, path)
-        def target = new File(sourceDir, toCopy.name)
-        logger.info("Copying ${source.absolutePath} to ${target.absolutePath}")
-        Files.copy(source, target)
+    void addReadmeFileToPotentiallyEmptyDir(File dir) {
+        def file = new File(dir, 'README')
+        file.text = 'This file is here because git ignores empty folders and some symlink point to this folder'
     }
 
     void linkLibraries(IOSFrameworkArtifactInfo info) {
         def deviceLib = new File(info.deviceTempDir, 'libdevice.a')
         def simLib = new File(info.simTempDir, 'libsim.a')
-        executor.executeCommand(new Command(runDir: conf.rootDir,
+        executor.executeCommand(new Command(
+                runDir: conf.rootDir,
                 cmd: ['lipo', '-create', deviceLib.absolutePath, simLib.absolutePath,
                         '-output', new File(info.frameworkDir, "Versions/Current/${info.frameworkName}")
                 ]))
+    }
+
+    void copyHeaders(IOSFrameworkArtifactInfo info) {
+        info.headers?.each { copy(it, info.variantDir, info.headersDir) }
+    }
+
+    void copyResources(IOSFrameworkArtifactInfo info) {
+        info.resources?.each { copy(it, info.variantDir, info.resourcesDir) }
+    }
+
+    void copy(String path, File variantDir, File sourceDir) {
+        def toCopy = new File(path)
+        def source = new File(variantDir, path)
+        def target = new File(sourceDir, toCopy.name)
+        logger.info("Copying ${source.absolutePath} to ${target.absolutePath}")
+        Files.copy(source, target)
     }
 
     @PackageScope
