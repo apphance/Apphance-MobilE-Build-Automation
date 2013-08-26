@@ -51,6 +51,12 @@ class FlowUtils {
         file
     }
 
+    File getTempDir() {
+        def dir = createTempDir()
+        dir.deleteOnExit()
+        dir
+    }
+
     //gradle guava 11 workaround
     String getNameWithoutExtension(String file) {
         checkNotNull(file)

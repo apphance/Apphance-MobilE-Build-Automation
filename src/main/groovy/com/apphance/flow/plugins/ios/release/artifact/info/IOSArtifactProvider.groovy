@@ -32,7 +32,8 @@ class IOSArtifactProvider {
         new IOSFrameworkArtifactInfo(
                 id: v.name,
                 filePrefix: "$v.name-$v.fullVersionString",
-                frameworkName: v.frameworkName.value
+                frameworkName: v.frameworkName.value,
+                variantDir: v.tmpDir
         )
     }
 
