@@ -54,8 +54,8 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         releaseConf.distributionZipFiles.put(bi.id, aa)
         mkdirs(aa)
         ant.zip(destfile: aa.location) {
-            zipfileset(dir: bi.mobileprovision.parent, includes: bi.mobileprovision)
-            zipfileset(dir: "$bi.archiveDir/Products/Applications", includes: "${bi.appName}/**")
+            fileset(dir: bi.mobileprovision.parent, includes: "$bi.mobileprovision.name")
+            fileset(dir: "$bi.archiveDir/Products/Applications")
         }
         logger.info("Distribution zip file created: $aa.location")
     }
@@ -66,7 +66,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder {
         releaseConf.dSYMZipFiles.put(bi.id, aa)
         mkdirs(aa)
         ant.zip(destfile: aa.location) {
-            zipfileset(dir: "$bi.archiveDir/dSYMs", includes: "${bi.appName}.dSYM/**")
+            fileset(dir: "$bi.archiveDir/dSYMs")
         }
         logger.info("dSYM zip file created: $aa.location")
     }
