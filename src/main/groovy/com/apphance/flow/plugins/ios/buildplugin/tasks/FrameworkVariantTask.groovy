@@ -7,6 +7,10 @@ import com.apphance.flow.util.FlowUtils
 
 import javax.inject.Inject
 
+import static com.apphance.flow.configuration.ios.IOSBuildMode.FRAMEWORK
+import static com.google.common.base.Preconditions.checkArgument
+import static com.google.common.base.Preconditions.checkNotNull
+
 class FrameworkVariantTask extends AbstractBuildVariantTask {
 
     String description = "Prepares 'framework' file for given variant"
@@ -14,20 +18,23 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
     @Inject IOSReleaseConfiguration releaseConf
     @Inject IOSFrameworkArtifactsBuilder frameworkArtifactsBuilder
     @Inject IOSArtifactProvider artifactProvider
-
     protected FlowUtils fu = new FlowUtils()
+
     @Lazy File simTmpDir = { fu.tempDir }()
     @Lazy File deviceTmpDir = { fu.tempDir }()
 
     @Override
     void build() {
+        checkNotNull(variant, 'Null variant passed to builder!')
+        checkArgument(variant.mode.value == FRAMEWORK, "Invalid build mode: $variant.mode.value!")
+
         iosExecutor.buildVariant(variant.tmpDir, cmdSim)
         iosExecutor.buildVariant(variant.tmpDir, cmdDevice)
 
         if (releaseConf.isEnabled()) {
             def info = artifactProvider.frameworkInfo(variant)
-            info.simTempDir = simTmpDir
-            info.deviceTempDir = deviceTmpDir
+            info.simLib = new File(simTmpDir, 'libsim.a')
+            info.deviceLib = new File(deviceTmpDir, 'libdevice.a')
             info.headers = variant.frameworkHeaders.value
             info.resources = variant.frameworkResources.value
             frameworkArtifactsBuilder.buildArtifacts(info)

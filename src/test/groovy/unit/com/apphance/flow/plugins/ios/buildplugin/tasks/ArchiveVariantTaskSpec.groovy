@@ -14,8 +14,7 @@ import spock.lang.Unroll
 
 import java.nio.file.Files
 
-import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
-import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class ArchiveVariantTaskSpec extends Specification {
@@ -27,7 +26,7 @@ class ArchiveVariantTaskSpec extends Specification {
         task.iosExecutor = GroovyMock(IOSExecutor)
     }
 
-    def 'no archive when null variant passed'() {
+    def 'exception when null variant passed'() {
         given:
         task.variant = null
 
@@ -37,6 +36,20 @@ class ArchiveVariantTaskSpec extends Specification {
         then:
         def e = thrown(NullPointerException)
         e.message == 'Null variant passed to builder!'
+    }
+
+    def 'exception when variant with bad mode passed'() {
+        given:
+        task.variant = GroovyMock(IOSVariant) {
+            getMode() >> new IOSBuildModeProperty(value: FRAMEWORK)
+        }
+
+        when:
+        task.build()
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == "Invalid build mode: $FRAMEWORK!"
     }
 
     def 'executor runs archive command when variant passed & release conf disabled'() {
@@ -96,26 +109,12 @@ class ArchiveVariantTaskSpec extends Specification {
         }
 
         expect:
-        task.builder.call().class.name.contains(name)
+        closure.call(task.builder.call())
 
         where:
-        mode      | name
-        DEVICE    | 'Device'
-        SIMULATOR | 'Simulator'
-    }
-
-    def 'no builder found for bad variant'() {
-        given:
-        task.variant = GroovyMock(IOSVariant) {
-            getMode() >> new IOSBuildModeProperty(value: '')
-            getName() >> 'V1'
-        }
-
-        when:
-        task.builder.call()
-
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.message == 'Unknown build mode \'null\' for variant \'V1\''
+        mode      | closure
+        DEVICE    | { it.class.name.contains(IOSDeviceArtifactsBuilder.class.name) }
+        SIMULATOR | { it.class.name.contains(IOSSimulatorArtifactsBuilder.class.name) }
+        FRAMEWORK | { it == null }
     }
 }

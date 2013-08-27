@@ -43,7 +43,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSSimArt
     @PackageScope
     void prepareSimulatorBundleFile(IOSSimArtifactInfo bi, IOSFamily family) {
         def fa = artifactProvider.simulator(bi, family)
-        releaseConf.dmgImageFiles.put("${family.iFormat()}-$bi.id" as String, fa)//TODO simplify
+        releaseConf.dmgImageFiles.put("${family.iFormat()}-$bi.id" as String, fa)
         mkdirs(fa)
 
         def tmpDir = tmpDir(bi, family)

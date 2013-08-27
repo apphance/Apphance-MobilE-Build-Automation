@@ -1,18 +1,17 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
-import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.apphance.flow.plugins.ios.release.artifact.builder.AbstractIOSArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSDeviceArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSSimulatorArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSSimArtifactInfo
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
-import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkNotNull
 
@@ -29,20 +28,14 @@ class ArchiveVariantTask extends AbstractBuildVariantTask {
     @Override
     void build() {
         checkNotNull(variant, 'Null variant passed to builder!')
-        //TODO check variant mode ??? != FRAMEWORK
+        checkArgument(variant.mode.value != FRAMEWORK, "Invalid build mode: $FRAMEWORK!")
 
         logger.info("Adding post archive action to scheme file: $variant.schemeFile.absolutePath")
         schemeParser.addPostArchiveAction(variant.schemeFile)
         def archiveOutput = iosExecutor.buildVariant(variant.tmpDir, cmd)
 
         if (releaseConf.enabled) {
-            //TODO strategy pattern + simplify
-            def info
-            if (variant.mode.value == DEVICE) {
-                info = artifactProvider.deviceInfo(variant)
-            } else if (variant.mode.value == SIMULATOR) {
-                info = artifactProvider.simInfo(variant)
-            }
+            def info = infoProvider.call()
             info.archiveDir = findArchiveFile(archiveOutput)
             info.appName = appName()
             info.productName = productName()
@@ -73,9 +66,11 @@ class ArchiveVariantTask extends AbstractBuildVariantTask {
         iosExecutor.buildSettings(variant.target, variant.archiveConfiguration)['PRODUCT_NAME']
     }
 
-    protected Closure<AbstractIOSArtifactsBuilder> builder = {
-        //TODO DEVICE, SIMULATOR
-        checkArgument(variant.mode?.value in IOSBuildMode.values(), "Unknown build mode '${variant.mode?.value}' for variant '$variant.name'")
+    protected Closure<? extends AbstractIOSArtifactsBuilder> builder = {
         [(DEVICE): deviceArtifactsBuilder, (SIMULATOR): simulatorArtifactsBuilder].get(variant.mode.value)
+    }.memoize()
+
+    protected Closure<? extends IOSSimArtifactInfo> infoProvider = {
+        [(DEVICE): artifactProvider.deviceInfo(variant), (SIMULATOR): artifactProvider.simInfo(variant)].get(variant.mode.value)
     }.memoize()
 }
