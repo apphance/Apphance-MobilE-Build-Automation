@@ -24,8 +24,7 @@ public class LintTask extends DefaultTask {
 
         def lintReport = new File(project.rootDir, 'build/reports/lint/lint-raport.html')
         lintReport.parentFile.mkdirs()
-        def mainVariant = androidVariantsConf.variants.find { it.name == androidVariantsConf.mainVariant }
 
-        androidExecutor.runLint mainVariant.tmpDir, lintReport
+        androidExecutor.runLint androidVariantsConf.mainVariant.tmpDir, lintReport
     }
 }

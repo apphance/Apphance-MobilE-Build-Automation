@@ -6,7 +6,6 @@ import com.apphance.flow.plugins.android.analysis.tasks.CPDTask
 import com.apphance.flow.plugins.android.analysis.tasks.LintTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.quality.FindBugs
 
 import javax.inject.Inject
 
@@ -36,8 +35,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
             rulesDir = new File(project.rootDir, 'build/analysis-rules')
             prepareRuleFiles()
 
-            def mainVariant = androidVariantsConf.variants.find { it.name == androidVariantsConf.mainVariant }
-            def mainVariantDir = relativeTo(project.rootDir, mainVariant.tmpDir)
+            def mainVariantDir = relativeTo(project.rootDir, androidVariantsConf.mainVariant.tmpDir)
 
             project.with {
                 apply plugin: 'java'
@@ -59,7 +57,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                 def lint = task(LintTask.NAME, type: LintTask)
 
                 check.dependsOn cpd, lint
-                [findbugsMain, lint]*.dependsOn(mainVariant.buildTaskName)
+                [findbugsMain, lint]*.dependsOn(androidVariantsConf.mainVariant.buildTaskName)
 
                 [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses, findbugsTest].each { it.enabled = false }
                 [checkstyle, findbugs, pmd, cpd].each { it.ignoreFailures = true }

@@ -81,8 +81,12 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
         AndroidBuildMode.values().collect { variantFactory.create(it.capitalize()) }
     }
 
-    String getMainVariant() {
+    String getMainVariantName() {
         variantsNames.value?.empty ? null : variantsNames.value[0]
+    }
+
+    AndroidVariantConfiguration getMainVariant() {
+        variants.find { it.name == mainVariantName }
     }
 
     @Override
