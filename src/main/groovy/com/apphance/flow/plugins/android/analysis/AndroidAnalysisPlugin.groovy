@@ -23,7 +23,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
     @Inject AndroidAnalysisConfiguration analysisConf
     @Inject AndroidVariantsConfiguration androidVariantsConf
 
-    File rulesDir = new File('build/analysis-rules')
+    File rulesDir
     File pmdRules
     File findbugsExclude
     File checkstyleConfigFile
@@ -33,6 +33,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         if (analysisConf.isEnabled()) {
             logger.lifecycle "Applying plugin ${this.class.simpleName}"
 
+            rulesDir = new File(project.rootDir, 'build/analysis-rules')
             prepareRuleFiles()
 
             def mainVariant = androidVariantsConf.variants.find { it.name == androidVariantsConf.mainVariant }
@@ -58,9 +59,9 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                 def lint = task(LintTask.NAME, type: LintTask)
 
                 check.dependsOn cpd, lint
-                [findbugsMain, findbugsTest, lint]*.dependsOn(mainVariant.buildTaskName)
+                [findbugsMain, lint]*.dependsOn(mainVariant.buildTaskName)
 
-                [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses].each { it.enabled = false }
+                [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses, findbugsTest].each { it.enabled = false }
                 [checkstyle, findbugs, pmd, cpd].each { it.ignoreFailures = true }
             }
         }
@@ -81,6 +82,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
             def stream = this.class.getResourceAsStream("/com/apphance/flow/plugins/android/analysis/tasks/$filename")
             File rules = new File(rulesDir, filename)
             rules.text = stream.text
+            logger.lifecycle "Created rule file $rules.absolutePath"
             rules
         }()
     }
