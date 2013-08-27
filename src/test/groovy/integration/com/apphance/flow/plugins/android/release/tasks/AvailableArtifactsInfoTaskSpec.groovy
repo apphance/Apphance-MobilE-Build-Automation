@@ -79,7 +79,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                     getMode() >> RELEASE
                 }
         ]
-        variantsConf.mainVariantName >> mainVariant
+        variantsConf.mainVariant >> mainVariant
 
         def artifactBuilder = new AndroidArtifactProvider(conf: conf, releaseConf: releaseConf)
 
@@ -238,7 +238,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         releaseConf.fileIndexFile = GroovySpy(FlowArtifact) {
             getUrl() >> 'http://ota.polidea.pl/fileIndexFile.html'.toURL()
         }
-        releaseConf.apkFiles[variantsConf.getMainVariantName] = GroovySpy(FlowArtifact) {
+        releaseConf.apkFiles[variantsConf.mainVariant] = GroovySpy(FlowArtifact) {
             getLocation() >> GroovyMock(File) {
                 size() >> 3145l
             }

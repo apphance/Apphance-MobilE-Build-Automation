@@ -35,7 +35,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
             rulesDir = new File(project.rootDir, 'build/analysis-rules')
             prepareRuleFiles()
 
-            def mainVariantDir = relativeTo(project.rootDir, androidVariantsConf.mainVariant.tmpDir)
+            def mainVariantDir = relativeTo(project.rootDir, androidVariantsConf.main.tmpDir)
 
             project.with {
                 apply plugin: 'java'
@@ -57,7 +57,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                 def lint = task(LintTask.NAME, type: LintTask)
 
                 check.dependsOn cpd, lint
-                [findbugsMain, lint]*.dependsOn(androidVariantsConf.mainVariant.buildTaskName)
+                [findbugsMain, lint]*.dependsOn androidVariantsConf.main.buildTaskName
 
                 [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses, findbugsTest].each { it.enabled = false }
                 [checkstyle, findbugs, pmd, cpd].each { it.ignoreFailures = true }
