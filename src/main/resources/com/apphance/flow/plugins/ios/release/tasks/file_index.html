@@ -174,6 +174,29 @@
                     </p>
                 </section>
                 <% } %>
+
+                <% if(v.mode.value.name() == 'FRAMEWORK') { %>
+                <section id="frameworks">
+                    <header style="text-align:center;">
+                        <h3>
+                            <div>${rb.getString('Frameworks')}</div>
+                        </h3>
+                    </header>
+                    <p>
+                    <ul data-role="listview" data-inset="true" data-theme="a">
+
+                        <% if (releaseConf.frameworkFiles[v.name] != null) { %>
+                        <li>
+                            <a href="${releaseConf.frameworkFiles[v.name].getRelativeUrl(baseUrl)}"
+                               rel="external">
+                                <h3>${v.name}</h3>
+                            </a>
+                        </li>
+                        <% } %>
+                    </ul>
+                    </p>
+                </section>
+                <% } %>
             </div>
         </div>
         <% } %>

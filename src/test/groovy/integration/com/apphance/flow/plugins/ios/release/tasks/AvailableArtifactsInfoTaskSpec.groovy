@@ -453,7 +453,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
 
         then:
         !releaseConf.mailMessageFile.location.text.contains('null')
-        releaseConf.releaseMailSubject == "iOS $projectName $fullVersionString is ready to install"
+        releaseConf.releaseMailSubject == "iOS $projectName $fullVersionString is ready to download"
         def slurper = new XmlSlurper().parse(releaseConf.mailMessageFile.location)
         slurper.head.title.text() == 'GradleXCode - iOS'
         slurper.body.b[0].text() == 'GradleXCode'
@@ -461,6 +461,5 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         slurper.body.p[0].ul.li.a.@href.text() == 'http://ota.polidea.pl/otaIndexFile.html'
         slurper.body.p[1].ul.li[0].text() == 'release'
         slurper.body.p[1].ul.li[1].text() == 'notes'
-        slurper.body.p[2].ul.li.a.@href.text() == 'http://ota.polidea.pl/fileIndexFile.html'
     }
 }

@@ -88,6 +88,20 @@
                 </ul>
                 <% } %>
                 <% } %>
+                <% if(v.mode.value.name() == 'FRAMEWORK') { %>
+                <% if (!releaseConf.frameworkFiles.isEmpty()) { %>
+                ${rb.getString('Frameworks')}<br/>
+                <ul>
+                    <% if (releaseConf.frameworkFiles[v.name] != null) { %>
+                    <li>${v.name}
+                        <a href="${releaseConf.frameworkFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                            ${releaseConf.frameworkFiles[v.name].url}
+                        </a>
+                    </li>
+                    <% } %>
+                </ul>
+                <% } %>
+                <% } %>
             </li>
             <% } %>
         </ul>

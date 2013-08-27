@@ -94,7 +94,7 @@ class IOSVariant extends AbstractVariant {
     @Lazy
     @PackageScope
     boolean mobileprovisionEnabled = {
-        def enabled = releaseConf.enabled && mode.value != FRAMEWORK
+        def enabled = releaseConf.enabled && mode.value == DEVICE
         if (!enabled)
             this.@mobileprovision.resetValue()
         enabled
@@ -166,11 +166,16 @@ class IOSVariant extends AbstractVariant {
     }
 
     String getProjectName() {
-        String bundleDisplayName = plistParser.bundleDisplayName(plist)
-        checkArgument(isNotBlank(bundleDisplayName),
-                """|Cant find 'CFBundleDisplayName' property in file $plist.absolutePath
+        if (mode.value in [SIMULATOR, DEVICE]) {
+            String bundleDisplayName = plistParser.bundleDisplayName(plist)
+            checkArgument(isNotBlank(bundleDisplayName),
+                    """|Cant find 'CFBundleDisplayName' property in file $plist.absolutePath
                    |Is project configured well?""".stripMargin())
-        plistParser.evaluate(bundleDisplayName, target, buildConfiguration)
+            return plistParser.evaluate(bundleDisplayName, target, buildConfiguration)
+        } else if (mode.value == FRAMEWORK) {
+            return frameworkName.value
+        }
+        return name
     }
 
     @Lazy

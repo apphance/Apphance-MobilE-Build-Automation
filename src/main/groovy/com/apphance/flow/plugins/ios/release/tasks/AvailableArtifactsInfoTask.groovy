@@ -12,6 +12,7 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
+import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static com.apphance.flow.util.file.FileManager.getHumanReadableSize
 import static java.net.URLEncoder.encode
 
@@ -22,12 +23,18 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     @Inject IOSArtifactProvider artifactProvider
 
     @PackageScope
+    IOSReleaseConfiguration getReleaseConf() {
+        super.@releaseConf as IOSReleaseConfiguration
+    }
+
+    @PackageScope
     void prepareOtherArtifacts() {
         def udids = [:]
         variantsConf.variants.each { v ->
             logger.lifecycle("Preparing artifact for ${v.name}")
             prepareArtifacts(v)
-            udids.put(v.name, mpParser.udids(v.mobileprovision.value))
+            if (v.mode.value == DEVICE)
+                udids.put(v.name, mpParser.udids(v.mobileprovision.value))
         }
 
         prepareFileIndexFile(udids)
@@ -35,37 +42,56 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
 
     @PackageScope
     void prepareArtifacts(IOSVariant variant) {
-        def bi = artifactProvider.deviceInfo(variant)
+        if (variant.mode.value == DEVICE) {
+            def bi = artifactProvider.deviceInfo(variant)
 
-        def zipDist = artifactProvider.zipDistribution(bi)
-        if (zipDist.location.exists())
-            releaseConf.distributionZipFiles.put(bi.id, zipDist)
+            def zipDist = artifactProvider.zipDistribution(bi)
+            if (zipDist.location.exists())
+                releaseConf.distributionZipFiles.put(bi.id, zipDist)
 
-        def dSym = artifactProvider.dSYMZip(bi)
-        if (dSym.location.exists())
-            releaseConf.dSYMZipFiles.put(bi.id, dSym)
+            def xcArchive = artifactProvider.xcArchive(bi)
+            if (xcArchive.location.exists())
+                releaseConf.xcArchiveZipFiles.put(bi.id, xcArchive)
 
-        def ahSym = artifactProvider.ahSYM(bi)
-        if (ahSym.location.exists()) {
-            releaseConf.ahSYMDirs.put(bi.id, ahSym)
-            ahSym.location.listFiles().each {
-                ahSym.childArtifacts << new FlowArtifact(location: it, name: it.name, url: "${ahSym.url.toString()}/${it.name}".toURL())
+            def dSym = artifactProvider.dSYMZip(bi)
+            if (dSym.location.exists())
+                releaseConf.dSYMZipFiles.put(bi.id, dSym)
+
+            def ipa = artifactProvider.ipa(bi)
+            if (ipa.location.exists())
+                releaseConf.ipaFiles.put(bi.id, ipa)
+
+            def manifest = artifactProvider.manifest(bi)
+            if (manifest.location.exists())
+                releaseConf.manifestFiles.put(bi.id, manifest)
+
+            def mobileprovision = artifactProvider.mobileprovision(bi)
+            if (mobileprovision.location.exists())
+                releaseConf.mobileProvisionFiles.put(bi.id, mobileprovision)
+
+            def ahSym = artifactProvider.ahSYM(bi)
+            if (ahSym.location.exists()) {
+                releaseConf.ahSYMDirs.put(bi.id, ahSym)
+                ahSym.location.listFiles().each {
+                    ahSym.childArtifacts << new FlowArtifact(location: it, name: it.name, url: "${ahSym.url.toString()}/${it.name}".toURL())
+                }
             }
         }
-
-        def ipa = artifactProvider.ipa(bi)
-        if (ipa.location.exists())
-            releaseConf.ipaFiles.put(bi.id, ipa)
-
-        def manifest = artifactProvider.manifest(bi)
-        if (manifest.location.exists())
-            releaseConf.manifestFiles.put(bi.id, manifest)
-
-        def mobileprovision = artifactProvider.mobileprovision(bi)
-        if (mobileprovision.location.exists())
-            releaseConf.mobileProvisionFiles.put(bi.id, mobileprovision)
-
-        //TODO simulator & frameworks
+        if (variant.mode.value == SIMULATOR) {
+            def sBi = artifactProvider.simInfo(variant)
+            IOSFamily.values().each { family ->
+                def fa = artifactProvider.simulator(sBi, family)
+                if (fa.location.exists())
+                    releaseConf.dmgImageFiles.put("${family.iFormat()}-$bi.id" as String, fa)
+            }
+        }
+        if (variant.mode.value == FRAMEWORK) {
+            def fBi = artifactProvider.frameworkInfo(variant)
+            def framework = artifactProvider.framework(fBi)
+            if (framework.location.exists()) {
+                releaseConf.frameworkFiles.put(fBi.id, framework)
+            }
+        }
     }
 
     @Override
