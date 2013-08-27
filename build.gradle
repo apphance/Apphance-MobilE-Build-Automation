@@ -198,18 +198,21 @@ task testUnit(type: Test) {
     testClassesDir = sourceSets.testUnit.output.classesDir
     classpath = sourceSets.testUnit.runtimeClasspath
     beforeTest(beforeTestClosure)
+    maxParallelForks = 4
 }
 
 task testIntegration(type: Test) {
     testClassesDir = sourceSets.testIntegration.output.classesDir
     classpath = sourceSets.testIntegration.runtimeClasspath
     beforeTest(beforeTestClosure)
+    maxParallelForks = 4
 }
 
 task testFunctional(type: Test) {
     testClassesDir = sourceSets.testFunctional.output.classesDir
     classpath = sourceSets.testFunctional.runtimeClasspath
     beforeTest(beforeTestClosure)
+    maxParallelForks = 4
 }
 
 test {
