@@ -82,7 +82,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
             IOSFamily.values().each { family ->
                 def fa = artifactProvider.simulator(sBi, family)
                 if (fa.location.exists())
-                    releaseConf.dmgImageFiles.put("${family.iFormat()}-$bi.id" as String, fa)
+                    releaseConf.dmgImageFiles.put("${family.iFormat()}-$sBi.id" as String, fa)
             }
         }
         if (variant.mode.value == FRAMEWORK) {
@@ -153,12 +153,28 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     Map otaIndexFileBinding() {
         def urlMap = [:]
         variantsConf.variants.each { v ->
-            if (releaseConf.manifestFiles[v.name]) {
-                logger.info("Preparing OTA configuration for ${v.name}")
-                def encodedUrl = encode(releaseConf.manifestFiles[v.name].url.toString(), "utf-8")
-                urlMap.put(v.name, "itms-services://?action=download-manifest&amp;url=${encodedUrl}")
-            } else {
-                logger.warn("Skipping preparing OTA configuration for ${v.name} -> missing manifest")
+            switch (v.mode.value) {
+                case DEVICE:
+                    def manifest = releaseConf.manifestFiles[v.name]
+                    if (manifest && manifest?.location?.exists()) {
+                        def encodedUrl = encode(manifest.url.toString(), 'utf-8')
+                        urlMap.put(v.name, "itms-services://?action=download-manifest&amp;url=${encodedUrl}")
+                    }
+                    break
+                case SIMULATOR:
+                    IOSFamily.values().each { f ->
+                        def bi = artifactProvider.simInfo(v)
+                        def fa = artifactProvider.simulator(bi, f)
+                        if (fa.location.exists())
+                            urlMap.put("${f.iFormat()}-$v.name".toString(), fa.url)
+                    }
+                    break
+                case FRAMEWORK:
+                    def bi = artifactProvider.frameworkInfo(v)
+                    def fa = artifactProvider.framework(bi)
+                    if (fa.location.exists())
+                        urlMap.put(bi.id, fa.url)
+                    break
             }
         }
         logger.info("OTA urls: $urlMap")
@@ -169,6 +185,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
                 urlMap: urlMap,
                 conf: conf,
                 variantsConf: variantsConf,
+                families: IOSFamily.values(),
                 rb: bundle('index')
         ]
     }

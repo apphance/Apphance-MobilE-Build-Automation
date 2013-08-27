@@ -31,37 +31,117 @@
                     </ul>
                 </div>
 
-                <div>
-                    <section id="instalation">
-                        <header style="text-align:center;">
-                            <h3>
-                                <div>${rb.getString('Installation')}</div>
-                            </h3>
+                <!-- main variant -->
+                <% def mainVariant = variantsConf.mainVariant %>
+                <% def mainVariantSimKeys = families.collect{ it.iFormat()+'-'+mainVariant.name} %>
+                <% if (urlMap[mainVariant.name] || mainVariantSimKeys.any { urlMap[it] }) { %>
+                    <div>
+                        <section>
+                            <header style="text-align:center;">
+                                <h3><div>${rb.getString('Main_version')}</div></h3>
                         </header>
-                    </section>
-                </div>
+                        </section>
+                    </div>
 
-                <div data-role="content">
-                    <ul data-role="listview" data-inset="true" data-theme="c" data-split-theme="a">
-                        <li>
-                            <div class="ui-grid-a">
-                                <div class="ui-block-a">
-                                    <div style="font-size:1.5em">${variantsConf.mainVariant.name}</div>
-                                </div>
-                                <div class="ui-block-b" style="text-align:right">
-                                    <a href="${urlMap[variantsConf.mainVariant.name]}"
-                                       data-role="button" data-inline="true"
-                                       rel="external" data-theme="a">
-                                        ${rb.getString('Install')}
-                                    </a>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+                    <div data-role="content">
+                        <ul data-role="listview" data-inset="true" data-theme="c" data-split-theme="a">
+                            <li>
+                                <div class="ui-grid-a">
+                                    <div class="ui-block-a">
+                                        <div style="font-size:1.5em">${mainVariant.name.replaceAll('[-_]',' ')}</div>
+                                        <br/>
+                                    </div>
+                                    <% def mode = mainVariant.mode.value.name() %>
+                                    <div class="ui-block-b" style="text-align:right">
+                                        <% if (mode in ['DEVICE', 'FRAMEWORK']) { %>
 
+                                            <% if (urlMap[mainVariant.name]) { %>
+                                                <a href="${urlMap[mainVariant.name]}"
+                                                data-role="button" data-inline="true" rel="external" data-theme="a">
+                                                    <% if(mode == 'DEVICE') { %>
+                                                        ${rb.getString('Install')}
+                                                    <% } else if(mode == 'FRAMEWORK') { %>
+                                                        ${rb.getString('Download')}
+                                                    <% } %>
+                                                </a>
+                                            <% } %>
+
+                                        <% } else if(mode == 'SIMULATOR') { %>
+                                            <% families.each { f -> %>
+                                                <% if (urlMap[f.iFormat() + '-' + mainVariant.name] != null) { %>
+                                                <a href="${urlMap[f.iFormat() + '-' + mainVariant.name]}"
+                                                    data-role="button" data-inline="true" rel="external" data-theme="a">
+                                                    ${rb.getString('Download')+' for '+f.iFormat()}
+                                                </a>
+                                                <% } %>
+                                            <% } %>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                <% } %>
+
+                <!-- other variants -->
+                <% def other = variantsConf.variants.findAll { it.name != mainVariant.name && (urlMap[it.name] || families.collect{ f -> f.iFormat()+'-'+it.name}.any { a -> urlMap[a] } )} %>
+                <% if (other) { %>
+                    <div>
+                        <section>
+                            <header style="text-align:center;">
+                                <h3><div>${rb.getString('Other_versions')}</div></h3>
+                            </header>
+                        </section>
+                    </div>
+
+                    <div data-role="content">
+                        <ul data-role="listview" data-inset="true" data-theme="c" data-split-theme="a">
+                            <% other.each { v -> %>
+                                <% def mode = v.mode.value.name() %>
+                                <% def simKeys = families.collect{ it.iFormat()+'-'+v.name} %>
+                                <% if(urlMap[v.name] || simKeys.any { urlMap[it] }) { %>
+                                <li>
+                                    <div class="ui-grid-a">
+                                        <div class="ui-block-a">
+                                            <div style="font-size:1.5em">${v.name.replaceAll('[-_]',' ')}</div>
+                                            <br/>
+                                        </div>
+                                        <div class="ui-block-b" style="text-align:right">
+                                            <% if (mode in ['DEVICE','FRAMEWORK']) { %>
+
+                                                <% if (urlMap[v.name]) { %>
+                                                <a href="${urlMap[v.name]}"
+                                                data-role="button" data-inline="true" rel="external" data-theme="a">
+                                                    <% if(mode == 'DEVICE') { %>
+                                                        ${rb.getString('Install')}
+                                                    <% } else if(mode == 'FRAMEWORK') { %>
+                                                        ${rb.getString('Download')}
+                                                    <% } %>
+                                                </a>
+                                                <% } %>
+
+                                            <% } else if(mode == 'SIMULATOR') { %>
+                                                <% families.each { f -> %>
+                                                    <% if (urlMap[f.iFormat() + '-' + v.name] != null) { %>
+                                                    <a href="${urlMap[f.iFormat() + '-' + v.name]}"
+                                                    data-role="button" data-inline="true" rel="external" data-theme="a">
+                                                        ${rb.getString('Download')+' for '+f.iFormat()}
+                                                    </a>
+                                                    <% } %>
+                                                <% } %>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </li>
+                                <% } %>
+                            <% } %>
+                        </ul>
+                    </div>
+                <% } %>
+
+                <!-- release notes -->
                 <% if (releaseNotes != null && !releaseNotes.isEmpty()) { %>
-                <section id="instalation">
+                <section>
                     <header style="text-align:center;">
                         <h3>${rb.getString('What_s_new')}</h3>
                     </header>
@@ -71,39 +151,6 @@
                     <li>${it}</li>
                     <% } %>
                 </ul>
-                <% } %>
-
-                <% def other = variantsConf.variants.findAll { it.name != variantsConf.mainVariant.name && it.mode.value.name() == 'DEVICE'} %>
-                <% if(other) { %>
-                <div>
-                    <section id="other_instalation">
-                        <header style="text-align:center;">
-                            <h3>
-                                <div>${rb.getString('Other_Installations')}</div>
-                            </h3>
-                        </header>
-                    </section>
-                </div>
-                <div data-role="content">
-                    <ul data-role="listview" data-inset="true" data-theme="c" data-split-theme="a">
-                        <% other.each { %>
-                        <li>
-                            <div class="ui-grid-a">
-                                <div class="ui-block-a">
-                                    <div style="font-size:1.5em">${it.name}</div>
-                                    <br/>
-                                </div>
-                                <div class="ui-block-b" style="text-align:right">
-                                    <a href="${urlMap[it.name]}" data-role="button" data-inline="true"
-                                       rel="external" data-theme="a">
-                                        ${rb.getString('Install')}
-                                    </a>
-                                </div>
-                            </div>
-                        </li>
-                        <% } %>
-                    </ul>
-                </div>
                 <% } %>
             </div>
         </div>
