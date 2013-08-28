@@ -15,6 +15,7 @@ import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFil
 class CommandExecutor {
 
     def logger = Logging.getLogger(getClass())
+    def static MAX_STD_LOG_SIZE = 1000000
 
     private FileLinker fileLinker
     private CommandLogFilesGenerator logFileGenerator
@@ -68,6 +69,8 @@ class CommandExecutor {
     void handleProcessResult(Integer exitValue, Command command, File stdoutLog, File stderrLog) {
         if (exitValue != 0) {
             if (command.failOnError) {
+                logger.error((stdoutLog && stdoutLog.size() < MAX_STD_LOG_SIZE) ? stdoutLog?.text : 'Stdout log not exist or too long')
+                logger.error((stderrLog && stderrLog.size() < MAX_STD_LOG_SIZE) ? stderrLog?.text : 'Stderr log not exist or too long')
                 throw new CommandFailedException("Error while executing: '$command.commandForPublic', in dir: '$command.runDir', exit value: '$exitValue'.",
                         command, stdoutLog, stderrLog)
             }
