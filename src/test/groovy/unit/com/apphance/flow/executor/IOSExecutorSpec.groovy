@@ -120,6 +120,16 @@ class IOSExecutorSpec extends Specification {
         iosExecutor.iOSSimVersion.matches('(\\d+\\.)+\\d+')
     }
 
+    def 'ios-sim version empty when ios-sim not installed'() {
+        given:
+        iosExecutor.executor = GroovyMock(CommandExecutor) {
+            executeCommand(_) >> { throw new Exception('no ios-sim') }
+        }
+
+        expect:
+        iosExecutor.iOSSimVersion == ''
+    }
+
     def 'archive command is executed well'() {
         given:
         def ce = GroovyMock(CommandExecutor)

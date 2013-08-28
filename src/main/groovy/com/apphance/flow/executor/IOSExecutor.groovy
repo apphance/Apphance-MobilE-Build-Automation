@@ -5,10 +5,13 @@ import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.ios.parsers.XCodeOutputParser
 import groovy.transform.PackageScope
+import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
 class IOSExecutor {
+
+    private logger = Logging.getLogger(getClass())
 
     @Inject IOSConfiguration conf
     @Inject XCodeOutputParser parser
@@ -137,13 +140,18 @@ class IOSExecutor {
 
     @Lazy
     String iOSSimVersion = {
-        def output = executor.executeCommand(new Command(
-                runDir: conf.rootDir,
-                cmd: ['ios-sim', '--version']
-        ))
-        def line = output.find {
-            it.matches('(\\d+\\.)+\\d+')
+        try {
+            def output = executor.executeCommand(new Command(
+                    runDir: conf.rootDir,
+                    cmd: ['ios-sim', '--version']
+            ))
+            def line = output.find {
+                it.matches('(\\d+\\.)+\\d+')
+            }
+            line ? line.trim() : ''
+        } catch (Exception e) {
+            logger.error("Error while getting ios-sim version: {}", e.message)
         }
-        line ? line.trim() : ''
+        ''
     }()
 }
