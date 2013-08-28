@@ -98,6 +98,10 @@ abstract class AbstractVariant extends AbstractConfiguration {
         "upload$name".replaceAll('\\s', '')
     }
 
+    String getTestTaskName() {
+        "test$name".replaceAll('\\s', '')
+    }
+
     @Override
     boolean isEnabled() {
         conf.enabled

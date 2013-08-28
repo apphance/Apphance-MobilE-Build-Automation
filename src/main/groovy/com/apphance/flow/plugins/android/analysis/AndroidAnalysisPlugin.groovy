@@ -50,6 +50,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                 sourceSets.main.java.srcDirs = ['src', 'variants']
                 sourceSets.test.java.srcDirs = ['test']
                 sourceSets.main.output.classesDir = mainVariantDir + '/bin/classes'
+                sourceSets.test.output.classesDir = mainVariantDir + '/bin/testClasses'
 
                 def cpd = task(CPDTask.NAME, type: CPDTask) as CPDTask
                 cpd.source(sourceSets.main.java.srcDirs)
@@ -58,8 +59,9 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
 
                 check.dependsOn cpd, lint
                 [findbugsMain, lint]*.dependsOn androidVariantsConf.main.buildTaskName
+                findbugsTest.dependsOn androidVariantsConf.main.testTaskName
 
-                [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses, findbugsTest].each { it.enabled = false }
+                [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses].each { it.enabled = false }
                 [checkstyle, findbugs, pmd, cpd].each { it.ignoreFailures = true }
             }
         }

@@ -63,14 +63,14 @@ class AndroidAnalysisPluginSpec extends Specification {
         project.sourceSets.main.java.srcDirs == [new File(project.rootDir, 'src'), new File(project.rootDir, 'variants')] as Set
         project.sourceSets.test.java.srcDirs == [new File(project.rootDir, 'test')] as Set
         project.sourceSets.main.output.classesDir == new File(mainVariant.tmpDir, 'bin/classes')
+        project.sourceSets.test.output.classesDir == new File(mainVariant.tmpDir, 'bin/testClasses')
 
         and: 'tasks added'
         !project.tasks.findByName('nonexistingTask')
         [CPDTask.NAME, LintTask.NAME, 'check', 'pmdMain', 'pmdTest', 'checkstyleMain', 'checkstyleTest', 'findbugsMain', 'findbugsTest'].
                 every { project.tasks.findByName(it) }
-        project.tasks[CPDTask.NAME].group == 'verification'
-        project.tasks[LintTask.NAME].group == 'verification'
-        project.tasks['check'].group == 'verification'
+
+        [CPDTask.NAME, LintTask.NAME, 'check'].every { project.tasks[it].group == 'verification' }
 
         and: 'task dependencies'
         project.check.dependsOn CPDTask.NAME
@@ -78,9 +78,10 @@ class AndroidAnalysisPluginSpec extends Specification {
 
         project.lint.dependsOn mainVariant.buildTaskName
         project.findbugsMain.dependsOn mainVariant.buildTaskName
+        project.findbugsTest.dependsOn mainVariant.testTaskName
 
         and: 'default java plugin tasks disabled'
-        project.with { [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses, findbugsTest].every { !it.enabled } }
+        project.with { [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses].every { !it.enabled } }
 
         and: 'ignoreFailures flag in analysis plugins'
         project.with { [checkstyle, findbugs, pmd, cpd].every { it.ignoreFailures } }
