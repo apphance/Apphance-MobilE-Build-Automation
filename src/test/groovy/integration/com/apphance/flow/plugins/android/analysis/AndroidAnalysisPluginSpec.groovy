@@ -68,8 +68,8 @@ class AndroidAnalysisPluginSpec extends Specification {
         !project.tasks.findByName('nonexistingTask')
         [CPDTask.NAME, LintTask.NAME, 'check', 'pmdMain', 'pmdTest', 'checkstyleMain', 'checkstyleTest', 'findbugsMain', 'findbugsTest'].
                 every { project.tasks.findByName(it) }
-        project.tasks[CPDTask.NAME].group == FLOW_ANALYSIS.name()
-        project.tasks[LintTask.NAME].group == FLOW_ANALYSIS.name()
+        project.tasks[CPDTask.NAME].group == 'verification'
+        project.tasks[LintTask.NAME].group == 'verification'
         project.tasks['check'].group == 'verification'
 
         and: 'task dependencies'

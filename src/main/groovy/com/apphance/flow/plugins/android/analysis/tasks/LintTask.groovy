@@ -7,12 +7,10 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_ANALYSIS
-
 public class LintTask extends DefaultTask {
 
     static String NAME = 'lint'
-    String group = FLOW_ANALYSIS
+    String group = 'verification'
     String description = 'Runs lint analysis on main variant of project'
 
     @Inject AndroidVariantsConfiguration androidVariantsConf
