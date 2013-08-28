@@ -5,9 +5,9 @@ import com.apphance.flow.configuration.properties.FileProperty
 import com.google.inject.Singleton
 
 import javax.inject.Inject
-import java.nio.file.Files
 
 import static com.apphance.flow.util.file.FileManager.relativeTo
+import static java.nio.file.Files.isDirectory
 
 @Singleton
 class AndroidTestConfiguration extends AbstractConfiguration {
@@ -35,14 +35,19 @@ class AndroidTestConfiguration extends AbstractConfiguration {
             defaultValue: { relativeTo(conf.rootDir.absolutePath, new File(conf.rootDir, 'test').absolutePath) },
             validator: {
                 def file = new File(conf.rootDir, it as String)
-                Files.isDirectory(file.toPath())
-                Files.isDirectory(new File(file, 'robolectric').toPath())
+                isDirectory(file.toPath()) && isDirectory(new File(file, 'robolectric').toPath())
             }
     )
 
     @Override
     void checkProperties() {
-        check testDir.validator(testDir.value), "Incorrect value '${testDir.value}' of property ${testDir.name}. Check that directory exists and contains " +
-                "'robolectric' subdirectory"
+        File libs = new File(conf.rootDir, 'lib/test')
+        check libs.exists(), "Directory 'lib/test' does not exist"
+        ['junit', 'robolectric'].each { String lib ->
+            check libs.list().find { it.contains(lib) }, "Lib $lib is missing"
+        }
+
+        check testDir.validator(testDir.value),
+                "Incorrect value '${testDir.value}' of property ${testDir.name}. Check that directory exists and contains 'robolectric' subdirectory"
     }
 }
