@@ -13,7 +13,6 @@ import groovy.transform.PackageScope
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.*
-import static com.apphance.flow.util.file.FileManager.getHumanReadableSize
 import static java.net.URLEncoder.encode
 
 class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
@@ -98,23 +97,12 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     @Override
     @PackageScope
     Map mailMsgBinding() {
-        def fileSize = 0
-        def existingBuild = ((IOSReleaseConfiguration) releaseConf).distributionZipFiles.find {
-            it.value.location != null
-        }
-        if (existingBuild) {
-            logger.lifecycle("Main build used for size calculation: ${existingBuild.key}")
-            fileSize = existingBuild.value.location.size()
-        }
-        def dmgImgFiles = ((IOSReleaseConfiguration) releaseConf).dmgImageFiles
-
         basicBinding + [
                 otaUrl: releaseConf.otaIndexFile?.url,
                 fileIndexUrl: releaseConf.fileIndexFile?.url,
                 releaseNotes: releaseConf.releaseNotes,
-                installable: dmgImgFiles,
+                installable: releaseConf.dmgImageFiles,
                 families: IOSFamily.values(),
-                fileSize: getHumanReadableSize(fileSize),
                 releaseMailFlags: releaseConf.releaseMailFlags,
                 rb: bundle('mail_message')
         ]
