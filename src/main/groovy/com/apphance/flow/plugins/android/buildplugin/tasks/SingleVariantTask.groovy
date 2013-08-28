@@ -22,7 +22,7 @@ import javax.inject.Inject
 import static com.android.manifmerger.MergerLog.wrapSdkLog
 import static com.android.utils.StdLogger.Level.VERBOSE
 import static com.apphance.flow.executor.AntExecutor.CLEAN
-import static com.apphance.flow.executor.command.CommandExecutor.getMAX_STD_LOG_SIZE
+import static com.apphance.flow.executor.command.CommandExecutor.MAX_STD_LOG_SIZE
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST
 
