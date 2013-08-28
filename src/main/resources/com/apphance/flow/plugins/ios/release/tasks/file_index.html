@@ -28,7 +28,14 @@
                         <p>
                             <ul data-role="listview" data-inset="true" data-theme="a">
                                 <% variantsConf.variants.each { v -> %>
-                                <li><a href="#${v.name}"><h3>${v.name}</h3></a></li>
+                                    <% def m = v.mode.value.name() %>
+                                    <% if(m == 'DEVICE' && releaseConf.ipaFiles[v.name]) { %>
+                                        <li><a href="#${v.name}"><h3>${v.name.replaceAll('[-_]',' ')}</h3></a></li>
+                                    <% } else if(m == 'SIMULATOR' && families.collect{ f -> f.iFormat()+'-'+v.name}.any { a -> releaseConf.dmgImageFiles[a] } ) { %>
+                                        <li><a href="#${v.name}"><h3>${v.name.replaceAll('[-_]',' ')}</h3></a></li>
+                                    <% } else if(m == 'FRAMEWORK' && releaseConf.frameworkFiles[v.name]) { %>
+                                        <li><a href="#${v.name}"><h3>${v.name.replaceAll('[-_]',' ')}</h3></a></li>
+                                    <% } %>
                                 <% } %>
                             </ul>
                         </p>
@@ -71,7 +78,9 @@
                                         </a>
                                     </li>
                                 <% } %>
+                                <% if(udids != null && !udids.isEmpty()) { %>
                                 <li><a href="#provprofiles"><h3>${rb.getString('Valid_UDIDs')}</h3></a></li>
+                                <% } %>
                             </ul>
                         </p>
                     </section>
@@ -86,13 +95,7 @@
                 <h1>${v.name}</h1>
             </div>
             <div data-role="content">
-                <header style="text-align:center;">
-                    <h3>
-                        <div>${rb.getString('Configuration')} ${v.archiveConfiguration}</div>
-                    </h3>
-                </header>
-
-                <% if(v.mode.value.name() == 'DEVICE') { %>
+                <% if(v.mode.value.name() == 'DEVICE' && releaseConf.ipaFiles[v.name]) { %>
                 <section id="${v.archiveConfiguration}">
                     <p>
                         <ul data-role="listview" data-inset="true" data-theme="a">
@@ -150,7 +153,7 @@
                 </section>
                 <% } %>
 
-                <% if(v.mode.value.name() == 'SIMULATOR') { %>
+                <% if(v.mode.value.name() == 'SIMULATOR' && families.collect{ f -> f.iFormat()+'-'+v.name}.any { a -> releaseConf.dmgImageFiles[a] }) { %>
                 <section id="simulatorImages">
                     <header style="text-align:center;">
                         <h3>
@@ -159,9 +162,7 @@
                     </header>
                     <p>
                         <ul data-role="listview" data-inset="true" data-theme="a">
-
                             <% families.each { family -> %>
-                            <% if (releaseConf.dmgImageFiles[family.iFormat() + '-' + v.name] != null) { %>
                             <li>
                                 <a href="${releaseConf.dmgImageFiles[family.iFormat() + '-' + v.name].getRelativeUrl(baseUrl)}"
                                    rel="external">
@@ -169,13 +170,12 @@
                                 </a>
                             </li>
                             <% } %>
-                            <% } %>
                         </ul>
                     </p>
                 </section>
                 <% } %>
 
-                <% if(v.mode.value.name() == 'FRAMEWORK') { %>
+                <% if(v.mode.value.name() == 'FRAMEWORK' && releaseConf.frameworkFiles[v.name]) { %>
                 <section id="frameworks">
                     <header style="text-align:center;">
                         <h3>
@@ -183,17 +183,13 @@
                         </h3>
                     </header>
                     <p>
-                    <ul data-role="listview" data-inset="true" data-theme="a">
-
-                        <% if (releaseConf.frameworkFiles[v.name] != null) { %>
-                        <li>
-                            <a href="${releaseConf.frameworkFiles[v.name].getRelativeUrl(baseUrl)}"
-                               rel="external">
-                                <h3>${v.name}</h3>
-                            </a>
-                        </li>
-                        <% } %>
-                    </ul>
+                        <ul data-role="listview" data-inset="true" data-theme="a">
+                            <li>
+                                <a href="${releaseConf.frameworkFiles[v.name].getRelativeUrl(baseUrl)}" rel="external">
+                                    <h3>${v.name}</h3>
+                                </a>
+                            </li>
+                        </ul>
                     </p>
                 </section>
                 <% } %>
@@ -201,18 +197,13 @@
         </div>
         <% } %>
 
-        <% variantsConf.variants.findAll { it.mode.value.name() == 'DEVICE' }.each { v -> %>
+        <% variantsConf.variants.findAll { it.mode.value.name() == 'DEVICE' && releaseConf.ahSYMDirs[it.name]?.location?.exists()}.each { v -> %>
         <div data-role="page" id="${v.name}-ahSYM" data-add-back-btn="true">
             <div data-role="header">
                 <h1>${v.name}</h1>
             </div>
             <div data-role="content">
                 <section id="${v.archiveConfiguration}-ahSYM">
-                    <header style="text-align:center;">
-                        <h3>
-                            <div>${rb.getString('Configuration')} ${v.archiveConfiguration}</div>
-                        </h3>
-                    </header>
                     <% if (releaseConf.ahSYMDirs[v.name] != null) { %>
                     <p>
                         <ul data-role="listview" data-inset="true" data-theme="a">
@@ -231,6 +222,7 @@
         </div>
         <% } %>
 
+        <% if(udids != null && !udids.isEmpty()) { %>
         <div data-role="page" id="provprofiles" data-add-back-btn="true">
             <div data-role="header">
                 <h1>${rb.getString('List_of_valid_UDIDs')}</h1>
@@ -238,7 +230,7 @@
             <div data-role="content">
                 <div>${rb.getString('List_of_valid_UDIDs')}</div>
                 <div style="word-wrap: break-word">
-                    <% variantsConf.variants.findAll { it.mode.value.name() == 'DEVICE' }.each { v -> %>
+                    <% variantsConf.variants.findAll { it.mode.value.name() == 'DEVICE' && udids[it.name] }.each { v -> %>
                     <h2>${v.name}</h2>
                     <ul>
                         <% udids[v.name].each { udid -> %>
@@ -249,5 +241,6 @@
                 </div>
             </div>
         </div>
+        <% } %>
     </body>
 </html>

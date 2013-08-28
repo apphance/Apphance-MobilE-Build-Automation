@@ -33,8 +33,9 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
         variantsConf.variants.each { v ->
             logger.lifecycle("Preparing artifact for ${v.name}")
             prepareArtifacts(v)
-            if (v.mode.value == DEVICE)
-                udids.put(v.name, mpParser.udids(v.mobileprovision.value))
+        }
+        variantsConf.variants.findAll { v -> v.mode.value == DEVICE && releaseConf.ipaFiles[v.name] }.each { v ->
+            udids.put(v.name, mpParser.udids(v.mobileprovision.value))
         }
 
         prepareFileIndexFile(udids)
