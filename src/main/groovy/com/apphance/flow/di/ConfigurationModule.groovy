@@ -7,7 +7,6 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantFactory
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.IOSFrameworkConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.IOSTestConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariantFactory
@@ -42,7 +41,6 @@ class ConfigurationModule extends AbstractModule {
                     ApphanceConfiguration,
                     IOSReleaseConfiguration,
                     IOSVariantsConfiguration,
-                    IOSFrameworkConfiguration,
                     IOSTestConfiguration,
             ],
     ]
