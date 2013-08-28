@@ -22,6 +22,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
     Map<String, FlowArtifact> mobileProvisionFiles = [:]
     Map<String, FlowArtifact> ahSYMDirs = [:]
     Map<String, FlowArtifact> dmgImageFiles = [:]
+    Map<String, FlowArtifact> frameworkFiles = [:]
 
     @Inject IOSVariantsConfiguration iosVariantsConf
     @Inject PlistParser plistParser

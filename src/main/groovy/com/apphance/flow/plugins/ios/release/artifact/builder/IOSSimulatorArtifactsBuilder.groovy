@@ -1,9 +1,9 @@
-package com.apphance.flow.plugins.ios.release
+package com.apphance.flow.plugins.ios.release.artifact.builder
 
 import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.executor.command.Command
-import com.apphance.flow.plugins.ios.builder.IOSBuilderInfo
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSSimArtifactInfo
 import groovy.transform.PackageScope
 import org.apache.commons.io.IOUtils
 
@@ -12,7 +12,7 @@ import javax.inject.Inject
 import static com.google.common.io.Files.createTempDir
 import static org.gradle.api.logging.Logging.getLogger
 
-class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
+class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSSimArtifactInfo> {
 
     private logger = getLogger(getClass())
 
@@ -34,15 +34,16 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }()
 
     @Override
-    void buildArtifacts(IOSBuilderInfo bi) {
+    void buildArtifacts(IOSSimArtifactInfo bi) {
         IOSFamily.values().each {
             prepareSimulatorBundleFile(bi, it)
         }
     }
 
     @PackageScope
-    void prepareSimulatorBundleFile(IOSBuilderInfo bi, IOSFamily family) {
+    void prepareSimulatorBundleFile(IOSSimArtifactInfo bi, IOSFamily family) {
         def fa = artifactProvider.simulator(bi, family)
+        releaseConf.dmgImageFiles.put("${family.iFormat()}-$bi.id" as String, fa)
         mkdirs(fa)
 
         def tmpDir = tmpDir(bi, family)
@@ -60,12 +61,11 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
 
         createSimAppDmg(fa.location, tmpDir, "$bi.appName-${family.iFormat()}")
 
-        releaseConf.dmgImageFiles.put("${family.iFormat()}-$bi.id" as String, fa)
         logger.info("Simulator zip file created: $fa.location")
     }
 
     @PackageScope
-    File tmpDir(IOSBuilderInfo bi, IOSFamily family) {
+    File tmpDir(IOSSimArtifactInfo bi, IOSFamily family) {
         def tmpDir = createTempDir()
         tmpDir.deleteOnExit()
         def appDir = new File(tmpDir, "$bi.productName (${family.iFormat()}_Simulator) ${conf.fullVersionString}.app")
@@ -88,7 +88,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder {
     }
 
     @PackageScope
-    File sourceApp(IOSBuilderInfo bi) {
+    File sourceApp(IOSSimArtifactInfo bi) {
         new File("$bi.archiveDir/Products/Applications", bi.appName)
     }
 

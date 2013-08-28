@@ -1,26 +1,23 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
-import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.plugins.ios.builder.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
-import com.apphance.flow.plugins.ios.release.AbstractIOSArtifactsBuilder
-import com.apphance.flow.plugins.ios.release.IOSDeviceArtifactsBuilder
-import com.apphance.flow.plugins.ios.release.IOSSimulatorArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.artifact.builder.AbstractIOSArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.artifact.builder.IOSDeviceArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.artifact.builder.IOSSimulatorArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSSimArtifactInfo
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
-import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
-import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
+import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkNotNull
 
-class ArchiveVariantTask extends AbstractActionVariantTask {
+class ArchiveVariantTask extends AbstractBuildVariantTask {
 
     String description = "Executes 'archive' action for single variant"
-    String group = FLOW_BUILD
 
     @Inject IOSReleaseConfiguration releaseConf
     @Inject IOSArtifactProvider artifactProvider
@@ -28,19 +25,22 @@ class ArchiveVariantTask extends AbstractActionVariantTask {
     @Inject IOSSimulatorArtifactsBuilder simulatorArtifactsBuilder
     @Inject XCSchemeParser schemeParser
 
+    @Override
     void build() {
         checkNotNull(variant, 'Null variant passed to builder!')
+        checkArgument(variant.mode.value != FRAMEWORK, "Invalid build mode: $FRAMEWORK!")
+
         logger.info("Adding post archive action to scheme file: $variant.schemeFile.absolutePath")
         schemeParser.addPostArchiveAction(variant.schemeFile)
-        def archiveOutput = executor.archiveVariant(variant.tmpDir, cmd)
+        def archiveOutput = iosExecutor.buildVariant(variant.tmpDir, cmd)
 
         if (releaseConf.enabled) {
-            def bi = artifactProvider.builderInfo(variant)
-            bi.archiveDir = findArchiveFile(archiveOutput)
-            bi.appName = appName()
-            bi.productName = productName()
+            def info = infoProvider.call()
+            info.archiveDir = findArchiveFile(archiveOutput)
+            info.appName = appName()
+            info.productName = productName()
 
-            builder.call().buildArtifacts(bi)
+            builder.call().buildArtifacts(info)
         }
     }
 
@@ -59,15 +59,18 @@ class ArchiveVariantTask extends AbstractActionVariantTask {
     }
 
     private String appName() {
-        executor.buildSettings(variant.target, variant.archiveConfiguration)['FULL_PRODUCT_NAME']
+        iosExecutor.buildSettings(variant.target, variant.archiveConfiguration)['FULL_PRODUCT_NAME']
     }
 
     private String productName() {
-        executor.buildSettings(variant.target, variant.archiveConfiguration)['PRODUCT_NAME']
+        iosExecutor.buildSettings(variant.target, variant.archiveConfiguration)['PRODUCT_NAME']
     }
 
-    protected Closure<AbstractIOSArtifactsBuilder> builder = {
-        checkArgument(variant.mode?.value in IOSBuildMode.values(), "Unknown build mode '${variant.mode?.value}' for variant '$variant.name'")
+    protected Closure<? extends AbstractIOSArtifactsBuilder> builder = {
         [(DEVICE): deviceArtifactsBuilder, (SIMULATOR): simulatorArtifactsBuilder].get(variant.mode.value)
+    }.memoize()
+
+    protected Closure<? extends IOSSimArtifactInfo> infoProvider = {
+        [(DEVICE): artifactProvider.deviceInfo(variant), (SIMULATOR): artifactProvider.simInfo(variant)].get(variant.mode.value)
     }.memoize()
 }

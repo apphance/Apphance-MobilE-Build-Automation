@@ -40,7 +40,7 @@ class BuildVariantTaskSpec extends Specification {
         def tmpDir = createTempDir()
         tmpDir.deleteOnExit()
 
-        task.executor = GroovyMock(IOSExecutor)
+        task.iosExecutor = GroovyMock(IOSExecutor)
         task.variant = GroovyMock(IOSVariant) {
             getTmpDir() >> tmpDir
             getMode() >> new IOSBuildModeProperty(value: DEVICE)
@@ -52,7 +52,7 @@ class BuildVariantTaskSpec extends Specification {
 
         then:
         noExceptionThrown()
-        1 * task.executor.buildVariant(tmpDir, ['xcodebuild', '-scheme', 'scheme1', '-sdk', 'iphoneos', 'clean', 'build'])
+        1 * task.iosExecutor.buildVariant(tmpDir, ['xcodebuild', '-scheme', 'scheme1', '-sdk', 'iphoneos', 'clean', 'build'])
     }
 
     @Unroll

@@ -96,12 +96,8 @@ class IOSExecutor {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: ['dot_clean', './']))
     }
 
-    def buildVariant(File dir, List<String> buildCmd) {
+    Iterator<String> buildVariant(File dir, List<String> buildCmd) {
         executor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
-    }
-
-    Iterator<String> archiveVariant(File dir, List<String> archiveCmd) {
-        executor.executeCommand(new Command(runDir: dir, cmd: archiveCmd))
     }
 
     def runTests(File runDir, String target, String configuration, String testResultPath) {

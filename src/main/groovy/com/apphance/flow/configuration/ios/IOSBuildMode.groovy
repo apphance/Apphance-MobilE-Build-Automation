@@ -2,7 +2,7 @@ package com.apphance.flow.configuration.ios
 
 enum IOSBuildMode {
 
-    SIMULATOR, DEVICE
+    SIMULATOR, DEVICE, FRAMEWORK
 
     String lowerCase() {
         name().toLowerCase()

@@ -1,4 +1,4 @@
-package com.apphance.flow.plugins.ios.release
+package com.apphance.flow.plugins.ios.release.artifact.builder
 
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.CommandExecutor

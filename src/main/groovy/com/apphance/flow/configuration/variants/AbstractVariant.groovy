@@ -85,6 +85,11 @@ abstract class AbstractVariant extends AbstractConfiguration {
         this.@name
     }
 
+    @Lazy
+    String presentationName = {
+        name?.replaceAll('[-_]',' ')
+    }()
+
     String getBuildTaskName() {
         "build$name".replaceAll('\\s', '')
     }

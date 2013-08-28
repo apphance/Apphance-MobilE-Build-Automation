@@ -10,11 +10,14 @@ import javax.inject.Inject
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 
-abstract class AbstractActionVariantTask extends DefaultTask {
+abstract class AbstractBuildVariantTask extends DefaultTask {
+
+    String group = FLOW_BUILD
 
     @Inject IOSConfiguration conf
-    @Inject IOSExecutor executor
+    @Inject IOSExecutor iosExecutor
 
     IOSVariant variant
 
@@ -37,6 +40,4 @@ abstract class AbstractActionVariantTask extends DefaultTask {
                 []
         }
     }
-
-    protected abstract List<String> getCmd()
 }

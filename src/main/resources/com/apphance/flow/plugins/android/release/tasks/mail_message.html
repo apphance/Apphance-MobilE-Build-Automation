@@ -14,7 +14,7 @@
             </ul>
         </p>
         <p>
-            <% if (releaseNotes != "") { %>
+            <% if (releaseNotes != null && !releaseNotes.isEmpty()) { %>
                 <b>${rb.getString('What_s_new')}</b>
                 <ul>
                 <% releaseNotes.each { %>
@@ -23,6 +23,7 @@
                 </ul>
             <% } %>
         </p>
+
         <b>${rb.getString('Released')}</b> ${currentDate} <br/>
         <b>${rb.getString('Size')}</b> ${fileSize} <br/>
         <p>

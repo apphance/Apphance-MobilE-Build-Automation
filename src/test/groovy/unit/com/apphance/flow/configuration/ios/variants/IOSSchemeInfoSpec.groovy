@@ -28,7 +28,6 @@ class IOSSchemeInfoSpec extends Specification {
     def 'schemes are detected correctly'() {
         expect:
         schemeInfo.hasSchemes
-        schemeInfo.schemesBuildable()
         schemeInfo.schemesDeclared()
         schemeInfo.schemesShared()
         schemeInfo.schemesHasEnabledTestTargets()
@@ -42,7 +41,6 @@ class IOSSchemeInfoSpec extends Specification {
 
         expect:
         !schemeInfo.hasSchemes
-        !schemeInfo.schemesBuildable()
         !schemeInfo.schemesDeclared()
         !schemeInfo.schemesShared()
         !schemeInfo.schemesHasEnabledTestTargets()

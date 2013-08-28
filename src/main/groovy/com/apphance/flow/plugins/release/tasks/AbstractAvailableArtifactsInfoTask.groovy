@@ -11,7 +11,6 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
-import static java.io.File.separator
 import static java.net.URLEncoder.encode
 import static java.util.ResourceBundle.getBundle
 
@@ -54,7 +53,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     void mailMsgArtifact() {
         releaseConf.mailMessageFile = new FlowArtifact(
                 name: 'Mail message file',
-                url: new URL("$releaseConf.releaseUrlVersioned${separator}message_file.html"),
+                url: new URL("$releaseConf.releaseUrlVersioned/message_file.html"),
                 location: new File(releaseConf.releaseDir, 'message_file.html'))
         releaseConf.mailMessageFile.location.parentFile.mkdirs()
         releaseConf.mailMessageFile.location.delete()
@@ -63,7 +62,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     void fileIndexArtifact() {
         releaseConf.fileIndexFile = new FlowArtifact(
                 name: "The file index file: ${conf.projectName.value}",
-                url: new URL("$releaseConf.releaseUrlVersioned${separator}file_index.html"),
+                url: new URL("$releaseConf.releaseUrlVersioned/file_index.html"),
                 location: new File(releaseConf.releaseDir, 'file_index.html')
         )
         releaseConf.fileIndexFile.location.parentFile.mkdirs()
@@ -73,7 +72,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     void plainFileIndexArtifact() {
         releaseConf.plainFileIndexFile = new FlowArtifact(
                 name: "The plain file index file: ${conf.projectName.value}",
-                url: new URL("$releaseConf.releaseUrlVersioned${separator}plain_file_index.html"),
+                url: new URL("$releaseConf.releaseUrlVersioned/plain_file_index.html"),
                 location: new File(releaseConf.releaseDir, 'plain_file_index.html'))
         releaseConf.plainFileIndexFile.location.parentFile.mkdirs()
         releaseConf.plainFileIndexFile.location.delete()
@@ -82,7 +81,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     void otaIndexFileArtifact() {
         releaseConf.otaIndexFile = new FlowArtifact(
                 name: "The ota index file: ${conf.projectName.value}",
-                url: new URL("$releaseConf.releaseUrlVersioned${separator}index.html"),
+                url: new URL("$releaseConf.releaseUrlVersioned/index.html"),
                 location: new File(releaseConf.releaseDir, 'index.html'))
         releaseConf.otaIndexFile.location.parentFile.mkdirs()
         releaseConf.otaIndexFile.location.delete()
@@ -93,7 +92,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
         def qrCodeFile = new File(releaseConf.releaseDir, qrCodeFileName)
         releaseConf.QRCodeFile = new FlowArtifact(
                 name: 'QR Code',
-                url: new URL("$releaseConf.releaseUrlVersioned$separator$qrCodeFileName"),
+                url: new URL("$releaseConf.releaseUrlVersioned/$qrCodeFileName"),
                 location: qrCodeFile)
         releaseConf.QRCodeFile.location.parentFile.mkdirs()
         releaseConf.QRCodeFile.location.delete()

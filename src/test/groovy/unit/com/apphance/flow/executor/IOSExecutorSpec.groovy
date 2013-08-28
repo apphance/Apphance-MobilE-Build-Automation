@@ -133,7 +133,7 @@ class IOSExecutorSpec extends Specification {
         })
 
         when:
-        iose.archiveVariant(rootDir, ['xcodebuild', '-project', 'Sample.xcodeproj', '-scheme', 's1', 'clean', 'archive'])
+        iose.buildVariant(rootDir, ['xcodebuild', '-project', 'Sample.xcodeproj', '-scheme', 's1', 'clean', 'archive'])
 
         then:
         1 * ce.executeCommand({ it.commandForExecution.join(' ') == 'xcodebuild -project Sample.xcodeproj -scheme s1 clean archive' && it.runDir.name == 'rootDir' })

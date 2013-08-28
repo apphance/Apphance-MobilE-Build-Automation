@@ -15,9 +15,7 @@ class IOSSchemeInfo {
 
     @Lazy
     @PackageScope
-    boolean hasSchemes = {
-        schemesDeclared() && schemesShared() && schemesBuildable() && schemesHasSingleBuildableTarget()
-    }()
+    boolean hasSchemes = { schemesDeclared() && schemesShared() }()
 
     @PackageScope
     boolean schemesDeclared() {
@@ -35,18 +33,8 @@ class IOSSchemeInfo {
     }
 
     @PackageScope
-    boolean schemesBuildable() {
-        schemeFiles.any(this.&schemeBuildable)
-    }
-
-    @PackageScope
     boolean schemeBuildable(File scheme) {
         schemeParser.isBuildable(scheme)
-    }
-
-    @PackageScope
-    boolean schemesHasSingleBuildableTarget() {
-        schemeFiles.any(this.&schemeHasSingleBuildableTarget)
     }
 
     @PackageScope
