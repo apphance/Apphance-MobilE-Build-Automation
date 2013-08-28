@@ -25,11 +25,11 @@ class CPDTask extends Pmd {
     public void run() {
         logger.lifecycle "Running CPD task in directory: ${project.rootDir.absolutePath}"
         report.parentFile.mkdirs()
-        runner.runAnt(project, report)
+        runner.runCpd(project, report)
     }
 
     class CPDRunner {
-        void runAnt(Project project, File report) {
+        void runCpd(Project project, File report) {
             def cp = project.configurations.pmd.asPath
             def rootDir = project.rootDir
 

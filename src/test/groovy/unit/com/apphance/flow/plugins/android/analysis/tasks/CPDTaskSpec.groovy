@@ -22,6 +22,6 @@ class CPDTaskSpec extends Specification {
         task.run()
 
         then:
-        1 * task.runner.runAnt(task.project)
+        1 * task.runner.runCpd(task.project, _ as File)
     }
 }
