@@ -24,8 +24,8 @@ class AndroidTestPluginSpec extends Specification {
         and:
         def variantsConf = GroovyStub(AndroidVariantsConfiguration)
         variantsConf.variants >> [
-                GroovyStub(AndroidVariantConfiguration) { getName() >> 'release' },
-                GroovyStub(AndroidVariantConfiguration) { getName() >> 'debug' }
+                GroovySpy(AndroidVariantConfiguration, constructorArgs: ['release']),
+                GroovySpy(AndroidVariantConfiguration, constructorArgs: ['debug'])
         ]
         plugin.variantsConf = variantsConf
 

@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.android.analysis
 
 import com.apphance.flow.configuration.android.AndroidAnalysisConfiguration
+import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.analysis.tasks.CPDTask
 import com.apphance.flow.plugins.android.analysis.tasks.LintTask
@@ -21,6 +22,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
 
     @Inject AndroidAnalysisConfiguration analysisConf
     @Inject AndroidVariantsConfiguration androidVariantsConf
+    @Inject AndroidTestConfiguration androidTestConf
 
     File rulesDir
     File pmdRules
@@ -59,7 +61,11 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
 
                 check.dependsOn cpd, lint
                 [findbugsMain, lint]*.dependsOn androidVariantsConf.main.buildTaskName
-                findbugsTest.dependsOn androidVariantsConf.main.testTaskName
+
+                findbugsTest.enabled = androidTestConf?.enabled as Boolean
+                if (findbugsTest.enabled) {
+                    findbugsTest.dependsOn androidVariantsConf.main.testTaskName
+                }
 
                 [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses].each { it.enabled = false }
                 [checkstyle, findbugs, pmd, cpd].each { it.ignoreFailures = true }
