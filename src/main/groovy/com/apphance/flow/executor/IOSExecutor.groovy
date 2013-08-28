@@ -148,7 +148,7 @@ class IOSExecutor {
             def line = output.find {
                 it.matches('(\\d+\\.)+\\d+')
             }
-            line ? line.trim() : ''
+            return line ? line.trim() : ''
         } catch (Exception e) {
             logger.error("Error while getting ios-sim version: {}", e.message)
         }
