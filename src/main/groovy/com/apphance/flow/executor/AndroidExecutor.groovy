@@ -47,12 +47,12 @@ class AndroidExecutor {
         ))
     }
 
-    File runLint(File dir, File report) {
+    File runLint(File dir, File reportDir) {
         executor.executeCommand(new Command(
                 runDir: dir,
-                cmd: lint.cmd + ['--html', report.absolutePath, '.']
+                cmd: lint.cmd + ['--html', new File(reportDir, 'report.html').absolutePath, '--xml', new File(reportDir, 'report.xml').absolutePath, '.']
         ))
-        report
+        reportDir
     }
 
     @PackageScope

@@ -25,6 +25,6 @@ class LintTaskSpec extends Specification {
         task.run()
 
         then:
-        1 * task.androidExecutor.runLint(taskDir, new File(task.project.rootDir, 'build/reports/lint/lint-raport.html'))
+        1 * task.androidExecutor.runLint(taskDir, new File(task.project.rootDir, 'build/reports/lint'))
     }
 }

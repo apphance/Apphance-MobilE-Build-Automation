@@ -40,7 +40,8 @@ class ExecuteAndroidBuildsTest extends Specification {
         true
         new File(testTmpDir, "build/reports/pmd/main.xml").exists()
         new File(testTmpDir, "build/reports/findbugs/main.xml").exists()
-        new File(testTmpDir, 'build/reports/lint/lint-raport.html').exists()
+        new File(testTmpDir, 'build/reports/lint/report.html').exists()
+        new File(testTmpDir, 'build/reports/lint/report.xml').exists()
         new File(testTmpDir, 'build/reports/cpd/cpd-result.xml').exists()
         new File(testTmpDir, 'build/reports/checkstyle/main.xml').exists()
     }

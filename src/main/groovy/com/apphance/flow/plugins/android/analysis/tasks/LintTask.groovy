@@ -20,9 +20,9 @@ public class LintTask extends DefaultTask {
     public void run() {
         logger.lifecycle "Running lint task"
 
-        def lintReport = new File(project.rootDir, 'build/reports/lint/lint-raport.html')
-        lintReport.parentFile.mkdirs()
+        def lintReportDir = new File(project.rootDir, 'build/reports/lint')
+        lintReportDir.mkdirs()
 
-        androidExecutor.runLint androidVariantsConf.main.tmpDir, lintReport
+        androidExecutor.runLint androidVariantsConf.main.tmpDir, lintReportDir
     }
 }
