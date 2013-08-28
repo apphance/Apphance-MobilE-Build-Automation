@@ -88,7 +88,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     }
 
     void qrCodeArtifact() {
-        def qrCodeFileName = "qrcode-${conf.projectName.value}-${conf.fullVersionString}.png"
+        def qrCodeFileName = "qrcode-${conf.projectNameNoWhiteSpace}-${conf.fullVersionString}.png"
         def qrCodeFile = new File(releaseConf.releaseDir, qrCodeFileName)
         releaseConf.QRCodeFile = new FlowArtifact(
                 name: 'QR Code',

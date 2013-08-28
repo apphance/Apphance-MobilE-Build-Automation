@@ -70,7 +70,8 @@ class ImageMontageTask extends DefaultTask {
 
     @PackageScope
     File outputMontageFile() {
-        def imageMontageFile = new File(releaseConf.releaseDir, "${conf.projectName.value}-${conf.fullVersionString}-image-montage.png")
+        def imageMontageFile = new File(releaseConf.releaseDir,
+                "${conf.projectNameNoWhiteSpace}-${conf.fullVersionString}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
         imageMontageFile

@@ -42,7 +42,7 @@ class JarLibraryTask extends DefaultTask {
         ant.copy(todir: resDir) {
             fileset(dir: project.file('res'))
         }
-        File destFile = project.file(getJarLibraryFilePath(androidConf.projectName.value, androidConf.versionString))
+        File destFile = project.file(getJarLibraryFilePath(androidConf.projectNameNoWhiteSpace, androidConf.versionString))
         File classesDir = project.file("bin/classes")
         destFile.delete()
         ant.jar(destfile: destFile, manifest: manifestFile, manifestencoding: 'utf-8') {
@@ -61,6 +61,6 @@ class JarLibraryTask extends DefaultTask {
     }
 
     private String jarLibraryPrefix() {
-        jarLibConf.resourcePrefix.value ?: androidConf.projectName.value
+        jarLibConf.resourcePrefix.value ?: androidConf.projectNameNoWhiteSpace
     }
 }

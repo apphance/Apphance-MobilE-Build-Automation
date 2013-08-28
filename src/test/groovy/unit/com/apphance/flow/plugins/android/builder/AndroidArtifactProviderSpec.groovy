@@ -71,7 +71,6 @@ class AndroidArtifactProviderSpec extends Specification {
         abi.buildDir == binDir
         abi.variantDir == variantDir
         abi.filePrefix == 'SampleAndroidProject-debug-V1-1.0.1_42'
-        abi.fullReleaseName == 'SampleAndroidProject-debug-V1-1.0.1_42'
         abi.originalFile == new File(binDir, 'classes.jar')
     }
 
@@ -98,7 +97,6 @@ class AndroidArtifactProviderSpec extends Specification {
         abi.buildDir == new File(new File(ac.tmpDir, avc.name), 'bin')
         abi.variantDir == variantDir
         abi.filePrefix == 'SampleAndroidProject-debug-V1-1.0.1_42'
-        abi.fullReleaseName == 'SampleAndroidProject-debug-V1-1.0.1_42'
         abi.originalFile == new File(binDir, 'SampleAndroidProject-debug.apk')
     }
 

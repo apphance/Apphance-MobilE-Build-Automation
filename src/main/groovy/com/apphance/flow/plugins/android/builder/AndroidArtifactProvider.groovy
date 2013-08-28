@@ -27,10 +27,9 @@ class AndroidArtifactProvider {
                 tmpDir: avc.tmpDir,
                 buildDir: binDir(avc),
                 variantDir: avc.variantDir?.value,
-                fullReleaseName: "${conf.projectName.value}-${variablePart}-${conf.fullVersionString}",
-                filePrefix: "${conf.projectName.value}-${variablePart}-${conf.fullVersionString}"
+                filePrefix: "${conf.projectNameNoWhiteSpace}-${variablePart}-${conf.fullVersionString}"
         )
-        bi.originalFile = new File(binDir(avc), conf.isLibrary() ? 'classes.jar' : "${conf.projectName.value}-${avc.mode.lowerCase()}.apk")
+        bi.originalFile = new File(binDir(avc), conf.isLibrary() ? 'classes.jar' : "${conf.projectNameNoWhiteSpace}-${avc.mode.lowerCase()}.apk")
         bi
     }
 

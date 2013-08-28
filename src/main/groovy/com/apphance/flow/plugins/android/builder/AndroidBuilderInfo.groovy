@@ -8,7 +8,6 @@ import com.apphance.flow.configuration.android.AndroidBuildMode
  */
 class AndroidBuilderInfo {
 
-    String fullReleaseName
     String filePrefix
     String variant
     AndroidBuildMode mode
