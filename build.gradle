@@ -257,6 +257,6 @@ artifacts {
         archives sourcesJar
         archives javadocJar
         archives jar
+        archives fatJar
     }
-    archives fatJar
 }
