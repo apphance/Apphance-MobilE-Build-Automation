@@ -101,10 +101,13 @@ class ReleaseConfigurationSpec extends Specification {
     def 'mail validators'() {
         expect:
         releaseConf.releaseMailFlags.validator('qrCode,imageMontage')
+        !releaseConf.releaseMailFlags.validator('')
         releaseConf.releaseMailFrom.validator('')
         releaseConf.releaseMailFrom.validator(null)
         releaseConf.releaseMailFrom.validator('Jenkins <no-reply@polidea.pl>')
-        releaseConf.releaseMailTo.validator('qwilt-team@polidea.pl')
+        releaseConf.releaseMailTo.validator('team@polidea.pl')
+        releaseConf.releaseMailTo.validator('team@polidea.pl,team@polidea.pl')
+        !releaseConf.releaseMailTo.validator('team@polidea.pl,team')
         releaseConf.releaseMailTo.validator('')
         releaseConf.releaseMailTo.validator(null)
     }

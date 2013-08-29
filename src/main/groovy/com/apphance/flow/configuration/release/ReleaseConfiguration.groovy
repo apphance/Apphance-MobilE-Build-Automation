@@ -19,7 +19,6 @@ import java.util.regex.Pattern
 
 import static com.apphance.flow.env.Environment.JENKINS
 import static com.apphance.flow.util.file.FileManager.relativeTo
-import static java.io.File.separator
 import static org.apache.commons.lang.StringUtils.isBlank
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
@@ -28,7 +27,8 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     final String configurationName = 'Release configuration'
 
     public static final String OTA_DIR = 'flow-ota'
-    public static final MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
+    public static final MAIL_PATTERN_WITH_NAME = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
+    public static final MAIL_PATTERN = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}/
     public static final ALL_EMAIL_FLAGS = [
             'qrCode',
             'imageMontage'
@@ -89,7 +89,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     )
 
     URL getReleaseUrlVersioned() {
-        new URL("$releaseUrl.value$separator$conf.fullVersionString")
+        new URL("$releaseUrl.value/$conf.fullVersionString")
     }
 
     @PackageScope
@@ -100,7 +100,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     }
 
     File getReleaseDir() {
-        new File(otaDir, "$releaseDirName$separator$conf.fullVersionString")
+        new File(otaDir, "$releaseDirName/$conf.fullVersionString")
     }
 
     File getOtaDir() {
@@ -138,19 +138,19 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             validator: { it ==~ /\p{Upper}{2}/ }
     )
 
-    StringProperty releaseMailFrom = new StringProperty(
+    def releaseMailFrom = new StringProperty(
             name: 'release.mail.from',
             message: 'Sender email address',
-            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : true }
+            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN_WITH_NAME : true }
     )
 
-    StringProperty releaseMailTo = new StringProperty(
+    def releaseMailTo = new ListStringProperty(
             name: 'release.mail.to',
-            message: 'Recipient of release email',
-            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : true }
+            message: 'Recipients of release email',
+            validator: { it?.trim() ? it?.split(',')?.every { it?.trim() ==~ ReleaseConfiguration.MAIL_PATTERN } : true }
     )
 
-    ListStringProperty releaseMailFlags = new ListStringProperty(
+    def releaseMailFlags = new ListStringProperty(
             name: 'release.mail.flags',
             message: 'Flags for release email',
             defaultValue: { ['qrCode', 'imageMontage'] as List<String> },
@@ -209,6 +209,13 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
         }
     }
 
+    static void validateMailList(ListStringProperty emails) {
+        def value = emails.value
+        if (!value || !value.every { it?.trim() ==~ ReleaseConfiguration.MAIL_PATTERN }) {
+            throw new GradleException(mailValidationMsg(emails.name))
+        }
+    }
+
     @Override
     void checkProperties() {
         check !checkException { releaseDirName }, "Property '${releaseUrl.name}' is not valid! Should end with folder name where files are copied!"
@@ -224,7 +231,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
         if (Environment.env() == JENKINS) {
             check !checkException { validateMailServer(mailServer) }, mailServerValidationMsg
             check !checkException { validateMailPort(mailPort) }, mailPortValidationMsg
-            check !checkException { validateMail(releaseMailTo) }, mailValidationMsg(releaseMailTo)
+            check !checkException { validateMailList(releaseMailTo) }, mailValidationMsg(releaseMailTo)
             check !checkException { validateMail(releaseMailFrom) }, mailValidationMsg(releaseMailFrom)
         }
     }

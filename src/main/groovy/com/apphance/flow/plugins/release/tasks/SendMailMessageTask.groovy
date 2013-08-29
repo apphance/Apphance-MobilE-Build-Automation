@@ -31,7 +31,7 @@ class SendMailMessageTask extends DefaultTask {
         validateMailPort(releaseConf.mailPort)
 
         validateMail(releaseConf.releaseMailFrom)
-        validateMail(releaseConf.releaseMailTo)
+        validateMailList(releaseConf.releaseMailTo)
 
         System.properties['mail.smtp.host'] = releaseConf.mailServer
         System.properties['mail.smtp.port'] = releaseConf.mailPort
@@ -52,7 +52,7 @@ class SendMailMessageTask extends DefaultTask {
                 mailport: releaseConf.mailPort,
                 subject: releaseConf.releaseMailSubject,
                 charset: 'UTF-8',
-                tolist: releaseConf.releaseMailTo.value,
+                tolist: releaseConf.releaseMailTo.value.join(','),
                 from: releaseConf.releaseMailFrom.value,
                 message: releaseConf.mailMessageFile?.location?.text,
                 messageMimeType: 'text/html',

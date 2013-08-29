@@ -16,7 +16,7 @@ class SendMailMessageTaskSpec extends Specification {
         getMailServer() >> 'mail.server'
         getMailPort() >> '3145'
         getReleaseMailFrom() >> new StringProperty(value: 'release@mail.from')
-        getReleaseMailTo() >> new StringProperty(value: 'release@mail.to')
+        getReleaseMailTo() >> new ListStringProperty(value: 'release@mail.to,release2@mail.to')
         getReleaseMailSubject() >> 'Release mail'
         getMailMessageFile() >> GroovyMock(FlowArtifact) {
             getLocation() >> GroovyMock(File) {
@@ -53,7 +53,7 @@ class SendMailMessageTaskSpec extends Specification {
                 'mailport': '3145',
                 'subject': 'Release mail',
                 'charset': 'UTF-8',
-                'tolist': 'release@mail.to',
+                'tolist': 'release@mail.to,release2@mail.to',
                 'from': 'release@mail.from',
                 'message': 'msg',
                 'messageMimeType': 'text/html',
