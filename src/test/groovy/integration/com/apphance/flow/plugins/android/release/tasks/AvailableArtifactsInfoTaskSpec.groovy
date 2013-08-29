@@ -60,7 +60,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
 
         releaseConf.conf = conf
         releaseConf.releaseUrl = new URLProperty(value: projectUrl)
-        releaseConf.iconFile = new FileProperty(value: 'res/drawable-hdpi/icon.png')
+        releaseConf.releaseIcon = new FileProperty(value: 'res/drawable-hdpi/icon.png')
         releaseConf.reader = reader
 
         variantsConf = GroovyMock(AndroidVariantsConfiguration)

@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.release.tasks
 
 import com.apphance.flow.configuration.release.ReleaseConfiguration
+import com.apphance.flow.validation.ReleaseValidator
 import org.apache.tools.ant.Project
 import org.gradle.api.AntBuilder
 import org.gradle.api.DefaultTask
@@ -8,7 +9,6 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.release.ReleaseConfiguration.*
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
 
 class SendMailMessageTask extends DefaultTask {
@@ -23,15 +23,16 @@ class SendMailMessageTask extends DefaultTask {
 
     @Inject AntBuilder ant
     @Inject ReleaseConfiguration releaseConf
+    @Inject ReleaseValidator validator
 
     @TaskAction
     void sendMailMessage() {
 
-        validateMailServer(releaseConf.mailServer)
-        validateMailPort(releaseConf.mailPort)
+        validator.validateMailServer(releaseConf.mailServer)
+        validator.validateMailPort(releaseConf.mailPort)
 
-        validateMail(releaseConf.releaseMailFrom)
-        validateMailList(releaseConf.releaseMailTo)
+        validator.validateMail(releaseConf.releaseMailFrom)
+        validator.validateMailList(releaseConf.releaseMailTo)
 
         System.properties['mail.smtp.host'] = releaseConf.mailServer
         System.properties['mail.smtp.port'] = releaseConf.mailPort

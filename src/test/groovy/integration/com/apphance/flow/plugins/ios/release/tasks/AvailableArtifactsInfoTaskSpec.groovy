@@ -59,7 +59,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         }
         releaseConf.conf = conf
         releaseConf.releaseUrl = new URLProperty(value: projectUrl)
-        releaseConf.iconFile = new FileProperty(value: 'icon_retina.png')
+        releaseConf.releaseIcon = new FileProperty(value: 'icon_retina.png')
         releaseConf.releaseMailFlags = new ListStringProperty(value: ALL_EMAIL_FLAGS)
         releaseConf.manifestFiles = [
                 'MainVariant': new FlowArtifact(url: "http://ota.polidea.pl/GradleXCode/MainVariant".toURL()),

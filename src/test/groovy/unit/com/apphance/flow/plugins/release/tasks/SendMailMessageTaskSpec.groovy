@@ -4,6 +4,7 @@ import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.release.ReleaseConfiguration
+import com.apphance.flow.validation.ReleaseValidator
 import com.apphance.flow.plugins.release.FlowArtifact
 import spock.lang.Specification
 
@@ -31,6 +32,7 @@ class SendMailMessageTaskSpec extends Specification {
     def setup() {
         task.releaseConf = releaseConf
         task.ant = ant
+        task.validator = new ReleaseValidator()
     }
 
     def 'ant mailer is called'() {

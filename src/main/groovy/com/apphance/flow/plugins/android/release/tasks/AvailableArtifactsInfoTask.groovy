@@ -101,7 +101,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
         basicBinding + [
                 baseUrl: releaseConf.otaIndexFile.url,
                 releaseNotes: releaseConf.releaseNotes,
-                iconFileName: releaseConf.iconFile.value.name,
+                iconFileName: releaseConf.releaseIcon.value.name,
                 variantsConf: variantsConf,
                 releaseConf: releaseConf,
                 rb: bundle('index')

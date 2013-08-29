@@ -159,7 +159,7 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
         }
         builder.executor = GroovyMock(CommandExecutor)
         builder.releaseConf = GroovyMock(IOSReleaseConfiguration) {
-            getIconFile() >> new FileProperty(value: iconFile)
+            getReleaseIcon() >> new FileProperty(value: iconFile)
         }
 
         when:

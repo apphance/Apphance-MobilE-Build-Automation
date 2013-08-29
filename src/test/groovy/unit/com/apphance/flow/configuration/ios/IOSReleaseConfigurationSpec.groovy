@@ -89,7 +89,7 @@ class IOSReleaseConfigurationSpec extends Specification {
 
         when:
         releaseConf.defaultIcon()
-        def value = releaseConf.iconFile.defaultValue()
+        def value = releaseConf.releaseIcon.defaultValue()
 
         then:
         noExceptionThrown()

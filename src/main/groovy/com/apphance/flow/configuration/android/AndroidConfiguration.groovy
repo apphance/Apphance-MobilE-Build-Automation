@@ -47,6 +47,14 @@ class AndroidConfiguration extends ProjectConfiguration {
             required: { true }
     )
 
+    private String defaultName() {
+        buildXmlHelper.projectName(rootDir)
+    }
+
+    private List<String> possibleNames() {
+        [rootDir.name, defaultName()].findAll { !it?.trim()?.empty }
+    }
+
     @Override
     String getVersionCode() {
         extVersionCode ?: manifestHelper.readVersion(rootDir).versionCode ?: ''
@@ -70,23 +78,11 @@ class AndroidConfiguration extends ProjectConfiguration {
             validator: { it in possibleTargets() }
     )
 
-    String getMainPackage() {
-        manifestHelper.androidPackage(rootDir)
-    }
-
-    Collection<String> sourceExcludes = super.sourceExcludes + ['**/*.class', '**/bin/**']
-
-    private String defaultName() {
-        buildXmlHelper.projectName(rootDir)
-    }
-
-    private List<String> possibleNames() {
-        [rootDir.name, defaultName()].findAll { !it?.trim()?.empty }
-    }
-
     private List<String> possibleTargets() {
         androidExecutor.targets
     }
+
+    Collection<String> sourceExcludes = super.sourceExcludes + ['**/*.class', '**/bin/**']
 
     def readProperties() {
         androidProperties = new Properties()
@@ -112,6 +108,5 @@ class AndroidConfiguration extends ProjectConfiguration {
         check versionCode?.matches('[0-9]+'), bundle.getString('exception.android.version.code')
         check((isNotEmpty(versionString) && !WHITESPACE_PATTERN.matcher(versionString).find()), bundle.getString('exception.android.version.string'))
         check target.validator(target.value), "Property ${target.name} must be set!"
-        check !isNullOrEmpty(mainPackage), "Property 'package' must be set! Check AndroidManifest.xml file!"
     }
 }

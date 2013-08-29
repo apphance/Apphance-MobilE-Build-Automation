@@ -103,7 +103,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSSimArt
     void resampleIcon(File icon) {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
                 '/opt/local/bin/convert',
-                new File(conf.rootDir, releaseConf.iconFile.value.path).canonicalPath,
+                new File(conf.rootDir, releaseConf.releaseIcon.value.path).canonicalPath,
                 '-resample',
                 '128x128',
                 icon.canonicalPath

@@ -5,12 +5,8 @@ import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import spock.lang.Specification
-
-import static com.apphance.flow.configuration.release.ReleaseConfiguration.validateMailPort
-import static com.apphance.flow.configuration.release.ReleaseConfiguration.validateMailServer
 
 class ReleaseConfigurationSpec extends Specification {
 
@@ -189,51 +185,5 @@ class ReleaseConfigurationSpec extends Specification {
         'PL'  | true
         'USA' | false
         'pln' | false
-    }
-
-    def 'mail port is validated correctly when empty'() {
-        when:
-        validateMailPort(mailPort)
-
-        then:
-        def e = thrown(GradleException)
-        e.message =~ 'Property \'mail.port\' has invalid value!'
-
-        where:
-        mailPort << [null, '', '  \t', 'with letter', 'withletter', '123-123']
-    }
-
-    def 'mail port is validated correctly when set'() {
-        when:
-        validateMailPort(mailPort)
-
-        then:
-        noExceptionThrown()
-
-        where:
-        mailPort << ['121', '1']
-    }
-
-    def 'mail server is validated correctly when empty'() {
-        when:
-        validateMailServer(mailServer)
-
-        then:
-        def e = thrown(GradleException)
-        e.message =~ 'Property \'mail.server\' has invalid value!'
-
-        where:
-        mailServer << [null, '  ', '  \t', 'with\tletter', 'with space']
-    }
-
-    def 'mail server is validated correctly when set'() {
-        when:
-        validateMailServer(mailServer)
-
-        then:
-        noExceptionThrown()
-
-        where:
-        mailServer << ['releaseString', 'release_String', 'relase_String_123_4']
     }
 }
