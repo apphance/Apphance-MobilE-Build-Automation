@@ -62,10 +62,6 @@ class AndroidPlugin implements Plugin<Project> {
                 }
             }
 
-            project.task(CompileAndroidTask.NAME,
-                    type: CompileAndroidTask,
-                    dependsOn: UpdateProjectTask.NAME)
-
             project.task(BUILD_ALL_DEBUG_TASK_NAME,
                     group: FLOW_BUILD,
                     description: 'Builds all debug variants')

@@ -8,8 +8,6 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantsConfigura
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.plugins.android.analysis.tasks.CPDTask
 import com.apphance.flow.plugins.android.analysis.tasks.LintTask
-import com.apphance.flow.plugins.android.buildplugin.tasks.CompileAndroidTask
-import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
 import spock.lang.Specification
 import spock.lang.Unroll
