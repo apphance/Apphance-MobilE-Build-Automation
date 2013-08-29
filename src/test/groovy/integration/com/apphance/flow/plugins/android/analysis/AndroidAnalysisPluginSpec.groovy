@@ -2,23 +2,28 @@ package com.apphance.flow.plugins.android.analysis
 
 import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.android.AndroidAnalysisConfiguration
+import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.plugins.android.analysis.tasks.CPDTask
 import com.apphance.flow.plugins.android.analysis.tasks.LintTask
+import com.apphance.flow.plugins.android.buildplugin.tasks.CompileAndroidTask
+import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
 import spock.lang.Specification
+import spock.lang.Unroll
 
-import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_ANALYSIS
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 @Mixin([TestUtils])
 class AndroidAnalysisPluginSpec extends Specification {
 
+    def project = builder().build()
+
+    @Unroll
     def 'tasks defined in plugin available when configuration is active'() {
         given:
-        def project = builder().build()
         def plugin = new AndroidAnalysisPlugin()
         def conf = GroovyStub(AndroidAnalysisConfiguration)
         conf.isEnabled() >> true
@@ -34,6 +39,8 @@ class AndroidAnalysisPluginSpec extends Specification {
 
         plugin.androidVariantsConf = variantsConf
         plugin.analysisConf = conf
+        plugin.androidTestConf = GroovyStub(AndroidTestConfiguration)
+        plugin.androidTestConf.enabled >> testConfEnabled
 
         when:
         plugin.apply(project)
@@ -73,18 +80,22 @@ class AndroidAnalysisPluginSpec extends Specification {
         [CPDTask.NAME, LintTask.NAME, 'check'].every { project.tasks[it].group == 'verification' }
 
         and: 'task dependencies'
-        project.check.dependsOn CPDTask.NAME
-        project.check.dependsOn LintTask.NAME
+        project.tasks['check'].dependsOn.grep(CPDTask)
+        project.tasks['check'].dependsOn.grep(LintTask)
+        mainVariant.buildTaskName in project.tasks[LintTask.NAME].dependsOn
+        mainVariant.buildTaskName in project.tasks['findbugsMain'].dependsOn
+        !(testConfEnabled <=> mainVariant.testTaskName in project.tasks['findbugsTest'].dependsOn)
 
-        project.lint.dependsOn mainVariant.buildTaskName
-        project.findbugsMain.dependsOn mainVariant.buildTaskName
-        project.findbugsTest.dependsOn mainVariant.testTaskName
+        project.findbugsTest.enabled == testConfEnabled
 
         and: 'default java plugin tasks disabled'
         project.with { [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses].every { !it.enabled } }
 
         and: 'ignoreFailures flag in analysis plugins'
         project.with { [checkstyle, findbugs, pmd, cpd].every { it.ignoreFailures } }
+
+        where:
+        testConfEnabled << [true, false]
     }
 
     def 'no tasks available when configuration is inactive'() {
@@ -104,4 +115,5 @@ class AndroidAnalysisPluginSpec extends Specification {
         plugin.pmdRules == null
         plugin.findbugsExclude == null
     }
+
 }

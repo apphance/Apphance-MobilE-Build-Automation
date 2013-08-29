@@ -62,7 +62,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                 check.dependsOn cpd, lint
                 [findbugsMain, lint]*.dependsOn androidVariantsConf.main.buildTaskName
 
-                findbugsTest.enabled = androidTestConf?.enabled as Boolean
+                findbugsTest.enabled = androidTestConf?.enabled
                 if (findbugsTest.enabled) {
                     findbugsTest.dependsOn androidVariantsConf.main.testTaskName
                 }
