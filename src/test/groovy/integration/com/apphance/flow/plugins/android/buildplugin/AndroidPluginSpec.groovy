@@ -113,14 +113,10 @@ class AndroidPluginSpec extends Specification {
         and:
         project.tasks['buildv1']
         project.tasks['buildv2']
-        project.tasks['installv1']
-        project.tasks['installv2']
 
         and:
         project.tasks['buildv1'].dependsOn.flatten().containsAll(CopySourcesTask.NAME)
         project.tasks['buildv2'].dependsOn.flatten().containsAll(CopySourcesTask.NAME)
-        project.tasks['installv1'].dependsOn.flatten()*.toString().containsAll('buildv1')
-        project.tasks['installv2'].dependsOn.flatten()*.toString().containsAll('buildv2')
         project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_RELEASE_TASK_NAME, BUILD_ALL_DEBUG_TASK_NAME)
         project.tasks[BUILD_ALL_DEBUG_TASK_NAME].dependsOn.flatten().contains('buildv1')
         project.tasks[BUILD_ALL_RELEASE_TASK_NAME].dependsOn.flatten().contains('buildv2')

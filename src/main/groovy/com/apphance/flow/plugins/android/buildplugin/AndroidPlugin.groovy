@@ -82,8 +82,6 @@ class AndroidPlugin implements Plugin<Project> {
 
                 def buildAllMode = "buildAll${variant.mode.capitalize()}"
                 project.tasks[buildAllMode].dependsOn variant.buildTaskName
-
-                project.task("install${variant.name}", type: InstallAndroidTask, dependsOn: variant.buildTaskName).variant = variant
             }
 
             project.tasks.each {
