@@ -11,11 +11,6 @@ import static com.apphance.flow.configuration.apphance.ApphanceMode.*
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- * Plugin for all apphance-relate IOS tasks.
- *
- * This plugins provides automated adding of Apphance libraries to the project
- */
 class IOSApphancePlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())
