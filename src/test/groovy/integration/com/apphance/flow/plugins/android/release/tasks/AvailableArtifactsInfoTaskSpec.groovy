@@ -105,7 +105,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         ]
         def png = [
                 'icon.png',
-                "qrcode-$projectName-${fullVersionString}.png"
+                "$projectName-$fullVersionString-qrcode.png"
         ]
 
         when:
