@@ -127,7 +127,7 @@ class AndroidManifestHelperSpec extends Specification {
 
     def 'main activity name is read correctly'() {
         expect:
-        androidManifestHelper.getMainActivitiesFromProject(new File('testProjects/apphance-updates/')) == ['pl.morizon.client.ui.HomeActivity'] as Set
+        androidManifestHelper.getMainActivitiesFromProject(new File('testProjects/android/android-basic/')) == ['com.apphance.flowTest.android.TestActivity'] as Set
     }
 
     def 'two main activities is read correctly'() {
