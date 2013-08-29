@@ -206,10 +206,6 @@ class IOSVariant extends AbstractVariant {
         "archive$name".replaceAll('\\s', '')
     }
 
-    String getTestTaskName() {
-        "test$name".replaceAll('\\s', '')
-    }
-
     String getFrameworkTaskName() {
         "framework$name".replaceAll('\\s', '')
     }
