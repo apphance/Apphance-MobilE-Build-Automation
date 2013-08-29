@@ -2,9 +2,6 @@ package com.apphance.flow.plugins.android.parsers
 
 import groovy.xml.XmlUtil
 
-/**
- * Performs various Android manifest XML operations.
- */
 class AndroidBuildXmlHelper {
 
     private final static String BUILD_XML = 'build.xml'

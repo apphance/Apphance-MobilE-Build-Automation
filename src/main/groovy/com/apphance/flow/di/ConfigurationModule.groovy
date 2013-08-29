@@ -2,7 +2,10 @@ package com.apphance.flow.di
 
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ProjectConfiguration
-import com.apphance.flow.configuration.android.*
+import com.apphance.flow.configuration.android.AndroidAnalysisConfiguration
+import com.apphance.flow.configuration.android.AndroidConfiguration
+import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
+import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantFactory
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
@@ -33,7 +36,6 @@ class ConfigurationModule extends AbstractModule {
                     AndroidVariantsConfiguration,
                     AndroidReleaseConfiguration,
                     AndroidAnalysisConfiguration,
-                    AndroidJarLibraryConfiguration,
                     AndroidTestConfiguration,
             ],
             (IOS): [

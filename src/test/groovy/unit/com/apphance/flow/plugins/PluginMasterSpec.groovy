@@ -6,7 +6,6 @@ import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.android.analysis.AndroidAnalysisPlugin
 import com.apphance.flow.plugins.android.apphance.AndroidApphancePlugin
 import com.apphance.flow.plugins.android.buildplugin.AndroidPlugin
-import com.apphance.flow.plugins.android.jarlibrary.AndroidJarLibraryPlugin
 import com.apphance.flow.plugins.android.release.AndroidReleasePlugin
 import com.apphance.flow.plugins.android.test.AndroidTestPlugin
 import com.apphance.flow.plugins.ios.apphance.IOSApphancePlugin
@@ -135,7 +134,6 @@ class PluginMasterSpec extends Specification {
             AndroidPlugin,
             AndroidAnalysisPlugin,
             AndroidApphancePlugin,
-            AndroidJarLibraryPlugin,
             AndroidReleasePlugin,
             AndroidTestPlugin
     ]

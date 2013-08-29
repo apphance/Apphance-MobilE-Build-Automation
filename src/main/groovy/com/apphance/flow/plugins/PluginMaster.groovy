@@ -5,7 +5,6 @@ import com.apphance.flow.detection.project.ProjectTypeDetector
 import com.apphance.flow.plugins.android.analysis.AndroidAnalysisPlugin
 import com.apphance.flow.plugins.android.apphance.AndroidApphancePlugin
 import com.apphance.flow.plugins.android.buildplugin.AndroidPlugin
-import com.apphance.flow.plugins.android.jarlibrary.AndroidJarLibraryPlugin
 import com.apphance.flow.plugins.android.release.AndroidReleasePlugin
 import com.apphance.flow.plugins.android.test.AndroidTestPlugin
 import com.apphance.flow.plugins.ios.apphance.IOSApphancePlugin
@@ -48,7 +47,6 @@ class PluginMaster {
                     ReleasePlugin,
                     AndroidAnalysisPlugin,
                     AndroidApphancePlugin,
-                    AndroidJarLibraryPlugin,
                     AndroidReleasePlugin,
                     AndroidTestPlugin,
             ],

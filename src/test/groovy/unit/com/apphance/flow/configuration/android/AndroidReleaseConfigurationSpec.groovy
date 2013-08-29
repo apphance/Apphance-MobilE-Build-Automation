@@ -26,19 +26,6 @@ class AndroidReleaseConfigurationSpec extends Specification {
         'abc'            | false
     }
 
-    def 'mutual exclusion of release configuration and jar library configuration'() {
-        given:
-        def releaseConf = new AndroidReleaseConfiguration()
-        releaseConf.jarLibraryConf = GroovyStub(AndroidJarLibraryConfiguration)
-        releaseConf.jarLibraryConf.enabled >> jarEnabled
-
-        expect:
-        releaseConf.canBeEnabled() ^ jarEnabled
-
-        where:
-        jarEnabled << [true, false]
-    }
-
     def 'test icon path sort'() {
         given:
         def hdpi = '/Users/user/work/project/res/drawable-hdpi/icon.png'
