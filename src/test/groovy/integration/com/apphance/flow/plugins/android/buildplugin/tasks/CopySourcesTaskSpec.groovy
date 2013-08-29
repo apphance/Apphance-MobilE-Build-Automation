@@ -1,5 +1,6 @@
 package com.apphance.flow.plugins.android.buildplugin.tasks
 
+import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
@@ -10,13 +11,17 @@ import spock.lang.Specification
 import static com.apphance.flow.configuration.ProjectConfiguration.LOG_DIR
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
+import static org.apache.commons.io.FileUtils.copyDirectory
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
+@Mixin(TestUtils)
 class CopySourcesTaskSpec extends Specification {
 
     def 'resources are copied'() {
         given:
-        def p = builder().withProjectDir(new File('testProjects/android/android-basic')).build()
+        def workDir = temporaryDir
+        copyDirectory(new File('testProjects/android/android-basic'), workDir)
+        def p = builder().withProjectDir(workDir).build()
 
         and:
         def conf = GroovySpy(AndroidConfiguration, {
@@ -67,10 +72,7 @@ class CopySourcesTaskSpec extends Specification {
         testDir.exists() && testDir.isDirectory() && testDir.list().size() > 0
 
         !(new File(marketDir, TMP_DIR)).exists()
-        !(new File(marketDir, TMP_DIR)).exists()
         !(new File(marketDir, OTA_DIR)).exists()
-        !(new File(marketDir, OTA_DIR)).exists()
-        !(new File(testDir, LOG_DIR)).exists()
         !(new File(testDir, LOG_DIR)).exists()
     }
 }
