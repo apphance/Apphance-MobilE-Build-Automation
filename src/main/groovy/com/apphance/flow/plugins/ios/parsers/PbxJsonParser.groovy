@@ -2,10 +2,10 @@ package com.apphance.flow.plugins.ios.parsers
 
 import com.apphance.flow.executor.IOSExecutor
 import groovy.json.JsonSlurper
+import org.gradle.api.GradleException
+import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
-
-import static org.apache.commons.lang.StringUtils.isNotBlank
 
 class PbxJsonParser {
 
@@ -19,10 +19,13 @@ class PbxJsonParser {
     public static final String INFOPLIST_FILE = 'INFOPLIST_FILE'
     public static final String XCBUILD_CONFIGURATION = 'XCBuildConfiguration'
 
+    private logger = Logging.getLogger(getClass())
 
     @Inject IOSExecutor executor
 
     String plistForScheme(File pbx, String configuration, String blueprintId) {
+        logger.info("Looking for plist in file: $pbx.absolutePath, configuration: $configuration, blueprintId: $blueprintId")
+
         def json = parsedPBX(pbx)
         def objects = json.objects
 
@@ -40,10 +43,15 @@ class PbxJsonParser {
         def configurations = objects.findAll { it.key in buildConfigurations }
         def conf = configurations.find { it.value.isa == XCBUILD_CONFIGURATION && it.value.name == configuration }
 
+        if (!conf)
+            throw new GradleException("Impossible to find configuration $configuration in configuration list: $buildConfigurationListKey")
+
         conf.value as Map
     }
 
     String targetForBlueprintId(File pbx, String blueprintId) {
+        logger.info("Looking for blueprintId: $blueprintId in file $pbx.absolutePath")
+
         def json = parsedPBX(pbx)
         def objects = json.objects
 

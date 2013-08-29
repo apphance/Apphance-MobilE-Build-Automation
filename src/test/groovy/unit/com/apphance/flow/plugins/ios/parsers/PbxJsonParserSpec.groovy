@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.ios.parsers
 
 import com.apphance.flow.executor.IOSExecutor
+import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -23,6 +24,20 @@ class PbxJsonParserSpec extends Specification {
         expect:
         parser.plistForScheme(GroovyMock(File), configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
     }
+
+    def 'exception thrown when no configuration found'() {
+        given:
+        def configuration = 'Invalid'
+        def blueprintId = 'D382B71014703FE500E9CC9B'
+
+        when:
+        parser.plistForScheme(GroovyMock(File), configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
+
+        then:
+        def e = thrown(GradleException)
+        e.message == 'Impossible to find configuration Invalid in configuration list: D382B74714703FE500E9CC9B'
+    }
+
 
     def 'target name is found for blueprint id'() {
         expect:
