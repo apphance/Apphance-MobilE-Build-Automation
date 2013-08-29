@@ -34,7 +34,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         if (analysisConf.isEnabled()) {
             logger.lifecycle "Applying plugin ${this.class.simpleName}"
 
-            rulesDir = new File(project.rootDir, 'build/analysis-rules')
+            rulesDir = new File(project.rootDir, 'default-analysis-rules')
             prepareRuleFiles()
 
             def mainVariantDir = relativeTo(project.rootDir, androidVariantsConf.main.tmpDir)
