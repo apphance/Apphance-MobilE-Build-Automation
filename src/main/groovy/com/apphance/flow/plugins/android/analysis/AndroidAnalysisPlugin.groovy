@@ -74,7 +74,6 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
     }
 
     void prepareRuleFiles() {
-        rulesDir.mkdirs()
         pmdRules = prepareConfigFile(analysisConf.pmdRules.value, 'pmd-rules.xml')
         findbugsExclude = prepareConfigFile(analysisConf.findbugsExclude.value, 'findbugs-exclude.xml')
         checkstyleConfigFile = prepareConfigFile(analysisConf.checkstyleConfigFile.value, 'checkstyle.xml')
@@ -86,6 +85,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
     File prepareConfigFile(File valueFormConf, String filename) {
         valueFormConf ?: {
             def stream = this.class.getResourceAsStream("/com/apphance/flow/plugins/android/analysis/tasks/$filename")
+            rulesDir.mkdirs()
             File rules = new File(rulesDir, filename)
             rules.text = stream.text
             logger.lifecycle "Created rule file $rules.absolutePath"
