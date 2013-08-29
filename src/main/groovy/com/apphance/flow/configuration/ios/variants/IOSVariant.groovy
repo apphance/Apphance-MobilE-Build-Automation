@@ -94,7 +94,7 @@ class IOSVariant extends AbstractVariant {
     @Lazy
     @PackageScope
     boolean mobileprovisionEnabled = {
-        def enabled = releaseConf.enabled && mode.value == DEVICE
+        def enabled = releaseConf.enabled && mode.value in [DEVICE, SIMULATOR]
         if (!enabled)
             this.@mobileprovision.resetValue()
         enabled
