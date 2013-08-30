@@ -1,20 +1,25 @@
 package com.apphance.flow.android.apphance
 
+import com.apphance.flow.TestUtils
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
+import static org.apache.commons.io.FileUtils.copyDirectory
 
+@Mixin(TestUtils)
 class ExecuteApphanceBuildsTest extends Specification {
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled', '-XX:+CMSPermGenSweepingEnabled',
             '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
-    static File projectDir = new File("testProjects/android/android-no-apphance-application")
+    static File projectDir
     static ProjectConnection connection
 
     void setupSpec() {
+        projectDir = temporaryDir
+        copyDirectory(new File("testProjects/android/android-no-apphance-application"), projectDir)
         connection = GradleConnector.newConnector().forProjectDirectory(projectDir).connect();
     }
 
@@ -25,7 +30,7 @@ class ExecuteApphanceBuildsTest extends Specification {
     protected void run(ProjectConnection projectConnection, String... tasks) {
         def buildLauncher = projectConnection.newBuild()
         buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
-        buildLauncher.forTasks(tasks).run()
+        buildLauncher.forTasks(tasks).withArguments("-PflowProjectPath=${new File('.').absolutePath}").run()
     }
 
     def 'test apphance addition'() {
