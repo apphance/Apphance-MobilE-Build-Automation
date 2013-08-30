@@ -211,7 +211,6 @@ test {
     beforeTest(beforeTestClosure)
 }
 
-
 idea {
     module {
         inheritOutputDirs = false
@@ -220,9 +219,9 @@ idea {
         testOutputDir = file('build/classes/test')
 
         testSourceDirs = [
-                file('src/test/groovy/unit'),
-                file('src/test/groovy/integration'),
-                file('src/test/groovy/functional'),
+            file('src/test/groovy/unit'),
+            file('src/test/groovy/integration'),
+            file('src/test/groovy/functional'),
         ]
     }
 }
