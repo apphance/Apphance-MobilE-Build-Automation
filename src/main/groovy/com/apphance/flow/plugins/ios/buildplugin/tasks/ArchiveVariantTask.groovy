@@ -54,7 +54,7 @@ class ArchiveVariantTask extends AbstractBuildVariantTask {
         def line = compilerOutput.find { it.contains('FLOW_ARCHIVE_PATH') }
         def file = line ? new File(line.split('=')[1].trim()) : null
         logger.info("Found xcarchive file: ${file?.absolutePath}")
-        checkArgument(file?.exists() && file?.isDirectory(), "Xcarchive file: $file.absolutePath does not exist or is not a directory")
+        checkArgument(file?.exists() && file?.isDirectory(), "Xcarchive file: ${file?.absolutePath} does not exist or is not a directory")
         file
     }
 
