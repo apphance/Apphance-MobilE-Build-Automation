@@ -58,8 +58,7 @@ class SingleVariantTask extends DefaultTask {
         }
 
         if (variant.oldPackage.value && variant.newPackage.value) {
-            def replacePackageTask = project.tasks[ReplacePackageTask.NAME] as ReplacePackageTask
-            replacePackageTask.replace(variant.tmpDir, variant.oldPackage.value, variant.newPackage.value, variant.newLabel.value, variant.newName.value)
+            new PackageReplacer().replace(variant.tmpDir, variant.oldPackage.value, variant.newPackage.value, variant.newLabel.value, variant.newName.value)
         }
 
         new LibraryDependencyHandler().handleLibraryDependencies(variant.tmpDir)

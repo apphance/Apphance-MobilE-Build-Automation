@@ -1,38 +1,18 @@
 package com.apphance.flow.plugins.android.buildplugin.tasks
 
-import com.apphance.flow.configuration.android.AndroidConfiguration
-import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.plugins.android.parsers.AndroidBuildXmlHelper
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.TaskAction
 
-import javax.inject.Inject
+import static org.gradle.api.logging.Logging.getLogger
 
-import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
+class PackageReplacer {
 
-class ReplacePackageTask extends DefaultTask {
-
-    static String NAME = 'replacePackage'
-    String description = """Replaces manifest's package with a new one. Requires oldPackage and newPackage
-           parameters. Optionally it takes newLabel or newName parameters if application's label/name is to be replaced"""
-    String group = FLOW_BUILD
-
-    @Inject AndroidConfiguration conf
-    @Inject AndroidManifestHelper manifestHelper
-    @Inject AndroidBuildXmlHelper buildXMLHelper
-    @Inject PropertyReader reader
-
-    @TaskAction
-    void replacePackage() {
-        String oldPackage = reader.systemProperty('oldPackage')
-        String newPackage = reader.systemProperty('newPackage')
-        String newLabel = reader.systemProperty('newLabel')
-        String newName = reader.systemProperty('newName')
-
-        replace(conf.rootDir, oldPackage, newPackage, newLabel, newName)
-    }
+    def logger = getLogger(this.class)
+    def manifestHelper = new AndroidManifestHelper()
+    def buildXMLHelper = new AndroidBuildXmlHelper()
+    def reader = new PropertyReader()
+    def ant = new AntBuilder()
 
     void replace(File dir, String oldPackage, String newPackage, String newLabel, String newName) {
         logger.lifecycle("Old package $oldPackage. New package $newPackage. New label $newLabel. New name $newName")
@@ -52,9 +32,7 @@ class ReplacePackageTask extends DefaultTask {
         ant.move(file: sourceFolder, tofile: targetFolder, failonerror: false)
 
         logger.lifecycle("Replacing remaining references in AndroidManifest ")
-
-        ant.replace(casesensitive: 'true', token: "${oldPackage}",
-                value: "${newPackage}", summary: true) {
+        ant.replace(casesensitive: 'true', token: "${oldPackage}", value: "${newPackage}", summary: true) {
             fileset(dir: dir.absolutePath + '/src') { include(name: '**/*.java') }
             fileset(dir: dir.absolutePath + '/res') { include(name: '**/*.xml') }
             fileset(dir: dir.absolutePath) { include(name: 'AndroidManifest.xml') }

@@ -5,7 +5,6 @@ import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
-import com.apphance.flow.plugins.android.buildplugin.tasks.ReplacePackageTask
 import com.apphance.flow.plugins.android.buildplugin.tasks.UpdateProjectTask
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
 import org.gradle.api.plugins.JavaPlugin
@@ -44,14 +43,12 @@ class AndroidPluginSpec extends Specification {
 
         then:
         project.tasks[CopySourcesTask.NAME].group == FLOW_BUILD.name()
-        project.tasks[ReplacePackageTask.NAME].group == FLOW_BUILD.name()
         project.tasks[UpdateProjectTask.NAME].group == FLOW_BUILD.name()
         project.tasks[BUILD_ALL_TASK_NAME].group == FLOW_BUILD.name()
         project.tasks[BUILD_ALL_DEBUG_TASK_NAME].group == FLOW_BUILD.name()
         project.tasks[BUILD_ALL_RELEASE_TASK_NAME].group == FLOW_BUILD.name()
 
         and:
-        project.tasks[ReplacePackageTask.NAME].dependsOn.flatten().containsAll(UpdateProjectTask.NAME)
         project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_RELEASE_TASK_NAME, BUILD_ALL_DEBUG_TASK_NAME)
     }
 
@@ -75,7 +72,6 @@ class AndroidPluginSpec extends Specification {
 
         then:
         !project.getTasksByName(CopySourcesTask.NAME, false)
-        !project.getTasksByName(ReplacePackageTask.NAME, false)
         !project.getTasksByName(UpdateProjectTask.NAME, false)
     }
 
@@ -107,7 +103,6 @@ class AndroidPluginSpec extends Specification {
 
         then:
         project.tasks[CopySourcesTask.NAME].group == FLOW_BUILD.name()
-        project.tasks[ReplacePackageTask.NAME].group == FLOW_BUILD.name()
         project.tasks[UpdateProjectTask.NAME].group == FLOW_BUILD.name()
 
         and:

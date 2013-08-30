@@ -49,10 +49,6 @@ class AndroidPlugin implements Plugin<Project> {
             project.task(CopySourcesTask.NAME,
                     type: CopySourcesTask).mustRunAfter(CleanFlowTask.NAME)
 
-            project.task(ReplacePackageTask.NAME,
-                    type: ReplacePackageTask,
-                    dependsOn: UpdateProjectTask.NAME)
-
             project.tasks.findByName(CleanFlowTask.NAME) << {
                 def requiredAntFiles = ['build.xml', 'local.properties', 'project.properties']
                 if (requiredAntFiles.every { new File(conf.rootDir, it).exists() }) {
