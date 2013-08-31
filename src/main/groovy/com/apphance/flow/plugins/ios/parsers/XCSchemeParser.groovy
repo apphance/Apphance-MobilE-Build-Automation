@@ -80,8 +80,8 @@ class XCSchemeParser {
     }
 
     private Closure<GPathResult> parseSchemeFile = { File scheme ->
-        validate(scheme.exists() && scheme.isFile() && scheme.size() > 0, {
-            throw new GradleException("Shemes must be shared! Invalid scheme file: $scheme.absolutePath")
+        validate(scheme?.exists() && scheme?.isFile() && scheme?.size() > 0, {
+            throw new GradleException("Schemes must be shared! Invalid scheme file: ${scheme?.absolutePath}")
         })
         new XmlSlurper().parse(scheme)
     }.memoize()

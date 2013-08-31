@@ -6,7 +6,6 @@ import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
-import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.configuration.variants.AbstractVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
@@ -33,7 +32,6 @@ class IOSVariant extends AbstractVariant {
     @Inject IOSReleaseConfiguration releaseConf
     @Inject PlistParser plistParser
     @Inject PbxJsonParser pbxJsonParser
-    @Inject PropertyReader reader
     @Inject IOSExecutor executor
     @Inject XCSchemeParser schemeParser
     @Inject IOSSchemeInfo schemeInfo

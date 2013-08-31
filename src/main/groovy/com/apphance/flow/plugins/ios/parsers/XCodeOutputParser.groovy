@@ -2,10 +2,6 @@ package com.apphance.flow.plugins.ios.parsers
 
 import org.apache.commons.collections.CollectionUtils
 
-/**
- * Parses xcodebuild output.
- *
- */
 class XCodeOutputParser {
 
     Collection<String> readSchemes(List trimmed) {
@@ -43,16 +39,13 @@ class XCodeOutputParser {
     }
 
     Map<String, String> parseBuildSettings(List<String> trimmed) {
-        if (CollectionUtils.isEmpty(trimmed)) {
+        if (CollectionUtils.isEmpty(trimmed))
             return [:]
+
+        trimmed.inject([:]) { result, line ->
+            def splitted = line.split('=')
+            splitted.size() == 2 ? result[splitted[0].trim()] = splitted[1].trim() : null
+            result
         }
-        def result = [:]
-        trimmed.each {
-            def splitted = it.split('=')
-            if (splitted.size() == 2) {
-                result[splitted[0].trim()] = splitted[1].trim()
-            }
-        }
-        result
     }
 }
