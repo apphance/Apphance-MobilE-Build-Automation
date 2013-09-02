@@ -7,7 +7,6 @@ import com.apphance.flow.configuration.release.ReleaseConfiguration
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
-import static java.io.File.separator
 import static org.apache.commons.io.FileUtils.copyDirectory
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
@@ -32,7 +31,7 @@ class BuildSourcesZipTaskSpec extends Specification {
         and:
         def rc = GroovySpy(ReleaseConfiguration) {
             getOtaDir() >> new File(project.rootDir, OTA_DIR)
-            getReleaseDir() >> new File(OTA_DIR, "$projectName$separator$fullVersionString")
+            getReleaseDir() >> new File(OTA_DIR, "$projectName/$fullVersionString")
         }
 
         and:

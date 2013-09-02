@@ -22,7 +22,6 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
-import static java.io.File.separator
 import static org.imgscalr.Scalr.pad
 
 @Mixin(ImageNameFilter)
@@ -50,7 +49,7 @@ class ImageMontageTask extends DefaultTask {
 
         releaseConf.imageMontageFile = new FlowArtifact(
                 name: 'Image Montage',
-                url: new URL("$releaseConf.releaseUrlVersioned$separator$imageMontageFile.name"),
+                url: new URL("$releaseConf.releaseUrlVersioned/$imageMontageFile.name"),
                 location: imageMontageFile)
 
         logger.lifecycle "Created image montage $imageMontageFile.absolutePath"

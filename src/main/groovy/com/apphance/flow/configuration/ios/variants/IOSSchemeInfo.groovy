@@ -6,8 +6,6 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static java.io.File.separator
-
 class IOSSchemeInfo {
 
     @Inject IOSConfiguration conf
@@ -60,7 +58,7 @@ class IOSSchemeInfo {
 
     @PackageScope
     Closure<File> schemeFile = { String name ->
-        new File(conf.xcodeDir.value, "xcshareddata${separator}xcschemes$separator${name}.xcscheme")
+        new File(conf.xcodeDir.value, "xcshareddata/xcschemes/${name}.xcscheme")
     }.memoize()
 
 }

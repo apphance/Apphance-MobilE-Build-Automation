@@ -10,7 +10,6 @@ import javax.inject.Inject
 
 import static com.apphance.flow.configuration.android.AndroidArchiveType.APK
 import static com.apphance.flow.configuration.android.AndroidArchiveType.JAR
-import static java.io.File.separator
 
 class AndroidArtifactProvider {
 
@@ -42,7 +41,7 @@ class AndroidArtifactProvider {
         def name = "${abi.filePrefix}.${type.lowerCase()}"
         new FlowArtifact(
                 name: "${type.name()} ${abi.mode} file for ${abi.variant}",
-                url: new URL("$releaseConf.releaseUrlVersioned$separator$name"),
+                url: new URL("$releaseConf.releaseUrlVersioned/$name"),
                 location: new File(releaseConf.releaseDir, name)
         )
     }
