@@ -1,7 +1,6 @@
 package com.apphance.flow.executor.command
 
 import com.apphance.flow.executor.linker.FileLinker
-import com.apphance.flow.util.FlowUtils
 import com.apphance.flow.util.Preconditions
 import org.gradle.api.logging.Logging
 
@@ -11,7 +10,7 @@ import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFil
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
 
-@Mixin([Preconditions, FlowUtils])
+@Mixin(Preconditions)
 class CommandExecutor {
 
     def logger = Logging.getLogger(getClass())

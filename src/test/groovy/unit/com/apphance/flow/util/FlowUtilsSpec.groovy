@@ -28,16 +28,6 @@ class FlowUtilsSpec extends Specification {
         files.sort()*.name == ['testFile1.dat', 'testFile3.dat']
     }
 
-    def 'test equals ignore whitespace'() {
-        expect:
-        equalsIgnoreWhitespace('abc', 'abc')
-        equalsIgnoreWhitespace('', '')
-        equalsIgnoreWhitespace('', '   ')
-        equalsIgnoreWhitespace('a b c', 'abc')
-        equalsIgnoreWhitespace("\n\na b c\n", 'abc    ')
-    }
-
-
     def 'test getPackage'() {
         expect:
         getPackage(file) == expectedPackage

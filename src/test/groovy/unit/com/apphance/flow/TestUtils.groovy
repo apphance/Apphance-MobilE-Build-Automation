@@ -37,4 +37,8 @@ class TestUtils {
         assert dir.mkdirs()
         dir
     }
+
+    String removeWhitespace(String input) {
+        input.replaceAll(/\s/, '')
+    }
 }

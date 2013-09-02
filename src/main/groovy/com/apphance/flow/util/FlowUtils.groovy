@@ -24,14 +24,6 @@ class FlowUtils {
         files
     }
 
-    boolean equalsIgnoreWhitespace(String left, String right) {
-        removeWhitespace(left).equals(removeWhitespace(right))
-    }
-
-    String removeWhitespace(String input) {
-        input.replaceAll(/\s/, '')
-    }
-
     File downloadToTempFile(String url) {
         File file = tempFile
         logger.info "Downloading $url to file: $file.absolutePath"
