@@ -2,13 +2,11 @@ package com.apphance.flow.plugins.ios.release.artifact.builder
 
 import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.executor.command.Command
-import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSSimArtifactInfo
 import groovy.transform.PackageScope
 import org.apache.commons.io.IOUtils
 
 import javax.imageio.ImageIO
-import javax.inject.Inject
 import java.awt.image.BufferedImage
 
 import static com.apphance.flow.util.ImageUtil.getImageFrom
@@ -18,8 +16,6 @@ import static org.gradle.api.logging.Logging.getLogger
 class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSSimArtifactInfo> {
 
     private logger = getLogger(getClass())
-
-    @Inject MobileProvisionParser mpParser
 
     @Lazy
     @PackageScope
@@ -51,15 +47,13 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSSimArt
 
         def tmpDir = tmpDir(bi, family)
         def embedDir = embedDir(tmpDir)
-        def contentsPlist = new File(tmpDir, 'Contents/Info.plist')
         def icon = new File(tmpDir, 'Contents/Resources/Launcher.icns')
         def embedPlist = new File(embedDir, "$bi.appName/Info.plist")
 
         syncSimAppTemplateToTmpDir(tmplDir, tmpDir)
         syncAppToTmpDir(sourceApp(bi), embedDir)
 
-        resampleIcon(icon)
-        updateBundleId(bi.mobileprovision, contentsPlist)
+        resizeIcon(icon)
         updateDeviceFamily(family, embedPlist)
 
         createSimAppDmg(fa.location, tmpDir, "$bi.appName-${family.iFormat()}")
@@ -103,19 +97,13 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSSimArt
     }
 
     @PackageScope
-    void resampleIcon(File icon) {
+    void resizeIcon(File icon) {
         def img = getImageFrom(new File(conf.rootDir, releaseConf.releaseIcon.value.path))
         def resizedImg = new BufferedImage(128, 128, img.type)
         def g = resizedImg.createGraphics()
         g.drawImage(img, 0, 0, 128, 128, null)
         g.dispose()
         ImageIO.write(resizedImg, 'png', icon)
-    }
-
-    @PackageScope
-    void updateBundleId(File mobileprovision, File plist) {
-        def bundleId = mpParser.bundleId(mobileprovision)
-        runPlistBuddy("Set :CFBundleIdentifier ${bundleId}.launchsim", plist)
     }
 
     @PackageScope

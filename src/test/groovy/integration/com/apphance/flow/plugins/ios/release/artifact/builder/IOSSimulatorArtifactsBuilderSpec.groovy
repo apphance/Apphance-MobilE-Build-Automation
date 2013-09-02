@@ -7,7 +7,6 @@ import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
-import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSSimArtifactInfo
 import com.apphance.flow.util.FlowUtils
 import spock.lang.Shared
@@ -116,23 +115,6 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
         length
     }
 
-    def 'bundleId is updated'() {
-        given:
-        builder.mpParser = GroovyMock(MobileProvisionParser)
-        builder.executor = GroovyMock(CommandExecutor)
-
-        when:
-        builder.updateBundleId(Mock(File), Mock(File) {
-            getAbsolutePath() >> 'absolute'
-        })
-
-        then:
-        1 * builder.mpParser.bundleId(_) >> 'bid'
-        1 * builder.executor.executeCommand({
-            it.commandForExecution.join(' ') == '/usr/libexec/PlistBuddy -c Set :CFBundleIdentifier bid.launchsim absolute'
-        })
-    }
-
     def 'device family is updated'() {
         given:
         builder.executor = GroovyMock(CommandExecutor)
@@ -162,7 +144,7 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
         def resizedIcon = new File(tempDir, 'icon-resized.png')
 
         when:
-        builder.resampleIcon(resizedIcon)
+        builder.resizeIcon(resizedIcon)
 
         then:
         resizedIcon.exists()

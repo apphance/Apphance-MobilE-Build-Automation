@@ -14,8 +14,7 @@ class IOSArtifactProvider {
     IOSSimArtifactInfo simInfo(IOSVariant v) {
         new IOSSimArtifactInfo(
                 id: v.name,
-                filePrefix: "$v.name-$v.fullVersionString",
-                mobileprovision: v.mobileprovision.value,
+                filePrefix: "$v.name-$v.fullVersionString"
         )
     }
 
