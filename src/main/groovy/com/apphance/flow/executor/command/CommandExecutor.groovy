@@ -37,6 +37,7 @@ class CommandExecutor {
         Process process = runCommand(c, commandLogs)
 
         Integer exitValue = process?.waitFor()
+        logger.lifecycle("Command exit value: $exitValue")
         handleProcessResult exitValue, c, commandLogs[STD], commandLogs[ERR]
 
         commandLogs[STD]?.newInputStream()?.newReader()?.iterator()
