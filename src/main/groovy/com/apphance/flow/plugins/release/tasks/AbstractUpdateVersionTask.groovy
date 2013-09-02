@@ -10,18 +10,20 @@ import javax.inject.Inject
 import java.util.regex.Pattern
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
+import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isEmpty
 
 abstract class AbstractUpdateVersionTask extends DefaultTask {
 
     static final String NAME = 'updateVersion'
     String group = FLOW_RELEASE
-    String description = """Updates version stored in manifest file of the project.
-           Numeric version is set from 'version.code' property, String version is set from 'version.string' property"""
+    String description = "Updates version stored in configuration file of the project. Numeric version is set from 'version.code' or 'VERSION_CODE' environment variable property, String version is set from 'version.string' property or 'VERSION_CODE' environment variable"
 
     public final static Pattern WHITESPACE_PATTERN = Pattern.compile('\\s+')
 
     @Inject ProjectConfiguration conf
+    private bundle = getBundle('validation')
+
 
     @TaskAction
     void updateVersion() {
@@ -43,18 +45,14 @@ abstract class AbstractUpdateVersionTask extends DefaultTask {
     @PackageScope
     void validateVersionString(String versionString) {
         if (isEmpty(versionString) || WHITESPACE_PATTERN.matcher(versionString).find()) {
-            throw new GradleException("""|Property 'version.string' has invalid value!
-                                         |Set it either by 'version.string' system property or 'VERSION_STRING' environment variable!
-                                         |This property must not contain white space characters!""".stripMargin())
+            throw new GradleException(bundle.getString('exception.ios.version.string.ext'))
         }
     }
 
     @PackageScope
     void validateVersionCode(String versionCode) {
         if (isEmpty(versionCode) || !versionCode.matches('[0-9]+')) {
-            throw new GradleException("""|Property 'version.code' has invalid value!
-                                         |Set it either by 'version.code' system property or 'VERSION_CODE' environment variable!
-                                         |This property must have numeric value!""".stripMargin())
+            throw new GradleException(bundle.getString('exception.ios.version.code.ext'))
         }
     }
 }
