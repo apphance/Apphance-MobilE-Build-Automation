@@ -18,7 +18,7 @@ class Command {
     }
 
     def getCommandForPublic() {
-        getFilledCommand(params + secretParams.collectEntries { [it.key, '???'] }).join(' ')
+        getFilledCommand(params + secretParams.collectEntries { [it.key, '***'] }).join(' ')
     }
 
     private getFilledCommand(Map args) {
