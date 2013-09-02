@@ -43,12 +43,6 @@ class FlowUtils {
         file
     }
 
-    File getTempDir() {
-        def dir = createTempDir()
-        dir.deleteOnExit()
-        dir
-    }
-
     //gradle guava 11 workaround
     String getNameWithoutExtension(String file) {
         checkNotNull(file)
@@ -68,5 +62,11 @@ class FlowUtils {
     String dotToCamel(String input) {
         def splitted = input.split('\\.')
         splitted.head() + splitted.tail().collect { it.capitalize() }.join('')
+    }
+
+    File getTemporaryDir() {
+        File file = createTempDir()
+        file.deleteOnExit()
+        file
     }
 }

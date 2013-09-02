@@ -12,7 +12,7 @@ class IOSFrameworkArtifactInfo extends AbstractIOSArtifactInfo {
     List<String> headers
     List<String> resources
 
-    @Lazy File frameworkDir = { new File(fu.tempDir, "${frameworkName}.framework") }()
+    @Lazy File frameworkDir = { new File(fu.temporaryDir, "${frameworkName}.framework") }()
     @Lazy File versionsDir = { new File(frameworkDir, 'Versions/A') }()
     @Lazy File resourcesDir = { new File(versionsDir, 'Resources') }()
     @Lazy File headersDir = { new File(versionsDir, 'Headers') }()

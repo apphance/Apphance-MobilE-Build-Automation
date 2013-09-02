@@ -20,8 +20,8 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
     @Inject IOSArtifactProvider artifactProvider
     protected FlowUtils fu = new FlowUtils()
 
-    @Lazy File simTmpDir = { fu.tempDir }()
-    @Lazy File deviceTmpDir = { fu.tempDir }()
+    @Lazy File simTmpDir = { fu.temporaryDir }()
+    @Lazy File deviceTmpDir = { fu.temporaryDir }()
 
     @Override
     void build() {

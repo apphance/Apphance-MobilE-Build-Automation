@@ -141,7 +141,7 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
 
     def 'icon is resized'() {
         given:
-        def resizedIcon = new File(tempDir, 'icon-resized.png')
+        def resizedIcon = new File(temporaryDir, 'icon-resized.png')
 
         when:
         builder.resizeIcon(resizedIcon)
