@@ -11,6 +11,7 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
+import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
 class UnlockKeyChainTask extends DefaultTask {
@@ -25,6 +26,8 @@ class UnlockKeyChainTask extends DefaultTask {
     @Inject CommandExecutor executor
     @Inject PropertyReader reader
 
+    private bundle = getBundle('validation')
+
     @TaskAction
     void unlockKeyChain() {
         def pass = reader.systemProperty('osx.keychain.password') ?: reader.envVariable('OSX_KEYCHAIN_PASSWORD') ?: null
@@ -38,11 +41,7 @@ class UnlockKeyChainTask extends DefaultTask {
                     location],
                     secretParams: [pass: pass]
             ))
-        } else {
-            throw new GradleException("""|No keychain parameters provided. To unlock the keychain,
-                                         |pass osx.keychain.password and osx.keychain.location
-                                         |as java system properties (-D) or set OSX_KEYCHAIN_PASSWORD and
-                                         |OSX_KEYCHAIN_LOCATION environment variables""".stripMargin())
-        }
+        } else
+            throw new GradleException(bundle.getString('exception.ios.keychain'))
     }
 }
