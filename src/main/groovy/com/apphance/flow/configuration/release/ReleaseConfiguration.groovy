@@ -146,7 +146,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     def releaseMailTo = new ListStringProperty(
             name: 'release.mail.to',
             message: 'Recipients of release email',
-            validator: { it?.trim() ? it?.split(',')?.every { it?.trim() ==~ ReleaseValidator.MAIL_PATTERN } : true }
+            validator: { it?.trim() ? it?.split(',')?.every { it?.trim() ==~ ReleaseValidator.MAIL_PATTERN_WITH_NAME } : true }
     )
 
     def releaseMailFlags = new ListStringProperty(
