@@ -109,7 +109,7 @@ class AndroidAnalysisPluginSpec extends Specification {
 
         then:
         !['java', 'pmd', 'checkstyle', 'findbugs'].collect { project.plugins.findPlugin(it) }.grep()
-        plugin.rulesDir == null
+        plugin.checkstyleConfigFile == null
         plugin.pmdRules == null
         plugin.findbugsExclude == null
     }

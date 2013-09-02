@@ -5,6 +5,7 @@ import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.analysis.tasks.CPDTask
 import com.apphance.flow.plugins.android.analysis.tasks.LintTask
+import com.apphance.flow.util.FlowUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -16,6 +17,7 @@ import static org.gradle.api.logging.Logging.getLogger
 /**
  * Provides static code analysis.
  */
+@Mixin(FlowUtils)
 class AndroidAnalysisPlugin implements Plugin<Project> {
 
     def logger = getLogger(this.class)
@@ -24,7 +26,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
     @Inject AndroidVariantsConfiguration androidVariantsConf
     @Inject AndroidTestConfiguration androidTestConf
 
-    File rulesDir
+    File rulesDir = temporaryDir
     File pmdRules
     File findbugsExclude
     File checkstyleConfigFile
@@ -34,7 +36,6 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
         if (analysisConf.isEnabled()) {
             logger.lifecycle "Applying plugin ${this.class.simpleName}"
 
-            rulesDir = new File(project.rootDir, 'default-analysis-rules')
             prepareRuleFiles()
 
             def mainVariantDir = relativeTo(project.rootDir, androidVariantsConf.main.tmpDir)
@@ -85,7 +86,6 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
     File prepareConfigFile(File valueFormConf, String filename) {
         valueFormConf ?: {
             def stream = this.class.getResourceAsStream("/com/apphance/flow/plugins/android/analysis/tasks/$filename")
-            rulesDir.mkdirs()
             File rules = new File(rulesDir, filename)
             rules.text = stream.text
             logger.lifecycle "Created rule file $rules.absolutePath"
