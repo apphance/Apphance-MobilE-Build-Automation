@@ -37,6 +37,7 @@ class ArchiveVariantTask extends AbstractBuildVariantTask {
         if (releaseConf.enabled) {
             def info = infoProvider.call()
             info.archiveDir = findArchiveFile(archiveOutput)
+            validateArchiveFile(info.archiveDir)
             info.appName = appName()
             info.productName = productName()
 
@@ -54,8 +55,12 @@ class ArchiveVariantTask extends AbstractBuildVariantTask {
         def line = compilerOutput.find { it.contains('FLOW_ARCHIVE_PATH') }
         def file = line ? new File(line.split('=')[1].trim()) : null
         logger.info("Found xcarchive file: ${file?.absolutePath}")
-        checkArgument(file?.exists() && file?.isDirectory(), "Xcarchive file: ${file?.absolutePath} does not exist or is not a directory")
         file
+    }
+
+    @PackageScope
+    validateArchiveFile(File archive) {
+        checkArgument(archive?.exists() && archive?.isDirectory(), "Xcarchive file: ${archive?.absolutePath} does not exist or is not a directory")
     }
 
     private String appName() {

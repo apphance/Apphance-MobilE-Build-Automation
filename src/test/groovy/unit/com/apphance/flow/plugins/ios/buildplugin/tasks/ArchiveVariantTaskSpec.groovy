@@ -87,14 +87,21 @@ class ArchiveVariantTaskSpec extends Specification {
         tmpFile.delete()
     }
 
+    def 'null returned when no archive found'() {
+        expect:
+        task.findArchiveFile([].iterator()) == null
+    }
+
     def 'exception thrown when no archive found'() {
+        given:
+        def archive = new File('not-existing')
+
         when:
-        task.findArchiveFile(["FLOW_ARCHIVE_PATH=none"].iterator())
+        task.validateArchiveFile(archive)
 
         then:
         def e = thrown(IllegalArgumentException)
-        e.message.startsWith('Xcarchive file: ')
-        e.message.endsWith('none does not exist or is not a directory')
+        e.message.endsWith("Xcarchive file: $archive.absolutePath does not exist or is not a directory")
     }
 
     @Unroll

@@ -43,7 +43,7 @@ class XCSchemeParserSpec extends Specification {
 
         then:
         def e = thrown(GradleException)
-        e.message == "Shemes must be shared! Invalid scheme file: ${schemeFile.absolutePath}"
+        e.message == "Schemes must be shared! Invalid scheme file: ${schemeFile.absolutePath}"
     }
 
     @Unroll

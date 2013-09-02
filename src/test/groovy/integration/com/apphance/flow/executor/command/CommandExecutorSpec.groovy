@@ -65,7 +65,6 @@ class CommandExecutorSpec extends Specification {
         output == []
     }
 
-    //this test may by potentially unsafe on windows workstations
     def "executor invokes 'ls' command with dir passed through env variable"() {
         expect:
         def command = new Command(cmd: cmd, runDir: runDir, environment: env, failOnError: false)
