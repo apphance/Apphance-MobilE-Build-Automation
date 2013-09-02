@@ -7,8 +7,11 @@ import com.apphance.flow.plugins.ios.release.artifact.info.IOSSimArtifactInfo
 import groovy.transform.PackageScope
 import org.apache.commons.io.IOUtils
 
+import javax.imageio.ImageIO
 import javax.inject.Inject
+import java.awt.image.BufferedImage
 
+import static com.apphance.flow.util.ImageUtil.getImageFrom
 import static com.google.common.io.Files.createTempDir
 import static org.gradle.api.logging.Logging.getLogger
 
@@ -101,13 +104,12 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSSimArt
 
     @PackageScope
     void resampleIcon(File icon) {
-        executor.executeCommand(new Command(runDir: conf.rootDir, cmd: [
-                '/opt/local/bin/convert',
-                new File(conf.rootDir, releaseConf.releaseIcon.value.path).canonicalPath,
-                '-resample',
-                '128x128',
-                icon.canonicalPath
-        ]))
+        def img = getImageFrom(new File(conf.rootDir, releaseConf.releaseIcon.value.path))
+        def resizedImg = new BufferedImage(128, 128, img.type)
+        def g = resizedImg.createGraphics()
+        g.drawImage(img, 0, 0, 128, 128, null)
+        g.dispose()
+        ImageIO.write(resizedImg, 'png', icon)
     }
 
     @PackageScope

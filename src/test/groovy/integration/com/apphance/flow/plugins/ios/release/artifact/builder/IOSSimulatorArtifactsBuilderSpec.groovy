@@ -9,6 +9,7 @@ import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSSimArtifactInfo
+import com.apphance.flow.util.FlowUtils
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -20,6 +21,7 @@ import static com.google.common.io.Files.createTempDir
 import static java.io.File.createTempFile
 import static java.nio.file.Files.isSymbolicLink
 
+@Mixin(FlowUtils)
 class IOSSimulatorArtifactsBuilderSpec extends Specification {
 
     @Shared
@@ -36,6 +38,9 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
             conf: GroovyMock(IOSConfiguration) {
                 getRootDir() >> new File('.')
                 getFullVersionString() >> '3.1.45_101'
+            },
+            releaseConf: GroovyMock(IOSReleaseConfiguration) {
+                getReleaseIcon() >> new FileProperty(value: 'testProjects/ios/GradleXCode/icon.png')
             },
             executor: executor
     )
@@ -152,26 +157,16 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
         family << IOSFamily.values()
     }
 
-    def 'icon is resampled'() {
+    def 'icon is resized'() {
         given:
-        def iconFile = GroovyMock(File) {
-            getCanonicalPath() >> 'canonical path 2'
-        }
-        builder.executor = GroovyMock(CommandExecutor)
-        builder.releaseConf = GroovyMock(IOSReleaseConfiguration) {
-            getReleaseIcon() >> new FileProperty(value: iconFile)
-        }
+        def resizedIcon = new File(tempDir, 'icon-resized.png')
 
         when:
-        builder.resampleIcon(GroovyMock(File) {
-            getCanonicalPath() >> 'canonical path'
-        })
+        builder.resampleIcon(resizedIcon)
 
         then:
-        1 * builder.executor.executeCommand({
-            def cfe = it.commandForExecution.join(' ')
-            cfe.startsWith('/opt/local/bin/convert') && cfe.endsWith('-resample 128x128 canonical path')
-        })
+        resizedIcon.exists()
+        resizedIcon.size() > 4500
     }
 
     def 'app sim dmg is created'() {
