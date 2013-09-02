@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.release.tasks
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.plugins.release.FlowArtifact
+import com.apphance.flow.util.ImageUtil
 import groovy.transform.PackageScope
 import ij.ImagePlus
 import ij.ImageStack
@@ -144,7 +145,7 @@ class ImageMontageTask extends DefaultTask {
     Collection<Image> resizeImages(List<File> inputs) {
         Collection<Image> images = inputs.collect {
 
-            def image = getImageFrom(it)
+            def image = ImageUtil.getImageFrom(it)
 
             if (image != null) {
                 image = pad(image, 20, Color.WHITE)
@@ -157,16 +158,5 @@ class ImageMontageTask extends DefaultTask {
 
         images.removeAll { it == null }
         images
-    }
-
-    @PackageScope
-    BufferedImage getImageFrom(File file) {
-        logger.info("Reading file: $file.absolutePath")
-        try {
-            ImageIO.read(file)
-        } catch (Exception ex) {
-            logger.error "Error during file read: $ex.message"
-            null
-        }
     }
 }
