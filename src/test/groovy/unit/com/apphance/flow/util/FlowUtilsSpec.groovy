@@ -22,7 +22,7 @@ class FlowUtilsSpec extends Specification {
 
     def 'test search with filter'() {
         when:
-        def files = allFiles dir: rootSearchDir, where: {it.name ==~ /.*.dat/}
+        def files = allFiles dir: rootSearchDir, where: { it.name ==~ /.*.dat/ }
 
         then:
         files.sort()*.name == ['testFile1.dat', 'testFile3.dat']
@@ -39,5 +39,17 @@ class FlowUtilsSpec extends Specification {
         tempFile << '\n\npackage com.polidea;\n'               | 'com.polidea'
         tempFile << '\n\npackage \tcom.polidea  ;  \n'         | 'com.polidea'
         tempFile << '\n\n   \tpackage \t com.polidea \t ;  \n' | 'com.polidea'
+    }
+
+    def 'test dot to camel'() {
+        expect:
+        expected == dotToCamel(input)
+
+        where:
+        input                | expected
+        'key'                | 'key'
+        'key.pass'           | 'keyPass'
+        'key.store.password' | 'keyStorePassword'
+        ''                   | ''
     }
 }

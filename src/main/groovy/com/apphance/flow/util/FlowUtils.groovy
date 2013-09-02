@@ -64,4 +64,9 @@ class FlowUtils {
             matcher.matches() ? matcher[0][1] : ''
         }.find() ?: ''
     }
+
+    String dotToCamel(String input) {
+        def splitted = input.split('\\.')
+        splitted.head() + splitted.tail().collect { it.capitalize() }.join('')
+    }
 }
