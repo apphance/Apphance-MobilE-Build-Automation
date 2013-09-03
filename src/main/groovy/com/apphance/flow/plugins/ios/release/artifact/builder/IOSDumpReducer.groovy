@@ -19,7 +19,7 @@ class IOSDumpReducer {
     private final static UUID_ARCHS_PATTERN = /UUID:\s(\w+-\w+-\w+-\w+-\w+)\s\((\w+)\)/
     private final static SUBPROGRAM_PATTERN = /^(0[xX]+[0-9a-fA-F]+):\s+TAG_subprogram/
     private final static CATVAL_PATTERN = /AT_(\w+)\(\s(.*)\s\)/
-    private final static SPEC_PATTERN = /{(0[xX]+[0-9a-fA-F]+)}/
+    private final static SPEC_PATTERN = /\{(0[xX]+[0-9a-fA-F]+)\}/
 
     private logger = getLogger(getClass())
 
@@ -226,7 +226,7 @@ class IOSDumpReducer {
             def atDeclFile = specification.get('AT_decl_file')
             def atDeclLine = specification.get('AT_decl_line')
 
-            if (isEmpty(atName) || isEmpty(atDeclFile) || isEmpty(atDeclLine))
+            if (isEmpty(atName?.toString()) || isEmpty(atDeclFile?.toString()) || isEmpty(atDeclLine?.toString()))
                 continue
 
             entry['AT_name'] = atName
