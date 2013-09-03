@@ -1,5 +1,6 @@
 package com.apphance.flow.validation
 
+import com.apphance.flow.configuration.properties.ListStringProperty
 import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
@@ -52,5 +53,27 @@ class ReleaseValidatorSpec extends Specification {
 
         where:
         mailServer << ['releaseString', 'release_String', 'relase_String_123_4']
+    }
+
+    def 'test validate mail list'() {
+        when:
+        validator.validateMailList(new ListStringProperty(value: emails))
+
+        then:
+        notThrown(Exception)
+
+        where:
+        emails << [
+                ['Alice Smith <alice.smith@mail.server.com>'],
+                ['Alice Smith <alice.smith@mail.server.com>', 'Bob Smith <bob.smith@mail.com>']
+        ]
+    }
+
+    def 'validate mail list throws exception'() {
+        when:
+        validator.validateMailList(new ListStringProperty(value: []))
+
+        then:
+        thrown(GradleException)
     }
 }

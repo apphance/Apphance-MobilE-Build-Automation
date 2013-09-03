@@ -13,7 +13,6 @@ import static org.apache.commons.lang.StringUtils.isBlank
 class ReleaseValidator {
 
     public static final MAIL_PATTERN_WITH_NAME = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
-    public static final MAIL_PATTERN = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}/
     public static final WHITESPACE = Pattern.compile('\\s+')
 
     private final bundle = getBundle('validation')
@@ -35,7 +34,7 @@ class ReleaseValidator {
 
     void validateMailList(ListStringProperty emails) {
         def value = emails.value
-        if (!value || !value.every { it?.trim() ==~ MAIL_PATTERN })
+        if (!value || !value.every { it?.trim() ==~ MAIL_PATTERN_WITH_NAME })
             throw new GradleException(format(bundle.getString('exception.release.mail.list'), emails.name, emails.value))
     }
 }
