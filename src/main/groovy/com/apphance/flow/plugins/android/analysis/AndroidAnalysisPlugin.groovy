@@ -5,6 +5,7 @@ import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.analysis.tasks.CPDTask
 import com.apphance.flow.plugins.android.analysis.tasks.LintTask
+import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import com.apphance.flow.util.FlowUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -30,6 +31,8 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
     File pmdRules
     File findbugsExclude
     File checkstyleConfigFile
+
+    def static analysisTasks = [CPDTask.NAME, LintTask.NAME, 'check', 'pmdMain', 'pmdTest', 'checkstyleMain', 'checkstyleTest', 'findbugsMain', 'findbugsTest']
 
     @Override
     void apply(Project project) {
@@ -71,6 +74,8 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                 [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses].each { it.enabled = false }
                 [checkstyle, findbugs, pmd, cpd].each { it.ignoreFailures = true }
             }
+
+            analysisTasks.each { project.tasks.findByName(it)?.dependsOn(VerifySetupTask.NAME) }
         }
     }
 
