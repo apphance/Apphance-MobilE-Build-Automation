@@ -70,7 +70,6 @@ class IOSApphancePluginSpec extends Specification {
                     GroovyMock(IOSVariant) {
                         getName() >> 'V1'
                         getApphanceMode() >> new ApphanceModeProperty(value: QA)
-                        getBuildTaskName() >> 'buildV1'
                         getArchiveTaskName() >> 'archiveV1'
                         getUploadTaskName() >> 'uploadV1'
                         getMode() >> new IOSBuildModeProperty(value: DEVICE)
@@ -78,7 +77,6 @@ class IOSApphancePluginSpec extends Specification {
                     GroovyMock(IOSVariant) {
                         getName() >> 'V2'
                         getApphanceMode() >> new ApphanceModeProperty(value: QA)
-                        getBuildTaskName() >> 'buildV2'
                         getArchiveTaskName() >> 'archiveV2'
                         getUploadTaskName() >> 'uploadV2'
                         getMode() >> new IOSBuildModeProperty(value: DEVICE)
@@ -86,7 +84,6 @@ class IOSApphancePluginSpec extends Specification {
                     GroovyMock(IOSVariant) {
                         getName() >> 'V3'
                         getApphanceMode() >> new ApphanceModeProperty(value: DISABLED)
-                        getBuildTaskName() >> 'buildV3'
                         getArchiveTaskName() >> 'archiveV3'
                         getUploadTaskName() >> 'uploadV3'
                         getMode() >> new IOSBuildModeProperty(value: DEVICE)
@@ -94,7 +91,6 @@ class IOSApphancePluginSpec extends Specification {
                     GroovyMock(IOSVariant) {
                         getName() >> 'V4'
                         getApphanceMode() >> new ApphanceModeProperty(value: DISABLED)
-                        getBuildTaskName() >> 'buildV4'
                         getArchiveTaskName() >> 'archiveV4'
                         getUploadTaskName() >> 'uploadV4'
                         getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
@@ -110,10 +106,6 @@ class IOSApphancePluginSpec extends Specification {
         !project.getTasksByName('uploadV4', false)
 
         then: 'tasks also have actions declared'
-        project.tasks['buildV1'].actions
-        project.tasks['buildV2'].actions
-        !project.tasks['buildV3'].actions
-        !project.tasks['buildV4'].actions
         project.tasks['archiveV1'].actions
         project.tasks['archiveV2'].actions
         !project.tasks['archiveV3'].actions

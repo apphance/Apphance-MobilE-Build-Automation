@@ -90,10 +90,6 @@ abstract class AbstractVariant extends AbstractConfiguration {
         name?.replaceAll('[-_]',' ')
     }()
 
-    String getBuildTaskName() {
-        "build$name".replaceAll('\\s', '')
-    }
-
     String getUploadTaskName() {
         "upload$name".replaceAll('\\s', '')
     }

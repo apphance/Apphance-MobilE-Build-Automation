@@ -74,6 +74,10 @@ class AndroidVariantConfiguration extends AbstractVariant {
         apphanceArtifactory.androidLibraries(apphanceMode.value)
     }
 
+    String getBuildTaskName() {
+        "build$name".replaceAll('\\s', '')
+    }
+
     @Override
     String getConfigurationName() {
         "Android Variant ${name}"

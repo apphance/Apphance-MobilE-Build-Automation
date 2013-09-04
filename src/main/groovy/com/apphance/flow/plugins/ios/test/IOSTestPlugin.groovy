@@ -48,7 +48,6 @@ class IOSTestPlugin implements Plugin<Project> {
 
                     project.tasks[TEST_ALL_TASK_NAME].dependsOn variant.testTaskName
 
-                    project.tasks.findByName(variant.buildTaskName)?.dependsOn variant.testTaskName
                     project.tasks.findByName(variant.archiveTaskName)?.dependsOn variant.testTaskName
 
                     project.tasks.findByName(variant.testTaskName).mustRunAfter VerifySetupTask.NAME
