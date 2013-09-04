@@ -28,8 +28,7 @@ class CopyMobileProvisionTask extends DefaultTask {
 
     @TaskAction
     void copyMobileProvision() {
-        def userHome = System.getProperty('user.home')
-        def mobileProvisionDir = "$userHome/Library/MobileDevice/Provisioning Profiles/"
+        def mobileProvisionDir = "${System.getProperty('user.home')}/Library/MobileDevice/Provisioning Profiles/"
         new File(mobileProvisionDir).mkdirs()
         variantsConf.variants.each { v ->
             def mobileprovision = v.mobileprovision.value

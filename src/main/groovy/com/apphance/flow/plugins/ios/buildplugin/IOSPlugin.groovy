@@ -17,19 +17,8 @@ import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
-/*
- * Plugin for various X-Code related tasks.
- * This is the main iOS build plugin.
- *
- * The plugin provides all the task needed to build iOS application.
- * Besides tasks explained below, the plugin prepares build*
- *
- */
 class IOSPlugin implements Plugin<Project> {
 
-    public static final String BUILD_ALL_TASK_NAME = 'buildAll'
-    public static final String BUILD_ALL_DEVICE_TASK_NAME = 'buildAllDevice'
-    public static final String BUILD_ALL_SIMULATOR_TASK_NAME = 'buildAllSimulator'
     public static final String ARCHIVE_ALL_TASK_NAME = 'archiveAll'
     public static final String ARCHIVE_ALL_DEVICE_TASK_NAME = 'archiveAllDevice'
     public static final String ARCHIVE_ALL_SIMULATOR_TASK_NAME = 'archiveAllSimulator'
@@ -67,20 +56,6 @@ class IOSPlugin implements Plugin<Project> {
             def buildableVariants = variantsConf.variants.findAll { it.mode.value in [DEVICE, SIMULATOR] }
 
             if (buildableVariants) {
-                project.task(BUILD_ALL_DEVICE_TASK_NAME,
-                        group: FLOW_BUILD,
-                        description: 'Builds all device variants')
-
-                project.task(BUILD_ALL_SIMULATOR_TASK_NAME,
-                        group: FLOW_BUILD,
-                        description: 'Builds all simulator variants')
-
-                project.task(BUILD_ALL_TASK_NAME,
-                        group: FLOW_BUILD,
-                        dependsOn: [BUILD_ALL_DEVICE_TASK_NAME, BUILD_ALL_SIMULATOR_TASK_NAME],
-                        description: 'Builds all variants')
-                buildableVariants.each(this.&createBuildTask)
-
                 project.task(ARCHIVE_ALL_DEVICE_TASK_NAME,
                         group: FLOW_BUILD,
                         description: 'Archives all device variants')
@@ -112,16 +87,6 @@ class IOSPlugin implements Plugin<Project> {
                 }
             }
         }
-    }
-
-    private void createBuildTask(IOSVariant variant) {
-        def task = project.task(variant.buildTaskName,
-                type: BuildVariantTask,
-                dependsOn: [CopyMobileProvisionTask.NAME]) as BuildVariantTask
-        task.variant = variant
-
-        def buildAllMode = "buildAll${variant.mode.value.capitalize()}"
-        project.tasks[buildAllMode].dependsOn task.name
     }
 
     private void createArchiveTask(IOSVariant variant) {

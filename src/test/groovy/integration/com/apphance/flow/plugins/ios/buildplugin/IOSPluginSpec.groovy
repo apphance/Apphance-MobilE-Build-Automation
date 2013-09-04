@@ -32,15 +32,13 @@ class IOSPluginSpec extends Specification {
         def variantsConf = GroovyMock(IOSVariantsConfiguration)
         variantsConf.variants >> [
                 GroovyMock(IOSVariant, {
-                    getBuildTaskName() >> 'buildV1'
-                    getMode() >> new IOSBuildModeProperty(value: DEVICE)
                     getArchiveTaskName() >> 'archiveV1'
+                    getMode() >> new IOSBuildModeProperty(value: DEVICE)
                 }
                 ),
                 GroovyMock(IOSVariant, {
-                    getBuildTaskName() >> 'buildV2'
-                    getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
                     getArchiveTaskName() >> 'archiveV2'
+                    getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
                 }),
                 GroovyMock(IOSVariant, {
                     getFrameworkTaskName() >> 'frameworkV3'
@@ -62,13 +60,6 @@ class IOSPluginSpec extends Specification {
         project.tasks[UnlockKeyChainTask.NAME].group == FLOW_BUILD.name()
 
         and:
-        project.tasks[BUILD_ALL_DEVICE_TASK_NAME].group == FLOW_BUILD.name()
-        project.tasks[BUILD_ALL_SIMULATOR_TASK_NAME].group == FLOW_BUILD.name()
-        project.tasks[BUILD_ALL_TASK_NAME].group == FLOW_BUILD.name()
-        project.tasks['buildV1'].group == FLOW_BUILD.name()
-        project.tasks['buildV2'].group == FLOW_BUILD.name()
-
-        and:
         project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].group == FLOW_BUILD.name()
         project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].group == FLOW_BUILD.name()
         project.tasks[ARCHIVE_ALL_TASK_NAME].group == FLOW_BUILD.name()
@@ -78,13 +69,6 @@ class IOSPluginSpec extends Specification {
         and:
         project.tasks[FRAMEWORK_ALL].group == FLOW_BUILD.name()
         project.tasks['frameworkV3'].group == FLOW_BUILD.name()
-
-        and:
-        project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_SIMULATOR_TASK_NAME, BUILD_ALL_DEVICE_TASK_NAME)
-        project.tasks['buildV1'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
-        project.tasks['buildV2'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
-        project.tasks[BUILD_ALL_SIMULATOR_TASK_NAME].dependsOn.flatten().contains('buildV2')
-        project.tasks[BUILD_ALL_DEVICE_TASK_NAME].dependsOn.flatten().contains('buildV1')
 
         and:
         project.tasks[ARCHIVE_ALL_TASK_NAME].dependsOn.flatten().containsAll(ARCHIVE_ALL_SIMULATOR_TASK_NAME, ARCHIVE_ALL_DEVICE_TASK_NAME)
@@ -117,9 +101,6 @@ class IOSPluginSpec extends Specification {
         !project.getTasksByName(CopySourcesTask.NAME, false)
         !project.getTasksByName(UnlockKeyChainTask.NAME, false)
         !project.getTasksByName(CopyMobileProvisionTask.NAME, false)
-        !project.getTasksByName(BUILD_ALL_TASK_NAME, false)
-        !project.getTasksByName(BUILD_ALL_SIMULATOR_TASK_NAME, false)
-        !project.getTasksByName(BUILD_ALL_DEVICE_TASK_NAME, false)
         !project.getTasksByName(ARCHIVE_ALL_TASK_NAME, false)
         !project.getTasksByName(ARCHIVE_ALL_SIMULATOR_TASK_NAME, false)
         !project.getTasksByName(ARCHIVE_ALL_DEVICE_TASK_NAME, false)
