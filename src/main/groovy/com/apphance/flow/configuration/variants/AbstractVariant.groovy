@@ -85,12 +85,17 @@ abstract class AbstractVariant extends AbstractConfiguration {
         this.@name
     }
 
-    String getBuildTaskName() {
-        "build$name".replaceAll('\\s', '')
-    }
+    @Lazy
+    String presentationName = {
+        name?.replaceAll('[-_]',' ')
+    }()
 
     String getUploadTaskName() {
         "upload$name".replaceAll('\\s', '')
+    }
+
+    String getTestTaskName() {
+        "test$name".replaceAll('\\s', '')
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.apphance.flow.configuration.android
 
 import com.apphance.flow.detection.project.ProjectTypeDetector
 import org.gradle.api.Project
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import static com.apphance.flow.detection.project.ProjectType.ANDROID
@@ -33,21 +32,6 @@ class AndroidConfigurationSpec extends Specification {
         enabled | type
         false   | IOS
         true    | ANDROID
-    }
-
-
-    @Ignore('works only on compiled projects')
-    def 'linkedLibraryJars and libraryJars are filled correctly'() {
-        given:
-        def project = GroovyStub(Project)
-        project.rootDir >> new File('testProjects/android/android-basic')
-
-        and:
-        def androidConf = new AndroidConfiguration(project, * [null] * 5)
-
-        expect:
-        ['FlurryAgent.jar', 'development-apphance.jar'] == androidConf.jarLibraries*.name
-        ['subproject', 'subsubproject'] == androidConf.linkedJarLibraries*.parentFile.parentFile.name
     }
 
     def 'no exception during readProperties'() {

@@ -12,7 +12,6 @@ import javax.inject.Inject
 import static com.apphance.flow.detection.project.ProjectType.IOS
 import static com.apphance.flow.util.file.FileManager.*
 import static groovy.io.FileType.DIRECTORIES
-import static java.io.File.separator
 
 @Singleton
 class IOSConfiguration extends ProjectConfiguration {
@@ -100,7 +99,7 @@ class IOSConfiguration extends ProjectConfiguration {
     }
 
     @Lazy
-    Collection<String> sourceExcludes = { super.sourceExcludes + ["**${separator}$xcodeDir.value${separator}xcuserdata${separator}**"] }()
+    Collection<String> sourceExcludes = { super.sourceExcludes + ["**/$xcodeDir.value/xcuserdata/**"] }()
 
     @Override
     boolean isEnabled() {

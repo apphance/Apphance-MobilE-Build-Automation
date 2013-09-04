@@ -1,25 +1,25 @@
 package com.apphance.flow.plugins.release.tasks
 
+import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
-import static java.io.File.separator
+import static org.apache.commons.io.FileUtils.copyDirectory
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
+@Mixin([TestUtils])
 class BuildSourcesZipTaskSpec extends Specification {
 
     def 'sources zip is built in correct location'() {
         given:
-        def projectDir = new File(projectPath)
+        def projectDir = temporaryDir
+        copyDirectory new File(templateProjectPath), projectDir
 
         and:
         def project = builder().withProjectDir(projectDir).build()
-
-        and:
-        def sourceZipName = srcZipName
 
         and:
         def pc = GroovySpy(ProjectConfiguration, {
@@ -31,7 +31,7 @@ class BuildSourcesZipTaskSpec extends Specification {
         and:
         def rc = GroovySpy(ReleaseConfiguration) {
             getOtaDir() >> new File(project.rootDir, OTA_DIR)
-            getReleaseDir() >> new File(OTA_DIR, "$projectName$separator$fullVersionString")
+            getReleaseDir() >> new File(OTA_DIR, "$projectName/$fullVersionString")
         }
 
         and:
@@ -43,15 +43,15 @@ class BuildSourcesZipTaskSpec extends Specification {
         task.buildSourcesZip()
 
         then:
-        def f = new File(projectDir, "${rc.releaseDir}/${sourceZipName}")
-        f.exists()
-        f.size() > 30000
+        def zipFile = new File(projectDir, "${rc.releaseDir}/${srcZipName}")
+        zipFile.exists()
+        zipFile.size() > 30000
 
         cleanup:
-        f.delete()
+        zipFile.delete()
 
         where:
-        projectPath                          | srcZipName                            | projectName          | fullVersionString
+        templateProjectPath                  | srcZipName                            | projectName          | fullVersionString
         'testProjects/android/android-basic' | 'TestAndroidProject-1.0.1_42-src.zip' | 'TestAndroidProject' | '1.0.1_42'
         'testProjects/ios/GradleXCode'       | 'GradleXCode-1.0_32-src.zip'          | 'GradleXCode'        | '1.0_32'
     }

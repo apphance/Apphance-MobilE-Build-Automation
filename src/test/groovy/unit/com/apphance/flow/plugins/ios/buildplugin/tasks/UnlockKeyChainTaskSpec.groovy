@@ -28,10 +28,7 @@ class UnlockKeyChainTaskSpec extends Specification {
 
         then:
         def e = thrown(GradleException)
-        e.message == """|No keychain parameters provided. To unlock the keychain,
-                        |pass osx.keychain.password and osx.keychain.location
-                        |as java system properties (-D) or set OSX_KEYCHAIN_PASSWORD and
-                        |OSX_KEYCHAIN_LOCATION environment variables""".stripMargin()
+        e.message == "No keychain parameters provided. To unlock the keychain, pass osx.keychain.password and osx.keychain.location as java system properties (-D) or set OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION environment variables"
     }
 
     def 'keychain is unlocked when system properties passed'() {

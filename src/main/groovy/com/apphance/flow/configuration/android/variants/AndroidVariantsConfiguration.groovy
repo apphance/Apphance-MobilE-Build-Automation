@@ -85,6 +85,10 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
         variantsNames.value?.empty ? null : variantsNames.value[0]
     }
 
+    AndroidVariantConfiguration getMain() {
+        variants.find { it.name == mainVariant }
+    }
+
     @Override
     Collection<AndroidVariantConfiguration> getSubConfigurations() {
         this.getVariants()

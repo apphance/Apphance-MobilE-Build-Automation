@@ -38,6 +38,11 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
 
     abstract StringProperty getProjectName()
 
+    @Lazy
+    String projectNameNoWhiteSpace = {
+        this.projectName?.value?.replaceAll('\\s', '_')
+    }()
+
     File getBuildDir() {
         project.file(BUILD_DIR)
     }

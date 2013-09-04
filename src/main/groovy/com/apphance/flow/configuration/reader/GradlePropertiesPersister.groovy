@@ -10,7 +10,6 @@ import javax.inject.Inject
 import java.text.SimpleDateFormat
 
 import static com.google.common.io.Files.newWriter
-import static java.io.File.separator
 import static java.nio.charset.StandardCharsets.UTF_8
 import static org.slf4j.LoggerFactory.getLogger
 
@@ -33,7 +32,7 @@ class GradlePropertiesPersister implements PropertyPersister {
     @Override
     void init(Project project) {
         props = new SortedProperties()
-        propertyFile = new File("${project.rootDir.absolutePath}${separator}$FLOW_PROP_FILENAME")
+        propertyFile = new File("$project.rootDir.absolutePath/$FLOW_PROP_FILENAME")
         if (propertyFile.exists()) {
             log.info("File ${propertyFile.absolutePath} exist. Reading configuration")
             props.load(Files.newReader(propertyFile, UTF_8))

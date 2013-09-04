@@ -1,11 +1,12 @@
 package com.apphance.flow.configuration.android
 
 import com.apphance.flow.configuration.AbstractConfiguration
-import com.apphance.flow.configuration.properties.URLProperty
+import com.apphance.flow.configuration.properties.FileProperty
+import com.google.inject.Singleton
 
 import javax.inject.Inject
 
-@com.google.inject.Singleton
+@Singleton
 class AndroidAnalysisConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Android Analysis Configuration'
@@ -23,15 +24,29 @@ class AndroidAnalysisConfiguration extends AbstractConfiguration {
         enabledInternal = enabled
     }
 
-    def analysisConfigUrl = new URLProperty(
-            name: 'android.analysis.config.url',
-            message: 'Android analysis config URL',
+    def pmdRules = new FileProperty(
+            name: 'android.analysis.pmd.rules',
+            message: 'Path to pmd rules config file'
+    )
+
+    def findbugsExclude = new FileProperty(
+            name: 'android.analysis.findbugs.exclude',
+            message: 'Path to findbugs exclude file'
+    )
+
+    def checkstyleConfigFile = new FileProperty(
+            name: 'android.analysis.checkstyle.config',
+            message: 'Path to checkstyle config file'
     )
 
     @Override
     void checkProperties() {
-        if (analysisConfigUrl.isSet()) {
-            check !checkException { analysisConfigUrl.value }, "Property '${analysisConfigUrl.name}' is not valid! Should be valid URL address!"
+        existsOrNull pmdRules, findbugsExclude, checkstyleConfigFile
+    }
+
+    void existsOrNull(FileProperty... fileProperties) {
+        fileProperties.each {
+            check it.value == null || it.value.exists(), "Incorrect value of '$it.name' property"
         }
     }
 }

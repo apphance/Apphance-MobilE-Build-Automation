@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.ios.parsers
 
 import com.apphance.flow.executor.IOSExecutor
+import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -24,14 +25,19 @@ class PbxJsonParserSpec extends Specification {
         parser.plistForScheme(GroovyMock(File), configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
     }
 
-    def 'plist for target and configuration is found correctly'() {
+    def 'exception thrown when no configuration found'() {
         given:
-        def target = 'GradleXCode'
-        def configuration = 'BasicConfiguration'
+        def configuration = 'Invalid'
+        def blueprintId = 'D382B71014703FE500E9CC9B'
 
-        expect:
-        parser.plistForTC(GroovyMock(File), target, configuration) == 'GradleXCode/GradleXCode-Info.plist'
+        when:
+        parser.plistForScheme(GroovyMock(File), configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
+
+        then:
+        def e = thrown(GradleException)
+        e.message == 'Impossible to find configuration Invalid in configuration list: D382B74714703FE500E9CC9B'
     }
+
 
     def 'target name is found for blueprint id'() {
         expect:
@@ -41,25 +47,6 @@ class PbxJsonParserSpec extends Specification {
         target             | blueprintId
         'GradleXCode'      | 'D382B71014703FE500E9CC9B'
         'GradleXCodeTests' | 'D382B73414703FE500E9CC9B'
-    }
-
-    def 'placeholder is recognized correctly'() {
-        expect:
-        PbxJsonParser.isPlaceholder(placeholder) == expected
-
-        where:
-        placeholder | expected
-        '$()'       | false
-        ''          | false
-        '  \t'      | false
-        '$$()'      | false
-        '$(()'      | false
-        '$())'      | false
-        '$(_)'      | false
-        '$(AA_)'    | false
-        '$(AA_D)'   | true
-        '$(AA_D_)'  | false
-        '$(_AA_D_)' | false
     }
 
     def 'apphance framework is found correctly'() {

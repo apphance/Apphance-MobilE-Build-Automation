@@ -5,10 +5,13 @@ import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.ios.parsers.XCodeOutputParser
 import groovy.transform.PackageScope
+import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
 class IOSExecutor {
+
+    private logger = Logging.getLogger(getClass())
 
     @Inject IOSConfiguration conf
     @Inject XCodeOutputParser parser
@@ -96,12 +99,8 @@ class IOSExecutor {
         executor.executeCommand(new Command(runDir: conf.rootDir, cmd: ['dot_clean', './']))
     }
 
-    def buildVariant(File dir, List<String> buildCmd) {
+    Iterator<String> buildVariant(File dir, List<String> buildCmd) {
         executor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
-    }
-
-    Iterator<String> archiveVariant(File dir, List<String> archiveCmd) {
-        executor.executeCommand(new Command(runDir: dir, cmd: archiveCmd))
     }
 
     def runTests(File runDir, String target, String configuration, String testResultPath) {
@@ -141,13 +140,18 @@ class IOSExecutor {
 
     @Lazy
     String iOSSimVersion = {
-        def output = executor.executeCommand(new Command(
-                runDir: conf.rootDir,
-                cmd: ['ios-sim', '--version']
-        ))
-        def line = output.find {
-            it.matches('(\\d+\\.)+\\d+')
+        try {
+            def output = executor.executeCommand(new Command(
+                    runDir: conf.rootDir,
+                    cmd: ['ios-sim', '--version']
+            ))
+            def line = output.find {
+                it.matches('(\\d+\\.)+\\d+')
+            }
+            line ? line.trim() : ''
+        } catch (Exception e) {
+            logger.error("Error while getting ios-sim version: {}", e.message)
+            ''
         }
-        line ? line.trim() : ''
     }()
 }

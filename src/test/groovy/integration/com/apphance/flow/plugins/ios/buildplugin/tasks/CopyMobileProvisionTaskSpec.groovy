@@ -74,7 +74,6 @@ class CopyMobileProvisionTaskSpec extends Specification {
 
         then:
         def e = thrown(GradleException)
-        println e.message
         e.message.startsWith('Bundle Id from variant: SampleVariant (MT2B94Q7N6.com.apphance.flowa)')
         e.message.contains('(MT2B94Q7N6.com.apphance.flowa)')
         e.message.contains('(MT2B94Q7N6.com.apphance.flow)')

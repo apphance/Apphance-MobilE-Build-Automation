@@ -56,6 +56,6 @@ class BuildSourcesZipTask extends DefaultTask {
         releaseConf.sourcesZip = new FlowArtifact(
                 name: 'Zipped project sources',
                 url: null, // we do not publish
-                location: new File(releaseConf.releaseDir, "${conf.projectName.value}-${conf.fullVersionString}-src.zip"))
+                location: new File(releaseConf.releaseDir, "${conf.projectNameNoWhiteSpace}-${conf.fullVersionString}-src.zip"))
     }
 }

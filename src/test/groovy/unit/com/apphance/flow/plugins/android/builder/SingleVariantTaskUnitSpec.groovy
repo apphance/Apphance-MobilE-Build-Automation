@@ -157,7 +157,6 @@ class SingleVariantTaskUnitSpec extends Specification {
 
         then:
         thrown(CommandFailedException)
-        1 * task.logger.info(* _)
         number * task.logger.error("Error during source compilation. Probably some non-activity class was configured as activity in AndroidManifest.xml.\n" +
                 "Make sure that all <activity> tags in your manifest points to some activity classes and not to other classes like Fragment.")
 

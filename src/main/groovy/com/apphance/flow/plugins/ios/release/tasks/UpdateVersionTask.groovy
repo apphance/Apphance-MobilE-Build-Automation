@@ -8,6 +8,8 @@ import com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask
 
 import javax.inject.Inject
 
+import static com.apphance.flow.configuration.ios.IOSBuildMode.FRAMEWORK
+
 class UpdateVersionTask extends AbstractUpdateVersionTask {
 
     @Inject PlistParser parser
@@ -17,7 +19,7 @@ class UpdateVersionTask extends AbstractUpdateVersionTask {
 
     @Override
     void updateDescriptor(String versionCode, String versionString) {
-        def plists = variantsConf.variants.collect { v ->
+        def plists = variantsConf.variants.findAll { it.mode.value != FRAMEWORK }.collect { v ->
             def blueprintId = schemeParser.blueprintIdentifier(v.schemeFile)
             new File(v.tmpDir, pbxJsonParser.plistForScheme(v.pbxFile, v.archiveConfiguration, blueprintId))
         }.unique()

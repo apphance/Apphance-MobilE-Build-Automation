@@ -11,11 +11,6 @@ import static com.apphance.flow.configuration.apphance.ApphanceMode.*
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- * Plugin for all apphance-relate IOS tasks.
- *
- * This plugins provides automated adding of Apphance libraries to the project
- */
 class IOSApphancePlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())
@@ -34,13 +29,12 @@ class IOSApphancePlugin implements Plugin<Project> {
                 if (variant.apphanceMode.value in [QA, PROD, SILENT] && variant.mode.value == DEVICE) {
                     def enhance = { iosApphanceEnhancerFactory.create(variant).enhanceApphance() }
 
-                    project.tasks[variant.buildTaskName].doFirst(enhance)
                     project.tasks[variant.archiveTaskName].doFirst(enhance)
 
                     def uploadTask =
                         project.task(variant.uploadTaskName,
                                 type: IOSApphanceUploadTask,
-                                dependsOn: variant.buildTaskName) as IOSApphanceUploadTask
+                                dependsOn: variant.archiveTaskName) as IOSApphanceUploadTask
                     uploadTask.variant = variant
                 } else {
                     logger.info("Apphance is disabled for variant '$variant.name'")

@@ -7,20 +7,19 @@ import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.configuration.reader.PropertyReader
+import com.apphance.flow.validation.ReleaseValidator
 import com.apphance.flow.env.Environment
 import com.apphance.flow.plugins.release.FlowArtifact
 import groovy.transform.PackageScope
-import org.gradle.api.GradleException
 
 import javax.imageio.ImageIO
 import javax.inject.Inject
 import java.text.SimpleDateFormat
-import java.util.regex.Pattern
 
 import static com.apphance.flow.env.Environment.JENKINS
 import static com.apphance.flow.util.file.FileManager.relativeTo
-import static java.io.File.separator
-import static org.apache.commons.lang.StringUtils.isBlank
+import static java.text.MessageFormat.format
+import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
 abstract class ReleaseConfiguration extends AbstractConfiguration {
@@ -28,18 +27,17 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     final String configurationName = 'Release configuration'
 
     public static final String OTA_DIR = 'flow-ota'
-    public static final MAIL_PATTERN = /.* *<{0,1}[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,4}>{0,1}/
     public static final ALL_EMAIL_FLAGS = [
-            'installableSimulator',
             'qrCode',
             'imageMontage'
     ]
-    def static WHITESPACE = Pattern.compile('\\s+')
 
     @Inject ProjectConfiguration conf
     @Inject PropertyReader reader
+    @Inject ReleaseValidator validator
 
     private boolean enabledInternal
+    private bundle = getBundle('validation')
 
     FlowArtifact otaIndexFile
     FlowArtifact fileIndexFile
@@ -90,7 +88,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     )
 
     URL getReleaseUrlVersioned() {
-        new URL("$releaseUrl.value$separator$conf.fullVersionString")
+        new URL("$releaseUrl.value/$conf.fullVersionString")
     }
 
     @PackageScope
@@ -101,14 +99,14 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     }
 
     File getReleaseDir() {
-        new File(otaDir, "$releaseDirName$separator$conf.fullVersionString")
+        new File(otaDir, "$releaseDirName/$conf.fullVersionString")
     }
 
     File getOtaDir() {
         new File(conf.rootDir, OTA_DIR)
     }
 
-    def iconFile = new FileProperty(
+    def releaseIcon = new FileProperty(
             name: 'release.icon',
             message: 'Path to project\'s icon file, must be relative to the root dir of project',
             required: { true },
@@ -139,19 +137,19 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             validator: { it ==~ /\p{Upper}{2}/ }
     )
 
-    StringProperty releaseMailFrom = new StringProperty(
+    def releaseMailFrom = new StringProperty(
             name: 'release.mail.from',
             message: 'Sender email address',
-            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : true }
+            validator: { (it = it?.trim()) ? it ==~ ReleaseValidator.MAIL_PATTERN_WITH_NAME : true }
     )
 
-    StringProperty releaseMailTo = new StringProperty(
+    def releaseMailTo = new ListStringProperty(
             name: 'release.mail.to',
-            message: 'Recipient of release email',
-            validator: { (it = it?.trim()) ? it ==~ MAIL_PATTERN : true }
+            message: 'Recipients of release email',
+            validator: { it?.trim() ? it?.split(',')?.every { it?.trim() ==~ ReleaseValidator.MAIL_PATTERN_WITH_NAME } : true }
     )
 
-    ListStringProperty releaseMailFlags = new ListStringProperty(
+    def releaseMailFlags = new ListStringProperty(
             name: 'release.mail.flags',
             message: 'Flags for release email',
             defaultValue: { ['qrCode', 'imageMontage'] as List<String> },
@@ -193,55 +191,19 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
         icons
     }
 
-    static void validateMailServer(String mailServer) {
-        if (isBlank(mailServer) || WHITESPACE.matcher(mailServer).find())
-            throw new GradleException(mailServerValidationMsg)
-    }
-
-    static void validateMailPort(String mailPort) {
-        if (isBlank(mailPort) || !mailPort.matches('[0-9]+')) {
-            throw new GradleException(mailPortValidationMsg)
-        }
-    }
-
-    static void validateMail(StringProperty mail) {
-        if (!mail.validator(mail.value)) {
-            throw new GradleException(mailValidationMsg(mail))
-        }
-    }
-
     @Override
     void checkProperties() {
-        check !checkException { releaseDirName }, "Property '${releaseUrl.name}' is not valid! Should end with folder name where files are copied!"
-        check language.validator(language.value), "Property '${language.name}' is not valid! Should be two letter lowercase!"
-        check country.validator(country.value), "Property '${country.name}' is not valid! Should be two letter uppercase!"
-        check releaseMailFrom.validator(releaseMailFrom.value), "Property '${releaseMailFrom.name}' is not valid! Should be valid " +
-                "email address! Current value: ${releaseMailFrom.value}"
-        check releaseMailTo.validator(releaseMailTo.value), "Property '${releaseMailTo.name}' is not valid! Should be valid email address!  Current value: ${releaseMailTo.value}"
-        check releaseMailFlags.validator(releaseMailFlags.persistentForm()), "Property '${releaseMailFlags.name}' is not valid! Possible values: " +
-                "${ALL_EMAIL_FLAGS} Current value: ${releaseMailFlags.value}"
-        check iconFile.validator(iconFile.value), "Property '${iconFile.name}' (${iconFile.value}) is not valid! Should be existing image file!"
+        check !checkException { releaseDirName }, bundle.getString('exception.release.url')
+        check language.validator(language.value), bundle.getString('exception.release.language')
+        check country.validator(country.value), bundle.getString('exception.release.country')
+        check releaseMailFrom.validator(releaseMailFrom.value), format(bundle.getString('exception.release.mail'), releaseMailFrom.name, releaseMailFrom.value)
+        check releaseMailTo.validator(releaseMailTo.persistentForm()), format(bundle.getString('exception.release.mail'), releaseMailTo.name, releaseMailTo.value)
+        check releaseMailFlags.validator(releaseMailFlags.persistentForm()), format(bundle.getString('exception.release.mail.flags'), ALL_EMAIL_FLAGS, releaseMailFlags.value)
+        check releaseIcon.validator(releaseIcon.value), format(bundle.getString('exception.release.icon'), releaseIcon.value)
 
         if (Environment.env() == JENKINS) {
-            check !checkException { validateMailServer(mailServer) }, mailServerValidationMsg
-            check !checkException { validateMailPort(mailPort) }, mailPortValidationMsg
-            check !checkException { validateMail(releaseMailTo) }, mailValidationMsg(releaseMailTo)
-            check !checkException { validateMail(releaseMailFrom) }, mailValidationMsg(releaseMailFrom)
+            check !checkException { validator.validateMailServer(mailServer) }, bundle.getString('exception.release.mail.server')
+            check !checkException { validator.validateMailPort(mailPort) }, bundle.getString('exception.release.mail.port')
         }
-    }
-
-    private static mailServerValidationMsg =
-        """|Property 'mail.server' has invalid value!
-           |Set it either by 'mail.server' system property or
-           |'MAIL_SERVER' environment variable!""".stripMargin()
-
-    private static mailPortValidationMsg =
-        """|Property 'mail.port' has invalid value!
-           |Set it either by 'mail.port' system property or 'MAIL_PORT' environment variable.
-           |This property must have numeric value!""".stripMargin()
-
-    private static mailValidationMsg = {
-        """|Property ${it.name} is not set!
-           |It should be valid email address!""".stripMargin()
     }
 }

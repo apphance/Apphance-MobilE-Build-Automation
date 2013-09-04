@@ -65,7 +65,6 @@ class CommandExecutorSpec extends Specification {
         output == []
     }
 
-    //this test may by potentially unsafe on windows workstations
     def "executor invokes 'ls' command with dir passed through env variable"() {
         expect:
         def command = new Command(cmd: cmd, runDir: runDir, environment: env, failOnError: false)
@@ -74,17 +73,6 @@ class CommandExecutorSpec extends Specification {
         where:
         expectedOutput   | runDir                  | cmd                               | env
         ['main', 'test'] | new File('src', 'test') | ['bash', '-c', 'ls \\$DIR_TO_LS'] | [DIR_TO_LS: new File('src', 'test').parentFile.canonicalPath]
-    }
-
-    def 'executor handles input correctly'() {
-        given:
-        def command = new Command(cmd: ['/bin/bash', '-c', 'read V; echo $V'], runDir: '.' as File, input: ['10'], params: [V: '$V'])
-
-        when:
-        def output = executor.executeCommand(command).toList()
-
-        then:
-        output == ['10']
     }
 
     def 'command output file in exception'() {

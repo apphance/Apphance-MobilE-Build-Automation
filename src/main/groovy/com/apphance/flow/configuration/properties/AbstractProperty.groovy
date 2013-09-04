@@ -6,7 +6,7 @@ abstract class AbstractProperty<T> {
 
     String name
     String message
-    public String validationMessage = ''
+    String validationMessage = ''
 
     protected T value
 
@@ -28,15 +28,12 @@ abstract class AbstractProperty<T> {
         value
     }
 
+    void resetValue() {
+        this.@value = null
+    }
+
     @Override
     String toString() { "$name = ${getValue()}" }
-
-    /**
-     * Default value of property used in configuration wizard. Calculated from <code>value</code>, <code>defaultValue</code> and <code>possibleValues</code>
-     */
-    String effectiveDefaultValue() {
-        getValue() ?: defaultValue() ?: possibleValues() ? possibleValues().get(0) : ''
-    }
 
     String getFailedValidationMessage() {
         "Validation failed for property: $name $validationMessage"
@@ -46,4 +43,6 @@ abstract class AbstractProperty<T> {
         if (value) return getValue()
         else throw new GradleException("Invalid $message. property name: $name")
     }
+
+
 }

@@ -49,23 +49,6 @@ class AndroidPlugin implements Plugin<Project> {
             project.task(CopySourcesTask.NAME,
                     type: CopySourcesTask).mustRunAfter(CleanFlowTask.NAME)
 
-            project.task(ReplacePackageTask.NAME,
-                    type: ReplacePackageTask,
-                    dependsOn: UpdateProjectTask.NAME)
-
-            project.tasks.findByName(CleanFlowTask.NAME) << {
-                def requiredAntFiles = ['build.xml', 'local.properties', 'project.properties']
-                if (requiredAntFiles.every { new File(conf.rootDir, it).exists() }) {
-                    antExecutor.executeTarget(conf.rootDir, CLEAN)
-                } else {
-                    logger.lifecycle("Skipping 'ant clean' in dir: $conf.rootDir. Missing one of $requiredAntFiles")
-                }
-            }
-
-            project.task(CompileAndroidTask.NAME,
-                    type: CompileAndroidTask,
-                    dependsOn: UpdateProjectTask.NAME)
-
             project.task(BUILD_ALL_DEBUG_TASK_NAME,
                     group: FLOW_BUILD,
                     description: 'Builds all debug variants')
@@ -86,8 +69,6 @@ class AndroidPlugin implements Plugin<Project> {
 
                 def buildAllMode = "buildAll${variant.mode.capitalize()}"
                 project.tasks[buildAllMode].dependsOn variant.buildTaskName
-
-                project.task("install${variant.name}", type: InstallAndroidTask, dependsOn: variant.buildTaskName).variant = variant
             }
 
             project.tasks.each {

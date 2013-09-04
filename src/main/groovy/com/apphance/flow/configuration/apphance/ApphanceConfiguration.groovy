@@ -28,12 +28,12 @@ class ApphanceConfiguration extends AbstractConfiguration {
 
     def user = new StringProperty(
             name: 'apphance.user',
-            message: 'Apphance user (used for uploading apk to apphance server)'
+            message: 'Apphance user (used for uploading artifacts to apphance server)'
     )
 
     def pass = new StringProperty(
             name: 'apphance.pass',
-            message: 'Apphance pass (used for uploading apk to apphance server)'
+            message: 'Apphance pass (used for uploading artifacts to apphance server)'
     )
 
     def enableShaking = new BooleanProperty(

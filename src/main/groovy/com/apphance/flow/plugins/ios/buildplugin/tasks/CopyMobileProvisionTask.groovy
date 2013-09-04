@@ -11,6 +11,8 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
+import static java.text.MessageFormat.format
+import static java.util.ResourceBundle.getBundle
 
 @Mixin(Preconditions)
 class CopyMobileProvisionTask extends DefaultTask {
@@ -22,10 +24,11 @@ class CopyMobileProvisionTask extends DefaultTask {
     @Inject IOSVariantsConfiguration variantsConf
     @Inject MobileProvisionParser mpParser
 
+    def bundle = getBundle('validation')
+
     @TaskAction
     void copyMobileProvision() {
-        def userHome = System.getProperty('user.home')
-        def mobileProvisionDir = "$userHome/Library/MobileDevice/Provisioning Profiles/"
+        def mobileProvisionDir = "${System.getProperty('user.home')}/Library/MobileDevice/Provisioning Profiles/"
         new File(mobileProvisionDir).mkdirs()
         variantsConf.variants.each { v ->
             def mobileprovision = v.mobileprovision.value
@@ -36,9 +39,7 @@ class CopyMobileProvisionTask extends DefaultTask {
 
     private void validateBundleId(IOSVariant v, File mobileprovision) {
         validate(v.bundleId == mpParser.bundleId(mobileprovision), {
-            throw new GradleException("""|Bundle Id from variant: ${v.name} (${v.bundleId})
-                                         |and from mobile provision file: ${mobileprovision.absolutePath}
-                                         |(${mpParser.bundleId(mobileprovision)}) do not match!""".stripMargin())
+            throw new GradleException(format(bundle.getString('exception.ios.bundleId'), v.name, v.bundleId, mobileprovision.absolutePath, mpParser.bundleId(mobileprovision)))
         })
     }
 }

@@ -2,7 +2,7 @@ package com.apphance.flow.configuration.android.variants
 
 import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
-import com.apphance.flow.configuration.apphance.ApphanceMode
+import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
@@ -16,7 +16,6 @@ import java.nio.file.Paths
 
 import static com.apphance.flow.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.flow.configuration.android.AndroidBuildMode.RELEASE
-import static com.apphance.flow.configuration.apphance.ApphanceMode.PROD
 import static com.apphance.flow.util.file.FileManager.asProperties
 import static com.apphance.flow.util.file.FileManager.relativeTo
 
@@ -24,9 +23,9 @@ import static com.apphance.flow.util.file.FileManager.relativeTo
 class AndroidVariantConfiguration extends AbstractVariant {
 
     final String prefix = 'android'
-    static def APPHANCE_MAVEN = 'http://repo1.maven.org/maven2/com/utest/'
 
     @Inject AndroidReleaseConfiguration androidReleaseConf
+    @Inject ApphanceArtifactory apphanceArtifactory
     private File vDir
 
     @AssistedInject
@@ -72,18 +71,11 @@ class AndroidVariantConfiguration extends AbstractVariant {
 
     @Override
     List<String> possibleApphanceLibVersions() {
-        parseVersionsFromMavenMetadata(apphanceMode.value)
+        apphanceArtifactory.androidLibraries(apphanceMode.value)
     }
 
-    List<String> parseVersionsFromMavenMetadata(ApphanceMode mode) {
-        try {
-            def file = downloadToTempFile APPHANCE_MAVEN + "apphance-${mode == PROD ? 'prod' : 'preprod'}/maven-metadata.xml"
-            def metadata = new XmlSlurper().parse(file)
-            metadata.versioning.versions.version.collect { it.text() }
-        } catch (Exception exp) {
-            logger.warn "error during parsing apphance lib versions from maven: $exp.message"
-            []
-        }
+    String getBuildTaskName() {
+        "build$name".replaceAll('\\s', '')
     }
 
     @Override
@@ -100,17 +92,31 @@ class AndroidVariantConfiguration extends AbstractVariant {
     }
 
     void checkSigningConfiguration() {
-        def file = new File(tmpDir, 'ant.properties')
-        check file.exists(), "If release or apphance plugin is enabled ant.properties should be present in ${tmpDir.absolutePath}"
+        def signParams = ['key.store', 'key.store.password', 'key.alias', 'key.alias.password']
+        def nonemptySigningProperties = signParams.collect { System.getProperty(it) }.grep()
 
+        def file = new File(tmpDir, 'ant.properties')
+        check file.exists() || nonemptySigningProperties.size() == 4, "If release or apphance plugin is enabled ant.properties should be present in " +
+                "${tmpDir.absolutePath} or appropriate signing parameters ($signParams) passed to gradle as command line options"
+
+        Properties antProperties = null
         if (file.exists()) {
-            Properties antProperties = asProperties(file)
-            String keyStorePath = antProperties.getProperty('key.store')
-            check keyStorePath, "key.store value in ant.properties file is not correctly configured: ${keyStorePath}"
-            if (keyStorePath) {
-                def keyStore = Paths.get(tmpDir.absolutePath).resolve(keyStorePath).toFile()
-                check keyStore?.exists(), "Keystore path is not correctly configured: File ${keyStore.absolutePath} doesn't exist."
-            }
+            antProperties = asProperties(file)
         }
+        String keyStorePath = validate(antProperties, 'key.store')
+        if (keyStorePath) {
+            def keyStore = Paths.get(tmpDir.absolutePath).resolve(keyStorePath).toFile()
+            check keyStore?.exists(), "Keystore path is not correctly configured: File ${keyStore?.absolutePath} doesn't exist."
+        }
+
+        validate(antProperties, 'key.store.password')
+        validate(antProperties, 'key.alias')
+        validate(antProperties, 'key.alias.password')
+    }
+
+    String validate(Properties antProperties, String property) {
+        String value = antProperties?.getProperty(property) ?: System.getProperty(property)
+        check value, "$property value is not correctly configured: ${value}"
+        value
     }
 }

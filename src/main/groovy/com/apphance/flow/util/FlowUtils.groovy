@@ -5,6 +5,7 @@ import org.gradle.api.logging.Logging
 
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static com.google.common.base.Preconditions.checkNotNull
+import static com.google.common.io.Files.createTempDir
 import static java.io.File.createTempFile
 
 class FlowUtils {
@@ -23,14 +24,6 @@ class FlowUtils {
         files
     }
 
-    boolean equalsIgnoreWhitespace(String left, String right) {
-        removeWhitespace(left).equals(removeWhitespace(right))
-    }
-
-    String removeWhitespace(String input) {
-        input.replaceAll(/\s/, '')
-    }
-
     File downloadToTempFile(String url) {
         File file = tempFile
         logger.info "Downloading $url to file: $file.absolutePath"
@@ -44,8 +37,8 @@ class FlowUtils {
         destDir
     }
 
-    File getTempFile() {
-        File file = createTempFile('prefix', 'suffix')
+    File getTempFile(String suffix = 'suffix') {
+        File file = createTempFile('prefix', suffix)
         file.deleteOnExit()
         file
     }
@@ -64,5 +57,16 @@ class FlowUtils {
             def matcher = it =~ packageRegex
             matcher.matches() ? matcher[0][1] : ''
         }.find() ?: ''
+    }
+
+    String dotToCamel(String input) {
+        def splitted = input.split('\\.')
+        splitted.head() + splitted.tail().collect { it.capitalize() }.join('')
+    }
+
+    File getTemporaryDir() {
+        File file = createTempDir()
+        file.deleteOnExit()
+        file
     }
 }

@@ -18,10 +18,6 @@ class URLProperty extends AbstractProperty<URL> {
         internalValue ? internalValue.toURL() : null
     }
 
-    boolean isSet() {
-        internalValue?.trim() as boolean
-    }
-
     @Override
     void setValidator(Closure<Boolean> validator) {
         internalValidator = validator

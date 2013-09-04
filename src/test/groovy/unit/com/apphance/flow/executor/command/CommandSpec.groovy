@@ -13,7 +13,7 @@ class CommandSpec extends Specification {
         commandForPublic                     | cmd                                              | params                 | secretParams
         'ls -al'                             | ['ls', '-al']                                    | [:]                    | [:]
         'ls -al /tmp'                        | ['ls', '-al', '$dir']                            | [dir: '/tmp']          | [:]
-        'upload -u user -p ??? /tmp/app.apk' | ['upload', '-u', 'user', '-p', '$pass', '$file'] | [file: '/tmp/app.apk'] | [pass: 'pass']
+        'upload -u user -p *** /tmp/app.apk' | ['upload', '-u', 'user', '-p', '$pass', '$file'] | [file: '/tmp/app.apk'] | [pass: 'pass']
 
     }
 

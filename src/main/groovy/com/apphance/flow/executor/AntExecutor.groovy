@@ -2,7 +2,7 @@ package com.apphance.flow.executor
 
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
-import org.gradle.api.GradleException
+import com.apphance.flow.util.FlowUtils
 
 import javax.inject.Inject
 import javax.inject.Named
@@ -10,6 +10,7 @@ import javax.inject.Named
 /**
  * Executor of ant targets.
  */
+@Mixin(FlowUtils)
 class AntExecutor {
 
     public static String DEBUG = 'debug'
@@ -20,11 +21,12 @@ class AntExecutor {
     @Inject
     @Named('executable.ant') ExecutableCommand executableAnt
 
-    void executeTarget(File rootDir, String command, Map params = [:]) {
-        try {
-            executor.executeCommand(new Command([runDir: rootDir, cmd: executableAnt.cmd + [command], failOnError: true] + params))
-        } catch (IOException e) {
-            throw new GradleException("Error during execution: ant $command, $params", e)
-        }
+    void executeTarget(File rootDir, String command) {
+        def signProps = System.getProperties().findAll { it.key.startsWith('key.') }
+        def commandProps = signProps.keySet().collect { "-D$it=\$${dotToCamel(it)}" }
+        def secretParams = signProps.collectEntries { String key, String value -> [(dotToCamel(key)): value] }
+
+        executor.executeCommand new Command(runDir: rootDir, cmd: executableAnt.cmd + [command] + commandProps, failOnError: true, secretParams: secretParams)
     }
 }
+

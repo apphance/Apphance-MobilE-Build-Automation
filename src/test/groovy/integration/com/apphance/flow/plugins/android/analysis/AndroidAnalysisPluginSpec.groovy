@@ -1,102 +1,120 @@
 package com.apphance.flow.plugins.android.analysis
 
+import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.android.AndroidAnalysisConfiguration
+import com.apphance.flow.configuration.android.AndroidTestConfiguration
+import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
+import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
+import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.plugins.android.analysis.tasks.CPDTask
-import com.apphance.flow.plugins.android.analysis.tasks.CheckstyleTask
-import com.apphance.flow.plugins.android.analysis.tasks.FindBugsTask
-import com.apphance.flow.plugins.android.analysis.tasks.PMDTask
-import com.apphance.flow.plugins.android.buildplugin.tasks.CompileAndroidTask
+import com.apphance.flow.plugins.android.analysis.tasks.LintTask
+import com.apphance.flow.plugins.project.tasks.VerifySetupTask
+import org.gradle.api.file.FileCollection
 import spock.lang.Specification
+import spock.lang.Unroll
 
-import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_ANALYSIS
-import static org.gradle.api.plugins.JavaPlugin.CLASSES_TASK_NAME
+import static com.apphance.flow.plugins.android.analysis.AndroidAnalysisPlugin.getAnalysisTasks
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
+@Mixin([TestUtils])
 class AndroidAnalysisPluginSpec extends Specification {
 
+    def project = builder().build()
+
+    @Unroll
     def 'tasks defined in plugin available when configuration is active'() {
         given:
-        def project = builder().build()
+        def plugin = new AndroidAnalysisPlugin()
+        def conf = GroovyStub(AndroidAnalysisConfiguration)
+        conf.isEnabled() >> true
+        conf.pmdRules >> new FileProperty()
+        conf.findbugsExclude >> new FileProperty()
+        conf.checkstyleConfigFile >> new FileProperty()
 
-        and:
-        project.task(CLASSES_TASK_NAME)
+        def variantsConf = GroovyStub(AndroidVariantsConfiguration)
+        def mainVariant = GroovyStub(AndroidVariantConfiguration)
+        mainVariant.tmpDir >> temporaryDir
+        mainVariant.buildTaskName >> 'debug'
+        variantsConf.main >> mainVariant
 
-        and:
-        def aap = new AndroidAnalysisPlugin()
-
-        and:
-        def aac = Mock(AndroidAnalysisConfiguration)
-        aac.isEnabled() >> true
-        aap.analysisConf = aac
+        plugin.androidVariantsConf = variantsConf
+        plugin.analysisConf = conf
+        plugin.androidTestConf = GroovyStub(AndroidTestConfiguration)
+        plugin.androidTestConf.enabled >> testConfEnabled
+        project.task(VerifySetupTask.NAME)
 
         when:
-        aap.apply(project)
+        plugin.apply(project)
 
-        then: 'every single task is in correct group'
-        project.tasks[PMDTask.NAME].group == FLOW_ANALYSIS.name()
-        project.tasks[CPDTask.NAME].group == FLOW_ANALYSIS.name()
-        project.tasks[FindBugsTask.NAME].group == FLOW_ANALYSIS.name()
-        project.tasks[CheckstyleTask.NAME].group == FLOW_ANALYSIS.name()
-        project.tasks['analysis'].group == FLOW_ANALYSIS.name()
+        then: 'check plugins are applied'
+        project.plugins.findPlugin('java')
+        project.plugins.findPlugin('pmd')
+        project.plugins.findPlugin('checkstyle')
+        project.plugins.findPlugin('findbugs')
 
-        then: 'configurations for tasks were added properly'
-        project.configurations.pmdConf
-        project.configurations.findbugsConf
-        project.configurations.checkstyleConf
+        !project.plugins.findPlugin('groovy')
+        !project.plugins.findPlugin('scala')
 
-        then: 'external dependencies configured correctly'
-        project.dependencies.configurationContainer.pmdConf.dependencies
-        project.dependencies.configurationContainer.pmdConf.dependencies.find {
-            it.group == 'pmd' && it.name == 'pmd' && it.version == '4.3'
-        }
+        and: 'config files are prepared'
+        plugin.rulesDir.exists()
+        plugin.pmdRules.exists()
+        plugin.findbugsExclude.exists()
+        plugin.checkstyleConfigFile.exists()
 
-        project.dependencies.configurationContainer.findbugsConf.dependencies
-        project.dependencies.configurationContainer.findbugsConf.dependencies.find {
-            it.group == 'com.google.code.findbugs' && it.name == 'findbugs' && it.version == '2.0.1'
-        }
-        project.dependencies.configurationContainer.findbugsConf.dependencies.find {
-            it.group == 'com.google.code.findbugs' && it.name == 'findbugs-ant' && it.version == '2.0.1'
-        }
+        and: 'configs set in analysis plugins configurations'
+        project.pmd.ruleSetFiles instanceof FileCollection
+        (project.pmd.ruleSetFiles as FileCollection).files == [plugin.pmdRules] as Set
+        project.findbugs.excludeFilter == plugin.findbugsExclude
+        project.checkstyle.configFile == plugin.checkstyleConfigFile
 
-        project.dependencies.configurationContainer.checkstyleConf.dependencies
-        project.dependencies.configurationContainer.checkstyleConf.dependencies.find {
-            it.group == 'com.puppycrawl.tools' && it.name == 'checkstyle' && it.version == '5.6'
-        }
+        and: 'sources sets properly configured'
+        project.sourceSets.main.java.srcDirs == [new File(project.rootDir, 'src'), new File(project.rootDir, 'variants')] as Set
+        project.sourceSets.test.java.srcDirs == [new File(project.rootDir, 'test')] as Set
+        project.sourceSets.main.output.classesDir == new File(mainVariant.tmpDir, 'bin/classes')
+        project.sourceSets.test.output.classesDir == new File(mainVariant.tmpDir, 'bin/testClasses')
 
-        and: 'task dependencies configured correctly'
-        project.tasks['analysis'].dependsOn.flatten().containsAll(FindBugsTask.NAME,
-                CPDTask.NAME,
-                PMDTask.NAME,
-                CheckstyleTask.NAME)
-        project.tasks[FindBugsTask.NAME].dependsOn.contains(CompileAndroidTask.NAME)
-        project.tasks[CheckstyleTask.NAME].dependsOn.contains(CompileAndroidTask.NAME)
+        and: 'tasks added'
+        !project.tasks.findByName('nonexistingTask')
+        analysisTasks.every { project.tasks.findByName(it) }
+
+        [CPDTask.NAME, LintTask.NAME, 'check'].every { project.tasks[it].group == 'verification' }
+
+        and: 'task dependencies'
+        project.tasks['check'].dependsOn.grep(CPDTask)
+        project.tasks['check'].dependsOn.grep(LintTask)
+        mainVariant.buildTaskName in project.tasks[LintTask.NAME].dependsOn
+        mainVariant.buildTaskName in project.tasks['findbugsMain'].dependsOn
+        !(testConfEnabled <=> mainVariant.testTaskName in project.tasks['findbugsTest'].dependsOn)
+        analysisTasks.each { assert VerifySetupTask.NAME in project.tasks[it].dependsOn }
+
+        project.findbugsTest.enabled == testConfEnabled
+
+        and: 'default java plugin tasks disabled'
+        project.with { [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses].every { !it.enabled } }
+
+        and: 'ignoreFailures flag in analysis plugins'
+        project.with { [checkstyle, findbugs, pmd, cpd].every { it.ignoreFailures } }
+
+        where:
+        testConfEnabled << [true, false]
     }
 
     def 'no tasks available when configuration is inactive'() {
         given:
         def project = builder().build()
-
-        and:
-        def aap = new AndroidAnalysisPlugin()
-
-        and:
-        def aac = Mock(AndroidAnalysisConfiguration)
-        aac.isEnabled() >> false
-        aap.analysisConf = aac
+        def plugin = new AndroidAnalysisPlugin()
+        def conf = GroovyStub(AndroidAnalysisConfiguration)
+        conf.isEnabled() >> false
+        plugin.analysisConf = conf
 
         when:
-        aap.apply(project)
+        plugin.apply(project)
 
         then:
-        !project.configurations.findByName('pmdConf')
-        !project.configurations.findByName('findbugsConf')
-        !project.configurations.findByName('checkstyleConf')
-
-        then:
-        !project.getTasksByName(PMDTask.NAME, false)
-        !project.getTasksByName(CPDTask.NAME, false)
-        !project.getTasksByName(FindBugsTask.NAME, false)
-        !project.getTasksByName(CheckstyleTask.NAME, false)
-        !project.getTasksByName('analysis', false)
+        !['java', 'pmd', 'checkstyle', 'findbugs'].collect { project.plugins.findPlugin(it) }.grep()
+        plugin.checkstyleConfigFile == null
+        plugin.pmdRules == null
+        plugin.findbugsExclude == null
     }
+
 }

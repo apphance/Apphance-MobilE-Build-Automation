@@ -40,14 +40,6 @@ task javadocJar(type: Jar, dependsOn: groovydoc, description: 'Prepares .jar fil
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
-artifacts {
-    if (isReleaseVersion) {
-        archives sourcesJar
-        archives javadocJar
-        archives jar
-    }
-}
-
 codenarc {
     configFile = file('codenarc.groovy')
 }
@@ -198,24 +190,26 @@ task testUnit(type: Test) {
     testClassesDir = sourceSets.testUnit.output.classesDir
     classpath = sourceSets.testUnit.runtimeClasspath
     beforeTest(beforeTestClosure)
+    maxParallelForks = 4
 }
 
 task testIntegration(type: Test) {
     testClassesDir = sourceSets.testIntegration.output.classesDir
     classpath = sourceSets.testIntegration.runtimeClasspath
     beforeTest(beforeTestClosure)
+    maxParallelForks = 4
 }
 
 task testFunctional(type: Test) {
     testClassesDir = sourceSets.testFunctional.output.classesDir
     classpath = sourceSets.testFunctional.runtimeClasspath
     beforeTest(beforeTestClosure)
+    maxParallelForks = 4
 }
 
 test {
     beforeTest(beforeTestClosure)
 }
-
 
 idea {
     module {
@@ -225,9 +219,9 @@ idea {
         testOutputDir = file('build/classes/test')
 
         testSourceDirs = [
-                file('src/test/groovy/unit'),
-                file('src/test/groovy/integration'),
-                file('src/test/groovy/functional'),
+            file('src/test/groovy/unit'),
+            file('src/test/groovy/integration'),
+            file('src/test/groovy/functional'),
         ]
     }
 }
@@ -247,7 +241,7 @@ jar {
 }
 
 task fatJar(type: Jar, dependsOn: jar) {
-    appendix = "standalone"
+    classifier 'jar-with-dependencies'
     from zipTree(jar.archivePath)
     from configurations.compile.collect {
         it.isDirectory() ? it : zipTree(it).matching {
@@ -255,4 +249,13 @@ task fatJar(type: Jar, dependsOn: jar) {
         }
     }
     manifest.attributes("Main-Class": "com.apphance.flow.plugins.android.apphance.Main")
+}
+
+artifacts {
+    if (isReleaseVersion) {
+        archives sourcesJar
+        archives javadocJar
+        archives jar
+        archives fatJar
+    }
 }

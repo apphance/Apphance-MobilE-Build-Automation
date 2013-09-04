@@ -11,7 +11,6 @@ import ij.ImagePlus
 import org.gradle.api.Project
 import spock.lang.Ignore
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import javax.imageio.ImageIO
 
@@ -19,6 +18,7 @@ import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
+import static com.apphance.flow.util.ImageUtil.getImageFrom
 import static java.io.File.createTempFile
 
 @Mixin([TestUtils, FlowUtils])
@@ -72,7 +72,7 @@ class ImageMontageTaskSpec extends Specification {
 
         def image = ImageIO.read(montage)
 
-        int size = filesToMontage.count { imageMontageTask.getImageFrom(it) != null }
+        int size = filesToMontage.count { getImageFrom(it) != null }
         int columns = Math.min(size, imageMontageTask.MAX_NUMBER_OF_TILES_IN_ROW)
         int rows = Math.ceil(size / columns)
         image.getWidth() == ImageMontageTask.TILE_PX_SIZE * columns
@@ -116,20 +116,6 @@ class ImageMontageTaskSpec extends Specification {
         99             | 10    | 10
         100            | 10    | 10
         101            | 10    | 11
-    }
-
-    @Unroll
-    def '#file conversion'() {
-        given:
-        def dir = 'src/test/resources/com/apphance/flow/plugins/release/tasks/montageFiles/montageFilesSubdir/'
-        def source = new File(dir + '1.' + file)
-
-        expect:
-        source.exists()
-        imageMontageTask.getImageFrom(source) != null
-
-        where:
-        file << ['jpg', 'jpeg', 'gif', 'png', 'raw', 'bmp']
     }
 
     def 'create montage when no images'() {

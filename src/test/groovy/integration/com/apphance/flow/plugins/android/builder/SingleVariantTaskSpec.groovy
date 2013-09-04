@@ -25,12 +25,14 @@ import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_ANT
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
+import static org.apache.commons.io.FileUtils.copyDirectory
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 @Mixin(TestUtils)
 class SingleVariantTaskSpec extends Specification {
 
-    def project = builder().withProjectDir(new File('testProjects/android/android-basic')).build()
+    def rootDir = temporaryDir
+    def project = builder().withProjectDir(rootDir).build()
     def task = create SingleVariantTask
 
     def static projectName = 'TestAndroidProject'
@@ -54,6 +56,7 @@ class SingleVariantTaskSpec extends Specification {
     def projectUpdater = new AndroidProjectUpdater(executor: androidExecutor)
 
     def setup() {
+        copyDirectory new File('testProjects/android/android-basic'), rootDir
         task.antExecutor = antExecutor
         task.projectUpdater = projectUpdater
         task.ant = project.ant

@@ -1,5 +1,6 @@
 package com.apphance.flow.plugins.android.release.tasks
 
+import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
@@ -14,6 +15,17 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
 
     @Inject AndroidVariantsConfiguration variantsConf
     @Inject AndroidArtifactProvider artifactBuilder
+
+    @PackageScope
+    AndroidConfiguration getConf() {
+        super.@releaseConf as AndroidConfiguration
+    }
+
+
+    @PackageScope
+    AndroidReleaseConfiguration getReleaseConf() {
+        super.@releaseConf as AndroidReleaseConfiguration
+    }
 
     @PackageScope
     void prepareOtherArtifacts() {
@@ -89,7 +101,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
         basicBinding + [
                 baseUrl: releaseConf.otaIndexFile.url,
                 releaseNotes: releaseConf.releaseNotes,
-                iconFileName: releaseConf.iconFile.value.name,
+                iconFileName: releaseConf.releaseIcon.value.name,
                 variantsConf: variantsConf,
                 releaseConf: releaseConf,
                 rb: bundle('index')

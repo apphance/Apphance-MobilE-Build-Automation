@@ -69,7 +69,8 @@ class IOSVariantsConfigurationSpec extends Specification {
                     'GradleXCodeNoLaunchAction',
                     'GradleXCodeWithApphance',
                     'GradleXCodeWith2Targets',
-                    'GradleXCode 2']
+                    'GradleXCode 2',
+                    'GradleXCodeNotShared']
         }
 
         and:
@@ -80,6 +81,6 @@ class IOSVariantsConfigurationSpec extends Specification {
         variantsConf.schemeInfo = schemeInfo
 
         expect:
-        variantsConf.possibleVariants.sort() == ['GradleXCode', 'GradleXCode With Space', 'GradleXCodeWithApphance']
+        variantsConf.possibleVariants == (conf.schemes - ['GradleXCode 2', 'GradleXCodeNotShared'])
     }
 }

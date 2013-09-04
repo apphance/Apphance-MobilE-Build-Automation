@@ -1,6 +1,5 @@
 package com.apphance.flow.plugins.android.test
 
-import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
@@ -24,7 +23,6 @@ class AndroidTestPlugin implements Plugin<Project> {
 
     static final String TEST_ALL_TASK_NAME = 'testAll'
 
-    @Inject AndroidConfiguration conf
     @Inject AndroidTestConfiguration testConf
     @Inject AndroidVariantsConfiguration variantsConf
 
@@ -36,13 +34,13 @@ class AndroidTestPlugin implements Plugin<Project> {
             project.task(TEST_ALL_TASK_NAME, group: FLOW_TEST, description: 'Run all android tests')
 
             variantsConf.variants.each { AndroidVariantConfiguration variantConf ->
-                def testTaskName = "test${variantConf.name.capitalize()}"
+                def testTaskName = variantConf.testTaskName
                 project.task(testTaskName,
                         type: RunRobolectricTestsTask,
                         dependsOn: CopySourcesTask.NAME).variantConf = variantConf
 
                 project.tasks.findByName(TEST_ALL_TASK_NAME).dependsOn testTaskName
-                project.tasks.findByName(variantConf.buildTaskName)?.dependsOn testTaskName
+                project.tasks.findByName(testTaskName)?.dependsOn variantConf.buildTaskName
                 project.tasks.findByName(testTaskName).mustRunAfter VerifySetupTask.NAME
             }
         }

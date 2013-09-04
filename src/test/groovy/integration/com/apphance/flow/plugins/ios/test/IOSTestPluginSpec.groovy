@@ -21,20 +21,16 @@ class IOSTestPluginSpec extends Specification {
             getTestVariants() >> [
                     GroovyMock(IOSVariant) {
                         getTestTaskName() >> 'testV1'
-                        getBuildTaskName() >> 'buildV1'
                         getArchiveTaskName() >> 'archiveV1'
                     },
                     GroovyMock(IOSVariant) {
                         getTestTaskName() >> 'testV2'
-                        getBuildTaskName() >> 'buildV2'
                         getArchiveTaskName() >> 'archiveV2'
                     }
             ]
         }
 
         and:
-        project.task('buildV1')
-        project.task('buildV2')
         project.task('archiveV1')
         project.task('archiveV2')
 
@@ -55,8 +51,6 @@ class IOSTestPluginSpec extends Specification {
         project.tasks['testV2'].getMustRunAfter().find { it.values.contains(VerifySetupTask.NAME) }
 
         and:
-        project.tasks['buildV1'].dependsOn.flatten().containsAll('testV1')
-        project.tasks['buildV2'].dependsOn.flatten().containsAll('testV2')
         project.tasks['archiveV1'].dependsOn.flatten().containsAll('testV1')
         project.tasks['archiveV2'].dependsOn.flatten().containsAll('testV2')
 

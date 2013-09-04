@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.release.tasks
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.plugins.release.FlowArtifact
+import com.apphance.flow.util.ImageUtil
 import groovy.transform.PackageScope
 import ij.ImagePlus
 import ij.ImageStack
@@ -21,7 +22,6 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
-import static java.io.File.separator
 import static org.imgscalr.Scalr.pad
 
 @Mixin(ImageNameFilter)
@@ -49,7 +49,7 @@ class ImageMontageTask extends DefaultTask {
 
         releaseConf.imageMontageFile = new FlowArtifact(
                 name: 'Image Montage',
-                url: new URL("$releaseConf.releaseUrlVersioned$separator$imageMontageFile.name"),
+                url: new URL("$releaseConf.releaseUrlVersioned/$imageMontageFile.name"),
                 location: imageMontageFile)
 
         logger.lifecycle "Created image montage $imageMontageFile.absolutePath"
@@ -70,7 +70,8 @@ class ImageMontageTask extends DefaultTask {
 
     @PackageScope
     File outputMontageFile() {
-        def imageMontageFile = new File(releaseConf.releaseDir, "${conf.projectName.value}-${conf.fullVersionString}-image-montage.png")
+        def imageMontageFile = new File(releaseConf.releaseDir,
+                "${conf.projectNameNoWhiteSpace}-${conf.fullVersionString}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
         imageMontageFile
@@ -143,23 +144,18 @@ class ImageMontageTask extends DefaultTask {
     Collection<Image> resizeImages(List<File> inputs) {
         Collection<Image> images = inputs.collect {
 
-            def image = getImageFrom(it)
+            def image = ImageUtil.getImageFrom(it)
 
             if (image != null) {
                 image = pad(image, 20, Color.WHITE)
                 image.getScaledInstance(TILE_PX_SIZE, TILE_PX_SIZE, Image.SCALE_DEFAULT)
             } else {
                 logger.error("Problem during converting ${it.absolutePath}")
+                null
             }
         }
 
         images.removeAll { it == null }
         images
-    }
-
-    @PackageScope
-    BufferedImage getImageFrom(File file) {
-        logger.info("Reading file: $file.absolutePath")
-        ImageIO.read(file)
     }
 }

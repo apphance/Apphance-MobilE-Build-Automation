@@ -19,6 +19,7 @@ import spock.lang.Specification
 import javax.inject.Inject
 
 import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_ANDROID
+import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_LINT
 
 class ConfigurationModuleSpec extends Specification {
 
@@ -56,6 +57,7 @@ class ConfigurationModuleSpec extends Specification {
 
                 bind(ConfigurationModuleSpec).toInstance(ConfigurationModuleSpec.this)
                 bindConstant().annotatedWith(Names.named('executable.android')).to(STD_EXECUTABLE_ANDROID)
+                bindConstant().annotatedWith(Names.named('executable.lint')).to(STD_EXECUTABLE_LINT)
             }
 
         }

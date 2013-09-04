@@ -9,7 +9,6 @@ import java.nio.file.Paths
 import static com.apphance.flow.configuration.ProjectConfiguration.BUILD_DIR
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
-import static groovy.io.FileType.DIRECTORIES
 import static groovy.io.FileType.FILES
 import static java.lang.String.format
 import static java.nio.charset.StandardCharsets.UTF_8
@@ -57,18 +56,6 @@ class FileManager {
 
     public static getHumanReadableSize(long byteSize) {
         byteSize >= MEGABYTE ? format("%.2f", byteSize * 1.0 / 1024.0 / 1024.0) + " MB" : format("%.2f", byteSize * 1.0 / 1024.0) + " kB"
-    }
-
-    public static void findAllPackages(String currentPackage, File directory, currentPackageList) {
-        boolean empty = true
-        directory.eachFile(FILES, { empty = false })
-        if (!empty) {
-            currentPackageList << currentPackage
-        }
-        boolean rootDirectory = (currentPackage == '')
-        directory.eachDir {
-            findAllPackages(rootDirectory ? it.name : (currentPackage + '.' + it.name), it, currentPackageList)
-        }
     }
 
     public static File relativeTo(String from, String to) {

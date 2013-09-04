@@ -6,7 +6,6 @@ class Command {
 
     File runDir
     List<String> cmd
-    List<String> input
 
     Map<String, Object> params = [:]
     Map<String, Object> secretParams = [:]
@@ -19,7 +18,7 @@ class Command {
     }
 
     def getCommandForPublic() {
-        getFilledCommand(params + secretParams.collectEntries { [it.key, '???'] }).join(' ')
+        getFilledCommand(params + secretParams.collectEntries { [it.key, '***'] }).join(' ')
     }
 
     private getFilledCommand(Map args) {

@@ -2,10 +2,10 @@ package com.apphance.flow.plugins.ios.parsers
 
 import com.apphance.flow.executor.IOSExecutor
 import groovy.json.JsonSlurper
+import org.gradle.api.GradleException
+import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
-
-import static org.apache.commons.lang.StringUtils.isNotBlank
 
 class PbxJsonParser {
 
@@ -19,25 +19,17 @@ class PbxJsonParser {
     public static final String INFOPLIST_FILE = 'INFOPLIST_FILE'
     public static final String XCBUILD_CONFIGURATION = 'XCBuildConfiguration'
 
+    private logger = Logging.getLogger(getClass())
 
     @Inject IOSExecutor executor
 
     String plistForScheme(File pbx, String configuration, String blueprintId) {
+        logger.info("Looking for plist in file: $pbx.absolutePath, configuration: $configuration, blueprintId: $blueprintId")
+
         def json = parsedPBX(pbx)
         def objects = json.objects
 
         def targetObject = objects.find { it.key == blueprintId }.value as Map
-        def buildConfigurationListKey = targetObject.buildConfigurationList
-        def conf = findConfiguration(objects, buildConfigurationListKey, configuration)
-
-        conf.buildSettings[INFOPLIST_FILE]
-    }
-
-    String plistForTC(File pbx, String target, String configuration) {
-        def json = parsedPBX(pbx)
-        def objects = json.objects
-
-        def targetObject = objects.find { it.value.isa == PBX_NATIVE_TARGET && it.value.name == target }.value as Map
         def buildConfigurationListKey = targetObject.buildConfigurationList
         def conf = findConfiguration(objects, buildConfigurationListKey, configuration)
 
@@ -51,10 +43,15 @@ class PbxJsonParser {
         def configurations = objects.findAll { it.key in buildConfigurations }
         def conf = configurations.find { it.value.isa == XCBUILD_CONFIGURATION && it.value.name == configuration }
 
+        if (!conf)
+            throw new GradleException("Impossible to find configuration $configuration in configuration list: $buildConfigurationListKey")
+
         conf.value as Map
     }
 
     String targetForBlueprintId(File pbx, String blueprintId) {
+        logger.info("Looking for blueprintId: $blueprintId in file $pbx.absolutePath")
+
         def json = parsedPBX(pbx)
         def objects = json.objects
 
@@ -70,9 +67,5 @@ class PbxJsonParser {
 
     private Map parsedPBX(File pbx) {
         new JsonSlurper().parseText(executor.pbxProjToJSON(pbx).join('\n')) as Map
-    }
-
-    static boolean isPlaceholder(String value) {
-        isNotBlank(value) && value.matches('\\$\\(([A-Z]+_)*([A-Z])+\\)')
     }
 }

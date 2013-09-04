@@ -1,11 +1,8 @@
 package com.apphance.flow.plugins.android.test
 
-import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
-import com.apphance.flow.configuration.properties.BooleanProperty
-import com.google.common.io.Files
 import spock.lang.Specification
 
 import static org.gradle.testfixtures.ProjectBuilder.builder
@@ -25,15 +22,10 @@ class AndroidTestPluginSpec extends Specification {
         plugin.testConf = atc
 
         and:
-        def ac = GroovyStub(AndroidConfiguration)
-        ac.SDKDir >> Files.createTempDir()
-        plugin.conf = ac
-
-        and:
         def variantsConf = GroovyStub(AndroidVariantsConfiguration)
         variantsConf.variants >> [
-                GroovyStub(AndroidVariantConfiguration) { getName() >> 'release' },
-                GroovyStub(AndroidVariantConfiguration) { getName() >> 'debug' }
+                GroovySpy(AndroidVariantConfiguration, constructorArgs: ['release']),
+                GroovySpy(AndroidVariantConfiguration, constructorArgs: ['debug'])
         ]
         plugin.variantsConf = variantsConf
 

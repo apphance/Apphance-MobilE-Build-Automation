@@ -22,6 +22,7 @@ import javax.inject.Inject
 import static com.android.manifmerger.MergerLog.wrapSdkLog
 import static com.android.utils.StdLogger.Level.VERBOSE
 import static com.apphance.flow.executor.AntExecutor.CLEAN
+import static com.apphance.flow.executor.command.CommandExecutor.MAX_STD_LOG_SIZE
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static com.apphance.flow.plugins.android.parsers.AndroidManifestHelper.ANDROID_MANIFEST
 
@@ -51,14 +52,13 @@ class SingleVariantTask extends DefaultTask {
         antExecutor.executeTarget builderInfo.tmpDir, CLEAN
 
         if (builderInfo.variantDir?.exists()) {
-            overriteVariantFilesAndMergeManifest(builderInfo)
+            overrideVariantFilesAndMergeManifest(builderInfo)
         } else {
             logger.lifecycle("No files copied because variant directory ${builderInfo.variantDir} does not exists")
         }
 
         if (variant.oldPackage.value && variant.newPackage.value) {
-            def replacePackageTask = project.tasks[ReplacePackageTask.NAME] as ReplacePackageTask
-            replacePackageTask.replace(variant.tmpDir, variant.oldPackage.value, variant.newPackage.value, variant.newLabel.value, variant.newName.value)
+            new PackageReplacer().replace(variant.tmpDir, variant.oldPackage.value, variant.newPackage.value, variant.newLabel.value, variant.newName.value)
         }
 
         new LibraryDependencyHandler().handleLibraryDependencies(variant.tmpDir)
@@ -82,8 +82,7 @@ class SingleVariantTask extends DefaultTask {
         try {
             antExecutor.executeTarget rootDir, command
         } catch (CommandFailedException exp) {
-            logger.info "****"
-            def output = (exp.stdoutLog && exp.stdoutLog.size() < 1000 * 1000) ? exp.stdoutLog?.text : ''
+            def output = (exp.stdoutLog && exp.stdoutLog.size() < MAX_STD_LOG_SIZE) ? exp.stdoutLog?.text : ''
             if (output.contains('method onStart in class Apphance cannot be applied to given types')) {
                 logger.error "Error during source compilation. Probably some non-activity class was configured as activity in AndroidManifest.xml.\n" +
                         "Make sure that all <activity> tags in your manifest points to some activity classes and not to other classes like Fragment."
@@ -92,7 +91,7 @@ class SingleVariantTask extends DefaultTask {
         }
     }
 
-    void overriteVariantFilesAndMergeManifest(AndroidBuilderInfo builderInfo) {
+    void overrideVariantFilesAndMergeManifest(AndroidBuilderInfo builderInfo) {
         logger.lifecycle("Overriding files in ${builderInfo.tmpDir} with variant files from ${builderInfo.variantDir}")
         ant.copy(todir: builderInfo.tmpDir, failonerror: true, overwrite: true, verbose: true) {
             fileset(dir: builderInfo.variantDir, includes: '**/*')

@@ -3,18 +3,18 @@ package com.apphance.flow.plugins.ios.apphance
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
-import com.apphance.flow.plugins.apphance.ApphancePluginCommons
 import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancer
 import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancerFactory
 import com.apphance.flow.plugins.ios.apphance.source.IOSApphanceSourceEnhancer
 import com.apphance.flow.plugins.ios.apphance.source.IOSApphanceSourceEnhancerFactory
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
+import com.apphance.flow.util.FlowUtils
 import com.google.inject.Inject
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
 import org.gradle.api.GradleException
-import org.gradle.api.Project
 
+import static com.apphance.flow.configuration.apphance.ApphanceArtifactory.IOS_APPHANCE_REPO
 import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.DIRECTORIES
@@ -22,18 +22,17 @@ import static java.text.MessageFormat.format
 import static java.util.ResourceBundle.getBundle
 import static org.gradle.api.logging.Logging.getLogger
 
-@Mixin(ApphancePluginCommons)
 class IOSApphanceEnhancer {
 
     static final APPHANCE_FRAMEWORK_NAME_PATTERN = ~/.*[aA]pphance.*\.framework/
 
     private logger = getLogger(getClass())
 
-    @Inject Project project
     @Inject CommandExecutor executor
     @Inject PbxJsonParser pbxJsonParser
     @Inject IOSApphancePbxEnhancerFactory apphancePbxEnhancerFactory
     @Inject IOSApphanceSourceEnhancerFactory apphanceSourceEnhancerFactory
+    @Inject FlowUtils flowUtils
 
     private IOSVariant variant
     private bundle = getBundle('validation')
@@ -77,30 +76,23 @@ class IOSApphanceEnhancer {
 
     @PackageScope
     void downloadDependency() {
-        def apphanceZip = new File(variant.tmpDir, 'apphance.zip')
-
-        String confName = "apphance$variant.name".toString()
-
-        addApphanceConfiguration(project, confName)
-        project.dependencies {
-            "$confName" apphanceLibDependency
-        }
-
         try {
-            downloadApphance(confName, apphanceZip.name)
+            def apphanceZip = downloadApphance(apphanceUrl)
+            unzip(apphanceZip)
+            apphanceZip.delete()
         } catch (e) {
-            logger.error("Error while resolving dependency: $apphanceLibDependency, error: $e.message")
-            throw new GradleException(format(bundle.getString('exception.apphance.dependency'), apphanceLibDependency, variant.name))
+            logger.error("Error while resolving dependency: '$apphanceUrl', error: $e.message")
+            throw new GradleException(format(bundle.getString('exception.apphance.dependency'), apphanceUrl, variant.name))
         }
-        unzip(apphanceZip)
-        checkFrameworkFolders(apphanceLibDependency)
-        apphanceZip.delete()
+        checkFrameworkFolders()
     }
 
     @Lazy
     @PackageScope
-    String apphanceLibDependency = {
-        "com.apphance:ios.${apphanceDependencyGroup}.$variant.apphanceDependencyArch:$variant.apphanceLibVersion.value"
+    String apphanceUrl = {
+        def suffix = "apphance-$variant.apphanceMode.value.repoSuffix"
+        def lib = variant.apphanceLibVersion.value
+        "$IOS_APPHANCE_REPO/com/utest/$suffix/$lib/$suffix-$lib-${variant.apphanceDependencyArch}.zip"
     }()
 
     @Lazy
@@ -109,14 +101,8 @@ class IOSApphanceEnhancer {
         libForMode(variant.apphanceMode.value).groupName
     }()
 
-    private void downloadApphance(String confName, String apphanceFileName) {
-        project.copy {
-            from { project.configurations.getByName(confName) }
-            into variant.tmpDir
-            rename { String filename ->
-                apphanceFileName
-            }
-        }
+    private File downloadApphance(String apphanceURL) {
+        flowUtils.downloadToTempFile(apphanceURL)
     }
 
     private void unzip(File apphanceZip) {
@@ -126,11 +112,11 @@ class IOSApphanceEnhancer {
     }
 
     @PackageScope
-    void checkFrameworkFolders(String dependency) {
+    void checkFrameworkFolders() {
         def libVariant = apphanceDependencyGroup.replace('p', 'P')
         def frameworkFolder = new File(variant.tmpDir, "Apphance-${libVariant}.framework")
         if (!frameworkFolder.exists() || !frameworkFolder.isDirectory() || !(frameworkFolder.length() > 0l)) {
-            throw new GradleException(format(bundle.getString('exception.apphance.ios.folders'), frameworkFolder.canonicalPath, dependency))
+            throw new GradleException(format(bundle.getString('exception.apphance.ios.folders'), frameworkFolder.canonicalPath, variant.apphanceLibVersion))
         }
     }
 }

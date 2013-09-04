@@ -94,7 +94,7 @@ class ConfigurationWizard {
     @PackageScope
     boolean validateInput(String input, AbstractProperty ap) {
         if (isBlank(input)) {
-            ap.effectiveDefaultValue() || !ap.required()
+            effectiveDefaultValue(ap) || !ap.required()
         } else {
             ap.validator(input)
         }
@@ -102,7 +102,7 @@ class ConfigurationWizard {
 
     @PackageScope
     void setPropertyValue(AbstractProperty ap, String input) {
-        ap.value = isBlank(input) ? ap.effectiveDefaultValue() : input
+        ap.value = isBlank(input) ? effectiveDefaultValue(ap) : input
         logger.info("Property '${ap.name}' value set to: ${ap.value}")
     }
 
@@ -113,11 +113,18 @@ class ConfigurationWizard {
 
     @PackageScope
     String promptDefault(AbstractProperty ap) {
-        ap.effectiveDefaultValue() ? "default: '${green(ap.effectiveDefaultValue())}'" : ''
+        effectiveDefaultValue(ap) ? "default: '${green(effectiveDefaultValue(ap))}'" : ''
     }
 
     @PackageScope
     String promptPossible(AbstractProperty ap) {
         ap.possibleValues() ? ", possible: ${blue(ap.possibleValues().toString())}" : ''
+    }
+
+    /**
+     * Default value of property used in configuration wizard. Calculated from <code>value</code>, <code>defaultValue</code> and <code>possibleValues</code>
+     */
+    String effectiveDefaultValue(AbstractProperty ap) {
+        ap.getValue() ?: ap.defaultValue() ?: ap.possibleValues() ? ap.possibleValues().get(0) : ''
     }
 }

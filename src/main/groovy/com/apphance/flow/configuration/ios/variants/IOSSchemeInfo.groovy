@@ -6,8 +6,6 @@ import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
-import static java.io.File.separator
-
 class IOSSchemeInfo {
 
     @Inject IOSConfiguration conf
@@ -15,9 +13,7 @@ class IOSSchemeInfo {
 
     @Lazy
     @PackageScope
-    boolean hasSchemes = {
-        schemesDeclared() && schemesShared() && schemesBuildable() && schemesHasSingleBuildableTarget()
-    }()
+    boolean hasSchemes = { schemesDeclared() && schemesShared() }()
 
     @PackageScope
     boolean schemesDeclared() {
@@ -35,18 +31,8 @@ class IOSSchemeInfo {
     }
 
     @PackageScope
-    boolean schemesBuildable() {
-        schemeFiles.any(this.&schemeBuildable)
-    }
-
-    @PackageScope
     boolean schemeBuildable(File scheme) {
         schemeParser.isBuildable(scheme)
-    }
-
-    @PackageScope
-    boolean schemesHasSingleBuildableTarget() {
-        schemeFiles.any(this.&schemeHasSingleBuildableTarget)
     }
 
     @PackageScope
@@ -72,7 +58,7 @@ class IOSSchemeInfo {
 
     @PackageScope
     Closure<File> schemeFile = { String name ->
-        new File(conf.xcodeDir.value, "xcshareddata${separator}xcschemes$separator${name}.xcscheme")
+        new File(conf.xcodeDir.value, "xcshareddata/xcschemes/${name}.xcscheme")
     }.memoize()
 
 }

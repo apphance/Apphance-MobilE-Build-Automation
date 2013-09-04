@@ -11,7 +11,6 @@ import spock.lang.Specification
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.configuration.android.AndroidBuildMode.DEBUG
 import static com.google.common.io.Files.createTempDir
-import static java.io.File.separator
 
 class AndroidArtifactProviderSpec extends Specification {
 
@@ -30,7 +29,7 @@ class AndroidArtifactProviderSpec extends Specification {
     def arc = GroovyMock(AndroidReleaseConfiguration) {
         getOtaDir() >> otaDir
         getReleaseUrlVersioned() >> "http://ota.polidea.pl/$projectName/$ac.fullVersionString".toURL()
-        getReleaseDir() >> new File(otaDir, "$projectName$separator$ac.fullVersionString")
+        getReleaseDir() >> new File(otaDir, "$projectName/$ac.fullVersionString")
     }
     def avc = GroovyMock(AndroidVariantConfiguration) {
         getMode() >> DEBUG
@@ -71,7 +70,6 @@ class AndroidArtifactProviderSpec extends Specification {
         abi.buildDir == binDir
         abi.variantDir == variantDir
         abi.filePrefix == 'SampleAndroidProject-debug-V1-1.0.1_42'
-        abi.fullReleaseName == 'SampleAndroidProject-debug-V1-1.0.1_42'
         abi.originalFile == new File(binDir, 'classes.jar')
     }
 
@@ -98,7 +96,6 @@ class AndroidArtifactProviderSpec extends Specification {
         abi.buildDir == new File(new File(ac.tmpDir, avc.name), 'bin')
         abi.variantDir == variantDir
         abi.filePrefix == 'SampleAndroidProject-debug-V1-1.0.1_42'
-        abi.fullReleaseName == 'SampleAndroidProject-debug-V1-1.0.1_42'
         abi.originalFile == new File(binDir, 'SampleAndroidProject-debug.apk')
     }
 

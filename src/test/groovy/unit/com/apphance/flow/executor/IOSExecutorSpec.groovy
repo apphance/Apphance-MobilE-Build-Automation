@@ -120,6 +120,16 @@ class IOSExecutorSpec extends Specification {
         iosExecutor.iOSSimVersion.matches('(\\d+\\.)+\\d+')
     }
 
+    def 'ios-sim version empty when ios-sim not installed'() {
+        given:
+        iosExecutor.executor = GroovyMock(CommandExecutor) {
+            executeCommand(_) >> { throw new Exception('no ios-sim') }
+        }
+
+        expect:
+        iosExecutor.iOSSimVersion == ''
+    }
+
     def 'archive command is executed well'() {
         given:
         def ce = GroovyMock(CommandExecutor)
@@ -133,7 +143,7 @@ class IOSExecutorSpec extends Specification {
         })
 
         when:
-        iose.archiveVariant(rootDir, ['xcodebuild', '-project', 'Sample.xcodeproj', '-scheme', 's1', 'clean', 'archive'])
+        iose.buildVariant(rootDir, ['xcodebuild', '-project', 'Sample.xcodeproj', '-scheme', 's1', 'clean', 'archive'])
 
         then:
         1 * ce.executeCommand({ it.commandForExecution.join(' ') == 'xcodebuild -project Sample.xcodeproj -scheme s1 clean archive' && it.runDir.name == 'rootDir' })
