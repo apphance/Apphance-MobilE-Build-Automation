@@ -7,10 +7,6 @@ import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
 import org.gradle.api.logging.Logging
 
-/**
- * Helps to parse and process android manifest.
- *
- */
 @Mixin(Preconditions)
 class AndroidManifestHelper {
 

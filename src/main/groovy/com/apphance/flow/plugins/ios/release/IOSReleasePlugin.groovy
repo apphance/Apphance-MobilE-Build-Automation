@@ -14,19 +14,6 @@ import javax.inject.Inject
 
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- *
- * Plugin for releasing iOS build.
- *
- * This is the plugin that provides simple release functionality.
- *
- * It provides basic release tasks, so that you can upgrade version of the application
- * while preparing the release and it provides post-release tasks that commit it into the repository.
- * Most importantly however, it produces ready-to-use OTA (Over-The-Air) package (in ota directory)
- * that you can copy to appropriate directory on your web server and have ready-to-use,
- * easily installable OTA version of your application.
- *
- */
 class IOSReleasePlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())

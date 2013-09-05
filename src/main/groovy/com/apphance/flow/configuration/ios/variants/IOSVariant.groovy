@@ -11,6 +11,7 @@ import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
+import com.apphance.flow.validation.VersionValidator
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
 
@@ -20,7 +21,6 @@ import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.LAUNCH_ACTION
-import static com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask.WHITESPACE_PATTERN
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
 import static java.util.ResourceBundle.getBundle
@@ -35,6 +35,7 @@ class IOSVariant extends AbstractVariant {
     @Inject IOSExecutor executor
     @Inject XCSchemeParser schemeParser
     @Inject IOSSchemeInfo schemeInfo
+    @Inject VersionValidator versionValidator
 
     private bundle = getBundle('validation')
 
@@ -219,13 +220,8 @@ class IOSVariant extends AbstractVariant {
     void checkProperties() {
         super.checkProperties()
 
-        def ec = conf.extVersionCode
-        if (ec)
-            check ec.matches('[0-9]+'), bundle.getString('exception.ios.version.code.ext')
-
-        def es = conf.extVersionString
-        if (es)
-            check((isNotEmpty(es) && !WHITESPACE_PATTERN.matcher(es).find()), bundle.getString('exception.ios.version.string.ext'))
+        check versionValidator.isNumber(versionCode), bundle.getString('exception.ios.version.code')
+        check versionValidator.hasNoWhiteSpace(versionString), bundle.getString('exception.ios.version.string')
 
         if (mobileprovisionEnabled)
             defaultValidation mobileprovision

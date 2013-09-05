@@ -109,7 +109,6 @@ class IOSConfiguration extends ProjectConfiguration {
     @Override
     void checkProperties() {
         super.checkProperties()
-
         defaultValidation xcodeDir, sdk, simulatorSdk
     }
 }
