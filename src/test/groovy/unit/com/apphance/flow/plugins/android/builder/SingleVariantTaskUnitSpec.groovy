@@ -6,6 +6,7 @@ import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.properties.BooleanProperty
+import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.AndroidExecutor
 import com.apphance.flow.executor.AntExecutor
@@ -26,18 +27,17 @@ import static com.google.common.io.Files.createTempDir
 class SingleVariantTaskUnitSpec extends Specification {
 
     def task = create SingleVariantTask
-    def tmpDir = createTempDir()
     def variantDir = temporaryDir
     AndroidBuilderInfo builderInfo
 
     def setup() {
         new File(variantDir, 'project.properties').createNewFile()
         builderInfo = GroovyStub(AndroidBuilderInfo) {
-            getTmpDir() >> tmpDir
+            getTmpDir() >> variantDir
             getMode() >> AndroidBuildMode.DEBUG
             getOriginalFile() >> getTempFile()
         }
-        with(task) {
+        task.with {
             artifactProvider = GroovyStub(AndroidArtifactProvider) {
                 builderInfo(_) >> builderInfo
                 artifact(_) >> GroovyStub(FlowArtifact) {
@@ -57,6 +57,7 @@ class SingleVariantTaskUnitSpec extends Specification {
                 getOldPackage() >> new StringProperty()
                 getNewPackage() >> new StringProperty()
                 getMergeManifest() >> new BooleanProperty(value: 'true')
+                getVariantDir() >> new FileProperty(value: temporaryDir)
             }
 
             ant = GroovyMock(AntBuilder)
@@ -73,18 +74,18 @@ class SingleVariantTaskUnitSpec extends Specification {
 
         then:
         with(task) {
-            1 * antExecutor.executeTarget(tmpDir, CLEAN)
-            1 * antExecutor.executeTarget(tmpDir, 'debug')
             1 * projectUpdater.updateRecursively(variantDir, 'android-8', 'TestAndroidProject')
+            1 * projectUpdater.executor.updateProject(variantDir, 'android-8', 'TestAndroidProject')
+            1 * antExecutor.executeTarget(variantDir, CLEAN)
+            1 * antExecutor.executeTarget(variantDir, 'debug')
+            1 * ant.copy(* _)
+
             0 * antExecutor.executeTarget(_, _)
-            0 * ant.copy(_)
         }
-        1 * task.projectUpdater.executor.updateProject(variantDir, 'android-8', 'TestAndroidProject')
     }
 
     def 'test override files from variant dir'() {
         given: 'variant has its directory'
-        builderInfo.variantDir >> createTempDir()
         task.releaseConf.enabled >> false
 
         when:
@@ -102,7 +103,7 @@ class SingleVariantTaskUnitSpec extends Specification {
         task.singleVariant()
 
         then:
-        1 * task.ant.copy(* _)
+        2 * task.ant.copy(* _)
     }
 
     def 'test manifest merge'() {
