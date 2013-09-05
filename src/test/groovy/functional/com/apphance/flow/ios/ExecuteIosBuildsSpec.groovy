@@ -93,6 +93,6 @@ class ExecuteIosBuildsSpec extends Specification {
     def runGradleOneVariant(String... tasks) {
         def buildLauncher = testProjectConnection.newBuild()
         buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS as String[])
-        buildLauncher.forTasks(tasks).run();
+        buildLauncher.forTasks(tasks).run()
     }
 }

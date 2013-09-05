@@ -85,8 +85,8 @@ class IOSVariant extends AbstractVariant {
             message: "Mobile provision file for variant defined",
             interactive: { mobileprovisionEnabled },
             required: { mobileprovisionEnabled },
-            possibleValues: { possibleMobileProvisionFiles()*.path as List<String> },
-            validator: { it in (possibleMobileProvisionFiles()*.path as List<String>) }
+            possibleValues: { possibleMobileProvisionPaths },
+            validator: { isNotEmpty(it?.path) ? it.path in (possibleMobileProvisionPaths) : false }
     )
 
     @Lazy
@@ -102,11 +102,12 @@ class IOSVariant extends AbstractVariant {
         new FileProperty(value: new File(tmpDir, this.@mobileprovision.value.path))
     }
 
+    @Lazy
     @PackageScope
-    List<File> possibleMobileProvisionFiles() {
-        def mp = releaseConf.findMobileProvisionFiles()
-        mp ? mp.collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath) } : []
-    }
+    List<String> possibleMobileProvisionPaths = {
+        def mp = releaseConf.mobileprovisionFiles
+        mp ? mp.collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath) }*.path : []
+    }()
 
     def frameworkName = new StringProperty(
             message: 'Framework name',
@@ -225,6 +226,9 @@ class IOSVariant extends AbstractVariant {
         def es = conf.extVersionString
         if (es)
             check((isNotEmpty(es) && !WHITESPACE_PATTERN.matcher(es).find()), bundle.getString('exception.ios.version.string.ext'))
+
+        if (mobileprovisionEnabled)
+            defaultValidation mobileprovision
 
         if (mode.value == FRAMEWORK) {
             defaultValidation frameworkName

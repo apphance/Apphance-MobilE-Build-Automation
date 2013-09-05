@@ -76,6 +76,6 @@ class ArchiveVariantTask extends AbstractBuildVariantTask {
     }.memoize()
 
     protected Closure<? extends IOSSimArtifactInfo> infoProvider = {
-        [(DEVICE): artifactProvider.deviceInfo(variant), (SIMULATOR): artifactProvider.simInfo(variant)].get(variant.mode.value)
+        [(DEVICE): { artifactProvider.deviceInfo(variant) }, (SIMULATOR): { artifactProvider.simInfo(variant) }].get(variant.mode.value).call()
     }.memoize()
 }
