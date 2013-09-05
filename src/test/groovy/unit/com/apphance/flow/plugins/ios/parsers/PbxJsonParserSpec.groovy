@@ -41,7 +41,7 @@ class PbxJsonParserSpec extends Specification {
 
     def 'target name is found for blueprint id'() {
         expect:
-        parser.targetForBlueprintId(GroovyMock(File), blueprintId) == target
+        parser.targetForBlueprintId.call(GroovyMock(File), blueprintId) == target
 
         where:
         target             | blueprintId

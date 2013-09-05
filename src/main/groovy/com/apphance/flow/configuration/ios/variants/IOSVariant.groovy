@@ -189,7 +189,7 @@ class IOSVariant extends AbstractVariant {
     }
 
     String getTarget() {
-        pbxJsonParser.targetForBlueprintId(pbxFile, schemeParser.blueprintIdentifier(schemeFile))
+        pbxJsonParser.targetForBlueprintId.call(pbxFile, schemeParser.blueprintIdentifier(schemeFile))
     }
 
     String getBuildConfiguration() {

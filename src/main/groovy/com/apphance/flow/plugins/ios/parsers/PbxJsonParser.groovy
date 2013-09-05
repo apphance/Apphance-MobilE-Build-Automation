@@ -49,20 +49,13 @@ class PbxJsonParser {
         conf.value as Map
     }
 
-    String targetForBlueprintId(File pbx, String blueprintId) {
+    Closure<String> targetForBlueprintId = { File pbx, String blueprintId ->
         logger.info("Looking for blueprintId: $blueprintId in file $pbx.absolutePath")
-
-        def json = parsedPBX(pbx)
-        def objects = json.objects
-
-        def targetObject = objects.find { it.value.isa == PBX_NATIVE_TARGET && it.key == blueprintId }.value as Map
-
-        targetObject.name
-    }
+        parsedPBX(pbx).objects.find { it.value.isa == PBX_NATIVE_TARGET && it.key == blueprintId }.value.name
+    }.memoize()
 
     boolean isFrameworkDeclared(File pbx, def frameworkNamePattern) {
-        def json = parsedPBX(pbx)
-        json.objects.find { it.value.isa == PBX_FILE_REFERENCE && it.value.name =~ frameworkNamePattern }
+        parsedPBX(pbx).objects.find { it.value.isa == PBX_FILE_REFERENCE && it.value.name =~ frameworkNamePattern }
     }
 
     private Map parsedPBX(File pbx) {

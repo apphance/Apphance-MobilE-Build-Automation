@@ -42,7 +42,7 @@ class IOSTestTask extends DefaultTask {
         def testBlueprintIds = schemeParser.findActiveTestableBlueprintIds(variant.schemeFile)
         testPbxEnhancer.addShellScriptToBuildPhase(variant, testBlueprintIds)
 
-        def testTargets = testBlueprintIds.collect { pbxJsonParser.targetForBlueprintId(variant.pbxFile, it) }
+        def testTargets = testBlueprintIds.collect { pbxJsonParser.targetForBlueprintId.call(variant.pbxFile, it) }
         def testConf = schemeParser.configuration(variant.schemeFile, TEST_ACTION)
 
         testTargets.each { String testTarget ->
