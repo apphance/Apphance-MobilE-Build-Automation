@@ -21,7 +21,7 @@ class UpdateVersionTask extends AbstractUpdateVersionTask {
     void updateDescriptor(String versionCode, String versionString) {
         def plists = variantsConf.variants.findAll { it.mode.value != FRAMEWORK }.collect { v ->
             def blueprintId = schemeParser.blueprintIdentifier(v.schemeFile)
-            new File(v.tmpDir, pbxJsonParser.plistForScheme(v.pbxFile, v.archiveConfiguration, blueprintId))
+            new File(v.tmpDir, pbxJsonParser.plistForScheme.call(v.pbxFile, v.archiveConfiguration, blueprintId))
         }.unique()
         plists.each {
             logger.info("Updating plist: $it.absolutePath, versionCode: $versionCode, versionString: $versionString")

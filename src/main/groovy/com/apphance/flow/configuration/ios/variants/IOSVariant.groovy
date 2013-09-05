@@ -185,7 +185,7 @@ class IOSVariant extends AbstractVariant {
     File getPlist() {
         String confName = schemeParser.configuration(schemeFile, LAUNCH_ACTION)
         String blueprintId = schemeParser.blueprintIdentifier(schemeFile)
-        new File(tmpDir, pbxJsonParser.plistForScheme(pbxFile, confName, blueprintId))
+        new File(tmpDir, pbxJsonParser.plistForScheme.call(pbxFile, confName, blueprintId))
     }
 
     String getTarget() {

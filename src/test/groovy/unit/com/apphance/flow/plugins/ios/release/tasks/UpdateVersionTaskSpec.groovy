@@ -55,7 +55,7 @@ class UpdateVersionTaskSpec extends Specification {
         }
         and:
         task.pbxJsonParser = GroovyMock(PbxJsonParser) {
-            plistForScheme(_, _, _) >> 'some.plist'
+            getPlistForScheme() >> { a, b, c -> 'some.plist' }.memoize()
         }
 
         when:
