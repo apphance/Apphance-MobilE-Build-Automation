@@ -8,9 +8,9 @@
         ${rb.getString('Application')} <b>${title}</b> - iOS<br/>
         ${rb.getString('Version')} <b>${version}</b>
         <p>
-            <b>${rb.getString('Available_files')}</b>
+            <b>${rb.getString('Installation')}</b>
             <ul>
-                <li><a href="${otaUrl}">${rb.getString('More_information_and_files_to_download')}</a></li>
+                <li><a href="${otaUrl}">${rb.getString('Main_installation_page')}</a></li>
             </ul>
         </p>
         <p>
@@ -23,7 +23,12 @@
                 </ul>
             <% } %>
         </p>
-
+        <p>
+            <b>${rb.getString('Extras')}</b>
+            <ul>
+                <li><a href="${fileIndexUrl}">${rb.getString('More_information_and_files_to_download')}</a></li>
+            </ul>
+        </p>
         <b>${rb.getString('Released')}</b> ${currentDate}<br/>
 
         ${rb.getString('Have_fun')}<br/><br/>
