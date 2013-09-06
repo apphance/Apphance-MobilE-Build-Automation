@@ -73,7 +73,6 @@ class IOSPluginSpec extends Specification {
         and:
         project.tasks[ARCHIVE_ALL_TASK_NAME].dependsOn.flatten().containsAll(ARCHIVE_ALL_SIMULATOR_TASK_NAME, ARCHIVE_ALL_DEVICE_TASK_NAME)
         project.tasks['archiveV1'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
-        project.tasks['archiveV2'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
         project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].dependsOn.flatten().contains('archiveV2')
         project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].dependsOn.flatten().contains('archiveV1')
 

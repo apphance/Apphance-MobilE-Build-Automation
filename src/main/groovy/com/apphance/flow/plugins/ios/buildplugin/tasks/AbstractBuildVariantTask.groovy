@@ -1,8 +1,13 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
+import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.configuration.ios.IOSConfiguration
+import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
+import com.apphance.flow.util.FlowUtils
+import com.google.common.base.Preconditions
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -17,7 +22,10 @@ abstract class AbstractBuildVariantTask extends DefaultTask {
     String group = FLOW_BUILD
 
     @Inject IOSConfiguration conf
+    @Inject IOSReleaseConfiguration releaseConf
     @Inject IOSExecutor iosExecutor
+    @Inject IOSArtifactProvider artifactProvider
+    @Inject FlowUtils fu
 
     IOSVariant variant
 
@@ -40,4 +48,21 @@ abstract class AbstractBuildVariantTask extends DefaultTask {
                 []
         }
     }
+
+    protected validate() {
+        Preconditions.checkNotNull(variant, 'Null variant passed to builder!')
+        Preconditions.checkArgument(variant.mode.value == validationMode, "Invalid build mode: $variant.mode.value!")
+    }
+
+    @Lazy
+    protected String productName = {
+        iosExecutor.buildSettings(variant.target, variant.archiveConfiguration)['PRODUCT_NAME']
+    }()
+
+    @Lazy
+    protected String appName = {
+        iosExecutor.buildSettings(variant.target, variant.archiveConfiguration)['FULL_PRODUCT_NAME']
+    }()
+
+    abstract protected IOSBuildMode getValidationMode()
 }

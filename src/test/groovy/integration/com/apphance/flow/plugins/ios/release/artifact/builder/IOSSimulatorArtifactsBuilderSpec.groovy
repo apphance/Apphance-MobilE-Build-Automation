@@ -73,14 +73,14 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
 
     def 'source app is synced'() {
         given:
-        def xcArchive = new File(getClass().getResource('GradleXCode.xcarchive').toURI())
-        def srcApp = builder.sourceApp(new IOSSimArtifactInfo(archiveDir: xcArchive, appName: 'GradleXCode.app'))
+        def xcArchive = new File(getClass().getResource('GradleXCode.xcarchive/Products/Applications').toURI())
+        def srcApp = builder.sourceApp(new IOSSimArtifactInfo(simDir: xcArchive, appName: 'GradleXCode.app'))
         and:
         def tmpDir = createTempDir()
         tmpDir.deleteOnExit()
 
         expect:
-        srcApp.canonicalPath.endsWith('GradleXCode.xcarchive/Products/Applications/GradleXCode.app')
+        srcApp.canonicalPath.endsWith('GradleXCode.app')
 
         when:
         builder.syncAppToTmpDir(srcApp, tmpDir)
