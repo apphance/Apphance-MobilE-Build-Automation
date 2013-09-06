@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.release
 
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
+import com.apphance.flow.plugins.release.tasks.AbstractAvailableArtifactsInfoTask
 import com.apphance.flow.plugins.release.tasks.BuildSourcesZipTask
 import com.apphance.flow.plugins.release.tasks.ImageMontageTask
 import com.apphance.flow.plugins.release.tasks.SendMailMessageTask
@@ -45,7 +46,7 @@ class ReleasePlugin implements Plugin<Project> {
 
             project.task(SendMailMessageTask.NAME,
                     type: SendMailMessageTask,
-                    dependsOn: 'prepareAvailableArtifactsInfo')
+                    dependsOn: AbstractAvailableArtifactsInfoTask.NAME)
 
             project.task(BuildSourcesZipTask.NAME,
                     type: BuildSourcesZipTask)
