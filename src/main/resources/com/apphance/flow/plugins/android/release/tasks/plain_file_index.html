@@ -15,7 +15,7 @@
         <ul>
             <% variantsConf.variants.each { variant -> %>
             <% if (releaseConf.apkFiles[variant.name] != null) { %>
-            <li><b>${variant.name}</b> : <a href="${releaseConf.apkFiles[variant.name].getRelativeUrl(baseUrl)}" rel="external">${releaseConf.apkFiles[variant.name].url}</a>
+            <li><b>${variant.displayName.value}</b> : <a href="${releaseConf.apkFiles[variant.name].getRelativeUrl(baseUrl)}" rel="external">${releaseConf.apkFiles[variant.name].url}</a>
             </li>
             <% } %>
             <% } %>

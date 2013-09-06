@@ -49,7 +49,7 @@ class SimulatorVariantTaskSpec extends Specification {
         task.build()
 
         then:
-        1 * task.iosExecutor.buildVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', '-sdk', 'iphonesimulator', '-arch', 'i386', "CONFIGURATION_BUILD_DIR=${task.simTmpDir.absolutePath}", 'clean', 'build'])
+        1 * task.iosExecutor.buildVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', '-configuration', 'c', '-sdk', 'iphonesimulator', '-arch', 'i386', "CONFIGURATION_BUILD_DIR=${task.simTmpDir.absolutePath}", 'clean', 'build'])
         cnt * task.artifactProvider.simInfo(_) >> new IOSSimArtifactInfo()
         cnt * task.simulatorArtifactsBuilder.buildArtifacts(_)
 

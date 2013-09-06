@@ -38,6 +38,8 @@ abstract class AbstractVariant extends AbstractConfiguration {
         apphanceLibVersion.name = "${prefix}.variant.${name}.apphance.lib"
         apphanceLibVersion.message = "Apphance lib version for '$name'"
 
+        displayName.name = "${prefix}.variant.${name}.display.name"
+
         super.init()
     }
 
@@ -81,14 +83,18 @@ abstract class AbstractVariant extends AbstractConfiguration {
         true
     }()
 
+    private displayName = new StringProperty(
+            required: { false },
+            interactive: { false }
+    )
+
+    StringProperty getDisplayName() {
+        new StringProperty(value: displayName?.value ?: name?.replaceAll('[-_]', ' '))
+    }
+
     String getName() {
         this.@name
     }
-
-    @Lazy
-    String presentationName = {
-        name?.replaceAll('[-_]',' ')
-    }()
 
     String getUploadTaskName() {
         "upload$name".replaceAll('\\s', '')
@@ -113,7 +119,6 @@ abstract class AbstractVariant extends AbstractConfiguration {
     void checkProperties() {
         if (apphanceConf.enabled) {
             defaultValidation apphanceMode
-
             if (apphanceMode.value != DISABLED) {
                 defaultValidation apphanceAppKey, apphanceLibVersion
             }

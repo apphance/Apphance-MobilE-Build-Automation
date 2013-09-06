@@ -30,11 +30,11 @@
                                 <% variantsConf.variants.each { v -> %>
                                     <% def m = v.mode.value.name() %>
                                     <% if(m == 'DEVICE' && releaseConf.ipaFiles[v.name]) { %>
-                                        <li><a href="#${v.name}"><h3>${v.presentationName}</h3></a></li>
+                                        <li><a href="#${v.name}"><h3>${v.displayName.value}</h3></a></li>
                                     <% } else if(m == 'SIMULATOR' && families.collect{ f -> f.iFormat()+'-'+v.name}.any { a -> releaseConf.dmgImageFiles[a] } ) { %>
-                                        <li><a href="#${v.name}"><h3>${v.presentationName}</h3></a></li>
+                                        <li><a href="#${v.name}"><h3>${v.displayName.value}</h3></a></li>
                                     <% } else if(m == 'FRAMEWORK' && releaseConf.frameworkFiles[v.name]) { %>
-                                        <li><a href="${releaseConf.frameworkFiles[v.name].getRelativeUrl(baseUrl)}" rel='external'><h3>${v.presentationName}</h3></a></li>
+                                        <li><a href="${releaseConf.frameworkFiles[v.name].getRelativeUrl(baseUrl)}" rel='external'><h3>${v.displayName.value}</h3></a></li>
                                     <% } %>
                                 <% } %>
                             </ul>

@@ -12,7 +12,7 @@
         <ul>
             <% variantsConf.variants.each { v -> %>
                 <% if(v.mode.value.name() == 'DEVICE' && releaseConf.ipaFiles[v.name]) { %>
-                <li><b>${v.presentationName}</b></li><br/>
+                <li><b>${v.displayName.value}</b></li><br/>
                 <ul>
                     <% if (releaseConf.distributionZipFiles[v.name] != null) { %>
                     <li>${rb.getString('Application_zip')}
@@ -73,7 +73,7 @@
                 <% } %>
 
                 <% if(v.mode.value.name() == 'SIMULATOR' && families.collect{ f -> f.iFormat()+'-'+v.name}.any { a -> releaseConf.dmgImageFiles[a] }) { %>
-                <li><b>${v.presentationName}</b></li><br/>
+                <li><b>${v.displayName.value}</b></li><br/>
                     <ul>
                         <% families.each { family -> %>
                         <% if (releaseConf.dmgImageFiles[family.iFormat() + '-' + v.name] != null) { %>
@@ -88,7 +88,7 @@
                 e<% } %>
 
                 <% if(v.mode.value.name() == 'FRAMEWORK' && releaseConf.frameworkFiles[v.name]) { %>
-                <li><b>${v.presentationName}</b></li><br/>
+                <li><b>${v.displayName.value}</b></li><br/>
                 <ul>
                     <% if (releaseConf.frameworkFiles[v.name] != null) { %>
                     <li>
@@ -99,6 +99,7 @@
                     <% } %>
                 </ul>
                 <% } %>
+                <br/>
             <% } %>
         </ul>
         <h2>${rb.getString('Other')}</h2>
