@@ -42,9 +42,4 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
         def icons = files { it.name ==~ ANDROID_ICON_PATTERN }*.canonicalPath
         icons.collect { relativeTo(androidConf.rootDir.absolutePath, it).path }
     }
-
-    @Override
-    void checkProperties() {
-        super.checkProperties()
-    }
 }
