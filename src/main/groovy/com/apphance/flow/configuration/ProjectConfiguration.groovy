@@ -30,11 +30,11 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
     abstract String getVersionString()
 
     String getExtVersionCode() {
-        reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
+        reader.envVariable('VERSION_CODE') ?: reader.systemProperty('version.code') ?: ''
     }
 
     String getExtVersionString() {
-        reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
+        reader.envVariable('VERSION_STRING') ?: reader.systemProperty('version.string') ?: ''
     }
 
     String getFullVersionString() {

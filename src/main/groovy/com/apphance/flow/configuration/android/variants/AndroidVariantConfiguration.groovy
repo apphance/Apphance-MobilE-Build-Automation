@@ -2,7 +2,6 @@ package com.apphance.flow.configuration.android.variants
 
 import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
-import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
@@ -25,7 +24,6 @@ class AndroidVariantConfiguration extends AbstractVariant {
     final String prefix = 'android'
 
     @Inject AndroidReleaseConfiguration androidReleaseConf
-    @Inject ApphanceArtifactory apphanceArtifactory
     private File vDir
 
     @AssistedInject
