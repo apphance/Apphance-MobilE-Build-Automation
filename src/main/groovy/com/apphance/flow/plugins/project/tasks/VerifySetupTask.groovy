@@ -10,9 +10,6 @@ import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_SETUP
 
-/**
- * Verifies all properties.
- */
 class VerifySetupTask extends DefaultTask {
 
     static String NAME = 'verifySetup'

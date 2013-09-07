@@ -1,5 +1,6 @@
 package com.apphance.flow.plugins.ios.parsers
 
+import com.apphance.flow.util.FlowUtils
 import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
@@ -7,16 +8,13 @@ import spock.lang.Unroll
 
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.*
 import static com.google.common.io.Files.copy
-import static com.google.common.io.Files.createTempDir
 
+@Mixin(FlowUtils)
 class XCSchemeParserSpec extends Specification {
 
-    @Shared
-    def scheme1 = new File(getClass().getResource('GradleXCode.xcscheme').toURI())
-    @Shared
-    def scheme2 = new File(getClass().getResource('GradleXCode2.xcscheme').toURI())
-
-    def parser = new XCSchemeParser()
+    @Shared scheme1 = new File(getClass().getResource('GradleXCode.xcscheme').toURI())
+    @Shared scheme2 = new File(getClass().getResource('GradleXCode2.xcscheme').toURI())
+    @Shared parser = new XCSchemeParser()
 
     def 'configuration for scheme is read and action correctly'() {
         expect:
@@ -60,7 +58,7 @@ class XCSchemeParserSpec extends Specification {
     @Unroll
     def 'archive post action is added in file: #filename'() {
         given:
-        def tmpDir = createTempDir()
+        def tmpDir = temporaryDir
         copy(new File(getClass().getResource("${filename}.xcscheme").toURI()), new File(tmpDir, "${filename}.xcscheme"))
         def tmpFile = new File(tmpDir, "${filename}.xcscheme")
 
@@ -74,9 +72,6 @@ class XCSchemeParserSpec extends Specification {
             it.@title.text() == 'ECHO_FLOW_ARCHIVE_PATH'
         }
         xml.ArchiveAction.@revealArchiveInOrganizer == 'YES'
-
-        cleanup:
-        tmpDir.deleteDir()
 
         where:
         filename       | actions

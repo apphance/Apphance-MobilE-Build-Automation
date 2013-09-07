@@ -46,9 +46,14 @@ abstract class AbstractVariant extends AbstractConfiguration {
     def apphanceMode = new ApphanceModeProperty(
             interactive: { apphanceEnabled },
             required: { apphanceConf.enabled },
-            possibleValues: { possibleApphanceModes() },
-            validator: { it -> it.toString() in possibleApphanceModes() }
+            possibleValues: { possibleApphanceModes },
+            validator: { it -> it.toString() in possibleApphanceModes }
     )
+
+    @Lazy
+    List<String> possibleApphanceModes = {
+        ApphanceMode.values()*.name() as List<String>
+    }()
 
     def apphanceAppKey = new StringProperty(
             interactive: { apphanceEnabled && !(DISABLED == apphanceMode.value) },
@@ -57,17 +62,13 @@ abstract class AbstractVariant extends AbstractConfiguration {
             validationMessage: "Key should match '[a-z0-9]+'"
     )
 
-    List<String> possibleApphanceModes() {
-        ApphanceMode.values()*.name() as List<String>
-    }
-
     def apphanceLibVersion = new StringProperty(
             interactive: { apphanceEnabled && !(DISABLED == apphanceMode.value) },
-            possibleValues: { possibleApphanceLibVersions() },
+            possibleValues: { possibleApphanceLibVersions },
             validator: { it?.matches('([0-9]+\\.)*[0-9]+(-[^-]*)?') }
     )
 
-    abstract List<String> possibleApphanceLibVersions()
+    abstract List<String> getPossibleApphanceLibVersions()
 
     @Lazy
     @PackageScope

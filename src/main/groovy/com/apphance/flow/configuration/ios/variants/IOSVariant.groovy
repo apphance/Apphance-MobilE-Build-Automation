@@ -123,10 +123,10 @@ class IOSVariant extends AbstractVariant {
         plistParser.evaluate(plistParser.bundleId(plist), target, buildConfiguration) ?: ''
     }
 
-    @Override
-    List<String> possibleApphanceLibVersions() {
+    @Lazy
+    List<String> possibleApphanceLibVersions = {
         apphanceArtifactory.iOSLibraries(apphanceMode.value, apphanceDependencyArch)
-    }
+    }()
 
     @Lazy
     @PackageScope

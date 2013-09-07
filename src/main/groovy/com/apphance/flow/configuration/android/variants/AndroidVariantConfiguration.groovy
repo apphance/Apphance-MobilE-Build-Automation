@@ -67,10 +67,10 @@ class AndroidVariantConfiguration extends AbstractVariant {
     def newName = new StringProperty(interactive: { false })
     def mergeManifest = new BooleanProperty(interactive: { false })
 
-    @Override
-    List<String> possibleApphanceLibVersions() {
+    @Lazy
+    List<String> possibleApphanceLibVersions = {
         apphanceArtifactory.androidLibraries(apphanceMode.value)
-    }
+    }()
 
     String getBuildTaskName() {
         "build$name".replaceAll('\\s', '')

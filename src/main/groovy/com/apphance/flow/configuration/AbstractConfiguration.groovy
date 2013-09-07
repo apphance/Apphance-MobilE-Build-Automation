@@ -11,7 +11,7 @@ import static org.gradle.api.logging.Logging.getLogger
 
 abstract class AbstractConfiguration {
 
-    def logger = getLogger(this.class)
+    protected logger = getLogger(getClass())
 
     @Inject PropertyPersister propertyPersister
 
@@ -90,7 +90,7 @@ abstract class AbstractConfiguration {
     }
 
     boolean canBeEnabled() {
-        return true
+        true
     }
 
     String explainDisabled() {

@@ -4,7 +4,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank
 
 class ListStringProperty extends AbstractProperty<List<String>> {
 
-    private static String SEPARATOR = ','
+    public static final String SEPARATOR = ','
 
     @Override
     void setValue(String value) {
@@ -20,9 +20,4 @@ class ListStringProperty extends AbstractProperty<List<String>> {
     Closure<Boolean> validator = { possibleValues().empty || possibleValues().containsAll(convert(it)) }
 
     Closure<String> persistentForm = { value?.join(SEPARATOR) ?: '' }
-
-    static String getSEPARATOR() {
-        SEPARATOR
-    }
-
 }
