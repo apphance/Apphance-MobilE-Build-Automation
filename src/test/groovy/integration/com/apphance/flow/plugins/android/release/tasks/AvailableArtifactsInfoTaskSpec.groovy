@@ -47,7 +47,6 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         }
 
         def conf = GroovySpy(AndroidConfiguration) {
-            isLibrary() >> false
             getFullVersionString() >> fullVersionString
             getVersionString() >> '1.0.1'
             getProjectName() >> new StringProperty(value: projectName)

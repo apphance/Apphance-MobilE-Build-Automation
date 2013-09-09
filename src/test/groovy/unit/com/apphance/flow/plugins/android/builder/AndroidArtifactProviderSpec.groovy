@@ -31,12 +31,7 @@ class AndroidArtifactProviderSpec extends Specification {
         getReleaseUrlVersioned() >> "http://ota.polidea.pl/$projectName/$ac.fullVersionString".toURL()
         getReleaseDir() >> new File(otaDir, "$projectName/$ac.fullVersionString")
     }
-    def avc = GroovyMock(AndroidVariantConfiguration) {
-        getMode() >> DEBUG
-        getName() >> 'V1'
-        getTmpDir() >> vTmpDir
-        getVariantDir() >> new FileProperty(value: variantDir)
-    }
+    def avc
 
     def project = GroovyStub(Project) {
         file(TMP_DIR) >> tmpDir
@@ -47,8 +42,14 @@ class AndroidArtifactProviderSpec extends Specification {
 
     def setup() {
         ac.project = project
+        avc = GroovySpy(AndroidVariantConfiguration, constructorArgs: ['V1'])
+        avc.getMode() >> DEBUG
+        avc.getName() >> 'V1'
+        avc.getTmpDir() >> vTmpDir
+        avc.getVariantDir() >> new FileProperty(value: variantDir)
         binDir = new File(new File(ac.tmpDir, avc.name), 'bin')
         avc.getBuildDir() >> binDir
+        avc.conf = aab.conf
     }
 
     def cleanup() {
@@ -76,7 +77,7 @@ class AndroidArtifactProviderSpec extends Specification {
 
     def 'jar artifact'() {
         when:
-        aab.conf.isLibrary() >> true
+        avc.isLibrary() >> true
         def ja = aab.artifact(aab.builderInfo(avc))
 
         then:
@@ -102,7 +103,8 @@ class AndroidArtifactProviderSpec extends Specification {
 
     def 'apk artifact'() {
         when:
-        aab.conf.isLibrary() >> false
+        avc.isLibrary() >> false
+        aab.conf.projectNameNoWhiteSpace >> 'SampleAndroidProject'
         def ja = aab.artifact(aab.builderInfo(avc))
 
         then:

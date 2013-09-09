@@ -1,6 +1,5 @@
 package com.apphance.flow.plugins.android.builder
 
-import com.apphance.flow.configuration.android.AndroidArchiveType
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
@@ -24,15 +23,15 @@ class AndroidArtifactProvider {
                 buildDir: avc.buildDir,
                 variantDir: avc.variantDir?.value,
                 filePrefix: "${conf.projectNameNoWhiteSpace}-${avc.mode.lowerCase()}-${avc.name}-${conf.fullVersionString}",
-                originalFile: avc.originalFile
+                originalFile: avc.originalFile,
+                type: avc.isLibrary() ? JAR : APK
         )
     }
 
     FlowArtifact artifact(AndroidBuilderInfo abi) {
-        AndroidArchiveType type = conf.isLibrary() ? JAR : APK
-        def name = "${abi.filePrefix}.${type.lowerCase()}"
+        def name = "${abi.filePrefix}.${abi.type.lowerCase()}"
         new FlowArtifact(
-                name: "${type.name()} ${abi.mode} file for ${abi.variant}",
+                name: "${abi.type.name()} ${abi.mode} file for ${abi.variant}",
                 url: new URL("$releaseConf.releaseUrlVersioned/$name"),
                 location: new File(releaseConf.releaseDir, name)
         )

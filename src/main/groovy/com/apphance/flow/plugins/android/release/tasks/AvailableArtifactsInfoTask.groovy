@@ -30,25 +30,16 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     @PackageScope
     void prepareOtherArtifacts() {
 
-        conf.isLibrary() ? buildJarArtifacts() : buildAPKArtifacts()
+        variantsConf.variants.each {
+            def bi = artifactBuilder.builderInfo(it)
+            if (it.isLibrary()) {
+                releaseConf.jarFiles.put(bi.id, artifactBuilder.artifact(bi))
+            } else {
+                releaseConf.apkFiles.put(bi.id, artifactBuilder.artifact(bi))
+            }
+        }
 
         prepareFileIndexFile()
-    }
-
-    @PackageScope
-    void buildJarArtifacts() {
-        variantsConf.variants.each {
-            def bi = artifactBuilder.builderInfo(it)
-            releaseConf.jarFiles.put(bi.id, artifactBuilder.artifact(bi))
-        }
-    }
-
-    @PackageScope
-    void buildAPKArtifacts() {
-        variantsConf.variants.each {
-            def bi = artifactBuilder.builderInfo(it)
-            releaseConf.apkFiles.put(bi.id, artifactBuilder.artifact(bi))
-        }
     }
 
     @Override

@@ -90,10 +90,6 @@ class AndroidConfiguration extends ProjectConfiguration {
         }
     }
 
-    boolean isLibrary() {
-        androidProperties.get('android.library') == 'true'
-    }
-
     @Override
     void checkProperties() {
         super.checkProperties()
