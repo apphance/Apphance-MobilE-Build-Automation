@@ -48,6 +48,7 @@ class AndroidArtifactProviderSpec extends Specification {
     def setup() {
         ac.project = project
         binDir = new File(new File(ac.tmpDir, avc.name), 'bin')
+        avc.getBuildDir() >> binDir
     }
 
     def cleanup() {
@@ -60,7 +61,7 @@ class AndroidArtifactProviderSpec extends Specification {
 
     def 'jar artifact builder info'() {
         when:
-        aab.conf.isLibrary() >> true
+        avc.originalFile >> new File(binDir, 'classes.jar')
         def abi = aab.builderInfo(avc)
 
         then:
@@ -86,7 +87,7 @@ class AndroidArtifactProviderSpec extends Specification {
 
     def 'apk artifact builder info'() {
         when:
-        aab.conf.isLibrary() >> false
+        avc.originalFile >> new File(binDir, 'SampleAndroidProject-debug.apk')
         def abi = aab.builderInfo(avc)
 
         then:

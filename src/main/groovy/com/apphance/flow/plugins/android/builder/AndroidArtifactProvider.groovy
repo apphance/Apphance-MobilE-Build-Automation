@@ -17,23 +17,15 @@ class AndroidArtifactProvider {
     @Inject AndroidReleaseConfiguration releaseConf
 
     AndroidBuilderInfo builderInfo(AndroidVariantConfiguration avc) {
-        String mode = avc.mode.lowerCase()
-        String variablePart = "$mode-${avc.name}"
-
-        AndroidBuilderInfo bi = new AndroidBuilderInfo(
+        new AndroidBuilderInfo(
                 variant: avc.name,
                 mode: avc.mode,
                 tmpDir: avc.tmpDir,
-                buildDir: binDir(avc),
+                buildDir: avc.buildDir,
                 variantDir: avc.variantDir?.value,
-                filePrefix: "${conf.projectNameNoWhiteSpace}-${variablePart}-${conf.fullVersionString}"
+                filePrefix: "${conf.projectNameNoWhiteSpace}-${avc.mode.lowerCase()}-${avc.name}-${conf.fullVersionString}",
+                originalFile: avc.originalFile
         )
-        bi.originalFile = new File(binDir(avc), conf.isLibrary() ? 'classes.jar' : "${conf.projectNameNoWhiteSpace}-${avc.mode.lowerCase()}.apk")
-        bi
-    }
-
-    private File binDir(AndroidVariantConfiguration avc) {
-        new File(new File(conf.tmpDir, avc.name), 'bin')
     }
 
     FlowArtifact artifact(AndroidBuilderInfo abi) {
