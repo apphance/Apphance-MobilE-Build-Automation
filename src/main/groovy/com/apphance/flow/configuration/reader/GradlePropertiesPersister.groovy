@@ -81,7 +81,7 @@ class GradlePropertiesPersister implements PropertyPersister {
                              |# ${'=' * conf.configurationName.length()}
                              |""".stripMargin())
 
-        writer.write("${conf.enabledPropKey}=${conf.enabled}\n".toString())
+        writer.write("${conf.enabledPropKey.replaceAll('\\s', '\\\\u0020')}=${conf.enabled}\n".toString())
 
         if (conf.enabled) {
             conf.propertyFields.each { AbstractProperty prop ->

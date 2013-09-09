@@ -110,6 +110,10 @@ abstract class AbstractVariant extends AbstractConfiguration {
         conf.enabled
     }
 
+    String getEnabledPropKey() {
+        "${prefix}.variant.${name}.enabled"
+    }
+
     File getTmpDir() {
         new File(conf.tmpDir, name)
     }
