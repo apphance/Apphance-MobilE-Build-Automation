@@ -8,6 +8,7 @@ import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
+import com.apphance.flow.validation.VersionValidator
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.*
@@ -19,17 +20,13 @@ class UpdateVersionTaskSpec extends Specification {
     def 'updateVersion task invokes replace version on plist parser'() {
         given:
         def tmpDir = createTempDir()
-
-        and:
         def parser = GroovyMock(PlistParser)
-
-        and:
         def task = create(UpdateVersionTask)
 
         and:
         task.conf = GroovySpy(IOSConfiguration) {
-            getExtVersionCode() >> '3145'
-            getExtVersionString() >> '3.1.45'
+            getVersionCode() >> '3145'
+            getVersionString() >> '3.1.45'
         }
         and:
         task.variantsConf = GroovySpy(IOSVariantsConfiguration) {
@@ -46,16 +43,15 @@ class UpdateVersionTaskSpec extends Specification {
                     }
             ]
         }
-        and:
         task.parser = parser
-        and:
         task.schemeParser = GroovyMock(XCSchemeParser) {
             blueprintIdentifier(_) >> 'blueprintId'
             configuration(_, _) >> 'configuration'
         }
+        task.versionValidator = new VersionValidator()
         and:
         task.pbxJsonParser = GroovyMock(PbxJsonParser) {
-            plistForScheme(_, _, _) >> 'some.plist'
+            getPlistForScheme() >> { a, b, c -> 'some.plist' }.memoize()
         }
 
         when:

@@ -49,7 +49,7 @@ class IOSReleaseConfigurationSpec extends Specification {
 
     def 'mobile provision file are found'() {
         when:
-        def files = iosReleaseConf.findMobileProvisionFiles()
+        def files = iosReleaseConf.mobileprovisionFiles
 
         then:
         files.size() == 1

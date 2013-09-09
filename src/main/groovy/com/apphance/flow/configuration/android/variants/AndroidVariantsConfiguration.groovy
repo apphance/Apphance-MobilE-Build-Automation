@@ -4,18 +4,16 @@ import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
+import com.google.inject.Singleton
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.properties.ListStringProperty.getSEPARATOR
+import static com.apphance.flow.configuration.properties.ListStringProperty.SEPARATOR
 import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
-import static org.gradle.api.logging.Logging.getLogger
 
-@com.google.inject.Singleton
+@Singleton
 class AndroidVariantsConfiguration extends AbstractConfiguration {
-
-    def logger = getLogger(getClass())
 
     String configurationName = 'Android Variants Configuration'
 
@@ -91,10 +89,14 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     Collection<AndroidVariantConfiguration> getSubConfigurations() {
-        this.getVariants()
+        variantsInternal()
     }
 
     Collection<AndroidVariantConfiguration> getVariants() {
+        variantsInternal().findAll { it.enabled }
+    }
+
+    private List<AndroidVariantConfiguration> variantsInternal() {
         this.@variants.findAll { it.name in variantsNames.value }
     }
 

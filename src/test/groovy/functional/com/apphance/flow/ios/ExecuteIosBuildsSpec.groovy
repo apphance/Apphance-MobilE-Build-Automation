@@ -2,13 +2,11 @@ package com.apphance.flow.ios
 
 import com.apphance.flow.configuration.ios.IOSFamily
 import org.gradle.tooling.ProjectConnection
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
 import static org.gradle.tooling.GradleConnector.newConnector
 
-@Ignore('xcode 5 is the reason, cannot archive simulator')
 class ExecuteIosBuildsSpec extends Specification {
 
     @Shared List<String> GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
@@ -93,6 +91,6 @@ class ExecuteIosBuildsSpec extends Specification {
     def runGradleOneVariant(String... tasks) {
         def buildLauncher = testProjectConnection.newBuild()
         buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS as String[])
-        buildLauncher.forTasks(tasks).run();
+        buildLauncher.forTasks(tasks).run()
     }
 }

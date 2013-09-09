@@ -51,7 +51,8 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
         icons
     }
 
-    List<File> findMobileProvisionFiles() {
+    @Lazy
+    List<File> mobileprovisionFiles = {
         def files = []
         conf.rootDir.traverse(
                 type: FILES,
@@ -61,7 +62,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
             files << it
         }
         files
-    }
+    }()
 
     @Override
     void checkProperties() {
@@ -70,7 +71,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     @Override
     boolean canBeEnabled() {
-        !findMobileProvisionFiles().empty
+        !mobileprovisionFiles.empty
     }
 
     @Override

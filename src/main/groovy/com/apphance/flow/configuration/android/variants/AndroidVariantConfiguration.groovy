@@ -2,7 +2,6 @@ package com.apphance.flow.configuration.android.variants
 
 import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
-import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
@@ -25,7 +24,6 @@ class AndroidVariantConfiguration extends AbstractVariant {
     final String prefix = 'android'
 
     @Inject AndroidReleaseConfiguration androidReleaseConf
-    @Inject ApphanceArtifactory apphanceArtifactory
     private File vDir
 
     @AssistedInject
@@ -69,10 +67,10 @@ class AndroidVariantConfiguration extends AbstractVariant {
     def newName = new StringProperty(interactive: { false })
     def mergeManifest = new BooleanProperty(interactive: { false })
 
-    @Override
-    List<String> possibleApphanceLibVersions() {
+    @Lazy
+    List<String> possibleApphanceLibVersions = {
         apphanceArtifactory.androidLibraries(apphanceMode.value)
-    }
+    }()
 
     String getBuildTaskName() {
         "build$name".replaceAll('\\s', '')

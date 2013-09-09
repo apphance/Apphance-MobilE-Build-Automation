@@ -68,7 +68,9 @@ class IOSPlugin implements Plugin<Project> {
                         group: FLOW_BUILD,
                         dependsOn: [ARCHIVE_ALL_DEVICE_TASK_NAME, ARCHIVE_ALL_SIMULATOR_TASK_NAME],
                         description: 'Archives all variants and produces all artifacts (zip, ipa, messages, etc)')
-                buildableVariants.each(this.&createArchiveTask)
+
+                buildableVariants.findAll { it.mode.value == DEVICE }.each(this.&createArchiveDeviceTask)
+                buildableVariants.findAll { it.mode.value == SIMULATOR }.each(this.&createArchiveSimulatorTask)
             }
 
             def frameworkVariants = variantsConf.variants.findAll { it.mode.value == FRAMEWORK }
@@ -89,13 +91,19 @@ class IOSPlugin implements Plugin<Project> {
         }
     }
 
-    private void createArchiveTask(IOSVariant variant) {
+    private void createArchiveDeviceTask(IOSVariant variant) {
         def task = project.task(variant.archiveTaskName,
-                type: ArchiveVariantTask,
-                dependsOn: [CopyMobileProvisionTask.NAME]) as ArchiveVariantTask
+                type: DeviceVariantTask,
+                dependsOn: [CopyMobileProvisionTask.NAME]) as DeviceVariantTask
         task.variant = variant
-        def archiveAllMode = "archiveAll${variant.mode.value.capitalize()}"
-        project.tasks[archiveAllMode].dependsOn task.name
+        project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].dependsOn task.name
+    }
+
+    private void createArchiveSimulatorTask(IOSVariant variant) {
+        def task = project.task(variant.archiveTaskName,
+                type: SimulatorVariantTask) as SimulatorVariantTask
+        task.variant = variant
+        project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].dependsOn task.name
     }
 
     private void createFrameworkVariant(IOSVariant variant) {

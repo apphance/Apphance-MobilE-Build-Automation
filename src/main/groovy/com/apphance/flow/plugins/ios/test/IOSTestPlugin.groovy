@@ -12,13 +12,6 @@ import javax.inject.Inject
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- * Unit test plugin - all unit tests are run here.
- *
- * This plugins provides functionality of standard test testing for iOS.
- * It executes all tests which are build using test test framework.
- *
- */
 class IOSTestPlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())

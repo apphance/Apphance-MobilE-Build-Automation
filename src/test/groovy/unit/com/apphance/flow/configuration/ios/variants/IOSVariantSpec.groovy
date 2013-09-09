@@ -2,6 +2,8 @@ package com.apphance.flow.configuration.ios.variants
 
 import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
+import com.apphance.flow.configuration.ios.IOSConfiguration
+import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
@@ -63,5 +65,17 @@ class IOSVariantSpec extends Specification {
         QA           | 'armv7'
         SILENT       | 'armv7'
         PROD         | 'armv7'
+    }
+
+    def 'possible mobile provision paths found'() {
+        given:
+        def conf = GroovyMock(IOSConfiguration) { getRootDir() >> new File('testProjects/ios/GradleXCode') }
+        def releaseConf = new IOSReleaseConfiguration(conf: conf)
+        def variant = new IOSVariant('v')
+        variant.conf = conf
+        variant.releaseConf = releaseConf
+
+        expect:
+        variant.possibleMobileProvisionPaths == ['release/distribution_resources/GradleXCode.mobileprovision']
     }
 }

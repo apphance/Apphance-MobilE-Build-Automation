@@ -41,17 +41,6 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         schemeInfo.schemeFiles.findAll { schemeInfo.schemeShared(it) }.collect { getNameWithoutExtension(it.name) }
     }()
 
-    private List<IOSVariant> variantsInternal() {
-        variantsNames.value.collect {
-            schemeVariant.call(it)
-        }
-    }
-
-    @PackageScope
-    Closure<IOSVariant> schemeVariant = { String name ->
-        variantFactory.createSchemeVariant(name)
-    }.memoize()
-
     @Override
     boolean isEnabled() {
         conf.enabled
@@ -63,12 +52,23 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }
 
     Collection<IOSVariant> getVariants() {
-        variantsInternal()
+        variantsInternal().findAll { it.isEnabled() }
     }
 
     IOSVariant getMainVariant() {
         variantsInternal()[0]
     }
+
+    private List<IOSVariant> variantsInternal() {
+        variantsNames.value.collect {
+            schemeVariant.call(it)
+        }
+    }
+
+    @PackageScope
+    Closure<IOSVariant> schemeVariant = { String name ->
+        variantFactory.createSchemeVariant(name)
+    }.memoize()
 
     @Override
     boolean canBeEnabled() {

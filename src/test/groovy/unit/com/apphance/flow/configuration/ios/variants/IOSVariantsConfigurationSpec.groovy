@@ -5,7 +5,6 @@ import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.reader.PropertyPersister
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class IOSVariantsConfigurationSpec extends Specification {
 
@@ -15,7 +14,9 @@ class IOSVariantsConfigurationSpec extends Specification {
     def setup() {
         conf = GroovyMock(IOSConfiguration)
         def vf = GroovyMock(IOSVariantFactory)
-        vf.createSchemeVariant(_) >> new IOSVariant('scheme')
+        vf.createSchemeVariant(_) >> GroovyMock(IOSVariant) {
+            isEnabled() >> true
+        }
 
         variantsConf = new IOSVariantsConfiguration()
         variantsConf.conf = conf
@@ -23,19 +24,13 @@ class IOSVariantsConfigurationSpec extends Specification {
         variantsConf.variantFactory = vf
     }
 
-    @Unroll
-    def 'test buildVariantsList #variantClass variant'() {
+    def 'test buildVariantsList variant'() {
         given:
-        conf.schemes >> schemes
+        conf.schemes >> ['v1', 'v2', 'v3']
         variantsConf.variantsNames.value = ['v1', 'v2', 'v3']
 
         expect:
-        variantsConf.variants.size() == expectedSize
-        variantsConf.variants.every { it.class == variantClass }
-
-        where:
-        expectedSize | variantClass | schemes
-        3            | IOSVariant   | ['v1', 'v2', 'v3']
+        variantsConf.variants.size() == 3
     }
 
     def 'variantNames validator works'() {

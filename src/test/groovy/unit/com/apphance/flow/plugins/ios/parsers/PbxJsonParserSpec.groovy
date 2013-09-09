@@ -22,7 +22,7 @@ class PbxJsonParserSpec extends Specification {
         def blueprintId = 'D382B71014703FE500E9CC9B'
 
         expect:
-        parser.plistForScheme(GroovyMock(File), configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
+        parser.plistForScheme.call(GroovyMock(File), configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
     }
 
     def 'exception thrown when no configuration found'() {
@@ -31,7 +31,7 @@ class PbxJsonParserSpec extends Specification {
         def blueprintId = 'D382B71014703FE500E9CC9B'
 
         when:
-        parser.plistForScheme(GroovyMock(File), configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
+        parser.plistForScheme.call(GroovyMock(File), configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
 
         then:
         def e = thrown(GradleException)
@@ -41,7 +41,7 @@ class PbxJsonParserSpec extends Specification {
 
     def 'target name is found for blueprint id'() {
         expect:
-        parser.targetForBlueprintId(GroovyMock(File), blueprintId) == target
+        parser.targetForBlueprintId.call(GroovyMock(File), blueprintId) == target
 
         where:
         target             | blueprintId

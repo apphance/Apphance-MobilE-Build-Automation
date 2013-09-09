@@ -1,32 +1,26 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
-import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
+import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSFrameworkArtifactsBuilder
-import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
-import com.apphance.flow.util.FlowUtils
 
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.FRAMEWORK
-import static com.google.common.base.Preconditions.checkArgument
-import static com.google.common.base.Preconditions.checkNotNull
 
 class FrameworkVariantTask extends AbstractBuildVariantTask {
 
     String description = "Prepares 'framework' file for given variant"
 
-    @Inject IOSReleaseConfiguration releaseConf
     @Inject IOSFrameworkArtifactsBuilder frameworkArtifactsBuilder
-    @Inject IOSArtifactProvider artifactProvider
-    protected FlowUtils fu = new FlowUtils()
 
     @Lazy File simTmpDir = { fu.temporaryDir }()
     @Lazy File deviceTmpDir = { fu.temporaryDir }()
 
+    final IOSBuildMode validationMode = FRAMEWORK
+
     @Override
     void build() {
-        checkNotNull(variant, 'Null variant passed to builder!')
-        checkArgument(variant.mode.value == FRAMEWORK, "Invalid build mode: $variant.mode.value!")
+        validate()
 
         iosExecutor.buildVariant(variant.tmpDir, cmdSim)
         iosExecutor.buildVariant(variant.tmpDir, cmdDevice)

@@ -45,6 +45,7 @@ class FrameworkVariantTaskSpec extends Specification {
             frameworkInfo(_) >> new IOSFrameworkArtifactInfo()
         }
         task.frameworkArtifactsBuilder = GroovyMock(IOSFrameworkArtifactsBuilder)
+        task.fu = new FlowUtils()
 
         when:
         task.build()
@@ -55,11 +56,11 @@ class FrameworkVariantTaskSpec extends Specification {
         1 * task.iosExecutor.buildVariant(null, ['xcodebuild', '-scheme', 'variant', '-sdk', 'iphonesimulator',
                 '-arch', 'i386', '-configuration', 'archive', "CONFIGURATION_BUILD_DIR=$task.simTmpDir.absolutePath", 'PRODUCT_NAME=sim',
                 'clean', 'build'])
-        invocationCount * task.artifactProvider.frameworkInfo(_) >> new IOSFrameworkArtifactInfo()
-        invocationCount * task.frameworkArtifactsBuilder.buildArtifacts(_)
+        cnt * task.artifactProvider.frameworkInfo(_) >> new IOSFrameworkArtifactInfo()
+        cnt * task.frameworkArtifactsBuilder.buildArtifacts(_)
 
         where:
-        releaseConfEnabled | invocationCount
+        releaseConfEnabled | cnt
         false              | 0
         true               | 1
     }

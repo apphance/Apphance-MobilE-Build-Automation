@@ -75,14 +75,8 @@ class IOSTestTaskSpec extends Specification {
 
         and:
         def schemeParser = GroovyMock(XCSchemeParser)
-
-        and:
         def testPbxEnhancer = GroovyMock(IOSTestPbxEnhancer)
-
-        and:
         def pbxJsonParser = GroovyMock(PbxJsonParser)
-
-        and:
         def executor = GroovyMock(IOSExecutor)
 
         and:
@@ -98,7 +92,7 @@ class IOSTestTaskSpec extends Specification {
         then:
         1 * schemeParser.findActiveTestableBlueprintIds(schemeFile) >> ['3145']
         1 * testPbxEnhancer.addShellScriptToBuildPhase(variant, ['3145'])
-        1 * pbxJsonParser.targetForBlueprintId(pbxFile, '3145') >> 't1'
+        1 * pbxJsonParser.getTargetForBlueprintId() >> { i, j -> 't1' }.memoize()
         1 * schemeParser.configuration(schemeFile, TEST_ACTION) >> 'c1'
         1 * executor.runTests(tmpDir, 't1', 'c1', new File(tmpDir, 'test-v1-t1.log').absolutePath)
 
@@ -110,5 +104,4 @@ class IOSTestTaskSpec extends Specification {
         pbxFile.delete()
         tmpDir.deleteDir()
     }
-
 }

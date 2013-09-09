@@ -5,8 +5,7 @@ import spock.lang.Specification
 
 class XCodeOutputParserSpec extends Specification {
 
-    @Shared
-    def parser = new XCodeOutputParser()
+    @Shared parser = new XCodeOutputParser()
 
     def static SCHEMES = """
             Schemes:
@@ -59,24 +58,18 @@ class XCodeOutputParserSpec extends Specification {
     }
 
     def 'reads iphone sdks'() {
-        given:
-        def sdks = parser.readIphoneSdks(XCODE_SHOWSDK)
         expect:
-        ['iphoneos', 'iphoneos4.3', 'iphoneos5.0'] == sdks
+        ['iphoneos', 'iphoneos4.3', 'iphoneos5.0'] == parser.readIphoneSdks(XCODE_SHOWSDK)
     }
 
     def 'reads iphone simulator sdks'() {
-        given:
-        def simulatorSdks = parser.readIphoneSimulatorSdks(XCODE_SHOWSDK)
         expect:
-        ['iphonesimulator', 'iphonesimulator4.3', 'iphonesimulator5.0'] == simulatorSdks
+        ['iphonesimulator', 'iphonesimulator4.3', 'iphonesimulator5.0'] == parser.readIphoneSimulatorSdks(XCODE_SHOWSDK)
     }
 
     def 'reads schemes'() {
-        given:
-        def schemes = parser.readSchemes(XCODE_LIST)
         expect:
-        ['Some', 'SomeWithMonkey', 'SomeSpecs', 'OtherSomeSpecs', 'RunMonkeyTests'] == schemes
+        ['Some', 'SomeWithMonkey', 'SomeSpecs', 'OtherSomeSpecs', 'RunMonkeyTests'] == parser.readSchemes(XCODE_LIST)
     }
 
     def 'parses build settings'() {

@@ -3,10 +3,12 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
+import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 import org.gradle.api.GradleException
 import spock.lang.Specification
 
+import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class CopyMobileProvisionTaskSpec extends Specification {
@@ -26,15 +28,10 @@ class CopyMobileProvisionTaskSpec extends Specification {
 
     def 'files are copied with no exceptions when bundleId match'() {
         given:
-        task.variantsConf = GroovyStub(IOSVariantsConfiguration, {
-            getVariants() >> [
-                    GroovyStub(IOSVariant) {
-                        getName() >> 'SampleVariant'
-                        getMobileprovision() >> new FileProperty(value: mobileprovisionFile)
-                        getBundleId() >> 'MT2B94Q7N6.com.apphance.flow'
-                    }
-            ]
-        })
+        def v1 = GroovyMock(IOSVariant) { getMode() >> new IOSBuildModeProperty(value: DEVICE) }
+        def v2 = GroovyMock(IOSVariant) { getMode() >> new IOSBuildModeProperty(value: FRAMEWORK) }
+        def v3 = GroovyMock(IOSVariant) { getMode() >> new IOSBuildModeProperty(value: SIMULATOR) }
+        task.variantsConf = GroovyStub(IOSVariantsConfiguration, { getVariants() >> [v1, v2, v3] })
 
         and:
         def copiedProfile = new File(mobileProvisionDir, mobileprovisionFile.name)
@@ -53,6 +50,14 @@ class CopyMobileProvisionTaskSpec extends Specification {
         copiedProfile.exists()
         copiedProfile.size() > 0
 
+        and:
+        1 * v1.getMobileprovision() >> new FileProperty(value: mobileprovisionFile)
+        1 * v1.getBundleId() >> 'MT2B94Q7N6.com.apphance.flow'
+        0 * v2.getMobileprovision()
+        0 * v2.getBundleId()
+        0 * v3.getMobileprovision()
+        0 * v3.getBundleId()
+
         cleanup:
         copiedProfile?.delete()
     }
@@ -65,6 +70,7 @@ class CopyMobileProvisionTaskSpec extends Specification {
                         getName() >> 'SampleVariant'
                         getMobileprovision() >> new FileProperty(value: mobileprovisionFile)
                         getBundleId() >> 'MT2B94Q7N6.com.apphance.flowa'
+                        getMode() >> new IOSBuildModeProperty(value: DEVICE)
                     }
             ]
         })

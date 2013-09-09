@@ -8,22 +8,26 @@ import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSDeviceArtifactsBuilder
-import com.apphance.flow.plugins.ios.release.artifact.builder.IOSSimulatorArtifactsBuilder
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
+import com.apphance.flow.plugins.ios.release.artifact.info.IOSDeviceArtifactInfo
+import com.apphance.flow.util.FlowUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import java.nio.file.Files
-
-import static com.apphance.flow.configuration.ios.IOSBuildMode.*
+import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
+import static com.apphance.flow.configuration.ios.IOSBuildMode.FRAMEWORK
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
-class ArchiveVariantTaskSpec extends Specification {
+@Mixin(FlowUtils)
+class DeviceVariantTaskSpec extends Specification {
 
     def project = builder().build()
-    def task = project.task('archiveTask', type: ArchiveVariantTask) as ArchiveVariantTask
+    def task = project.task('archiveTask', type: DeviceVariantTask) as DeviceVariantTask
 
     def setup() {
-        task.iosExecutor = GroovyMock(IOSExecutor)
+        task.iosExecutor = GroovyMock(IOSExecutor) {
+            buildSettings(_, _) >> [:]
+        }
     }
 
     def 'exception when null variant passed'() {
@@ -52,9 +56,11 @@ class ArchiveVariantTaskSpec extends Specification {
         e.message == "Invalid build mode: $FRAMEWORK!"
     }
 
-    def 'executor runs archive command when variant passed & release conf disabled'() {
+    @Unroll
+    def 'executor runs archive command when variant passed & release conf enabled #releaseConfEnabled'() {
         given:
-        def tmpFile = Files.createTempFile('a', 'b').toFile()
+        def tmpFile = tempFile
+        def tmpDir = temporaryDir
 
         and:
         def variant = GroovySpy(IOSVariant) {
@@ -65,9 +71,11 @@ class ArchiveVariantTaskSpec extends Specification {
             getName() >> 'GradleXCode'
             getSchemeFile() >> tmpFile
             getMode() >> new IOSBuildModeProperty(value: DEVICE)
+            getTarget() >> 't'
+            getArchiveConfiguration() >> 'c'
         }
         task.releaseConf = GroovyMock(IOSReleaseConfiguration) {
-            isEnabled() >> false
+            isEnabled() >> releaseConfEnabled
         }
         task.conf = GroovyMock(IOSConfiguration) {
             xcodebuildExecutionPath() >> ['xcodebuild']
@@ -75,16 +83,21 @@ class ArchiveVariantTaskSpec extends Specification {
         }
         task.variant = variant
         task.schemeParser = GroovyMock(XCSchemeParser)
+        task.artifactProvider = GroovyMock(IOSArtifactProvider)
+        task.deviceArtifactsBuilder = GroovyMock(IOSDeviceArtifactsBuilder)
 
         when:
         task.build()
 
         then:
-        noExceptionThrown()
-        1 * task.iosExecutor.buildVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', '-sdk', 'iphoneos', 'clean', 'archive']) >> ["FLOW_ARCHIVE_PATH=$tmpFile.absolutePath"].iterator()
+        1 * task.iosExecutor.buildVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', '-sdk', 'iphoneos', 'clean', 'archive']) >> ["FLOW_ARCHIVE_PATH=$temporaryDir.absolutePath"].iterator()
+        cnt * task.artifactProvider.deviceInfo(_) >> new IOSDeviceArtifactInfo()
+        cnt * task.deviceArtifactsBuilder.buildArtifacts(_)
 
-        cleanup:
-        tmpFile.delete()
+        where:
+        releaseConfEnabled | cnt
+        true               | 1
+        false              | 0
     }
 
     def 'null returned when no archive found'() {
@@ -102,26 +115,5 @@ class ArchiveVariantTaskSpec extends Specification {
         then:
         def e = thrown(IllegalArgumentException)
         e.message.endsWith("Xcarchive file: $archive.absolutePath does not exist or is not a directory")
-    }
-
-    @Unroll
-    def 'correct instance of builder is returned for mode #mode'() {
-        given:
-        task.simulatorArtifactsBuilder = GroovyMock(IOSSimulatorArtifactsBuilder)
-        task.deviceArtifactsBuilder = GroovyMock(IOSDeviceArtifactsBuilder)
-
-        and:
-        task.variant = GroovyMock(IOSVariant) {
-            getMode() >> new IOSBuildModeProperty(value: mode)
-        }
-
-        expect:
-        closure.call(task.builder.call())
-
-        where:
-        mode      | closure
-        DEVICE    | { it.class.name.contains(IOSDeviceArtifactsBuilder.class.name) }
-        SIMULATOR | { it.class.name.contains(IOSSimulatorArtifactsBuilder.class.name) }
-        FRAMEWORK | { it == null }
     }
 }

@@ -11,6 +11,7 @@ import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
+import com.apphance.flow.validation.VersionValidator
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
 
@@ -20,7 +21,6 @@ import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.LAUNCH_ACTION
-import static com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask.WHITESPACE_PATTERN
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
 import static java.util.ResourceBundle.getBundle
@@ -35,6 +35,7 @@ class IOSVariant extends AbstractVariant {
     @Inject IOSExecutor executor
     @Inject XCSchemeParser schemeParser
     @Inject IOSSchemeInfo schemeInfo
+    @Inject VersionValidator versionValidator
 
     private bundle = getBundle('validation')
 
@@ -85,8 +86,8 @@ class IOSVariant extends AbstractVariant {
             message: "Mobile provision file for variant defined",
             interactive: { mobileprovisionEnabled },
             required: { mobileprovisionEnabled },
-            possibleValues: { possibleMobileProvisionFiles()*.path as List<String> },
-            validator: { it in (possibleMobileProvisionFiles()*.path as List<String>) }
+            possibleValues: { possibleMobileProvisionPaths },
+            validator: { isNotEmpty(it?.path) ? it.path in (possibleMobileProvisionPaths) : false }
     )
 
     @Lazy
@@ -102,11 +103,12 @@ class IOSVariant extends AbstractVariant {
         new FileProperty(value: new File(tmpDir, this.@mobileprovision.value.path))
     }
 
+    @Lazy
     @PackageScope
-    List<File> possibleMobileProvisionFiles() {
-        def mp = releaseConf.findMobileProvisionFiles()
-        mp ? mp.collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath) } : []
-    }
+    List<String> possibleMobileProvisionPaths = {
+        def mp = releaseConf.mobileprovisionFiles
+        mp ? mp.collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath) }*.path : []
+    }()
 
     def frameworkName = new StringProperty(
             message: 'Framework name',
@@ -121,10 +123,10 @@ class IOSVariant extends AbstractVariant {
         plistParser.evaluate(plistParser.bundleId(plist), target, buildConfiguration) ?: ''
     }
 
-    @Override
-    List<String> possibleApphanceLibVersions() {
+    @Lazy
+    List<String> possibleApphanceLibVersions = {
         apphanceArtifactory.iOSLibraries(apphanceMode.value, apphanceDependencyArch)
-    }
+    }()
 
     @Lazy
     @PackageScope
@@ -185,11 +187,11 @@ class IOSVariant extends AbstractVariant {
     File getPlist() {
         String confName = schemeParser.configuration(schemeFile, LAUNCH_ACTION)
         String blueprintId = schemeParser.blueprintIdentifier(schemeFile)
-        new File(tmpDir, pbxJsonParser.plistForScheme(pbxFile, confName, blueprintId))
+        new File(tmpDir, pbxJsonParser.plistForScheme.call(pbxFile, confName, blueprintId))
     }
 
     String getTarget() {
-        pbxJsonParser.targetForBlueprintId(pbxFile, schemeParser.blueprintIdentifier(schemeFile))
+        pbxJsonParser.targetForBlueprintId.call(pbxFile, schemeParser.blueprintIdentifier(schemeFile))
     }
 
     String getBuildConfiguration() {
@@ -218,13 +220,11 @@ class IOSVariant extends AbstractVariant {
     void checkProperties() {
         super.checkProperties()
 
-        def ec = conf.extVersionCode
-        if (ec)
-            check ec.matches('[0-9]+'), bundle.getString('exception.ios.version.code.ext')
+        check versionValidator.isNumber(versionCode), bundle.getString('exception.ios.version.code')
+        check versionValidator.hasNoWhiteSpace(versionString), bundle.getString('exception.ios.version.string')
 
-        def es = conf.extVersionString
-        if (es)
-            check((isNotEmpty(es) && !WHITESPACE_PATTERN.matcher(es).find()), bundle.getString('exception.ios.version.string.ext'))
+        if (mobileprovisionEnabled)
+            defaultValidation mobileprovision
 
         if (mode.value == FRAMEWORK) {
             defaultValidation frameworkName

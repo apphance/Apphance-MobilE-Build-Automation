@@ -3,12 +3,14 @@ package com.apphance.flow.configuration
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.detection.project.ProjectTypeDetector
+import com.apphance.flow.validation.VersionValidator
 import org.gradle.api.Project
 
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
+import static java.util.ResourceBundle.getBundle
 
 abstract class ProjectConfiguration extends AbstractConfiguration {
 
@@ -19,17 +21,20 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
     @Inject Project project
     @Inject PropertyReader reader
     @Inject ProjectTypeDetector projectTypeDetector
+    @Inject VersionValidator versionValidator
+
+    protected bundle = getBundle('validation')
 
     abstract String getVersionCode()
 
     abstract String getVersionString()
 
     String getExtVersionCode() {
-        reader.systemProperty('version.code') ?: reader.envVariable('VERSION_CODE') ?: ''
+        reader.envVariable('VERSION_CODE') ?: reader.systemProperty('version.code') ?: ''
     }
 
     String getExtVersionString() {
-        reader.systemProperty('version.string') ?: reader.envVariable('VERSION_STRING') ?: ''
+        reader.envVariable('VERSION_STRING') ?: reader.systemProperty('version.string') ?: ''
     }
 
     String getFullVersionString() {

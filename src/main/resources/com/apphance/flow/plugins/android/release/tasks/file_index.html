@@ -30,7 +30,7 @@
                             <% if (releaseConf.apkFiles[variant.name] != null) { %>
                             <li>
                                 <a href="${releaseConf.apkFiles[variant.name].getRelativeUrl(baseUrl)}" rel="external">
-                                    <h3>${rb.getString('Apk_file')}: ${variant.name}</h3>
+                                    <h3>${rb.getString('Apk_file')}: ${variant.displayName.value}</h3>
                                 </a>
                             </li>
                             <% } %>

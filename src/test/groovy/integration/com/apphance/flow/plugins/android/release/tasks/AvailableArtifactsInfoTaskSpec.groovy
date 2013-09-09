@@ -67,14 +67,17 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         variantsConf.variants >> [
                 GroovyMock(AndroidVariantConfiguration) {
                     getName() >> mainVariant
+                    getDisplayName() >> new StringProperty(value: mainVariant)
                     getMode() >> RELEASE
                 },
                 GroovyMock(AndroidVariantConfiguration) {
                     getName() >> 'Variant1'
+                    getDisplayName() >> new StringProperty(value: 'Variant1')
                     getMode() >> DEBUG
                 },
                 GroovyMock(AndroidVariantConfiguration) {
                     getName() >> 'Variant2'
+                    getDisplayName() >> new StringProperty(value: 'Variant2')
                     getMode() >> RELEASE
                 }
         ]

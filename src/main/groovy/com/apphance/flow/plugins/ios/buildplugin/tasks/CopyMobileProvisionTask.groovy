@@ -10,6 +10,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
+import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static java.text.MessageFormat.format
 import static java.util.ResourceBundle.getBundle
@@ -30,14 +31,14 @@ class CopyMobileProvisionTask extends DefaultTask {
     void copyMobileProvision() {
         def mobileProvisionDir = "${System.getProperty('user.home')}/Library/MobileDevice/Provisioning Profiles/"
         new File(mobileProvisionDir).mkdirs()
-        variantsConf.variants.each { v ->
+        variantsConf.variants.findAll { it.mode.value == DEVICE }.each { v ->
             def mobileprovision = v.mobileprovision.value
             validateBundleId(v, mobileprovision)
             ant.copy(file: mobileprovision.absolutePath, todir: mobileProvisionDir, overwrite: true, failonerror: true, verbose: true)
         }
     }
 
-    private void validateBundleId(IOSVariant v, File mobileprovision) {
+    void validateBundleId(IOSVariant v, File mobileprovision) {
         validate(v.bundleId == mpParser.bundleId(mobileprovision), {
             throw new GradleException(format(bundle.getString('exception.ios.bundleId'), v.name, v.bundleId, mobileprovision.absolutePath, mpParser.bundleId(mobileprovision)))
         })

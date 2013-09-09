@@ -10,10 +10,7 @@ import com.google.inject.Singleton
 import javax.inject.Inject
 
 import static com.apphance.flow.detection.project.ProjectType.ANDROID
-import static com.apphance.flow.plugins.android.release.tasks.UpdateVersionTask.WHITESPACE_PATTERN
 import static com.google.common.base.Strings.isNullOrEmpty
-import static java.util.ResourceBundle.getBundle
-import static org.apache.commons.lang.StringUtils.isNotEmpty
 
 @Singleton
 class AndroidConfiguration extends ProjectConfiguration {
@@ -25,7 +22,6 @@ class AndroidConfiguration extends ProjectConfiguration {
     @Inject AndroidExecutor androidExecutor
 
     private Properties androidProperties
-    private bundle = getBundle('validation')
 
     @Override
     @Inject
@@ -101,12 +97,10 @@ class AndroidConfiguration extends ProjectConfiguration {
     @Override
     void checkProperties() {
         super.checkProperties()
-
         check !isNullOrEmpty(reader.envVariable('ANDROID_HOME')), "Environment variable 'ANDROID_HOME' must be set!"
-        check rootDir.canWrite(), "No write access to project root dir ${rootDir.absolutePath}, check file system permissions!"
         check !isNullOrEmpty(projectName.value), "Property ${projectName.name} must be set!"
-        check versionCode?.matches('[0-9]+'), bundle.getString('exception.android.version.code')
-        check((isNotEmpty(versionString) && !WHITESPACE_PATTERN.matcher(versionString).find()), bundle.getString('exception.android.version.string'))
+        check versionValidator.isNumber(versionCode), bundle.getString('exception.android.version.code')
+        check versionValidator.hasNoWhiteSpace(versionString), bundle.getString('exception.android.version.string')
         check target.validator(target.value), "Property ${target.name} must be set!"
     }
 }

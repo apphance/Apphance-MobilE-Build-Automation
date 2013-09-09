@@ -21,6 +21,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
     @Inject ProjectConfiguration conf
     @Inject ApphanceConfiguration apphanceConf
     @Inject ApphanceArtifactory apphanceArtifactory
+    private boolean enabledInternal = true
 
     @Inject
     AbstractVariant(@Assisted String name) {
@@ -38,15 +39,22 @@ abstract class AbstractVariant extends AbstractConfiguration {
         apphanceLibVersion.name = "${prefix}.variant.${name}.apphance.lib"
         apphanceLibVersion.message = "Apphance lib version for '$name'"
 
+        displayName.name = "${prefix}.variant.${name}.display.name"
+
         super.init()
     }
 
     def apphanceMode = new ApphanceModeProperty(
             interactive: { apphanceEnabled },
             required: { apphanceConf.enabled },
-            possibleValues: { possibleApphanceModes() },
-            validator: { it -> it.toString() in possibleApphanceModes() }
+            possibleValues: { possibleApphanceModes },
+            validator: { it -> it.toString() in possibleApphanceModes }
     )
+
+    @Lazy
+    List<String> possibleApphanceModes = {
+        ApphanceMode.values()*.name() as List<String>
+    }()
 
     def apphanceAppKey = new StringProperty(
             interactive: { apphanceEnabled && !(DISABLED == apphanceMode.value) },
@@ -55,17 +63,13 @@ abstract class AbstractVariant extends AbstractConfiguration {
             validationMessage: "Key should match '[a-z0-9]+'"
     )
 
-    List<String> possibleApphanceModes() {
-        ApphanceMode.values()*.name() as List<String>
-    }
-
     def apphanceLibVersion = new StringProperty(
             interactive: { apphanceEnabled && !(DISABLED == apphanceMode.value) },
-            possibleValues: { possibleApphanceLibVersions() },
+            possibleValues: { possibleApphanceLibVersions },
             validator: { it?.matches('([0-9]+\\.)*[0-9]+(-[^-]*)?') }
     )
 
-    abstract List<String> possibleApphanceLibVersions()
+    abstract List<String> getPossibleApphanceLibVersions()
 
     @Lazy
     @PackageScope
@@ -81,14 +85,18 @@ abstract class AbstractVariant extends AbstractConfiguration {
         true
     }()
 
+    private displayName = new StringProperty(
+            required: { false },
+            interactive: { false }
+    )
+
+    StringProperty getDisplayName() {
+        new StringProperty(value: displayName?.value ?: name?.replaceAll('[-_]', ' '))
+    }
+
     String getName() {
         this.@name
     }
-
-    @Lazy
-    String presentationName = {
-        name?.replaceAll('[-_]',' ')
-    }()
 
     String getUploadTaskName() {
         "upload$name".replaceAll('\\s', '')
@@ -100,7 +108,17 @@ abstract class AbstractVariant extends AbstractConfiguration {
 
     @Override
     boolean isEnabled() {
-        conf.enabled
+        conf.enabled && enabledInternal
+    }
+
+    @Override
+    void setEnabled(boolean enabled) {
+        enabledInternal = enabled
+    }
+
+    @Override
+    String getEnabledPropKey() {
+        "${prefix}.variant.${name}.enabled"
     }
 
     File getTmpDir() {
@@ -113,7 +131,6 @@ abstract class AbstractVariant extends AbstractConfiguration {
     void checkProperties() {
         if (apphanceConf.enabled) {
             defaultValidation apphanceMode
-
             if (apphanceMode.value != DISABLED) {
                 defaultValidation apphanceAppKey, apphanceLibVersion
             }

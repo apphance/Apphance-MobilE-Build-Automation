@@ -86,7 +86,7 @@ class IOSSimulatorArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSSimArt
 
     @PackageScope
     File sourceApp(IOSSimArtifactInfo bi) {
-        new File("$bi.archiveDir/Products/Applications", bi.appName)
+        new File("$bi.simDir", bi.appName)
     }
 
     @PackageScope
