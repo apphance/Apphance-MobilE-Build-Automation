@@ -89,10 +89,14 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     Collection<AndroidVariantConfiguration> getSubConfigurations() {
-        this.getVariants()
+        variantsInternal()
     }
 
     Collection<AndroidVariantConfiguration> getVariants() {
+        variantsInternal().findAll { it.enabled }
+    }
+
+    private List<AndroidVariantConfiguration> variantsInternal() {
         this.@variants.findAll { it.name in variantsNames.value }
     }
 

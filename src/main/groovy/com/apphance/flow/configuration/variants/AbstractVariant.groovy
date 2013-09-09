@@ -21,6 +21,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
     @Inject ProjectConfiguration conf
     @Inject ApphanceConfiguration apphanceConf
     @Inject ApphanceArtifactory apphanceArtifactory
+    private boolean enabledInternal = true
 
     @Inject
     AbstractVariant(@Assisted String name) {
@@ -107,9 +108,15 @@ abstract class AbstractVariant extends AbstractConfiguration {
 
     @Override
     boolean isEnabled() {
-        conf.enabled
+        conf.enabled && enabledInternal
     }
 
+    @Override
+    void setEnabled(boolean enabled) {
+        enabledInternal = enabled
+    }
+
+    @Override
     String getEnabledPropKey() {
         "${prefix}.variant.${name}.enabled"
     }

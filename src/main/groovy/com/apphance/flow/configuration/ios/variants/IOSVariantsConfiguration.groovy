@@ -52,7 +52,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }
 
     Collection<IOSVariant> getVariants() {
-        variantsInternal()
+        variantsInternal().findAll { it.isEnabled() }
     }
 
     IOSVariant getMainVariant() {
