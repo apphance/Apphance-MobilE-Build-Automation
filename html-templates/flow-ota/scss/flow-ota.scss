@@ -1,0 +1,123 @@
+@import "normalize";
+@import "foundation";
+
+header, section {
+  margin-bottom: 0.5em;
+}
+
+header {
+  background: #222;
+  h5 {
+    display: inline-block;
+    white-space: nowrap;
+    margin: 3px 0;
+    color: #ddd;
+    width: auto;
+    height: auto;
+  }
+  img {
+    display: inline-block;
+    vertical-align: text-bottom;
+    margin: 0 0 1px 0.5em;
+    width: $h5-font-size;
+  }
+}
+
+section.info {
+  h2.subheader {
+    margin: 0;
+  }
+
+  .logo, .description {
+    display: inline-block;
+  }
+  .logo {
+    height: 73px;
+    @media (min-width: $small-screen) {
+      height: 87px;
+    }
+    margin-right: 0.5em;
+    float: left;
+  }
+
+  .detail-wrapper {
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 18px;
+    .headers {
+      float: left;
+      text-align: right;
+      margin-right: 0.25em;
+    }
+    .details {
+      float: left;
+    }
+  }
+}
+
+section.builds {
+  .panel.build {
+    display: inline-table;
+    width: 100%;
+    padding: 0.75em;
+    margin: 0;
+
+    background-color: #eee;
+    border-style: solid;
+    border-color: #999;
+    &:first-child {
+      border-width: 1px;
+    }
+    border-width: 0 1px 1px 1px;
+    h4 {
+      margin: 0;
+      white-space: nowrap;
+      @media (min-width: $small-screen) {
+        display: inline-block;
+        float: left;
+        width: 50%;
+      }
+    }
+    .buttons {
+      @media (max-width: $small-screen) and (orientation: landscape) {
+        text-align: center;
+      }
+      @media (min-width: $small-screen) {
+        display: inline-block;
+        float: right;
+        width: 50%;
+      }
+      .button {
+        @include button-style($bg: #ddd);
+        @media (max-width: $small-screen) {
+          margin: 0.5em auto 0 auto;
+          @include button-size($padding: $button-sml);
+          @media screen and (orientation: portrait) {
+            width: 100%;
+          }
+          @media screen and (orientation: landscape) {
+            width: 50%;
+          }
+        }
+        @media (min-width: $small-screen) {
+          display: inline-block;
+          margin: 0;
+          width: 49%;
+        }
+      }
+    }
+    &.highlighted {
+      background-color: #aed1db;
+      border-color: #00A8CC;
+      .button {
+        @include button-style($bg: #00A8CC);
+      }
+    }
+  }
+}
+
+section.changelog {
+  h3 {
+    margin: 0;
+  }
+}

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTA installation - iOS</title>
+
+    <link href="css/flow-ota.css" rel="stylesheet">
+</head>
+
+
+<body>
+
+<header>
+    <div class="row">
+        <div class="large-12 columns text-center">
+            <h5>Apphance Flow OTA</h5><img src="img/android.png">
+        </div>
+    </div>
+</header>
+
+<section class="info">
+    <div class="row">
+        <div class="large-12 columns">
+            <img class="logo" src="http://ota.polidea.pl/Qwilt-iOS-PGUM2DLK/3.1.46_395/Icon.png">
+
+            <div class="description">
+                <h2 class="subheader">Qwilt</h2>
+
+                <div class="detail-wrapper">
+                    <div class="headers">
+                        <div>Version:</div>
+                        <div>Date:</div>
+                    </div>
+                    <div class="details">
+                        <div><span class="round label">3.1.46</span></div>
+                        <div><span class="round secondary label">29-08-2013 14:01 CEST</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="builds">
+    <div class="row">
+        <div class="large-12 columns text-center">
+            <h3>Available builds:</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-12 columns">
+            <div class="panel build highlighted">
+                <h4>Long name name name</h4>
+
+                <div class="buttons">
+                    <a href="#" class="button">Install</a>
+                </div>
+            </div>
+            <div class="panel build">
+                <h4>Long name name name</h4>
+
+                <div class="buttons">
+                    <a href="#" class="button secondary">Download for iPhone</a>
+                    <a href="#" class="button">Download for iPad</a>
+                </div>
+            </div>
+            <div class="panel build">
+                <h4>Long name name name</h4>
+
+                <div class="buttons">
+                    <a href="#" class="button">Install</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="changelog">
+    <div class="row">
+        <div class="large-12 columns">
+            <div class="section-container accordion contain-to-grid" data-section="accordion">
+                <section>
+                    <h3 class="title text-center" data-section-title><a href="#">Changelog</a></h3>
+
+                    <div class="content" id="changelog-content" data-section-content>
+                        <p>
+                            Like you, I used to think the world was this great place where everybody lived by the same
+                            standards I did, then some kid with a nail showed me I was living in his world, a world
+                            where chaos rules not order, a world where righteousness is not rewarded. That's Cesar's
+                            world, and if you're not willing to play by his rules, then you're gonna have to pay the
+                            price.
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="js/vendor/zepto.js"></script>
+<script src="js/foundation/foundation.js"></script>
+<script src="js/foundation/foundation.section.js"></script>
+
+<script type="text/javascript">
+    $(document).foundation('section', {
+        callback: function () {
+            var offset = $('#changelog-content').offset();
+            Foundation.lib_methods.scrollTo($(window), offset.top + offset.height, 200);
+        }
+    });
+</script>
+
+</body>
+
+
+</html>
