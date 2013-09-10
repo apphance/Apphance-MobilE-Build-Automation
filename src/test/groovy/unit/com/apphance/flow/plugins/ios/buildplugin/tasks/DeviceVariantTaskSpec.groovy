@@ -66,7 +66,7 @@ class DeviceVariantTaskSpec extends Specification {
         def variant = GroovySpy(IOSVariant) {
             getTmpDir() >> GroovyMock(File)
             getConf() >> GroovyMock(IOSConfiguration) {
-                xcodebuildExecutionPath() >> ['xcodebuild']
+                getXcodebuildExecutionPath() >> ['xcodebuild']
             }
             getName() >> 'GradleXCode'
             getSchemeFile() >> tmpFile
@@ -78,7 +78,7 @@ class DeviceVariantTaskSpec extends Specification {
             isEnabled() >> releaseConfEnabled
         }
         task.conf = GroovyMock(IOSConfiguration) {
-            xcodebuildExecutionPath() >> ['xcodebuild']
+            getXcodebuildExecutionPath() >> ['xcodebuild']
             getSdk() >> new StringProperty(value: 'iphoneos')
         }
         task.variant = variant

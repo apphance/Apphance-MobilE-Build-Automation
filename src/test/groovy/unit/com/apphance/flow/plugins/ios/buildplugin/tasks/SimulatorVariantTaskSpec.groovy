@@ -25,7 +25,7 @@ class SimulatorVariantTaskSpec extends Specification {
     def 'executor runs build command when variant passed & release conf enabled #releaseConfEnabled'() {
         given:
         task.conf = GroovyMock(IOSConfiguration) {
-            xcodebuildExecutionPath() >> ['xcodebuild']
+            getXcodebuildExecutionPath() >> ['xcodebuild']
             getSimulatorSdk() >> new StringProperty(value: 'iphonesimulator')
         }
         task.releaseConf = GroovyMock(IOSReleaseConfiguration) {

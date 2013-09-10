@@ -26,7 +26,7 @@ class FrameworkVariantTaskSpec extends Specification {
     def 'framework action is invoked, release conf enabled: #releaseConfEnabled'() {
         given:
         task.conf = GroovyMock(IOSConfiguration) {
-            xcodebuildExecutionPath() >> ['xcodebuild']
+            getXcodebuildExecutionPath() >> ['xcodebuild']
             getSimulatorSdk() >> new StringProperty(value: '')
             getSdk() >> new StringProperty(value: '')
         }

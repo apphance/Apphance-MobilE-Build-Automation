@@ -162,7 +162,7 @@ class IOSExecutorSpec extends Specification {
         and:
         def iose = new IOSExecutor(executor: ce, conf: GroovySpy(IOSConfiguration) {
             getRootDir() >> rootDir
-            xcodebuildExecutionPath() >> ['xcodebuild', '-project', 'Sample.xcodeproj']
+            getXcodebuildExecutionPath() >> ['xcodebuild', '-project', 'Sample.xcodeproj']
         })
 
         when:

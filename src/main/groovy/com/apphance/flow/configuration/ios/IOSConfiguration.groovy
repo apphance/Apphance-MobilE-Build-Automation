@@ -74,9 +74,10 @@ class IOSConfiguration extends ProjectConfiguration {
         dirs
     }()
 
-    List<String> xcodebuildExecutionPath() {
+    @Lazy
+    List<String> xcodebuildExecutionPath = {
         xcodeDir.value ? ['xcodebuild', '-project', xcodeDir.value as String] : ['xcodebuild']
-    }
+    }()
 
     def sdk = new StringProperty(
             name: 'ios.sdk',

@@ -28,7 +28,7 @@ class IOSExecutor {
     private List<String> showSdks() {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath() + ['-showsdks'])).toList()*.trim()
+                cmd: conf.xcodebuildExecutionPath + ['-showsdks'])).toList()*.trim()
     }
 
     @Lazy List<String> schemes = {
@@ -40,7 +40,7 @@ class IOSExecutor {
     List<String> list = {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath() + ['-list'])).toList()*.trim()
+                cmd: conf.xcodebuildExecutionPath + ['-list'])).toList()*.trim()
     }()
 
     List<String> pbxProjToJSON(File pbxproj) {
@@ -90,7 +90,7 @@ class IOSExecutor {
     private Closure<Map<String, String>> buildSettingsC = { String target, String configuration ->
         def result = executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath().toList() + ['-target', target, '-configuration', configuration, '-showBuildSettings']
+                cmd: conf.xcodebuildExecutionPath + ['-target', target, '-configuration', configuration, '-showBuildSettings']
         )).toList()
         parser.parseBuildSettings(result)
     }.memoize()
@@ -105,7 +105,7 @@ class IOSExecutor {
 
     def runTests(File runDir, String target, String configuration, String testResultPath) {
         executor.executeCommand new Command(runDir: runDir,
-                cmd: conf.xcodebuildExecutionPath() +
+                cmd: conf.xcodebuildExecutionPath +
                         ['-target', target, '-configuration', configuration, '-sdk', 'iphonesimulator', 'clean', 'build'],
                 environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: testResultPath],
                 failOnError: false
