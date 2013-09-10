@@ -28,7 +28,7 @@ class IOSExecutor {
     private List<String> showSdks() {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath + ['-showsdks'])).toList()*.trim()
+                cmd: ['xcodebuild', '-showsdks'])).toList()*.trim()
     }
 
     @Lazy List<String> schemes = {
@@ -40,7 +40,7 @@ class IOSExecutor {
     List<String> list = {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath + ['-list'])).toList()*.trim()
+                cmd: ['xcodebuild', '-list'])).toList()*.trim()
     }()
 
     List<String> pbxProjToJSON(File pbxproj) {
@@ -90,7 +90,7 @@ class IOSExecutor {
     private Closure<Map<String, String>> buildSettingsC = { String target, String configuration ->
         def result = executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath + ['-target', target, '-configuration', configuration, '-showBuildSettings']
+                cmd: ['xcodebuild', '-target', target, '-configuration', configuration, '-showBuildSettings']
         )).toList()
         parser.parseBuildSettings(result)
     }.memoize()
@@ -103,12 +103,9 @@ class IOSExecutor {
         executor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
     }
 
-    def runTests(File runDir, String target, String configuration, String testResultPath) {
-        executor.executeCommand new Command(runDir: runDir,
-                cmd: conf.xcodebuildExecutionPath +
-                        ['-target', target, '-configuration', configuration, '-sdk', 'iphonesimulator', 'clean', 'build'],
-                environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: testResultPath],
-                failOnError: false
+    def runTests(File runDir, List<String> cmd, String testResultPath) {
+        executor.executeCommand new Command(runDir: runDir, cmd: cmd, failOnError: false,
+                environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: testResultPath]
         )
     }
 

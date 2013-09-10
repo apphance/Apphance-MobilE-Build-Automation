@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.ios.test.tasks
 
 import com.apphance.flow.TestUtils
+import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.linker.SimpleFileLinker
@@ -78,6 +79,9 @@ class IOSTestTaskSpec extends Specification {
         def testPbxEnhancer = GroovyMock(IOSTestPbxEnhancer)
         def pbxJsonParser = GroovyMock(PbxJsonParser)
         def executor = GroovyMock(IOSExecutor)
+        def conf = GroovyMock(IOSConfiguration) {
+            getXcodebuildExecutionPath() >> ['xcodebuild']
+        }
 
         and:
         task.variant = variant
@@ -85,6 +89,7 @@ class IOSTestTaskSpec extends Specification {
         task.testPbxEnhancer = testPbxEnhancer
         task.pbxJsonParser = pbxJsonParser
         task.executor = executor
+        task.conf = conf
 
         when:
         task.execute()
@@ -94,7 +99,7 @@ class IOSTestTaskSpec extends Specification {
         1 * testPbxEnhancer.addShellScriptToBuildPhase(variant, ['3145'])
         1 * pbxJsonParser.getTargetForBlueprintId() >> { i, j -> 't1' }.memoize()
         1 * schemeParser.configuration(schemeFile, TEST_ACTION) >> 'c1'
-        1 * executor.runTests(tmpDir, 't1', 'c1', new File(tmpDir, 'test-v1-t1.log').absolutePath)
+        1 * executor.runTests(tmpDir, ['xcodebuild', '-target', 't1', '-configuration', 'c1', '-sdk', 'iphonesimulator', 'clean', 'build'], new File(tmpDir, 'test-v1-t1.log').absolutePath)
 
         and:
         noExceptionThrown()

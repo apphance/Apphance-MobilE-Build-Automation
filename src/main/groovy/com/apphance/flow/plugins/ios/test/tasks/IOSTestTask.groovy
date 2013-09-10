@@ -48,7 +48,8 @@ class IOSTestTask extends DefaultTask {
         testTargets.each { String testTarget ->
 
             def testResultsLog = newFile(testTarget, 'log')
-            executor.runTests(variant.tmpDir, testTarget, testConf, testResultsLog.absolutePath)
+            def cmd = conf.xcodebuildExecutionPath + ['-target', testTarget, '-configuration', testConf, '-sdk', 'iphonesimulator', 'clean', 'build']
+            executor.runTests(variant.tmpDir, cmd, testResultsLog.absolutePath)
 
             Collection<OCUnitTestSuite> parsedResults = parseResults(testResultsLog)
 
