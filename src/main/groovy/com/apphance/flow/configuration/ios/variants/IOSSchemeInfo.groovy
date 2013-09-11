@@ -3,10 +3,18 @@ package com.apphance.flow.configuration.ios.variants
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import groovy.transform.PackageScope
+import org.gradle.api.GradleException
 
 import javax.inject.Inject
 
+import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
+import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
+import static groovy.io.FileType.FILES
+import static org.gradle.api.logging.Logging.getLogger
+
 class IOSSchemeInfo {
+
+    protected logger = getLogger(getClass())
 
     @Inject IOSConfiguration conf
     @Inject XCSchemeParser schemeParser
@@ -58,7 +66,27 @@ class IOSSchemeInfo {
 
     @PackageScope
     Closure<File> schemeFile = { String name ->
-        new File(conf.xcodeDir.value, "xcshareddata/xcschemes/${name}.xcscheme")
+        logger.info("Searching scheme file for: $name in: $conf.rootDir.absolutePath")
+        List<File> found = []
+        conf.rootDir.traverse(
+                type: FILES,
+                maxDepth: MAX_RECURSION_LEVEL,
+                nameFilter: ~/${name}\.xcscheme/,
+                excludeFilter: EXCLUDE_FILTER
+        ) {
+            if (it.absolutePath.endsWith("xcshareddata/xcschemes/${name}.xcscheme"))
+                found << it
+        }
+        logger.debug("Found following schemes for name: $name, schemes: $found")
+        switch (found.size()) {
+            case 0:
+                logger.warn("No scheme file found for name: $name")
+                return new File(conf.rootDir, "${name}.xcscheme")
+            case 1:
+                logger.info("Found scheme file for name: $name, file: ${found[0].absolutePath}")
+                return found[0]
+            default:
+                throw new GradleException("Found more than one scheme file for name $name, files: $found")
+        }
     }.memoize()
-
 }
