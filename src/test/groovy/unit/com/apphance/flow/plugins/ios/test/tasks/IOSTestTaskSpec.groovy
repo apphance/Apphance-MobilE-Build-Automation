@@ -72,6 +72,7 @@ class IOSTestTaskSpec extends Specification {
             getSchemeFile() >> schemeFile
             getPbxFile() >> pbxFile
             getTmpDir() >> tmpDir
+            getXcodebuildExecutionPath() >> ['xcodebuild']
         }
 
         and:
@@ -79,9 +80,6 @@ class IOSTestTaskSpec extends Specification {
         def testPbxEnhancer = GroovyMock(IOSTestPbxEnhancer)
         def pbxJsonParser = GroovyMock(PbxJsonParser)
         def executor = GroovyMock(IOSExecutor)
-        def conf = GroovyMock(IOSConfiguration) {
-            getXcodebuildExecutionPath() >> ['xcodebuild']
-        }
 
         and:
         task.variant = variant
@@ -89,7 +87,6 @@ class IOSTestTaskSpec extends Specification {
         task.testPbxEnhancer = testPbxEnhancer
         task.pbxJsonParser = pbxJsonParser
         task.executor = executor
-        task.conf = conf
 
         when:
         task.execute()

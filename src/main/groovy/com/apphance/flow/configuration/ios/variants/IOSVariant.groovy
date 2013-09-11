@@ -222,6 +222,11 @@ class IOSVariant extends AbstractVariant {
         tmpScheme?.exists() ? tmpScheme : new File(conf.rootDir, relative)
     }
 
+    @Lazy
+    List<String> xcodebuildExecutionPath = {
+        ['xcodebuild', '-project', xcodeprojLocator.findXCodeproj(schemeParser.xcodeprojName(schemeFile), schemeParser.blueprintIdentifier(schemeFile)).name]
+    }()
+
     @Override
     void checkProperties() {
         super.checkProperties()

@@ -1,7 +1,6 @@
 package com.apphance.flow.executor
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
@@ -156,14 +155,11 @@ class IOSExecutorSpec extends Specification {
 
         and:
         def rootDir = new File('rootDir')
-        def conf = GroovySpy(IOSConfiguration) {
-            getRootDir() >> rootDir
-            getXcodebuildExecutionPath() >> ['xcodebuild', '-project', 'Sample.xcodeproj']
-        }
+        def conf = GroovySpy(IOSConfiguration) { getRootDir() >> rootDir }
 
         and:
         def iose = new IOSExecutor(executor: ce, conf: conf)
-        def cmd = conf.xcodebuildExecutionPath + ['-target', 't1', '-configuration', 'c1', '-sdk', 'iphonesimulator', 'clean', 'build']
+        def cmd = ['xcodebuild', '-target', 't1', '-configuration', 'c1', '-sdk', 'iphonesimulator', 'clean', 'build']
 
         when:
         iose.runTests(rootDir, cmd, 'somePath')
@@ -171,7 +167,7 @@ class IOSExecutorSpec extends Specification {
         then:
         1 * ce.executeCommand(
                 {
-                    it.commandForExecution.join(' ') == 'xcodebuild -project Sample.xcodeproj -target t1 -configuration c1 -sdk iphonesimulator clean build' &&
+                    it.commandForExecution.join(' ') == 'xcodebuild -target t1 -configuration c1 -sdk iphonesimulator clean build' &&
                             it.runDir.name == 'rootDir' &&
                             it.failOnError == false &&
                             it.environment.RUN_UNIT_TEST_WITH_IOS_SIM == 'YES' &&

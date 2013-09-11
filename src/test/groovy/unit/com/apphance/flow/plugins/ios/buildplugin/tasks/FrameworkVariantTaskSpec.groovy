@@ -26,7 +26,6 @@ class FrameworkVariantTaskSpec extends Specification {
     def 'framework action is invoked, release conf enabled: #releaseConfEnabled'() {
         given:
         task.conf = GroovyMock(IOSConfiguration) {
-            getXcodebuildExecutionPath() >> ['xcodebuild']
             getSimulatorSdk() >> new StringProperty(value: '')
             getSdk() >> new StringProperty(value: '')
         }
@@ -40,6 +39,7 @@ class FrameworkVariantTaskSpec extends Specification {
             getFrameworkHeaders() >> new ListStringProperty(value: [])
             getFrameworkResources() >> new ListStringProperty(value: [])
             getMode() >> new IOSBuildModeProperty(value: FRAMEWORK)
+            getXcodebuildExecutionPath() >> ['xcodebuild']
         }
         task.artifactProvider = GroovyMock(IOSArtifactProvider) {
             frameworkInfo(_) >> new IOSFrameworkArtifactInfo()

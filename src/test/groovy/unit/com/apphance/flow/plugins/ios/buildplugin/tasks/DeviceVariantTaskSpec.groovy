@@ -10,6 +10,7 @@ import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSDeviceArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSDeviceArtifactInfo
+import com.apphance.flow.plugins.ios.xcodeproj.IOSXCodeprojLocator
 import com.apphance.flow.util.FlowUtils
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -60,25 +61,21 @@ class DeviceVariantTaskSpec extends Specification {
     def 'executor runs archive command when variant passed & release conf enabled #releaseConfEnabled'() {
         given:
         def tmpFile = tempFile
-        def tmpDir = temporaryDir
 
         and:
         def variant = GroovySpy(IOSVariant) {
             getTmpDir() >> GroovyMock(File)
-            getConf() >> GroovyMock(IOSConfiguration) {
-                getXcodebuildExecutionPath() >> ['xcodebuild']
-            }
             getName() >> 'GradleXCode'
             getSchemeFile() >> tmpFile
             getMode() >> new IOSBuildModeProperty(value: DEVICE)
             getTarget() >> 't'
             getArchiveConfiguration() >> 'c'
+            getXcodebuildExecutionPath() >> ['xcodebuild']
         }
         task.releaseConf = GroovyMock(IOSReleaseConfiguration) {
             isEnabled() >> releaseConfEnabled
         }
         task.conf = GroovyMock(IOSConfiguration) {
-            getXcodebuildExecutionPath() >> ['xcodebuild']
             getSdk() >> new StringProperty(value: 'iphoneos')
         }
         task.variant = variant

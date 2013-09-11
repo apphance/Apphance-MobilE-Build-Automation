@@ -1,6 +1,5 @@
 package com.apphance.flow.plugins.ios.test.tasks
 
-import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.linker.FileLinker
@@ -26,7 +25,6 @@ class IOSTestTask extends DefaultTask {
     String group = FLOW_TEST
     String description = 'Build and executes iOS tests'
 
-    @Inject IOSConfiguration conf
     @Inject IOSExecutor executor
     @Inject IOSTestPbxEnhancer testPbxEnhancer
     @Inject XCSchemeParser schemeParser
@@ -48,7 +46,7 @@ class IOSTestTask extends DefaultTask {
         testTargets.each { String testTarget ->
 
             def testResultsLog = newFile(testTarget, 'log')
-            def cmd = conf.xcodebuildExecutionPath + ['-target', testTarget, '-configuration', testConf, '-sdk', 'iphonesimulator', 'clean', 'build']
+            def cmd = variant.xcodebuildExecutionPath + ['-target', testTarget, '-configuration', testConf, '-sdk', 'iphonesimulator', 'clean', 'build']
             executor.runTests(variant.tmpDir, cmd, testResultsLog.absolutePath)
 
             Collection<OCUnitTestSuite> parsedResults = parseResults(testResultsLog)
