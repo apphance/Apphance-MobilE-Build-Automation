@@ -50,7 +50,7 @@ class PbxJsonParser {
 
     Closure<String> targetForBlueprintId = { File pbx, String blueprintId ->
         logger.info("Looking for blueprintId: $blueprintId in file $pbx.absolutePath")
-        parsedPBX(pbx).objects.find { it.value.isa == PBX_NATIVE_TARGET && it.key == blueprintId }.value.name
+        parsedPBX(pbx).objects.find { it.value.isa == PBX_NATIVE_TARGET && it.key == blueprintId }?.value?.name
     }.memoize()
 
     boolean isFrameworkDeclared(File pbx, def frameworkNamePattern) {
