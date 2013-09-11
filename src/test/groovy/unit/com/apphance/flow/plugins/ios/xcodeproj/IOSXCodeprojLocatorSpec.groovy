@@ -7,7 +7,7 @@ import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
 
-class IOSXCodeprojInfoSpec extends Specification {
+class IOSXCodeprojLocatorSpec extends Specification {
 
     @Shared conf = GroovyMock(IOSConfiguration) {
         getRootDir() >> new File('testProjects/ios/GradleXCode')

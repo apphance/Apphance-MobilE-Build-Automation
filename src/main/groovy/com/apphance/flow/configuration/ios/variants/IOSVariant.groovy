@@ -12,6 +12,7 @@ import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
+import com.apphance.flow.plugins.ios.xcodeproj.IOSXCodeprojLocator
 import com.apphance.flow.validation.VersionValidator
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
@@ -36,6 +37,7 @@ class IOSVariant extends AbstractVariant {
     @Inject IOSExecutor executor
     @Inject XCSchemeParser schemeParser
     @Inject IOSSchemeInfo schemeInfo
+    @Inject IOSXCodeprojLocator xcodeprojLocator
     @Inject VersionValidator versionValidator
 
     private bundle = getBundle('validation')
@@ -181,8 +183,10 @@ class IOSVariant extends AbstractVariant {
 
     @Lazy
     File pbxFile = {
-        def pbx = new File("$tmpDir.absolutePath/$conf.xcodeDir.value", PROJECT_PBXPROJ)
-        pbx.exists() ? pbx : new File("${conf.rootDir}/${conf.xcodeDir.value}", PROJECT_PBXPROJ)
+        def pbx = xcodeprojLocator.findXCodeproj(schemeParser.xcodeprojName(schemeFile), schemeParser.blueprintIdentifier(schemeFile))
+        def relative = relativeTo(conf.rootDir, pbx)
+        def tmpPbx = new File(tmpDir, relative)
+        tmpPbx?.exists() ? new File(tmpPbx, PROJECT_PBXPROJ) : new File(conf.rootDir, "$relative/$PROJECT_PBXPROJ")
     }()
 
     File getPlist() {

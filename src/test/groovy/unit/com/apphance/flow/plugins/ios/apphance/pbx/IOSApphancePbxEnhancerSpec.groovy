@@ -3,7 +3,6 @@ package com.apphance.flow.plugins.ios.apphance.pbx
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
-import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
@@ -58,7 +57,6 @@ class IOSApphancePbxEnhancerSpec extends Specification {
 
         and:
         def conf = GroovyStub(IOSConfiguration) {
-            getXcodeDir() >> new FileProperty(value: 'GradleXCode/GradleXCode.xcodeproj')
             getRootDir() >> tmpDir
         }
 
@@ -92,7 +90,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         enhancer.pbxJsonParser = new PbxJsonParser(executor: executor)
 
         and:
-        new File(tmpDir, "${conf.xcodeDir.value}").mkdirs()
+        new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj').mkdirs()
 
         when:
         enhancer.addApphanceToPbx()
