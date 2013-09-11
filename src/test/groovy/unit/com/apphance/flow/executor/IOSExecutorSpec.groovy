@@ -36,8 +36,6 @@ class IOSExecutorSpec extends Specification {
         conf.project = GroovyStub(Project) {
             getRootDir() >> new File('testProjects/ios/GradleXCode')
         }
-        conf.xcodeDir >> new FileProperty(value: new File('GradleXCode.xcodeproj'))
-
         iosExecutor.executor = executor
         iosExecutor.conf = conf
         iosExecutor.parser = new XCodeOutputParser()
@@ -51,7 +49,7 @@ class IOSExecutorSpec extends Specification {
 
     def 'pbxproj is converted to json format well'() {
         when:
-        def json = iosExecutor.pbxProjToJSON(new File("$conf.rootDir.absolutePath/$conf.xcodeDir.value.name", PROJECT_PBXPROJ))
+        def json = iosExecutor.pbxProjToJSON(new File('testProjects/ios/GradleXCode/GradleXCode.xcodeproj', PROJECT_PBXPROJ))
 
         then:
         noExceptionThrown()

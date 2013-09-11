@@ -68,6 +68,18 @@ class XCSchemeParser {
         xml.LaunchAction.BuildableProductRunnable.BuildableReference.@BlueprintIdentifier
     }.memoize()
 
+
+    String xcodeprojName(File scheme) {
+        xcodeprojNameC.call(scheme)
+    }
+
+    private Closure<String> xcodeprojNameC = { File scheme ->
+        def xml = parseSchemeFile.call(scheme)
+        def ref = xml.LaunchAction.BuildableProductRunnable.BuildableReference.@ReferencedContainer
+        def splitted = ref?.text()?.split(':')
+        splitted?.size() == 2 ? splitted[1] : null
+    }.memoize()
+
     void addPostArchiveAction(File scheme) {
         def xml = parseSchemeFile.call(scheme)
         if (xml.ArchiveAction.PostActions.size() == 0) {

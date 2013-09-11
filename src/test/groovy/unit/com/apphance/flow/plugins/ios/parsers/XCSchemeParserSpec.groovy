@@ -110,4 +110,9 @@ class XCSchemeParserSpec extends Specification {
         scheme1 | ['D382B73414703FE500E9CC9B']
         scheme2 | []
     }
+
+    def 'xcodeproj name is returned'() {
+        expect:
+        parser.xcodeprojName(scheme1) == 'GradleXCode.xcodeproj'
+    }
 }
