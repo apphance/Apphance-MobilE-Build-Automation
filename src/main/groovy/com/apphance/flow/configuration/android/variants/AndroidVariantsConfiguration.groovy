@@ -107,6 +107,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     void checkProperties() {
-        check variantsNames.value.sort() == variants*.name.sort(), "List in '${variantsNames.name}' property is not equal to the list of names of configured variants, check '${FLOW_PROP_FILENAME}' file!"
+        check variantsNames.value.collect().sort() == variants*.name.collect().sort(), "List in '${variantsNames.name}' property is not equal to the list of" +
+                " names of configured variants, check '${FLOW_PROP_FILENAME}' file!"
     }
 }
