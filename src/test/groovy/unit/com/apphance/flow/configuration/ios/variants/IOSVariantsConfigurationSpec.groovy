@@ -3,6 +3,7 @@ package com.apphance.flow.configuration.ios.variants
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.reader.PropertyPersister
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
+import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
 import com.apphance.flow.util.FlowUtils
 import org.apache.commons.io.FileUtils
 import spock.lang.Specification
@@ -57,7 +58,7 @@ class IOSVariantsConfigurationSpec extends Specification {
     def 'possible variants found'() {
         given:
         def tmpDir = temporaryDir
-        FileUtils.copyDirectory(new File(getClass().getResource('iosProject').toURI()), tmpDir)
+        FileUtils.copyDirectory(new File(IOSSchemeInfo.getResource('iosProject').toURI()), tmpDir)
 
         and:
         def conf = GroovyMock(IOSConfiguration) {

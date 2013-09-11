@@ -1,11 +1,8 @@
 package com.apphance.flow.configuration.ios
 
-import com.apphance.flow.configuration.ios.variants.IOSSchemeInfo
+import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
-import com.apphance.flow.configuration.properties.FileProperty
-import com.apphance.flow.configuration.properties.ListStringProperty
-import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.apphance.flow.util.FlowUtils
@@ -119,7 +116,7 @@ class IOSTestConfigurationSpec extends Specification {
 
     def 'possible test variants found'() {
         given:
-        def projectDir = new File(IOSVariantsConfiguration.class.getResource('iOSProject/xcshareddata/xcschemes').toURI())
+        def projectDir = new File(IOSSchemeInfo.class.getResource('iOSProject/xcshareddata/xcschemes').toURI())
         def tc = new IOSTestConfiguration(
                 variantsConf: GroovyMock(IOSVariantsConfiguration) {
                     getVariants() >> projectDir.listFiles().collect { file ->

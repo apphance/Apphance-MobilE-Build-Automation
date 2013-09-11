@@ -3,6 +3,7 @@ package com.apphance.flow.configuration.ios.variants
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
+import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
 import com.apphance.flow.util.FlowUtils
 import com.google.inject.Singleton
 import groovy.transform.PackageScope

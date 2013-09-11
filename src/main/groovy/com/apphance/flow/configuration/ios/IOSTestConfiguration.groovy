@@ -1,11 +1,10 @@
 package com.apphance.flow.configuration.ios
 
 import com.apphance.flow.configuration.AbstractConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSSchemeInfo
+import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
 import com.apphance.flow.configuration.ios.variants.IOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
-import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.util.FlowUtils
 import com.apphance.flow.util.Version

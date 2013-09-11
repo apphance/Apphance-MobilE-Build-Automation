@@ -1,4 +1,4 @@
-package com.apphance.flow.configuration.ios.variants
+package com.apphance.flow.plugins.ios.scheme
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser

@@ -11,6 +11,7 @@ import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
+import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
 import com.apphance.flow.validation.VersionValidator
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
