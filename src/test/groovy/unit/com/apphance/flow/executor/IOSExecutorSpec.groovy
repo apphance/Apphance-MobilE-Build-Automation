@@ -222,6 +222,5 @@ class IOSExecutorSpec extends Specification {
 
         cleanup:
         dSYM.delete()
-
     }
 }
