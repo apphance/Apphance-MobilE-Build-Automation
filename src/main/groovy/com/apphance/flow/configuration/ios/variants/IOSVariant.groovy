@@ -23,6 +23,7 @@ import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.LAUNCH_ACTION
+import static com.apphance.flow.plugins.ios.xcodeproj.IOSXCodeprojLocator.PROJECT_PBXPROJ
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
 import static java.util.ResourceBundle.getBundle

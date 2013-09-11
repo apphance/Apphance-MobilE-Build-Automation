@@ -9,7 +9,6 @@ import groovy.json.JsonSlurper
 import org.gradle.api.Project
 import spock.lang.Specification
 
-import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
@@ -48,7 +47,7 @@ class IOSExecutorSpec extends Specification {
 
     def 'pbxproj is converted to json format well'() {
         when:
-        def json = iosExecutor.pbxProjToJSON(new File('testProjects/ios/GradleXCode/GradleXCode.xcodeproj', PROJECT_PBXPROJ))
+        def json = iosExecutor.pbxProjToJSON(new File('testProjects/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj'))
 
         then:
         noExceptionThrown()

@@ -2,10 +2,6 @@ package com.apphance.flow.plugins.ios.test.tasks.results.parser
 
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- * Parses text output of OCUNIT.
- *
- */
 class OCUnitParser {
 
     private logger = getLogger(getClass())

@@ -15,8 +15,6 @@ class IOSConfiguration extends ProjectConfiguration {
 
     String configurationName = 'iOS Configuration'
 
-    public static final PROJECT_PBXPROJ = 'project.pbxproj'
-
     @Inject IOSExecutor executor
     @Inject IOSVariantsConfiguration variantsConf
 

@@ -4,10 +4,6 @@ import com.apphance.flow.plugins.ios.test.tasks.results.parser.OCUnitTestResult
 import com.apphance.flow.plugins.ios.test.tasks.results.parser.OCUnitTestSuite
 import groovy.xml.MarkupBuilder
 
-/**
- * Exports XML JUnit-like result from text output of OCUnit.
- *
- */
 class XMLJunitExporter {
     Collection<OCUnitTestSuite> testSuites
     File outputFile

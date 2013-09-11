@@ -1,6 +1,5 @@
 package com.apphance.flow.plugins.ios.test.tasks.results.parser
 
-
 class OCUnitTestError {
     String file
     int line
