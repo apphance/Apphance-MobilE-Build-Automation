@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.release.tasks
 
 import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
@@ -31,12 +31,12 @@ class UpdateVersionTaskSpec extends Specification {
         and:
         task.variantsConf = GroovySpy(IOSVariantsConfiguration) {
             getVariants() >> [
-                    GroovyMock(IOSVariant) {
+                    GroovyMock(AbstractIOSVariant) {
                         getPlist() >> GroovyMock(File)
                         getTmpDir() >> tmpDir
                         getMode() >> new IOSBuildModeProperty(value: mode)
                     },
-                    GroovyMock(IOSVariant) {
+                    GroovyMock(AbstractIOSVariant) {
                         getPlist() >> GroovyMock(File)
                         getTmpDir() >> tmpDir
                         getMode() >> new IOSBuildModeProperty(value: mode)

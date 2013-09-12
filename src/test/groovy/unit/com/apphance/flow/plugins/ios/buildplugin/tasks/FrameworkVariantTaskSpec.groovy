@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
@@ -33,7 +33,7 @@ class FrameworkVariantTaskSpec extends Specification {
             isEnabled() >> releaseConfEnabled
         }
         task.iosExecutor = GroovyMock(IOSExecutor)
-        task.variant = GroovyMock(IOSVariant) {
+        task.variant = GroovyMock(AbstractIOSVariant) {
             getName() >> 'variant'
             getArchiveConfiguration() >> 'archive'
             getFrameworkHeaders() >> new ListStringProperty(value: [])
@@ -79,7 +79,7 @@ class FrameworkVariantTaskSpec extends Specification {
 
     def 'exception thrown when variant with bad mode passed'() {
         given:
-        task.variant = GroovyMock(IOSVariant) {
+        task.variant = GroovyMock(AbstractIOSVariant) {
             getMode() >> new IOSBuildModeProperty(value: mode)
         }
 

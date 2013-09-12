@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.apphance
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancer
@@ -34,7 +34,7 @@ class IOSApphanceEnhancer {
     @Inject IOSApphanceSourceEnhancerFactory apphanceSourceEnhancerFactory
     @Inject FlowUtils flowUtils
 
-    private IOSVariant variant
+    private AbstractIOSVariant variant
     private bundle = getBundle('validation')
     @Lazy
     private IOSApphancePbxEnhancer apphancePbxEnhancer = {
@@ -46,7 +46,7 @@ class IOSApphanceEnhancer {
     }()
 
     @Inject
-    IOSApphanceEnhancer(@Assisted IOSVariant variant) {
+    IOSApphanceEnhancer(@Assisted AbstractIOSVariant variant) {
         this.variant = variant
     }
 

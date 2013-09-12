@@ -16,15 +16,14 @@ class IOSVariantsConfigurationSpec extends Specification {
 
     def setup() {
         conf = GroovyMock(IOSConfiguration)
-        def vf = GroovyMock(IOSVariantFactory)
-        vf.createSchemeVariant(_) >> GroovyMock(IOSVariant) {
-            isEnabled() >> true
-        }
-
         variantsConf = new IOSVariantsConfiguration()
         variantsConf.conf = conf
         variantsConf.propertyPersister = Stub(PropertyPersister, { get(_) >> '' })
-        variantsConf.variantFactory = vf
+        variantsConf.variantFactory = GroovyMock(IOSVariantFactory) {
+            createSchemeVariant(_) >> GroovyMock(IOSSchemeVariant) {
+                isEnabled() >> true
+            }
+        }
     }
 
     def 'test buildVariantsList variant'() {

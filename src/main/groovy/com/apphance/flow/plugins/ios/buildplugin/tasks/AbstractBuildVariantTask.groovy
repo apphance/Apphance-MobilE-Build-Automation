@@ -3,7 +3,7 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.util.FlowUtils
@@ -27,7 +27,7 @@ abstract class AbstractBuildVariantTask extends DefaultTask {
     @Inject IOSArtifactProvider artifactProvider
     @Inject FlowUtils fu
 
-    IOSVariant variant
+    AbstractIOSVariant variant
 
     @TaskAction
     abstract void build()

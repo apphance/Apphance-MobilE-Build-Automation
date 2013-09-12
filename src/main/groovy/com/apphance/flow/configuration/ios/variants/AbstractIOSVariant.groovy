@@ -30,7 +30,7 @@ import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
-class IOSVariant extends AbstractVariant {
+abstract class AbstractIOSVariant extends AbstractVariant {
 
     @Inject IOSReleaseConfiguration releaseConf
     @Inject PlistParser plistParser
@@ -44,7 +44,7 @@ class IOSVariant extends AbstractVariant {
     private bundle = getBundle('validation')
 
     @Inject
-    IOSVariant(@Assisted String name) {
+    AbstractIOSVariant(@Assisted String name) {
         super(name)
     }
 
@@ -86,7 +86,7 @@ class IOSVariant extends AbstractVariant {
         []
     }()
 
-    private FileProperty mobileprovision = new FileProperty(
+    protected FileProperty mobileprovision = new FileProperty(
             message: "Mobile provision file for variant defined",
             interactive: { mobileprovisionEnabled },
             required: { mobileprovisionEnabled },

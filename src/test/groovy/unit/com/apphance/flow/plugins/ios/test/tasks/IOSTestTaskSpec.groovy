@@ -1,8 +1,7 @@
 package com.apphance.flow.plugins.ios.test.tasks
 
 import com.apphance.flow.TestUtils
-import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.linker.SimpleFileLinker
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
@@ -23,7 +22,7 @@ class IOSTestTaskSpec extends Specification {
 
     def setupSpec() {
         task.fileLinker = new SimpleFileLinker()
-        task.variant = GroovyMock(IOSVariant) {
+        task.variant = GroovyMock(AbstractIOSVariant) {
             getName() >> 'v1'
         }
     }
@@ -67,7 +66,7 @@ class IOSTestTaskSpec extends Specification {
         def pbxFile = new File('pbxFile')
         def tmpDir = new File('tmpDir')
         tmpDir.mkdirs()
-        def variant = GroovyMock(IOSVariant) {
+        def variant = GroovyMock(AbstractIOSVariant) {
             getName() >> 'v1'
             getSchemeFile() >> schemeFile
             getPbxFile() >> pbxFile

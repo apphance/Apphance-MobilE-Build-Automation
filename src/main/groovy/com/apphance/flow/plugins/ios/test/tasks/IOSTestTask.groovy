@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.test.tasks
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.linker.FileLinker
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
@@ -31,7 +31,7 @@ class IOSTestTask extends DefaultTask {
     @Inject PbxJsonParser pbxJsonParser
     @Inject FileLinker fileLinker
 
-    IOSVariant variant
+    AbstractIOSVariant variant
 
     @TaskAction
     void test() {

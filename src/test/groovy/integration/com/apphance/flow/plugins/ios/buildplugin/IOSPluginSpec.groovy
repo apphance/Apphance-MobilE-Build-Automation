@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.buildplugin
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
@@ -31,16 +31,16 @@ class IOSPluginSpec extends Specification {
         and:
         def variantsConf = GroovyMock(IOSVariantsConfiguration)
         variantsConf.variants >> [
-                GroovyMock(IOSVariant, {
+                GroovyMock(AbstractIOSVariant, {
                     getArchiveTaskName() >> 'archiveV1'
                     getMode() >> new IOSBuildModeProperty(value: DEVICE)
                 }
                 ),
-                GroovyMock(IOSVariant, {
+                GroovyMock(AbstractIOSVariant, {
                     getArchiveTaskName() >> 'archiveV2'
                     getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
                 }),
-                GroovyMock(IOSVariant, {
+                GroovyMock(AbstractIOSVariant, {
                     getFrameworkTaskName() >> 'frameworkV3'
                     getMode() >> new IOSBuildModeProperty(value: FRAMEWORK)
                 })

@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.test.tasks.pbx
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
@@ -47,7 +47,7 @@ class IOSTestPbxEnhancerSpec extends Specification {
         executor.executor = commandExecutor
 
         and:
-        def variant = GroovyMock(IOSVariant) {
+        def variant = GroovyMock(AbstractIOSVariant) {
             getTarget() >> 'GradleXCode'
             getTmpDir() >> tmpDir
             getPbxFile() >> new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj/project.pbxproj')

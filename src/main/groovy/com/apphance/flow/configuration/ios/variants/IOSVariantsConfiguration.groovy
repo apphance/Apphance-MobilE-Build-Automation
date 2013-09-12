@@ -48,26 +48,26 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    Collection<IOSVariant> getSubConfigurations() {
+    Collection<? extends AbstractIOSVariant> getSubConfigurations() {
         variantsInternal()
     }
 
-    Collection<IOSVariant> getVariants() {
+    Collection<? extends AbstractIOSVariant> getVariants() {
         variantsInternal().findAll { it.isEnabled() }
     }
 
-    IOSVariant getMainVariant() {
+    AbstractIOSVariant getMainVariant() {
         variantsInternal()[0]
     }
 
-    private List<IOSVariant> variantsInternal() {
+    private List<? extends AbstractIOSVariant> variantsInternal() {
         variantsNames.value.collect {
             schemeVariant.call(it)
         }
     }
 
     @PackageScope
-    Closure<IOSVariant> schemeVariant = { String name ->
+    Closure<? extends AbstractIOSVariant> schemeVariant = { String name ->
         variantFactory.createSchemeVariant(name)
     }.memoize()
 

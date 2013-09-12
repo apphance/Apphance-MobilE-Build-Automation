@@ -1,6 +1,6 @@
 package com.apphance.flow.configuration.ios
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
 import spock.lang.Specification
@@ -9,7 +9,7 @@ class IOSConfigurationSpec extends Specification {
 
     def 'version code and string are taken from main variant'() {
         given:
-        def variant = GroovyMock(IOSVariant) {
+        def variant = GroovyMock(AbstractIOSVariant) {
             getVersionCode() >> 'version code'
             getVersionString() >> 'version string'
         }
@@ -30,7 +30,7 @@ class IOSConfigurationSpec extends Specification {
         given:
         def iOSConf = new IOSConfiguration(variantsConf:
                 GroovyMock(IOSVariantsConfiguration) {
-                    getMainVariant() >> GroovyMock(IOSVariant) { getProjectName() >> 'test project name' }
+                    getMainVariant() >> GroovyMock(AbstractIOSVariant) { getProjectName() >> 'test project name' }
                 }
         )
 

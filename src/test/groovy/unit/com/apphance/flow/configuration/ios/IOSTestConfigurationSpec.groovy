@@ -1,7 +1,7 @@
 package com.apphance.flow.configuration.ios
 
 import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
@@ -120,7 +120,7 @@ class IOSTestConfigurationSpec extends Specification {
         def tc = new IOSTestConfiguration(
                 variantsConf: GroovyMock(IOSVariantsConfiguration) {
                     getVariants() >> projectDir.listFiles().collect { file ->
-                        GroovyMock(IOSVariant) {
+                        GroovyMock(AbstractIOSVariant) {
                             getSchemeFile() >> file
                             getName() >> getNameWithoutExtension(file.name)
                         }

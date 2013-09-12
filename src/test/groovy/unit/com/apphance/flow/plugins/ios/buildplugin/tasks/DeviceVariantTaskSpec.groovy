@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
@@ -10,7 +10,6 @@ import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSDeviceArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSDeviceArtifactInfo
-import com.apphance.flow.plugins.ios.xcodeproj.IOSXCodeprojLocator
 import com.apphance.flow.util.FlowUtils
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -45,7 +44,7 @@ class DeviceVariantTaskSpec extends Specification {
 
     def 'exception when variant with bad mode passed'() {
         given:
-        task.variant = GroovyMock(IOSVariant) {
+        task.variant = GroovyMock(AbstractIOSVariant) {
             getMode() >> new IOSBuildModeProperty(value: FRAMEWORK)
         }
 
@@ -63,7 +62,7 @@ class DeviceVariantTaskSpec extends Specification {
         def tmpFile = tempFile
 
         and:
-        def variant = GroovySpy(IOSVariant) {
+        def variant = GroovySpy(AbstractIOSVariant) {
             getTmpDir() >> GroovyMock(File)
             getName() >> 'GradleXCode'
             getSchemeFile() >> tmpFile

@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.test
 
 import com.apphance.flow.configuration.ios.IOSTestConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import spock.lang.Specification
@@ -19,11 +19,11 @@ class IOSTestPluginSpec extends Specification {
         plugin.testConf = GroovyMock(IOSTestConfiguration) {
             isEnabled() >> true
             getTestVariants() >> [
-                    GroovyMock(IOSVariant) {
+                    GroovyMock(AbstractIOSVariant) {
                         getTestTaskName() >> 'testV1'
                         getArchiveTaskName() >> 'archiveV1'
                     },
-                    GroovyMock(IOSVariant) {
+                    GroovyMock(AbstractIOSVariant) {
                         getTestTaskName() >> 'testV2'
                         getArchiveTaskName() >> 'archiveV2'
                     }

@@ -15,7 +15,7 @@ import static com.apphance.flow.configuration.apphance.ApphanceMode.*
 import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static com.google.common.io.Files.createTempDir
 
-class IOSVariantSpec extends Specification {
+class IOSSchemeVariantSpec extends Specification {
 
     @Shared
     def tmpDir = createTempDir()
@@ -23,7 +23,7 @@ class IOSVariantSpec extends Specification {
     @Unroll
     def 'apphance enabled depending for #mode'() {
         given:
-        def conf = new IOSVariant('name')
+        def conf = new IOSSchemeVariant('name')
         conf.mode.value = mode
 
         and:
@@ -43,7 +43,7 @@ class IOSVariantSpec extends Specification {
 
     def 'apphance lib dependency is constructed correctly'() {
         given:
-        def variant = GroovySpy(IOSVariant) {
+        def variant = GroovySpy(AbstractIOSVariant) {
             getApphanceMode() >> new ApphanceModeProperty(value: apphanceMode)
             getApphanceLibVersion() >> new StringProperty(value: '1.8.2')
             getTarget() >> 't'
@@ -71,7 +71,7 @@ class IOSVariantSpec extends Specification {
         given:
         def conf = GroovyMock(IOSConfiguration) { getRootDir() >> new File('testProjects/ios/GradleXCode') }
         def releaseConf = new IOSReleaseConfiguration(conf: conf)
-        def variant = new IOSVariant('v')
+        def variant = new IOSSchemeVariant('v')
         variant.conf = conf
         variant.releaseConf = releaseConf
 

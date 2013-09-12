@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.test.tasks.pbx
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxHashGenerator
 import groovy.json.JsonSlurper
@@ -21,7 +21,7 @@ class IOSTestPbxEnhancer {
 
     @Inject IOSExecutor executor
 
-    void addShellScriptToBuildPhase(IOSVariant variant, List<String> blueprintIds) {
+    void addShellScriptToBuildPhase(AbstractIOSVariant variant, List<String> blueprintIds) {
         def json = jsonC.call(variant)
         def buildPhaseHash = addNewBuildPhase(json)
         addBuildPhaseToTargets(json, blueprintIds, buildPhaseHash)
@@ -65,7 +65,7 @@ class IOSTestPbxEnhancer {
     }
 
     @Lazy
-    private Closure<Map> jsonC = { IOSVariant variant ->
+    private Closure<Map> jsonC = { AbstractIOSVariant variant ->
         new JsonSlurper().parseText(executor.pbxProjToJSON(variant.pbxFile).join('\n')) as Map
     }.memoize()
 }

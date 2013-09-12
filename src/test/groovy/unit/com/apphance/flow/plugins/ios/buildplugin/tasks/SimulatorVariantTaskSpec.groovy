@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
@@ -30,7 +30,7 @@ class SimulatorVariantTaskSpec extends Specification {
         task.releaseConf = GroovyMock(IOSReleaseConfiguration) {
             isEnabled() >> releaseConfEnabled
         }
-        task.variant = GroovySpy(IOSVariant) {
+        task.variant = GroovySpy(AbstractIOSVariant) {
             getName() >> 'GradleXCode'
             getTmpDir() >> GroovyMock(File)
             getMode() >> new IOSBuildModeProperty(value: SIMULATOR)

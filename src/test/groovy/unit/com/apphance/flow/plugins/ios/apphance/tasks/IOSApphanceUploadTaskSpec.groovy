@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.apphance.tasks
 
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.reader.PropertyReader
 import com.apphance.flow.plugins.apphance.ApphanceNetworkHelper
@@ -23,7 +23,7 @@ class IOSApphanceUploadTaskSpec extends Specification {
 
     def 'exception is thrown when user, pass or key empty'() {
         given:
-        task.variant = GroovyMock(IOSVariant) {
+        task.variant = GroovyMock(AbstractIOSVariant) {
             getApphanceAppKey() >> new StringProperty(value: null)
             getName() >> 'Variant1'
         }
@@ -54,7 +54,7 @@ class IOSApphanceUploadTaskSpec extends Specification {
 
     def 'artifacts are uploaded'() {
         given:
-        def variant = GroovyMock(IOSVariant) {
+        def variant = GroovyMock(AbstractIOSVariant) {
             getApphanceAppKey() >> new StringProperty(value: '3145')
             getVersionCode() >> '3145'
             getVersionString() >> '31.4.5'
@@ -106,7 +106,7 @@ class IOSApphanceUploadTaskSpec extends Specification {
 
     def 'error handled while ipa uploading'() {
         given:
-        def variant = GroovyMock(IOSVariant) {
+        def variant = GroovyMock(AbstractIOSVariant) {
             getApphanceAppKey() >> new StringProperty(value: '3145')
             getVersionCode() >> '3145'
             getVersionString() >> '31.4.5'
@@ -148,7 +148,7 @@ class IOSApphanceUploadTaskSpec extends Specification {
 
     def 'error handled while ahSYM uploaded'() {
         given:
-        def variant = GroovyMock(IOSVariant) {
+        def variant = GroovyMock(AbstractIOSVariant) {
             getApphanceAppKey() >> new StringProperty(value: '3145')
             getVersionCode() >> '3145'
             getVersionString() >> '31.4.5'

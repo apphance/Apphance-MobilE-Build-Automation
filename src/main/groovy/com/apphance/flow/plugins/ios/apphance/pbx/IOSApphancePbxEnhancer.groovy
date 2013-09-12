@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.apphance.pbx
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxHashGenerator
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
@@ -24,10 +24,10 @@ class IOSApphancePbxEnhancer {
     @Inject IOSExecutor executor
     @Inject PbxJsonParser pbxJsonParser
 
-    @PackageScope IOSVariant variant
+    @PackageScope AbstractIOSVariant variant
 
     @Inject
-    IOSApphancePbxEnhancer(@Assisted IOSVariant variant) {
+    IOSApphancePbxEnhancer(@Assisted AbstractIOSVariant variant) {
         this.variant = variant
     }
 
