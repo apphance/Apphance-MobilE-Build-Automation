@@ -41,7 +41,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     @Inject IOSXCodeprojLocator xcodeprojLocator
     @Inject VersionValidator versionValidator
 
-    private bundle = getBundle('validation')
+    protected bundle = getBundle('validation')
 
     @Inject
     AbstractIOSVariant(@Assisted String name) {
@@ -154,7 +154,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     @Override
     String getConfigurationName() {
-        "iOS Variant ${name}"
+        "iOS Variant $name"
     }
 
     String getVersionCode() {
@@ -223,10 +223,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         tmpScheme?.exists() ? tmpScheme : new File(conf.rootDir, relative)
     }
 
-    @Lazy
-    List<String> xcodebuildExecutionPath = {
-        ['xcodebuild', '-project', xcodeprojLocator.findXCodeproj(schemeParser.xcodeprojName(schemeFile), schemeParser.blueprintIdentifier(schemeFile)).name]
-    }()
+    abstract List<String> getXcodebuildExecutionPath()
 
     @Override
     void checkProperties() {

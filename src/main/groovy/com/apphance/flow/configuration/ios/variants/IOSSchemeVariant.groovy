@@ -10,4 +10,9 @@ class IOSSchemeVariant extends AbstractIOSVariant {
     IOSSchemeVariant(@Assisted String name) {
         super(name)
     }
+
+    @Lazy
+    List<String> xcodebuildExecutionPath = {
+        ['xcodebuild', '-project', xcodeprojLocator.findXCodeproj(schemeParser.xcodeprojName(schemeFile), schemeParser.blueprintIdentifier(schemeFile)).name]
+    }()
 }

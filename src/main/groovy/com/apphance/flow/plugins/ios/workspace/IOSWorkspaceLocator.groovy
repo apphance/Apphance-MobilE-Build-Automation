@@ -45,4 +45,9 @@ class IOSWorkspaceLocator {
     private boolean containsXcodeprojInPath(File file) {
         file.absolutePath.contains('.xcodeproj')
     }
+
+    @Lazy
+    boolean hasWorkspaces = {
+        workspaces.size() > 0
+    }()
 }

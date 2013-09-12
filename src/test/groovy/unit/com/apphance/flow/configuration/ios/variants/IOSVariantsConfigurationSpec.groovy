@@ -4,15 +4,17 @@ import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.reader.PropertyPersister
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
+import com.apphance.flow.plugins.ios.workspace.IOSWorkspaceLocator
 import com.apphance.flow.util.FlowUtils
 import org.apache.commons.io.FileUtils
+import spock.lang.Ignore
 import spock.lang.Specification
 
 @Mixin(FlowUtils)
 class IOSVariantsConfigurationSpec extends Specification {
 
-    private IOSConfiguration conf
-    private IOSVariantsConfiguration variantsConf
+    IOSConfiguration conf
+    IOSVariantsConfiguration variantsConf
 
     def setup() {
         conf = GroovyMock(IOSConfiguration)
@@ -23,16 +25,40 @@ class IOSVariantsConfigurationSpec extends Specification {
             createSchemeVariant(_) >> GroovyMock(IOSSchemeVariant) {
                 isEnabled() >> true
             }
+            createWorkspaceVariant(_) >> GroovyMock(IOSWorkspaceVariant) {
+                isEnabled() >> true
+            }
         }
     }
 
-    def 'test buildVariantsList variant'() {
+    def 'list of scheme variants is created'() {
         given:
-        conf.schemes >> ['v1', 'v2', 'v3']
+        variantsConf.workspaceLocator = GroovyMock(IOSWorkspaceLocator) {
+            getHasWorkspaces() >> false
+        }
+        variantsConf.schemeInfo = GroovyMock(IOSSchemeInfo) {
+            getHasSchemes() >> true
+        }
         variantsConf.variantsNames.value = ['v1', 'v2', 'v3']
 
         expect:
         variantsConf.variants.size() == 3
+        variantsConf.variants.every { it.toString().contains(IOSSchemeVariant.class.simpleName) }
+    }
+
+    def 'list of workspace variants is created'() {
+        given:
+        variantsConf.workspaceLocator = GroovyMock(IOSWorkspaceLocator) {
+            getHasWorkspaces() >> true
+        }
+        variantsConf.schemeInfo = GroovyMock(IOSSchemeInfo) {
+            getHasSchemes() >> true
+        }
+        variantsConf.variantsNames.value = ['v1', 'v2', 'v3']
+
+        expect:
+        variantsConf.variants.size() == 3
+        variantsConf.variants.every { it.toString().contains(IOSWorkspaceVariant.class.simpleName) }
     }
 
     def 'variantNames validator works'() {
@@ -54,6 +80,7 @@ class IOSVariantsConfigurationSpec extends Specification {
         ['\n']       | false
     }
 
+    @Ignore('TODO')
     def 'possible variants found'() {
         given:
         def tmpDir = temporaryDir

@@ -4,6 +4,7 @@ import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
+import com.apphance.flow.plugins.ios.workspace.IOSWorkspaceLocator
 import com.apphance.flow.util.FlowUtils
 import com.google.inject.Singleton
 import groovy.transform.PackageScope
@@ -19,6 +20,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     @Inject IOSConfiguration conf
     @Inject IOSVariantFactory variantFactory
     @Inject IOSSchemeInfo schemeInfo
+    @Inject IOSWorkspaceLocator workspaceLocator
 
     @Inject
     @Override
@@ -39,7 +41,22 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     @Lazy
     @PackageScope
     List<String> possibleVariants = {
-        schemeInfo.schemeFiles.findAll { schemeInfo.schemeShared(it) }.collect { getNameWithoutExtension(it.name) }
+        hasWorkspaceAndSchemes ? workspaceXscheme.collect { w, s -> "$w$s".toString() } : (hasSchemes ? schemes : [])
+    }()
+
+    @Lazy
+    List<List<String>> workspaceXscheme = {
+        [workspaces, schemes].combinations()
+    }()
+
+    @Lazy
+    private List<String> schemes = {
+        schemeInfo.schemeFiles.findAll(schemeInfo.&schemeShared).collect(nameWithoutExtension)
+    }()
+
+    @Lazy
+    private List<String> workspaces = {
+        workspaceLocator.workspaces.collect(nameWithoutExtension)
     }()
 
     @Override
@@ -61,20 +78,30 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }
 
     private List<? extends AbstractIOSVariant> variantsInternal() {
-        variantsNames.value.collect {
-            schemeVariant.call(it)
-        }
+        if (hasWorkspaceAndSchemes)
+            return variantsNames.value.collect(workspaceVariant)
+        else if (hasSchemes)
+            return variantsNames.value.collect(schemeVariant)
+        []//TODO what to do here? exception?
     }
 
-    @PackageScope
-    Closure<? extends AbstractIOSVariant> schemeVariant = { String name ->
+    @Lazy
+    private boolean hasWorkspaceAndSchemes = {
+        workspaceLocator.hasWorkspaces && schemeInfo.hasSchemes
+    }()
+
+    @Lazy
+    private boolean hasSchemes = {
+        schemeInfo.hasSchemes
+    }()
+
+    private Closure<IOSSchemeVariant> schemeVariant = { String name ->
         variantFactory.createSchemeVariant(name)
     }.memoize()
 
-    @Override
-    boolean canBeEnabled() {
-        schemeInfo.hasSchemes
-    }
+    private Closure<IOSWorkspaceVariant> workspaceVariant = { String name ->
+        variantFactory.createWorkspaceVariant(name)
+    }.memoize()
 
     @Override
     void checkProperties() {

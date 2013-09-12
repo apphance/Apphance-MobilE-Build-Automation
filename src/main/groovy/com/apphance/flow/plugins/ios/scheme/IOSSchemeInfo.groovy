@@ -20,7 +20,6 @@ class IOSSchemeInfo {
     @Inject XCSchemeParser schemeParser
 
     @Lazy
-    @PackageScope
     boolean hasSchemes = { schemesDeclared() && schemesShared() }()
 
     @PackageScope
