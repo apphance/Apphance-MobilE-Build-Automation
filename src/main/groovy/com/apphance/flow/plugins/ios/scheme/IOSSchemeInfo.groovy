@@ -74,7 +74,7 @@ class IOSSchemeInfo {
                 nameFilter: ~/${name}\.xcscheme/,
                 excludeFilter: EXCLUDE_FILTER
         ) {
-            if (it.absolutePath.endsWith("xcshareddata/xcschemes/${name}.xcscheme") && isScheme.call(it))
+            if (it.absolutePath.endsWith("xcshareddata/xcschemes/${name}.xcscheme") && isScheme.call(it) && !containsXcuserdataInPath(it))
                 found << it
         }
         logger.debug("Found following schemes for name: $name, schemes: $found")
@@ -89,6 +89,10 @@ class IOSSchemeInfo {
                 throw new GradleException("Found more than one scheme file for name $name, files: $found")
         }
     }.memoize()
+
+    private boolean containsXcuserdataInPath(File file) {
+        file.absolutePath.contains('xcuserdata')
+    }
 
     private Closure<Boolean> isScheme = { File f ->
         try {
