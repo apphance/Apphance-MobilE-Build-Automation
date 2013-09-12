@@ -107,8 +107,10 @@ class IOSSchemeInfoSpec extends Specification {
         def sDir2 = new File(tmpDir2, 'other/xcshareddata/xcschemes')
         sDir1.mkdirs()
         sDir2.mkdirs()
-        new File(sDir1, 'GradleXCode.xcscheme').createNewFile()
-        new File(sDir2, 'GradleXCode.xcscheme').createNewFile()
+        def s1 = new File(sDir1, 'GradleXCode.xcscheme')
+        def s2 = new File(sDir2, 'GradleXCode.xcscheme')
+        s1.text = '<Scheme></Scheme>'
+        s2.text = '<Scheme></Scheme>'
 
         and:
         schemeInfo.conf = GroovyMock(IOSConfiguration) {

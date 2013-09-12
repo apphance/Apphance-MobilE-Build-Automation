@@ -74,7 +74,7 @@ class IOSSchemeInfo {
                 nameFilter: ~/${name}\.xcscheme/,
                 excludeFilter: EXCLUDE_FILTER
         ) {
-            if (it.absolutePath.endsWith("xcshareddata/xcschemes/${name}.xcscheme"))
+            if (it.absolutePath.endsWith("xcshareddata/xcschemes/${name}.xcscheme") && isScheme.call(it))
                 found << it
         }
         logger.debug("Found following schemes for name: $name, schemes: $found")
@@ -88,5 +88,13 @@ class IOSSchemeInfo {
             default:
                 throw new GradleException("Found more than one scheme file for name $name, files: $found")
         }
+    }.memoize()
+
+    private Closure<Boolean> isScheme = { File f ->
+        try {
+            def xml = new XmlSlurper().parse(f)
+            return xml.name() == 'Scheme'
+        } catch (e) {}
+        false
     }.memoize()
 }
