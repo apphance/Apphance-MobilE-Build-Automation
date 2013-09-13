@@ -37,7 +37,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     @Inject ReleaseValidator validator
 
     private boolean enabledInternal
-    private bundle = getBundle('validation')
+    protected bundle = getBundle('validation')
 
     FlowArtifact otaIndexFile
     FlowArtifact fileIndexFile
@@ -109,11 +109,11 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     def releaseIcon = new FileProperty(
             name: 'release.icon',
             message: 'Path to project\'s icon file, must be relative to the root dir of project',
-            required: { true },
+            required: { false },
             defaultValue: { defaultIcon() ? relativeTo(conf.rootDir.absolutePath, defaultIcon().absolutePath) : null },
             possibleValues: { possibleIcons() },
             validator: {
-                if (!it) return false
+                if (!it) return true
                 def file = new File(conf.rootDir, it as String)
                 file?.absolutePath?.trim() ? (file.exists() && ImageIO.read(file)) : false
             }
@@ -185,7 +185,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     protected List<File> getFiles(File searchRootDir, String dirPattern = '.*', Closure acceptFilter) {
         List<File> icons = []
-        searchRootDir.eachDirMatch(~dirPattern) { dir ->
+        searchRootDir?.eachDirMatch(~dirPattern) { dir ->
             icons.addAll(dir.listFiles([accept: acceptFilter] as FileFilter))
         }
         icons

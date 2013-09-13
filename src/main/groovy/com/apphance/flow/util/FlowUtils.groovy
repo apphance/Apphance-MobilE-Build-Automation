@@ -12,6 +12,12 @@ class FlowUtils {
 
     private def logger = Logging.getLogger(this.class)
 
+    File copy(String resource, File file) {
+        file.parentFile.mkdirs()
+        new FileOutputStream(file).write(this.class.getResourceAsStream(resource).getBytes())
+        file
+    }
+
     List<File> allFiles(Map options) {
         def files = []
         File dir = options.dir

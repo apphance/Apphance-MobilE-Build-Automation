@@ -1,5 +1,7 @@
 package com.apphance.flow.plugins
 
+import com.apphance.flow.TestUtils
+import com.apphance.flow.detection.project.ProjectType
 import com.apphance.flow.detection.project.ProjectTypeDetector
 import com.apphance.flow.di.*
 import com.apphance.flow.executor.IOSExecutor
@@ -28,6 +30,7 @@ import static com.apphance.flow.detection.project.ProjectType.IOS
 import static com.apphance.flow.di.ConfigurationModule.getVariantFactories
 import static com.apphance.flow.plugins.ios.parsers.XCodeOutputParserSpec.XCODE_LIST
 
+@Mixin(TestUtils)
 class PluginMasterSpec extends Specification {
 
     @Unroll
@@ -145,9 +148,9 @@ class PluginMasterSpec extends Specification {
             IOSTestPlugin,
     ]
 
-    def createInjectorForPluginsMocks(mocks, file, projectType) {
-        def rootDir = Mock(File)
-        rootDir.list() >> [file]
+    def createInjectorForPluginsMocks(mocks, String fileName, ProjectType projectType) {
+        def rootDir = temporaryDir
+        new File(rootDir, fileName).createNewFile()
         def project = GroovyMock(Project)
 
         def iosExecutorMock = GroovyStub(IOSExecutor)

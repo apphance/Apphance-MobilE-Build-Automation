@@ -1,5 +1,6 @@
 package com.apphance.flow.di
 
+import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.android.AndroidConfiguration
@@ -21,6 +22,7 @@ import javax.inject.Inject
 import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_ANDROID
 import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_LINT
 
+@Mixin(TestUtils)
 class ConfigurationModuleSpec extends Specification {
 
     @Inject AndroidConfiguration androidConf1
@@ -38,8 +40,8 @@ class ConfigurationModuleSpec extends Specification {
         def fileLinker = Mock(FileLinker)
         def logFileGenerator = Mock(CommandLogFilesGenerator)
 
-        def rootDir = Mock(File)
-        rootDir.list() >> ['AndroidManifest.xml']
+        def rootDir = temporaryDir
+        new File(rootDir, 'AndroidManifest.xml').createNewFile()
 
         def project = Mock(Project)
         project.rootDir >> rootDir

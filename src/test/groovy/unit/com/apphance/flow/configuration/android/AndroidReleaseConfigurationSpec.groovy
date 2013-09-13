@@ -4,6 +4,8 @@ import com.apphance.flow.TestUtils
 import com.apphance.flow.util.FlowUtils
 import spock.lang.Specification
 
+import javax.imageio.ImageIO
+
 import static com.apphance.flow.configuration.android.AndroidReleaseConfiguration.ICON_ORDER
 import static com.apphance.flow.configuration.android.AndroidReleaseConfiguration.getDRAWABLE_DIR_PATTERN
 
@@ -42,5 +44,19 @@ class AndroidReleaseConfigurationSpec extends Specification {
         expect:
         paths.sort(ICON_ORDER) == [drawable, image, relativeImage, ldpi, mdpi, hdpi, relativeHdpi, xhdpi]
 
+    }
+
+    def 'test default icon'() {
+        given:
+        def configuration = new AndroidReleaseConfiguration()
+
+        when:
+        def icon = configuration.androidIcon
+
+        then:
+        icon.exists()
+        icon.size() > 100
+        ImageIO.read(icon)
+        icon.name == 'defaultIcon.png'
     }
 }
