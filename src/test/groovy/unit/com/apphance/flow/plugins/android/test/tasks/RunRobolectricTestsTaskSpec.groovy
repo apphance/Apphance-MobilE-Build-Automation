@@ -14,6 +14,7 @@ class RunRobolectricTestsTaskSpec extends Specification {
         given:
         def tempVariantDir = temporaryDir
         new File(tempVariantDir, 'build.xml') << new File("src/test/resources/com/apphance/flow/android/$buildFile").text
+        new File(tempVariantDir, 'project.properties').createNewFile()
 
         task.variantConf = GroovyStub(AndroidVariantConfiguration) {
             getTmpDir() >> tempVariantDir
