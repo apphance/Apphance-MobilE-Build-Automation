@@ -143,7 +143,8 @@ class AddApphanceToAndroid {
     void addApphanceImportsAndStartStopMethodsInAllActivities() {
         Set<String> activityNames = getActivities(getManifest(variantDir))
         List<File> activityFiles = getSourcesOf(variantDir, activityNames)
-        activityFiles.each {
+        List<File> existingActivityFiles = activityFiles.findAll { it.exists() }
+        existingActivityFiles.each {
             addApphanceImportTo(it)
             addStartStopInvocations(it)
         }
