@@ -1,4 +1,4 @@
-package com.apphance.flow.configuration.ios.variants
+package com.apphance.flow.configuration.ios
 
 enum IOSXCodeAction {
 

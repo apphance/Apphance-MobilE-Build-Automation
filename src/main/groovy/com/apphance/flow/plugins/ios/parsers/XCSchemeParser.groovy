@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.parsers
 
-import com.apphance.flow.configuration.ios.variants.IOSXCodeAction
+import com.apphance.flow.configuration.ios.IOSXCodeAction
 import com.apphance.flow.util.Preconditions
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
