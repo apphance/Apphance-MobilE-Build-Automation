@@ -88,7 +88,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Lazy
     private boolean hasWorkspaceAndSchemes = {
-        workspaceLocator.hasWorkspaces && schemeInfo.hasSchemes
+        workspaceLocator.hasWorkspaces && hasSchemes
     }()
 
     @Lazy
