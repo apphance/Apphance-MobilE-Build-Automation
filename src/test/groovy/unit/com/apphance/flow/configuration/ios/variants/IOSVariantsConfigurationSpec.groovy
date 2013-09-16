@@ -7,7 +7,6 @@ import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
 import com.apphance.flow.plugins.ios.workspace.IOSWorkspaceLocator
 import com.apphance.flow.util.FlowUtils
 import org.apache.commons.io.FileUtils
-import spock.lang.Ignore
 import spock.lang.Specification
 
 @Mixin(FlowUtils)
@@ -80,8 +79,7 @@ class IOSVariantsConfigurationSpec extends Specification {
         ['\n']       | false
     }
 
-    @Ignore('TODO')
-    def 'possible variants found'() {
+    def 'possible scheme variants found'() {
         given:
         def tmpDir = temporaryDir
         FileUtils.copyDirectory(new File(IOSSchemeInfo.getResource('iosProject').toURI()), tmpDir)
@@ -105,7 +103,47 @@ class IOSVariantsConfigurationSpec extends Specification {
         variantsConf.conf = conf
         variantsConf.schemeInfo = schemeInfo
 
+        and:
+        variantsConf.workspaceLocator = GroovyMock(IOSWorkspaceLocator) {
+            getHasWorkspaces() >> false
+        }
+
         expect:
         variantsConf.possibleVariants == (conf.schemes - ['GradleXCode 2', 'GradleXCodeNotShared'])
+    }
+
+    def 'possible workspace variants found'() {
+        given:
+        def tmpDir = temporaryDir
+        FileUtils.copyDirectory(new File(IOSSchemeInfo.getResource('iosProject').toURI()), tmpDir)
+
+        and:
+        def conf = GroovyMock(IOSConfiguration) {
+            getRootDir() >> tmpDir
+            getSchemes() >> ['GradleXCode',
+                    'GradleXCode With Space',
+                    'GradleXCodeNoLaunchAction',
+                    'GradleXCodeWithApphance',
+                    'GradleXCodeWith2Targets',
+                    'GradleXCode 2',
+                    'GradleXCodeNotShared']
+        }
+
+        and:
+        def schemeInfo = new IOSSchemeInfo(schemeParser: new XCSchemeParser(), conf: conf)
+
+        and:
+        variantsConf.conf = conf
+        variantsConf.schemeInfo = schemeInfo
+
+        and:
+        variantsConf.workspaceLocator = GroovyMock(IOSWorkspaceLocator) {
+            getHasWorkspaces() >> true
+            getWorkspaces() >> [new File('WS.xcworkspace')]
+        }
+
+
+        expect:
+        variantsConf.possibleVariants == (conf.schemes - ['GradleXCode 2', 'GradleXCodeNotShared']).collect { "WS$it" }
     }
 }
