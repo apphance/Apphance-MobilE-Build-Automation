@@ -29,7 +29,6 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         given:
         def enhancer = new IOSApphancePbxEnhancer(GroovyMock(AbstractIOSVariant) {
             getTarget() >> 'GradleXCode'
-            getBuildConfiguration() >> 'BasicConfiguration'
             getArchiveConfiguration() >> 'Release'
         })
         enhancer.executor = GroovyMock(IOSExecutor) {
@@ -39,7 +38,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         expect:
         enhancer.rootObject.isa == 'PBXProject'
         enhancer.target.name == 'GradleXCode'
-        enhancer.configurations*.name.sort() == ['BasicConfiguration', 'Release']
+        enhancer.configurations*.name == ['Release']
         enhancer.frameworksBuildPhase.files.containsAll(
                 'D382B71614703FE500E9CC9B', 'D382B71814703FE500E9CC9B', 'D382B71A14703FE500E9CC9B'
         )
@@ -78,7 +77,6 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         and:
         def variant = GroovyMock(AbstractIOSVariant) {
             getTarget() >> 'GradleXCode'
-            getBuildConfiguration() >> 'BasicConfiguration'
             getArchiveConfiguration() >> 'Release'
             getApphanceMode() >> new ApphanceModeProperty(value: QA)
             getTmpDir() >> tmpDir
@@ -116,17 +114,9 @@ class IOSApphancePbxEnhancerSpec extends Specification {
             it.key in rootObject.targets && it.value.isa == PBX_NATIVE_TARGET && it.value.name == variant.target
         }.value as Map
         def confHashes = json.objects[target.buildConfigurationList].buildConfigurations
-        def buildConfiguration = json.objects.find {
-            it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION && it.value.name == variant.buildConfiguration
-        }.value as Map
         def archiveConfiguration = json.objects.find {
             it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION && it.value.name == variant.archiveConfiguration
         }.value as Map
-
-        and:
-        buildConfiguration.buildSettings.OTHER_LDFLAGS == ['-ObjC', '-all_load']
-        buildConfiguration.buildSettings.FRAMEWORK_SEARCH_PATHS == ['$(inherited)', '"$(SRCROOT)"']
-        buildConfiguration.buildSettings.LIBRARY_SEARCH_PATHS == ['$(inherited)', "\"\$(SRCROOT)/Apphance-Pre-Production.framework\""]
 
         and:
         archiveConfiguration.buildSettings.OTHER_LDFLAGS == ['-ObjC', '-all_load']

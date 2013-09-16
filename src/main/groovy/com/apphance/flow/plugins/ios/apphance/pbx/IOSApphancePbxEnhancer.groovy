@@ -146,7 +146,7 @@ class IOSApphancePbxEnhancer {
     @PackageScope List<Map> configurations = {
         def buildConfListHash = target.buildConfigurationList
         def confHashes = json.objects[buildConfListHash].buildConfigurations
-        def variantConfigurations = [variant.buildConfiguration, variant.archiveConfiguration].unique()
+        def variantConfigurations = [variant.archiveConfiguration]
 
         json.objects.findAll {
             it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION &&

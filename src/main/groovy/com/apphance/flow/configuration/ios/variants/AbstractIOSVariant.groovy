@@ -123,7 +123,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     def frameworkResources = new ListStringProperty(interactive: { false }, required: { false })
 
     String getBundleId() {
-        plistParser.evaluate(plistParser.bundleId(plist), target, buildConfiguration) ?: ''
+        plistParser.evaluate(plistParser.bundleId(plist), target, archiveConfiguration) ?: ''
     }
 
     @Lazy
@@ -142,8 +142,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     @Lazy
     @PackageScope
     Collection<String> availableXCodeArchitectures = {
-        (executor.buildSettings(target, buildConfiguration)['ARCHS'].split(' ').toList() +
-                executor.buildSettings(target, archiveConfiguration)['ARCHS'].split(' ').toList())*.trim()
+        executor.buildSettings(target, archiveConfiguration)['ARCHS'].split(' ').toList()*.trim()
     }()
 
     @Lazy
@@ -157,11 +156,11 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     }
 
     String getVersionCode() {
-        conf.extVersionCode ?: plistParser.evaluate(plistParser.bundleVersion(plist), target, buildConfiguration) ?: ''
+        conf.extVersionCode ?: plistParser.evaluate(plistParser.bundleVersion(plist), target, archiveConfiguration) ?: ''
     }
 
     String getVersionString() {
-        conf.extVersionString ?: plistParser.evaluate(plistParser.bundleShortVersionString(plist), target, buildConfiguration) ?: ''
+        conf.extVersionString ?: plistParser.evaluate(plistParser.bundleShortVersionString(plist), target, archiveConfiguration) ?: ''
     }
 
     String getFullVersionString() {
@@ -174,7 +173,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
             checkArgument(isNotBlank(bundleDisplayName),
                     """|Cant find 'CFBundleDisplayName' property in file $plist.absolutePath
                    |Is project configured well?""".stripMargin())
-            return plistParser.evaluate(bundleDisplayName, target, buildConfiguration)
+            return plistParser.evaluate(bundleDisplayName, target, archiveConfiguration)
         } else if (mode.value == FRAMEWORK) {
             return frameworkName.value
         }
@@ -197,10 +196,6 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     String getTarget() {
         pbxJsonParser.targetForBlueprintId.call(pbxFile, schemeParser.blueprintIdentifier(schemeFile))
-    }
-
-    String getBuildConfiguration() {
-        schemeParser.configuration(schemeFile, LAUNCH_ACTION)
     }
 
     String getArchiveConfiguration() {
