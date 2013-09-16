@@ -122,6 +122,6 @@ class IOSSchemeInfoSpec extends Specification {
 
         then:
         def e = thrown(GradleException)
-        e.message.startsWith('Found more than one scheme file for name GradleXCode')
+        e.message.startsWith('Found more than one scheme file for name: GradleXCode')
     }
 }

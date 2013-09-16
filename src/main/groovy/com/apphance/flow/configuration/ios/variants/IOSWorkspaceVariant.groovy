@@ -5,6 +5,7 @@ import com.google.inject.assistedinject.Assisted
 
 import javax.inject.Inject
 
+import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkNotNull
 import static java.text.MessageFormat.format
 
@@ -13,24 +14,31 @@ class IOSWorkspaceVariant extends AbstractIOSVariant {
     @Inject IOSVariantsConfiguration variantsConf
     @Inject IOSWorkspaceLocator workspaceLocator
 
-    private String scheme
-    private String workspace
+    private String schemeName
+    private String workspaceName
 
     @Inject
     IOSWorkspaceVariant(@Assisted String name) {
         super(name)
         def tuple = variantsConf.workspaceXscheme.find { w, s -> "$w$s".toString() == name }
         checkNotNull(tuple, format(bundle.getString('exception.ios.variant.workspace.init'), name, variantsConf.workspaceXscheme))
-        scheme = tuple[0]
-        workspace = tuple[1]
+        schemeName = tuple[0]
+        workspaceName = tuple[1]
     }
 
     @Lazy
     List<String> xcodebuildExecutionPath = {
-        ['xcodebuild', '-workspace', workspaceFile.name]
+        ['xcodebuild', '-workspace', workspaceFile.path]
     }()
 
     File getWorkspaceFile() {
-        null//TODO
+        def ws = workspaceLocator.findWorkspace(workspaceName)
+        def relative = relativeTo(conf.rootDir, ws)
+        new File(tmpDir, relative)
+    }
+
+    @Override
+    String getSchemeName() {
+        this.@schemeName
     }
 }

@@ -69,7 +69,7 @@ class IOSSchemeInfo {
         List<File> found = []
         conf.rootDir.traverse(
                 type: FILES,
-                maxDepth: MAX_RECURSION_LEVEL,
+                maxDepth: MAX_RECURSION_LEVEL,//TODO lower level???
                 nameFilter: ~/${name}\.xcscheme/,
                 excludeFilter: EXCLUDE_FILTER
         ) {
@@ -85,7 +85,7 @@ class IOSSchemeInfo {
                 logger.info("Found scheme file for name: $name, file: ${found[0].absolutePath}")
                 return found[0]
             default:
-                throw new GradleException("Found more than one scheme file for name $name, files: $found")
+                throw new GradleException("Found more than one scheme file for name: $name, files: $found")
         }
     }.memoize()
 

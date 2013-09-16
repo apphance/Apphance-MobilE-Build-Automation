@@ -36,8 +36,8 @@ class IOSWorkspaceVariantSpec extends Specification {
 
         then:
         noExceptionThrown()
-        variant.scheme == 'a'
-        variant.workspace == 'b'
+        variant.schemeName == 'a'
+        variant.workspaceName == 'b'
     }
 }
 

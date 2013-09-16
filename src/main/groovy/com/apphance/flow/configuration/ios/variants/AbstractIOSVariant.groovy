@@ -20,7 +20,6 @@ import groovy.transform.PackageScope
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.*
-import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.ARCHIVE_ACTION
 import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.LAUNCH_ACTION
 import static com.apphance.flow.plugins.ios.xcodeproj.IOSXCodeprojLocator.PROJECT_PBXPROJ
@@ -217,11 +216,13 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     }
 
     File getSchemeFile() {
-        def scheme = schemeInfo.schemeFile.call(name)
-        def relative = relativeTo(conf.rootDir, scheme)
+        def s = schemeInfo.schemeFile.call(schemeName)
+        def relative = relativeTo(conf.rootDir, s)
         def tmpScheme = new File(tmpDir, relative)
         tmpScheme?.exists() ? tmpScheme : new File(conf.rootDir, relative)
     }
+
+    abstract String getSchemeName()
 
     abstract List<String> getXcodebuildExecutionPath()
 
