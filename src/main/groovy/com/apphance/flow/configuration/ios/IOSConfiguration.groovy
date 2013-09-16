@@ -76,7 +76,6 @@ class IOSConfiguration extends ProjectConfiguration {
 
     @Override
     void checkProperties() {
-        super.checkProperties()
         defaultValidation sdk, simulatorSdk
     }
 }

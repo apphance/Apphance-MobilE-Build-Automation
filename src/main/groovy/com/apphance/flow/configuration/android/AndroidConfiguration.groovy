@@ -92,7 +92,6 @@ class AndroidConfiguration extends ProjectConfiguration {
 
     @Override
     void checkProperties() {
-        super.checkProperties()
         check !isNullOrEmpty(reader.envVariable('ANDROID_HOME')), "Environment variable 'ANDROID_HOME' must be set!"
         check !isNullOrEmpty(projectName.value), "Property ${projectName.name} must be set!"
         check versionValidator.isNumber(versionCode), bundle.getString('exception.android.version.code')

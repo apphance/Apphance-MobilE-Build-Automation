@@ -65,11 +65,6 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
     }()
 
     @Override
-    void checkProperties() {
-        super.checkProperties()
-    }
-
-    @Override
     boolean canBeEnabled() {
         !mobileprovisionFiles.empty
     }
