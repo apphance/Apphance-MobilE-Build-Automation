@@ -25,6 +25,7 @@ import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.LAUNCH
 import static com.apphance.flow.plugins.ios.xcodeproj.IOSXCodeprojLocator.PROJECT_PBXPROJ
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
+import static java.text.MessageFormat.format
 import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.apache.commons.lang.StringUtils.isNotEmpty
@@ -62,6 +63,11 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     }
 
     final String prefix = 'ios'
+
+    @Override
+    String getConfigurationName() {
+        "iOS Variant $name"
+    }
 
     @PackageScope
     IOSConfiguration getConf() {
@@ -120,6 +126,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
             validator: { isNotEmpty(it) }
     )
     def frameworkHeaders = new ListStringProperty(interactive: { false }, required: { false })
+
     def frameworkResources = new ListStringProperty(interactive: { false }, required: { false })
 
     String getBundleId() {
@@ -150,11 +157,6 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         mode.value == DEVICE
     }()
 
-    @Override
-    String getConfigurationName() {
-        "iOS Variant $name"
-    }
-
     String getVersionCode() {
         conf.extVersionCode ?: plistParser.evaluate(plistParser.bundleVersion(plist), target, archiveConfiguration) ?: ''
     }
@@ -170,9 +172,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     String getProjectName() {
         if (mode.value in [SIMULATOR, DEVICE]) {
             String bundleDisplayName = plistParser.bundleDisplayName(plist)
-            checkArgument(isNotBlank(bundleDisplayName),
-                    """|Cant find 'CFBundleDisplayName' property in file $plist.absolutePath
-                   |Is project configured well?""".stripMargin())
+            checkArgument(isNotBlank(bundleDisplayName), format(bundle.getString('exception.ios.variant.bundleDisplayName'), plist.absolutePath))
             return plistParser.evaluate(bundleDisplayName, target, archiveConfiguration)
         } else if (mode.value == FRAMEWORK) {
             return frameworkName.value

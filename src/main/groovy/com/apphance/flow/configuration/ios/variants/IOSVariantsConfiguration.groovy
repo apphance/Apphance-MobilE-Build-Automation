@@ -8,6 +8,7 @@ import com.apphance.flow.plugins.ios.workspace.IOSWorkspaceLocator
 import com.apphance.flow.util.FlowUtils
 import com.google.inject.Singleton
 import groovy.transform.PackageScope
+import org.gradle.api.GradleException
 
 import javax.inject.Inject
 
@@ -82,7 +83,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
             return variantsNames.value.collect(workspaceVariant)
         else if (hasSchemes)
             return variantsNames.value.collect(schemeVariant)
-        []//TODO what to do here? exception?
+        throw new GradleException('Project has no workspaces nor schemes')
     }
 
     @Lazy

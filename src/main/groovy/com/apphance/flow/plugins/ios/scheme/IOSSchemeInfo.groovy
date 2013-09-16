@@ -69,7 +69,7 @@ class IOSSchemeInfo {
         List<File> found = []
         conf.rootDir.traverse(
                 type: FILES,
-                maxDepth: MAX_RECURSION_LEVEL,//TODO lower level???
+                maxDepth: MAX_RECURSION_LEVEL,
                 nameFilter: ~/${name}\.xcscheme/,
                 excludeFilter: EXCLUDE_FILTER
         ) {
