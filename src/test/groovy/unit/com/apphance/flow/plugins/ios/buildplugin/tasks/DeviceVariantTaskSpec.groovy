@@ -65,6 +65,7 @@ class DeviceVariantTaskSpec extends Specification {
         def variant = GroovySpy(AbstractIOSVariant) {
             getTmpDir() >> GroovyMock(File)
             getName() >> 'GradleXCode'
+            getSchemeName() >> 'GradleXCode'
             getSchemeFile() >> tmpFile
             getMode() >> new IOSBuildModeProperty(value: DEVICE)
             getTarget() >> 't'

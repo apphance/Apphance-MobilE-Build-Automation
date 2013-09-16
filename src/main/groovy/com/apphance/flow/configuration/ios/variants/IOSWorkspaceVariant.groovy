@@ -14,16 +14,22 @@ class IOSWorkspaceVariant extends AbstractIOSVariant {
     @Inject IOSVariantsConfiguration variantsConf
     @Inject IOSWorkspaceLocator workspaceLocator
 
-    private String schemeName
     private String workspaceName
+    private String schemeName
 
     @Inject
     IOSWorkspaceVariant(@Assisted String name) {
         super(name)
+    }
+
+    @Inject
+    @Override
+    void init() {
         def tuple = variantsConf.workspaceXscheme.find { w, s -> "$w$s".toString() == name }
         checkNotNull(tuple, format(bundle.getString('exception.ios.variant.workspace.init'), name, variantsConf.workspaceXscheme))
-        schemeName = tuple[0]
-        workspaceName = tuple[1]
+        workspaceName = tuple[0]
+        schemeName = tuple[1]
+        super.init()
     }
 
     @Lazy

@@ -37,7 +37,7 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
 
     @Lazy
     List<String> cmdSim = {
-        variant.xcodebuildExecutionPath + ['-scheme', variant.name] +
+        variant.xcodebuildExecutionPath + ['-scheme', variant.schemeName] +
                 ['-sdk', conf.simulatorSdk.value ?: 'iphonesimulator'] + ['-arch', 'i386'] +
                 ['-configuration', variant.archiveConfiguration] +
                 ["CONFIGURATION_BUILD_DIR=${simTmpDir.absolutePath}".toString()] +
@@ -47,7 +47,7 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
 
     @Lazy
     List<String> cmdDevice = {
-        variant.xcodebuildExecutionPath + ['-scheme', variant.name] +
+        variant.xcodebuildExecutionPath + ['-scheme', variant.schemeName] +
                 ['-sdk', conf.sdk.value ?: 'iphoneos'] +
                 ['-configuration', variant.archiveConfiguration] +
                 ["CONFIGURATION_BUILD_DIR=${deviceTmpDir.absolutePath}".toString()] +

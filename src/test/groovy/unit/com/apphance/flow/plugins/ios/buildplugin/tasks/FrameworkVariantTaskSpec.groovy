@@ -35,6 +35,7 @@ class FrameworkVariantTaskSpec extends Specification {
         task.iosExecutor = GroovyMock(IOSExecutor)
         task.variant = GroovyMock(AbstractIOSVariant) {
             getName() >> 'variant'
+            getSchemeName() >> 'variant'
             getArchiveConfiguration() >> 'archive'
             getFrameworkHeaders() >> new ListStringProperty(value: [])
             getFrameworkResources() >> new ListStringProperty(value: [])

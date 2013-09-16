@@ -37,7 +37,7 @@ class SimulatorVariantTask extends AbstractBuildVariantTask {
 
     @Lazy
     List<String> cmd = {
-        (variant.xcodebuildExecutionPath + ['-scheme', variant.name] + ['-configuration', variant.archiveConfiguration] +
+        (variant.xcodebuildExecutionPath + ['-scheme', variant.schemeName] + ['-configuration', variant.archiveConfiguration] +
                 sdkCmd + archCmd + ["CONFIGURATION_BUILD_DIR=$simTmpDir.absolutePath"] + ['clean', 'build'])
     }()
 }

@@ -32,6 +32,7 @@ class SimulatorVariantTaskSpec extends Specification {
         }
         task.variant = GroovySpy(AbstractIOSVariant) {
             getName() >> 'GradleXCode'
+            getSchemeName() >> 'GradleXCode'
             getTmpDir() >> GroovyMock(File)
             getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
             getTarget() >> 't'

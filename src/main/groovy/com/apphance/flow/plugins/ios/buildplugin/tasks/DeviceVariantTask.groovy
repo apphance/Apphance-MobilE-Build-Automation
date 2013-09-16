@@ -40,7 +40,7 @@ class DeviceVariantTask extends AbstractBuildVariantTask {
 
     @Lazy
     List<String> cmd = {
-        (variant.xcodebuildExecutionPath + ['-scheme', variant.name] + sdkCmd + archCmd + ['clean', 'archive'])
+        (variant.xcodebuildExecutionPath + ['-scheme', variant.schemeName] + sdkCmd + archCmd + ['clean', 'archive'])
     }()
 
     @PackageScope
