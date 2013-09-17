@@ -5,10 +5,8 @@ import spock.lang.Specification
 class FileLinkerSpec extends Specification {
 
     def 'simple file linker returns empty file link'() {
-
         given:
         def logfile = new File('.')
-
         and:
         def simpleFileLinker = new SimpleFileLinker()
 
@@ -19,7 +17,6 @@ class FileLinkerSpec extends Specification {
     def 'jenkins file linker returns url file link'(){
         given:
         def logfile = new File('log')
-
         def workspace = new File('.')
         and:
         def linker = new JenkinsFileLinker('jenkins://job/', workspace.canonicalPath)

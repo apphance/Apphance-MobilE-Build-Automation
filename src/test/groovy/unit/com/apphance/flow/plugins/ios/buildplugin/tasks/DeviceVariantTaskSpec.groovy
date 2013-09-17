@@ -2,10 +2,11 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.cocoapods.PodLocator
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSDeviceArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
@@ -44,7 +45,7 @@ class DeviceVariantTaskSpec extends Specification {
 
     def 'exception when variant with bad mode passed'() {
         given:
-        task.variant = GroovyMock(IOSVariant) {
+        task.variant = GroovyMock(AbstractIOSVariant) {
             getMode() >> new IOSBuildModeProperty(value: FRAMEWORK)
         }
 
@@ -60,31 +61,29 @@ class DeviceVariantTaskSpec extends Specification {
     def 'executor runs archive command when variant passed & release conf enabled #releaseConfEnabled'() {
         given:
         def tmpFile = tempFile
-        def tmpDir = temporaryDir
 
         and:
-        def variant = GroovySpy(IOSVariant) {
+        def variant = GroovySpy(AbstractIOSVariant) {
             getTmpDir() >> GroovyMock(File)
-            getConf() >> GroovyMock(IOSConfiguration) {
-                xcodebuildExecutionPath() >> ['xcodebuild']
-            }
             getName() >> 'GradleXCode'
+            getSchemeName() >> 'GradleXCode'
             getSchemeFile() >> tmpFile
             getMode() >> new IOSBuildModeProperty(value: DEVICE)
             getTarget() >> 't'
             getArchiveConfiguration() >> 'c'
+            getXcodebuildExecutionPath() >> ['xcodebuild']
         }
         task.releaseConf = GroovyMock(IOSReleaseConfiguration) {
             isEnabled() >> releaseConfEnabled
         }
         task.conf = GroovyMock(IOSConfiguration) {
-            xcodebuildExecutionPath() >> ['xcodebuild']
             getSdk() >> new StringProperty(value: 'iphoneos')
         }
         task.variant = variant
         task.schemeParser = GroovyMock(XCSchemeParser)
         task.artifactProvider = GroovyMock(IOSArtifactProvider)
         task.deviceArtifactsBuilder = GroovyMock(IOSDeviceArtifactsBuilder)
+        task.podLocator = GroovyMock(PodLocator)
 
         when:
         task.build()

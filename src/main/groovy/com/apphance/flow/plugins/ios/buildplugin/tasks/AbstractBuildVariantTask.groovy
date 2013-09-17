@@ -3,8 +3,9 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.cocoapods.PodLocator
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.util.FlowUtils
 import com.google.common.base.Preconditions
@@ -25,12 +26,17 @@ abstract class AbstractBuildVariantTask extends DefaultTask {
     @Inject IOSReleaseConfiguration releaseConf
     @Inject IOSExecutor iosExecutor
     @Inject IOSArtifactProvider artifactProvider
+    @Inject PodLocator podLocator
     @Inject FlowUtils fu
 
-    IOSVariant variant
+    AbstractIOSVariant variant
 
     @TaskAction
-    abstract void build()
+    void build() {
+        validate()
+        def pod = podLocator.findPodfile(variant.tmpDir)
+        if (pod) iosExecutor.podInstall(pod.parentFile)
+    }
 
     protected List<String> getArchCmd() {
         variant.mode.value == SIMULATOR ? ['-arch', 'i386'] : []
@@ -49,7 +55,7 @@ abstract class AbstractBuildVariantTask extends DefaultTask {
         }
     }
 
-    protected validate() {
+    private void validate() {
         Preconditions.checkNotNull(variant, 'Null variant passed to builder!')
         Preconditions.checkArgument(variant.mode.value == validationMode, "Invalid build mode: $variant.mode.value!")
     }

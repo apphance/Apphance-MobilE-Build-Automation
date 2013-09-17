@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.apphance
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
@@ -21,7 +21,7 @@ class IOSApphanceEnhancerSpec extends Specification {
 
     def 'apphance framework is found as expected in variant dir'() {
         given:
-        def variant = GroovyStub(IOSVariant) {
+        def variant = GroovyStub(AbstractIOSVariant) {
             getTmpDir() >> variantDir
         }
 
@@ -47,7 +47,7 @@ class IOSApphanceEnhancerSpec extends Specification {
 
     def 'no exception is thrown when apphance found in variant dir'() {
         given:
-        def enhancer = new IOSApphanceEnhancer(GroovyMock(IOSVariant) {
+        def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
             getName() >> 'Variant1'
             getTmpDir() >> new File('variant1/dir')
         })
@@ -66,7 +66,7 @@ class IOSApphanceEnhancerSpec extends Specification {
 
     def 'apphance dependency group resolved'() {
         given:
-        def enhancer = new IOSApphanceEnhancer(GroovyMock(IOSVariant) {
+        def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
             getApphanceMode() >> new ApphanceModeProperty(value: apphanceMode)
         })
 
@@ -82,7 +82,7 @@ class IOSApphanceEnhancerSpec extends Specification {
 
     def 'apphance zip url is constructed correctly'() {
         given:
-        def enhancer = new IOSApphanceEnhancer(GroovyMock(IOSVariant) {
+        def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
             getApphanceMode() >> new ApphanceModeProperty(value: apphanceMode)
             getApphanceLibVersion() >> new StringProperty(value: '1.8.8')
             getApphanceDependencyArch() >> 'armv7'
@@ -102,7 +102,7 @@ class IOSApphanceEnhancerSpec extends Specification {
         given:
         def tmpDir = createTempDir()
 
-        def enhancer = new IOSApphanceEnhancer(GroovyMock(IOSVariant) {
+        def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
             getTmpDir() >> tmpDir
             getApphanceMode() >> new ApphanceModeProperty(value: mode)
             getApphanceLibVersion() >> new StringProperty(value: '1.8.')

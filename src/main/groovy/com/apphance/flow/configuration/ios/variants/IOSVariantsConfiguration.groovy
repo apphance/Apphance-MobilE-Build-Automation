@@ -3,9 +3,12 @@ package com.apphance.flow.configuration.ios.variants
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
+import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
+import com.apphance.flow.plugins.ios.workspace.IOSWorkspaceLocator
 import com.apphance.flow.util.FlowUtils
 import com.google.inject.Singleton
 import groovy.transform.PackageScope
+import org.gradle.api.GradleException
 
 import javax.inject.Inject
 
@@ -18,6 +21,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     @Inject IOSConfiguration conf
     @Inject IOSVariantFactory variantFactory
     @Inject IOSSchemeInfo schemeInfo
+    @Inject IOSWorkspaceLocator workspaceLocator
 
     @Inject
     @Override
@@ -38,7 +42,22 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     @Lazy
     @PackageScope
     List<String> possibleVariants = {
-        schemeInfo.schemeFiles.findAll { schemeInfo.schemeShared(it) }.collect { getNameWithoutExtension(it.name) }
+        hasWorkspaceAndSchemes ? workspaceXscheme.collect { w, s -> "$w$s".toString() } : (hasSchemes ? schemes : [])
+    }()
+
+    @Lazy
+    List<List<String>> workspaceXscheme = {
+        [workspaces, schemes].combinations()
+    }()
+
+    @Lazy
+    private List<String> schemes = {
+        schemeInfo.schemeFiles.findAll(schemeInfo.&schemeShared).collect(nameWithoutExtension)
+    }()
+
+    @Lazy
+    private List<String> workspaces = {
+        workspaceLocator.workspaces.collect(nameWithoutExtension)
     }()
 
     @Override
@@ -47,36 +66,41 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    Collection<IOSVariant> getSubConfigurations() {
+    Collection<? extends AbstractIOSVariant> getSubConfigurations() {
         variantsInternal()
     }
 
-    Collection<IOSVariant> getVariants() {
+    Collection<? extends AbstractIOSVariant> getVariants() {
         variantsInternal().findAll { it.isEnabled() }
     }
 
-    IOSVariant getMainVariant() {
+    AbstractIOSVariant getMainVariant() {
         variantsInternal()[0]
     }
 
-    private List<IOSVariant> variantsInternal() {
-        variantsNames.value.collect {
-            schemeVariant.call(it)
-        }
+    private List<? extends AbstractIOSVariant> variantsInternal() {
+        if (hasWorkspaceAndSchemes)
+            return variantsNames.value.collect(workspaceVariant)
+        else if (hasSchemes)
+            return variantsNames.value.collect(schemeVariant)
+        throw new GradleException('Project has no workspaces nor schemes')
     }
 
-    @PackageScope
-    Closure<IOSVariant> schemeVariant = { String name ->
+    @Lazy
+    private boolean hasWorkspaceAndSchemes = {
+        workspaceLocator.hasWorkspaces && hasSchemes
+    }()
+
+    @Lazy
+    private boolean hasSchemes = {
+        schemeInfo.hasSchemes
+    }()
+
+    private Closure<IOSSchemeVariant> schemeVariant = { String name ->
         variantFactory.createSchemeVariant(name)
     }.memoize()
 
-    @Override
-    boolean canBeEnabled() {
-        schemeInfo.hasSchemes
-    }
-
-    @Override
-    void checkProperties() {
-        super.checkProperties()
-    }
+    private Closure<IOSWorkspaceVariant> workspaceVariant = { String name ->
+        variantFactory.createWorkspaceVariant(name)
+    }.memoize()
 }

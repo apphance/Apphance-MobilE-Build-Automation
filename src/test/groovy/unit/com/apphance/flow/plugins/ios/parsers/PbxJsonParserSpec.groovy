@@ -31,7 +31,7 @@ class PbxJsonParserSpec extends Specification {
         def blueprintId = 'D382B71014703FE500E9CC9B'
 
         when:
-        parser.plistForScheme.call(GroovyMock(File), configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
+        parser.plistForScheme.call(GroovyMock(File), configuration, blueprintId)
 
         then:
         def e = thrown(GradleException)

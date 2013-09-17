@@ -34,7 +34,7 @@ import static com.apphance.flow.plugins.ios.parsers.XCodeOutputParserSpec.XCODE_
 class PluginMasterSpec extends Specification {
 
     @Unroll
-    def 'test if all #type plugins are applied'() {
+    def 'all #type plugins are applied'() {
         given:
         def mocks = (plugins + commonPlugins).collect(mockToMap).sum()
         def master = createInjectorForPluginsMocks(mocks, file, type).getInstance(PluginMaster)
@@ -65,7 +65,7 @@ class PluginMasterSpec extends Specification {
         IOS     | iosPlugins     | 'GradleXCode.xcodeproj'
     }
 
-    def 'test Android plugins order'() {
+    def 'android plugins applied in correct order'() {
         given:
         def mocks = (commonPlugins + androidPlugins).collect(mockToMap).sum()
         def master = createInjectorForPluginsMocks(mocks, 'AndroidManifest.xml', ANDROID).getInstance(PluginMaster)
@@ -96,7 +96,7 @@ class PluginMasterSpec extends Specification {
         ReleasePlugin | AndroidReleasePlugin
     }
 
-    def 'test iOS plugins order'() {
+    def 'iOS plugins applied in correct order'() {
         given:
         def mocks = (commonPlugins + iosPlugins).collect(mockToMap).sum()
         def master = createInjectorForPluginsMocks(mocks, 'GradleXCode.xcodeproj', IOS).getInstance(PluginMaster)

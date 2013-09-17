@@ -57,6 +57,10 @@ class FlowUtils {
         (dotIndex == -1) ? fileName : fileName.substring(0, dotIndex)
     }
 
+    Closure<String> nameWithoutExtension = { File f ->
+        getNameWithoutExtension(f.name)
+    }
+
     String getPackage(File javaFile) {
         def packageRegex = /\s*package\s+(\S+)\s*;.*/
         javaFile.readLines().collect {

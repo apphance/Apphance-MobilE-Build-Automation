@@ -1,0 +1,971 @@
+{
+    "archiveVersion": "1", 
+    "classes": {}, 
+    "objectVersion": "46", 
+    "objects": {
+        "6799F9CB151CA7A700178017": {
+            "children": [
+                "6799F9CC151CA7A700178017", 
+                "6799F9CD151CA7A700178017"
+            ], 
+            "isa": "PBXGroup", 
+            "path": "subdir", 
+            "sourceTree": "<group>"
+        }, 
+        "6799F9CC151CA7A700178017": {
+            "fileEncoding": "4", 
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.h", 
+            "path": "emptyPathView.h", 
+            "sourceTree": "<group>"
+        }, 
+        "6799F9CD151CA7A700178017": {
+            "fileEncoding": "4", 
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.objc", 
+            "path": "emptyPathView.m", 
+            "sourceTree": "<group>"
+        }, 
+        "6799F9CE151CA7A700178017": {
+            "fileRef": "6799F9CD151CA7A700178017", 
+            "isa": "PBXBuildFile"
+        }, 
+        "6799F9CF151CA7CB00178017": {
+            "fileEncoding": "4", 
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.h", 
+            "name": "NonEmptyPathView.h", 
+            "path": "subdir/NonEmptyPathView.h", 
+            "sourceTree": "<group>"
+        }, 
+        "6799F9D0151CA7CB00178017": {
+            "fileEncoding": "4", 
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.objc", 
+            "name": "NonEmptyPathView.m", 
+            "path": "subdir/NonEmptyPathView.m", 
+            "sourceTree": "<group>"
+        }, 
+        "6799F9D1151CA7CB00178017": {
+            "fileRef": "6799F9D0151CA7CB00178017", 
+            "isa": "PBXBuildFile"
+        }, 
+        "6A08C57E17B25CFA00B6B527": {
+            "containerPortal": "D382B70814703FE500E9CC9B", 
+            "isa": "PBXContainerItemProxy", 
+            "proxyType": "1", 
+            "remoteGlobalIDString": "D382B71014703FE500E9CC9B", 
+            "remoteInfo": "GradleXCode"
+        }, 
+        "6A08C57F17B25CFA00B6B527": {
+            "isa": "PBXTargetDependency", 
+            "target": "D382B71014703FE500E9CC9B", 
+            "targetProxy": "6A08C57E17B25CFA00B6B527"
+        }, 
+        "6A131F7517B24344003E5388": {
+            "buildActionMask": "2147483647", 
+            "files": [
+                "6A131F8617B24344003E5388"
+            ], 
+            "isa": "PBXSourcesBuildPhase", 
+            "runOnlyForDeploymentPostprocessing": "0"
+        }, 
+        "6A131F7617B24344003E5388": {
+            "buildActionMask": "2147483647", 
+            "files": [
+                "6A131F7B17B24344003E5388", 
+                "6A131F7C17B24344003E5388", 
+                "6A131F7D17B24344003E5388"
+            ], 
+            "isa": "PBXFrameworksBuildPhase", 
+            "runOnlyForDeploymentPostprocessing": "0"
+        }, 
+        "6A131F7717B24344003E5388": {
+            "buildActionMask": "2147483647", 
+            "files": [
+                "6A131F8317B24344003E5388"
+            ], 
+            "isa": "PBXResourcesBuildPhase", 
+            "runOnlyForDeploymentPostprocessing": "0"
+        }, 
+        "6A131F7917B24344003E5388": {
+            "buildConfigurationList": "6A131F8C17B24344003E5388", 
+            "buildPhases": [
+                "6A131F7517B24344003E5388", 
+                "6A131F7617B24344003E5388", 
+                "6A131F7717B24344003E5388"
+            ], 
+            "buildRules": [], 
+            "dependencies": [
+                "6A08C57F17B25CFA00B6B527"
+            ], 
+            "isa": "PBXNativeTarget", 
+            "name": "GradleXCodeFailingTests", 
+            "productName": "GradleXCodeFailingTests", 
+            "productReference": "6A131F7A17B24344003E5388", 
+            "productType": "com.apple.product-type.bundle"
+        }, 
+        "6A131F7A17B24344003E5388": {
+            "explicitFileType": "wrapper.cfbundle", 
+            "includeInIndex": "0", 
+            "isa": "PBXFileReference", 
+            "path": "GradleXCodeFailingTests.octest", 
+            "sourceTree": "BUILT_PRODUCTS_DIR"
+        }, 
+        "6A131F7B17B24344003E5388": {
+            "fileRef": "D382B73614703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "6A131F7C17B24344003E5388": {
+            "fileRef": "D382B71514703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "6A131F7D17B24344003E5388": {
+            "fileRef": "D382B71714703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "6A131F7E17B24344003E5388": {
+            "children": [
+                "6A131F8417B24344003E5388", 
+                "6A131F8517B24344003E5388", 
+                "6A131F7F17B24344003E5388"
+            ], 
+            "isa": "PBXGroup", 
+            "path": "GradleXCodeFailingTests", 
+            "sourceTree": "<group>"
+        }, 
+        "6A131F7F17B24344003E5388": {
+            "children": [
+                "6A131F8017B24344003E5388", 
+                "6A131F8117B24344003E5388", 
+                "6A131F8717B24344003E5388"
+            ], 
+            "isa": "PBXGroup", 
+            "name": "Supporting Files", 
+            "sourceTree": "<group>"
+        }, 
+        "6A131F8017B24344003E5388": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "text.plist.xml", 
+            "path": "GradleXCodeFailingTests-Info.plist", 
+            "sourceTree": "<group>"
+        }, 
+        "6A131F8117B24344003E5388": {
+            "children": [
+                "6A131F8217B24344003E5388"
+            ], 
+            "isa": "PBXVariantGroup", 
+            "name": "InfoPlist.strings", 
+            "sourceTree": "<group>"
+        }, 
+        "6A131F8217B24344003E5388": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "text.plist.strings", 
+            "name": "en", 
+            "path": "en.lproj/InfoPlist.strings", 
+            "sourceTree": "<group>"
+        }, 
+        "6A131F8317B24344003E5388": {
+            "fileRef": "6A131F8117B24344003E5388", 
+            "isa": "PBXBuildFile"
+        }, 
+        "6A131F8417B24344003E5388": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.h", 
+            "path": "GradleXCodeFailingTests.h", 
+            "sourceTree": "<group>"
+        }, 
+        "6A131F8517B24344003E5388": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.objc", 
+            "path": "GradleXCodeFailingTests.m", 
+            "sourceTree": "<group>"
+        }, 
+        "6A131F8617B24344003E5388": {
+            "fileRef": "6A131F8517B24344003E5388", 
+            "isa": "PBXBuildFile"
+        }, 
+        "6A131F8717B24344003E5388": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.h", 
+            "path": "GradleXCodeFailingTests-Prefix.pch", 
+            "sourceTree": "<group>"
+        }, 
+        "6A131F8817B24344003E5388": {
+            "buildSettings": {
+                "BUNDLE_LOADER": "$(BUILT_PRODUCTS_DIR)/GradleXCode.app/GradleXCode", 
+                "CLANG_CXX_LANGUAGE_STANDARD": "gnu++0x", 
+                "CLANG_CXX_LIBRARY": "libc++", 
+                "CLANG_WARN_CONSTANT_CONVERSION": "YES", 
+                "CLANG_WARN_EMPTY_BODY": "YES", 
+                "CLANG_WARN_ENUM_CONVERSION": "YES", 
+                "CLANG_WARN_INT_CONVERSION": "YES", 
+                "CLANG_WARN__DUPLICATE_METHOD_MATCH": "YES", 
+                "FRAMEWORK_SEARCH_PATHS": [
+                    "\"$(SDKROOT)/Developer/Library/Frameworks\"", 
+                    "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\""
+                ], 
+                "GCC_PRECOMPILE_PREFIX_HEADER": "YES", 
+                "GCC_PREFIX_HEADER": "GradleXCodeFailingTests/GradleXCodeFailingTests-Prefix.pch", 
+                "GCC_WARN_UNINITIALIZED_AUTOS": "YES", 
+                "INFOPLIST_FILE": "GradleXCodeFailingTests/GradleXCodeFailingTests-Info.plist", 
+                "IPHONEOS_DEPLOYMENT_TARGET": "6.1", 
+                "ONLY_ACTIVE_ARCH": "YES", 
+                "PRODUCT_NAME": "$(TARGET_NAME)", 
+                "TEST_HOST": "$(BUNDLE_LOADER)", 
+                "WRAPPER_EXTENSION": "octest"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "Debug"
+        }, 
+        "6A131F8917B24344003E5388": {
+            "buildSettings": {
+                "BUNDLE_LOADER": "$(BUILT_PRODUCTS_DIR)/GradleXCode.app/GradleXCode", 
+                "CLANG_CXX_LANGUAGE_STANDARD": "gnu++0x", 
+                "CLANG_CXX_LIBRARY": "libc++", 
+                "CLANG_WARN_CONSTANT_CONVERSION": "YES", 
+                "CLANG_WARN_EMPTY_BODY": "YES", 
+                "CLANG_WARN_ENUM_CONVERSION": "YES", 
+                "CLANG_WARN_INT_CONVERSION": "YES", 
+                "CLANG_WARN__DUPLICATE_METHOD_MATCH": "YES", 
+                "FRAMEWORK_SEARCH_PATHS": [
+                    "\"$(SDKROOT)/Developer/Library/Frameworks\"", 
+                    "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\""
+                ], 
+                "GCC_PRECOMPILE_PREFIX_HEADER": "YES", 
+                "GCC_PREFIX_HEADER": "GradleXCodeFailingTests/GradleXCodeFailingTests-Prefix.pch", 
+                "GCC_WARN_UNINITIALIZED_AUTOS": "YES", 
+                "INFOPLIST_FILE": "GradleXCodeFailingTests/GradleXCodeFailingTests-Info.plist", 
+                "IPHONEOS_DEPLOYMENT_TARGET": "6.1", 
+                "PRODUCT_NAME": "$(TARGET_NAME)", 
+                "TEST_HOST": "$(BUNDLE_LOADER)", 
+                "WRAPPER_EXTENSION": "octest"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "Release"
+        }, 
+        "6A131F8A17B24344003E5388": {
+            "buildSettings": {
+                "BUNDLE_LOADER": "$(BUILT_PRODUCTS_DIR)/GradleXCode.app/GradleXCode", 
+                "CLANG_CXX_LANGUAGE_STANDARD": "gnu++0x", 
+                "CLANG_CXX_LIBRARY": "libc++", 
+                "CLANG_WARN_CONSTANT_CONVERSION": "YES", 
+                "CLANG_WARN_EMPTY_BODY": "YES", 
+                "CLANG_WARN_ENUM_CONVERSION": "YES", 
+                "CLANG_WARN_INT_CONVERSION": "YES", 
+                "CLANG_WARN__DUPLICATE_METHOD_MATCH": "YES", 
+                "FRAMEWORK_SEARCH_PATHS": [
+                    "\"$(SDKROOT)/Developer/Library/Frameworks\"", 
+                    "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\""
+                ], 
+                "GCC_PRECOMPILE_PREFIX_HEADER": "YES", 
+                "GCC_PREFIX_HEADER": "GradleXCodeFailingTests/GradleXCodeFailingTests-Prefix.pch", 
+                "GCC_WARN_UNINITIALIZED_AUTOS": "YES", 
+                "INFOPLIST_FILE": "GradleXCodeFailingTests/GradleXCodeFailingTests-Info.plist", 
+                "IPHONEOS_DEPLOYMENT_TARGET": "6.1", 
+                "PRODUCT_NAME": "$(TARGET_NAME)", 
+                "TEST_HOST": "$(BUNDLE_LOADER)", 
+                "WRAPPER_EXTENSION": "octest"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "BasicConfiguration"
+        }, 
+        "6A131F8B17B24344003E5388": {
+            "buildSettings": {
+                "BUNDLE_LOADER": "$(BUILT_PRODUCTS_DIR)/GradleXCode.app/GradleXCode", 
+                "CLANG_CXX_LANGUAGE_STANDARD": "gnu++0x", 
+                "CLANG_CXX_LIBRARY": "libc++", 
+                "CLANG_WARN_CONSTANT_CONVERSION": "YES", 
+                "CLANG_WARN_EMPTY_BODY": "YES", 
+                "CLANG_WARN_ENUM_CONVERSION": "YES", 
+                "CLANG_WARN_INT_CONVERSION": "YES", 
+                "CLANG_WARN__DUPLICATE_METHOD_MATCH": "YES", 
+                "FRAMEWORK_SEARCH_PATHS": [
+                    "\"$(SDKROOT)/Developer/Library/Frameworks\"", 
+                    "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\""
+                ], 
+                "GCC_PRECOMPILE_PREFIX_HEADER": "YES", 
+                "GCC_PREFIX_HEADER": "GradleXCodeFailingTests/GradleXCodeFailingTests-Prefix.pch", 
+                "GCC_WARN_UNINITIALIZED_AUTOS": "YES", 
+                "INFOPLIST_FILE": "GradleXCodeFailingTests/GradleXCodeFailingTests-Info.plist", 
+                "IPHONEOS_DEPLOYMENT_TARGET": "6.1", 
+                "PRODUCT_NAME": "$(TARGET_NAME)", 
+                "TEST_HOST": "$(BUNDLE_LOADER)", 
+                "WRAPPER_EXTENSION": "octest"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "Another Configuration"
+        }, 
+        "6A131F8C17B24344003E5388": {
+            "buildConfigurations": [
+                "6A131F8817B24344003E5388", 
+                "6A131F8917B24344003E5388", 
+                "6A131F8A17B24344003E5388", 
+                "6A131F8B17B24344003E5388"
+            ], 
+            "defaultConfigurationIsVisible": "0", 
+            "defaultConfigurationName": "Release", 
+            "isa": "XCConfigurationList"
+        }, 
+        "6AE87B3B1782D9D300571959": {
+            "buildSettings": {
+                "ALWAYS_SEARCH_USER_PATHS": "NO", 
+                "ARCHS": "$(ARCHS_STANDARD_32_BIT)", 
+                "CLANG_ENABLE_OBJC_ARC": "YES", 
+                "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "iPhone Distribution", 
+                "COPY_PHASE_STRIP": "YES", 
+                "GCC_C_LANGUAGE_STANDARD": "gnu99", 
+                "GCC_VERSION": "com.apple.compilers.llvm.clang.1_0", 
+                "GCC_WARN_ABOUT_MISSING_PROTOTYPES": "YES", 
+                "GCC_WARN_ABOUT_RETURN_TYPE": "YES", 
+                "GCC_WARN_UNUSED_VARIABLE": "YES", 
+                "IPHONEOS_DEPLOYMENT_TARGET": "5.0", 
+                "OTHER_CFLAGS": "-DNS_BLOCK_ASSERTIONS=1", 
+                "PROVISIONING_PROFILE[sdk=iphoneos*]": "", 
+                "SDKROOT": "iphoneos", 
+                "TARGETED_DEVICE_FAMILY": "1,2", 
+                "VALIDATE_PRODUCT": "YES"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "Another Configuration"
+        }, 
+        "6AE87B3C1782D9D300571959": {
+            "buildSettings": {
+                "GCC_PRECOMPILE_PREFIX_HEADER": "YES", 
+                "GCC_PREFIX_HEADER": "GradleXCode/GradleXCode-Prefix.pch", 
+                "INFOPLIST_FILE": "GradleXCode/GradleXCode-Info.plist", 
+                "PRODUCT_NAME": "$(TARGET_NAME)", 
+                "WRAPPER_EXTENSION": "app"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "Another Configuration"
+        }, 
+        "6AE87B3D1782D9D300571959": {
+            "buildSettings": {
+                "BUNDLE_LOADER": "$(BUILT_PRODUCTS_DIR)/GradleXCode.app/GradleXCode", 
+                "FRAMEWORK_SEARCH_PATHS": [
+                    "$(SDKROOT)/Developer/Library/Frameworks", 
+                    "$(DEVELOPER_LIBRARY_DIR)/Frameworks"
+                ], 
+                "GCC_PRECOMPILE_PREFIX_HEADER": "YES", 
+                "GCC_PREFIX_HEADER": "GradleXCode/GradleXCode-Prefix.pch", 
+                "INFOPLIST_FILE": "GradleXCodeTests/GradleXCodeTests-Info.plist", 
+                "PRODUCT_NAME": "$(TARGET_NAME)", 
+                "TEST_HOST": "$(BUNDLE_LOADER)", 
+                "WRAPPER_EXTENSION": "octest"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "Another Configuration"
+        }, 
+        "D382B70614703FE500E9CC9B": {
+            "children": [
+                "D382B71B14703FE500E9CC9B", 
+                "D382B73C14703FE500E9CC9B", 
+                "6A131F7E17B24344003E5388", 
+                "D382B71414703FE500E9CC9B", 
+                "D382B71214703FE500E9CC9B"
+            ], 
+            "isa": "PBXGroup", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B70814703FE500E9CC9B": {
+            "attributes": {
+                "LastUpgradeCheck": "0420", 
+                "ORGANIZATIONNAME": "Apphance"
+            }, 
+            "buildConfigurationList": "D382B70B14703FE500E9CC9B", 
+            "compatibilityVersion": "Xcode 3.2", 
+            "developmentRegion": "English", 
+            "hasScannedForEncodings": "0", 
+            "isa": "PBXProject", 
+            "knownRegions": [
+                "en"
+            ], 
+            "mainGroup": "D382B70614703FE500E9CC9B", 
+            "productRefGroup": "D382B71214703FE500E9CC9B", 
+            "projectDirPath": "", 
+            "projectRoot": "", 
+            "targets": [
+                "D382B71014703FE500E9CC9B", 
+                "D382B73414703FE500E9CC9B", 
+                "6A131F7917B24344003E5388"
+            ]
+        }, 
+        "D382B70B14703FE500E9CC9B": {
+            "buildConfigurations": [
+                "D382B74514703FE500E9CC9B", 
+                "D382B74614703FE500E9CC9B", 
+                "D382B75114704A4700E9CC9B", 
+                "6AE87B3B1782D9D300571959"
+            ], 
+            "defaultConfigurationIsVisible": "0", 
+            "defaultConfigurationName": "Release", 
+            "isa": "XCConfigurationList"
+        }, 
+        "D382B70D14703FE500E9CC9B": {
+            "buildActionMask": "2147483647", 
+            "files": [
+                "D382B72214703FE500E9CC9B", 
+                "D382B72614703FE500E9CC9B", 
+                "D382B72F14703FE500E9CC9B", 
+                "6799F9CE151CA7A700178017", 
+                "6799F9D1151CA7CB00178017"
+            ], 
+            "isa": "PBXSourcesBuildPhase", 
+            "runOnlyForDeploymentPostprocessing": "0"
+        }, 
+        "D382B70E14703FE500E9CC9B": {
+            "buildActionMask": "2147483647", 
+            "files": [
+                "D382B71614703FE500E9CC9B", 
+                "D382B71814703FE500E9CC9B", 
+                "D382B71A14703FE500E9CC9B"
+            ], 
+            "isa": "PBXFrameworksBuildPhase", 
+            "runOnlyForDeploymentPostprocessing": "0"
+        }, 
+        "D382B70F14703FE500E9CC9B": {
+            "buildActionMask": "2147483647", 
+            "files": [
+                "D382B72014703FE500E9CC9B", 
+                "D382B72914703FE500E9CC9B", 
+                "D382B72C14703FE500E9CC9B"
+            ], 
+            "isa": "PBXResourcesBuildPhase", 
+            "runOnlyForDeploymentPostprocessing": "0"
+        }, 
+        "D382B71014703FE500E9CC9B": {
+            "buildConfigurationList": "D382B74714703FE500E9CC9B", 
+            "buildPhases": [
+                "D382B70D14703FE500E9CC9B", 
+                "D382B70E14703FE500E9CC9B", 
+                "D382B70F14703FE500E9CC9B"
+            ], 
+            "buildRules": [], 
+            "dependencies": [], 
+            "isa": "PBXNativeTarget", 
+            "name": "GradleXCode", 
+            "productName": "GradleXCode", 
+            "productReference": "D382B71114703FE500E9CC9B", 
+            "productType": "com.apple.product-type.application"
+        }, 
+        "D382B71114703FE500E9CC9B": {
+            "explicitFileType": "wrapper.application", 
+            "includeInIndex": "0", 
+            "isa": "PBXFileReference", 
+            "path": "GradleXCode.app", 
+            "sourceTree": "BUILT_PRODUCTS_DIR"
+        }, 
+        "D382B71214703FE500E9CC9B": {
+            "children": [
+                "D382B71114703FE500E9CC9B", 
+                "D382B73514703FE500E9CC9B", 
+                "6A131F7A17B24344003E5388"
+            ], 
+            "isa": "PBXGroup", 
+            "name": "Products", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B71414703FE500E9CC9B": {
+            "children": [
+                "D382B71514703FE500E9CC9B", 
+                "D382B71714703FE500E9CC9B", 
+                "D382B71914703FE500E9CC9B", 
+                "D382B73614703FE500E9CC9B"
+            ], 
+            "isa": "PBXGroup", 
+            "name": "Frameworks", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B71514703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "wrapper.framework", 
+            "name": "UIKit.framework", 
+            "path": "System/Library/Frameworks/UIKit.framework", 
+            "sourceTree": "SDKROOT"
+        }, 
+        "D382B71614703FE500E9CC9B": {
+            "fileRef": "D382B71514703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B71714703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "wrapper.framework", 
+            "name": "Foundation.framework", 
+            "path": "System/Library/Frameworks/Foundation.framework", 
+            "sourceTree": "SDKROOT"
+        }, 
+        "D382B71814703FE500E9CC9B": {
+            "fileRef": "D382B71714703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B71914703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "wrapper.framework", 
+            "name": "CoreGraphics.framework", 
+            "path": "System/Library/Frameworks/CoreGraphics.framework", 
+            "sourceTree": "SDKROOT"
+        }, 
+        "D382B71A14703FE500E9CC9B": {
+            "fileRef": "D382B71914703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B71B14703FE500E9CC9B": {
+            "children": [
+                "6799F9CB151CA7A700178017", 
+                "D382B72414703FE500E9CC9B", 
+                "D382B72514703FE500E9CC9B", 
+                "D382B72714703FE500E9CC9B", 
+                "D382B72A14703FE500E9CC9B", 
+                "D382B72D14703FE500E9CC9B", 
+                "D382B72E14703FE500E9CC9B", 
+                "D382B71C14703FE500E9CC9B", 
+                "6799F9CF151CA7CB00178017", 
+                "6799F9D0151CA7CB00178017"
+            ], 
+            "isa": "PBXGroup", 
+            "path": "GradleXCode", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B71C14703FE500E9CC9B": {
+            "children": [
+                "D382B71D14703FE500E9CC9B", 
+                "D382B71E14703FE500E9CC9B", 
+                "D382B72114703FE500E9CC9B", 
+                "D382B72314703FE500E9CC9B"
+            ], 
+            "isa": "PBXGroup", 
+            "name": "Supporting Files", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B71D14703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "text.plist.xml", 
+            "path": "GradleXCode-Info.plist", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B71E14703FE500E9CC9B": {
+            "children": [
+                "D382B71F14703FE500E9CC9B"
+            ], 
+            "isa": "PBXVariantGroup", 
+            "name": "InfoPlist.strings", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B71F14703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "text.plist.strings", 
+            "name": "en", 
+            "path": "en.lproj/InfoPlist.strings", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B72014703FE500E9CC9B": {
+            "fileRef": "D382B71E14703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B72114703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.objc", 
+            "path": "main.m", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B72214703FE500E9CC9B": {
+            "fileRef": "D382B72114703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B72314703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.h", 
+            "path": "GradleXCode-Prefix.pch", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B72414703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.h", 
+            "path": "gradleXCodeAppDelegate.h", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B72514703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.objc", 
+            "path": "gradleXCodeAppDelegate.m", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B72614703FE500E9CC9B": {
+            "fileRef": "D382B72514703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B72714703FE500E9CC9B": {
+            "children": [
+                "D382B72814703FE500E9CC9B"
+            ], 
+            "isa": "PBXVariantGroup", 
+            "name": "MainStoryboard_iPhone.storyboard", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B72814703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "file.storyboard", 
+            "name": "en", 
+            "path": "en.lproj/MainStoryboard_iPhone.storyboard", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B72914703FE500E9CC9B": {
+            "fileRef": "D382B72714703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B72A14703FE500E9CC9B": {
+            "children": [
+                "D382B72B14703FE500E9CC9B"
+            ], 
+            "isa": "PBXVariantGroup", 
+            "name": "MainStoryboard_iPad.storyboard", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B72B14703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "file.storyboard", 
+            "name": "en", 
+            "path": "en.lproj/MainStoryboard_iPad.storyboard", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B72C14703FE500E9CC9B": {
+            "fileRef": "D382B72A14703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B72D14703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.h", 
+            "path": "gradleXCodeViewController.h", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B72E14703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.objc", 
+            "path": "gradleXCodeViewController.m", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B72F14703FE500E9CC9B": {
+            "fileRef": "D382B72E14703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B73014703FE500E9CC9B": {
+            "buildActionMask": "2147483647", 
+            "files": [
+                "D382B74414703FE500E9CC9B"
+            ], 
+            "isa": "PBXSourcesBuildPhase", 
+            "runOnlyForDeploymentPostprocessing": "0"
+        }, 
+        "D382B73114703FE500E9CC9B": {
+            "buildActionMask": "2147483647", 
+            "files": [
+                "D382B73714703FE500E9CC9B", 
+                "D382B73814703FE500E9CC9B", 
+                "D382B73914703FE500E9CC9B"
+            ], 
+            "isa": "PBXFrameworksBuildPhase", 
+            "runOnlyForDeploymentPostprocessing": "0"
+        }, 
+        "D382B73214703FE500E9CC9B": {
+            "buildActionMask": "2147483647", 
+            "files": [
+                "D382B74114703FE500E9CC9B"
+            ], 
+            "isa": "PBXResourcesBuildPhase", 
+            "runOnlyForDeploymentPostprocessing": "0"
+        }, 
+        "D382B73414703FE500E9CC9B": {
+            "buildConfigurationList": "D382B74A14703FE500E9CC9B", 
+            "buildPhases": [
+                "D382B73014703FE500E9CC9B", 
+                "D382B73114703FE500E9CC9B", 
+                "D382B73214703FE500E9CC9B"
+            ], 
+            "buildRules": [], 
+            "dependencies": [
+                "D382B73B14703FE500E9CC9B"
+            ], 
+            "isa": "PBXNativeTarget", 
+            "name": "GradleXCodeTests", 
+            "productName": "GradleXCodeTests", 
+            "productReference": "D382B73514703FE500E9CC9B", 
+            "productType": "com.apple.product-type.bundle"
+        }, 
+        "D382B73514703FE500E9CC9B": {
+            "explicitFileType": "wrapper.cfbundle", 
+            "includeInIndex": "0", 
+            "isa": "PBXFileReference", 
+            "path": "GradleXCodeTests.octest", 
+            "sourceTree": "BUILT_PRODUCTS_DIR"
+        }, 
+        "D382B73614703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "wrapper.framework", 
+            "name": "SenTestingKit.framework", 
+            "path": "Library/Frameworks/SenTestingKit.framework", 
+            "sourceTree": "DEVELOPER_DIR"
+        }, 
+        "D382B73714703FE500E9CC9B": {
+            "fileRef": "D382B73614703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B73814703FE500E9CC9B": {
+            "fileRef": "D382B71514703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B73914703FE500E9CC9B": {
+            "fileRef": "D382B71714703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B73A14703FE500E9CC9B": {
+            "containerPortal": "D382B70814703FE500E9CC9B", 
+            "isa": "PBXContainerItemProxy", 
+            "proxyType": "1", 
+            "remoteGlobalIDString": "D382B71014703FE500E9CC9B", 
+            "remoteInfo": "GradleXCode"
+        }, 
+        "D382B73B14703FE500E9CC9B": {
+            "isa": "PBXTargetDependency", 
+            "target": "D382B71014703FE500E9CC9B", 
+            "targetProxy": "D382B73A14703FE500E9CC9B"
+        }, 
+        "D382B73C14703FE500E9CC9B": {
+            "children": [
+                "D382B74214703FE500E9CC9B", 
+                "D382B74314703FE500E9CC9B", 
+                "D382B73D14703FE500E9CC9B"
+            ], 
+            "isa": "PBXGroup", 
+            "path": "GradleXCodeTests", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B73D14703FE500E9CC9B": {
+            "children": [
+                "D382B73E14703FE500E9CC9B", 
+                "D382B73F14703FE500E9CC9B"
+            ], 
+            "isa": "PBXGroup", 
+            "name": "Supporting Files", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B73E14703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "text.plist.xml", 
+            "path": "GradleXCodeTests-Info.plist", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B73F14703FE500E9CC9B": {
+            "children": [
+                "D382B74014703FE500E9CC9B"
+            ], 
+            "isa": "PBXVariantGroup", 
+            "name": "InfoPlist.strings", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B74014703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "text.plist.strings", 
+            "name": "en", 
+            "path": "en.lproj/InfoPlist.strings", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B74114703FE500E9CC9B": {
+            "fileRef": "D382B73F14703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B74214703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.h", 
+            "path": "GradleXCodeTests.h", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B74314703FE500E9CC9B": {
+            "isa": "PBXFileReference", 
+            "lastKnownFileType": "sourcecode.c.objc", 
+            "path": "GradleXCodeTests.m", 
+            "sourceTree": "<group>"
+        }, 
+        "D382B74414703FE500E9CC9B": {
+            "fileRef": "D382B74314703FE500E9CC9B", 
+            "isa": "PBXBuildFile"
+        }, 
+        "D382B74514703FE500E9CC9B": {
+            "buildSettings": {
+                "ALWAYS_SEARCH_USER_PATHS": "NO", 
+                "ARCHS": "$(ARCHS_STANDARD_32_BIT)", 
+                "CLANG_ENABLE_OBJC_ARC": "YES", 
+                "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "iPhone Developer", 
+                "COPY_PHASE_STRIP": "NO", 
+                "GCC_C_LANGUAGE_STANDARD": "gnu99", 
+                "GCC_DYNAMIC_NO_PIC": "NO", 
+                "GCC_OPTIMIZATION_LEVEL": "0", 
+                "GCC_PREPROCESSOR_DEFINITIONS": [
+                    "DEBUG=1", 
+                    "$(inherited)"
+                ], 
+                "GCC_SYMBOLS_PRIVATE_EXTERN": "NO", 
+                "GCC_VERSION": "com.apple.compilers.llvm.clang.1_0", 
+                "GCC_WARN_ABOUT_MISSING_PROTOTYPES": "YES", 
+                "GCC_WARN_ABOUT_RETURN_TYPE": "YES", 
+                "GCC_WARN_UNUSED_VARIABLE": "YES", 
+                "IPHONEOS_DEPLOYMENT_TARGET": "5.0", 
+                "SDKROOT": "iphoneos", 
+                "TARGETED_DEVICE_FAMILY": "1,2"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "Debug"
+        }, 
+        "D382B74614703FE500E9CC9B": {
+            "buildSettings": {
+                "ALWAYS_SEARCH_USER_PATHS": "NO", 
+                "ARCHS": "$(ARCHS_STANDARD_32_BIT)", 
+                "CLANG_ENABLE_OBJC_ARC": "YES", 
+                "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "iPhone Distribution", 
+                "COPY_PHASE_STRIP": "YES", 
+                "GCC_C_LANGUAGE_STANDARD": "gnu99", 
+                "GCC_VERSION": "com.apple.compilers.llvm.clang.1_0", 
+                "GCC_WARN_ABOUT_MISSING_PROTOTYPES": "YES", 
+                "GCC_WARN_ABOUT_RETURN_TYPE": "YES", 
+                "GCC_WARN_UNUSED_VARIABLE": "YES", 
+                "IPHONEOS_DEPLOYMENT_TARGET": "5.0", 
+                "OTHER_CFLAGS": "-DNS_BLOCK_ASSERTIONS=1", 
+                "PROVISIONING_PROFILE[sdk=iphoneos*]": "", 
+                "SDKROOT": "iphoneos", 
+                "TARGETED_DEVICE_FAMILY": "1,2", 
+                "VALIDATE_PRODUCT": "YES"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "Release"
+        }, 
+        "D382B74714703FE500E9CC9B": {
+            "buildConfigurations": [
+                "D382B74814703FE500E9CC9B", 
+                "D382B74914703FE500E9CC9B", 
+                "D382B75214704A4700E9CC9B", 
+                "6AE87B3C1782D9D300571959"
+            ], 
+            "defaultConfigurationIsVisible": "0", 
+            "defaultConfigurationName": "Release", 
+            "isa": "XCConfigurationList"
+        }, 
+        "D382B74814703FE500E9CC9B": {
+            "buildSettings": {
+                "GCC_PRECOMPILE_PREFIX_HEADER": "YES", 
+                "GCC_PREFIX_HEADER": "GradleXCode/GradleXCode-Prefix.pch", 
+                "INFOPLIST_FILE": "GradleXCode/GradleXCode-Info.plist", 
+                "PRODUCT_NAME": "$(TARGET_NAME)", 
+                "WRAPPER_EXTENSION": "app"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "Debug"
+        }, 
+        "D382B74914703FE500E9CC9B": {
+            "buildSettings": {
+                "GCC_PRECOMPILE_PREFIX_HEADER": "YES", 
+                "GCC_PREFIX_HEADER": "GradleXCode/GradleXCode-Prefix.pch", 
+                "INFOPLIST_FILE": "GradleXCode/GradleXCode-Info.plist", 
+                "PRODUCT_NAME": "$(TARGET_NAME)", 
+                "WRAPPER_EXTENSION": "app"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "Release"
+        }, 
+        "D382B74A14703FE500E9CC9B": {
+            "buildConfigurations": [
+                "D382B74B14703FE500E9CC9B", 
+                "D382B74C14703FE500E9CC9B", 
+                "D382B75314704A4700E9CC9B", 
+                "6AE87B3D1782D9D300571959"
+            ], 
+            "defaultConfigurationIsVisible": "0", 
+            "defaultConfigurationName": "Release", 
+            "isa": "XCConfigurationList"
+        }, 
+        "D382B74B14703FE500E9CC9B": {
+            "buildSettings": {
+                "BUNDLE_LOADER": "$(BUILT_PRODUCTS_DIR)/GradleXCode.app/GradleXCode", 
+                "FRAMEWORK_SEARCH_PATHS": [
+                    "$(SDKROOT)/Developer/Library/Frameworks", 
+                    "$(DEVELOPER_LIBRARY_DIR)/Frameworks"
+                ], 
+                "GCC_PRECOMPILE_PREFIX_HEADER": "YES", 
+                "GCC_PREFIX_HEADER": "GradleXCode/GradleXCode-Prefix.pch", 
+                "INFOPLIST_FILE": "GradleXCodeTests/GradleXCodeTests-Info.plist", 
+                "PRODUCT_NAME": "$(TARGET_NAME)", 
+                "TEST_HOST": "$(BUNDLE_LOADER)", 
+                "WRAPPER_EXTENSION": "octest"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "Debug"
+        }, 
+        "D382B74C14703FE500E9CC9B": {
+            "buildSettings": {
+                "BUNDLE_LOADER": "$(BUILT_PRODUCTS_DIR)/GradleXCode.app/GradleXCode", 
+                "FRAMEWORK_SEARCH_PATHS": [
+                    "$(SDKROOT)/Developer/Library/Frameworks", 
+                    "$(DEVELOPER_LIBRARY_DIR)/Frameworks"
+                ], 
+                "GCC_PRECOMPILE_PREFIX_HEADER": "YES", 
+                "GCC_PREFIX_HEADER": "GradleXCode/GradleXCode-Prefix.pch", 
+                "INFOPLIST_FILE": "GradleXCodeTests/GradleXCodeTests-Info.plist", 
+                "PRODUCT_NAME": "$(TARGET_NAME)", 
+                "TEST_HOST": "$(BUNDLE_LOADER)", 
+                "WRAPPER_EXTENSION": "octest"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "Release"
+        }, 
+        "D382B75114704A4700E9CC9B": {
+            "buildSettings": {
+                "ALWAYS_SEARCH_USER_PATHS": "NO", 
+                "ARCHS": "$(ARCHS_STANDARD_32_BIT)", 
+                "CLANG_ENABLE_OBJC_ARC": "YES", 
+                "CODE_SIGN_IDENTITY[sdk=iphoneos*]": "iPhone Distribution", 
+                "COPY_PHASE_STRIP": "YES", 
+                "GCC_C_LANGUAGE_STANDARD": "gnu99", 
+                "GCC_VERSION": "com.apple.compilers.llvm.clang.1_0", 
+                "GCC_WARN_ABOUT_MISSING_PROTOTYPES": "YES", 
+                "GCC_WARN_ABOUT_RETURN_TYPE": "YES", 
+                "GCC_WARN_UNUSED_VARIABLE": "YES", 
+                "IPHONEOS_DEPLOYMENT_TARGET": "5.0", 
+                "OTHER_CFLAGS": "-DNS_BLOCK_ASSERTIONS=1", 
+                "PROVISIONING_PROFILE[sdk=iphoneos*]": "", 
+                "SDKROOT": "iphoneos", 
+                "TARGETED_DEVICE_FAMILY": "1,2", 
+                "VALIDATE_PRODUCT": "YES"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "BasicConfiguration"
+        }, 
+        "D382B75214704A4700E9CC9B": {
+            "buildSettings": {
+                "GCC_PRECOMPILE_PREFIX_HEADER": "YES", 
+                "GCC_PREFIX_HEADER": "GradleXCode/GradleXCode-Prefix.pch", 
+                "INFOPLIST_FILE": "GradleXCode/GradleXCode-Info.plist", 
+                "PRODUCT_NAME": "$(TARGET_NAME)", 
+                "WRAPPER_EXTENSION": "app"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "BasicConfiguration"
+        }, 
+        "D382B75314704A4700E9CC9B": {
+            "buildSettings": {
+                "BUNDLE_LOADER": "$(BUILT_PRODUCTS_DIR)/GradleXCode.app/GradleXCode", 
+                "FRAMEWORK_SEARCH_PATHS": [
+                    "$(SDKROOT)/Developer/Library/Frameworks", 
+                    "$(DEVELOPER_LIBRARY_DIR)/Frameworks"
+                ], 
+                "GCC_PRECOMPILE_PREFIX_HEADER": "YES", 
+                "GCC_PREFIX_HEADER": "GradleXCode/GradleXCode-Prefix.pch", 
+                "INFOPLIST_FILE": "GradleXCodeTests/GradleXCodeTests-Info.plist", 
+                "PRODUCT_NAME": "$(TARGET_NAME)", 
+                "TEST_HOST": "$(BUNDLE_LOADER)", 
+                "WRAPPER_EXTENSION": "octest"
+            }, 
+            "isa": "XCBuildConfiguration", 
+            "name": "BasicConfiguration"
+        }
+    }, 
+    "rootObject": "D382B70814703FE500E9CC9B"
+}

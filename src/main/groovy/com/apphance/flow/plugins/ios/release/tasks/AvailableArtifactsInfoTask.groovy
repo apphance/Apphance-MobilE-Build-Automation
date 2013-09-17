@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.release.tasks
 
 import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
@@ -41,7 +41,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     }
 
     @PackageScope
-    void prepareArtifacts(IOSVariant variant) {
+    void prepareArtifacts(AbstractIOSVariant variant) {
         if (variant.mode.value == DEVICE) {
             def bi = artifactProvider.deviceInfo(variant)
 

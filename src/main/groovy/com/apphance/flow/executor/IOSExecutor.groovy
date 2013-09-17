@@ -5,13 +5,17 @@ import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.ios.parsers.XCodeOutputParser
 import groovy.transform.PackageScope
-import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
+import java.util.regex.Pattern
+
+import static org.gradle.api.logging.Logging.getLogger
 
 class IOSExecutor {
 
-    private logger = Logging.getLogger(getClass())
+    private logger = getLogger(getClass())
+    private final VERSION_PATTERN = Pattern.compile('(\\d+\\.)+\\d+')
+
 
     @Inject IOSConfiguration conf
     @Inject XCodeOutputParser parser
@@ -28,7 +32,7 @@ class IOSExecutor {
     private List<String> showSdks() {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath() + ['-showsdks'])).toList()*.trim()
+                cmd: ['xcodebuild', '-showsdks'])).toList()*.trim()
     }
 
     @Lazy List<String> schemes = {
@@ -40,7 +44,7 @@ class IOSExecutor {
     List<String> list = {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath() + ['-list'])).toList()*.trim()
+                cmd: ['xcodebuild', '-list'])).toList()*.trim()
     }()
 
     List<String> pbxProjToJSON(File pbxproj) {
@@ -90,7 +94,7 @@ class IOSExecutor {
     private Closure<Map<String, String>> buildSettingsC = { String target, String configuration ->
         def result = executor.executeCommand(new Command(
                 runDir: conf.rootDir,
-                cmd: conf.xcodebuildExecutionPath().toList() + ['-target', target, '-configuration', configuration, '-showBuildSettings']
+                cmd: ['xcodebuild', '-target', target, '-configuration', configuration, '-showBuildSettings']
         )).toList()
         parser.parseBuildSettings(result)
     }.memoize()
@@ -103,12 +107,9 @@ class IOSExecutor {
         executor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
     }
 
-    def runTests(File runDir, String target, String configuration, String testResultPath) {
-        executor.executeCommand new Command(runDir: runDir,
-                cmd: conf.xcodebuildExecutionPath() +
-                        ['-target', target, '-configuration', configuration, '-sdk', 'iphonesimulator', 'clean', 'build'],
-                environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: testResultPath],
-                failOnError: false
+    def runTests(File runDir, List<String> cmd, String testResultPath) {
+        executor.executeCommand new Command(runDir: runDir, cmd: cmd, failOnError: false,
+                environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: testResultPath]
         )
     }
 
@@ -145,13 +146,35 @@ class IOSExecutor {
                     runDir: conf.rootDir,
                     cmd: ['ios-sim', '--version']
             ))
-            def line = output.find {
-                it.matches('(\\d+\\.)+\\d+')
-            }
+            def line = output.find { it.matches('(\\d+\\.)+\\d+') }
             line ? line.trim() : ''
         } catch (Exception e) {
             logger.error("Error while getting ios-sim version: {}", e.message)
             ''
         }
     }()
+
+    @Lazy
+    String podVersion = {
+        try {
+            def output = executor.executeCommand(new Command(
+                    runDir: conf.rootDir,
+                    cmd: ['gem', 'list', '--local']
+            ))
+            def line = output.find { it.matches('cocoapods \\((\\d+\\.)+\\d+\\)') }
+            line = line ? line.trim() : ''
+            def matcher = VERSION_PATTERN.matcher(line)
+            matcher.find() ? matcher.group(0) : ''
+        } catch (Exception e) {
+            logger.error("Error while getting pod version: {}", e.message)
+            ''
+        }
+    }()
+
+    def podInstall(File dir) {
+        executor.executeCommand(new Command(
+                runDir: dir,
+                cmd: ['pod', 'istall']
+        ))
+    }
 }

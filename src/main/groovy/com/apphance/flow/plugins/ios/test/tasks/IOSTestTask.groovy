@@ -1,7 +1,6 @@
 package com.apphance.flow.plugins.ios.test.tasks
 
-import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.linker.FileLinker
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
@@ -17,7 +16,7 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.TEST_ACTION
+import static com.apphance.flow.configuration.ios.IOSXCodeAction.TEST_ACTION
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 
 @Mixin(Preconditions)
@@ -26,14 +25,13 @@ class IOSTestTask extends DefaultTask {
     String group = FLOW_TEST
     String description = 'Build and executes iOS tests'
 
-    @Inject IOSConfiguration conf
     @Inject IOSExecutor executor
     @Inject IOSTestPbxEnhancer testPbxEnhancer
     @Inject XCSchemeParser schemeParser
     @Inject PbxJsonParser pbxJsonParser
     @Inject FileLinker fileLinker
 
-    IOSVariant variant
+    AbstractIOSVariant variant
 
     @TaskAction
     void test() {
@@ -48,7 +46,8 @@ class IOSTestTask extends DefaultTask {
         testTargets.each { String testTarget ->
 
             def testResultsLog = newFile(testTarget, 'log')
-            executor.runTests(variant.tmpDir, testTarget, testConf, testResultsLog.absolutePath)
+            def cmd = variant.xcodebuildExecutionPath + ['-target', testTarget, '-configuration', testConf, '-sdk', 'iphonesimulator', 'clean', 'build']
+            executor.runTests(variant.tmpDir, cmd, testResultsLog.absolutePath)
 
             Collection<OCUnitTestSuite> parsedResults = parseResults(testResultsLog)
 

@@ -1,8 +1,8 @@
 package com.apphance.flow.plugins.ios.apphance
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 
 interface IOSApphanceEnhancerFactory {
 
-    IOSApphanceEnhancer create(IOSVariant variant)
+    IOSApphanceEnhancer create(AbstractIOSVariant variant)
 }

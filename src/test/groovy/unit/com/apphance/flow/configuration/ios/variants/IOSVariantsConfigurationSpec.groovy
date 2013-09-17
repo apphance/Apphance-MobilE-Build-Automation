@@ -1,36 +1,63 @@
 package com.apphance.flow.configuration.ios.variants
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.reader.PropertyPersister
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
+import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
+import com.apphance.flow.plugins.ios.workspace.IOSWorkspaceLocator
+import com.apphance.flow.util.FlowUtils
+import org.apache.commons.io.FileUtils
 import spock.lang.Specification
 
+@Mixin(FlowUtils)
 class IOSVariantsConfigurationSpec extends Specification {
 
-    private IOSConfiguration conf
-    private IOSVariantsConfiguration variantsConf
+    IOSConfiguration conf
+    IOSVariantsConfiguration variantsConf
 
     def setup() {
         conf = GroovyMock(IOSConfiguration)
-        def vf = GroovyMock(IOSVariantFactory)
-        vf.createSchemeVariant(_) >> GroovyMock(IOSVariant) {
-            isEnabled() >> true
-        }
-
         variantsConf = new IOSVariantsConfiguration()
         variantsConf.conf = conf
         variantsConf.propertyPersister = Stub(PropertyPersister, { get(_) >> '' })
-        variantsConf.variantFactory = vf
+        variantsConf.variantFactory = GroovyMock(IOSVariantFactory) {
+            createSchemeVariant(_) >> GroovyMock(IOSSchemeVariant) {
+                isEnabled() >> true
+            }
+            createWorkspaceVariant(_) >> GroovyMock(IOSWorkspaceVariant) {
+                isEnabled() >> true
+            }
+        }
     }
 
-    def 'test buildVariantsList variant'() {
+    def 'list of scheme variants is created'() {
         given:
-        conf.schemes >> ['v1', 'v2', 'v3']
+        variantsConf.workspaceLocator = GroovyMock(IOSWorkspaceLocator) {
+            getHasWorkspaces() >> false
+        }
+        variantsConf.schemeInfo = GroovyMock(IOSSchemeInfo) {
+            getHasSchemes() >> true
+        }
         variantsConf.variantsNames.value = ['v1', 'v2', 'v3']
 
         expect:
         variantsConf.variants.size() == 3
+        variantsConf.variants.every { it.toString().contains(IOSSchemeVariant.class.simpleName) }
+    }
+
+    def 'list of workspace variants is created'() {
+        given:
+        variantsConf.workspaceLocator = GroovyMock(IOSWorkspaceLocator) {
+            getHasWorkspaces() >> true
+        }
+        variantsConf.schemeInfo = GroovyMock(IOSSchemeInfo) {
+            getHasSchemes() >> true
+        }
+        variantsConf.variantsNames.value = ['v1', 'v2', 'v3']
+
+        expect:
+        variantsConf.variants.size() == 3
+        variantsConf.variants.every { it.toString().contains(IOSWorkspaceVariant.class.simpleName) }
     }
 
     def 'variantNames validator works'() {
@@ -52,13 +79,14 @@ class IOSVariantsConfigurationSpec extends Specification {
         ['\n']       | false
     }
 
-    def 'possible variants found'() {
+    def 'possible scheme variants found'() {
         given:
-        def xcodeDir = new File(getClass().getResource('iosProject').toURI())
+        def tmpDir = temporaryDir
+        FileUtils.copyDirectory(new File(IOSSchemeInfo.getResource('iosProject').toURI()), tmpDir)
 
         and:
         def conf = GroovyMock(IOSConfiguration) {
-            getXcodeDir() >> new FileProperty(value: xcodeDir)
+            getRootDir() >> tmpDir
             getSchemes() >> ['GradleXCode',
                     'GradleXCode With Space',
                     'GradleXCodeNoLaunchAction',
@@ -75,7 +103,47 @@ class IOSVariantsConfigurationSpec extends Specification {
         variantsConf.conf = conf
         variantsConf.schemeInfo = schemeInfo
 
+        and:
+        variantsConf.workspaceLocator = GroovyMock(IOSWorkspaceLocator) {
+            getHasWorkspaces() >> false
+        }
+
         expect:
         variantsConf.possibleVariants == (conf.schemes - ['GradleXCode 2', 'GradleXCodeNotShared'])
+    }
+
+    def 'possible workspace variants found'() {
+        given:
+        def tmpDir = temporaryDir
+        FileUtils.copyDirectory(new File(IOSSchemeInfo.getResource('iosProject').toURI()), tmpDir)
+
+        and:
+        def conf = GroovyMock(IOSConfiguration) {
+            getRootDir() >> tmpDir
+            getSchemes() >> ['GradleXCode',
+                    'GradleXCode With Space',
+                    'GradleXCodeNoLaunchAction',
+                    'GradleXCodeWithApphance',
+                    'GradleXCodeWith2Targets',
+                    'GradleXCode 2',
+                    'GradleXCodeNotShared']
+        }
+
+        and:
+        def schemeInfo = new IOSSchemeInfo(schemeParser: new XCSchemeParser(), conf: conf)
+
+        and:
+        variantsConf.conf = conf
+        variantsConf.schemeInfo = schemeInfo
+
+        and:
+        variantsConf.workspaceLocator = GroovyMock(IOSWorkspaceLocator) {
+            getHasWorkspaces() >> true
+            getWorkspaces() >> [new File('WS.xcworkspace')]
+        }
+
+
+        expect:
+        variantsConf.possibleVariants == (conf.schemes - ['GradleXCode 2', 'GradleXCodeNotShared']).collect { "WS$it" }
     }
 }

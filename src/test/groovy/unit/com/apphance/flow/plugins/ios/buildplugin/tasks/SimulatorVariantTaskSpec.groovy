@@ -2,10 +2,11 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.cocoapods.PodLocator
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSSimulatorArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSSimArtifactInfo
@@ -25,18 +26,19 @@ class SimulatorVariantTaskSpec extends Specification {
     def 'executor runs build command when variant passed & release conf enabled #releaseConfEnabled'() {
         given:
         task.conf = GroovyMock(IOSConfiguration) {
-            xcodebuildExecutionPath() >> ['xcodebuild']
             getSimulatorSdk() >> new StringProperty(value: 'iphonesimulator')
         }
         task.releaseConf = GroovyMock(IOSReleaseConfiguration) {
             isEnabled() >> releaseConfEnabled
         }
-        task.variant = GroovySpy(IOSVariant) {
+        task.variant = GroovySpy(AbstractIOSVariant) {
             getName() >> 'GradleXCode'
+            getSchemeName() >> 'GradleXCode'
             getTmpDir() >> GroovyMock(File)
             getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
             getTarget() >> 't'
             getArchiveConfiguration() >> 'c'
+            getXcodebuildExecutionPath() >> ['xcodebuild']
         }
         task.iosExecutor = GroovyMock(IOSExecutor) {
             buildSettings(_, _) >> [:]
@@ -44,6 +46,7 @@ class SimulatorVariantTaskSpec extends Specification {
         task.fu = new FlowUtils()
         task.artifactProvider = GroovyMock(IOSArtifactProvider)
         task.simulatorArtifactsBuilder = GroovyMock(IOSSimulatorArtifactsBuilder)
+        task.podLocator = GroovyMock(PodLocator)
 
         when:
         task.build()

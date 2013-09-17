@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.apphance.source
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancer
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
@@ -22,11 +22,11 @@ class IOSApphanceSourceEnhancer {
 
     @Inject AntBuilder ant
 
-    @PackageScope IOSVariant variant
+    @PackageScope AbstractIOSVariant variant
     @PackageScope IOSApphancePbxEnhancer apphancePbxEnhancer
 
     @Inject
-    IOSApphanceSourceEnhancer(@Assisted IOSVariant variant, @Assisted IOSApphancePbxEnhancer apphancePbxEnhancer) {
+    IOSApphanceSourceEnhancer(@Assisted AbstractIOSVariant variant, @Assisted IOSApphancePbxEnhancer apphancePbxEnhancer) {
         this.variant = variant
         this.apphancePbxEnhancer = apphancePbxEnhancer
     }

@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.apphance.pbx
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxHashGenerator
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
@@ -24,10 +24,10 @@ class IOSApphancePbxEnhancer {
     @Inject IOSExecutor executor
     @Inject PbxJsonParser pbxJsonParser
 
-    @PackageScope IOSVariant variant
+    @PackageScope AbstractIOSVariant variant
 
     @Inject
-    IOSApphancePbxEnhancer(@Assisted IOSVariant variant) {
+    IOSApphancePbxEnhancer(@Assisted AbstractIOSVariant variant) {
         this.variant = variant
     }
 
@@ -146,7 +146,7 @@ class IOSApphancePbxEnhancer {
     @PackageScope List<Map> configurations = {
         def buildConfListHash = target.buildConfigurationList
         def confHashes = json.objects[buildConfListHash].buildConfigurations
-        def variantConfigurations = [variant.buildConfiguration, variant.archiveConfiguration].unique()
+        def variantConfigurations = [variant.archiveConfiguration]
 
         json.objects.findAll {
             it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION &&

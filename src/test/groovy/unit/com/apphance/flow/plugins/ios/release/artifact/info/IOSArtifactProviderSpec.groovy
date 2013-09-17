@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.release.artifact.info
 
 import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import spock.lang.Shared
@@ -18,7 +18,7 @@ class IOSArtifactProviderSpec extends Specification {
     @Shared variantName = 'V1'
     @Shared filePrefix = "$variantName-$fullVersionString"
     @Shared tmpDir = createTempDir()
-    @Shared variant = GroovyMock(IOSVariant) {
+    @Shared variant = GroovyMock(AbstractIOSVariant) {
         getName() >> variantName
         getFullVersionString() >> fullVersionString
         getMobileprovision() >> new FileProperty()

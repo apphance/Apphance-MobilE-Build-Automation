@@ -1,6 +1,6 @@
 package com.apphance.flow.configuration.ios
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PlistParser
@@ -22,7 +22,7 @@ class IOSReleaseConfigurationSpec extends Specification {
         }
 
         def variantsConf = GroovyStub(IOSVariantsConfiguration)
-        variantsConf.mainVariant >> GroovyStub(IOSVariant) {
+        variantsConf.mainVariant >> GroovyStub(AbstractIOSVariant) {
             getPlist() >> new File(PlistParserSpec.class.getResource('Test.plist.json').toURI())
         }
 

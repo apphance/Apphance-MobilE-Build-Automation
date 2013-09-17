@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
@@ -28,9 +28,9 @@ class CopyMobileProvisionTaskSpec extends Specification {
 
     def 'files are copied with no exceptions when bundleId match'() {
         given:
-        def v1 = GroovyMock(IOSVariant) { getMode() >> new IOSBuildModeProperty(value: DEVICE) }
-        def v2 = GroovyMock(IOSVariant) { getMode() >> new IOSBuildModeProperty(value: FRAMEWORK) }
-        def v3 = GroovyMock(IOSVariant) { getMode() >> new IOSBuildModeProperty(value: SIMULATOR) }
+        def v1 = GroovyMock(AbstractIOSVariant) { getMode() >> new IOSBuildModeProperty(value: DEVICE) }
+        def v2 = GroovyMock(AbstractIOSVariant) { getMode() >> new IOSBuildModeProperty(value: FRAMEWORK) }
+        def v3 = GroovyMock(AbstractIOSVariant) { getMode() >> new IOSBuildModeProperty(value: SIMULATOR) }
         task.variantsConf = GroovyStub(IOSVariantsConfiguration, { getVariants() >> [v1, v2, v3] })
 
         and:
@@ -66,7 +66,7 @@ class CopyMobileProvisionTaskSpec extends Specification {
         given:
         task.variantsConf = GroovyStub(IOSVariantsConfiguration, {
             getVariants() >> [
-                    GroovyStub(IOSVariant) {
+                    GroovyStub(AbstractIOSVariant) {
                         getName() >> 'SampleVariant'
                         getMobileprovision() >> new FileProperty(value: mobileprovisionFile)
                         getBundleId() >> 'MT2B94Q7N6.com.apphance.flowa'
