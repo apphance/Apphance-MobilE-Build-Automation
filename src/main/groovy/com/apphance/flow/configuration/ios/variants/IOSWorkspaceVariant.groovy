@@ -27,7 +27,7 @@ class IOSWorkspaceVariant extends AbstractIOSVariant {
     void init() {
         super.init()
         def tuple = variantsConf.workspaceXscheme.find { w, s -> "$w$s".toString() == name }
-        checkNotNull(tuple, format(bundle.getString('exception.ios.variant.workspace.init'), name, variantsConf.workspaceXscheme))
+        checkNotNull(tuple, format(bundle.getString('exception.ios.variant.workspace.init'), name, variantsConf.workspaceXscheme.collect({ w, s -> "$w+$s" })))
         workspaceName = tuple[0]
         schemeName = tuple[1]
     }

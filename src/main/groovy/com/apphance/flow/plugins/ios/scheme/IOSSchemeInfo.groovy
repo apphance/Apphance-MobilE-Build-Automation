@@ -65,7 +65,7 @@ class IOSSchemeInfo {
 
     @PackageScope
     Closure<File> schemeFile = { String name ->
-        logger.info("Searching scheme file for: $name in: $conf.rootDir.absolutePath")
+        logger.info("Searching for scheme file for: $name in: $conf.rootDir.absolutePath")
         List<File> found = []
         conf.rootDir.traverse(
                 type: FILES,
