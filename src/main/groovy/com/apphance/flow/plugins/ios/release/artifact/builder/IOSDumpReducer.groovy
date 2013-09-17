@@ -45,12 +45,14 @@ class IOSDumpReducer {
             symTable = sortList(symTable, 'AT_low_pc')
 
             def header = [
+                    Name: plistParser.bundleDisplayName(plist),
                     CFBundleDisplayName: plistParser.bundleDisplayName(plist),
                     CFBundleIdentifier: plistParser.bundleId(plist),
                     CFBundleShortVersionString: plistParser.bundleShortVersionString(plist),
                     CFBundleVersion: plistParser.bundleVersion(plist),
                     dsym_uuid: dsymUUID,
                     dsym_arch: dsymArch,
+                    dump_ver: 4
             ]
 
             def dsymDict = createDsymDict(outputDir, toJson(['dsym_header': header, dsym_table: symTable]))
