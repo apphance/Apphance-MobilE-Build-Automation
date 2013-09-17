@@ -2,15 +2,34 @@ package com.apphance.flow.configuration.android
 
 import com.apphance.flow.TestUtils
 import com.apphance.flow.util.FlowUtils
+import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import javax.imageio.ImageIO
 
 import static com.apphance.flow.configuration.android.AndroidReleaseConfiguration.ICON_ORDER
 import static com.apphance.flow.configuration.android.AndroidReleaseConfiguration.getDRAWABLE_DIR_PATTERN
+import static com.apphance.flow.util.file.FileManager.relativeTo
 
 @Mixin([FlowUtils, TestUtils])
 class AndroidReleaseConfigurationSpec extends Specification {
+
+    @Shared
+    def tmpFile = tempFile
+
+    @Shared
+    AndroidReleaseConfiguration configuration
+
+    @Shared
+    def rootDir = temporaryDir
+
+    def setupSpec() {
+        configuration = new AndroidReleaseConfiguration()
+        configuration.androidConf = GroovyStub(AndroidConfiguration) {
+            getRootDir() >> rootDir
+        }
+    }
 
     def 'DRAWABLE_DIR_PATTERN'() {
         expect:
@@ -58,5 +77,26 @@ class AndroidReleaseConfigurationSpec extends Specification {
         icon.size() > 100
         ImageIO.read(icon)
         icon.name == 'defaultIcon.png'
+    }
+
+    @Unroll
+    def 'set icon default. value: #val, initialized: #initialized, expected: #expected'() {
+        given:
+        configuration.releaseIcon.@value = val
+        configuration.releaseIcon.initialized = initialized
+
+        when:
+        configuration.releaseIconDefault()
+
+        then:
+        configuration.releaseIcon.value == expected
+        configuration.releaseIcon.initialized == initialized
+
+        where:
+        val     | initialized | expected
+        tmpFile | true        | tmpFile
+        null    | true        | new File(relativeTo(rootDir, configuration.androidIcon))
+        tmpFile | false       | tmpFile
+        null    | false       | null
     }
 }

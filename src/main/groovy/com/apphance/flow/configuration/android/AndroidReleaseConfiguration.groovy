@@ -28,7 +28,7 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
 
     @Inject
     void releaseIconDefault() {
-        if (!releaseIcon.value) {
+        if (!releaseIcon.value && releaseIcon.initialized) {
             releaseIcon.setValue(relativeTo(androidConf.rootDir, androidIcon))
         }
     }
