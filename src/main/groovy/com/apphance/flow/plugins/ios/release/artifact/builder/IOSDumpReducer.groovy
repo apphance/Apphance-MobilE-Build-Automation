@@ -260,12 +260,11 @@ class IOSDumpReducer {
         def zipFile = new File(outputDir, "${filename}.ahsym")
         def zos = new ZipOutputStream(new FileOutputStream(zipFile))
         zos.putNextEntry(new ZipEntry(dsymDict.name))
-        def buffer = new byte[2048]
-        dsymDict.withInputStream { i ->
-            def l = i.read(buffer)
-            if (l > 0) {
+        dsymDict.withInputStream { stream ->
+            byte[] buffer = new byte[2048]
+            def l
+            while ((l = stream.read(buffer)) > 0)
                 zos.write(buffer, 0, l)
-            }
         }
         zos.closeEntry()
         zos.close()
