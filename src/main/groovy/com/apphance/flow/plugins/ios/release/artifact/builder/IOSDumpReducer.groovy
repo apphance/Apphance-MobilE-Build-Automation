@@ -49,8 +49,8 @@ class IOSDumpReducer {
                     CFBundleIdentifier: plistParser.bundleId(plist),
                     CFBundleShortVersionString: plistParser.bundleShortVersionString(plist),
                     CFBundleVersion: plistParser.bundleVersion(plist),
-                    dsymUUID: dsymUUID,
-                    dsymArch: dsymArch,
+                    dsym_uuid: dsymUUID,
+                    dsym_arch: dsymArch,
             ]
 
             def dsymDict = createDsymDict(outputDir, toJson(['dsym_header': header, dsym_table: symTable]))
