@@ -22,7 +22,7 @@ class PodLocator {
                 nameFilter: ~/Podfile/,
                 excludeFilter: EXCLUDE_FILTER) {
             if (it.isFile() && it.exists() && it.size() > 0) podfile = it
-        }             git
+        }
         logger.info("Found Podfile: $podfile in dir $dir.absolutePath")
         podfile
     }.memoize()
