@@ -21,8 +21,7 @@ class SimulatorVariantTask extends AbstractBuildVariantTask {
 
     @Override
     void build() {
-        validate()
-
+        super.build()
         iosExecutor.buildVariant(variant.tmpDir, cmd)
 
         if (releaseConf.isEnabled()) {

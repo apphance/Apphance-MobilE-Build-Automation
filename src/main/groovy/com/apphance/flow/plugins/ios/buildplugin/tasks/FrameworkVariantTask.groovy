@@ -20,8 +20,7 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
 
     @Override
     void build() {
-        validate()
-
+        super.build()
         iosExecutor.buildVariant(variant.tmpDir, cmdSim)
         iosExecutor.buildVariant(variant.tmpDir, cmdDevice)
 

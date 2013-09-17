@@ -170,4 +170,11 @@ class IOSExecutor {
             ''
         }
     }()
+
+    def podInstall(File dir) {
+        executor.executeCommand(new Command(
+                runDir: dir,
+                cmd: ['pod', 'istall']
+        ))
+    }
 }

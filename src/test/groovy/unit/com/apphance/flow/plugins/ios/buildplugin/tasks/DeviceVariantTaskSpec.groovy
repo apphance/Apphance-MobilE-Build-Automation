@@ -6,6 +6,7 @@ import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.cocoapods.PodLocator
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSDeviceArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
@@ -82,6 +83,7 @@ class DeviceVariantTaskSpec extends Specification {
         task.schemeParser = GroovyMock(XCSchemeParser)
         task.artifactProvider = GroovyMock(IOSArtifactProvider)
         task.deviceArtifactsBuilder = GroovyMock(IOSDeviceArtifactsBuilder)
+        task.podLocator = GroovyMock(PodLocator)
 
         when:
         task.build()

@@ -7,6 +7,7 @@ import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.cocoapods.PodLocator
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSFrameworkArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSFrameworkArtifactInfo
@@ -47,6 +48,7 @@ class FrameworkVariantTaskSpec extends Specification {
         }
         task.frameworkArtifactsBuilder = GroovyMock(IOSFrameworkArtifactsBuilder)
         task.fu = new FlowUtils()
+        task.podLocator = GroovyMock(PodLocator)
 
         when:
         task.build()

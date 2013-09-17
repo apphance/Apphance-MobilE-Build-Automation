@@ -6,6 +6,7 @@ import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.cocoapods.PodLocator
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSSimulatorArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSSimArtifactInfo
@@ -45,6 +46,7 @@ class SimulatorVariantTaskSpec extends Specification {
         task.fu = new FlowUtils()
         task.artifactProvider = GroovyMock(IOSArtifactProvider)
         task.simulatorArtifactsBuilder = GroovyMock(IOSSimulatorArtifactsBuilder)
+        task.podLocator = GroovyMock(PodLocator)
 
         when:
         task.build()

@@ -15,10 +15,12 @@ class PodLocatorSpec extends Specification {
         tmpPod.text = "platform :ios, '6.0'"
 
         when:
-        def pods = locator.findPodfile(tmpDir)
+        def pod = locator.findPodfile(tmpDir)
 
         then:
-        pods.every { it.exists() && it.isFile() && it.size() > 0 }
+        pod.exists()
+        pod.isFile()
+        pod.size() > 0
     }
 
     def 'podfile is not found'() {

@@ -21,8 +21,7 @@ class DeviceVariantTask extends AbstractBuildVariantTask {
 
     @Override
     void build() {
-        validate()
-
+        super.build()
         logger.info("Adding post archive action to scheme file: $variant.schemeFile.absolutePath")
         schemeParser.addPostArchiveAction(variant.schemeFile)
         def archiveOutput = iosExecutor.buildVariant(variant.tmpDir, cmd)
