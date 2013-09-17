@@ -5,13 +5,17 @@ import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.ios.parsers.XCodeOutputParser
 import groovy.transform.PackageScope
-import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
+import java.util.regex.Pattern
+
+import static org.gradle.api.logging.Logging.getLogger
 
 class IOSExecutor {
 
-    private logger = Logging.getLogger(getClass())
+    private logger = getLogger(getClass())
+    private final VERSION_PATTERN = Pattern.compile('(\\d+\\.)+\\d+')
+
 
     @Inject IOSConfiguration conf
     @Inject XCodeOutputParser parser
@@ -142,12 +146,27 @@ class IOSExecutor {
                     runDir: conf.rootDir,
                     cmd: ['ios-sim', '--version']
             ))
-            def line = output.find {
-                it.matches('(\\d+\\.)+\\d+')
-            }
+            def line = output.find { it.matches('(\\d+\\.)+\\d+') }
             line ? line.trim() : ''
         } catch (Exception e) {
             logger.error("Error while getting ios-sim version: {}", e.message)
+            ''
+        }
+    }()
+
+    @Lazy
+    String podVersion = {
+        try {
+            def output = executor.executeCommand(new Command(
+                    runDir: conf.rootDir,
+                    cmd: ['gem', 'list', '--local']
+            ))
+            def line = output.find { it.matches('cocoapods \\((\\d+\\.)+\\d+\\)') }
+            line = line ? line.trim() : ''
+            def matcher = VERSION_PATTERN.matcher(line)
+            matcher.find() ? matcher.group(0) : ''
+        } catch (Exception e) {
+            logger.error("Error while getting pod version: {}", e.message)
             ''
         }
     }()

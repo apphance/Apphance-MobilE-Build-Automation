@@ -126,6 +126,21 @@ class IOSExecutorSpec extends Specification {
         iosExecutor.iOSSimVersion == ''
     }
 
+    def 'pod version is read correctly'() {
+        expect:
+        iosExecutor.podVersion.matches('(\\d+\\.)+\\d+')
+    }
+
+    def 'pod version empty when pod not installed'() {
+        given:
+        iosExecutor.executor = GroovyMock(CommandExecutor) {
+            executeCommand(_) >> { throw new Exception('no pod') }
+        }
+
+        expect:
+        iosExecutor.podVersion == ''
+    }
+
     def 'archive command is executed well'() {
         given:
         def ce = GroovyMock(CommandExecutor)
