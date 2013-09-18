@@ -116,6 +116,6 @@ class ExecuteIosBuildsSpec extends Specification {
     def runGradle(ProjectConnection pc, String... tasks) {
         def buildLauncher = pc.newBuild()
         buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS as String[])
-        buildLauncher.forTasks(tasks).run()
+        buildLauncher.forTasks(tasks).withArguments("-PflowProjectPath=${new File('.').absolutePath}").run()
     }
 }
