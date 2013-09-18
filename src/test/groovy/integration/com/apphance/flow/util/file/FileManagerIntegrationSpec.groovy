@@ -42,8 +42,8 @@ class FileManagerIntegrationSpec extends Specification {
 
         where:
         root                                           | path                                           | expected
-        new File('testProjects/android')               | new File('testProjects/android/android-basic') | 'android-basic'
-        new File('testProjects/android/android-basic') | new File('testProjects/android')               | '..'
+        new File('demo/android')               | new File('demo/android/android-basic') | 'android-basic'
+        new File('demo/android/android-basic') | new File('demo/android')               | '..'
     }
 
     def 'test relativeTo'() {

@@ -26,7 +26,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
     def apkDir = createTempDir()
     def tmpDir = createTempDir()
 
-    def p = builder().withProjectDir(new File('testProjects/android/android-basic')).build()
+    def p = builder().withProjectDir(new File('demo/android/android-basic')).build()
 
     def projectName = 'TestAndroidProject'
     def projectUrl = "http://ota.polidea.pl/$projectName".toURL()

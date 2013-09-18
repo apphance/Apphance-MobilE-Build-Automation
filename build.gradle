@@ -234,7 +234,7 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.7'
 }
 
-file('testProjects').traverse(nameFilter: ~/flow-(log|ota|tmp)/) { File dir ->
+file('demo').traverse(nameFilter: ~/flow-(log|ota|tmp)/) { File dir ->
     tasks['clean'] << {
         ant.delete(dir: dir.absolutePath)
     }
