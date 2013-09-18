@@ -146,8 +146,8 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
                 case DEVICE:
                     def manifest = releaseConf.manifestFiles[v.name]
                     if (manifest && manifest?.location?.exists()) {
-                        def encodedUrl = encode(manifest.url.toString(), 'utf-8')
-                        urlMap.put(v.name, "itms-services://?action=download-manifest&amp;url=${encodedUrl}")
+                        def encodedUrl = encode(manifest.url.toString(), 'UTF-8').replaceAll('\\+', '%2520')
+                        urlMap.put(v.name, "itms-services://?action=download-manifest&amp;url=$encodedUrl")
                     }
                     break
                 case SIMULATOR:
