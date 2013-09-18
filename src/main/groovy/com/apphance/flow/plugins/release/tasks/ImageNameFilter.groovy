@@ -1,8 +1,5 @@
 package com.apphance.flow.plugins.release.tasks
-/**
- * Filter for image names.
- *
- */
+
 class ImageNameFilter {
 
     private final String[] VALID_EXTENSIONS = [

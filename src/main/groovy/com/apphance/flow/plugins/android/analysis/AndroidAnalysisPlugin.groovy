@@ -15,9 +15,6 @@ import javax.inject.Inject
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- * Provides static code analysis.
- */
 @Mixin(FlowUtils)
 class AndroidAnalysisPlugin implements Plugin<Project> {
 

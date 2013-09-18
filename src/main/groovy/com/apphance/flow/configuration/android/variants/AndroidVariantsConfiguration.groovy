@@ -5,7 +5,6 @@ import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.google.inject.Singleton
-import org.gradle.api.Project
 
 import javax.inject.Inject
 
@@ -17,7 +16,6 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     String configurationName = 'Android Variants Configuration'
 
-    @Inject Project project
     @Inject AndroidConfiguration conf
     @Inject AndroidVariantFactory variantFactory
 
@@ -64,7 +62,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     }
 
     File getVariantsDir() {
-        project.file('variants')
+        new File(conf.rootDir, 'variants')
     }
 
     private List<AndroidVariantConfiguration> extractVariantsFromDir() {

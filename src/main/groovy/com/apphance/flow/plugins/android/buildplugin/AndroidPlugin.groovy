@@ -2,8 +2,9 @@ package com.apphance.flow.plugins.android.buildplugin
 
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
-import com.apphance.flow.executor.AntExecutor
-import com.apphance.flow.plugins.android.buildplugin.tasks.*
+import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
+import com.apphance.flow.plugins.android.buildplugin.tasks.SingleVariantTask
+import com.apphance.flow.plugins.android.buildplugin.tasks.UpdateProjectTask
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
 import com.apphance.flow.plugins.project.tasks.PrepareSetupTask
 import com.apphance.flow.plugins.project.tasks.VerifySetupTask
@@ -12,19 +13,9 @@ import org.gradle.api.Project
 
 import javax.inject.Inject
 
-import static com.apphance.flow.executor.AntExecutor.CLEAN
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- * This is the main android build plugin.
- *
- * The plugin provides all the tasks needed to build android application.
- * Besides tasks explained below, the plugin prepares build-* and install-*
- * tasks which are dynamically created, based on variants available. In
- * case the build has no variants, the only available builds are Debug and Release.
- * In case of variants, there is one build and one task created for every variant.
- */
 class AndroidPlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())
@@ -35,7 +26,6 @@ class AndroidPlugin implements Plugin<Project> {
 
     @Inject AndroidConfiguration conf
     @Inject AndroidVariantsConfiguration variantsConf
-    @Inject AntExecutor antExecutor
 
     @Override
     void apply(Project project) {

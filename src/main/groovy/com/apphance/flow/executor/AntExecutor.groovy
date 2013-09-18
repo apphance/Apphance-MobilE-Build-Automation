@@ -7,9 +7,6 @@ import com.apphance.flow.util.FlowUtils
 import javax.inject.Inject
 import javax.inject.Named
 
-/**
- * Executor of ant targets.
- */
 @Mixin(FlowUtils)
 class AntExecutor {
 

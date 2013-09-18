@@ -39,14 +39,15 @@ class AndroidExecutorSpec extends Specification {
 
     def 'id for target'() {
         given:
-        def ce = Mock(CommandExecutor)
-        ce.executeCommand(_) >> targets.split('\n').iterator()
+        def ce = Mock(CommandExecutor) {
+            executeCommand(_) >> targets.split('\n').iterator()
+        }
 
         and:
         def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
 
         expect:
-        idForTarget == ae.idForTarget(target)
+        idForTarget == ae.idForTarget.call(target)
 
         where:
         idForTarget | target

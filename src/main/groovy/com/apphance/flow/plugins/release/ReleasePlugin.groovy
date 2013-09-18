@@ -13,16 +13,6 @@ import javax.inject.Inject
 
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- *
- * This is Flow release plugin.
- *
- * Plugin for releasing projects.
- *
- * The plugin provides all the basic tasks required to prepare OTA release of
- * an application. It should be added after build plugin is added.
- *
- */
 class ReleasePlugin implements Plugin<Project> {
 
     def logger = getLogger(getClass())
