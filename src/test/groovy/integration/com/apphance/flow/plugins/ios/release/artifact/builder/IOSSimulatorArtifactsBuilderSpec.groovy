@@ -39,7 +39,7 @@ class IOSSimulatorArtifactsBuilderSpec extends Specification {
                 getFullVersionString() >> '3.1.45_101'
             },
             releaseConf: GroovyMock(IOSReleaseConfiguration) {
-                getReleaseIcon() >> new FileProperty(value: 'testProjects/ios/GradleXCode/icon.png')
+                getReleaseIcon() >> new FileProperty(value: 'demo/ios/GradleXCode/icon.png')
             },
             executor: executor
     )

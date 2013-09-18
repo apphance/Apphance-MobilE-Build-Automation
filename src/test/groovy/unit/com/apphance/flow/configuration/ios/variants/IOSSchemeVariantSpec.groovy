@@ -68,7 +68,7 @@ class IOSSchemeVariantSpec extends Specification {
 
     def 'possible mobile provision paths found'() {
         given:
-        def conf = GroovyMock(IOSConfiguration) { getRootDir() >> new File('testProjects/ios/GradleXCode') }
+        def conf = GroovyMock(IOSConfiguration) { getRootDir() >> new File('demo/ios/GradleXCode') }
         def releaseConf = new IOSReleaseConfiguration(conf: conf)
         def variant = new IOSSchemeVariant('v')
         variant.conf = conf

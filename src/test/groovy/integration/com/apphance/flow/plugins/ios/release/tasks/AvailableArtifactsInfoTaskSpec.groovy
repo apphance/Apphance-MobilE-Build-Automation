@@ -27,7 +27,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
     def rootDir = createTempDir()
     def tmpDir = createTempDir()
 
-    def p = builder().withProjectDir(new File('testProjects/ios/GradleXCode')).build()
+    def p = builder().withProjectDir(new File('demo/ios/GradleXCode')).build()
 
     @Shared
     def projectName = 'GradleXCode'

@@ -53,6 +53,6 @@ class BuildSourcesZipTaskSpec extends Specification {
         where:
         templateProjectPath                  | srcZipName                            | projectName          | fullVersionString
         'testProjects/android/android-basic' | 'TestAndroidProject-1.0.1_42-src.zip' | 'TestAndroidProject' | '1.0.1_42'
-        'testProjects/ios/GradleXCode'       | 'GradleXCode-1.0_32-src.zip'          | 'GradleXCode'        | '1.0_32'
+        'demo/ios/GradleXCode'       | 'GradleXCode-1.0_32-src.zip'          | 'GradleXCode'        | '1.0_32'
     }
 }

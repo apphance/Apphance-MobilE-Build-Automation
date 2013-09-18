@@ -12,8 +12,8 @@ class ExecuteIosBuildsSpec extends Specification {
     @Shared List<String> GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
             '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
-    @Shared File projectScheme = new File('testProjects/ios/GradleXCode')
-    @Shared File projectWorkspace = new File('testProjects/ios/GradleXCodeWS')
+    @Shared File projectScheme = new File('demo/ios/GradleXCode')
+    @Shared File projectWorkspace = new File('demo/ios/GradleXCodeWS')
     @Shared ProjectConnection projectSchemeConnection
     @Shared ProjectConnection projectWorkspaceConnection
 

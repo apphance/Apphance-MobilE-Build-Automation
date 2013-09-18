@@ -13,7 +13,7 @@ import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class CopyMobileProvisionTaskSpec extends Specification {
 
-    def projectDir = 'testProjects/ios/GradleXCode'
+    def projectDir = 'demo/ios/GradleXCode'
     def project = builder().withProjectDir(new File(projectDir)).build()
     def mobileprovisionFile = new File(projectDir, 'release/distribution_resources/GradleXCode.mobileprovision')
     def mobileProvisionDir = new File("${System.getProperty('user.home')}/Library/MobileDevice/Provisioning Profiles/")

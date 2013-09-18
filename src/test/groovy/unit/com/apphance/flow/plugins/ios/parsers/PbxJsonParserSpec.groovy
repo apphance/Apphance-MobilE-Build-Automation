@@ -10,7 +10,7 @@ import static com.apphance.flow.plugins.ios.apphance.IOSApphanceEnhancer.getAPPH
 class PbxJsonParserSpec extends Specification {
 
     @Shared
-    def input = new File('testProjects/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
+    def input = new File('demo/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
     @Shared
     def parser = new PbxJsonParser(executor: GroovyMock(IOSExecutor) {
         pbxProjToJSON(_) >> input.text.split('\n')

@@ -16,7 +16,7 @@ class CopySourcesTaskSpec extends Specification {
 
     def 'sources are copied to appropriate dirs'() {
         given:
-        def p = builder().withProjectDir(new File('testProjects/ios/GradleXCode')).build()
+        def p = builder().withProjectDir(new File('demo/ios/GradleXCode')).build()
 
         and:
         def tmpDir = Files.createTempDir()

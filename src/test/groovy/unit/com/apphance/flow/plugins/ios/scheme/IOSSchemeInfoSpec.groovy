@@ -88,7 +88,7 @@ class IOSSchemeInfoSpec extends Specification {
     def 'scheme file is found for #scheme'() {
         given:
         schemeInfo.conf = GroovyMock(IOSConfiguration) {
-            getRootDir() >> new File('testProjects/ios/GradleXCode')
+            getRootDir() >> new File('demo/ios/GradleXCode')
         }
 
         expect:
@@ -96,8 +96,8 @@ class IOSSchemeInfoSpec extends Specification {
 
         where:
         scheme        || expectedPath
-        'GradleXCode' || 'testProjects/ios/GradleXCode/GradleXCode.xcodeproj/xcshareddata/xcschemes/GradleXCode.xcscheme'
-        'FakeScheme'  || 'testProjects/ios/GradleXCode/FakeScheme.xcscheme'
+        'GradleXCode' || 'demo/ios/GradleXCode/GradleXCode.xcodeproj/xcshareddata/xcschemes/GradleXCode.xcscheme'
+        'FakeScheme'  || 'demo/ios/GradleXCode/FakeScheme.xcscheme'
     }
 
     def 'exception thrown when 1+ schemes found for given name'() {

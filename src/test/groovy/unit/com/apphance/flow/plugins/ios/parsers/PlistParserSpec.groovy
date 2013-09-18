@@ -37,7 +37,7 @@ class PlistParserSpec extends Specification {
 
     def 'versionCode and versionString are replaced correctly'() {
         given:
-        def plist = new File('testProjects/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist')
+        def plist = new File('demo/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist')
 
         and:
         def tmpDir = createTempDir()

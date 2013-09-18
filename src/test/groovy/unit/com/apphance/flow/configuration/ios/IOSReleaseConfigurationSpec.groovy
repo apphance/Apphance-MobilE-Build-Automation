@@ -18,7 +18,7 @@ class IOSReleaseConfigurationSpec extends Specification {
     def setup() {
         def iosConf = GroovySpy(IOSConfiguration)
         iosConf.project = GroovyStub(Project) {
-            getRootDir() >> new File('testProjects/ios/GradleXCode/')
+            getRootDir() >> new File('demo/ios/GradleXCode/')
         }
 
         def variantsConf = GroovyStub(IOSVariantsConfiguration)

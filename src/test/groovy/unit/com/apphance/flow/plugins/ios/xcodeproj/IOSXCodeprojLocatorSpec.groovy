@@ -10,17 +10,17 @@ import spock.lang.Specification
 class IOSXCodeprojLocatorSpec extends Specification {
 
     @Shared conf = GroovyMock(IOSConfiguration) {
-        getRootDir() >> new File('testProjects/ios/GradleXCode')
+        getRootDir() >> new File('demo/ios/GradleXCode')
     }
     @Shared pbxParser = new PbxJsonParser(executor: GroovyMock(IOSExecutor) {
-        pbxProjToJSON(_) >> new File('testProjects/ios/GradleXCode/GradleXcode.xcodeproj/project.pbxproj.json').readLines()
+        pbxProjToJSON(_) >> new File('demo/ios/GradleXCode/GradleXcode.xcodeproj/project.pbxproj.json').readLines()
     })
     @Shared xcodeprojInfo = new IOSXCodeprojLocator(conf: conf, pbxParser: pbxParser)
 
     def 'xcodeproj found for valid name and valid blueprintId'() {
         expect:
         xcodeprojInfo.findXCodeproj('GradleXCode.xcodeproj', 'D382B71014703FE500E9CC9B').path ==
-                'testProjects/ios/GradleXCode/GradleXCode.xcodeproj'
+                'demo/ios/GradleXCode/GradleXCode.xcodeproj'
     }
 
     def 'xcodeproj not found for valid name and invalid blueprintId'() {

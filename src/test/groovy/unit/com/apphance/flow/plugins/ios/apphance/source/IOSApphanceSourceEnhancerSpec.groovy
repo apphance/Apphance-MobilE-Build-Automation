@@ -16,7 +16,7 @@ import static java.util.regex.Pattern.compile
 class IOSApphanceSourceEnhancerSpec extends Specification {
 
     @Shared
-    def projectDir = new File('testProjects/ios/GradleXCode')
+    def projectDir = new File('demo/ios/GradleXCode')
 
     def tmpDir = createTempDir()
 

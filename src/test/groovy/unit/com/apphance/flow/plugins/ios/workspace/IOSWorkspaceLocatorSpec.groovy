@@ -21,8 +21,8 @@ class IOSWorkspaceLocatorSpec extends Specification {
 
         where:
         root                             | workspaces
-        'testProjects/ios/GradleXCode'   | []
-        'testProjects/ios/GradleXCodeWS' | ['testProjects/ios/GradleXCodeWS/GradleXCodeWS.xcworkspace']
+        'demo/ios/GradleXCode'   | []
+        'demo/ios/GradleXCodeWS' | ['demo/ios/GradleXCodeWS/GradleXCodeWS.xcworkspace']
     }
 
     def 'workspace is found for given name'() {
@@ -39,8 +39,8 @@ class IOSWorkspaceLocatorSpec extends Specification {
 
         where:
         root                             | name            | expectedName                | exists
-        'testProjects/ios/GradleXCode'   | 'GradleXCodeWS' | 'GradleXCodeWS.xcworkspace' | false
-        'testProjects/ios/GradleXCodeWS' | 'GradleXCodeWS' | 'GradleXCodeWS.xcworkspace' | true
+        'demo/ios/GradleXCode'   | 'GradleXCodeWS' | 'GradleXCodeWS.xcworkspace' | false
+        'demo/ios/GradleXCodeWS' | 'GradleXCodeWS' | 'GradleXCodeWS.xcworkspace' | true
     }
 
     def 'exception thrown when 1+ schemes found for given name'() {

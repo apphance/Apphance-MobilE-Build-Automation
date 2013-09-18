@@ -20,7 +20,7 @@ import static java.io.File.createTempFile
 class IOSTestPbxEnhancerSpec extends Specification {
 
     @Shared
-    def pbxJSON = new File('testProjects/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
+    def pbxJSON = new File('demo/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
 
     def 'shell script is added to pbx'() {
         given:
