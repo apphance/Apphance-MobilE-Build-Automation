@@ -62,7 +62,17 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     boolean isEnabled() {
-        conf.enabled
+        conf.enabled && hasSchemes
+    }
+
+    @Override
+    boolean canBeEnabled() {
+        conf.enabled && hasSchemes
+    }
+
+    @Override
+    String explainDisabled() {
+        "'$configurationName' cannot be enabled. No shared schemes detected."
     }
 
     @Override

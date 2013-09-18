@@ -95,7 +95,7 @@ abstract class AbstractConfiguration {
     }
 
     String explainDisabled() {
-        ""
+        ''
     }
 
     Collection<? extends AbstractConfiguration> getSubConfigurations() {
