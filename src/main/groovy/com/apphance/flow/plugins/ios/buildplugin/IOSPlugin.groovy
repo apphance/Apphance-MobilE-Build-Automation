@@ -101,7 +101,8 @@ class IOSPlugin implements Plugin<Project> {
 
     private void createArchiveSimulatorTask(AbstractIOSVariant variant) {
         def task = project.task(variant.archiveTaskName,
-                type: SimulatorVariantTask) as SimulatorVariantTask
+                type: SimulatorVariantTask,
+                dependsOn: [CopySourcesTask.NAME]) as SimulatorVariantTask
         task.variant = variant
         project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].dependsOn task.name
     }
