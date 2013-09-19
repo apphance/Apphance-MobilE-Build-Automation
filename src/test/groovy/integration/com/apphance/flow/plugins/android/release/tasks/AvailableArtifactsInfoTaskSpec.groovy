@@ -80,7 +80,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                     getMode() >> RELEASE
                 }
         ]
-        variantsConf.mainVariant >> mainVariant
+        variantsConf.mainVariant >> variantsConf.variants[0]
 
         def artifactBuilder = new AndroidArtifactProvider(conf: conf, releaseConf: releaseConf)
 

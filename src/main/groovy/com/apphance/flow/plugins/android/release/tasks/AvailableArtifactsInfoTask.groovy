@@ -52,7 +52,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     }
 
     private String fileSize() {
-        getHumanReadableSize((releaseConf as AndroidReleaseConfiguration).artifacts[variantsConf.mainVariant].location.size())
+        getHumanReadableSize((releaseConf as AndroidReleaseConfiguration).artifacts[variantsConf.mainVariant.name].location.size())
     }
 
     @PackageScope

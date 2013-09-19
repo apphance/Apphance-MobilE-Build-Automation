@@ -23,6 +23,6 @@ public class LintTask extends DefaultTask {
         def lintReportDir = new File(project.rootDir, 'build/reports/lint')
         lintReportDir.mkdirs()
 
-        androidExecutor.runLint androidVariantsConf.main.tmpDir, lintReportDir
+        androidExecutor.runLint androidVariantsConf.mainVariant.tmpDir, lintReportDir
     }
 }

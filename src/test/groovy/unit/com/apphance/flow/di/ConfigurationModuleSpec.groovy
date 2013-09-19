@@ -5,7 +5,6 @@ import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
-import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.detection.project.ProjectTypeDetector
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
@@ -84,10 +83,5 @@ class ConfigurationModuleSpec extends Specification {
         expect:
         projectConfiguration.class == AndroidConfiguration
         releaseConfiguration.class == AndroidReleaseConfiguration
-    }
-
-    def 'variants created'() {
-        expect:
-        injector.getInstance(AndroidVariantsConfiguration).variantsNames.value.sort() == ['Debug', "Release"]
     }
 }

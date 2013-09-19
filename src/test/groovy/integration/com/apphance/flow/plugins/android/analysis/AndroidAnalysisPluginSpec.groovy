@@ -35,7 +35,7 @@ class AndroidAnalysisPluginSpec extends Specification {
         def mainVariant = GroovyStub(AndroidVariantConfiguration)
         mainVariant.tmpDir >> temporaryDir
         mainVariant.buildTaskName >> 'debug'
-        variantsConf.main >> mainVariant
+        variantsConf.mainVariant >> mainVariant
 
         plugin.androidVariantsConf = variantsConf
         plugin.analysisConf = conf

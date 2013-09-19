@@ -84,9 +84,10 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         variantsInternal().findAll { it.isEnabled() }
     }
 
-    AbstractIOSVariant getMainVariant() {
+    @Lazy
+    AbstractIOSVariant mainVariant = {
         variantsInternal()[0]
-    }
+    }()
 
     private List<? extends AbstractIOSVariant> variantsInternal() {
         if (hasWorkspaceAndSchemes)
