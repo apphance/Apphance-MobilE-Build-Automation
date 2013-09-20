@@ -1,4 +1,4 @@
-package com.apphance.flow.util
+package com.apphance.flow.docs
 
 import com.apphance.flow.configuration.AbstractConfiguration
 import org.codehaus.groovy.groovydoc.GroovyClassDoc

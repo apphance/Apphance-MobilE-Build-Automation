@@ -1,8 +1,7 @@
-package com.apphance.flow.util
+package com.apphance.flow.docs
 
 import spock.lang.Specification
 
-@Mixin(FlowUtils)
 class FlowPluginReferenceSpec extends Specification {
 
     def 'test get flow reference'() {
