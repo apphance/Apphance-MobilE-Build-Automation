@@ -27,6 +27,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     def variantsNames = new ListStringProperty(
             name: 'android.variants',
             message: "Variants. Debug variant must contains word 'debug' (case insensitive) in name. Otherwise it is Release variant",
+            defaultValue: { possibleVariants },
             possibleValues: { possibleVariants },
             validator: {
                 def list = variantsNames.convert(it.toString())
