@@ -40,7 +40,7 @@ class IOSApphanceSourceEnhancer {
     @PackageScope
     void replaceLogs() {
         logger.info("Replacing apphance logger in dir: $variant.tmpDir.absolutePath")
-        logger.info("Source files to replace logs: ${apphancePbxEnhancer.filesToReplaceLogs}")
+        apphancePbxEnhancer.filesToReplaceLogs.each { logger.info("Replacing NSLog with APHLog in: $it") }
         ant.replaceregexp(match: '\\bNSLog\\b', replace: 'APHLog', byline: true) {
             fileset(dir: variant.tmpDir) {
                 apphancePbxEnhancer.filesToReplaceLogs.each {
@@ -116,5 +116,4 @@ class IOSApphanceSourceEnhancer {
                 throw new GradleException("Invalid apphance mode: '$variant.apphanceMode.value' for variant: '$variant.name'")
         }
     }
-
 }
