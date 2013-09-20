@@ -11,14 +11,17 @@ import static com.apphance.flow.util.file.FileManager.relativeTo
 import static groovy.io.FileType.FILES
 import static org.apache.maven.artifact.ant.shaded.FileUtils.extension
 import static org.codehaus.groovy.tools.groovydoc.gstringTemplates.GroovyDocTemplateInfo.*
+import static org.gradle.api.logging.Logging.getLogger
 
 class FlowPluginReference {
+
+    def static logger = getLogger(FlowPluginReference)
 
     List<GroovyClassDoc> classes
 
     FlowPluginReference() {
         File src = new File('src')
-        GroovyDocTool htmlTool = new GroovyDocTool(new ClasspathResourceManager(), [src.path] as String[],
+        GroovyDocTool docTool = new GroovyDocTool(new ClasspathResourceManager(), [src.path] as String[],
                 DEFAULT_DOC_TEMPLATES, DEFAULT_PACKAGE_TEMPLATES, DEFAULT_CLASS_TEMPLATES, [], new Properties()
         )
         List<String> groovySources = []
@@ -26,8 +29,8 @@ class FlowPluginReference {
             if (extension(it.name) == 'groovy') groovySources << relativeTo(src, it)
         }
 
-        htmlTool.add(groovySources)
-        classes = htmlTool.rootDoc.classes()
+        docTool.add(groovySources)
+        classes = docTool.rootDoc.classes()
     }
 
     List<GroovyClassDoc> getPlugins() {
@@ -43,7 +46,14 @@ class FlowPluginReference {
     }
 
     List<String> superClasses(GroovyClassDoc classDoc) {
-        classDoc.superclass() && classDoc.name() != 'Object' ?
-            [classDoc.superclass().name()] + superClasses(classDoc.superclass()) : []
+        def superclass = classDoc.superclass()
+        superclass && classDoc.name() != 'Object' ? [superclass.name()] + superClasses(superclass) : []
+    }
+
+    public static void main(String[] args) {
+        logger.lifecycle "Building Apphance Flow plugin reference"
+
+        def reference = new FlowPluginReference()
+        //TODO: generate documentation using groovydoc taken from reference and html templates
     }
 }
