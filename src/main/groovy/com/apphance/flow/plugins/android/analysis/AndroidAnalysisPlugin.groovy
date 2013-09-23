@@ -15,9 +15,6 @@ import javax.inject.Inject
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- * Provides static code analysis.
- */
 @Mixin(FlowUtils)
 class AndroidAnalysisPlugin implements Plugin<Project> {
 
@@ -41,7 +38,7 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
 
             prepareRuleFiles()
 
-            def mainVariantDir = relativeTo(project.rootDir, androidVariantsConf.main.tmpDir)
+            def mainVariantDir = relativeTo(project.rootDir, androidVariantsConf.mainVariant.tmpDir)
 
             project.with {
                 apply plugin: 'java'
@@ -64,11 +61,11 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                 def lint = task(LintTask.NAME, type: LintTask)
 
                 check.dependsOn cpd, lint
-                [findbugsMain, lint]*.dependsOn androidVariantsConf.main.buildTaskName
+                [findbugsMain, lint]*.dependsOn androidVariantsConf.mainVariant.buildTaskName
 
                 findbugsTest.enabled = androidTestConf?.enabled
                 if (findbugsTest.enabled) {
-                    findbugsTest.dependsOn androidVariantsConf.main.testTaskName
+                    findbugsTest.dependsOn androidVariantsConf.mainVariant.testTaskName
                 }
 
                 [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses].each { it.enabled = false }

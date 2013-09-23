@@ -27,9 +27,9 @@
                         </header>
                         <ul data-role="listview" data-inset="true" data-theme="a">
                             <% variantsConf.variants.each { variant -> %>
-                            <% if (releaseConf.apkFiles[variant.name] != null) { %>
+                            <% if (releaseConf.artifacts[variant.name] != null) { %>
                             <li>
-                                <a href="${releaseConf.apkFiles[variant.name].getRelativeUrl(baseUrl)}" rel="external">
+                                <a href="${releaseConf.artifacts[variant.name].getRelativeUrl(baseUrl)}" rel="external">
                                     <h3>${rb.getString('Apk_file')}: ${variant.displayName.value}</h3>
                                 </a>
                             </li>

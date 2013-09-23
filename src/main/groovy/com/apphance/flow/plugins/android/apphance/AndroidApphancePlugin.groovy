@@ -14,16 +14,6 @@ import javax.inject.Inject
 import static com.apphance.flow.configuration.apphance.ApphanceMode.DISABLED
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- * Adds Apphance in automated way.
- *
- * This is the plugin that links Flow with Apphance service.
- *
- * The plugin provides integration with Apphance service. It performs the
- * following tasks: adding Apphance on-the-fly while building the application
- * (for all Debug builds), removing Apphance on-the-fly while building the application
- * (for all Release builds), submitting the application to apphance at release time.
- */
 class AndroidApphancePlugin implements Plugin<Project> {
 
     def logger = getLogger(this.class)
@@ -49,7 +39,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
                     addApphanceTask.dependsOn project.tasks.getByName(VerifySetupTask.NAME)
                     project.task(variantConf.uploadTaskName, type: UploadAndroidArtifactTask, dependsOn: buildVariantTask?.name).variant = variantConf
                 } else {
-                    logger.lifecycle("Not adding apphance to ${variantConf.name} because it is not in debug mode")
+                    logger.lifecycle("Not adding apphance to ${variantConf.name} because it is $DISABLED")
                 }
             }
         }

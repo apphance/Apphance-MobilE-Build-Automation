@@ -2,7 +2,6 @@ package com.apphance.flow.executor
 
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.executor.command.CommandExecutor
-import org.gradle.api.Project
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -10,15 +9,16 @@ import static com.apphance.flow.executor.ExecutableCommand.STD_EXECUTABLE_ANDROI
 
 class AndroidExecutorSpec extends Specification {
 
-    def conf = new AndroidConfiguration(project: GroovyStub(Project))
-    def commandExecutor = GroovyMock(CommandExecutor) {
-        executeCommand(_) >> targets.split('\n').iterator()
-    }
-    def file = GroovyMock(File)
-    def androidExecutor = new AndroidExecutor(executor: commandExecutor, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
+    def conf = GroovyMock(AndroidConfiguration)
 
     def 'test updateProject method'() {
-        when: androidExecutor.updateProject(file, 'android-8', 'sample-name')
+        given:
+        def commandExecutor = GroovyMock(CommandExecutor) {
+            executeCommand(_) >> targets.split('\n').iterator()
+        }
+        def androidExecutor = new AndroidExecutor(executor: commandExecutor, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
+
+        when: androidExecutor.updateProject(GroovyMock(File), 'android-8', 'sample-name')
         then: 1 * commandExecutor.executeCommand({ it.commandForExecution.join(' ') == "android update project -p . -s -t android-8 -n sample-name" })
     }
 
@@ -39,14 +39,15 @@ class AndroidExecutorSpec extends Specification {
 
     def 'id for target'() {
         given:
-        def ce = Mock(CommandExecutor)
-        ce.executeCommand(_) >> targets.split('\n').iterator()
+        def ce = Mock(CommandExecutor) {
+            executeCommand(_) >> targets.split('\n').iterator()
+        }
 
         and:
         def ae = new AndroidExecutor(executor: ce, conf: conf, executableAndroid: STD_EXECUTABLE_ANDROID)
 
         expect:
-        idForTarget == ae.idForTarget(target)
+        idForTarget == ae.idForTarget.call(target)
 
         where:
         idForTarget | target

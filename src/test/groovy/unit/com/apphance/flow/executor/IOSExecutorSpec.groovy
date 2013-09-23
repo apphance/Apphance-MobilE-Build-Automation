@@ -1,7 +1,6 @@
 package com.apphance.flow.executor
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
@@ -10,7 +9,6 @@ import groovy.json.JsonSlurper
 import org.gradle.api.Project
 import spock.lang.Specification
 
-import static com.apphance.flow.configuration.ios.IOSConfiguration.PROJECT_PBXPROJ
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
 import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static java.io.File.createTempFile
@@ -34,10 +32,8 @@ class IOSExecutorSpec extends Specification {
 
         conf = GroovySpy(IOSConfiguration)
         conf.project = GroovyStub(Project) {
-            getRootDir() >> new File('testProjects/ios/GradleXCode')
+            getRootDir() >> new File('demo/ios/GradleXCode')
         }
-        conf.xcodeDir >> new FileProperty(value: new File('GradleXCode.xcodeproj'))
-
         iosExecutor.executor = executor
         iosExecutor.conf = conf
         iosExecutor.parser = new XCodeOutputParser()
@@ -51,7 +47,7 @@ class IOSExecutorSpec extends Specification {
 
     def 'pbxproj is converted to json format well'() {
         when:
-        def json = iosExecutor.pbxProjToJSON(new File("$conf.rootDir.absolutePath/$conf.xcodeDir.value.name", PROJECT_PBXPROJ))
+        def json = iosExecutor.pbxProjToJSON(new File('demo/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj'))
 
         then:
         noExceptionThrown()
@@ -130,6 +126,21 @@ class IOSExecutorSpec extends Specification {
         iosExecutor.iOSSimVersion == ''
     }
 
+    def 'pod version is read correctly'() {
+        expect:
+        iosExecutor.podVersion.matches('(\\d+\\.)+\\d+')
+    }
+
+    def 'pod version empty when pod not installed'() {
+        given:
+        iosExecutor.executor = GroovyMock(CommandExecutor) {
+            executeCommand(_) >> { throw new Exception('no pod') }
+        }
+
+        expect:
+        iosExecutor.podVersion == ''
+    }
+
     def 'archive command is executed well'() {
         given:
         def ce = GroovyMock(CommandExecutor)
@@ -158,20 +169,19 @@ class IOSExecutorSpec extends Specification {
 
         and:
         def rootDir = new File('rootDir')
+        def conf = GroovySpy(IOSConfiguration) { getRootDir() >> rootDir }
 
         and:
-        def iose = new IOSExecutor(executor: ce, conf: GroovySpy(IOSConfiguration) {
-            getRootDir() >> rootDir
-            xcodebuildExecutionPath() >> ['xcodebuild', '-project', 'Sample.xcodeproj']
-        })
+        def iose = new IOSExecutor(executor: ce, conf: conf)
+        def cmd = ['xcodebuild', '-target', 't1', '-configuration', 'c1', '-sdk', 'iphonesimulator', 'clean', 'build']
 
         when:
-        iose.runTests(rootDir, 't1', 'c1', 'somePath')
+        iose.runTests(rootDir, cmd, 'somePath')
 
         then:
         1 * ce.executeCommand(
                 {
-                    it.commandForExecution.join(' ') == 'xcodebuild -project Sample.xcodeproj -target t1 -configuration c1 -sdk iphonesimulator clean build' &&
+                    it.commandForExecution.join(' ') == 'xcodebuild -target t1 -configuration c1 -sdk iphonesimulator clean build' &&
                             it.runDir.name == 'rootDir' &&
                             it.failOnError == false &&
                             it.environment.RUN_UNIT_TEST_WITH_IOS_SIM == 'YES' &&
@@ -226,6 +236,5 @@ class IOSExecutorSpec extends Specification {
 
         cleanup:
         dSYM.delete()
-
     }
 }

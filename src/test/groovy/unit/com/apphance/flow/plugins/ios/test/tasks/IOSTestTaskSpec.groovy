@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.test.tasks
 
 import com.apphance.flow.TestUtils
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.linker.SimpleFileLinker
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
@@ -12,7 +12,7 @@ import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
 
-import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.TEST_ACTION
+import static com.apphance.flow.configuration.ios.IOSXCodeAction.TEST_ACTION
 
 @Mixin(TestUtils)
 class IOSTestTaskSpec extends Specification {
@@ -22,7 +22,7 @@ class IOSTestTaskSpec extends Specification {
 
     def setupSpec() {
         task.fileLinker = new SimpleFileLinker()
-        task.variant = GroovyMock(IOSVariant) {
+        task.variant = GroovyMock(AbstractIOSVariant) {
             getName() >> 'v1'
         }
     }
@@ -66,11 +66,12 @@ class IOSTestTaskSpec extends Specification {
         def pbxFile = new File('pbxFile')
         def tmpDir = new File('tmpDir')
         tmpDir.mkdirs()
-        def variant = GroovyMock(IOSVariant) {
+        def variant = GroovyMock(AbstractIOSVariant) {
             getName() >> 'v1'
             getSchemeFile() >> schemeFile
             getPbxFile() >> pbxFile
             getTmpDir() >> tmpDir
+            getXcodebuildExecutionPath() >> ['xcodebuild']
         }
 
         and:
@@ -94,7 +95,7 @@ class IOSTestTaskSpec extends Specification {
         1 * testPbxEnhancer.addShellScriptToBuildPhase(variant, ['3145'])
         1 * pbxJsonParser.getTargetForBlueprintId() >> { i, j -> 't1' }.memoize()
         1 * schemeParser.configuration(schemeFile, TEST_ACTION) >> 'c1'
-        1 * executor.runTests(tmpDir, 't1', 'c1', new File(tmpDir, 'test-v1-t1.log').absolutePath)
+        1 * executor.runTests(tmpDir, ['xcodebuild', '-target', 't1', '-configuration', 'c1', '-sdk', 'iphonesimulator', 'clean', 'build'], new File(tmpDir, 'test-v1-t1.log').absolutePath)
 
         and:
         noExceptionThrown()

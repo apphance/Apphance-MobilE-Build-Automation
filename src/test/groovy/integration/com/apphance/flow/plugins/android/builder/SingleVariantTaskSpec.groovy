@@ -5,6 +5,7 @@ import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.properties.BooleanProperty
+import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.AndroidExecutor
 import com.apphance.flow.executor.AntExecutor
@@ -56,7 +57,7 @@ class SingleVariantTaskSpec extends Specification {
     def projectUpdater = new AndroidProjectUpdater(executor: androidExecutor)
 
     def setup() {
-        copyDirectory new File('testProjects/android/android-basic'), rootDir
+        copyDirectory new File('demo/android/android-basic'), rootDir
         task.antExecutor = antExecutor
         task.projectUpdater = projectUpdater
         task.ant = project.ant
@@ -92,10 +93,11 @@ class SingleVariantTaskSpec extends Specification {
 
         task.artifactProvider.builderInfo(_) >> GroovyStub(AndroidBuilderInfo) {
             getTmpDir() >> project.file(variantTmpDir)
-            getVariantDir() >> project.file('variants/test')
             getMode() >> DEBUG
             getOriginalFile() >> project.file("$variantTmpDir/bin/$mainArtifact")
         }
+
+        task.variant.getVariantDir() >> new FileProperty(value: project.file('variants/test'))
 
         and:
         copyProjectToTmpDir()

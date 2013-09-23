@@ -44,10 +44,10 @@
                         <li>
                             <div class="ui-grid-a">
                                 <div class="ui-block-a">
-                                    <div style="font-size:1.5em">${variantsConf.mainVariant.replaceAll('_',' ')}</div>
+                                    <div style="font-size:1.5em">${variantsConf.mainVariant.name.replaceAll('_',' ')}</div>
                                 </div>
                                 <div class="ui-block-b" style="text-align:right"><a
-                                    href="${releaseConf.apkFiles[variantsConf.mainVariant].url}"
+                                    href="${releaseConf.artifacts[variantsConf.mainVariant.name].url}"
                                     data-role="button" data-inline="true" rel="external" data-theme="a">${rb.getString('Install')}</a>
                                 </div>
                             </div>
@@ -91,7 +91,7 @@
                                         <div style="font-size:1.5em">${variant.replaceAll('_',' ')}</div>
                                     </div>
                                     <div class="ui-block-b" style="text-align:right">
-                                        <a href="${releaseConf.apkFiles[variant].url}" data-role="button" data-inline="true"
+                                        <a href="${releaseConf.artifacts[variant].url}" data-role="button" data-inline="true"
                                         rel="external" data-theme="a">${rb.getString('Install')}</a>
                                     </div>
                                 </div>

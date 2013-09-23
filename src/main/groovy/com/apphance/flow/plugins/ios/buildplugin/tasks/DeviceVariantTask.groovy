@@ -21,8 +21,7 @@ class DeviceVariantTask extends AbstractBuildVariantTask {
 
     @Override
     void build() {
-        validate()
-
+        super.build()
         logger.info("Adding post archive action to scheme file: $variant.schemeFile.absolutePath")
         schemeParser.addPostArchiveAction(variant.schemeFile)
         def archiveOutput = iosExecutor.buildVariant(variant.tmpDir, cmd)
@@ -40,7 +39,7 @@ class DeviceVariantTask extends AbstractBuildVariantTask {
 
     @Lazy
     List<String> cmd = {
-        (conf.xcodebuildExecutionPath() + ['-scheme', variant.name] + sdkCmd + archCmd + ['clean', 'archive'])
+        (variant.xcodebuildExecutionPath + ['-scheme', variant.schemeName] + sdkCmd + archCmd + ['clean', 'archive'])
     }()
 
     @PackageScope

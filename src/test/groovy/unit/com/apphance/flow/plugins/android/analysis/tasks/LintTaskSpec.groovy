@@ -16,7 +16,7 @@ class LintTaskSpec extends Specification {
         def taskDir = temporaryDir
         task.androidExecutor = GroovyMock(AndroidExecutor)
         task.androidVariantsConf = GroovyStub(AndroidVariantsConfiguration) {
-            getMain() >> GroovyStub(AndroidVariantConfiguration) {
+            getMainVariant() >> GroovyStub(AndroidVariantConfiguration) {
                 getTmpDir() >> taskDir
             }
         }

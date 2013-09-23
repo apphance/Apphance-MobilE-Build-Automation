@@ -1,9 +1,5 @@
 package com.apphance.flow.plugins
 
-/**
- * All task groups defined for Flow.
- *
- */
 enum FlowTasksGroups {
     FLOW_BUILD,
     FLOW_TEST,

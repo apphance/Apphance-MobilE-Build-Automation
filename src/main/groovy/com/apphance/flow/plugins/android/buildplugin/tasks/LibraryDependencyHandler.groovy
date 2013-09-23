@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.android.buildplugin.tasks
 
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
+import com.apphance.flow.util.AndroidUtils
 import com.apphance.flow.util.FlowUtils
 import groovy.transform.PackageScope
 import org.gradle.api.logging.Logging
@@ -8,7 +9,7 @@ import org.gradle.api.logging.Logging
 import static com.apphance.flow.util.file.FileManager.*
 import static groovy.io.FileType.FILES
 
-@Mixin([AndroidManifestHelper, FlowUtils])
+@Mixin([AndroidManifestHelper, FlowUtils, AndroidUtils])
 class LibraryDependencyHandler {
 
     def logger = Logging.getLogger(this.class)
@@ -82,14 +83,6 @@ class LibraryDependencyHandler {
         def buildFile = new File(projectRoot, 'build.xml')
         logger.info "Modifying $buildFile.absolutePath. Adding target: $target"
         replace(buildFile, '</project>', target + '\n</project>')
-    }
-
-    @PackageScope
-    List<File> findLibraries(File root) {
-        def propFile = new File(root, 'project.properties')
-        def references = asProperties(propFile).findAll { it.key.startsWith('android.library.reference') }
-        def libNames = references.collect { it.value } as List<String>
-        libNames.collect { new File(root, it) }.findAll { it.exists() }
     }
 
     String preCompile(String replacement) {

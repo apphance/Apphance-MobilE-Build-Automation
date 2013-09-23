@@ -7,6 +7,7 @@ abstract class AbstractProperty<T> {
     String name
     String message
     String validationMessage = ''
+    Boolean initialized = false
 
     protected T value
 
@@ -43,6 +44,4 @@ abstract class AbstractProperty<T> {
         if (value) return getValue()
         else throw new GradleException("Invalid $message. property name: $name")
     }
-
-
 }

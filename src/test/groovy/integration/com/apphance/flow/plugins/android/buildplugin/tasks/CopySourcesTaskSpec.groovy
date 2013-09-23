@@ -20,7 +20,7 @@ class CopySourcesTaskSpec extends Specification {
     def 'resources are copied'() {
         given:
         def workDir = temporaryDir
-        copyDirectory(new File('testProjects/android/android-basic'), workDir)
+        copyDirectory(new File('demo/android/android-basic'), workDir)
         def p = builder().withProjectDir(workDir).build()
 
         and:

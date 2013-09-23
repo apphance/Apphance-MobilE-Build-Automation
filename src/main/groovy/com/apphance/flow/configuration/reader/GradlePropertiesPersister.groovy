@@ -16,7 +16,7 @@ import static org.slf4j.LoggerFactory.getLogger
 @com.google.inject.Singleton
 class GradlePropertiesPersister implements PropertyPersister {
 
-    def log = getLogger(this.class)
+    def logger = getLogger(this.class)
 
     private Properties props
 
@@ -34,11 +34,11 @@ class GradlePropertiesPersister implements PropertyPersister {
         props = new SortedProperties()
         propertyFile = new File("$project.rootDir.absolutePath/$FLOW_PROP_FILENAME")
         if (propertyFile.exists()) {
-            log.info("File ${propertyFile.absolutePath} exist. Reading configuration")
+            logger.info("File ${propertyFile.absolutePath} exist. Reading configuration")
             props.load(Files.newReader(propertyFile, UTF_8))
-            log.info("Configuration: $props")
+            logger.info("Configuration: $props")
         } else {
-            log.info("No property file. Expected: ${propertyFile.absolutePath}\nEmpty initial configuration")
+            logger.info("No property file. Expected: ${propertyFile.absolutePath}\nEmpty initial configuration")
         }
     }
 
@@ -51,7 +51,7 @@ class GradlePropertiesPersister implements PropertyPersister {
     def save(Collection<AbstractConfiguration> configurations) {
         if (propertyFile.exists()) {
             def backupFile = propertyFile.absolutePath + timeStamp
-            log.info("Making backup of old configuration: $backupFile")
+            logger.info("Making backup of old configuration: $backupFile")
             Files.copy(propertyFile, new File(backupFile))
             propertyFile.delete()
         }
@@ -73,7 +73,7 @@ class GradlePropertiesPersister implements PropertyPersister {
 
         writer.flush()
         writer.close()
-        log.info("New configuration written successfully")
+        logger.info("New configuration written successfully")
     }
 
     void saveConf(AbstractConfiguration conf, Writer writer) {

@@ -1,9 +1,8 @@
 package com.apphance.flow.plugins.ios.apphance.pbx
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
-import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
@@ -24,13 +23,12 @@ import static java.io.File.createTempFile
 class IOSApphancePbxEnhancerSpec extends Specification {
 
     @Shared
-    def pbxJSON = new File('testProjects/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
+    def pbxJSON = new File('demo/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
 
     def 'basic pbx json objects found'() {
         given:
-        def enhancer = new IOSApphancePbxEnhancer(GroovyMock(IOSVariant) {
+        def enhancer = new IOSApphancePbxEnhancer(GroovyMock(AbstractIOSVariant) {
             getTarget() >> 'GradleXCode'
-            getBuildConfiguration() >> 'BasicConfiguration'
             getArchiveConfiguration() >> 'Release'
         })
         enhancer.executor = GroovyMock(IOSExecutor) {
@@ -40,7 +38,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         expect:
         enhancer.rootObject.isa == 'PBXProject'
         enhancer.target.name == 'GradleXCode'
-        enhancer.configurations*.name.sort() == ['BasicConfiguration', 'Release']
+        enhancer.configurations*.name == ['Release']
         enhancer.frameworksBuildPhase.files.containsAll(
                 'D382B71614703FE500E9CC9B', 'D382B71814703FE500E9CC9B', 'D382B71A14703FE500E9CC9B'
         )
@@ -58,7 +56,6 @@ class IOSApphancePbxEnhancerSpec extends Specification {
 
         and:
         def conf = GroovyStub(IOSConfiguration) {
-            getXcodeDir() >> new FileProperty(value: 'GradleXCode/GradleXCode.xcodeproj')
             getRootDir() >> tmpDir
         }
 
@@ -78,9 +75,8 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         executor.executor = commandExecutor
 
         and:
-        def variant = GroovyMock(IOSVariant) {
+        def variant = GroovyMock(AbstractIOSVariant) {
             getTarget() >> 'GradleXCode'
-            getBuildConfiguration() >> 'BasicConfiguration'
             getArchiveConfiguration() >> 'Release'
             getApphanceMode() >> new ApphanceModeProperty(value: QA)
             getTmpDir() >> tmpDir
@@ -92,7 +88,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         enhancer.pbxJsonParser = new PbxJsonParser(executor: executor)
 
         and:
-        new File(tmpDir, "${conf.xcodeDir.value}").mkdirs()
+        new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj').mkdirs()
 
         when:
         enhancer.addApphanceToPbx()
@@ -118,17 +114,9 @@ class IOSApphancePbxEnhancerSpec extends Specification {
             it.key in rootObject.targets && it.value.isa == PBX_NATIVE_TARGET && it.value.name == variant.target
         }.value as Map
         def confHashes = json.objects[target.buildConfigurationList].buildConfigurations
-        def buildConfiguration = json.objects.find {
-            it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION && it.value.name == variant.buildConfiguration
-        }.value as Map
         def archiveConfiguration = json.objects.find {
             it.key in confHashes && it.value.isa == XCBUILD_CONFIGURATION && it.value.name == variant.archiveConfiguration
         }.value as Map
-
-        and:
-        buildConfiguration.buildSettings.OTHER_LDFLAGS == ['-ObjC', '-all_load']
-        buildConfiguration.buildSettings.FRAMEWORK_SEARCH_PATHS == ['$(inherited)', '"$(SRCROOT)"']
-        buildConfiguration.buildSettings.LIBRARY_SEARCH_PATHS == ['$(inherited)', "\"\$(SRCROOT)/Apphance-Pre-Production.framework\""]
 
         and:
         archiveConfiguration.buildSettings.OTHER_LDFLAGS == ['-ObjC', '-all_load']

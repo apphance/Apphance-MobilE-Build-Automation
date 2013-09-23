@@ -1,0 +1,6 @@
+[submodule "demo/ios"]
+	path = demo/ios
+	url = git@github.com:apphance/flow-demo-ios.git
+[submodule "demo/android"]
+	path = demo/android
+	url = git@github.com:apphance/flow-demo-android.git

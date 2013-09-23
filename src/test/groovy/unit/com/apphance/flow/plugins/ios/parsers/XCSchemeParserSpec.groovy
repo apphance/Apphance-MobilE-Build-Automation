@@ -6,7 +6,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static com.apphance.flow.configuration.ios.variants.IOSXCodeAction.*
+import static com.apphance.flow.configuration.ios.IOSXCodeAction.*
 import static com.google.common.io.Files.copy
 
 @Mixin(FlowUtils)
@@ -109,5 +109,10 @@ class XCSchemeParserSpec extends Specification {
         scheme  | targets
         scheme1 | ['D382B73414703FE500E9CC9B']
         scheme2 | []
+    }
+
+    def 'xcodeproj name is returned'() {
+        expect:
+        parser.xcodeprojName(scheme1) == 'GradleXCode.xcodeproj'
     }
 }

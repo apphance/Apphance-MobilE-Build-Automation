@@ -12,59 +12,84 @@ class ExecuteIosBuildsSpec extends Specification {
     @Shared List<String> GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled',
             '-XX:+CMSPermGenSweepingEnabled', '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
-    @Shared File testProject = new File('testProjects/ios/GradleXCode')
-    @Shared ProjectConnection testProjectConnection
+    @Shared File projectScheme = new File('demo/ios/GradleXCode')
+    @Shared File projectWorkspace = new File('demo/ios/GradleXCodeWS')
+    @Shared ProjectConnection projectSchemeConnection
+    @Shared ProjectConnection projectWorkspaceConnection
 
     def setupSpec() {
-        testProjectConnection = newConnector().forProjectDirectory(testProject).connect()
+        projectSchemeConnection = newConnector().forProjectDirectory(projectScheme).connect()
+        projectWorkspaceConnection = newConnector().forProjectDirectory(projectWorkspace).connect()
     }
 
     def cleanupSpec() {
-        testProjectConnection.close()
+        projectSchemeConnection.close()
+        projectWorkspaceConnection.close()
     }
 
     def 'single device variant is archived'() {
         when:
-        runGradleOneVariant('cleanFlow', 'archiveGradleXCode')
+        runGradle(projectSchemeConnection, 'cleanFlow', 'archiveGradleXCode')
 
         then:
         noExceptionThrown()
 
         then:
         def path = 'flow-ota/GradleXCode/1.0_32/GradleXCode/'
-        new File(testProject, "$path/GradleXCode-1.0_32.ipa").exists()
-        new File(testProject, "$path/GradleXCode-1.0_32.mobileprovision").exists()
-        new File(testProject, "$path/GradleXCode-1.0_32.zip").exists()
-        new File(testProject, "$path/GradleXCode-1.0_32_xcarchive.zip").exists()
-        new File(testProject, "$path/GradleXCode-1.0_32_dSYM.zip").exists()
-        new File(testProject, "$path/manifest.plist").exists()
-        new File(testProject, "$path/GradleXCode-1.0_32_ahSYM").exists()
-        new File(testProject, "$path/GradleXCode-1.0_32_ahSYM").listFiles().size() > 0
+        new File(projectScheme, "$path/GradleXCode-1.0_32.ipa").exists()
+        new File(projectScheme, "$path/GradleXCode-1.0_32.mobileprovision").exists()
+        new File(projectScheme, "$path/GradleXCode-1.0_32.zip").exists()
+        new File(projectScheme, "$path/GradleXCode-1.0_32_xcarchive.zip").exists()
+        new File(projectScheme, "$path/GradleXCode-1.0_32_dSYM.zip").exists()
+        new File(projectScheme, "$path/manifest.plist").exists()
+        new File(projectScheme, "$path/GradleXCode-1.0_32_ahSYM").exists()
+        new File(projectScheme, "$path/GradleXCode-1.0_32_ahSYM").listFiles().size() > 0
     }
 
-    def 'single device variant with apphance is archived'() {
+    def 'single device scheme variant with apphance is archived'() {
         when:
-        runGradleOneVariant('cleanFlow', 'archiveGradleXCodeWithApphance')
+        runGradle(projectSchemeConnection, 'cleanFlow', 'archiveGradleXCodeWithApphance')
 
         then:
         noExceptionThrown()
 
         then:
         def path = 'flow-ota/GradleXCode/1.0_32/GradleXCodeWithApphance/'
-        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32.ipa").exists()
-        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32.mobileprovision").exists()
-        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32.zip").exists()
-        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32_xcarchive.zip").exists()
-        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32_dSYM.zip").exists()
-        new File(testProject, "$path/manifest.plist").exists()
-        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32_ahSYM").exists()
-        new File(testProject, "$path/GradleXCodeWithApphance-1.0_32_ahSYM").listFiles().size() > 0
-        new File(testProject, "flow-tmp/GradleXCodeWithApphance/Apphance-Pre-Production.framework").exists()
+        new File(projectScheme, "$path/GradleXCodeWithApphance-1.0_32.ipa").exists()
+        new File(projectScheme, "$path/GradleXCodeWithApphance-1.0_32.mobileprovision").exists()
+        new File(projectScheme, "$path/GradleXCodeWithApphance-1.0_32.zip").exists()
+        new File(projectScheme, "$path/GradleXCodeWithApphance-1.0_32_xcarchive.zip").exists()
+        new File(projectScheme, "$path/GradleXCodeWithApphance-1.0_32_dSYM.zip").exists()
+        new File(projectScheme, "$path/manifest.plist").exists()
+        new File(projectScheme, "$path/GradleXCodeWithApphance-1.0_32_ahSYM").exists()
+        new File(projectScheme, "$path/GradleXCodeWithApphance-1.0_32_ahSYM").listFiles().size() > 0
+        new File(projectScheme, "flow-tmp/GradleXCodeWithApphance/Apphance-Pre-Production.framework").exists()
+    }
+
+    def 'single device workspace variant with apphance is archived'() {
+        when:
+        runGradle(projectWorkspaceConnection, 'cleanFlow', 'archiveGradleXCodeWSGradleXCodeWithApphance')
+
+        then:
+        noExceptionThrown()
+
+        then:
+        def name = 'GradleXCodeWSGradleXCodeWithApphance'
+        def path = "flow-ota/GradleXCodeWS/1.0_32/$name"
+        new File(projectWorkspace, "$path/$name-1.0_32.ipa").exists()
+        new File(projectWorkspace, "$path/$name-1.0_32.mobileprovision").exists()
+        new File(projectWorkspace, "$path/$name-1.0_32.zip").exists()
+        new File(projectWorkspace, "$path/$name-1.0_32_xcarchive.zip").exists()
+        new File(projectWorkspace, "$path/$name-1.0_32_dSYM.zip").exists()
+        new File(projectWorkspace, "$path/manifest.plist").exists()
+        new File(projectWorkspace, "$path/$name-1.0_32_ahSYM").exists()
+        new File(projectWorkspace, "$path/$name-1.0_32_ahSYM").listFiles().size() > 0
+        new File(projectWorkspace, "flow-tmp/$name/Apphance-Pre-Production.framework").exists()
     }
 
     def 'exception is raised on test fail during build'() {
         when:
-        runGradleOneVariant('cleanFlow', 'testGradleXCodeWithSpace')
+        runGradle(projectSchemeConnection, 'cleanFlow', 'testGradleXCodeWithSpace')
 
         then:
         def e = thrown(Exception)
@@ -75,22 +100,22 @@ class ExecuteIosBuildsSpec extends Specification {
 
     def 'single simulator variant is archived'() {
         when:
-        runGradleOneVariant('cleanFlow', 'archiveGradleXCodeSimulator')
+        runGradle(projectSchemeConnection, 'cleanFlow', 'archiveGradleXCodeSimulator')
 
         then:
         noExceptionThrown()
 
         then:
         IOSFamily.values().every {
-            def f = new File(testProject,
+            def f = new File(projectScheme,
                     "flow-ota/GradleXCode/1.0_32/GradleXCodeSimulator/GradleXCodeSimulator-1.0_32-${it.iFormat()}-sim-img.dmg")
             f.exists() && f.size() > 30000
         }
     }
 
-    def runGradleOneVariant(String... tasks) {
-        def buildLauncher = testProjectConnection.newBuild()
+    def runGradle(ProjectConnection pc, String... tasks) {
+        def buildLauncher = pc.newBuild()
         buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS as String[])
-        buildLauncher.forTasks(tasks).run()
+        buildLauncher.forTasks(tasks).withArguments("-PflowProjectPath=${new File('.').absolutePath}").run()
     }
 }

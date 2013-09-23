@@ -163,6 +163,10 @@ dependencies {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
         exclude group: 'org.hamcrest', module: 'hamcrest-core'
     }
+    testCompile('org.spockframework:spock-guice:0.7-groovy-1.8') {
+        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+        exclude group: 'org.hamcrest', module: 'hamcrest-core'
+    }
     testRuntime 'cglib:cglib-nodep:2.2.2'
     compile fileTree(dir: 'libs', include: '*.jar')
 
@@ -219,9 +223,9 @@ idea {
         testOutputDir = file('build/classes/test')
 
         testSourceDirs = [
-            file('src/test/groovy/unit'),
-            file('src/test/groovy/integration'),
-            file('src/test/groovy/functional'),
+                file('src/test/groovy/unit'),
+                file('src/test/groovy/integration'),
+                file('src/test/groovy/functional'),
         ]
     }
 }
@@ -230,7 +234,7 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.7'
 }
 
-file('testProjects').traverse(nameFilter: ~/flow-(log|ota|tmp)/) { File dir ->
+file('demo').traverse(nameFilter: ~/flow-(log|ota|tmp)/) { File dir ->
     tasks['clean'] << {
         ant.delete(dir: dir.absolutePath)
     }

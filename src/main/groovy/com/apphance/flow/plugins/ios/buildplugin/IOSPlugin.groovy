@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.buildplugin
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.buildplugin.tasks.*
@@ -91,7 +91,7 @@ class IOSPlugin implements Plugin<Project> {
         }
     }
 
-    private void createArchiveDeviceTask(IOSVariant variant) {
+    private void createArchiveDeviceTask(AbstractIOSVariant variant) {
         def task = project.task(variant.archiveTaskName,
                 type: DeviceVariantTask,
                 dependsOn: [CopyMobileProvisionTask.NAME]) as DeviceVariantTask
@@ -99,14 +99,15 @@ class IOSPlugin implements Plugin<Project> {
         project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].dependsOn task.name
     }
 
-    private void createArchiveSimulatorTask(IOSVariant variant) {
+    private void createArchiveSimulatorTask(AbstractIOSVariant variant) {
         def task = project.task(variant.archiveTaskName,
-                type: SimulatorVariantTask) as SimulatorVariantTask
+                type: SimulatorVariantTask,
+                dependsOn: [CopySourcesTask.NAME]) as SimulatorVariantTask
         task.variant = variant
         project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].dependsOn task.name
     }
 
-    private void createFrameworkVariant(IOSVariant variant) {
+    private void createFrameworkVariant(AbstractIOSVariant variant) {
         def task = project.task(variant.frameworkTaskName,
                 type: FrameworkVariantTask,
                 dependsOn: [CopySourcesTask.NAME]) as FrameworkVariantTask

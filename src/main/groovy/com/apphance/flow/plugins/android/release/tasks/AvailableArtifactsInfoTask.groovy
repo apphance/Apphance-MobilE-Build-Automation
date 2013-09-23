@@ -30,25 +30,12 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     @PackageScope
     void prepareOtherArtifacts() {
 
-        conf.isLibrary() ? buildJarArtifacts() : buildAPKArtifacts()
+        variantsConf.variants.each {
+            def bi = artifactBuilder.builderInfo(it)
+            releaseConf.artifacts.put(bi.id, artifactBuilder.artifact(bi))
+        }
 
         prepareFileIndexFile()
-    }
-
-    @PackageScope
-    void buildJarArtifacts() {
-        variantsConf.variants.each {
-            def bi = artifactBuilder.builderInfo(it)
-            releaseConf.jarFiles.put(bi.id, artifactBuilder.artifact(bi))
-        }
-    }
-
-    @PackageScope
-    void buildAPKArtifacts() {
-        variantsConf.variants.each {
-            def bi = artifactBuilder.builderInfo(it)
-            releaseConf.apkFiles.put(bi.id, artifactBuilder.artifact(bi))
-        }
     }
 
     @Override
@@ -65,7 +52,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     }
 
     private String fileSize() {
-        getHumanReadableSize((releaseConf as AndroidReleaseConfiguration).apkFiles[variantsConf.mainVariant].location.size())
+        getHumanReadableSize((releaseConf as AndroidReleaseConfiguration).artifacts[variantsConf.mainVariant.name].location.size())
     }
 
     @PackageScope
@@ -73,7 +60,6 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
         def binding = [
                 baseUrl: releaseConf.fileIndexFile.url,
                 variants: variantsConf.variants*.name,
-                apkFiles: releaseConf.apkFiles,
                 variantsConf: variantsConf,
                 releaseConf: releaseConf,
                 rb: bundle('file_index')
@@ -88,7 +74,6 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     Map plainFileIndexFileBinding() {
         basicBinding + [
                 baseUrl: releaseConf.plainFileIndexFile.url,
-                apkFiles: releaseConf.apkFiles,
                 variantsConf: variantsConf,
                 releaseConf: releaseConf,
                 rb: bundle('plain_file_index')

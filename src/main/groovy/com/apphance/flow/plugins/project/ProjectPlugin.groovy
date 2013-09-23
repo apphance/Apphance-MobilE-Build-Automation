@@ -11,13 +11,13 @@ import static org.gradle.api.logging.Logging.getLogger
 
 class ProjectPlugin implements Plugin<Project> {
 
-    private log = getLogger(getClass())
+    private logger = getLogger(getClass())
 
     public static final String COPY_SOURCES_TASK_NAME = 'copySources'
 
     @Override
     void apply(Project project) {
-        log.lifecycle("Applying plugin ${this.class.simpleName}")
+        logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
         project.repositories.mavenCentral()
 

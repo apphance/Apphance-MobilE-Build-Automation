@@ -117,4 +117,17 @@ class AndroidVariantConfiguration extends AbstractVariant {
         check value, "$property value is not correctly configured: ${value}"
         value
     }
+
+    File getOriginalFile() {
+        new File(tmpDir, isLibrary() ? 'bin/classes.jar' : "bin/${conf.projectNameNoWhiteSpace}-${mode.lowerCase()}.apk")
+    }
+
+    Boolean isLibrary() {
+        def projectProprerties = new File(tmpDir, 'project.properties')
+        projectProprerties.exists() && asProperties(projectProprerties).getProperty('android.library') == 'true'
+    }
+
+    File getBuildDir() {
+        new File(tmpDir, 'bin')
+    }
 }

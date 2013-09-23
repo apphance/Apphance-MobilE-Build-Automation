@@ -1,8 +1,8 @@
 package com.apphance.flow.plugins.ios.apphance.pbx
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 
 interface IOSApphancePbxEnhancerFactory {
 
-    IOSApphancePbxEnhancer create(IOSVariant variant)
+    IOSApphancePbxEnhancer create(AbstractIOSVariant variant)
 }

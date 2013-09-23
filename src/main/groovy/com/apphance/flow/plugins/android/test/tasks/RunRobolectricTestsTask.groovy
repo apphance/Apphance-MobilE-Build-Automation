@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.android.test.tasks
 import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.executor.AntExecutor
+import com.apphance.flow.util.AndroidUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -10,6 +11,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 
+@Mixin(AndroidUtils)
 class RunRobolectricTestsTask extends DefaultTask {
 
     String group = FLOW_TEST
@@ -39,6 +41,9 @@ class RunRobolectricTestsTask extends DefaultTask {
 
     @Lazy
     def robolectricTestPath = (androidTestConf?.testDir?.value?.toString() ?: 'test') + '/robolectric'
+
+    @Lazy
+    def librariesJars = allLibraries(variantConf.tmpDir).collect { """<fileset dir="$it" includes="**/*.jar"/>""" }.join('\n                    ') ?: ''
 
     @Lazy
     def robolectricTasks = """
@@ -109,8 +114,9 @@ class RunRobolectricTestsTask extends DefaultTask {
                 <classpath>
                     <pathelement path="\${out.classes.absolute.dir}"/>
                     <pathelement path="\${out.test-classes.absolute.dir}"/>
-                    <fileset dir="\${jar.libs.dir}" includes="*.jar"/>
+                    <fileset dir="\${jar.libs.dir}" includes="**/*.jar"/>
                     <fileset dir="\${tested.project.absolute.dir}/lib/test" includes="**/*.jar"/>
+                    $librariesJars
                     <path refid="project.target.class.path"/>
                     <pathelement path="\${sdk.dir}/extras/android/support/v4/android-support-v4.jar"/>
                 </classpath>

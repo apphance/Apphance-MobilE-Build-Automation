@@ -24,6 +24,7 @@ abstract class AbstractConfiguration {
         propertyFields.each {
             logger.debug "Initializing property $it.name to value: ${propertyPersister.get(it.name)}"
             it.value = propertyPersister.get(it.name)
+            it.initialized = propertyPersister.get(it.name) != null
         }
 
         String enabled = propertyPersister.get(enabledPropKey)
@@ -94,7 +95,7 @@ abstract class AbstractConfiguration {
     }
 
     String explainDisabled() {
-        ""
+        ''
     }
 
     Collection<? extends AbstractConfiguration> getSubConfigurations() {

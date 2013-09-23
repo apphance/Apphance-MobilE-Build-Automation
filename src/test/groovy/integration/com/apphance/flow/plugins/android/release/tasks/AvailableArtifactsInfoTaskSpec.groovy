@@ -26,7 +26,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
     def apkDir = createTempDir()
     def tmpDir = createTempDir()
 
-    def p = builder().withProjectDir(new File('testProjects/android/android-basic')).build()
+    def p = builder().withProjectDir(new File('demo/android/android-basic')).build()
 
     def projectName = 'TestAndroidProject'
     def projectUrl = "http://ota.polidea.pl/$projectName".toURL()
@@ -47,7 +47,6 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         }
 
         def conf = GroovySpy(AndroidConfiguration) {
-            isLibrary() >> false
             getFullVersionString() >> fullVersionString
             getVersionString() >> '1.0.1'
             getProjectName() >> new StringProperty(value: projectName)
@@ -81,7 +80,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                     getMode() >> RELEASE
                 }
         ]
-        variantsConf.mainVariant >> mainVariant
+        variantsConf.mainVariant >> variantsConf.variants[0]
 
         def artifactBuilder = new AndroidArtifactProvider(conf: conf, releaseConf: releaseConf)
 

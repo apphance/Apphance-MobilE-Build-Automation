@@ -51,7 +51,7 @@ class ConfigurationWizard {
             out.flush()
             conf.enabled = reader.readLine()?.equalsIgnoreCase('y')
         } else {
-            print conf.explainDisabled()
+            println conf.explainDisabled()
             out.flush()
         }
     }

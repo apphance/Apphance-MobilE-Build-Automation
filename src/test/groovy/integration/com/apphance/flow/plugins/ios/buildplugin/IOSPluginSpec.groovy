@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.buildplugin
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
@@ -31,16 +31,16 @@ class IOSPluginSpec extends Specification {
         and:
         def variantsConf = GroovyMock(IOSVariantsConfiguration)
         variantsConf.variants >> [
-                GroovyMock(IOSVariant, {
+                GroovyMock(AbstractIOSVariant, {
                     getArchiveTaskName() >> 'archiveV1'
                     getMode() >> new IOSBuildModeProperty(value: DEVICE)
                 }
                 ),
-                GroovyMock(IOSVariant, {
+                GroovyMock(AbstractIOSVariant, {
                     getArchiveTaskName() >> 'archiveV2'
                     getMode() >> new IOSBuildModeProperty(value: SIMULATOR)
                 }),
-                GroovyMock(IOSVariant, {
+                GroovyMock(AbstractIOSVariant, {
                     getFrameworkTaskName() >> 'frameworkV3'
                     getMode() >> new IOSBuildModeProperty(value: FRAMEWORK)
                 })
@@ -73,6 +73,7 @@ class IOSPluginSpec extends Specification {
         and:
         project.tasks[ARCHIVE_ALL_TASK_NAME].dependsOn.flatten().containsAll(ARCHIVE_ALL_SIMULATOR_TASK_NAME, ARCHIVE_ALL_DEVICE_TASK_NAME)
         project.tasks['archiveV1'].dependsOn.flatten().contains(CopyMobileProvisionTask.NAME)
+        project.tasks['archiveV2'].dependsOn.flatten().contains(CopySourcesTask.NAME)
         project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].dependsOn.flatten().contains('archiveV2')
         project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].dependsOn.flatten().contains('archiveV1')
 

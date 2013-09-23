@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.release.artifact.info
 
 import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.plugins.release.FlowArtifact
 
 import javax.inject.Inject
@@ -11,14 +11,14 @@ class IOSArtifactProvider {
 
     @Inject IOSReleaseConfiguration releaseConf
 
-    IOSSimArtifactInfo simInfo(IOSVariant v) {
+    IOSSimArtifactInfo simInfo(AbstractIOSVariant v) {
         new IOSSimArtifactInfo(
                 id: v.name,
                 filePrefix: "$v.name-$v.fullVersionString"
         )
     }
 
-    IOSDeviceArtifactInfo deviceInfo(IOSVariant v) {
+    IOSDeviceArtifactInfo deviceInfo(AbstractIOSVariant v) {
         new IOSDeviceArtifactInfo(
                 id: v.name,
                 filePrefix: "$v.name-$v.fullVersionString",
@@ -27,7 +27,7 @@ class IOSArtifactProvider {
         )
     }
 
-    IOSFrameworkArtifactInfo frameworkInfo(IOSVariant v) {
+    IOSFrameworkArtifactInfo frameworkInfo(AbstractIOSVariant v) {
         new IOSFrameworkArtifactInfo(
                 id: v.name,
                 filePrefix: "$v.name-$v.fullVersionString",

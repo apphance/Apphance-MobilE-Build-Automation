@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.apphance.source
 
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancer
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
@@ -22,11 +22,11 @@ class IOSApphanceSourceEnhancer {
 
     @Inject AntBuilder ant
 
-    @PackageScope IOSVariant variant
+    @PackageScope AbstractIOSVariant variant
     @PackageScope IOSApphancePbxEnhancer apphancePbxEnhancer
 
     @Inject
-    IOSApphanceSourceEnhancer(@Assisted IOSVariant variant, @Assisted IOSApphancePbxEnhancer apphancePbxEnhancer) {
+    IOSApphanceSourceEnhancer(@Assisted AbstractIOSVariant variant, @Assisted IOSApphancePbxEnhancer apphancePbxEnhancer) {
         this.variant = variant
         this.apphancePbxEnhancer = apphancePbxEnhancer
     }
@@ -40,7 +40,7 @@ class IOSApphanceSourceEnhancer {
     @PackageScope
     void replaceLogs() {
         logger.info("Replacing apphance logger in dir: $variant.tmpDir.absolutePath")
-        logger.info("Source files to replace logs: ${apphancePbxEnhancer.filesToReplaceLogs}")
+        apphancePbxEnhancer.filesToReplaceLogs.each { logger.info("Replacing NSLog with APHLog in: $it") }
         ant.replaceregexp(match: '\\bNSLog\\b', replace: 'APHLog', byline: true) {
             fileset(dir: variant.tmpDir) {
                 apphancePbxEnhancer.filesToReplaceLogs.each {
@@ -116,5 +116,4 @@ class IOSApphanceSourceEnhancer {
                 throw new GradleException("Invalid apphance mode: '$variant.apphanceMode.value' for variant: '$variant.name'")
         }
     }
-
 }

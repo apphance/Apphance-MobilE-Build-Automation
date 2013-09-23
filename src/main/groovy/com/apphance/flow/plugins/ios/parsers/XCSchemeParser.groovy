@@ -1,6 +1,6 @@
 package com.apphance.flow.plugins.ios.parsers
 
-import com.apphance.flow.configuration.ios.variants.IOSXCodeAction
+import com.apphance.flow.configuration.ios.IOSXCodeAction
 import com.apphance.flow.util.Preconditions
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
@@ -66,6 +66,18 @@ class XCSchemeParser {
     private Closure<String> blueprintIdentifierC = { File scheme ->
         def xml = parseSchemeFile.call(scheme)
         xml.LaunchAction.BuildableProductRunnable.BuildableReference.@BlueprintIdentifier
+    }.memoize()
+
+
+    String xcodeprojName(File scheme) {
+        xcodeprojNameC.call(scheme)
+    }
+
+    private Closure<String> xcodeprojNameC = { File scheme ->
+        def xml = parseSchemeFile.call(scheme)
+        def ref = xml.LaunchAction.BuildableProductRunnable.BuildableReference.@ReferencedContainer
+        def splitted = ref?.text()?.split(':')
+        splitted?.size() == 2 ? splitted[1] : null
     }.memoize()
 
     void addPostArchiveAction(File scheme) {

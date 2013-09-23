@@ -14,9 +14,6 @@ import javax.inject.Inject
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- * Performs android testing.
- */
 class AndroidTestPlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())

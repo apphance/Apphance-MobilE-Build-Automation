@@ -45,12 +45,14 @@ class IOSDumpReducer {
             symTable = sortList(symTable, 'AT_low_pc')
 
             def header = [
+                    Name: plistParser.bundleDisplayName(plist),
                     CFBundleDisplayName: plistParser.bundleDisplayName(plist),
                     CFBundleIdentifier: plistParser.bundleId(plist),
                     CFBundleShortVersionString: plistParser.bundleShortVersionString(plist),
                     CFBundleVersion: plistParser.bundleVersion(plist),
-                    dsymUUID: dsymUUID,
-                    dsymArch: dsymArch,
+                    dsym_uuid: dsymUUID,
+                    dsym_arch: dsymArch,
+                    dump_ver: 4
             ]
 
             def dsymDict = createDsymDict(outputDir, toJson(['dsym_header': header, dsym_table: symTable]))
@@ -260,12 +262,11 @@ class IOSDumpReducer {
         def zipFile = new File(outputDir, "${filename}.ahsym")
         def zos = new ZipOutputStream(new FileOutputStream(zipFile))
         zos.putNextEntry(new ZipEntry(dsymDict.name))
-        def buffer = new byte[2048]
-        dsymDict.withInputStream { i ->
-            def l = i.read(buffer)
-            if (l > 0) {
+        dsymDict.withInputStream { stream ->
+            byte[] buffer = new byte[2048]
+            def l
+            while ((l = stream.read(buffer)) > 0)
                 zos.write(buffer, 0, l)
-            }
         }
         zos.closeEntry()
         zos.close()

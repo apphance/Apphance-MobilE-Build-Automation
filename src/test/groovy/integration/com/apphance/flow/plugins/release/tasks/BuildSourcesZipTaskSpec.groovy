@@ -30,8 +30,8 @@ class BuildSourcesZipTaskSpec extends Specification {
 
         and:
         def rc = GroovySpy(ReleaseConfiguration) {
-            getOtaDir() >> new File(project.rootDir, OTA_DIR)
-            getReleaseDir() >> new File(OTA_DIR, "$projectName/$fullVersionString")
+            getOtaDir() >> new File(projectDir, OTA_DIR)
+            getReleaseDir() >> new File("$projectDir/$OTA_DIR", "$projectName/$fullVersionString")
         }
 
         and:
@@ -43,7 +43,7 @@ class BuildSourcesZipTaskSpec extends Specification {
         task.buildSourcesZip()
 
         then:
-        def zipFile = new File(projectDir, "${rc.releaseDir}/${srcZipName}")
+        def zipFile = new File(rc.releaseDir, srcZipName)
         zipFile.exists()
         zipFile.size() > 30000
 
@@ -52,7 +52,7 @@ class BuildSourcesZipTaskSpec extends Specification {
 
         where:
         templateProjectPath                  | srcZipName                            | projectName          | fullVersionString
-        'testProjects/android/android-basic' | 'TestAndroidProject-1.0.1_42-src.zip' | 'TestAndroidProject' | '1.0.1_42'
-        'testProjects/ios/GradleXCode'       | 'GradleXCode-1.0_32-src.zip'          | 'GradleXCode'        | '1.0_32'
+        'demo/android/android-basic' | 'TestAndroidProject-1.0.1_42-src.zip' | 'TestAndroidProject' | '1.0.1_42'
+        'demo/ios/GradleXCode'       | 'GradleXCode-1.0_32-src.zip'          | 'GradleXCode'        | '1.0_32'
     }
 }

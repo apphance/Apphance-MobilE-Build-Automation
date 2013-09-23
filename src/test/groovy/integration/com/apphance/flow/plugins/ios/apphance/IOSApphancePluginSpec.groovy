@@ -1,7 +1,7 @@
 package com.apphance.flow.plugins.ios.apphance
 
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
@@ -67,28 +67,28 @@ class IOSApphancePluginSpec extends Specification {
         plugin.apphanceConf = GroovyStub(ApphanceConfiguration) { isEnabled() >> true }
         plugin.variantsConf = GroovyStub(IOSVariantsConfiguration) {
             getVariants() >> [
-                    GroovyMock(IOSVariant) {
+                    GroovyMock(AbstractIOSVariant) {
                         getName() >> 'V1'
                         getApphanceMode() >> new ApphanceModeProperty(value: QA)
                         getArchiveTaskName() >> 'archiveV1'
                         getUploadTaskName() >> 'uploadV1'
                         getMode() >> new IOSBuildModeProperty(value: DEVICE)
                     },
-                    GroovyMock(IOSVariant) {
+                    GroovyMock(AbstractIOSVariant) {
                         getName() >> 'V2'
                         getApphanceMode() >> new ApphanceModeProperty(value: QA)
                         getArchiveTaskName() >> 'archiveV2'
                         getUploadTaskName() >> 'uploadV2'
                         getMode() >> new IOSBuildModeProperty(value: DEVICE)
                     },
-                    GroovyMock(IOSVariant) {
+                    GroovyMock(AbstractIOSVariant) {
                         getName() >> 'V3'
                         getApphanceMode() >> new ApphanceModeProperty(value: DISABLED)
                         getArchiveTaskName() >> 'archiveV3'
                         getUploadTaskName() >> 'uploadV3'
                         getMode() >> new IOSBuildModeProperty(value: DEVICE)
                     },
-                    GroovyMock(IOSVariant) {
+                    GroovyMock(AbstractIOSVariant) {
                         getName() >> 'V4'
                         getApphanceMode() >> new ApphanceModeProperty(value: DISABLED)
                         getArchiveTaskName() >> 'archiveV4'

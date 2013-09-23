@@ -1,5 +1,6 @@
 package com.apphance.flow.plugins.android.builder
 
+import com.apphance.flow.configuration.android.AndroidArchiveType
 import com.apphance.flow.configuration.android.AndroidBuildMode
 
 class AndroidBuilderInfo {
@@ -11,6 +12,7 @@ class AndroidBuilderInfo {
     File buildDir
     File tmpDir
     File variantDir
+    AndroidArchiveType type
 
     String getId() {
         variant

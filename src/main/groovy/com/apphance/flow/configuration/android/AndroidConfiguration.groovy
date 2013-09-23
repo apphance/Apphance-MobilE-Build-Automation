@@ -90,17 +90,13 @@ class AndroidConfiguration extends ProjectConfiguration {
         }
     }
 
-    boolean isLibrary() {
-        androidProperties.get('android.library') == 'true'
-    }
-
     @Override
     void checkProperties() {
-        super.checkProperties()
         check !isNullOrEmpty(reader.envVariable('ANDROID_HOME')), "Environment variable 'ANDROID_HOME' must be set!"
         check !isNullOrEmpty(projectName.value), "Property ${projectName.name} must be set!"
         check versionValidator.isNumber(versionCode), bundle.getString('exception.android.version.code')
         check versionValidator.hasNoWhiteSpace(versionString), bundle.getString('exception.android.version.string')
-        check target.validator(target.value), "Property ${target.name} must be set!"
+        check target.validator(target.value), "Property ${target.name} is incorrect." +
+                (target.value ? " Probably target $target.value is not installed in your system" : '')
     }
 }

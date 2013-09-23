@@ -34,6 +34,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
                     'robolectric tests',
             defaultValue: { relativeTo(conf.rootDir.absolutePath, new File(conf.rootDir, 'test').absolutePath) },
             validator: {
+                if (!it) return true
                 def file = new File(conf.rootDir, it as String)
                 isDirectory(file.toPath()) && isDirectory(new File(file, 'robolectric').toPath())
             }

@@ -1,5 +1,7 @@
 package com.apphance.flow.plugins
 
+import com.apphance.flow.TestUtils
+import com.apphance.flow.detection.project.ProjectType
 import com.apphance.flow.detection.project.ProjectTypeDetector
 import com.apphance.flow.di.*
 import com.apphance.flow.executor.IOSExecutor
@@ -28,10 +30,11 @@ import static com.apphance.flow.detection.project.ProjectType.IOS
 import static com.apphance.flow.di.ConfigurationModule.getVariantFactories
 import static com.apphance.flow.plugins.ios.parsers.XCodeOutputParserSpec.XCODE_LIST
 
+@Mixin(TestUtils)
 class PluginMasterSpec extends Specification {
 
     @Unroll
-    def 'test if all #type plugins are applied'() {
+    def 'all #type plugins are applied'() {
         given:
         def mocks = (plugins + commonPlugins).collect(mockToMap).sum()
         def master = createInjectorForPluginsMocks(mocks, file, type).getInstance(PluginMaster)
@@ -62,7 +65,7 @@ class PluginMasterSpec extends Specification {
         IOS     | iosPlugins     | 'GradleXCode.xcodeproj'
     }
 
-    def 'test Android plugins order'() {
+    def 'android plugins applied in correct order'() {
         given:
         def mocks = (commonPlugins + androidPlugins).collect(mockToMap).sum()
         def master = createInjectorForPluginsMocks(mocks, 'AndroidManifest.xml', ANDROID).getInstance(PluginMaster)
@@ -93,7 +96,7 @@ class PluginMasterSpec extends Specification {
         ReleasePlugin | AndroidReleasePlugin
     }
 
-    def 'test iOS plugins order'() {
+    def 'iOS plugins applied in correct order'() {
         given:
         def mocks = (commonPlugins + iosPlugins).collect(mockToMap).sum()
         def master = createInjectorForPluginsMocks(mocks, 'GradleXCode.xcodeproj', IOS).getInstance(PluginMaster)
@@ -145,9 +148,9 @@ class PluginMasterSpec extends Specification {
             IOSTestPlugin,
     ]
 
-    def createInjectorForPluginsMocks(mocks, file, projectType) {
-        def rootDir = Mock(File)
-        rootDir.list() >> [file]
+    def createInjectorForPluginsMocks(mocks, String fileName, ProjectType projectType) {
+        def rootDir = temporaryDir
+        new File(rootDir, fileName).createNewFile()
         def project = GroovyMock(Project)
 
         def iosExecutorMock = GroovyStub(IOSExecutor)

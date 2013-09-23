@@ -10,7 +10,7 @@ import static com.apphance.flow.plugins.ios.apphance.IOSApphanceEnhancer.getAPPH
 class PbxJsonParserSpec extends Specification {
 
     @Shared
-    def input = new File('testProjects/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
+    def input = new File('demo/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
     @Shared
     def parser = new PbxJsonParser(executor: GroovyMock(IOSExecutor) {
         pbxProjToJSON(_) >> input.text.split('\n')
@@ -31,7 +31,7 @@ class PbxJsonParserSpec extends Specification {
         def blueprintId = 'D382B71014703FE500E9CC9B'
 
         when:
-        parser.plistForScheme.call(GroovyMock(File), configuration, blueprintId) == 'GradleXCode/GradleXCode-Info.plist'
+        parser.plistForScheme.call(GroovyMock(File), configuration, blueprintId)
 
         then:
         def e = thrown(GradleException)

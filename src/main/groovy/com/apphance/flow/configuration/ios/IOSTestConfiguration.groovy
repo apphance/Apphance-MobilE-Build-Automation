@@ -1,11 +1,10 @@
 package com.apphance.flow.configuration.ios
 
 import com.apphance.flow.configuration.AbstractConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSSchemeInfo
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
-import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.util.FlowUtils
 import com.apphance.flow.util.Version
@@ -67,7 +66,7 @@ class IOSTestConfiguration extends AbstractConfiguration {
 
     @Lazy
     @PackageScope
-    List<IOSVariant> testVariants = {
+    List<AbstractIOSVariant> testVariants = {
         variantsConf.variants.findAll { it.name in testVariantsNames.value }
     }()
 
@@ -117,7 +116,6 @@ class IOSTestConfiguration extends AbstractConfiguration {
 
     @Override
     void checkProperties() {
-        super.checkProperties()
         defaultValidation testVariantsNames
     }
 }

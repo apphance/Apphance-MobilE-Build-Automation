@@ -21,8 +21,7 @@ class SimulatorVariantTask extends AbstractBuildVariantTask {
 
     @Override
     void build() {
-        validate()
-
+        super.build()
         iosExecutor.buildVariant(variant.tmpDir, cmd)
 
         if (releaseConf.isEnabled()) {
@@ -37,7 +36,7 @@ class SimulatorVariantTask extends AbstractBuildVariantTask {
 
     @Lazy
     List<String> cmd = {
-        (conf.xcodebuildExecutionPath() + ['-scheme', variant.name] + ['-configuration', variant.archiveConfiguration] +
+        (variant.xcodebuildExecutionPath + ['-scheme', variant.schemeName] + ['-configuration', variant.archiveConfiguration] +
                 sdkCmd + archCmd + ["CONFIGURATION_BUILD_DIR=$simTmpDir.absolutePath"] + ['clean', 'build'])
     }()
 }

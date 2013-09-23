@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.release
 
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
+import com.apphance.flow.plugins.release.tasks.AbstractAvailableArtifactsInfoTask
 import com.apphance.flow.plugins.release.tasks.BuildSourcesZipTask
 import com.apphance.flow.plugins.release.tasks.ImageMontageTask
 import com.apphance.flow.plugins.release.tasks.SendMailMessageTask
@@ -12,16 +13,6 @@ import javax.inject.Inject
 
 import static org.gradle.api.logging.Logging.getLogger
 
-/**
- *
- * This is Flow release plugin.
- *
- * Plugin for releasing projects.
- *
- * The plugin provides all the basic tasks required to prepare OTA release of
- * an application. It should be added after build plugin is added.
- *
- */
 class ReleasePlugin implements Plugin<Project> {
 
     def logger = getLogger(getClass())
@@ -45,7 +36,7 @@ class ReleasePlugin implements Plugin<Project> {
 
             project.task(SendMailMessageTask.NAME,
                     type: SendMailMessageTask,
-                    dependsOn: 'prepareAvailableArtifactsInfo')
+                    dependsOn: AbstractAvailableArtifactsInfoTask.NAME)
 
             project.task(BuildSourcesZipTask.NAME,
                     type: BuildSourcesZipTask)

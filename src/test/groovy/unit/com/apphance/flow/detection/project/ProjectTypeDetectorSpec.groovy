@@ -18,8 +18,8 @@ class ProjectTypeDetectorSpec extends Specification {
 
         where:
         expectedType | path
-        ANDROID      | new File("testProjects/android/android-basic")
-        IOS          | new File('testProjects/ios/GradleXCode')
+        ANDROID      | new File("demo/android/android-basic")
+        IOS          | new File('demo/ios/GradleXCode')
     }
 
     def 'should yield on bi-detection'() {

@@ -1,8 +1,7 @@
 package com.apphance.flow.plugins.ios.test.tasks.pbx
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
-import com.apphance.flow.configuration.properties.FileProperty
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
@@ -21,7 +20,7 @@ import static java.io.File.createTempFile
 class IOSTestPbxEnhancerSpec extends Specification {
 
     @Shared
-    def pbxJSON = new File('testProjects/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
+    def pbxJSON = new File('demo/ios/GradleXCode/GradleXCode.xcodeproj/project.pbxproj.json')
 
     def 'shell script is added to pbx'() {
         given:
@@ -29,7 +28,6 @@ class IOSTestPbxEnhancerSpec extends Specification {
 
         and:
         def conf = GroovyStub(IOSConfiguration) {
-            getXcodeDir() >> new FileProperty(value: 'GradleXCode/GradleXCode.xcodeproj')
             getRootDir() >> tmpDir
         }
 
@@ -49,7 +47,7 @@ class IOSTestPbxEnhancerSpec extends Specification {
         executor.executor = commandExecutor
 
         and:
-        def variant = GroovyMock(IOSVariant) {
+        def variant = GroovyMock(AbstractIOSVariant) {
             getTarget() >> 'GradleXCode'
             getTmpDir() >> tmpDir
             getPbxFile() >> new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj/project.pbxproj')
@@ -59,7 +57,7 @@ class IOSTestPbxEnhancerSpec extends Specification {
         enhancer.executor = executor
 
         and:
-        new File(tmpDir, "${conf.xcodeDir.value}").mkdirs()
+        new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj').mkdirs()
 
         when:
         enhancer.addShellScriptToBuildPhase(variant, ['D382B73414703FE500E9CC9B'])

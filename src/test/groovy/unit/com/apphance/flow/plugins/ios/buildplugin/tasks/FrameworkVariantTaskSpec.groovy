@@ -2,11 +2,12 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.cocoapods.PodLocator
 import com.apphance.flow.plugins.ios.release.artifact.builder.IOSFrameworkArtifactsBuilder
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSFrameworkArtifactInfo
@@ -26,7 +27,6 @@ class FrameworkVariantTaskSpec extends Specification {
     def 'framework action is invoked, release conf enabled: #releaseConfEnabled'() {
         given:
         task.conf = GroovyMock(IOSConfiguration) {
-            xcodebuildExecutionPath() >> ['xcodebuild']
             getSimulatorSdk() >> new StringProperty(value: '')
             getSdk() >> new StringProperty(value: '')
         }
@@ -34,18 +34,21 @@ class FrameworkVariantTaskSpec extends Specification {
             isEnabled() >> releaseConfEnabled
         }
         task.iosExecutor = GroovyMock(IOSExecutor)
-        task.variant = GroovyMock(IOSVariant) {
+        task.variant = GroovyMock(AbstractIOSVariant) {
             getName() >> 'variant'
+            getSchemeName() >> 'variant'
             getArchiveConfiguration() >> 'archive'
             getFrameworkHeaders() >> new ListStringProperty(value: [])
             getFrameworkResources() >> new ListStringProperty(value: [])
             getMode() >> new IOSBuildModeProperty(value: FRAMEWORK)
+            getXcodebuildExecutionPath() >> ['xcodebuild']
         }
         task.artifactProvider = GroovyMock(IOSArtifactProvider) {
             frameworkInfo(_) >> new IOSFrameworkArtifactInfo()
         }
         task.frameworkArtifactsBuilder = GroovyMock(IOSFrameworkArtifactsBuilder)
         task.fu = new FlowUtils()
+        task.podLocator = GroovyMock(PodLocator)
 
         when:
         task.build()
@@ -79,7 +82,7 @@ class FrameworkVariantTaskSpec extends Specification {
 
     def 'exception thrown when variant with bad mode passed'() {
         given:
-        task.variant = GroovyMock(IOSVariant) {
+        task.variant = GroovyMock(AbstractIOSVariant) {
             getMode() >> new IOSBuildModeProperty(value: mode)
         }
 

@@ -18,31 +18,6 @@ class FileManager {
     public static final int MAX_RECURSION_LEVEL = 7
     private static final long MEGABYTE = 1048576L
 
-    public static List getFiles(Project project, Closure filter) {
-        return getFilesOrDirectories(project, FILES, filter)
-    }
-
-    public static List getFilesOrDirectories(Project project, FileType type, Closure filter) {
-        List paths = [
-                project.file('bin').absolutePath,
-                project.file('build').absolutePath,
-                project.file('ota').absolutePath,
-                project.file('tmp').absolutePath,
-                project.file('.hg').absolutePath,
-                project.file('.git').absolutePath,
-        ]
-        def plistFiles = []
-        project.rootDir.traverse([type: type, maxDepth: MAX_RECURSION_LEVEL]) {
-            def thePath = it.absolutePath
-            if (filter(it)) {
-                if (!paths.any { path -> thePath.startsWith(path) }) {
-                    plistFiles << thePath.substring(project.rootDir.path.length() + 1)
-                }
-            }
-        }
-        return plistFiles
-    }
-
     public static void removeMissingSymlinks(File baseDirectory) {
         baseDirectory.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
             if (!it.isDirectory()) {

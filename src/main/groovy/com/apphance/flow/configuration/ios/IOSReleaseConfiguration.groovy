@@ -10,6 +10,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.util.file.FileManager.*
 import static groovy.io.FileType.FILES
+import static java.text.MessageFormat.format
 
 @Singleton
 class IOSReleaseConfiguration extends ReleaseConfiguration {
@@ -67,6 +68,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
     @Override
     void checkProperties() {
         super.checkProperties()
+        check releaseIcon.value, format(bundle.getString('exception.release.icon'), releaseIcon.value)
     }
 
     @Override
@@ -76,7 +78,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     @Override
     String explainDisabled() {
-        "To enable configuration you need to provide mobile provision file somewhere in project directory.\n" +
-                "File must match *.mobileprovision. Can be placed anywhere in project source."
+        "'$configurationName' cannot be enabled. To enable configuration you need to provide mobile provision file" +
+                " somewhere in project directory. File must match *.mobileprovision and can be placed anywhere in project source."
     }
 }

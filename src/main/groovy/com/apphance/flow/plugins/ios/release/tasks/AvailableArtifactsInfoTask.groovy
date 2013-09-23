@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.release.tasks
 
 import com.apphance.flow.configuration.ios.IOSFamily
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.variants.IOSVariant
+import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
@@ -41,7 +41,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     }
 
     @PackageScope
-    void prepareArtifacts(IOSVariant variant) {
+    void prepareArtifacts(AbstractIOSVariant variant) {
         if (variant.mode.value == DEVICE) {
             def bi = artifactProvider.deviceInfo(variant)
 
@@ -146,8 +146,8 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
                 case DEVICE:
                     def manifest = releaseConf.manifestFiles[v.name]
                     if (manifest && manifest?.location?.exists()) {
-                        def encodedUrl = encode(manifest.url.toString(), 'utf-8')
-                        urlMap.put(v.name, "itms-services://?action=download-manifest&amp;url=${encodedUrl}")
+                        def encodedUrl = encode(manifest.url.toString(), 'UTF-8').replaceAll('\\+', '%2520')
+                        urlMap.put(v.name, "itms-services://?action=download-manifest&amp;url=$encodedUrl")
                     }
                     break
                 case SIMULATOR:

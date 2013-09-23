@@ -117,7 +117,7 @@ class IOSDeviceArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSDeviceArt
         def engine = new SimpleTemplateEngine()
         def bundleId = plistParser.bundleId(plist.call(bi))
         def binding = [
-                ipaUrl: releaseConf.ipaFiles.get(bi.id).url,
+                ipaUrl: releaseConf.ipaFiles.get(bi.id).url.toString().replaceAll(' ', '%20'),
                 title: bi.productName,
                 bundleId: bundleId,
                 versionString: bi.versionString
