@@ -2,6 +2,7 @@ package com.apphance.flow.configuration.ios.variants
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
+import com.apphance.flow.configuration.ios.IOSXCodeAction
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.ListStringProperty
@@ -20,8 +21,7 @@ import groovy.transform.PackageScope
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.*
-import static com.apphance.flow.configuration.ios.IOSXCodeAction.ARCHIVE_ACTION
-import static com.apphance.flow.configuration.ios.IOSXCodeAction.LAUNCH_ACTION
+import static com.apphance.flow.configuration.ios.IOSXCodeAction.*
 import static com.apphance.flow.plugins.ios.xcodeproj.IOSXCodeprojLocator.PROJECT_PBXPROJ
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
@@ -182,11 +182,15 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     @Lazy
     File pbxFile = {
-        def pbx = xcodeprojLocator.findXCodeproj(schemeParser.xcodeprojName(schemeFile), schemeParser.blueprintIdentifier(schemeFile))
+        def pbx = xcodeprojLocator.findXCodeproj(schemeParser.xcodeprojName(schemeFile, action), schemeParser.blueprintIdentifier(schemeFile, action))
         def relative = relativeTo(conf.rootDir, pbx)
         def tmpPbx = new File(tmpDir, relative)
         tmpPbx?.exists() ? new File(tmpPbx, PROJECT_PBXPROJ) : new File(conf.rootDir, "$relative/$PROJECT_PBXPROJ")
     }()
+
+    IOSXCodeAction getAction() {
+        mode.value == FRAMEWORK ? BUILD_ACTION : LAUNCH_ACTION
+    }
 
     File getPlist() {
         String confName = schemeParser.configuration(schemeFile, LAUNCH_ACTION)

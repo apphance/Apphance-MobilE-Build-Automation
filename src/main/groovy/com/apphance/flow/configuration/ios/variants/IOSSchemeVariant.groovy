@@ -19,7 +19,7 @@ class IOSSchemeVariant extends AbstractIOSVariant {
     }()
 
     private File getXcodeprojFile() {
-        def xcodeproj = xcodeprojLocator.findXCodeproj(schemeParser.xcodeprojName(schemeFile), schemeParser.blueprintIdentifier(schemeFile))
+        def xcodeproj = xcodeprojLocator.findXCodeproj(schemeParser.xcodeprojName(schemeFile, action), schemeParser.blueprintIdentifier(schemeFile, action))
         def relative = relativeTo(conf.rootDir, xcodeproj)
         new File(tmpDir, relative)
     }

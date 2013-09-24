@@ -14,22 +14,26 @@ class ExecuteIosBuildsSpec extends Specification {
 
     @Shared File projectScheme = new File('demo/ios/GradleXCode')
     @Shared File projectWorkspace = new File('demo/ios/GradleXCodeWS')
-    @Shared ProjectConnection projectSchemeConnection
-    @Shared ProjectConnection projectWorkspaceConnection
+    @Shared File projectFramework = new File('demo/ios/GRadleXCodeFW')
+    @Shared ProjectConnection projectSchemeConn
+    @Shared ProjectConnection projectWorkspaceConn
+    @Shared ProjectConnection projectFrameworkConn
 
     def setupSpec() {
-        projectSchemeConnection = newConnector().forProjectDirectory(projectScheme).connect()
-        projectWorkspaceConnection = newConnector().forProjectDirectory(projectWorkspace).connect()
+        projectSchemeConn = newConnector().forProjectDirectory(projectScheme).connect()
+        projectWorkspaceConn = newConnector().forProjectDirectory(projectWorkspace).connect()
+        projectFrameworkConn = newConnector().forProjectDirectory(projectFramework).connect()
     }
 
     def cleanupSpec() {
-        projectSchemeConnection.close()
-        projectWorkspaceConnection.close()
+        projectSchemeConn.close()
+        projectWorkspaceConn.close()
+        projectFrameworkConn.close()
     }
 
     def 'single device variant is archived'() {
         when:
-        runGradle(projectSchemeConnection, 'cleanFlow', 'archiveGradleXCode')
+        runGradle(projectSchemeConn, 'cleanFlow', 'archiveGradleXCode')
 
         then:
         noExceptionThrown()
@@ -48,7 +52,7 @@ class ExecuteIosBuildsSpec extends Specification {
 
     def 'single device scheme variant with apphance is archived'() {
         when:
-        runGradle(projectSchemeConnection, 'cleanFlow', 'archiveGradleXCodeWithApphance')
+        runGradle(projectSchemeConn, 'cleanFlow', 'archiveGradleXCodeWithApphance')
 
         then:
         noExceptionThrown()
@@ -68,7 +72,7 @@ class ExecuteIosBuildsSpec extends Specification {
 
     def 'single device workspace variant with apphance is archived'() {
         when:
-        runGradle(projectWorkspaceConnection, 'cleanFlow', 'archiveGradleXCodeWSGradleXCodeWithApphance')
+        runGradle(projectWorkspaceConn, 'cleanFlow', 'archiveGradleXCodeWSGradleXCodeWithApphance')
 
         then:
         noExceptionThrown()
@@ -89,7 +93,7 @@ class ExecuteIosBuildsSpec extends Specification {
 
     def 'exception is raised on test fail during build'() {
         when:
-        runGradle(projectSchemeConnection, 'cleanFlow', 'testGradleXCodeWithSpace')
+        runGradle(projectSchemeConn, 'cleanFlow', 'testGradleXCodeWithSpace')
 
         then:
         def e = thrown(Exception)
@@ -100,7 +104,7 @@ class ExecuteIosBuildsSpec extends Specification {
 
     def 'single simulator variant is archived'() {
         when:
-        runGradle(projectSchemeConnection, 'cleanFlow', 'archiveGradleXCodeSimulator')
+        runGradle(projectSchemeConn, 'cleanFlow', 'archiveGradleXCodeSimulator')
 
         then:
         noExceptionThrown()
@@ -113,9 +117,29 @@ class ExecuteIosBuildsSpec extends Specification {
         }
     }
 
+    def 'single framework variant is built'() {
+        given:
+        System.properties['version.string'] = '1.0'
+        System.properties['version.code'] = '32'
+
+        when:
+        runGradle(projectFrameworkConn, 'cleanFlow', 'frameworkGradleXCodeFW')
+
+        then:
+        noExceptionThrown()
+
+        then:
+        def path = 'flow-ota/GradleXCode/1.0_32/GradleXCodeFW/'
+        new File(projectFramework, "$path/GradleXCodeFW-1.0_32-GradleXCodeFramework.zip").exists()
+
+        cleanup:
+        System.properties.remove('version.string')
+        System.properties.remove('version.code')
+    }
+
     def runGradle(ProjectConnection pc, String... tasks) {
         def buildLauncher = pc.newBuild()
         buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS as String[])
-        buildLauncher.forTasks(tasks).withArguments("-PflowProjectPath=${new File('.').absolutePath}").run()
+        buildLauncher.forTasks(tasks).withArguments("-PflowProjectPath=${new File('.').absolutePath}", '-i').run()
     }
 }

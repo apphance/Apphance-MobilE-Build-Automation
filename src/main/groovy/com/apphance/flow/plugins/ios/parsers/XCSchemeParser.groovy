@@ -6,6 +6,8 @@ import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
 import org.gradle.api.GradleException
 
+import static com.apphance.flow.configuration.ios.IOSXCodeAction.BUILD_ACTION
+import static com.apphance.flow.configuration.ios.IOSXCodeAction.LAUNCH_ACTION
 import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(Preconditions)
@@ -58,27 +60,49 @@ class XCSchemeParser {
         }*.BuildableReference*.@BlueprintIdentifier*.text()
     }
 
-    String blueprintIdentifier(File scheme) {
-        blueprintIdentifierC.call(scheme)
+    String blueprintIdentifier(File scheme, IOSXCodeAction action = LAUNCH_ACTION) {
+        blueprintIdentifierC.call(scheme, action)
     }
 
-    @Lazy
-    private Closure<String> blueprintIdentifierC = { File scheme ->
+    private Closure<String> blueprintIdentifierC = { File scheme, IOSXCodeAction action ->
         def xml = parseSchemeFile.call(scheme)
-        xml.LaunchAction.BuildableProductRunnable.BuildableReference.@BlueprintIdentifier
+        def bId = blueprintIdForAction(xml, action).text()
+        logger.info("Found blueprintId: $bId in file: $scheme.absolutePath and for action: $action")
+        bId
     }.memoize()
 
-
-    String xcodeprojName(File scheme) {
-        xcodeprojNameC.call(scheme)
+    private GPathResult blueprintIdForAction(GPathResult xml, IOSXCodeAction action) {
+        switch (action) {
+            case BUILD_ACTION:
+                return xml.BuildAction.BuildActionEntries.BuildActionEntry.BuildableReference.@BlueprintIdentifier
+            case LAUNCH_ACTION:
+                return xml.LaunchAction.BuildableProductRunnable.BuildableReference.@BlueprintIdentifier
+            default:
+                throw new GradleException("Unsupported action: $action")
+        }
     }
 
-    private Closure<String> xcodeprojNameC = { File scheme ->
+    String xcodeprojName(File scheme, IOSXCodeAction action) {
+        xcodeprojNameC.call(scheme, action)
+    }
+
+    private Closure<String> xcodeprojNameC = { File scheme, IOSXCodeAction action ->
         def xml = parseSchemeFile.call(scheme)
-        def ref = xml.LaunchAction.BuildableProductRunnable.BuildableReference.@ReferencedContainer
+        def ref = xcodeprojForAction(xml, action)
         def splitted = ref?.text()?.split(':')
         splitted?.size() == 2 ? splitted[1] : null
     }.memoize()
+
+    private GPathResult xcodeprojForAction(GPathResult xml, IOSXCodeAction action) {
+        switch (action) {
+            case BUILD_ACTION:
+                return xml.BuildAction.BuildActionEntries.BuildActionEntry.BuildableReference.@ReferencedContainer
+            case LAUNCH_ACTION:
+                return xml.LaunchAction.BuildableProductRunnable.BuildableReference.@ReferencedContainer
+            default:
+                throw new GradleException("Unsupported action: $action")
+        }
+    }
 
     void addPostArchiveAction(File scheme) {
         def xml = parseSchemeFile.call(scheme)
