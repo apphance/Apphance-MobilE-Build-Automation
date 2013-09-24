@@ -32,11 +32,11 @@ class PluginMaster {
     final static PLUGINS = [
             COMMON: [
                     ProjectPlugin,
+                    ReleasePlugin,
             ],
 
             IOS: [
                     IOSPlugin,
-                    ReleasePlugin,
                     IOSReleasePlugin,
                     IOSApphancePlugin,
                     IOSTestPlugin,
@@ -44,7 +44,6 @@ class PluginMaster {
 
             ANDROID: [
                     AndroidPlugin,
-                    ReleasePlugin,
                     AndroidAnalysisPlugin,
                     AndroidApphancePlugin,
                     AndroidReleasePlugin,

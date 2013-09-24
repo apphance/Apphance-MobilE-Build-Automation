@@ -87,13 +87,10 @@ class PluginMasterSpec extends Specification {
         1 * mocks[before].apply(project)
 
         then:
-        1 * mocks[after].apply(project)
+        1 * mocks[AndroidPlugin].apply(project)
 
         where:
-        before        | after
-        ProjectPlugin | AndroidPlugin
-        AndroidPlugin | ReleasePlugin
-        ReleasePlugin | AndroidReleasePlugin
+        before << [ProjectPlugin, ReleasePlugin]
     }
 
     def 'iOS plugins applied in correct order'() {
@@ -118,13 +115,10 @@ class PluginMasterSpec extends Specification {
         1 * mocks[before].apply(project)
 
         then:
-        1 * mocks[after].apply(project)
+        1 * mocks[IOSPlugin].apply(project)
 
         where:
-        before        | after
-        ProjectPlugin | IOSPlugin
-        IOSPlugin     | ReleasePlugin
-        ReleasePlugin | IOSReleasePlugin
+        before << [ProjectPlugin, ReleasePlugin]
     }
 
     final projectTypeDetectorMock = Mock(ProjectTypeDetector)
