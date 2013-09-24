@@ -70,7 +70,7 @@ class XCSchemeInfo {
         conf.rootDir.traverse(
                 type: FILES,
                 maxDepth: MAX_RECURSION_LEVEL,
-                nameFilter: ~/${name}\.xcscheme/,
+                nameFilter: "${name}.xcscheme",
                 excludeFilter: EXCLUDE_FILTER
         ) {
             if (it.absolutePath.endsWith("xcshareddata/xcschemes/${name}.xcscheme") && isScheme.call(it) && !containsXcuserdataInPath(it))

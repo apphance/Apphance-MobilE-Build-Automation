@@ -45,7 +45,7 @@ class XCWorkspaceLocator {
         conf.rootDir.traverse(
                 type: DIRECTORIES,
                 maxDepth: 1,
-                nameFilter: ~/${name}\.xcworkspace/,
+                nameFilter: "${name}.xcworkspace",
                 excludeFilter: EXCLUDE_FILTER
         ) {
             def contents = new File(it, 'contents.xcworkspacedata')

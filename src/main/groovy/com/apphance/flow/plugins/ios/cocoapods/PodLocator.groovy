@@ -19,7 +19,7 @@ class PodLocator {
         dir.traverse(
                 type: FILES,
                 maxDepth: MAX_RECURSION_LEVEL,
-                nameFilter: ~/Podfile/,
+                nameFilter: 'Podfile',
                 excludeFilter: EXCLUDE_FILTER) {
             if (it.isFile() && it.exists() && it.size() > 0) podfile = it
         }

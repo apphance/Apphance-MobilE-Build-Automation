@@ -30,7 +30,7 @@ class XCProjLocator {
         conf.rootDir.traverse(
                 type: DIRECTORIES,
                 maxDepth: MAX_RECURSION_LEVEL,
-                nameFilter: ~/$name/,
+                nameFilter: name,
                 excludeFilter: EXCLUDE_FILTER
         ) {
             def pbx = new File(it, PROJECT_PBXPROJ)
