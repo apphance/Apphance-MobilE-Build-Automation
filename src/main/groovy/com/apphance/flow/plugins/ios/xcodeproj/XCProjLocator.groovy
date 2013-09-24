@@ -11,7 +11,7 @@ import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.DIRECTORIES
 import static org.gradle.api.logging.Logging.getLogger
 
-class IOSXCodeprojLocator {
+class XCProjLocator {
 
     public static final PROJECT_PBXPROJ = 'project.pbxproj'
 

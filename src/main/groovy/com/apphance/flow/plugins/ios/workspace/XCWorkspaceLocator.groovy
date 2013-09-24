@@ -9,7 +9,7 @@ import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
 import static groovy.io.FileType.DIRECTORIES
 import static org.gradle.api.logging.Logging.getLogger
 
-class IOSWorkspaceLocator {
+class XCWorkspaceLocator {
 
     private logger = getLogger(getClass())
 

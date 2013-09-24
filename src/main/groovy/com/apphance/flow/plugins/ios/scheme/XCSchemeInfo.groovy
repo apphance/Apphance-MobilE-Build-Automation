@@ -12,7 +12,7 @@ import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
 import static org.gradle.api.logging.Logging.getLogger
 
-class IOSSchemeInfo {
+class XCSchemeInfo {
 
     protected logger = getLogger(getClass())
 

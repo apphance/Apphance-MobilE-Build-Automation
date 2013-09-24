@@ -1,13 +1,13 @@
 package com.apphance.flow.plugins.ios.parsers
 
-import com.apphance.flow.configuration.ios.IOSXCodeAction
+import com.apphance.flow.configuration.ios.XCAction
 import com.apphance.flow.util.Preconditions
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.XmlUtil
 import org.gradle.api.GradleException
 
-import static com.apphance.flow.configuration.ios.IOSXCodeAction.BUILD_ACTION
-import static com.apphance.flow.configuration.ios.IOSXCodeAction.LAUNCH_ACTION
+import static com.apphance.flow.configuration.ios.XCAction.BUILD_ACTION
+import static com.apphance.flow.configuration.ios.XCAction.LAUNCH_ACTION
 import static org.gradle.api.logging.Logging.getLogger
 
 @Mixin(Preconditions)
@@ -22,12 +22,12 @@ class XCSchemeParser {
     </ExecutionAction>
 '''
 
-    String configuration(File scheme, IOSXCodeAction action) {
+    String configuration(File scheme, XCAction action) {
         configurationC.call(scheme, action)
     }
 
     @Lazy
-    private Closure<String> configurationC = { File scheme, IOSXCodeAction action ->
+    private Closure<String> configurationC = { File scheme, XCAction action ->
         def xml = parseSchemeFile.call(scheme)
         xml."$action.xmlNodeName".@buildConfiguration.text()
     }.memoize()
@@ -60,18 +60,18 @@ class XCSchemeParser {
         }*.BuildableReference*.@BlueprintIdentifier*.text()
     }
 
-    String blueprintIdentifier(File scheme, IOSXCodeAction action = LAUNCH_ACTION) {
+    String blueprintIdentifier(File scheme, XCAction action = LAUNCH_ACTION) {
         blueprintIdentifierC.call(scheme, action)
     }
 
-    private Closure<String> blueprintIdentifierC = { File scheme, IOSXCodeAction action ->
+    private Closure<String> blueprintIdentifierC = { File scheme, XCAction action ->
         def xml = parseSchemeFile.call(scheme)
         def bId = blueprintIdForAction(xml, action).text()
         logger.info("Found blueprintId: $bId in file: $scheme.absolutePath and for action: $action")
         bId
     }.memoize()
 
-    private GPathResult blueprintIdForAction(GPathResult xml, IOSXCodeAction action) {
+    private GPathResult blueprintIdForAction(GPathResult xml, XCAction action) {
         switch (action) {
             case BUILD_ACTION:
                 return xml.BuildAction.BuildActionEntries.BuildActionEntry.BuildableReference.@BlueprintIdentifier
@@ -82,18 +82,18 @@ class XCSchemeParser {
         }
     }
 
-    String xcodeprojName(File scheme, IOSXCodeAction action) {
+    String xcodeprojName(File scheme, XCAction action) {
         xcodeprojNameC.call(scheme, action)
     }
 
-    private Closure<String> xcodeprojNameC = { File scheme, IOSXCodeAction action ->
+    private Closure<String> xcodeprojNameC = { File scheme, XCAction action ->
         def xml = parseSchemeFile.call(scheme)
         def ref = xcodeprojForAction(xml, action)
         def splitted = ref?.text()?.split(':')
         splitted?.size() == 2 ? splitted[1] : null
     }.memoize()
 
-    private GPathResult xcodeprojForAction(GPathResult xml, IOSXCodeAction action) {
+    private GPathResult xcodeprojForAction(GPathResult xml, XCAction action) {
         switch (action) {
             case BUILD_ACTION:
                 return xml.BuildAction.BuildActionEntries.BuildActionEntry.BuildableReference.@ReferencedContainer

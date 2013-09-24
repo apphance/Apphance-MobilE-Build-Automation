@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.parsers
 
 import org.apache.commons.collections.CollectionUtils
 
-class XCodeOutputParser {
+class XCOutputParser {
 
     Collection<String> readSchemes(List trimmed) {
         def startSchemes = trimmed.indexOf('Schemes:')

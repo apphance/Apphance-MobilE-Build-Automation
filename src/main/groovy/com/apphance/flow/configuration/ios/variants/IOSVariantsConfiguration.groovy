@@ -3,8 +3,9 @@ package com.apphance.flow.configuration.ios.variants
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
-import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
-import com.apphance.flow.plugins.ios.workspace.IOSWorkspaceLocator
+import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
+import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
+import com.apphance.flow.plugins.ios.workspace.XCWorkspaceLocator
 import com.apphance.flow.util.FlowUtils
 import com.google.inject.Singleton
 import groovy.transform.PackageScope
@@ -20,8 +21,8 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Inject IOSConfiguration conf
     @Inject IOSVariantFactory variantFactory
-    @Inject IOSSchemeInfo schemeInfo
-    @Inject IOSWorkspaceLocator workspaceLocator
+    @Inject XCSchemeInfo schemeInfo
+    @Inject XCWorkspaceLocator workspaceLocator
 
     @Inject
     @Override

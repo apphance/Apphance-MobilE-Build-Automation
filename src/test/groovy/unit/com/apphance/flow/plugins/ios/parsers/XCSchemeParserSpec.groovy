@@ -6,7 +6,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static com.apphance.flow.configuration.ios.IOSXCodeAction.*
+import static com.apphance.flow.configuration.ios.XCAction.*
 import static com.google.common.io.Files.copy
 
 @Mixin(FlowUtils)

@@ -10,7 +10,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 @Mixin(FlowUtils)
-class IOSSchemeInfoSpec extends Specification {
+class XCSchemeInfoSpec extends Specification {
 
     @Shared
     def schemes = ['GradleXCode',
@@ -27,7 +27,7 @@ class IOSSchemeInfoSpec extends Specification {
         getRootDir() >> tmpDir
         getSchemes() >> schemes
     }
-    def schemeInfo = new IOSSchemeInfo(conf: conf, schemeParser: new XCSchemeParser())
+    def schemeInfo = new XCSchemeInfo(conf: conf, schemeParser: new XCSchemeParser())
 
     def setupSpec() {
         FileUtils.copyDirectory(new File(getClass().getResource('iosProject').toURI()), tmpDir)

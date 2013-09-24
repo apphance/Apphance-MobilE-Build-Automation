@@ -7,7 +7,7 @@ import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
 
-class IOSXCodeprojLocatorSpec extends Specification {
+class XCProjLocatorSpec extends Specification {
 
     @Shared conf = GroovyMock(IOSConfiguration) {
         getRootDir() >> new File('demo/ios/GradleXCode')
@@ -15,7 +15,7 @@ class IOSXCodeprojLocatorSpec extends Specification {
     @Shared pbxParser = new PbxJsonParser(executor: GroovyMock(IOSExecutor) {
         pbxProjToJSON(_) >> new File('demo/ios/GradleXCode/GradleXcode.xcodeproj/project.pbxproj.json').readLines()
     })
-    @Shared xcodeprojInfo = new IOSXCodeprojLocator(conf: conf, pbxParser: pbxParser)
+    @Shared xcodeprojInfo = new XCProjLocator(conf: conf, pbxParser: pbxParser)
 
     def 'xcodeproj found for valid name and valid blueprintId'() {
         expect:

@@ -6,9 +6,9 @@ import org.gradle.api.GradleException
 import spock.lang.Specification
 
 @Mixin(FlowUtils)
-class IOSWorkspaceLocatorSpec extends Specification {
+class XCWorkspaceLocatorSpec extends Specification {
 
-    def locator = new IOSWorkspaceLocator()
+    def locator = new XCWorkspaceLocator()
 
     def 'workspaces are found'() {
         given:
@@ -20,7 +20,7 @@ class IOSWorkspaceLocatorSpec extends Specification {
         locator.workspaces*.toString() == workspaces
 
         where:
-        root                             | workspaces
+        root                     | workspaces
         'demo/ios/GradleXCode'   | []
         'demo/ios/GradleXCodeWS' | ['demo/ios/GradleXCodeWS/GradleXCodeWS.xcworkspace']
     }
@@ -38,7 +38,7 @@ class IOSWorkspaceLocatorSpec extends Specification {
         ws.exists() == exists
 
         where:
-        root                             | name            | expectedName                | exists
+        root                     | name            | expectedName                | exists
         'demo/ios/GradleXCode'   | 'GradleXCodeWS' | 'GradleXCodeWS.xcworkspace' | false
         'demo/ios/GradleXCodeWS' | 'GradleXCodeWS' | 'GradleXCodeWS.xcworkspace' | true
     }

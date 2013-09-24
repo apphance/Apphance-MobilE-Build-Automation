@@ -1,6 +1,6 @@
 package com.apphance.flow.configuration.ios.variants
 
-import com.apphance.flow.plugins.ios.workspace.IOSWorkspaceLocator
+import com.apphance.flow.plugins.ios.workspace.XCWorkspaceLocator
 import com.google.inject.assistedinject.Assisted
 
 import javax.inject.Inject
@@ -12,7 +12,7 @@ import static java.text.MessageFormat.format
 class IOSWorkspaceVariant extends AbstractIOSVariant {
 
     @Inject IOSVariantsConfiguration variantsConf
-    @Inject IOSWorkspaceLocator workspaceLocator
+    @Inject XCWorkspaceLocator workspaceLocator
 
     private String workspaceName
     private String schemeName

@@ -2,7 +2,7 @@ package com.apphance.flow.configuration.ios.variants
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.configuration.ios.IOSXCodeAction
+import com.apphance.flow.configuration.ios.XCAction
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.ListStringProperty
@@ -12,8 +12,8 @@ import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
-import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
-import com.apphance.flow.plugins.ios.xcodeproj.IOSXCodeprojLocator
+import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
+import com.apphance.flow.plugins.ios.xcodeproj.XCProjLocator
 import com.apphance.flow.validation.VersionValidator
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
@@ -21,8 +21,8 @@ import groovy.transform.PackageScope
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.*
-import static com.apphance.flow.configuration.ios.IOSXCodeAction.*
-import static com.apphance.flow.plugins.ios.xcodeproj.IOSXCodeprojLocator.PROJECT_PBXPROJ
+import static com.apphance.flow.configuration.ios.XCAction.*
+import static com.apphance.flow.plugins.ios.xcodeproj.XCProjLocator.PROJECT_PBXPROJ
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
 import static java.text.MessageFormat.format
@@ -37,8 +37,8 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     @Inject PbxJsonParser pbxJsonParser
     @Inject IOSExecutor executor
     @Inject XCSchemeParser schemeParser
-    @Inject IOSSchemeInfo schemeInfo
-    @Inject IOSXCodeprojLocator xcodeprojLocator
+    @Inject XCSchemeInfo schemeInfo
+    @Inject XCProjLocator xcodeprojLocator
     @Inject VersionValidator versionValidator
 
     protected bundle = getBundle('validation')
@@ -188,7 +188,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         tmpPbx?.exists() ? new File(tmpPbx, PROJECT_PBXPROJ) : new File(conf.rootDir, "$relative/$PROJECT_PBXPROJ")
     }()
 
-    IOSXCodeAction getAction() {
+    XCAction getAction() {
         mode.value == FRAMEWORK ? BUILD_ACTION : LAUNCH_ACTION
     }
 

@@ -4,7 +4,7 @@ import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.executor.linker.FileLinker
-import com.apphance.flow.plugins.ios.parsers.XCodeOutputParser
+import com.apphance.flow.plugins.ios.parsers.XCOutputParser
 import groovy.json.JsonSlurper
 import org.gradle.api.Project
 import spock.lang.Specification
@@ -36,7 +36,7 @@ class IOSExecutorSpec extends Specification {
         }
         iosExecutor.executor = executor
         iosExecutor.conf = conf
-        iosExecutor.parser = new XCodeOutputParser()
+        iosExecutor.parser = new XCOutputParser()
     }
 
     def cleanup() {

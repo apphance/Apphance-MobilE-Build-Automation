@@ -1,6 +1,6 @@
 package com.apphance.flow.configuration.ios
 
-enum IOSXCodeAction {
+enum XCAction {
 
     BUILD_ACTION('BuildAction'),
     LAUNCH_ACTION('LaunchAction'),
@@ -9,7 +9,7 @@ enum IOSXCodeAction {
 
     private String xmlNodeName
 
-    IOSXCodeAction(String xmlNodeName) {
+    XCAction(String xmlNodeName) {
         this.xmlNodeName = xmlNodeName
     }
 

@@ -3,7 +3,7 @@ package com.apphance.flow.executor
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.executor.command.Command
 import com.apphance.flow.executor.command.CommandExecutor
-import com.apphance.flow.plugins.ios.parsers.XCodeOutputParser
+import com.apphance.flow.plugins.ios.parsers.XCOutputParser
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
@@ -18,7 +18,7 @@ class IOSExecutor {
 
 
     @Inject IOSConfiguration conf
-    @Inject XCodeOutputParser parser
+    @Inject XCOutputParser parser
     @Inject CommandExecutor executor
 
     @Lazy List<String> sdks = {
