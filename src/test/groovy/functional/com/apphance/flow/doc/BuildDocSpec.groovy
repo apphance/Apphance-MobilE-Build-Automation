@@ -47,7 +47,7 @@ class BuildDocSpec extends Specification {
 
     def 'test build documentation'() {
         when:
-        buildLauncher.withArguments("-PdocMode=true", "-PoutDocFile=$outFileName", '-i', "-PflowProjectPath=${new File('.').absolutePath}").run()
+        buildLauncher.withArguments("-Pflow.doc.mode=true", "-Pflow.doc.file=$outFileName", '-i', "-PflowProjectPath=${new File('.').absolutePath}").run()
 
         def outFile = new File(testTmpDir, outFileName)
 
