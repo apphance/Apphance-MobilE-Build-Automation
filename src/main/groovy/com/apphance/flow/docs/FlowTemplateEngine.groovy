@@ -10,4 +10,9 @@ class FlowTemplateEngine {
         def tmpl = getClass().getResource('flow_doc_task.template')
         engine.createTemplate(tmpl).make(group)
     }
+
+    String fillConfTemplate(Map conf) {
+        def tmpl = getClass().getResource('flow_doc_conf.template')
+        engine.createTemplate(tmpl).make(conf)
+    }
 }

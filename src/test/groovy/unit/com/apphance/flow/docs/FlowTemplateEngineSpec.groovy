@@ -7,7 +7,7 @@ class FlowTemplateEngineSpec extends Specification {
 
     @Shared tmplEngine = new FlowTemplateEngine()
 
-    def 'template task is filled with data'() {
+    def 'task template is filled with data'() {
         given:
         def tasksGroup = [
                 header: 'Some group',
@@ -27,7 +27,6 @@ class FlowTemplateEngineSpec extends Specification {
         ]
 
         expect:
-        println tmplEngine.fillTaskTemplate(tasksGroup)
         tmplEngine.fillTaskTemplate(tasksGroup) == '<h3 style="border-bottom:dotted 1px #aaa">\n' +
                 '    <font size="4">Some group</font>\n' +
                 '</h3>\n' +
@@ -73,4 +72,71 @@ class FlowTemplateEngineSpec extends Specification {
                 '</div>\n' +
                 ''
     }
+
+    def 'conf template is filled with data'() {
+        given:
+        def conf = [
+                confName: 'Conf',
+                confDescription: 'Conf description',
+                confProperties: [
+                        [
+                                name: 'sample.property.name',
+                                description: 'This is very important property'
+                        ],
+                        [
+                                name: 'sample.property.name2',
+                                description: 'This is very, very important property'
+                        ],
+                ],
+        ]
+        expect:
+        tmplEngine.fillConfTemplate(conf) == '<h3 style="border-bottom:dotted 1px #aaa">\n' +
+                '    <font size="4">Conf</font>\n' +
+                '</h3>\n' +
+                '\n' +
+                '<br/>\n' +
+                '\n' +
+                '<div>\n' +
+                '    Conf description\n' +
+                '</div>\n' +
+                '\n' +
+                '\n' +
+                '<h4>Properties</h4>\n' +
+                '\n' +
+                '\n' +
+                '<div class="sites-codeblock sites-codesnippet-block">\n' +
+                '    <div>\n' +
+                '        <div style="font-family:courier new,monospace">\n' +
+                '            <code>\n' +
+                '                <font color="#6aa84f">sample.property.name</font>\n' +
+                '            </code>\n' +
+                '        </div>\n' +
+                '    </div>\n' +
+                '</div>\n' +
+                '<br/>\n' +
+                '<div style="text-align:justify">\n' +
+                '    This is very important property\n' +
+                '</div>\n' +
+                '<br/>\n' +
+                '<br/>\n' +
+                '\n' +
+                '<div class="sites-codeblock sites-codesnippet-block">\n' +
+                '    <div>\n' +
+                '        <div style="font-family:courier new,monospace">\n' +
+                '            <code>\n' +
+                '                <font color="#6aa84f">sample.property.name2</font>\n' +
+                '            </code>\n' +
+                '        </div>\n' +
+                '    </div>\n' +
+                '</div>\n' +
+                '<br/>\n' +
+                '<div style="text-align:justify">\n' +
+                '    This is very, very important property\n' +
+                '</div>\n' +
+                '<br/>\n' +
+                '<br/>\n' +
+                '\n' +
+                ''
+    }
+
 }
