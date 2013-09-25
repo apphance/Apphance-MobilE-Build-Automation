@@ -1,5 +1,6 @@
 package com.apphance.flow.plugins
 
+import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.detection.project.ProjectType
 import com.apphance.flow.detection.project.ProjectTypeDetector
 import com.apphance.flow.plugins.android.analysis.AndroidAnalysisPlugin
@@ -30,6 +31,7 @@ class PluginMaster {
 
     @Inject ProjectTypeDetector projectTypeDetector
     @Inject Injector injector
+    @Inject Map<Integer, AbstractConfiguration> configurations
 
     final static PLUGINS = [
             COMMON: [
@@ -94,11 +96,15 @@ class PluginMaster {
     void saveDocInfo(Map<Plugin, Set<Task>> map, File file) {
         def json = new JsonBuilder()
 
-        def output = json(map.collectEntries { Plugin plugin, Set<Task> tasks ->
+        def output = json([plugins: map.collectEntries { Plugin plugin, Set<Task> tasks ->
             [(plugin.class.simpleName): tasks.collect {
                 [taskClass: it.class.superclass.simpleName, taskName: it.name, description: it.description]
             }]
-        })
+        }, configurations: configurations.values().collectEntries {
+            [(it.class.simpleName): it.propertyFields.collect {
+                [name: it.name, description: it.doc()]
+            }]
+        }])
         logger.info "Prepared json: " + output.toString()
 
         file << output.toString()
