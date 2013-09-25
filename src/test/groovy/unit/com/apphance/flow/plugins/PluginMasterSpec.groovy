@@ -42,6 +42,7 @@ class PluginMasterSpec extends Specification {
         and:
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
+        project.rootDir >> temporaryDir
         def flowProperties = Mock(File)
         flowProperties.exists() >> true
         project.file(FLOW_PROP_FILENAME) >> flowProperties
@@ -73,6 +74,7 @@ class PluginMasterSpec extends Specification {
         and:
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
+        project.rootDir >> temporaryDir
         def flowProperties = Mock(File)
         flowProperties.exists() >> true
         project.file(FLOW_PROP_FILENAME) >> flowProperties
@@ -101,6 +103,7 @@ class PluginMasterSpec extends Specification {
         and:
         def project = Mock(Project)
         project.plugins >> Mock(PluginContainer)
+        project.rootDir >> temporaryDir
         def flowProperties = Mock(File)
         flowProperties.exists() >> true
         project.file(FLOW_PROP_FILENAME) >> flowProperties

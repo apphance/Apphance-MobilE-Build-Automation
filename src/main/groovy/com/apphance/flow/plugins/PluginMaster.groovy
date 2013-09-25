@@ -14,8 +14,10 @@ import com.apphance.flow.plugins.ios.test.IOSTestPlugin
 import com.apphance.flow.plugins.project.ProjectPlugin
 import com.apphance.flow.plugins.release.ReleasePlugin
 import com.google.inject.Injector
+import groovy.json.JsonBuilder
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
@@ -54,12 +56,27 @@ class PluginMaster {
     void enhanceProject(Project project) {
         ProjectType projectType = projectTypeDetector.detectProjectType(project.rootDir)
 
+        String docOutFileName = project.hasProperty('outDocFile') ? project.outDocFile : 'build/doc/doc.json'
+        File docOutFile = new File(project.rootDir, docOutFileName)
+        Map<Plugin, Set<Task>> doc = [:]
+
+        if (project.hasProperty('docMode')) {
+            logger.lifecycle "docMode enabled"
+            docOutFile.parentFile.mkdirs()
+            if (docOutFile.createNewFile()) logger.lifecycle "${docOutFile.absolutePath} successfully created"
+            else logger.error "Error while creating docOutFile.absolutePath"
+        }
+
         def installPlugin = {
             logger.info("Applying plugin $it")
 
             Plugin<Project> plugin = (Plugin<Project>) injector.getInstance(it)
 
+            Set<Task> tasksBefore = project.tasks.findAll()
+
             plugin.apply(project)
+            doc[plugin] = (project.tasks.findAll() - tasksBefore).findAll { it.enabled }
+
             project.plugins.add(plugin)
         }
 
@@ -68,5 +85,22 @@ class PluginMaster {
         if (project.file(FLOW_PROP_FILENAME).exists()) {
             PLUGINS[projectType.name()].each installPlugin
         }
+
+        if (project.hasProperty('docMode') && docOutFile.exists()) {
+            saveDocInfo(doc, docOutFile)
+        }
+    }
+
+    void saveDocInfo(Map<Plugin, Set<Task>> map, File file) {
+        def json = new JsonBuilder()
+
+        def output = json(map.collectEntries { Plugin plugin, Set<Task> tasks ->
+            [(plugin.class.simpleName): tasks.collect {
+                [taskClass: it.class.superclass.simpleName, taskName: it.name, description: it.description]
+            }]
+        })
+        logger.info "Prepared json: " + output.toString()
+
+        file << output.toString()
     }
 }
