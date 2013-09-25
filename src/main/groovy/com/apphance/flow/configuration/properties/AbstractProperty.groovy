@@ -1,7 +1,5 @@
 package com.apphance.flow.configuration.properties
 
-import org.gradle.api.GradleException
-
 abstract class AbstractProperty<T> {
 
     String name
@@ -35,13 +33,4 @@ abstract class AbstractProperty<T> {
 
     @Override
     String toString() { "$name = ${getValue()}" }
-
-    String getFailedValidationMessage() {
-        "Validation failed for property: $name $validationMessage"
-    }
-
-    T getNotEmptyValue() {
-        if (value) return getValue()
-        else throw new GradleException("Invalid $message. property name: $name")
-    }
 }

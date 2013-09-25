@@ -80,7 +80,7 @@ class ConfigurationWizard {
                 if (!interactiveMode) {
                     throw new GradleException("Cannot set value of property ${ap.name} in non-interacivte mode. No sensible default value")
                 }
-                println yellow(ap.failedValidationMessage)
+                println yellow("Validation failed for property: $ap.name, $ap.validationMessage")
                 out.flush()
             }
         }
