@@ -1,5 +1,7 @@
 package com.apphance.flow.configuration.properties
 
+import org.gradle.api.GradleException
+
 abstract class AbstractProperty<T> {
 
     String name
@@ -21,7 +23,9 @@ abstract class AbstractProperty<T> {
 
     Closure<Boolean> required = { false }
 
-    abstract void setValue(String value);
+    Closure<String> doc = (Closure<String>) { throw new GradleException("Property $name has empty doc field!") }
+
+    abstract void setValue(String value)
 
     T getValue() {
         value
