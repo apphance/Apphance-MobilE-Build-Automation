@@ -66,22 +66,35 @@ class FlowPluginReference {
         applyAllPluginsInDocMode(docProject)
 
         def json = new JsonSlurper().parseText(new File(docProject, 'build/doc/doc.json').text)
-        def html = json.plugins.collect { String pluginName, List tasks ->
+        def pluginHtml = json.plugins.collect { String pluginName, List tasks ->
             tmplEngine.fillTaskTemplate([
                     header: pluginName,
                     groupName: pluginName,
                     groupDescription: docText(pluginName),
                     tasks: tasks.collect {
                         [
-                                taskName: "$it.taskName",
+                                taskName: it.taskName,
                                 taskDescription: [it.description, docText(it.taskClass)].grep().join('<p><p>')
                         ]
                     }
             ])
         }.join('\n')
 
+        def confHtml = json.configurations.collect { String confName, List propertyFields ->
+            tmplEngine.fillConfTemplate([
+                    confName: confName,
+                    confDescription: docText(confName),
+                    confProperties: propertyFields.collect {
+                        [
+                                name: it.name,
+                                description: it.description
+                        ]
+                    }
+            ])
+        }.join('\n')
+
         outputHtml.parentFile.mkdirs()
-        outputHtml.text = html
+        outputHtml.text = pluginHtml + confHtml
     }
 
     private void applyAllPluginsInDocMode(File docProject) {
