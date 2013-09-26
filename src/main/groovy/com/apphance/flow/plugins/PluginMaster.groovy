@@ -93,11 +93,11 @@ class PluginMaster {
     }
 
     boolean docModeEnabled(Project project) {
-        project.hasProperty('doc.mode') ? Boolean.valueOf(project.'doc.mode' as String) : false
+        project.hasProperty('docMode') ? Boolean.valueOf(project.docMode as String) : false
     }
 
     File docFile(Project project) {
-        def name = project.hasProperty('doc.file') ? project.'doc.file' : 'build/doc/doc.json'
+        def name = project.hasProperty('docFile') ? project.docFile : 'build/doc/doc.json'
         def docFile = new File(project.rootDir, name)
         docFile.parentFile.mkdirs()
         if (docFile.createNewFile())
