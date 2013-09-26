@@ -231,7 +231,7 @@ idea {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.7'
+    gradleVersion = '1.8'
 }
 
 file('demo').traverse(nameFilter: ~/flow-(log|ota|tmp)/) { File dir ->
