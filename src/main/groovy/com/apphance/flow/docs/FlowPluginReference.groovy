@@ -101,6 +101,6 @@ class FlowPluginReference {
         def connection = newConnector().forProjectDirectory(docProject).connect()
         def buildLauncher = connection.newBuild()
         buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
-        buildLauncher.withArguments("-PdocMode=true", '-i', "-PflowProjectPath=${new File('.').absolutePath}").run()
+        buildLauncher.withArguments("-Pdoc.mode=true", '-i', "-PflowProjectPath=${new File('.').absolutePath}").run()
     }
 }
