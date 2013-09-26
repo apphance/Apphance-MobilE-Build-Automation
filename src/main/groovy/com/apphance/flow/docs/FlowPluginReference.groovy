@@ -1,6 +1,8 @@
 package com.apphance.flow.docs
 
 import com.apphance.flow.configuration.AbstractConfiguration
+import com.apphance.flow.util.FlowUtils
+import groovy.json.JsonSlurper
 import org.codehaus.groovy.groovydoc.GroovyClassDoc
 import org.codehaus.groovy.tools.groovydoc.ClasspathResourceManager
 import org.codehaus.groovy.tools.groovydoc.GroovyDocTool
@@ -12,12 +14,23 @@ import static groovy.io.FileType.FILES
 import static org.apache.maven.artifact.ant.shaded.FileUtils.extension
 import static org.codehaus.groovy.tools.groovydoc.gstringTemplates.GroovyDocTemplateInfo.*
 import static org.gradle.api.logging.Logging.getLogger
+import static org.gradle.tooling.GradleConnector.newConnector
 
+@Mixin(FlowUtils)
 class FlowPluginReference {
 
     def static logger = getLogger(FlowPluginReference)
 
     List<GroovyClassDoc> classes
+    def tmplEngine = new FlowTemplateEngine()
+    def outputHtml = new File('build/doc/doc.html')
+
+    public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled', '-XX:+CMSPermGenSweepingEnabled',
+            '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
+
+    @Lazy List<GroovyClassDoc> plugins = { classes.findAll { it.interfaces()*.name().contains Plugin.simpleName } }()
+    @Lazy List<GroovyClassDoc> configurations = { classes.findAll { superClasses(it).contains AbstractConfiguration.simpleName } }()
+    @Lazy List<GroovyClassDoc> tasks = { classes.findAll { superClasses(it).contains AbstractTask.simpleName } }()
 
     FlowPluginReference() {
         File src = new File('src')
@@ -33,16 +46,8 @@ class FlowPluginReference {
         classes = docTool.rootDoc.classes()
     }
 
-    List<GroovyClassDoc> getPlugins() {
-        classes.findAll { it.interfaces()*.name().contains Plugin.simpleName }
-    }
-
-    List<GroovyClassDoc> getConfigurations() {
-        classes.findAll { superClasses(it).contains AbstractConfiguration.simpleName }
-    }
-
-    List<GroovyClassDoc> getTasks() {
-        classes.findAll { superClasses(it).contains AbstractTask.simpleName }
+    String docText(String entityName) {
+        (plugins + tasks + configurations).find { it.name() == entityName }?.commentText()
     }
 
     List<String> superClasses(GroovyClassDoc classDoc) {
@@ -51,9 +56,38 @@ class FlowPluginReference {
     }
 
     public static void main(String[] args) {
+        new FlowPluginReference().run()
+    }
+
+    public void run() {
         logger.lifecycle "Building Apphance Flow plugin reference"
 
-        def reference = new FlowPluginReference()
-        //TODO: generate documentation using groovydoc taken from reference and html templates
+        def docProject = new File("demo/android/android-basic")
+        applyAllPluginsInDocMode(docProject)
+
+        def json = new JsonSlurper().parseText(new File(docProject, 'build/doc/doc.json').text)
+        def html = json.plugins.collect { String pluginName, List tasks ->
+            tmplEngine.fillTaskTemplate([
+                    header: pluginName,
+                    groupName: pluginName,
+                    groupDescription: docText(pluginName),
+                    tasks: tasks.collect {
+                        [
+                                taskName: "$it.taskName",
+                                taskDescription: [it.description, docText(it.taskClass)].grep().join('<p><p>')
+                        ]
+                    }
+            ])
+        }.join('\n')
+
+        outputHtml.parentFile.mkdirs()
+        outputHtml.text = html
+    }
+
+    private void applyAllPluginsInDocMode(File docProject) {
+        def connection = newConnector().forProjectDirectory(docProject).connect()
+        def buildLauncher = connection.newBuild()
+        buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
+        buildLauncher.withArguments("-PdocMode=true", '-i', "-PflowProjectPath=${new File('.').absolutePath}").run()
     }
 }

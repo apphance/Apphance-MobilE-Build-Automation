@@ -264,7 +264,7 @@ artifacts {
     }
 }
 
-task buildPluginReference(dependsOn: classes, type:JavaExec) {
+task buildPluginReference(dependsOn: classes, type: JavaExec) {
     main = 'com.apphance.flow.docs.FlowPluginReference'
     classpath = sourceSets.main.runtimeClasspath
 }

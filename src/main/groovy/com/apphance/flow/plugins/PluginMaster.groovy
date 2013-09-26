@@ -123,6 +123,6 @@ class PluginMaster {
                 ]
         )
         logger.info "Prepared doc json: $output"
-        file << output
+        file.text = output
     }
 }

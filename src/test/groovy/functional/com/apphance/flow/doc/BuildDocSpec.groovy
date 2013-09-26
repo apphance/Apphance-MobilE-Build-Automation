@@ -1,6 +1,7 @@
 package com.apphance.flow.doc
 
 import com.apphance.flow.TestUtils
+import groovy.json.JsonSlurper
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.ProjectConnection
 import spock.lang.Specification
@@ -54,5 +55,6 @@ class BuildDocSpec extends Specification {
         then:
         outFile.exists()
         outFile.size() > 0
+        new JsonSlurper().parseText(outFile.text)
     }
 }
