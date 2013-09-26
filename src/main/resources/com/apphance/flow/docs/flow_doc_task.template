@@ -14,8 +14,6 @@
     <br>
 </div>
 
-<div>${groupNameFull}</div>
-<br>
 <div>${groupDescription}</div>
 
 <% if(tasks && !tasks.isEmpty()) { %>

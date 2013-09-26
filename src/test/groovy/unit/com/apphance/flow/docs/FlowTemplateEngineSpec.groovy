@@ -43,8 +43,6 @@ class FlowTemplateEngineSpec extends Specification {
                 '    <br>\n' +
                 '</div>\n' +
                 '\n' +
-                '<div>This is flow some group</div>\n' +
-                '<br>\n' +
                 '<div>This is the group description</div>\n' +
                 '\n' +
                 '\n' +
