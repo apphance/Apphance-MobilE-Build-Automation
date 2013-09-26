@@ -49,7 +49,7 @@ class IOSConfiguration extends ProjectConfiguration {
     def sdk = new StringProperty(
             name: 'ios.sdk',
             message: 'iOS SDK',
-            defaultValue: { 'iphones' },
+            defaultValue: { 'iphoneos' },
             possibleValues: { executor.sdks as List },
             validator: { it in executor.sdks },
             required: { true }
