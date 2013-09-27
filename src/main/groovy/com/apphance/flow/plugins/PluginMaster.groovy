@@ -18,16 +18,18 @@ import com.google.inject.Injector
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.logging.Logging
 
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static groovy.json.JsonOutput.toJson
+import static java.util.ResourceBundle.getBundle
+import static org.gradle.api.logging.Logging.getLogger
 
 class PluginMaster {
 
-    def logger = Logging.getLogger(getClass())
+    def logger = getLogger(getClass())
+    def docBundle = getBundle('doc')
 
     @Inject ProjectTypeDetector projectTypeDetector
     @Inject Injector injector
@@ -116,9 +118,11 @@ class PluginMaster {
                             }]
                         },
                         configurations: configurations.values().collectEntries {
-                            [(it.class.simpleName): it.propertyFields.collect {
-                                [name: it.name, description: it.doc()]
-                            }]
+                            [(it.class.simpleName):
+                                    [name: it.enabledPropKey, description: docBundle.getString(it.enabledPropKey)] +
+                                            it.propertyFields.collect {
+                                                [name: it.name, description: it.doc()]
+                                            }]
                         }
                 ]
         )
