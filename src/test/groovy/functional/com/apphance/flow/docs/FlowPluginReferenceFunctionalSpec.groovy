@@ -8,13 +8,13 @@ class FlowPluginReferenceFunctionalSpec extends Specification {
 
     def 'test generate documentation'() {
         given:
-        File outHtml = tempFile
-        def pluginRef = new FlowPluginReference(outputHtml:  outHtml)
+        def pluginRef = new FlowPluginReference()
         pluginRef.run()
 
         expect:
-        outHtml.size() > 0
-        outHtml.text.contains('<font size="4">AndroidApphancePlugin</font>')
-        outHtml.text.contains('android.analysis.findbugs.exclude')
+        ['build/doc/conf.html', 'build/doc/plugin.html'].every {
+            def f = new File(it)
+            f.exists() && f.size() > 0
+        }
     }
 }

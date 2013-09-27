@@ -119,7 +119,7 @@ class PluginMaster {
                         },
                         configurations: configurations.values().collectEntries {
                             [(it.class.simpleName):
-                                    [[name: it.enabledPropKey, description: docBundle.getString(it.enabledPropKey)],] <<
+                                    [[name: it.enabledPropKey, description: docBundle.getString(it.enabledPropKey)]] +
                                             it.propertyFields.collect {
                                                 [name: it.name, description: it.doc()]
                                             }]

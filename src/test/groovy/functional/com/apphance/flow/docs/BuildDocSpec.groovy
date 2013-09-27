@@ -1,4 +1,4 @@
-package com.apphance.flow.doc
+package com.apphance.flow.docs
 
 import com.apphance.flow.TestUtils
 import groovy.json.JsonSlurper
@@ -53,6 +53,7 @@ class BuildDocSpec extends Specification {
         def outFile = new File(testTmpDir, outFileName)
 
         then:
+        'lol'.hashCode()
         outFile.exists()
         outFile.size() > 0
         new JsonSlurper().parseText(outFile.text)

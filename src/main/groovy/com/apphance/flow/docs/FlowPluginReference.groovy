@@ -1,6 +1,8 @@
 package com.apphance.flow.docs
 
 import com.apphance.flow.configuration.AbstractConfiguration
+import com.apphance.flow.plugins.project.ProjectPlugin
+import com.apphance.flow.plugins.release.ReleasePlugin
 import com.apphance.flow.util.FlowUtils
 import groovy.json.JsonSlurper
 import org.codehaus.groovy.groovydoc.GroovyClassDoc
@@ -22,8 +24,9 @@ class FlowPluginReference {
     def static logger = getLogger(FlowPluginReference)
 
     List<GroovyClassDoc> classes
-    def tmplEngine = new FlowTemplateEngine()
-    def outputHtml = new File('build/doc/doc.html')
+    private FlowTemplateEngine tmplEngine = new FlowTemplateEngine()
+    private File pluginHtml = new File('build/doc/plugin.html')
+    private File confHtml = new File('build/doc/conf.html')
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled', '-XX:+CMSPermGenSweepingEnabled',
             '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
@@ -46,10 +49,6 @@ class FlowPluginReference {
         classes = docTool.rootDoc.classes()
     }
 
-    String docText(String entityName) {
-        (plugins + tasks + configurations).find { it.name() == entityName }?.commentText()
-    }
-
     List<String> superClasses(GroovyClassDoc classDoc) {
         def superclass = classDoc.superclass()
         superclass && classDoc.name() != 'Object' ? [superclass.name()] + superClasses(superclass) : []
@@ -62,11 +61,51 @@ class FlowPluginReference {
     public void run() {
         logger.lifecycle "Building Apphance Flow plugin reference"
 
-        def docProject = new File("testProjects/android/android-basic")
-        applyAllPluginsInDocMode(docProject)
+        def androidProject = new File("demo/android/android-basic")
+        def iosProject = new File('doc-projects/iOS')
 
-        def json = new JsonSlurper().parseText(new File(docProject, 'build/doc/doc.json').text)
-        def pluginHtml = json.plugins.collect { String pluginName, List tasks ->
+        applyAllPluginsInDocMode(androidProject)
+        def androidJson = toJson(new File(androidProject, 'build/doc/doc.json'))
+
+        applyAllPluginsInDocMode(iosProject)
+        def iosJson = toJson(new File(iosProject, 'build/doc/doc.json'))
+
+        def projectPlugin = ProjectPlugin.simpleName
+        def releasePlugin = ReleasePlugin.simpleName
+
+        iosJson.plugins.remove(projectPlugin)
+        iosJson.plugins.remove(releasePlugin)
+
+        def commonPlugins = [
+                (projectPlugin): androidJson.plugins.remove(projectPlugin),
+                (releasePlugin): androidJson.plugins.remove(releasePlugin)
+        ]
+        def androidPlugins = androidJson.plugins
+        def iosPlugins = iosJson.plugins
+
+        def pluginsRef = [commonPlugins, androidPlugins, iosPlugins].collect(this.&generatePluginDoc).join('\n')
+        def configurationsRef = [androidJson.configurations, iosJson.configurations].collect(this.&generateConfDoc).join('\n')
+
+        pluginHtml.parentFile.mkdirs()
+        pluginHtml.text = pluginsRef
+
+        confHtml.parentFile.mkdirs()
+        confHtml.text = configurationsRef
+    }
+
+    private void applyAllPluginsInDocMode(File docProject) {
+        def connection = newConnector().forProjectDirectory(docProject).connect()
+        def buildLauncher = connection.newBuild()
+        buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
+        buildLauncher.withArguments("-PdocMode=true", '-i', "-PflowProjectPath=${new File('.').absolutePath}").run()
+    }
+
+    private Map toJson(File doc) {
+        new JsonSlurper().parseText(doc.text) as Map
+    }
+
+    private String generatePluginDoc(Map plugins) {
+        plugins.collect { String pluginName, List tasks ->
             tmplEngine.fillTaskTemplate([
                     header: pluginName,
                     groupName: pluginName,
@@ -79,8 +118,10 @@ class FlowPluginReference {
                     }
             ])
         }.join('\n')
+    }
 
-        def confHtml = json.configurations.collect { String confName, List propertyFields ->
+    private String generateConfDoc(Map configurations) {
+        configurations.collect { String confName, List propertyFields ->
             tmplEngine.fillConfTemplate([
                     confName: confName,
                     confDescription: docText(confName),
@@ -92,15 +133,9 @@ class FlowPluginReference {
                     }
             ])
         }.join('\n')
-
-        outputHtml.parentFile.mkdirs()
-        outputHtml.text = pluginHtml + confHtml
     }
 
-    private void applyAllPluginsInDocMode(File docProject) {
-        def connection = newConnector().forProjectDirectory(docProject).connect()
-        def buildLauncher = connection.newBuild()
-        buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
-        buildLauncher.withArguments("-PdocMode=true", '-i', "-PflowProjectPath=${new File('.').absolutePath}").run()
+    String docText(String entityName) {
+        (plugins + tasks + configurations).find { it.name() == entityName }?.commentText()
     }
 }
