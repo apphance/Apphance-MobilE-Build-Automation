@@ -24,7 +24,7 @@ class BuildDocSpec extends Specification {
 
     def setup() {
         testTmpDir = temporaryDir
-        copyDirectory new File("demo/android/android-basic"), testTmpDir
+        copyDirectory new File("testProjects/android/android-basic"), testTmpDir
         connection = newConnector().forProjectDirectory(testTmpDir).connect()
         buildLauncher = connection.newBuild()
         buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)

@@ -62,7 +62,7 @@ class FlowPluginReference {
     public void run() {
         logger.lifecycle "Building Apphance Flow plugin reference"
 
-        def docProject = new File("demo/android/android-basic")
+        def docProject = new File("testProjects/android/android-basic")
         applyAllPluginsInDocMode(docProject)
 
         def json = new JsonSlurper().parseText(new File(docProject, 'build/doc/doc.json').text)
