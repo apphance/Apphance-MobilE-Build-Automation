@@ -1,0 +1,5 @@
+buildscript {
+    apply from: "$flowProjectPath/flow_in_classpath.gradle"
+}
+
+apply plugin: 'apphance-flow'
