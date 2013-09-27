@@ -61,7 +61,7 @@ class FlowPluginReference {
     public void run() {
         logger.lifecycle "Building Apphance Flow plugin reference"
 
-        def androidProject = new File("demo/android/android-basic")
+        def androidProject = new File("doc-projects/android")
         def iosProject = new File('doc-projects/iOS')
 
         applyAllPluginsInDocMode(androidProject)
