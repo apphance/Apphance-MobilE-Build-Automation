@@ -1,6 +1,10 @@
 package com.apphance.flow.docs
 
 import com.apphance.flow.configuration.AbstractConfiguration
+import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
+import com.apphance.flow.configuration.apphance.ApphanceConfiguration
+import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
+import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.util.FlowUtils
 import groovy.json.JsonSlurper
 import org.codehaus.groovy.groovydoc.GroovyClassDoc
@@ -80,13 +84,9 @@ class FlowPluginReference {
         iosPlugins.remove('1')
 
         def pluginsRef = [commonPlugins, androidPlugins, iosPlugins].collect(this.&generatePluginDoc).join('\n')
-        def configurationsRef = [androidJson.configurations, iosJson.configurations].collect(this.&generateConfDoc).join('\n')
 
         pluginHtml.parentFile.mkdirs()
         pluginHtml.text = pluginsRef
-
-        confHtml.parentFile.mkdirs()
-        confHtml.text = configurationsRef
 
         pluginSiteHtml.parentFile.mkdirs()
         pluginSiteHtml.text = tmplEngine.fillTaskSiteTemplate(
@@ -96,6 +96,31 @@ class FlowPluginReference {
                         iosPlugins: iosPlugins.values().collect { [plugin: it.plugin] },
                         tasks: pluginHtml.text
                 ])
+
+        def androidConfs = androidJson.configurations.sort { it.key }
+        def iosConfs = iosJson.configurations.sort { it.key }
+
+        def findConfKey = { confs, conf -> confs.find { it.value.conf == conf }.key }
+        def commonConfs = [
+                '0': androidConfs.remove(findConfKey(androidConfs, AndroidReleaseConfiguration.simpleName)),
+                '1': androidConfs.remove(findConfKey(androidConfs, ApphanceConfiguration.simpleName)),
+        ]
+
+        commonConfs['0'].confName = commonConfs['0'].conf = ReleaseConfiguration.simpleName
+
+        iosConfs.remove(findConfKey(iosConfs, ApphanceConfiguration.simpleName))
+        iosConfs.remove(findConfKey(iosConfs, IOSReleaseConfiguration.simpleName))
+
+        def configurationsRef = [commonConfs, androidConfs, iosConfs].collect(this.&generateConfDoc).join('\n')
+        confHtml.parentFile.mkdirs()
+        confHtml.text = tmplEngine.fillConfSiteTemplate(
+                [
+                        commonConfs: commonConfs.values().collect { [conf: it.conf] },
+                        androidConfs: androidConfs.values().collect { [conf: it.conf] },
+                        iosConfs: iosConfs.values().collect { [conf: it.conf] },
+                        confs: configurationsRef
+                ]
+        )
     }
 
     private void applyAllPluginsInDocMode(File docProject) {
@@ -128,17 +153,19 @@ class FlowPluginReference {
     }
 
     private String generateConfDoc(Map configurations) {
-        configurations.collect { String confName, List propertyFields ->
-            tmplEngine.fillConfTemplate([
-                    confName: confName,
-                    confDescription: docText(confName),
-                    confProperties: propertyFields.collect {
-                        [
-                                name: it.name,
-                                description: it.description
-                        ]
-                    }
-            ])
+        configurations.collect { String id, Map conf ->
+            tmplEngine.fillConfTemplate(
+                    [
+                            confName: conf.conf,
+                            confDescription: docText(conf.conf),
+                            confProperties: conf.props.collect {
+                                [
+                                        name: it.name,
+                                        description: it.description
+                                ]
+                            }
+                    ]
+            )
         }.join('\n')
     }
 

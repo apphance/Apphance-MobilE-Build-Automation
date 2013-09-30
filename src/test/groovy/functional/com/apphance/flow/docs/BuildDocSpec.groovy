@@ -24,7 +24,7 @@ class BuildDocSpec extends Specification {
 
     def setup() {
         testTmpDir = temporaryDir
-        copyDirectory new File("testProjects/android/android-basic"), testTmpDir
+        copyDirectory new File("doc-projects/android"), testTmpDir
         connection = newConnector().forProjectDirectory(testTmpDir).connect()
         buildLauncher = connection.newBuild()
         buildLauncher.setJvmArguments(GRADLE_DAEMON_ARGS)
@@ -53,7 +53,6 @@ class BuildDocSpec extends Specification {
         def outFile = new File(testTmpDir, outFileName)
 
         then:
-        'lol'.hashCode()
         outFile.exists()
         outFile.size() > 0
         new JsonSlurper().parseText(outFile.text)

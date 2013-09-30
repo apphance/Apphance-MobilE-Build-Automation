@@ -111,28 +111,35 @@ class PluginMaster {
     }
 
     void saveDoc(Map<Integer, Map> map, File file) {
-        def output = toJson(
-                [
-                        plugins: map.collectEntries { Integer id, Map details ->
-                            [
-                                    (id): [
-                                            plugin: details.plugin.class.simpleName,
-                                            tasks: details.tasks.collect {
-                                                [taskClass: it.class.superclass.simpleName, taskName: it.name, description: it.description]
-                                            }
-                                    ]
-
-                            ]
-                        },
-                        configurations: configurations.values().collectEntries {
-                            [(it.class.simpleName):
-                                    [[name: it.enabledPropKey, description: docBundle.getString(it.enabledPropKey)]] +
-                                            it.propertyFields.collect {
-                                                [name: it.name, description: it.doc()]
-                                            }]
-                        }
-                ]
-        )
-        file.text = output
+        def json = [:]
+        json.plugins = map.collectEntries { Integer id, Map details ->
+            [
+                    (id): [
+                            plugin: details.plugin.class.simpleName,
+                            tasks: details.tasks.collect {
+                                [taskClass: it.class.superclass.simpleName, taskName: it.name, description: it.description]
+                            }
+                    ]
+            ]
+        }
+        def confs = [:]
+        def conf2map = { AbstractConfiguration conf ->
+            [
+                    conf: conf.class.simpleName,
+                    props: [[name: conf.enabledPropKey, description: docBundle.getString(conf.enabledPropKey)]] +
+                            conf.propertyFields.collect {
+                                [name: it.name, description: it.doc()]
+                            }
+            ]
+        }
+        def cnt = 0
+        configurations.values().each { c ->
+            confs[cnt++] = conf2map(c)
+            c.subConfigurations.each { sc ->
+                confs[cnt++] = conf2map(sc)
+            }
+        }
+        json.configurations = confs
+        file.text = toJson(json)
     }
 }

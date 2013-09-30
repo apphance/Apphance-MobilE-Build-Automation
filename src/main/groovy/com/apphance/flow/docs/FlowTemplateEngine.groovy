@@ -20,4 +20,10 @@ class FlowTemplateEngine {
         def tmpl = getClass().getResource('flow_doc_conf.template')
         engine.createTemplate(tmpl).make(conf)
     }
+
+    String fillConfSiteTemplate(Map conf) {
+        def tmpl = getClass().getResource('flow_doc_conf_site.template')
+        engine.createTemplate(tmpl).make(conf)
+    }
+
 }

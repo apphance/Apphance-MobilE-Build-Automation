@@ -88,7 +88,7 @@ class FlowTemplateEngineSpec extends Specification {
                 ],
         ]
         expect:
-        tmplEngine.fillConfTemplate(conf) == '<h3 style="border-bottom:dotted 1px #aaa">\n' +
+        tmplEngine.fillConfTemplate(conf) == '<h3 id="Conf" style="border-bottom:dotted 1px #aaa">\n' +
                 '    <font size="4">Conf</font>\n' +
                 '</h3>\n' +
                 '\n' +

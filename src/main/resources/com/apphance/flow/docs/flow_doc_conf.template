@@ -1,4 +1,4 @@
-<h3 style="border-bottom:dotted 1px #aaa">
+<h3 id="${confName}" style="border-bottom:dotted 1px #aaa">
     <font size="4">${confName}</font>
 </h3>
 
