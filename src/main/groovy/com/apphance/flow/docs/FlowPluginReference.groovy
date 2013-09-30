@@ -1,8 +1,6 @@
 package com.apphance.flow.docs
 
 import com.apphance.flow.configuration.AbstractConfiguration
-import com.apphance.flow.plugins.project.ProjectPlugin
-import com.apphance.flow.plugins.release.ReleasePlugin
 import com.apphance.flow.util.FlowUtils
 import groovy.json.JsonSlurper
 import org.codehaus.groovy.groovydoc.GroovyClassDoc
@@ -26,6 +24,7 @@ class FlowPluginReference {
     List<GroovyClassDoc> classes
     private FlowTemplateEngine tmplEngine = new FlowTemplateEngine()
     private File pluginHtml = new File('build/doc/plugin.html')
+    private File pluginSiteHtml = new File('build/doc/plugins.html')
     private File confHtml = new File('build/doc/conf.html')
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled', '-XX:+CMSPermGenSweepingEnabled',
@@ -70,18 +69,15 @@ class FlowPluginReference {
         applyAllPluginsInDocMode(iosProject)
         def iosJson = toJson(new File(iosProject, 'build/doc/doc.json'))
 
-        def projectPlugin = ProjectPlugin.simpleName
-        def releasePlugin = ReleasePlugin.simpleName
-
-        iosJson.plugins.remove(projectPlugin)
-        iosJson.plugins.remove(releasePlugin)
+        def androidPlugins = androidJson.plugins.sort { it.key }
+        def iosPlugins = iosJson.plugins.sort { it.key }
 
         def commonPlugins = [
-                (projectPlugin): androidJson.plugins.remove(projectPlugin),
-                (releasePlugin): androidJson.plugins.remove(releasePlugin)
-        ]
-        def androidPlugins = androidJson.plugins
-        def iosPlugins = iosJson.plugins
+                '0': androidPlugins.remove('0'),
+                '1': androidPlugins.remove('1')
+        ].sort { it.key }
+        iosPlugins.remove('0')
+        iosPlugins.remove('1')
 
         def pluginsRef = [commonPlugins, androidPlugins, iosPlugins].collect(this.&generatePluginDoc).join('\n')
         def configurationsRef = [androidJson.configurations, iosJson.configurations].collect(this.&generateConfDoc).join('\n')
@@ -91,6 +87,15 @@ class FlowPluginReference {
 
         confHtml.parentFile.mkdirs()
         confHtml.text = configurationsRef
+
+        pluginSiteHtml.parentFile.mkdirs()
+        pluginSiteHtml.text = tmplEngine.fillTaskSiteTemplate(
+                [
+                        commonPlugins: commonPlugins.values().collect { [plugin: it.plugin] },
+                        androidPlugins: androidPlugins.values().collect { [plugin: it.plugin] },
+                        iosPlugins: iosPlugins.values().collect { [plugin: it.plugin] },
+                        tasks: pluginHtml.text
+                ])
     }
 
     private void applyAllPluginsInDocMode(File docProject) {
@@ -105,18 +110,20 @@ class FlowPluginReference {
     }
 
     private String generatePluginDoc(Map plugins) {
-        plugins.collect { String pluginName, List tasks ->
-            tmplEngine.fillTaskTemplate([
-                    header: pluginName,
-                    groupName: pluginName,
-                    groupDescription: docText(pluginName),
-                    tasks: tasks.collect {
-                        [
-                                taskName: it.taskName,
-                                taskDescription: [it.description, docText(it.taskClass)].grep().join('<p><p>')
-                        ]
-                    }
-            ])
+        plugins.collect { String id, Map m ->
+            tmplEngine.fillTaskTemplate(
+                    [
+                            header: m.plugin,
+                            groupName: m.plugin,
+                            groupDescription: docText(m.plugin),
+                            tasks: m.tasks.collect { t ->
+                                [
+                                        taskName: t.taskName,
+                                        taskDescription: [t.description, docText(t.taskClass)].grep().join('<p><p>')
+                                ]
+                            }
+                    ]
+            )
         }.join('\n')
     }
 

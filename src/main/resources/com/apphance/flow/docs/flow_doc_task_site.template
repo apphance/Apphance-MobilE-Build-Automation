@@ -1,0 +1,54 @@
+Plugin reference for Apphance Flow, version 1.0.8 (TODO - generate version number)
+
+<br/>
+
+<div style='text-align:justify'>
+  //TODO
+  This reference provides description of all plugins of Apphance Flow, and tasks that they provide.
+  It also provides description of all properties that can be used in the plugin's configuration.
+  Last but not least, it provides examples showing how particular plugin should be used -
+  including conventions they can be used with particular plugins.
+</div>
+
+<br/>
+
+<div class="sites-codeblock sites-codesnippet-block" style="width:300px">
+
+    <% if(commonPlugins && commonPlugins.size() > 0) { %>
+        <br/>
+        <a href="#Common%20tasks">Common tasks</a>
+        <br/>
+        <br/>
+        <% commonPlugins.each { p -> %>
+            <a href="#${p.plugin}">${p.plugin}</a>
+            <br/>
+        <% } %>
+    <% } %>
+
+    <% if(androidPlugins && androidPlugins.size() > 0) { %>
+        <br/>
+        <a href="#Android%20tasks">Android tasks</a>
+        <br/>
+        <br/>
+        <% androidPlugins.each { p -> %>
+            <a href="#${p.plugin}">${p.plugin}</a>
+            <br/>
+        <% } %>
+    <% } %>
+
+    <% if(iosPlugins && iosPlugins.size() > 0) { %>
+        <br/>
+        <a href="#iOS%20tasks">iOS tasks</a>
+        <br/>
+        <br/>
+        <% iosPlugins.each { p -> %>
+            <a href="#${p.plugin}">${p.plugin}</a>
+            <br/>
+        <% } %>
+    <% } %>
+
+</div>
+<br/>
+
+${tasks}
+

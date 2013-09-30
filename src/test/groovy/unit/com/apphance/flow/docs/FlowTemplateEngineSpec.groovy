@@ -27,7 +27,7 @@ class FlowTemplateEngineSpec extends Specification {
         ]
 
         expect:
-        tmplEngine.fillTaskTemplate(tasksGroup) == '<h3 style="border-bottom:dotted 1px #aaa">\n' +
+        tmplEngine.fillTaskTemplate(tasksGroup) == '<h3 id="Some group" style="border-bottom:dotted 1px #aaa">\n' +
                 '    <font size="4">Some group</font>\n' +
                 '</h3>\n' +
                 '\n' +

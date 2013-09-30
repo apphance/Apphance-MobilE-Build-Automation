@@ -38,7 +38,7 @@ class PluginMaster {
     final static PLUGINS = [
             COMMON: [
                     ProjectPlugin,
-                    ReleasePlugin,
+                    ReleasePlugin,//TODO any problems with accessible tasks when no flow.properties exists?
             ],
 
             IOS: [
@@ -60,10 +60,11 @@ class PluginMaster {
     void enhanceProject(Project project) {
         ProjectType projectType = projectTypeDetector.detectProjectType(project.rootDir)
 
-        Map<Plugin, Set<Task>> doc = [:]
+        Map<Integer, Map> doc = [:]
 
         def docModeEnabled = docModeEnabled(project)
         def docFile = docModeEnabled ? docFile(project) : null
+        def idx = 0
 
         if (docModeEnabled)
             logger.lifecycle "'docMode' enabled - generating documentation"
@@ -80,7 +81,10 @@ class PluginMaster {
             plugin.apply(project)
 
             if (docModeEnabled)
-                doc[plugin] = (project.tasks.findAll() - tasksBefore).findAll { it.enabled }
+                doc[idx++] = [
+                        plugin: plugin,
+                        tasks: (project.tasks.findAll() - tasksBefore).findAll { it.enabled }
+                ]
 
             project.plugins.add(plugin)
         }
@@ -102,20 +106,23 @@ class PluginMaster {
         def name = project.hasProperty('docFile') ? project.docFile : 'build/doc/doc.json'
         def docFile = new File(project.rootDir, name)
         docFile.parentFile.mkdirs()
-        if (docFile.createNewFile())
-            logger.lifecycle "${docFile.absolutePath} successfully created"
-        else
-            logger.error "Error while creating $docFile.absolutePath"
+        docFile.createNewFile()
         docFile
     }
 
-    void saveDoc(Map<Plugin, Set<Task>> map, File file) {
+    void saveDoc(Map<Integer, Map> map, File file) {
         def output = toJson(
                 [
-                        plugins: map.collectEntries { Plugin plugin, Set<Task> tasks ->
-                            [(plugin.class.simpleName): tasks.collect {
-                                [taskClass: it.class.superclass.simpleName, taskName: it.name, description: it.description]
-                            }]
+                        plugins: map.collectEntries { Integer id, Map details ->
+                            [
+                                    (id): [
+                                            plugin: details.plugin.class.simpleName,
+                                            tasks: details.tasks.collect {
+                                                [taskClass: it.class.superclass.simpleName, taskName: it.name, description: it.description]
+                                            }
+                                    ]
+
+                            ]
                         },
                         configurations: configurations.values().collectEntries {
                             [(it.class.simpleName):
@@ -126,7 +133,6 @@ class PluginMaster {
                         }
                 ]
         )
-        logger.info "Prepared doc json: $output"
         file.text = output
     }
 }
