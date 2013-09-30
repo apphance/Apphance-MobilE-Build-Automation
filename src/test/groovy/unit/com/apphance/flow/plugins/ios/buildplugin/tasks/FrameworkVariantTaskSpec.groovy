@@ -40,6 +40,7 @@ class FrameworkVariantTaskSpec extends Specification {
             getArchiveConfiguration() >> 'archive'
             getFrameworkHeaders() >> new ListStringProperty(value: [])
             getFrameworkResources() >> new ListStringProperty(value: [])
+            getFrameworkLibs() >> new ListStringProperty(value: [])
             getMode() >> new IOSBuildModeProperty(value: FRAMEWORK)
             getXcodebuildExecutionPath() >> ['xcodebuild']
         }
@@ -57,7 +58,7 @@ class FrameworkVariantTaskSpec extends Specification {
         1 * task.iosExecutor.buildVariant(null, ['xcodebuild', '-scheme', 'variant', '-sdk', 'iphoneos',
                 '-configuration', 'archive', "CONFIGURATION_BUILD_DIR=$task.deviceTmpDir.absolutePath", 'PRODUCT_NAME=device', 'clean', 'build'])
         1 * task.iosExecutor.buildVariant(null, ['xcodebuild', '-scheme', 'variant', '-sdk', 'iphonesimulator',
-                '-arch', 'i386', '-configuration', 'archive', "CONFIGURATION_BUILD_DIR=$task.simTmpDir.absolutePath", 'PRODUCT_NAME=sim',
+                '-configuration', 'archive', "CONFIGURATION_BUILD_DIR=$task.simTmpDir.absolutePath", 'PRODUCT_NAME=sim',
                 'clean', 'build'])
         cnt * task.artifactProvider.frameworkInfo(_) >> new IOSFrameworkArtifactInfo()
         cnt * task.frameworkArtifactsBuilder.buildArtifacts(_)

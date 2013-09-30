@@ -16,7 +16,8 @@ class IOSFrameworkArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSFramew
     @Override
     void buildArtifacts(IOSFrameworkArtifactInfo info) {
         buildFrameworkStructure(info)
-        linkLibraries(info)
+        runLipo(info)
+        runLibtool(info)
         copyHeaders(info)
         copyResources(info)
         prepareFrameworkZip(info)
@@ -55,12 +56,26 @@ class IOSFrameworkArtifactsBuilder extends AbstractIOSArtifactsBuilder<IOSFramew
     }
 
     @PackageScope
-    void linkLibraries(IOSFrameworkArtifactInfo info) {
+    void runLipo(IOSFrameworkArtifactInfo info) {
         executor.executeCommand(new Command(
                 runDir: conf.rootDir,
                 cmd: ['lipo', '-create', info.deviceLib.absolutePath, info.simLib.absolutePath,
-                        '-output', new File(info.frameworkDir, "Versions/Current/${info.frameworkName}")
+                        '-output', new File(info.frameworkDir, "Versions/Current/$info.frameworkName")
                 ]))
+    }
+
+    @PackageScope
+    void runLibtool(IOSFrameworkArtifactInfo info) {
+        def paths = info.libs.collect { new File(info.variantDir, it) }*.absolutePath
+        if (paths.size() > 0) {
+            executor.executeCommand(new Command(
+                    runDir: conf.rootDir,
+                    cmd: ['libtool', '-static', '-o',
+                            new File(info.frameworkDir, "Versions/Current/$info.frameworkName").absolutePath,
+                            new File(info.frameworkDir, "Versions/Current/$info.frameworkName").absolutePath,
+                    ] + paths
+            ))
+        }
     }
 
     @PackageScope

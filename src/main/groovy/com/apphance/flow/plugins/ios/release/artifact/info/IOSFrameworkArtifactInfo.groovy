@@ -9,8 +9,9 @@ class IOSFrameworkArtifactInfo extends AbstractIOSArtifactInfo {
     String frameworkName
     File simLib
     File deviceLib
-    List<String> headers
-    List<String> resources
+    List<String> headers = []
+    List<String> resources = []
+    List<String> libs = []
 
     @Lazy File frameworkDir = { new File(fu.temporaryDir, "${frameworkName}.framework") }()
     @Lazy File versionsDir = { new File(frameworkDir, 'Versions/A') }()

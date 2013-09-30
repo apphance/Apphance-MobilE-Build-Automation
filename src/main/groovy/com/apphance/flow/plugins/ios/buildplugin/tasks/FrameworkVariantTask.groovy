@@ -30,6 +30,7 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
             info.deviceLib = new File(deviceTmpDir, 'libdevice.a')
             info.headers = variant.frameworkHeaders.value
             info.resources = variant.frameworkResources.value
+            info.libs = variant.frameworkLibs.value
             frameworkArtifactsBuilder.buildArtifacts(info)
         }
     }
@@ -37,7 +38,7 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
     @Lazy
     List<String> cmdSim = {
         variant.xcodebuildExecutionPath + ['-scheme', variant.schemeName] +
-                ['-sdk', conf.simulatorSdk.value ?: 'iphonesimulator'] + ['-arch', 'i386'] +
+                ['-sdk', conf.simulatorSdk.value ?: 'iphonesimulator'] +
                 ['-configuration', variant.archiveConfiguration] +
                 ["CONFIGURATION_BUILD_DIR=${simTmpDir.absolutePath}".toString()] +
                 ['PRODUCT_NAME=sim'] +

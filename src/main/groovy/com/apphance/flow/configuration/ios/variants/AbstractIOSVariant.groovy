@@ -58,6 +58,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         frameworkName.name = "ios.variant.${name}.framework.name"
         frameworkHeaders.name = "ios.variant.${name}.framework.headers"
         frameworkResources.name = "ios.variant.${name}.framework.resources"
+        frameworkLibs.name = "ios.variant.${name}.framework.libs"
 
         super.init()
     }
@@ -126,8 +127,8 @@ abstract class AbstractIOSVariant extends AbstractVariant {
             validator: { isNotEmpty(it) }
     )
     def frameworkHeaders = new ListStringProperty(interactive: { false }, required: { false })
-
     def frameworkResources = new ListStringProperty(interactive: { false }, required: { false })
+    def frameworkLibs = new ListStringProperty(interactive: { false }, required: { false })
 
     String getBundleId() {
         plistParser.evaluate(plistParser.bundleId(plist), target, archiveConfiguration) ?: ''
@@ -239,6 +240,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
             defaultValidation frameworkName
             check(frameworkHeaders.value.every { new File(conf.rootDir, it).exists() }, bundle.getString('exception.ios.framework.invalid.headers'))
             check(frameworkResources.value.every { new File(conf.rootDir, it).exists() }, bundle.getString('exception.ios.framework.invalid.resources'))
+            check(frameworkLibs.value.every { new File(conf.rootDir, it).exists() }, bundle.getString('exception.ios.framework.invalid.libs'))
         }
     }
 }
