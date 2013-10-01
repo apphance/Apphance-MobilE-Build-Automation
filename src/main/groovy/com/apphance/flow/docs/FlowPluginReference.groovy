@@ -1,9 +1,6 @@
 package com.apphance.flow.docs
 
 import com.apphance.flow.configuration.AbstractConfiguration
-import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
-import com.apphance.flow.configuration.apphance.ApphanceConfiguration
-import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.util.FlowUtils
 import groovy.json.JsonSlurper
@@ -99,22 +96,22 @@ class FlowPluginReference {
 
         def findConfKey = { confs, conf -> confs.find { it.value.conf == conf }.key }
         def commonConfs = [
-                '0': androidConfs.remove(findConfKey(androidConfs, AndroidReleaseConfiguration.simpleName)),
-                '1': androidConfs.remove(findConfKey(androidConfs, ApphanceConfiguration.simpleName)),
+                '0': androidConfs.remove(findConfKey(androidConfs, 'Release Configuration')),
+                '1': androidConfs.remove(findConfKey(androidConfs, 'Apphance Configuration')),
         ].sort { it.key }
 
-        commonConfs['0'].confName = commonConfs['0'].conf = ReleaseConfiguration.simpleName
+        commonConfs['0'].confName = commonConfs['0'].conf = 'Release Configuration'
 
-        iosConfs.remove(findConfKey(iosConfs, ApphanceConfiguration.simpleName))
-        iosConfs.remove(findConfKey(iosConfs, IOSReleaseConfiguration.simpleName))
+        iosConfs.remove(findConfKey(iosConfs, 'Apphance Configuration'))
+        iosConfs.remove(findConfKey(iosConfs, 'Release Configuration'))
 
         def configurationsRef = [commonConfs, androidConfs, iosConfs].collect(this.&generateConfDoc).join('\n')
         confsHtml.parentFile.mkdirs()
         confsHtml.text = tmplEngine.fillConfSiteTemplate(
                 [
-                        commonConfs: commonConfs.values().collect { [conf: splitByCharacterTypeCamelCase(it.conf).join(' ')] },
-                        androidConfs: androidConfs.values().collect { [conf: splitByCharacterTypeCamelCase(it.conf).join(' ')] },
-                        iosConfs: iosConfs.values().collect { [conf: splitByCharacterTypeCamelCase(it.conf).join(' ')] },
+                        commonConfs: commonConfs.values().collect { [conf: it.conf] },
+                        androidConfs: androidConfs.values().collect { [conf: it.conf] },
+                        iosConfs: iosConfs.values().collect { [conf: it.conf] },
                         confs: configurationsRef
                 ]
         )
@@ -153,8 +150,8 @@ class FlowPluginReference {
         configurations.collect { String id, Map conf ->
             tmplEngine.fillConfTemplate(
                     [
-                            confName: splitByCharacterTypeCamelCase(conf.conf).join(' '),
-                            confDescription: docText(conf.conf),
+                            confName: conf.conf,
+                            confDescription: docText(conf.confClass),
                             confProperties: conf.props.collect {
                                 [
                                         name: it.name,

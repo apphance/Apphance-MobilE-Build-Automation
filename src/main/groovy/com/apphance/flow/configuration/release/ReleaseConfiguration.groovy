@@ -24,7 +24,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank
 
 abstract class ReleaseConfiguration extends AbstractConfiguration {
 
-    final String configurationName = 'Release configuration'
+    final String configurationName = 'Release Configuration'
 
     public static final String OTA_DIR = 'flow-ota'
     public static final ALL_EMAIL_FLAGS = [

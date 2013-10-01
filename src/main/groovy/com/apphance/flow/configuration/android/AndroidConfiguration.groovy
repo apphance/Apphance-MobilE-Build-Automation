@@ -12,6 +12,10 @@ import javax.inject.Inject
 import static com.apphance.flow.detection.project.ProjectType.ANDROID
 import static com.google.common.base.Strings.isNullOrEmpty
 
+/**
+ * Plugin for various X-Code related tasks.
+ *
+ */
 @Singleton
 class AndroidConfiguration extends ProjectConfiguration {
 

@@ -17,6 +17,10 @@ import static com.apphance.flow.configuration.ios.IOSBuildMode.*
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
+/**
+ * Plugin for various X-Code related tasks.
+ *
+ */
 class IOSPlugin implements Plugin<Project> {
 
     public static final String ARCHIVE_ALL_TASK_NAME = 'archiveAll'

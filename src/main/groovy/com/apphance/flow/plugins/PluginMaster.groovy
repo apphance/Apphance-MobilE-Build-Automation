@@ -125,7 +125,8 @@ class PluginMaster {
         def confs = [:]
         def conf2map = { AbstractConfiguration conf ->
             [
-                    conf: conf.class.simpleName,
+                    conf: conf.configurationName,
+                    confClass: conf.class.simpleName,
                     props: [[name: conf.enabledPropKey, description: docBundle.getString(conf.enabledPropKey)]] +
                             conf.propertyFields.collect {
                                 [name: it.name, description: it.doc()]
