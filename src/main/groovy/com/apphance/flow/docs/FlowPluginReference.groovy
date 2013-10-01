@@ -15,6 +15,7 @@ import org.gradle.api.internal.AbstractTask
 
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static groovy.io.FileType.FILES
+import static org.apache.commons.lang.StringUtils.splitByCharacterTypeCamelCase
 import static org.apache.maven.artifact.ant.shaded.FileUtils.extension
 import static org.codehaus.groovy.tools.groovydoc.gstringTemplates.GroovyDocTemplateInfo.*
 import static org.gradle.api.logging.Logging.getLogger
@@ -27,9 +28,8 @@ class FlowPluginReference {
 
     List<GroovyClassDoc> classes
     private FlowTemplateEngine tmplEngine = new FlowTemplateEngine()
-    private File pluginHtml = new File('build/doc/plugin.html')
-    private File pluginSiteHtml = new File('build/doc/plugins.html')
-    private File confHtml = new File('build/doc/conf.html')
+    private File pluginsHtml = new File('build/doc/plugins.html')
+    private File confsHtml = new File('build/doc/confs.html')
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled', '-XX:+CMSPermGenSweepingEnabled',
             '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
@@ -85,16 +85,13 @@ class FlowPluginReference {
 
         def pluginsRef = [commonPlugins, androidPlugins, iosPlugins].collect(this.&generatePluginDoc).join('\n')
 
-        pluginHtml.parentFile.mkdirs()
-        pluginHtml.text = pluginsRef
-
-        pluginSiteHtml.parentFile.mkdirs()
-        pluginSiteHtml.text = tmplEngine.fillTaskSiteTemplate(
+        pluginsHtml.parentFile.mkdirs()
+        pluginsHtml.text = tmplEngine.fillTaskSiteTemplate(
                 [
-                        commonPlugins: commonPlugins.values().collect { [plugin: it.plugin] },
-                        androidPlugins: androidPlugins.values().collect { [plugin: it.plugin] },
-                        iosPlugins: iosPlugins.values().collect { [plugin: it.plugin] },
-                        tasks: pluginHtml.text
+                        commonPlugins: commonPlugins.values().collect { [plugin: splitByCharacterTypeCamelCase(it.plugin).join(' ')] },
+                        androidPlugins: androidPlugins.values().collect { [plugin: splitByCharacterTypeCamelCase(it.plugin).join(' ')] },
+                        iosPlugins: iosPlugins.values().collect { [plugin: splitByCharacterTypeCamelCase(it.plugin).join(' ')] },
+                        tasks: pluginsRef
                 ])
 
         def androidConfs = androidJson.configurations.sort { it.key }
@@ -104,7 +101,7 @@ class FlowPluginReference {
         def commonConfs = [
                 '0': androidConfs.remove(findConfKey(androidConfs, AndroidReleaseConfiguration.simpleName)),
                 '1': androidConfs.remove(findConfKey(androidConfs, ApphanceConfiguration.simpleName)),
-        ]
+        ].sort { it.key }
 
         commonConfs['0'].confName = commonConfs['0'].conf = ReleaseConfiguration.simpleName
 
@@ -112,12 +109,12 @@ class FlowPluginReference {
         iosConfs.remove(findConfKey(iosConfs, IOSReleaseConfiguration.simpleName))
 
         def configurationsRef = [commonConfs, androidConfs, iosConfs].collect(this.&generateConfDoc).join('\n')
-        confHtml.parentFile.mkdirs()
-        confHtml.text = tmplEngine.fillConfSiteTemplate(
+        confsHtml.parentFile.mkdirs()
+        confsHtml.text = tmplEngine.fillConfSiteTemplate(
                 [
-                        commonConfs: commonConfs.values().collect { [conf: it.conf] },
-                        androidConfs: androidConfs.values().collect { [conf: it.conf] },
-                        iosConfs: iosConfs.values().collect { [conf: it.conf] },
+                        commonConfs: commonConfs.values().collect { [conf: splitByCharacterTypeCamelCase(it.conf).join(' ')] },
+                        androidConfs: androidConfs.values().collect { [conf: splitByCharacterTypeCamelCase(it.conf).join(' ')] },
+                        iosConfs: iosConfs.values().collect { [conf: splitByCharacterTypeCamelCase(it.conf).join(' ')] },
                         confs: configurationsRef
                 ]
         )
@@ -138,8 +135,8 @@ class FlowPluginReference {
         plugins.collect { String id, Map m ->
             tmplEngine.fillTaskTemplate(
                     [
-                            header: m.plugin,
-                            groupName: m.plugin,
+                            header: splitByCharacterTypeCamelCase(m.plugin).join(' '),
+                            groupName: splitByCharacterTypeCamelCase(m.plugin).join(' '),
                             groupDescription: docText(m.plugin),
                             tasks: m.tasks.collect { t ->
                                 [
@@ -156,7 +153,7 @@ class FlowPluginReference {
         configurations.collect { String id, Map conf ->
             tmplEngine.fillConfTemplate(
                     [
-                            confName: conf.conf,
+                            confName: splitByCharacterTypeCamelCase(conf.conf).join(' '),
                             confDescription: docText(conf.conf),
                             confProperties: conf.props.collect {
                                 [

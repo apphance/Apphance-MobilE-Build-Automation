@@ -14,7 +14,7 @@ class FlowPluginReferenceFunctionalSpec extends Specification {
         new FlowPluginReference().run()
 
         expect:
-        ['build/doc/conf.html', 'build/doc/plugin.html'].collect { new File(it) }.every {
+        ['build/doc/confs.html', 'build/doc/plugins.html'].collect { new File(it) }.every {
             it.exists() && it.size() > 0
         }
     }
