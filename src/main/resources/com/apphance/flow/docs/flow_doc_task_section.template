@@ -1,9 +1,0 @@
-<h3 id="${sectionName}" style="border-bottom:dotted 1px #aaa">
-    <font size="4">${sectionName}</font>
-</h3>
-
-<div>
-    <br>
-</div>
-
-${section}

@@ -115,7 +115,7 @@ class FlowPluginReference {
                         commonPlugins: commonPlugins.values().collect { [plugin: splitByCharacterTypeCamelCase(it.plugin).join(' ')] },
                         androidPlugins: androidPlugins.values().collect { [plugin: splitByCharacterTypeCamelCase(it.plugin).join(' ')] },
                         iosPlugins: iosPlugins.values().collect { [plugin: splitByCharacterTypeCamelCase(it.plugin).join(' ')] },
-                        tasks: pluginSection.collect { fillTemplate('flow_doc_task_section.template', it) }.join('\n')
+                        tasks: pluginSection.collect { fillTemplate('flow_doc_section.template', it) }.join('\n')
                 ])
     }
 
@@ -178,7 +178,7 @@ class FlowPluginReference {
                         commonConfs: commonConfs.values().collect { [conf: it.conf] },
                         androidConfs: androidConfs.values().collect { [conf: it.conf] },
                         iosConfs: iosConfs.values().collect { [conf: it.conf] },
-                        confs: confSection.collect { fillTemplate('flow_doc_conf_section.template', it) }.join('\n')
+                        confs: confSection.collect { fillTemplate('flow_doc_section.template', it) }.join('\n')
                 ]
         )
     }
