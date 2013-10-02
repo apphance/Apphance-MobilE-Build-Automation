@@ -41,7 +41,7 @@ class AndroidConfiguration extends ProjectConfiguration {
 
     StringProperty projectName = new StringProperty(
             name: 'android.project.name',
-            message: 'Project name',
+            message: "Project name. This property is used with command: 'android update project --name' before every build.",
             defaultValue: { defaultName() },
             possibleValues: { possibleNames() },
             required: { true }
@@ -71,7 +71,7 @@ class AndroidConfiguration extends ProjectConfiguration {
 
     def target = new StringProperty(
             name: 'android.target',
-            message: 'Android target',
+            message: "Android target. This property is used with command: 'android update project --target' before every build.",
             defaultValue: { androidProperties.getProperty('target') ?: '' },
             required: { true },
             possibleValues: { possibleTargets() },

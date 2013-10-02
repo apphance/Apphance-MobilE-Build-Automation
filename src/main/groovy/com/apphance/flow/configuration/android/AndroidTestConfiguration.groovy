@@ -30,8 +30,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
 
     def testDir = new FileProperty(
             name: 'android.dir.test',
-            message: 'Directory where test sources are located. By convention this folder should have "robolectric" subfolder if project has ' +
-                    'robolectric tests',
+            message: 'Directory where test sources are located. By convention this folder should have "robolectric" subfolder if project has robolectric tests',
             defaultValue: { relativeTo(conf.rootDir.absolutePath, new File(conf.rootDir, 'test').absolutePath) },
             validator: {
                 if (!it) return true

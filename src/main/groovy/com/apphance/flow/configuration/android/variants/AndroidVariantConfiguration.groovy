@@ -57,12 +57,34 @@ class AndroidVariantConfiguration extends AbstractVariant {
         name.toLowerCase().contains(DEBUG.lowerCase()) ? DEBUG : RELEASE
     }
 
-    def variantDir = new FileProperty(interactive: { false })
-    def oldPackage = new StringProperty(interactive: { false })
-    def newPackage = new StringProperty(interactive: { false })
-    def newLabel = new StringProperty(interactive: { false })
-    def newName = new StringProperty(interactive: { false })
-    def mergeManifest = new BooleanProperty(interactive: { false })
+    def variantDir = new FileProperty(
+            interactive: { false },
+            doc: { "Variant directory. Content of this directory overrides content of the main project directory." }
+    )
+    def oldPackage = new StringProperty(
+            interactive: { false },
+            doc: { "Package name used in main sources before package replacement in variant." }
+    )
+    def newPackage = new StringProperty(
+            interactive: { false },
+            doc: { "New package name that will be used in variant." }
+    )
+    def newLabel = new StringProperty(
+            interactive: { false },
+            doc: { "Variant value of 'android:label' attribute in manifest <applicatio> tag." }
+    )
+
+    def newName = new StringProperty(
+            interactive: { false },
+            doc: { "Variant value of 'name' attribute of build.xml." }
+    )
+    def mergeManifest = new BooleanProperty(
+            interactive: { false },
+            doc: {
+                "If true then manifest file in variant directory will be merged with main project manifest. " +
+                        "When false variant manifest will override main manifest. Default value: false"
+            }
+    )
 
     @Lazy
     List<String> possibleApphanceLibVersions = {

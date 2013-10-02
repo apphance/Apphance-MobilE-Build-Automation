@@ -21,7 +21,7 @@ abstract class AbstractProperty<T> {
 
     Closure<Boolean> required = { false }
 
-    Closure<String> doc = { "default doc" } //TODO: (Closure<String>) { throw new GradleException("Property $name has empty doc field!") }
+    Closure<String> doc = { message ?: 'default doc' } //TODO: (Closure<String>) { throw new GradleException("Property $name has empty doc field!") }
 
     abstract void setValue(String value)
 
