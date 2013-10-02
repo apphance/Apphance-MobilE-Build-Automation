@@ -13,12 +13,6 @@ allprojects {
     }
 }
 
-configurations.all {
-    resolutionStrategy {
-        failOnVersionConflict()
-    }
-}
-
 apply {
     plugin 'maven'
     plugin 'signing'
@@ -158,6 +152,7 @@ dependencies {
     compile('com.google.android:android:4.1.1.4') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
+    compile 'com.google.gdata:core:1.47.1'
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
@@ -265,6 +260,15 @@ artifacts {
 }
 
 task buildPluginReference(dependsOn: classes, type: JavaExec) {
+    inputs.dir new File('src')
+    outputs.dir new File(buildDir, 'doc')
     main = 'com.apphance.flow.docs.FlowPluginReference'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task sendDocToFlowSite(dependsOn: buildPluginReference, type: JavaExec) {
+    inputs.dir new File(buildDir, 'doc')
+    outputs.upToDateWhen { true }
+    main = 'com.apphance.flow.docs.DocumenationSender'
     classpath = sourceSets.main.runtimeClasspath
 }
