@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.ios.buildplugin
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
+import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.buildplugin.tasks.*
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
@@ -62,16 +63,16 @@ class IOSPlugin implements Plugin<Project> {
             if (buildableVariants) {
                 project.task(ARCHIVE_ALL_DEVICE_TASK_NAME,
                         group: FLOW_BUILD,
-                        description: 'Archives all device variants')
+                        description: "Aggregate task that builds all 'DEVICE' mode variants")
 
                 project.task(ARCHIVE_ALL_SIMULATOR_TASK_NAME,
                         group: FLOW_BUILD,
-                        description: 'Archives all simulator variants')
+                        description: "Aggregate task tgat builds all 'SIMULATOR' mode variants")
 
                 project.task(ARCHIVE_ALL_TASK_NAME,
                         group: FLOW_BUILD,
                         dependsOn: [ARCHIVE_ALL_DEVICE_TASK_NAME, ARCHIVE_ALL_SIMULATOR_TASK_NAME],
-                        description: 'Archives all variants and produces all artifacts (zip, ipa, messages, etc)')
+                        description: 'Aggregate task that builds all DEVICE and SIMULATOR variants')
 
                 buildableVariants.findAll { it.mode.value == DEVICE }.each(this.&createArchiveDeviceTask)
                 buildableVariants.findAll { it.mode.value == SIMULATOR }.each(this.&createArchiveSimulatorTask)
@@ -82,7 +83,7 @@ class IOSPlugin implements Plugin<Project> {
             if (frameworkVariants) {
                 project.task(FRAMEWORK_ALL,
                         group: FLOW_BUILD,
-                        description: 'Builds all framework variants')
+                        description: 'Aggregate task that builds all FRAMEWORK mode variants')
 
                 frameworkVariants.each(this.&createFrameworkVariant)
             }
@@ -98,7 +99,10 @@ class IOSPlugin implements Plugin<Project> {
     private void createArchiveDeviceTask(AbstractIOSVariant variant) {
         def task = project.task(variant.archiveTaskName,
                 type: DeviceVariantTask,
-                dependsOn: [CopyMobileProvisionTask.NAME]) as DeviceVariantTask
+                dependsOn: [CopyMobileProvisionTask.NAME],
+                description: "Invokes 'archive' action for the variant. From the result of the action xcarchive, distribution zip, dSYM, ahSYM, ipa, manifest and mobileprovision artifacts are prepared. All the artifacts are located under $ReleaseConfiguration.OTA_DIR."
+        ) as DeviceVariantTask
+
         task.variant = variant
         project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].dependsOn task.name
     }
@@ -106,7 +110,9 @@ class IOSPlugin implements Plugin<Project> {
     private void createArchiveSimulatorTask(AbstractIOSVariant variant) {
         def task = project.task(variant.archiveTaskName,
                 type: SimulatorVariantTask,
-                dependsOn: [CopySourcesTask.NAME]) as SimulatorVariantTask
+                dependsOn: [CopySourcesTask.NAME],
+                description: "Invokes 'build' action for the variant. From the result of the action simulator images are prepared for both iPhone and iPad simulators. Images are located under $ReleaseConfiguration.OTA_DIR"
+        ) as SimulatorVariantTask
         task.variant = variant
         project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].dependsOn task.name
     }
@@ -114,7 +120,9 @@ class IOSPlugin implements Plugin<Project> {
     private void createFrameworkVariant(AbstractIOSVariant variant) {
         def task = project.task(variant.frameworkTaskName,
                 type: FrameworkVariantTask,
-                dependsOn: [CopySourcesTask.NAME]) as FrameworkVariantTask
+                dependsOn: [CopySourcesTask.NAME],
+                description: "Prepares a ready-to-use framework and puts the artifact under $ReleaseConfiguration.OTA_DIR"
+        ) as FrameworkVariantTask
         task.variant = variant
         project.tasks[FRAMEWORK_ALL].dependsOn task.name
     }

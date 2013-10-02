@@ -1,13 +1,10 @@
-Plugin reference for Apphance Flow, version 1.0.8 (TODO - generate version number)
-
 <br/>
 
 <div style='text-align:justify'>
-  //TODO
-  This reference provides description of all plugins of Apphance Flow, and tasks that they provide.
-  It also provides description of all properties that can be used in the plugin's configuration.
-  Last but not least, it provides examples showing how particular plugin should be used -
-  including conventions they can be used with particular plugins.
+  This reference provides description for all tasks accessible in Apphance Flow.
+  To use Apphance Flow build system only single plugin needs to be applied: 'apphance-flow', but under the hood,
+  for better clarity and organisation several plugins are implemented. Every task is assigned to a particular plugin
+  and for better understanding, the documentation below follows this scheme.
 </div>
 
 <br/>
