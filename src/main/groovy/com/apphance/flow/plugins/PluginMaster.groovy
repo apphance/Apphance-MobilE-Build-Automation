@@ -26,6 +26,7 @@ import static groovy.json.JsonOutput.toJson
 import static java.util.ResourceBundle.getBundle
 import static org.gradle.api.logging.Logging.getLogger
 
+//TODO remove doc generation to mixin
 class PluginMaster {
 
     def logger = getLogger(getClass())

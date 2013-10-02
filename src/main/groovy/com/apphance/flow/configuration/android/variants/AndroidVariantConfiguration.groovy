@@ -57,10 +57,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
         name.toLowerCase().contains(DEBUG.lowerCase()) ? DEBUG : RELEASE
     }
 
-    def variantDir = new FileProperty(
-            interactive: { false }
-    )
-
+    def variantDir = new FileProperty(interactive: { false })
     def oldPackage = new StringProperty(interactive: { false })
     def newPackage = new StringProperty(interactive: { false })
     def newLabel = new StringProperty(interactive: { false })
@@ -123,8 +120,8 @@ class AndroidVariantConfiguration extends AbstractVariant {
     }
 
     Boolean isLibrary() {
-        def projectProprerties = new File(tmpDir, 'project.properties')
-        projectProprerties.exists() && asProperties(projectProprerties).getProperty('android.library') == 'true'
+        def props = new File(tmpDir, 'project.properties')
+        props.exists() && asProperties(props).getProperty('android.library') == 'true'
     }
 
     File getBuildDir() {

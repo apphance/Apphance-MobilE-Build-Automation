@@ -1,9 +1,10 @@
 package com.apphance.flow.docs
 
 import com.apphance.flow.configuration.AbstractConfiguration
-import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.util.FlowUtils
 import groovy.json.JsonSlurper
+import groovy.text.SimpleTemplateEngine
+import groovy.text.TemplateEngine
 import org.codehaus.groovy.groovydoc.GroovyClassDoc
 import org.codehaus.groovy.tools.groovydoc.ClasspathResourceManager
 import org.codehaus.groovy.tools.groovydoc.GroovyDocTool
@@ -21,19 +22,20 @@ import static org.gradle.tooling.GradleConnector.newConnector
 @Mixin(FlowUtils)
 class FlowPluginReference {
 
-    def static logger = getLogger(FlowPluginReference)
-
-    List<GroovyClassDoc> classes
-    private FlowTemplateEngine tmplEngine = new FlowTemplateEngine()
-    private File pluginsHtml = new File('build/doc/plugins.html')
-    private File confsHtml = new File('build/doc/confs.html')
-
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled', '-XX:+CMSPermGenSweepingEnabled',
             '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
+
+    def static logger = getLogger(FlowPluginReference)
+
+    private TemplateEngine tmplEngine = new SimpleTemplateEngine()
+
+    private File pluginsHtml = new File('build/doc/plugins.html')
+    private File confsHtml = new File('build/doc/confs.html')
 
     @Lazy List<GroovyClassDoc> plugins = { classes.findAll { it.interfaces()*.name().contains Plugin.simpleName } }()
     @Lazy List<GroovyClassDoc> configurations = { classes.findAll { superClasses(it).contains AbstractConfiguration.simpleName } }()
     @Lazy List<GroovyClassDoc> tasks = { classes.findAll { superClasses(it).contains AbstractTask.simpleName } }()
+    List<GroovyClassDoc> classes
 
     FlowPluginReference() {
         File src = new File('src')
@@ -54,67 +56,19 @@ class FlowPluginReference {
         superclass && classDoc.name() != 'Object' ? [superclass.name()] + superClasses(superclass) : []
     }
 
-    public static void main(String[] args) {
-        new FlowPluginReference().run()
-    }
-
     public void run() {
-        logger.lifecycle "Building Apphance Flow plugin reference"
+        logger.lifecycle 'Building Apphance Flow docs'
 
-        def androidProject = new File("doc-projects/android")
-        def iosProject = new File('doc-projects/iOS')
-
+        def androidProject = new File('doc-projects/android')
         applyAllPluginsInDocMode(androidProject)
         def androidJson = toJson(new File(androidProject, 'build/doc/doc.json'))
 
+        def iosProject = new File('doc-projects/iOS')
         applyAllPluginsInDocMode(iosProject)
         def iosJson = toJson(new File(iosProject, 'build/doc/doc.json'))
 
-        def androidPlugins = androidJson.plugins.sort { it.key }
-        def iosPlugins = iosJson.plugins.sort { it.key }
-
-        def commonPlugins = [
-                '0': androidPlugins.remove('0'),
-                '1': androidPlugins.remove('1')
-        ].sort { it.key }
-        iosPlugins.remove('0')
-        iosPlugins.remove('1')
-
-        def pluginsRef = [commonPlugins, androidPlugins, iosPlugins].collect(this.&generatePluginDoc).join('\n')
-
-        pluginsHtml.parentFile.mkdirs()
-        pluginsHtml.text = tmplEngine.fillTaskSiteTemplate(
-                [
-                        commonPlugins: commonPlugins.values().collect { [plugin: splitByCharacterTypeCamelCase(it.plugin).join(' ')] },
-                        androidPlugins: androidPlugins.values().collect { [plugin: splitByCharacterTypeCamelCase(it.plugin).join(' ')] },
-                        iosPlugins: iosPlugins.values().collect { [plugin: splitByCharacterTypeCamelCase(it.plugin).join(' ')] },
-                        tasks: pluginsRef
-                ])
-
-        def androidConfs = androidJson.configurations.sort { it.key }
-        def iosConfs = iosJson.configurations.sort { it.key }
-
-        def findConfKey = { confs, conf -> confs.find { it.value.conf == conf }.key }
-        def commonConfs = [
-                '0': androidConfs.remove(findConfKey(androidConfs, 'Release Configuration')),
-                '1': androidConfs.remove(findConfKey(androidConfs, 'Apphance Configuration')),
-        ].sort { it.key }
-
-        commonConfs['0'].confName = commonConfs['0'].conf = 'Release Configuration'
-
-        iosConfs.remove(findConfKey(iosConfs, 'Apphance Configuration'))
-        iosConfs.remove(findConfKey(iosConfs, 'Release Configuration'))
-
-        def configurationsRef = [commonConfs, androidConfs, iosConfs].collect(this.&generateConfDoc).join('\n')
-        confsHtml.parentFile.mkdirs()
-        confsHtml.text = tmplEngine.fillConfSiteTemplate(
-                [
-                        commonConfs: commonConfs.values().collect { [conf: it.conf] },
-                        androidConfs: androidConfs.values().collect { [conf: it.conf] },
-                        iosConfs: iosConfs.values().collect { [conf: it.conf] },
-                        confs: configurationsRef
-                ]
-        )
+        processPlugins(androidJson, iosJson)
+        processConfigurations(androidJson, iosJson)
     }
 
     private void applyAllPluginsInDocMode(File docProject) {
@@ -128,9 +82,46 @@ class FlowPluginReference {
         new JsonSlurper().parseText(doc.text) as Map
     }
 
+    private void processPlugins(Map androidJson, Map iosJson) {
+        def androidPlugins = androidJson.plugins.sort { it.key }
+        def iosPlugins = iosJson.plugins.sort { it.key }
+
+        def commonPlugins = [
+                '0': androidPlugins.remove('0'),
+                '1': androidPlugins.remove('1')
+        ].sort { it.key }
+        iosPlugins.remove('0')
+        iosPlugins.remove('1')
+
+        def pluginGroups = [commonPlugins, androidPlugins, iosPlugins].collect(this.&generatePluginDoc)
+        def pluginSection = [
+                [
+                        sectionName: 'Common tasks',
+                        section: pluginGroups[0],
+                ],
+                [
+                        sectionName: 'Android tasks',
+                        section: pluginGroups[1],
+                ],
+                [
+                        sectionName: 'iOS tasks',
+                        section: pluginGroups[2],
+                ]
+        ]
+
+        pluginsHtml.parentFile.mkdirs()
+        pluginsHtml.text = fillTemplate('flow_doc_task_site.template',
+                [
+                        commonPlugins: commonPlugins.values().collect { [plugin: splitByCharacterTypeCamelCase(it.plugin).join(' ')] },
+                        androidPlugins: androidPlugins.values().collect { [plugin: splitByCharacterTypeCamelCase(it.plugin).join(' ')] },
+                        iosPlugins: iosPlugins.values().collect { [plugin: splitByCharacterTypeCamelCase(it.plugin).join(' ')] },
+                        tasks: pluginSection.collect { fillTemplate('flow_doc_task_section.template', it) }.join('\n')
+                ])
+    }
+
     private String generatePluginDoc(Map plugins) {
         plugins.collect { String id, Map m ->
-            tmplEngine.fillTaskTemplate(
+            fillTemplate('flow_doc_task_group.template',
                     [
                             header: splitByCharacterTypeCamelCase(m.plugin).join(' '),
                             groupName: splitByCharacterTypeCamelCase(m.plugin).join(' '),
@@ -146,9 +137,55 @@ class FlowPluginReference {
         }.join('\n')
     }
 
+    private void processConfigurations(Map androidJson, Map iosJson) {
+        def androidConfs = androidJson.configurations.sort { it.key }
+        def iosConfs = iosJson.configurations.sort { it.key }
+
+        def releaseConf = 'Release Configuration'
+        def apphanceConf = 'Apphance Configuration'
+        def findConfKey = { confs, conf -> confs.find { it.value.conf == conf }.key }
+
+        def commonConfs = [
+                '0': androidConfs.remove(findConfKey(androidConfs, releaseConf)),
+                '1': androidConfs.remove(findConfKey(androidConfs, apphanceConf)),
+        ].sort { it.key }
+
+        commonConfs['0'].confName = commonConfs['0'].conf = releaseConf
+
+        iosConfs.remove(findConfKey(iosConfs, apphanceConf))
+        iosConfs.remove(findConfKey(iosConfs, releaseConf))
+
+        def confGroups = [commonConfs, androidConfs, iosConfs].collect(this.&generateConfDoc)
+
+        def confSection = [
+                [
+                        sectionName: 'Common configurations',
+                        section: confGroups[0],
+                ],
+                [
+                        sectionName: 'Android configurations',
+                        section: confGroups[1],
+                ],
+                [
+                        sectionName: 'iOS configurations',
+                        section: confGroups[2],
+                ]
+        ]
+
+        confsHtml.parentFile.mkdirs()
+        confsHtml.text = fillTemplate('flow_doc_conf_site.template',
+                [
+                        commonConfs: commonConfs.values().collect { [conf: it.conf] },
+                        androidConfs: androidConfs.values().collect { [conf: it.conf] },
+                        iosConfs: iosConfs.values().collect { [conf: it.conf] },
+                        confs: confSection.collect { fillTemplate('flow_doc_conf_section.template', it) }.join('\n')
+                ]
+        )
+    }
+
     private String generateConfDoc(Map configurations) {
         configurations.collect { String id, Map conf ->
-            tmplEngine.fillConfTemplate(
+            fillTemplate('flow_doc_conf_group.template',
                     [
                             confName: conf.conf,
                             confDescription: docText(conf.confClass),
@@ -165,5 +202,14 @@ class FlowPluginReference {
 
     String docText(String entityName) {
         (plugins + tasks + configurations).find { it.name() == entityName }?.commentText()
+    }
+
+    private String fillTemplate(String name, Map binding) {
+        def tmpl = getClass().getResource(name)
+        tmplEngine.createTemplate(tmpl).make(binding)
+    }
+
+    public static void main(String[] args) {
+        new FlowPluginReference().run()
     }
 }
