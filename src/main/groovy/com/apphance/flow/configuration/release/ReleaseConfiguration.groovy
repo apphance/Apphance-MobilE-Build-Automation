@@ -7,9 +7,9 @@ import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.configuration.reader.PropertyReader
-import com.apphance.flow.validation.ReleaseValidator
 import com.apphance.flow.env.Environment
 import com.apphance.flow.plugins.release.FlowArtifact
+import com.apphance.flow.validation.ReleaseValidator
 import groovy.transform.PackageScope
 
 import javax.imageio.ImageIO
@@ -77,6 +77,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             name: 'release.url',
             message: 'Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as ' +
                     'subdirectory of ota dir when artifacts are created locally.',
+            doc: { docBundle.getString('release.url') },
             required: { true },
             validator: {
                 try {
@@ -109,6 +110,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     def releaseIcon = new FileProperty(
             name: 'release.icon',
             message: 'Path to project\'s icon file, must be relative to the root dir of project',
+            doc: { docBundle.getString('release.icon') },
             required: { false },
             defaultValue: { defaultIcon() ? relativeTo(conf.rootDir.absolutePath, defaultIcon().absolutePath) : null },
             possibleValues: { possibleIcons() },
@@ -126,6 +128,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     def language = new StringProperty(
             name: 'release.language',
             message: 'Language of the project',
+            doc: { docBundle.getString('release.language') },
             defaultValue: { 'en' },
             validator: { it ==~ /\p{Lower}{2}/ }
     )
@@ -133,6 +136,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     def country = new StringProperty(
             name: 'release.country',
             message: 'Project country',
+            doc: { docBundle.getString('release.country') },
             defaultValue: { 'US' },
             validator: { it ==~ /\p{Upper}{2}/ }
     )
@@ -140,18 +144,21 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     def releaseMailFrom = new StringProperty(
             name: 'release.mail.from',
             message: 'Sender email address',
+            doc: { docBundle.getString('release.mail.from') },
             validator: { (it = it?.trim()) ? it ==~ ReleaseValidator.MAIL_PATTERN_WITH_NAME : true }
     )
 
     def releaseMailTo = new ListStringProperty(
             name: 'release.mail.to',
             message: 'Recipients of release email',
+            doc: { docBundle.getString('release.mail.to') },
             validator: { it?.trim() ? it?.split(',')?.every { it?.trim() ==~ ReleaseValidator.MAIL_PATTERN_WITH_NAME } : true }
     )
 
     def releaseMailFlags = new ListStringProperty(
             name: 'release.mail.flags',
             message: 'Flags for release email',
+            doc: { docBundle.getString('release.mail.flags') },
             defaultValue: { ['qrCode', 'imageMontage'] as List<String> },
             validator: { it?.split(',')?.every { it?.trim() in ReleaseConfiguration.ALL_EMAIL_FLAGS } }
     )
@@ -167,12 +174,14 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     StringProperty mailPortInternal = new StringProperty(
             name: 'mail.port',
             message: 'Mail port',
+            doc: { docBundle.getString('mail.port') },
             validator: { it?.matches('[0-9]+') }
     )
 
     StringProperty mailServerInternal = new StringProperty(
             name: 'mail.server',
-            message: 'Mail server'
+            message: 'Mail server',
+            doc: { docBundle.getString('mail.server') },
     )
 
     boolean isEnabled() {

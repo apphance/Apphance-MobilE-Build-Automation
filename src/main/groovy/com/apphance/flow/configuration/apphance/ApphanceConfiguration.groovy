@@ -28,17 +28,21 @@ class ApphanceConfiguration extends AbstractConfiguration {
 
     def user = new StringProperty(
             name: 'apphance.user',
-            message: 'Apphance user (used for uploading artifacts to apphance server)'
+            message: 'Apphance user (used for uploading artifacts to apphance server)',
+            doc: { docBundle.getString('apphance.user') }
+
     )
 
     def pass = new StringProperty(
             name: 'apphance.pass',
-            message: 'Apphance pass (used for uploading artifacts to apphance server)'
+            message: 'Apphance pass (used for uploading artifacts to apphance server)',
+            doc: { docBundle.getString('apphance.pass') }
     )
 
     def enableShaking = new BooleanProperty(
             name: 'apphance.enableShaking',
             message: "Report bug to apphance by shaking device",
-            possibleValues: { ['false', 'true'] as List<String> }
+            possibleValues: { ['false', 'true'] as List<String> },
+            doc: { docBundle.getString('apphance.enableShaking') }
     )
 }

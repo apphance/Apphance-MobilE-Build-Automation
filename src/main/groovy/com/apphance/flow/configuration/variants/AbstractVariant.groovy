@@ -41,6 +41,9 @@ abstract class AbstractVariant extends AbstractConfiguration {
 
         displayName.name = "${prefix}.variant.${name}.display.name"
 
+        apphanceAppKey.doc = { docBundle.getString('variant.apphance.appKey') }
+        apphanceLibVersion.doc = { docBundle.getString('variant.apphance.lib') }
+
         super.init()
     }
 
@@ -86,6 +89,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
     }()
 
     private displayName = new StringProperty(
+            doc: { docBundle.getString('variant.display.name') },
             required: { false },
             interactive: { false }
     )

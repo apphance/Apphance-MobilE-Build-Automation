@@ -96,15 +96,15 @@ class FlowPluginReference {
         def pluginGroups = [commonPlugins, androidPlugins, iosPlugins].collect(this.&generatePluginDoc)
         def pluginSection = [
                 [
-                        sectionName: 'Common tasks',
+                        sectionName: 'Common Tasks',
                         section: pluginGroups[0],
                 ],
                 [
-                        sectionName: 'Android tasks',
+                        sectionName: 'Android Tasks',
                         section: pluginGroups[1],
                 ],
                 [
-                        sectionName: 'iOS tasks',
+                        sectionName: 'iOS Tasks',
                         section: pluginGroups[2],
                 ]
         ]
@@ -159,15 +159,15 @@ class FlowPluginReference {
 
         def confSection = [
                 [
-                        sectionName: 'Common configurations',
+                        sectionName: 'Common Configurations',
                         section: confGroups[0],
                 ],
                 [
-                        sectionName: 'Android configurations',
+                        sectionName: 'Android Configurations',
                         section: confGroups[1],
                 ],
                 [
-                        sectionName: 'iOS configurations',
+                        sectionName: 'iOS Configurations',
                         section: confGroups[2],
                 ]
         ]

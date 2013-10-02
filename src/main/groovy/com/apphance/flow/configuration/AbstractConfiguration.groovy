@@ -6,12 +6,14 @@ import com.apphance.flow.configuration.reader.PropertyPersister
 import javax.inject.Inject
 import java.lang.reflect.Field
 
+import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.join
 import static org.gradle.api.logging.Logging.getLogger
 
 abstract class AbstractConfiguration {
 
     protected logger = getLogger(getClass())
+    protected docBundle = getBundle('doc')
 
     @Inject PropertyPersister propertyPersister
 

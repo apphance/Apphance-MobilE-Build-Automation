@@ -49,6 +49,7 @@ class IOSConfiguration extends ProjectConfiguration {
     def sdk = new StringProperty(
             name: 'ios.sdk',
             message: 'iOS SDK',
+            doc: { docBundle.getString('ios.sdk') },
             defaultValue: { 'iphoneos' },
             possibleValues: { executor.sdks as List },
             validator: { it in executor.sdks },
@@ -58,6 +59,7 @@ class IOSConfiguration extends ProjectConfiguration {
     def simulatorSdk = new StringProperty(
             name: 'ios.sdk.simulator',
             message: 'iOS simulator SDK',
+            doc: { docBundle.getString('ios.sdk.simulator') },
             defaultValue: { 'iphonesimulator' },
             possibleValues: { executor.simulatorSdks as List },
             validator: { it in executor.simulatorSdks },

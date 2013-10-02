@@ -16,7 +16,7 @@ Configuration reference for Apphance Flow, version 1.0.8 (TODO - generate versio
 
     <% if(commonConfs && commonConfs.size() > 0) { %>
         <br/>
-        <a href="#Common%20configurations">Common configurations</a>
+        <a href="#Common%20Configurations">Common Configurations</a>
         <br/>
         <br/>
         <% commonConfs.each { c -> %>
@@ -27,7 +27,7 @@ Configuration reference for Apphance Flow, version 1.0.8 (TODO - generate versio
 
     <% if(androidConfs && androidConfs.size() > 0) { %>
         <br/>
-        <a href="#Android%20configurations">Android configurations</a>
+        <a href="#Android%20Configurations">Android Configurations</a>
         <br/>
         <br/>
         <% androidConfs.each { c -> %>
@@ -38,7 +38,7 @@ Configuration reference for Apphance Flow, version 1.0.8 (TODO - generate versio
 
     <% if(iosConfs && iosConfs.size() > 0) { %>
         <br/>
-        <a href="#iOS%20configurations">iOS configurations</a>
+        <a href="#iOS%20Configurations">iOS Configurations</a>
         <br/>
         <br/>
         <% iosConfs.each { c -> %>

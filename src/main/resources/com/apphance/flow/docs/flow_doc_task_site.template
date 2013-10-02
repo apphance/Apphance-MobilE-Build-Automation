@@ -16,7 +16,7 @@ Plugin reference for Apphance Flow, version 1.0.8 (TODO - generate version numbe
 
     <% if(commonPlugins && commonPlugins.size() > 0) { %>
         <br/>
-        <a href="#Common%20tasks">Common tasks</a>
+        <a href="#Common%20Tasks">Common Tasks</a>
         <br/>
         <br/>
         <% commonPlugins.each { p -> %>
@@ -27,7 +27,7 @@ Plugin reference for Apphance Flow, version 1.0.8 (TODO - generate version numbe
 
     <% if(androidPlugins && androidPlugins.size() > 0) { %>
         <br/>
-        <a href="#Android%20tasks">Android tasks</a>
+        <a href="#Android%20Tasks">Android Tasks</a>
         <br/>
         <br/>
         <% androidPlugins.each { p -> %>
@@ -38,7 +38,7 @@ Plugin reference for Apphance Flow, version 1.0.8 (TODO - generate version numbe
 
     <% if(iosPlugins && iosPlugins.size() > 0) { %>
         <br/>
-        <a href="#iOS%20tasks">iOS tasks</a>
+        <a href="#iOS%20Tasks">iOS Tasks</a>
         <br/>
         <br/>
         <% iosPlugins.each { p -> %>

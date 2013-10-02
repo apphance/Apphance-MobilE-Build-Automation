@@ -60,6 +60,8 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         frameworkResources.name = "ios.variant.${name}.framework.resources"
         frameworkLibs.name = "ios.variant.${name}.framework.libs"
 
+        apphanceMode.doc = { docBundle.getString('ios.variant.apphance.mode') }
+
         super.init()
     }
 
@@ -77,6 +79,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     def mode = new IOSBuildModeProperty(
             message: "Build mode for the variant",
+            doc: { docBundle.getString('ios.variant.mode') },
             required: { true },
             possibleValues: { possibleBuildModes },
             validator: { it in possibleBuildModes }
@@ -94,6 +97,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     protected FileProperty mobileprovision = new FileProperty(
             message: "Mobile provision file for variant defined",
+            doc: { docBundle.getString('ios.variant.mobileprovision') },
             interactive: { mobileprovisionEnabled },
             required: { mobileprovisionEnabled },
             possibleValues: { possibleMobileProvisionPaths },
@@ -122,13 +126,25 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     def frameworkName = new StringProperty(
             message: 'Framework name',
+            doc: {docBundle.getString('ios.variant.framework.name')},
             required: { mode.value == FRAMEWORK },
             interactive: { mode.value == FRAMEWORK },
             validator: { isNotEmpty(it) }
     )
-    def frameworkHeaders = new ListStringProperty(interactive: { false }, required: { false })
-    def frameworkResources = new ListStringProperty(interactive: { false }, required: { false })
-    def frameworkLibs = new ListStringProperty(interactive: { false }, required: { false })
+    def frameworkHeaders = new ListStringProperty(
+            doc: {docBundle.getString('ios.variant.framework.headers')},
+            interactive: { false }, required: { false }
+    )
+
+    def frameworkResources = new ListStringProperty(
+            doc: {docBundle.getString('ios.variant.framework.resources')},
+            interactive: { false }, required: { false }
+    )
+
+    def frameworkLibs = new ListStringProperty(
+            doc: {docBundle.getString('ios.variant.framework.libs')},
+            interactive: { false }, required: { false }
+    )
 
     String getBundleId() {
         plistParser.evaluate(plistParser.bundleId(plist), target, archiveConfiguration) ?: ''

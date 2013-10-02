@@ -49,6 +49,7 @@ class IOSTestConfiguration extends AbstractConfiguration {
     def testVariantsNames = new ListStringProperty(
             name: 'ios.test.variants',
             message: 'iOS test variants',
+            doc: { docBundle.getString('ios.test.variants') },
             possibleValues: { possibleTestVariants },
             validator: {
                 def list = testVariantsNames.convert(it.toString())
