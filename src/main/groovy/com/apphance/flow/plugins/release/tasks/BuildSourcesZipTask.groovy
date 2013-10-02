@@ -17,7 +17,7 @@ import static com.apphance.flow.util.file.FileManager.removeMissingSymlinks
 class BuildSourcesZipTask extends DefaultTask {
 
     static String NAME = 'buildSourcesZip'
-    String description = 'Builds sources .zip file.'
+    String description = 'Prepares file with zipped project directory.'
     String group = FLOW_RELEASE
 
     @Inject ProjectConfiguration conf

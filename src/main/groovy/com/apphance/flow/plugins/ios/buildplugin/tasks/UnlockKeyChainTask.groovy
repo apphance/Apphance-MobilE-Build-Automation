@@ -18,7 +18,8 @@ class UnlockKeyChainTask extends DefaultTask {
 
     static final NAME = 'unlockKeyChain'
     String description = "Unlocks key chain used while building projects. Requires osx.keychain.password and " +
-            "osx.keychain.location system (-D) properties or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION environment variables"
+            "osx.keychain.location system (-D) properties or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION " +
+            "environment variables."
     String group = FLOW_BUILD
 
     @Inject ProjectConfiguration conf

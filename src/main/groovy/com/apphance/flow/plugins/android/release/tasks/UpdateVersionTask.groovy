@@ -8,6 +8,11 @@ import javax.inject.Inject
 
 class UpdateVersionTask extends AbstractUpdateVersionTask {
 
+    String description = "Updates version stored in configuration file of the project - AndroidManifest.xml." +
+            " Numeric version is set from 'version.code' system property (-D) or 'VERSION_CODE' environment variable " +
+            "property. String version is set from 'version.string' system property (-D) or 'VERSION_CODE' " +
+            "environment variable"
+
     @Inject AndroidManifestHelper manifestHelper
     @Inject AndroidVariantsConfiguration variantsConf
 

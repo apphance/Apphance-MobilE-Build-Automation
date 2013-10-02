@@ -14,7 +14,6 @@ abstract class AbstractUpdateVersionTask extends DefaultTask {
 
     static final String NAME = 'updateVersion'
     String group = FLOW_RELEASE
-    String description = "Updates version stored in configuration file of the project. Numeric version is set from 'version.code' system property or 'VERSION_CODE' environment variable property. String version is set from 'version.string' system property or 'VERSION_CODE' environment variable"
 
     @Inject ProjectConfiguration conf
     @Inject VersionValidator versionValidator

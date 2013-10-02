@@ -19,7 +19,8 @@ import static java.util.ResourceBundle.getBundle
 class CopyMobileProvisionTask extends DefaultTask {
 
     static final NAME = 'copyMobileProvision'
-    String description = "Copies all *.mobileprovision files to user's provisioning profiles folder. While copying it checks if bundle identifier in mobileprovision file and in plist are same. If not an exception is thrown"
+    String description = "Copies all *.mobileprovision files to user's provisioning profiles folder. While copying it" +
+            " checks if bundle identifier in mobileprovision file and in plist are same. If not an exception is thrown."
     String group = FLOW_BUILD
 
     @Inject IOSVariantsConfiguration variantsConf

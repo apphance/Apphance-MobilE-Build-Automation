@@ -23,7 +23,7 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 class IOSTestTask extends DefaultTask {
 
     String group = FLOW_TEST
-    String description = 'Build and executes iOS tests'
+    String description = 'Builds variant and runs test against it.'
 
     @Inject IOSExecutor executor
     @Inject IOSTestPbxEnhancer testPbxEnhancer

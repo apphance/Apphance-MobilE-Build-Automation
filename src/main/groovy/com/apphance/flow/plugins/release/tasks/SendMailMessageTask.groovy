@@ -15,11 +15,10 @@ class SendMailMessageTask extends DefaultTask {
 
     static String NAME = 'sendMailMessage'
     String group = FLOW_RELEASE
-    String description = """Sends mail message. Requires mail.server, mail.port properties
-             or corresponding MAIL_SERVER, MAIL_PORT env variables (no authentication).
-             It also uses certain properties to send mails:
-             release.mail.from, release.mail.to, release.mail.flags
-             flags are one of: qrCode, imageMontage"""
+    String description = "Sends mail message. Requires mail.server, mail.port system (-D) properties or " +
+            "corresponding MAIL_SERVER, MAIL_PORT env variables (no authentication). " +
+            "It also uses certain properties to send mails: 'release.mail.from', " +
+            "'release.mail.to' and 'release.mail.flags'. See configuration reference for more details."
 
     @Inject AntBuilder ant
     @Inject ReleaseConfiguration releaseConf

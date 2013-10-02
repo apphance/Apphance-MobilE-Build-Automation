@@ -26,6 +26,8 @@
                 <b>${task.taskName}</b>
                 <br/>
                 ${task.taskDescription}
+                <br/>
+                <br/>
             </span>
         </li>
         <% } %>

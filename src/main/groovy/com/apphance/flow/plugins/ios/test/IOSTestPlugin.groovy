@@ -27,7 +27,9 @@ class IOSTestPlugin implements Plugin<Project> {
 
             if (testConf.testVariants.size() > 0) {
 
-                project.task(TEST_ALL_TASK_NAME, group: FLOW_TEST, description: 'Runs all iOS tests')
+                project.task(TEST_ALL_TASK_NAME,
+                        group: FLOW_TEST,
+                        description: "Aggregate task, runs tests for all variants configured in 'ios.test.variants'.")
                 project.tasks[TEST_ALL_TASK_NAME].mustRunAfter VerifySetupTask.NAME
 
                 testConf.testVariants.each { variant ->

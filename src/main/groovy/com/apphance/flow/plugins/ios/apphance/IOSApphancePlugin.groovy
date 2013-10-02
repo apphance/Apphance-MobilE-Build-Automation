@@ -34,7 +34,9 @@ class IOSApphancePlugin implements Plugin<Project> {
                     def uploadTask =
                         project.task(variant.uploadTaskName,
                                 type: IOSApphanceUploadTask,
-                                dependsOn: variant.archiveTaskName) as IOSApphanceUploadTask
+                                dependsOn: variant.archiveTaskName,
+                                description: "Uploads IPA, ahSYM and image montage files to 'apphance.com'."
+                        ) as IOSApphanceUploadTask
                     uploadTask.variant = variant
                 } else {
                     logger.info("Apphance is disabled for variant '$variant.name'")
