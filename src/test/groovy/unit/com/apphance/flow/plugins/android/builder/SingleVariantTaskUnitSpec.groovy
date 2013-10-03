@@ -21,7 +21,7 @@ import org.gradle.api.logging.Logger
 import spock.lang.Specification
 
 import static com.apphance.flow.executor.AntExecutor.CLEAN
-import static com.google.common.io.Files.createTempDir
+import static com.apphance.flow.executor.AntExecutor.DEBUG
 
 @Mixin([TestUtils, FlowUtils])
 class SingleVariantTaskUnitSpec extends Specification {
@@ -51,7 +51,6 @@ class SingleVariantTaskUnitSpec extends Specification {
                 getProjectName() >> new StringProperty(value: 'TestAndroidProject')
             }
             projectUpdater.executor = GroovyMock(AndroidExecutor)
-            releaseConf = GroovyStub(AndroidReleaseConfiguration)
             variant = GroovyStub(AndroidVariantConfiguration) {
                 getTmpDir() >> variantDir
                 getOldPackage() >> new StringProperty()
@@ -66,9 +65,6 @@ class SingleVariantTaskUnitSpec extends Specification {
     }
 
     def 'test ant executor tasks'() {
-        given:
-        task.releaseConf.enabled >> false
-
         when:
         task.singleVariant()
 
@@ -77,33 +73,11 @@ class SingleVariantTaskUnitSpec extends Specification {
             1 * projectUpdater.updateRecursively(variantDir, 'android-8', 'TestAndroidProject')
             1 * projectUpdater.executor.updateProject(variantDir, 'android-8', 'TestAndroidProject')
             1 * antExecutor.executeTarget(variantDir, CLEAN)
-            1 * antExecutor.executeTarget(variantDir, 'debug')
-            1 * ant.copy(* _)
+            1 * antExecutor.executeTarget(variantDir, DEBUG)
+            2 * ant.copy(* _)
 
             0 * antExecutor.executeTarget(_, _)
         }
-    }
-
-    def 'test override files from variant dir'() {
-        given: 'variant has its directory'
-        task.releaseConf.enabled >> false
-
-        when:
-        task.singleVariant()
-
-        then:
-        1 * task.ant.copy(* _)
-    }
-
-    def 'test copy to ota'() {
-        given: 'variant has its directory'
-        task.releaseConf.enabled >> true
-
-        when:
-        task.singleVariant()
-
-        then:
-        2 * task.ant.copy(* _)
     }
 
     def 'test manifest merge'() {
