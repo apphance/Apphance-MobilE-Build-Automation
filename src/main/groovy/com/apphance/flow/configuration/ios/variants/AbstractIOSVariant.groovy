@@ -107,7 +107,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     @Lazy
     @PackageScope
     boolean mobileprovisionEnabled = {
-        def enabled = releaseConf.enabled && mode.value == DEVICE
+        def enabled = mode.value == DEVICE
         if (!enabled)
             this.@mobileprovision.resetValue()
         enabled
@@ -126,23 +126,23 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     def frameworkName = new StringProperty(
             message: 'Framework name',
-            doc: {docBundle.getString('ios.variant.framework.name')},
+            doc: { docBundle.getString('ios.variant.framework.name') },
             required: { mode.value == FRAMEWORK },
             interactive: { mode.value == FRAMEWORK },
             validator: { isNotEmpty(it) }
     )
     def frameworkHeaders = new ListStringProperty(
-            doc: {docBundle.getString('ios.variant.framework.headers')},
+            doc: { docBundle.getString('ios.variant.framework.headers') },
             interactive: { false }, required: { false }
     )
 
     def frameworkResources = new ListStringProperty(
-            doc: {docBundle.getString('ios.variant.framework.resources')},
+            doc: { docBundle.getString('ios.variant.framework.resources') },
             interactive: { false }, required: { false }
     )
 
     def frameworkLibs = new ListStringProperty(
-            doc: {docBundle.getString('ios.variant.framework.libs')},
+            doc: { docBundle.getString('ios.variant.framework.libs') },
             interactive: { false }, required: { false }
     )
 

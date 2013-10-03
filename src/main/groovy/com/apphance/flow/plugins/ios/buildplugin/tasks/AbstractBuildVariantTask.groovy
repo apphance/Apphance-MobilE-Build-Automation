@@ -2,7 +2,6 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.cocoapods.PodLocator
@@ -23,7 +22,6 @@ abstract class AbstractBuildVariantTask extends DefaultTask {
     String group = FLOW_BUILD
 
     @Inject IOSConfiguration conf
-    @Inject IOSReleaseConfiguration releaseConf
     @Inject IOSExecutor iosExecutor
     @Inject IOSArtifactProvider artifactProvider
     @Inject PodLocator podLocator

@@ -26,15 +26,13 @@ class DeviceVariantTask extends AbstractBuildVariantTask {
         schemeParser.addPostArchiveAction(variant.schemeFile)
         def archiveOutput = iosExecutor.buildVariant(variant.tmpDir, cmd)
 
-        if (releaseConf.isEnabled()) {
-            def info = artifactProvider.deviceInfo(variant)
-            info.archiveDir = findArchiveFile(archiveOutput)
-            validateArchiveFile(info.archiveDir)
-            info.appName = appName
-            info.productName = productName
+        def info = artifactProvider.deviceInfo(variant)
+        info.archiveDir = findArchiveFile(archiveOutput)
+        validateArchiveFile(info.archiveDir)
+        info.appName = appName
+        info.productName = productName
 
-            deviceArtifactsBuilder.buildArtifacts(info)
-        }
+        deviceArtifactsBuilder.buildArtifacts(info)
     }
 
     @Lazy

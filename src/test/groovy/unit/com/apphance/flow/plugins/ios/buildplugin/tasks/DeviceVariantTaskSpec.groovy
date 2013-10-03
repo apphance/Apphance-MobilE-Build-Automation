@@ -1,7 +1,6 @@
 package com.apphance.flow.plugins.ios.buildplugin.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
@@ -13,7 +12,6 @@ import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSDeviceArtifactInfo
 import com.apphance.flow.util.FlowUtils
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.FRAMEWORK
@@ -57,13 +55,12 @@ class DeviceVariantTaskSpec extends Specification {
         e.message == "Invalid build mode: $FRAMEWORK!"
     }
 
-    @Unroll
-    def 'executor runs archive command when variant passed & release conf enabled #releaseConfEnabled'() {
+    def 'device action is invoked with all interactions'() {
         given:
         def tmpFile = tempFile
 
         and:
-        def variant = GroovySpy(AbstractIOSVariant) {
+        def variant = GroovyStub(AbstractIOSVariant) {
             getTmpDir() >> GroovyMock(File)
             getName() >> 'GradleXCode'
             getSchemeName() >> 'GradleXCode'
@@ -73,30 +70,22 @@ class DeviceVariantTaskSpec extends Specification {
             getArchiveConfiguration() >> 'c'
             getXcodebuildExecutionPath() >> ['xcodebuild']
         }
-        task.releaseConf = GroovyMock(IOSReleaseConfiguration) {
-            isEnabled() >> releaseConfEnabled
-        }
-        task.conf = GroovyMock(IOSConfiguration) {
+        task.conf = GroovyStub(IOSConfiguration) {
             getSdk() >> new StringProperty(value: 'iphoneos')
         }
         task.variant = variant
         task.schemeParser = GroovyMock(XCSchemeParser)
         task.artifactProvider = GroovyMock(IOSArtifactProvider)
         task.deviceArtifactsBuilder = GroovyMock(IOSDeviceArtifactsBuilder)
-        task.podLocator = GroovyMock(PodLocator)
+        task.podLocator = GroovyStub(PodLocator)
 
         when:
         task.build()
 
         then:
         1 * task.iosExecutor.buildVariant(_, ['xcodebuild', '-scheme', 'GradleXCode', '-sdk', 'iphoneos', 'clean', 'archive']) >> ["FLOW_ARCHIVE_PATH=$temporaryDir.absolutePath"].iterator()
-        cnt * task.artifactProvider.deviceInfo(_) >> new IOSDeviceArtifactInfo()
-        cnt * task.deviceArtifactsBuilder.buildArtifacts(_)
-
-        where:
-        releaseConfEnabled | cnt
-        true               | 1
-        false              | 0
+        1 * task.artifactProvider.deviceInfo(_) >> new IOSDeviceArtifactInfo()
+        1 * task.deviceArtifactsBuilder.buildArtifacts(_)
     }
 
     def 'null returned when no archive found'() {
