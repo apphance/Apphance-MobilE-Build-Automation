@@ -22,7 +22,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty
 @Mixin(Preconditions)
 class UploadAndroidArtifactTask extends DefaultTask {
 
-    String description = 'Uploads apk to Apphance server'
+    String description = 'Uploads apk to Apphance server. Then apk can be found at https://panel.apphance.com/'
     String group = FLOW_APPHANCE_SERVICE
 
     @Inject AndroidConfiguration conf

@@ -16,6 +16,13 @@ import javax.inject.Inject
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
+/**
+ * Main android build plugin.<br/>
+ *
+ * The plugin provides all the tasks needed to build android application.
+ * Among plugin tasks there are three static anchor tasks: 'buildAll', 'buildAllDebug' and 'buildAllRelease'.
+ * They actually don't do anything besides calling other build tasks. Build tasks are created dynamically based on available variants.
+ */
 class AndroidPlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())

@@ -14,6 +14,16 @@ import javax.inject.Inject
 import static com.apphance.flow.configuration.apphance.ApphanceMode.DISABLED
 import static org.gradle.api.logging.Logging.getLogger
 
+
+/**
+ * Plugin for enabling Apphance (<a href="http://www.apphance.com">http://www.apphance.com</a>) library in android project.<br/>
+ *
+ * The plugin provides integration with Apphance service. It performs the
+ * following tasks: adding Apphance on-the-fly while building the application for configured variants,
+ * submitting the application to apphance at release time.<br/>
+ * Adding Apphance is implemented according to library installation documentation:
+ * <a href="http://help.apphance.com/library-installation/android">http://help.apphance.com/library-installation/android</a>
+ */
 class AndroidApphancePlugin implements Plugin<Project> {
 
     def logger = getLogger(this.class)
@@ -31,7 +41,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
                     logger.lifecycle("Adding apphance task for ${variantConf.name}")
 
                     def buildVariantTask = project.tasks.findByName(variantConf.buildTaskName)
-                    def addApphanceTask = project.task("addApphance$variantConf.name")
+                    def addApphanceTask = project.task("addApphance$variantConf.name", description: "adding Apphance on-the-fly to $variantConf.name variant")
                     addApphanceTask.doFirst {
                         new AddApphanceToAndroid(variantConf, apphanceConf.enableShaking.value).addApphance()
                     }

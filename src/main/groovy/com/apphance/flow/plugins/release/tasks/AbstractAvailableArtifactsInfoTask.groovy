@@ -18,8 +18,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     static final NAME = 'prepareAvailableArtifactsInfo'
     String group = FLOW_RELEASE
-    String description = 'Generates release artifacts, this includes: mail message, QR code with installation link' +
-            'and installation HTML sites.'
+    String description = 'Generates release artifacts, this includes: mail message, QR code with installation link and installation HTML sites.'
 
     @Inject ProjectConfiguration conf
     @Inject ReleaseConfiguration releaseConf
