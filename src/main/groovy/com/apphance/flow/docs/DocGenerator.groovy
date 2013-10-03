@@ -1,6 +1,8 @@
 package com.apphance.flow.docs
 
 import com.apphance.flow.configuration.AbstractConfiguration
+import com.apphance.flow.configuration.apphance.ApphanceConfiguration
+import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.util.FlowUtils
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
@@ -151,6 +153,8 @@ class DocGenerator {
         ].sort { it.key }
 
         commonConfs['0'].confName = commonConfs['0'].conf = releaseConf
+        commonConfs['0'].confClass = ApphanceConfiguration.simpleName
+        commonConfs['1'].confClass = ReleaseConfiguration.simpleName
 
         iosConfs.remove(findConfKey(iosConfs, apphanceConf))
         iosConfs.remove(findConfKey(iosConfs, releaseConf))

@@ -12,6 +12,9 @@ import org.gradle.api.GradleException
 
 import javax.inject.Inject
 
+/**
+ * Variants configuration holds the list of variants thar are configured for building.
+ */
 @Singleton
 @Mixin(FlowUtils)
 class IOSVariantsConfiguration extends AbstractConfiguration {

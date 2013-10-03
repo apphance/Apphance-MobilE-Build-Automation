@@ -6,6 +6,10 @@ import javax.inject.Inject
 
 import static com.apphance.flow.util.file.FileManager.relativeTo
 
+/**
+ * Variant configuration keeps all variant-related settings, used while building artifacts. Depending on the values set,
+ * various artifacts are created. See plugin reference for the details.
+ */
 class IOSSchemeVariant extends AbstractIOSVariant {
 
     @Inject

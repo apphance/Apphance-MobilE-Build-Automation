@@ -17,6 +17,9 @@ import javax.inject.Inject
 import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
+/**
+ * Test configuration keeps the list of variants configured to run tests against them.
+ */
 @Singleton
 @Mixin(FlowUtils)
 class IOSTestConfiguration extends AbstractConfiguration {

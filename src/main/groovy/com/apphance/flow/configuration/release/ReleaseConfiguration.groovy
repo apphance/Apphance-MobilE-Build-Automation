@@ -22,6 +22,10 @@ import static java.text.MessageFormat.format
 import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
+/**
+ * This configuration holds values used while executing various release-related tasks. See the descriptions below for
+ * detailed information.
+ */
 abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     final String configurationName = 'Release Configuration'

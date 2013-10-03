@@ -10,6 +10,9 @@ import javax.inject.Inject
 
 import static com.apphance.flow.detection.project.ProjectType.IOS
 
+/**
+ * This configuration keeps the values that are passed as a parameters to 'xcodebuild' while building artifacts.
+ */
 @Singleton
 class IOSConfiguration extends ProjectConfiguration {
 
