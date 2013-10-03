@@ -9,9 +9,9 @@ import com.google.gdata.util.XmlBlob
 
 import static org.gradle.api.logging.Logging.getLogger
 
-class DocumenationSender {
+class DocSender {
 
-    def static logger = getLogger(FlowPluginReference)
+    def static logger = getLogger(DocGenerator)
 
     public static void main(String[] args) {
         logger.lifecycle "Sending flow documentation to flow.apphance.com"

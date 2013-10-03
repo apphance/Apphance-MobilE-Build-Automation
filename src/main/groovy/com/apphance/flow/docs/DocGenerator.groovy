@@ -20,12 +20,12 @@ import static org.gradle.api.logging.Logging.getLogger
 import static org.gradle.tooling.GradleConnector.newConnector
 
 @Mixin(FlowUtils)
-class FlowPluginReference {
+class DocGenerator {
 
     public static final String[] GRADLE_DAEMON_ARGS = ['-XX:MaxPermSize=1024m', '-XX:+CMSClassUnloadingEnabled', '-XX:+CMSPermGenSweepingEnabled',
             '-XX:+HeapDumpOnOutOfMemoryError', '-Xmx1024m'] as String[]
 
-    def static logger = getLogger(FlowPluginReference)
+    def static logger = getLogger(DocGenerator)
 
     private TemplateEngine tmplEngine = new SimpleTemplateEngine()
 
@@ -37,7 +37,7 @@ class FlowPluginReference {
     @Lazy List<GroovyClassDoc> tasks = { classes.findAll { superClasses(it).contains AbstractTask.simpleName } }()
     List<GroovyClassDoc> classes
 
-    FlowPluginReference() {
+    DocGenerator() {
         File src = new File('src')
         GroovyDocTool docTool = new GroovyDocTool(new ClasspathResourceManager(), [src.path] as String[],
                 DEFAULT_DOC_TEMPLATES, DEFAULT_PACKAGE_TEMPLATES, DEFAULT_CLASS_TEMPLATES, [], new Properties()
@@ -210,6 +210,6 @@ class FlowPluginReference {
     }
 
     public static void main(String[] args) {
-        new FlowPluginReference().run()
+        new DocGenerator().run()
     }
 }

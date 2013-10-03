@@ -2,11 +2,11 @@ package com.apphance.flow.docs
 
 import spock.lang.Specification
 
-class FlowPluginReferenceSpec extends Specification {
+class DocGeneratorSpec extends Specification {
 
     def 'test get flow reference'() {
         given:
-        def reference = new FlowPluginReference()
+        def reference = new DocGenerator()
 
         expect:
         reference.configurations

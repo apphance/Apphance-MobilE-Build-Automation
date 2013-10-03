@@ -115,9 +115,4 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     private Closure<IOSWorkspaceVariant> workspaceVariant = { String name ->
         variantFactory.createWorkspaceVariant(name)
     }.memoize()
-
-    @Override
-    void checkProperties() {
-        //TODO variants
-    }
 }

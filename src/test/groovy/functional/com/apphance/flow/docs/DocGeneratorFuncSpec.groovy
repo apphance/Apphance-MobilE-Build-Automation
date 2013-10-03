@@ -6,12 +6,12 @@ import spock.lang.Specification
 import static org.apache.commons.io.FileUtils.deleteDirectory
 
 @Mixin(TestUtils)
-class FlowPluginReferenceFunctionalSpec extends Specification {
+class DocGeneratorFuncSpec extends Specification {
 
     def 'test generate documentation'() {
         given:
         deleteDirectory(new File('build/doc/'))
-        new FlowPluginReference().run()
+        new DocGenerator().run()
 
         expect:
         ['build/doc/confs.html', 'build/doc/plugins.html'].collect { new File(it) }.every {
