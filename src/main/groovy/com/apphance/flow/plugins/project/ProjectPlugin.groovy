@@ -9,6 +9,12 @@ import org.gradle.api.Project
 import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static org.gradle.api.logging.Logging.getLogger
 
+/**
+ * This is the base plugin which is applied to every project.
+ * <br/><br/>
+ * This plugin provides setup-related tasks. The tasks allow to generate new configuration or verify existing
+ * configuration.
+ */
 class ProjectPlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())

@@ -19,8 +19,40 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
- * Plugin for various X-Code related tasks.
- *
+ * This is the main iOS plugin.
+ * <br/><br/>
+ * It provides all tasks necessary for building artifacts for the defined variants. Every variant has a related task,
+ * that is dynamically created during initialization of Apphance Flow. For 'DEVICE' and 'SIMULATOR' variants build task
+ * name is prefixed with 'archive' prefix, for 'FRAMEWORK' mode prefix for task name is 'framework'.
+ * <br/><br/>
+ * The following artifacts are be prepared with usage of iOS Plugin:
+ * <br/>
+ * <ul>
+ *  <li>for 'DEVICE' mode variant:
+ *      <ul>
+ *          <li>zipped xcarchive</li>
+ *          <li>zipped dSYM files</li>
+ *          <li>zipped ahSYM files - special SYM format for apphance integration</li>
+ *          <li>ipa file</li>
+ *          <li>manifest file</li>
+ *          <li>mobileprovision file</li>
+ *      </ul>
+ *  </li>
+ *  <br/>
+ *  <li>for 'SIMULATOR' mode variant
+ *      <ul>
+ *          <li>dmg disk image with iPhone simulator dedicated application</li>
+ *          <li>dmg disk image with iPad simulator dedicated application</li>
+ *      </ul>
+ *  </li>
+ *  <br/>
+ *  <li>for 'FRAMEWORK' mode variant
+ *      <ul>
+ *          <li>ready-to-se framework file</li>
+ *      </ul>
+ *  </li>
+ * </ul>
+ * That's all greetings for the whole family!
  */
 class IOSPlugin implements Plugin<Project> {
 

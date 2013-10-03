@@ -1,5 +1,23 @@
 package com.apphance.flow.plugins.ios.apphance
 
+/**
+ * This plugin provides automatic source code integration of apphance framework and defines a task for uploading built
+ * artifacts (ipa, ahSYM and image montage) to 'apphance.com'. To upload artifacts apphance user and pass must be passed
+ * via flow.properties file, system (-D) properties or environment variables.
+ * <br/><br/>
+ * For more info visit: <a href="http://apphance.com">apphance.com</a>.
+ * <br/><br/>
+ * No special task is defined for apphance integration. If apphance mode for particular variant is one of 'QA', 'SILENT'
+ * or 'PROD' source code will be modified before building the variant.
+ * <br/><br/>
+ * Automatic source integration does the following:
+ * <ul>
+ *     <li>adds necessary frameworks to 'project.pbxproj' file</li>
+ *     <li>modifies the PCH file to include apphance framework headers</li>
+ *     <li>replaces all NSLog invocations with 'APHLog'</li>
+ *     <li>adds apphance session initialization when application starts</li>
+ * </ul>
+ */
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.apphance.tasks.IOSApphanceUploadTask

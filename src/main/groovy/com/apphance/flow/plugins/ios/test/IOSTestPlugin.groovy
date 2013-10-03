@@ -12,6 +12,18 @@ import javax.inject.Inject
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
+/**
+ * This plugin enables running ocunit compatible tests for chosen variants.
+ * <br/><br/>
+ * To enable this plugin following requirements must be fulfilled:
+ * <ul>
+ *     <li>xcode version must be between 4.6.2 and 5.0</li>
+ *     <li>ios-sim must be installed</li>
+ *     <li>test targets must be enabled</li>
+ * </ul>
+ * Running tests is done by adding special shell script to build phase in project.pbxproj configuration file and then
+ * invoking 'build' action for particular target and configuration.
+ */
 class IOSTestPlugin implements Plugin<Project> {
 
     private logger = getLogger(getClass())
