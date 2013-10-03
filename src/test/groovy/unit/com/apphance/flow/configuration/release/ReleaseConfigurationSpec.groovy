@@ -111,7 +111,7 @@ class ReleaseConfigurationSpec extends Specification {
 
     def 'possible icons are found'() {
         given:
-        def projectDir = 'testProjects/android/android-basic'
+        def projectDir = 'projects/test/android/android-basic'
 
         and:
         def ac = new AndroidConfiguration()
@@ -129,7 +129,7 @@ class ReleaseConfigurationSpec extends Specification {
 
     def 'default icons are found'() {
         given:
-        def projectDir = 'testProjects/android/android-basic'
+        def projectDir = 'projects/test/android/android-basic'
 
         and:
         def ac = new AndroidConfiguration()

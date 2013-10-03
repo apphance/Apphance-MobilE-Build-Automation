@@ -7,7 +7,7 @@ class AndroidUtilsSpec extends Specification {
 
     def 'test find libraries'() {
         expect:
-        allLibraries(new File('testProjects/android/android-basic'))*.path ==
-                ['testProjects/android/android-basic/subproject', 'testProjects/android/android-basic/subproject/subsubproject']
+        allLibraries(new File('projects/test/android/android-basic'))*.path ==
+                ['projects/test/android/android-basic/subproject', 'projects/test/android/android-basic/subproject/subsubproject']
     }
 }

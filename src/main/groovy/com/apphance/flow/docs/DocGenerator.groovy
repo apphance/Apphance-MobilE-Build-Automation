@@ -61,11 +61,11 @@ class DocGenerator {
     public void run() {
         logger.lifecycle 'Building Apphance Flow docs'
 
-        def androidProject = new File('doc-projects/android')
+        def androidProject = new File('projects/doc/android')
         applyAllPluginsInDocMode(androidProject)
         def androidJson = toJson(new File(androidProject, 'build/doc/doc.json'))
 
-        def iosProject = new File('doc-projects/iOS')
+        def iosProject = new File('projects/doc//iOS')
         applyAllPluginsInDocMode(iosProject)
         def iosJson = toJson(new File(iosProject, 'build/doc/doc.json'))
 

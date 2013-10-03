@@ -18,7 +18,7 @@ class ExecuteAndroidBuildsTest extends Specification {
 
     def setup() {
         testTmpDir = temporaryDir
-        copyDirectory new File("testProjects/android/android-basic"), testTmpDir
+        copyDirectory new File("projects/test/android/android-basic"), testTmpDir
         connection = newConnector().forProjectDirectory(testTmpDir).connect();
     }
 

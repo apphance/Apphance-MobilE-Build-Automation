@@ -19,7 +19,7 @@ class ExecuteApphanceBuildsTest extends Specification {
 
     void setupSpec() {
         projectDir = temporaryDir
-        copyDirectory(new File("testProjects/android/android-no-apphance-application"), projectDir)
+        copyDirectory(new File("projects/test/android/android-no-apphance-application"), projectDir)
         connection = GradleConnector.newConnector().forProjectDirectory(projectDir).connect();
     }
 

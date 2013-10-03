@@ -57,7 +57,7 @@ class SingleVariantTaskSpec extends Specification {
     def projectUpdater = new AndroidProjectUpdater(executor: androidExecutor)
 
     def setup() {
-        copyDirectory new File('testProjects/android/android-basic'), rootDir
+        copyDirectory new File('projects/test/android/android-basic'), rootDir
         task.antExecutor = antExecutor
         task.projectUpdater = projectUpdater
         task.ant = project.ant

@@ -12,7 +12,7 @@ class CleanFlowTaskSpec extends Specification {
 
     def 'appropriate directories are cleaned'() {
         given:
-        def projectDir = new File('testProjects/android/android-basic')
+        def projectDir = new File('projects/test/android/android-basic')
         def project = builder().withProjectDir(projectDir).build()
 
         and:
