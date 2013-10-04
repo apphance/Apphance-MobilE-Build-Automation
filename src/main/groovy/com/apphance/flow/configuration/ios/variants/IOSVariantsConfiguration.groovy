@@ -94,6 +94,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }()
 
     private List<? extends AbstractIOSVariant> variantsInternal() {
+        variantsNames.makeUnique()
         if (hasWorkspaceAndSchemes)
             return variantsNames.value.collect(workspaceVariant)
         else if (hasSchemes)
