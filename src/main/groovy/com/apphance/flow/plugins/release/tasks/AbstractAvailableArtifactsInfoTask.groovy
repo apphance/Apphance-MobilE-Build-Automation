@@ -110,7 +110,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     void prepareIconFile() {
         ant.copy(
-                file: new File(project.rootDir, releaseConf.releaseIcon.value.path),
+                file: new File(conf.rootDir, releaseConf.releaseIcon.value.path),
                 tofile: new File(releaseConf.releaseDir, releaseConf.releaseIcon.value.name)
         )
     }

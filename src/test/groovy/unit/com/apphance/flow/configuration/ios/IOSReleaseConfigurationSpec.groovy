@@ -9,6 +9,8 @@ import com.google.common.io.Files
 import org.gradle.api.Project
 import spock.lang.Specification
 
+import javax.imageio.ImageIO
+
 import static com.apphance.flow.configuration.ios.IOSReleaseConfiguration.getICON_PATTERN
 
 class IOSReleaseConfigurationSpec extends Specification {
@@ -39,7 +41,7 @@ class IOSReleaseConfigurationSpec extends Specification {
 
     def 'test defaultIcon'() {
         expect:
-        iosReleaseConf.defaultIcon().path == 'icon.png'
+        iosReleaseConf.possibleIcon().path == 'icon.png'
     }
 
     def 'test possibleIcons'() {
@@ -88,7 +90,7 @@ class IOSReleaseConfigurationSpec extends Specification {
         })
 
         when:
-        releaseConf.defaultIcon()
+        releaseConf.possibleIcon()
         def value = releaseConf.releaseIcon.defaultValue()
 
         then:
@@ -98,4 +100,18 @@ class IOSReleaseConfigurationSpec extends Specification {
         cleanup:
         rootDir.deleteDir()
     }
+
+    def 'default icon exists'() {
+        given:
+        def configuration = new IOSReleaseConfiguration()
+
+        when:
+        def icon = configuration.defaultIcon
+
+        then:
+        icon.exists()
+        icon.size() > 100
+        icon.name == 'ios-icon.svg'
+    }
+
 }

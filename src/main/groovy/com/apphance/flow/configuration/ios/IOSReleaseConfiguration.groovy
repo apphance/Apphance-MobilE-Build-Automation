@@ -4,15 +4,16 @@ import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import com.apphance.flow.plugins.release.FlowArtifact
+import com.apphance.flow.util.FlowUtils
 import com.google.inject.Singleton
 
 import javax.inject.Inject
 
 import static com.apphance.flow.util.file.FileManager.*
 import static groovy.io.FileType.FILES
-import static java.text.MessageFormat.format
 
 @Singleton
+@Mixin(FlowUtils)
 class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     Map<String, FlowArtifact> distributionZipFiles = [:]
@@ -29,8 +30,10 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
     @Inject PlistParser plistParser
     static final String ICON_PATTERN = /(?i).*icon.*png/
 
+    File defaultIcon = copy('/com/apphance/flow/configuration/ios/ios-icon.svg', new File(temporaryDir, 'ios-icon.svg'))
+
     @Override
-    File defaultIcon() {
+    File possibleIcon() {
         def icon = iconFiles.find { it.name.toLowerCase().startsWith('icon') } ?: iconFiles.find()
         icon ? relativeTo(conf.rootDir.absolutePath, icon.absolutePath) : null
     }
@@ -64,12 +67,6 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
         }
         files
     }()
-
-    @Override
-    void checkProperties() {
-        super.checkProperties()
-        check releaseIcon.value, format(validationBundle.getString('exception.release.icon'), releaseIcon.value)
-    }
 
     @Override
     boolean canBeEnabled() {

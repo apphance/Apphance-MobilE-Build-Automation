@@ -5,7 +5,6 @@ abstract class AbstractProperty<T> {
     String name
     String message
     String validationMessage = ''
-    Boolean initialized = false
 
     protected T value
 

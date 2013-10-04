@@ -109,12 +109,12 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
         new File(conf.rootDir, OTA_DIR)
     }
 
-    def releaseIcon = new FileProperty(
+    private FileProperty releaseIcon = new FileProperty(
             name: 'release.icon',
             message: 'Path to project\'s icon file, must be relative to the root dir of project',
             doc: { docBundle.getString('release.icon') },
             required: { false },
-            defaultValue: { defaultIcon() ? relativeTo(conf.rootDir.absolutePath, defaultIcon().absolutePath) : null },
+            defaultValue: { possibleIcon() ? relativeTo(conf.rootDir.absolutePath, possibleIcon().absolutePath) : null },
             possibleValues: { possibleIcons() },
             validator: {
                 if (!it) return true
@@ -123,9 +123,15 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             }
     )
 
-    abstract File defaultIcon()
+    FileProperty getReleaseIcon() {
+        this.@releaseIcon.value ? this.@releaseIcon : new FileProperty(value: relativeTo(conf.rootDir, defaultIcon))
+    }
 
-    abstract List<String> possibleIcons()
+    protected abstract File getDefaultIcon()
+
+    protected abstract File possibleIcon()
+
+    protected abstract List<String> possibleIcons()
 
     def language = new StringProperty(
             name: 'release.language',

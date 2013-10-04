@@ -142,7 +142,7 @@ class ReleaseConfigurationSpec extends Specification {
         def arc = new AndroidReleaseConfiguration(androidConf: ac, manifestHelper: new AndroidManifestHelper())
 
         expect:
-        arc.defaultIcon().absolutePath.endsWith('drawable-hdpi/icon.png')
+        arc.possibleIcon().absolutePath.endsWith('drawable-hdpi/icon.png')
     }
 
     def 'fields from superclass are also accessible'() {

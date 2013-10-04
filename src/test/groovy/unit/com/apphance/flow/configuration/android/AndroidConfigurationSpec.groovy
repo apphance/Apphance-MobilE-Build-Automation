@@ -38,7 +38,10 @@ class AndroidConfigurationSpec extends Specification {
         given:
         def conf = new AndroidConfiguration(project: builder().build())
 
-        expect:
+        when:
         conf.androidProperties
+
+        then:
+        noExceptionThrown()
     }
 }

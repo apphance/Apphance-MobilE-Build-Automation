@@ -59,7 +59,6 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
 
         releaseConf.conf = conf
         releaseConf.releaseUrl = new URLProperty(value: projectUrl)
-        releaseConf.releaseIcon = new FileProperty(value: 'res/drawable-hdpi/icon.png')
         releaseConf.reader = reader
 
         variantsConf = GroovyMock(AndroidVariantsConfiguration)
@@ -106,7 +105,6 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                 'message_file.html',
         ]
         def png = [
-                'icon.png',
                 "$projectName-$fullVersionString-qrcode.png"
         ]
 
