@@ -26,7 +26,6 @@ import static com.apphance.flow.plugins.ios.xcodeproj.XCProjLocator.PROJECT_PBXP
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static com.google.common.base.Preconditions.checkArgument
 import static java.text.MessageFormat.format
-import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
@@ -40,8 +39,6 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     @Inject XCSchemeInfo schemeInfo
     @Inject XCProjLocator xcodeprojLocator
     @Inject VersionValidator versionValidator
-
-    protected bundle = getBundle('validation')
 
     @Inject
     AbstractIOSVariant(@Assisted String name) {
@@ -189,7 +186,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     String getProjectName() {
         if (mode.value in [SIMULATOR, DEVICE]) {
             String bundleDisplayName = plistParser.bundleDisplayName(plist)
-            checkArgument(isNotBlank(bundleDisplayName), format(bundle.getString('exception.ios.variant.bundleDisplayName'), plist.absolutePath))
+            checkArgument(isNotBlank(bundleDisplayName), format(validationBundle.getString('exception.ios.variant.bundleDisplayName'), plist.absolutePath))
             return plistParser.evaluate(bundleDisplayName, target, archiveConfiguration)
         } else if (mode.value == FRAMEWORK) {
             return frameworkName.value
@@ -246,17 +243,17 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     void checkProperties() {
         super.checkProperties()
 
-        check versionValidator.isNumber(versionCode), bundle.getString('exception.ios.version.code')
-        check versionValidator.hasNoWhiteSpace(versionString), bundle.getString('exception.ios.version.string')
+        check versionValidator.isNumber(versionCode), validationBundle.getString('exception.ios.version.code')
+        check versionValidator.hasNoWhiteSpace(versionString), validationBundle.getString('exception.ios.version.string')
 
         if (mobileprovisionEnabled)
             defaultValidation mobileprovision
 
         if (mode.value == FRAMEWORK) {
             defaultValidation frameworkName
-            check(frameworkHeaders.value.every { new File(conf.rootDir, it).exists() }, bundle.getString('exception.ios.framework.invalid.headers'))
-            check(frameworkResources.value.every { new File(conf.rootDir, it).exists() }, bundle.getString('exception.ios.framework.invalid.resources'))
-            check(frameworkLibs.value.every { new File(conf.rootDir, it).exists() }, bundle.getString('exception.ios.framework.invalid.libs'))
+            check(frameworkHeaders.value.every { new File(conf.rootDir, it).exists() }, validationBundle.getString('exception.ios.framework.invalid.headers'))
+            check(frameworkResources.value.every { new File(conf.rootDir, it).exists() }, validationBundle.getString('exception.ios.framework.invalid.resources'))
+            check(frameworkLibs.value.every { new File(conf.rootDir, it).exists() }, validationBundle.getString('exception.ios.framework.invalid.libs'))
         }
     }
 }

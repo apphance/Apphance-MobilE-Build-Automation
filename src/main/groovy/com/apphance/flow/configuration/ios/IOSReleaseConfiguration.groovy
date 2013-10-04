@@ -68,7 +68,7 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
     @Override
     void checkProperties() {
         super.checkProperties()
-        check releaseIcon.value, format(bundle.getString('exception.release.icon'), releaseIcon.value)
+        check releaseIcon.value, format(validationBundle.getString('exception.release.icon'), releaseIcon.value)
     }
 
     @Override

@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat
 import static com.apphance.flow.env.Environment.JENKINS
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static java.text.MessageFormat.format
-import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
 /**
@@ -41,7 +40,6 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     @Inject ReleaseValidator validator
 
     private boolean enabledInternal
-    protected bundle = getBundle('validation')
 
     FlowArtifact otaIndexFile
     FlowArtifact fileIndexFile
@@ -206,17 +204,17 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     @Override
     void checkProperties() {
-        check !checkException { releaseDirName }, bundle.getString('exception.release.url')
-        check language.validator(language.value), bundle.getString('exception.release.language')
-        check country.validator(country.value), bundle.getString('exception.release.country')
-        check releaseMailFrom.validator(releaseMailFrom.value), format(bundle.getString('exception.release.mail'), releaseMailFrom.name, releaseMailFrom.value)
-        check releaseMailTo.validator(releaseMailTo.persistentForm()), format(bundle.getString('exception.release.mail'), releaseMailTo.name, releaseMailTo.value)
-        check releaseMailFlags.validator(releaseMailFlags.persistentForm()), format(bundle.getString('exception.release.mail.flags'), ALL_EMAIL_FLAGS, releaseMailFlags.value)
-        check releaseIcon.validator(releaseIcon.value), format(bundle.getString('exception.release.icon'), releaseIcon.value)
+        check !checkException { releaseDirName }, validationBundle.getString('exception.release.url')
+        check language.validator(language.value), validationBundle.getString('exception.release.language')
+        check country.validator(country.value), validationBundle.getString('exception.release.country')
+        check releaseMailFrom.validator(releaseMailFrom.value), format(validationBundle.getString('exception.release.mail'), releaseMailFrom.name, releaseMailFrom.value)
+        check releaseMailTo.validator(releaseMailTo.persistentForm()), format(validationBundle.getString('exception.release.mail'), releaseMailTo.name, releaseMailTo.value)
+        check releaseMailFlags.validator(releaseMailFlags.persistentForm()), format(validationBundle.getString('exception.release.mail.flags'), ALL_EMAIL_FLAGS, releaseMailFlags.value)
+        check releaseIcon.validator(releaseIcon.value), format(validationBundle.getString('exception.release.icon'), releaseIcon.value)
 
         if (Environment.env() == JENKINS) {
-            check !checkException { validator.validateMailServer(mailServer) }, bundle.getString('exception.release.mail.server')
-            check !checkException { validator.validateMailPort(mailPort) }, bundle.getString('exception.release.mail.port')
+            check !checkException { validator.validateMailServer(mailServer) }, validationBundle.getString('exception.release.mail.server')
+            check !checkException { validator.validateMailPort(mailPort) }, validationBundle.getString('exception.release.mail.port')
         }
     }
 }

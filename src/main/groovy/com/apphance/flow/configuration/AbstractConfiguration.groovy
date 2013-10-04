@@ -14,6 +14,7 @@ abstract class AbstractConfiguration {
 
     protected logger = getLogger(getClass())
     protected docBundle = getBundle('doc')
+    protected validationBundle = getBundle('validation')
 
     @Inject PropertyPersister propertyPersister
 
