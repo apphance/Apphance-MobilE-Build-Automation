@@ -11,6 +11,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.detection.project.ProjectType.ANDROID
 import static com.google.common.base.Strings.isNullOrEmpty
+import static java.text.MessageFormat.format
 
 @Singleton
 class AndroidConfiguration extends ProjectConfiguration {
@@ -87,8 +88,8 @@ class AndroidConfiguration extends ProjectConfiguration {
 
     @Override
     void checkProperties() {
-        check !isNullOrEmpty(reader.envVariable('ANDROID_HOME')), "Environment variable 'ANDROID_HOME' must be set!"
-        check !isNullOrEmpty(projectName.value), "Property ${projectName.name} must be set!"
+        check !isNullOrEmpty(reader.envVariable('ANDROID_HOME')), validationBundle.getString('exception.android.android.home')
+        check !isNullOrEmpty(projectName.value), format(validationBundle.getString('exception.android.project.name'), projectName.name)
         check versionValidator.isNumber(versionCode), validationBundle.getString('exception.android.version.code')
         check versionValidator.hasNoWhiteSpace(versionString), validationBundle.getString('exception.android.version.string')
         check target.validator(target.value), "Property ${target.name} is incorrect." +

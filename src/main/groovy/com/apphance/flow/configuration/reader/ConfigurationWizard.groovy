@@ -121,9 +121,6 @@ class ConfigurationWizard {
         ap.possibleValues() ? ", possible: ${blue(ap.possibleValues().toString())}" : ''
     }
 
-    /**
-     * Default value of property used in configuration wizard. Calculated from <code>value</code>, <code>defaultValue</code> and <code>possibleValues</code>
-     */
     String effectiveDefaultValue(AbstractProperty ap) {
         ap.getValue() ?: ap.defaultValue() ?: ap.possibleValues() ? ap.possibleValues().get(0) : ''
     }

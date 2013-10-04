@@ -8,8 +8,6 @@ import com.google.inject.Singleton
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
-
 @Singleton
 class AndroidVariantsConfiguration extends AbstractConfiguration {
 
@@ -80,11 +78,5 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     @Override
     boolean isEnabled() {
         conf.enabled
-    }
-
-    @Override
-    void checkProperties() {
-        check variantsNames.value.sort(false) == variants*.name.sort(false), "List in '${variantsNames.name}' property is not equal to the list of" +
-                " names of configured variants, check '${FLOW_PROP_FILENAME}' file!"
     }
 }
