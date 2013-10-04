@@ -21,13 +21,10 @@ class AndroidConfiguration extends ProjectConfiguration {
     @Inject AndroidManifestHelper manifestHelper
     @Inject AndroidExecutor androidExecutor
 
-    private Properties androidProperties
-
-    @Override
     @Inject
+    @Override
     void init() {
         super.init()
-        readProperties()
     }
 
     @Override
@@ -80,15 +77,13 @@ class AndroidConfiguration extends ProjectConfiguration {
 
     Collection<String> sourceExcludes = super.sourceExcludes + ['**/*.class', '**/bin/**']
 
-    def readProperties() {
-        androidProperties = new Properties()
-        ['local', 'build', 'default', 'project'].each {
-            File propFile = project.file("${it}.properties")
-            if (propFile?.exists()) {
-                androidProperties.load(new FileInputStream(propFile))
-            }
-        }
-    }
+    @Lazy
+    Properties androidProperties = {
+        def p = new Properties()
+        ['local', 'build', 'default', 'project'].collect { project.file("${it}.properties") }.
+                findAll { it.exists() }.each { p.load(new FileInputStream(it)) }
+        p
+    }()
 
     @Override
     void checkProperties() {
@@ -99,4 +94,5 @@ class AndroidConfiguration extends ProjectConfiguration {
         check target.validator(target.value), "Property ${target.name} is incorrect." +
                 (target.value ? " Probably target $target.value is not installed in your system" : '')
     }
+
 }

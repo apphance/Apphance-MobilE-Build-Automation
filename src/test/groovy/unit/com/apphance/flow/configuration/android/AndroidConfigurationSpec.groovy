@@ -36,10 +36,9 @@ class AndroidConfigurationSpec extends Specification {
 
     def 'no exception during readProperties'() {
         given:
-        def androidConfiguration = new AndroidConfiguration()
-        androidConfiguration.project = builder().build()
+        def conf = new AndroidConfiguration(project: builder().build())
 
         expect:
-        androidConfiguration.readProperties()
+        conf.androidProperties
     }
 }
