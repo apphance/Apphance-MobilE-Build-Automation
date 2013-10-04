@@ -21,7 +21,6 @@
         </div>
     </div>
 </div>
-<br/>
 <div style="text-align:justify">
     ${p.description}
 </div>
