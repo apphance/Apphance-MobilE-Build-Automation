@@ -124,7 +124,10 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     )
 
     FileProperty getReleaseIcon() {
-        this.@releaseIcon.value ? this.@releaseIcon : new FileProperty(value: relativeTo(conf.rootDir, defaultIcon))
+        this.@releaseIcon.value ?
+            this.@releaseIcon
+        :
+            new FileProperty(value: relativeTo(conf.rootDir.absolutePath, defaultIcon.absolutePath))
     }
 
     protected abstract File getDefaultIcon()

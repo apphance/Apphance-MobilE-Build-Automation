@@ -47,7 +47,8 @@ abstract class AbstractConfiguration {
         findDeclaredFields(getClass())
         fields.findAll {
             it.accessible = true
-            it.get(this)?.class?.superclass == AbstractProperty
+            def fieldClass = it.get(this).getClass()
+            fieldClass.getClass() == Object ? false : fieldClass?.superclass == AbstractProperty
         }.collect {
             it.accessible = true
             it.get(this) as AbstractProperty
