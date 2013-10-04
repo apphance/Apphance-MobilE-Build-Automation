@@ -71,7 +71,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
     )
     def newLabel = new StringProperty(
             interactive: { false },
-            doc: { "Variant value of 'android:label' attribute in manifest <applicatio> tag." }
+            doc: { "Variant value of 'android:label' attribute in manifest 'application' tag." }
     )
 
     def newName = new StringProperty(

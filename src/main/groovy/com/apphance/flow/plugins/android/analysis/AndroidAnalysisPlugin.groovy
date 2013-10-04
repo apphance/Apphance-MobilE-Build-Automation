@@ -18,7 +18,7 @@ import static org.gradle.api.logging.Logging.getLogger
 /**
  * This plugin provides tasks for android project code analysis.
  * <p/>
- * When applied following analysis can be performed on project: PMD, Checkstyle, Findbugs, Lint and CPD.<br>
+ * When applied following analysis can be performed on project: PMD, Checkstyle, Findbugs, Lint and CPD.<br/>
  * Every analysis task has predefined default configuration but custom configurations can be provided for pmd, checkstyle and findbugs.
  * Every analysis task generates reports in 'build/report' directory.
  */

@@ -15,10 +15,10 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
- * Plugin that provides test functionality for android project.<br><br>
+ * Plugin that provides test functionality for android project.<br/><br/>
  *
  * Currently Apphance Flow supports testing android app with Robolectric framework.
- * Plugin adds one anchor task 'testAll' and 'test<variantName>' tasks for each configured variant.
+ * Plugin adds one anchor task 'testAll' and 'testVariantName' tasks for each configured variant.
  */
 class AndroidTestPlugin implements Plugin<Project> {
 

@@ -11,7 +11,7 @@ import javax.inject.Inject
 import static org.gradle.api.logging.Logging.getLogger
 
 /**
- * Plugin that provides release functionality for android.<br><br>
+ * Plugin that provides release functionality for android.<br/><br/>
  *
  * It provides basic release tasks that update version code and version name of the application while preparing the release and
  * produces ready-to-use OTA (Over-The-Air) package (in flow-ota directory) that you can copy to appropriate directory on your web server and have
