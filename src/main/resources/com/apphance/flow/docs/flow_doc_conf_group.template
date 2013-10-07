@@ -1,4 +1,5 @@
-<h3 id="${confName}" style="border-bottom:dotted 1px #aaa">
+<h3 id="${confName.replaceAll(' ', '-')}" style="border-bottom:dotted 1px #aaa">
+    <a name="${confName.replaceAll(' ', '-')}"></a>
     <font size="4">${confName}</font>
 </h3>
 

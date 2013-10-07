@@ -8,33 +8,33 @@
 
     <% if(commonConfs && commonConfs.size() > 0) { %>
         <br/>
-        <a href="#Common%20Configurations">Common Configurations</a>
+        <a href="#Common-Configurations">Common Configurations</a>
         <br/>
         <br/>
         <% commonConfs.each { c -> %>
-            <a href="#${c.conf}">${c.conf}</a>
+            <a href="#${c.conf.replaceAll(' ', '-')}">${c.conf}</a>
             <br/>
         <% } %>
     <% } %>
 
     <% if(androidConfs && androidConfs.size() > 0) { %>
         <br/>
-        <a href="#Android%20Configurations">Android Configurations</a>
+        <a href="#Android-Configurations">Android Configurations</a>
         <br/>
         <br/>
         <% androidConfs.each { c -> %>
-            <a href="#${c.conf}">${c.conf}</a>
+            <a href="#${c.conf.replaceAll(' ', '-')}">${c.conf}</a>
             <br/>
         <% } %>
     <% } %>
 
     <% if(iosConfs && iosConfs.size() > 0) { %>
         <br/>
-        <a href="#iOS%20Configurations">iOS Configurations</a>
+        <a href="#iOS-Configurations">iOS Configurations</a>
         <br/>
         <br/>
         <% iosConfs.each { c -> %>
-            <a href="#${c.conf}">${c.conf}</a>
+            <a href="#${c.conf.replaceAll(' ', '-')}">${c.conf}</a>
             <br/>
         <% } %>
     <% } %>
