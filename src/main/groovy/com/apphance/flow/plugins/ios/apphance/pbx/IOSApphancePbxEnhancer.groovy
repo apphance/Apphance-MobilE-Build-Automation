@@ -194,6 +194,7 @@ class IOSApphancePbxEnhancer {
             ['name': 'CoreTelephony.framework', 'path': 'System/Library/Frameworks/CoreTelephony.framework', 'group': 'SDKROOT'],
             ['name': 'AudioToolbox.framework', 'path': 'System/Library/Frameworks/AudioToolbox.framework', 'group': 'SDKROOT'],
             ['name': 'Security.framework', 'path': 'System/Library/Frameworks/Security.framework', 'group': 'SDKROOT'],
+            ['name': 'AssetsLibrary.framework', 'path': 'System/Library/Frameworks/AssetsLibrary.framework', 'group': 'SDKROOT'],
     ]
 
     private String getFrameworkName() {
