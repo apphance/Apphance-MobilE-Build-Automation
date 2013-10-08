@@ -12,7 +12,7 @@
         <br/>
         <br/>
         <% commonConfs.each { c -> %>
-            <a href="#${c.conf.replaceAll(' ', '-')}">${c.conf}</a>
+            <a href="#${c.conf.replaceAll(' ', '-')}" style="margin-left: 20px">${c.conf}</a>
             <br/>
         <% } %>
     <% } %>
@@ -23,7 +23,7 @@
         <br/>
         <br/>
         <% androidConfs.each { c -> %>
-            <a href="#${c.conf.replaceAll(' ', '-')}">${c.conf}</a>
+            <a href="#${c.conf.replaceAll(' ', '-')}" style="margin-left: 20px">${c.conf}</a>
             <br/>
         <% } %>
     <% } %>
@@ -34,12 +34,18 @@
         <br/>
         <br/>
         <% iosConfs.each { c -> %>
-            <a href="#${c.conf.replaceAll(' ', '-')}">${c.conf}</a>
+            <a href="#${c.conf.replaceAll(' ', '-')}" style="margin-left: 20px">${c.conf}</a>
             <br/>
         <% } %>
     <% } %>
 
 </div>
+<br/>
+<br/>
+You can find example projects for Android <a href='https://github.com/apphance/flow-demo-android'>at our github page</a>.
+<br/>
+You can find example projects for iOS <a href='https://github.com/apphance/flow-demo-ios'>at our github page</a>.
+<br/>
 <br/>
 
 ${confs}

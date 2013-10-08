@@ -9,7 +9,8 @@ import com.google.inject.Singleton
 import javax.inject.Inject
 
 /**
- * This configuration keeps values used while uploading prepared artifacts to apphance.com service.
+ * This configuration keeps values used while uploading prepared artifacts to <a href="http://apphance.com">apphance.com
+ * </a> service.
  */
 @Singleton
 class ApphanceConfiguration extends AbstractConfiguration {

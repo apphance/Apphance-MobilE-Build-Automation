@@ -11,14 +11,17 @@ import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
 
+/**
+ * Requires mail.server, mail.port system (-D) properties or corresponding MAIL_SERVER, MAIL_PORT env variables
+ * (no authentication). It also uses certain properties to send mails: 'release.mail.from', release.mail.to' and
+ * 'release.mail.flags'. See <a href="http://flow.apphance.com/introduction/configuration-reference">configuration
+ * reference</a> for more details.
+ */
 class SendMailMessageTask extends DefaultTask {
 
     static String NAME = 'sendMailMessage'
     String group = FLOW_RELEASE
-    String description = "Sends mail message. Requires mail.server, mail.port system (-D) properties or " +
-            "corresponding MAIL_SERVER, MAIL_PORT env variables (no authentication). " +
-            "It also uses certain properties to send mails: 'release.mail.from', " +
-            "'release.mail.to' and 'release.mail.flags'. See configuration reference for more details."
+    String description = "Sends mail message."
 
     @Inject AntBuilder ant
     @Inject ReleaseConfiguration releaseConf

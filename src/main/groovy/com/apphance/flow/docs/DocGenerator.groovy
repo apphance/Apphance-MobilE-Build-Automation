@@ -131,7 +131,7 @@ class DocGenerator {
                             tasks: m.tasks.collect { t ->
                                 [
                                         taskName: t.taskName,
-                                        taskDescription: [t.description, docText(t.taskClass)].grep().join('<p><p>')
+                                        taskDescription: [t.description, docText(t.taskClass)].grep().join('<br/>')
                                 ]
                             }
                     ]

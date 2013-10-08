@@ -16,13 +16,13 @@ import static org.gradle.api.logging.Logging.getLogger
 
 
 /**
- * Plugin for enabling Apphance (<a href="http://www.apphance.com">http://www.apphance.com</a>) library in android project.<br/>
+ * Plugin for enabling Apphance (<a href="http://www.apphance.com">apphance.com</a>) library in android project.<br/>
  *
  * The plugin provides integration with Apphance service. It performs the
  * following tasks: adding Apphance on-the-fly while building the application for configured variants,
  * submitting the application to apphance at release time.<br/>
  * Adding Apphance is implemented according to library installation documentation:
- * <a href="http://help.apphance.com/library-installation/android">http://help.apphance.com/library-installation/android</a>
+ * <a href="http://help.apphance.com/library-installation/android">help.apphance.com</a>
  */
 class AndroidApphancePlugin implements Plugin<Project> {
 

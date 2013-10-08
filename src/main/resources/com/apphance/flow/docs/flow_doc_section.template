@@ -1,7 +1,7 @@
-<h3 id="${sectionName.replaceAll(' ', '-')}" style="border-bottom:dotted 1px #aaa">
+<h2 id="${sectionName.replaceAll(' ', '-')}" style="color:#973800;border-bottom:solid 1px #aaa">
     <a name="${sectionName.replaceAll(' ', '-')}"></a>
-    <font size="4">${sectionName}</font>
-</h3>
+    <font size="5">${sectionName}</font>
+</h2>
 
 <div>
     <br/>

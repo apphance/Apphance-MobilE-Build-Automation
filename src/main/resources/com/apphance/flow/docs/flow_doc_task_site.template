@@ -17,7 +17,7 @@
         <br/>
         <br/>
         <% commonPlugins.each { p -> %>
-            <a href="#${p.plugin.replace(' ', '-')}">${p.plugin}</a>
+            <a href="#${p.plugin.replace(' ', '-')}" style="margin-left: 20px">${p.plugin}</a>
             <br/>
         <% } %>
     <% } %>
@@ -28,7 +28,7 @@
         <br/>
         <br/>
         <% androidPlugins.each { p -> %>
-            <a href="#${p.plugin.replace(' ', '-')}">${p.plugin}</a>
+            <a href="#${p.plugin.replace(' ', '-')}" style="margin-left: 20px">${p.plugin}</a>
             <br/>
         <% } %>
     <% } %>
@@ -39,12 +39,18 @@
         <br/>
         <br/>
         <% iosPlugins.each { p -> %>
-            <a href="#${p.plugin.replace(' ', '-')}">${p.plugin}</a>
+            <a href="#${p.plugin.replace(' ', '-')}" style="margin-left: 20px">${p.plugin}</a>
             <br/>
         <% } %>
     <% } %>
 
 </div>
+<br/>
+<br/>
+You can find example projects for Android <a href='https://github.com/apphance/flow-demo-android'>at our github page</a>.
+<br/>
+You can find example projects for iOS <a href='https://github.com/apphance/flow-demo-ios'>at our github page</a>.
+<br/>
 <br/>
 
 ${tasks}
