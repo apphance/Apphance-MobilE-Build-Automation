@@ -27,7 +27,6 @@ import static com.apphance.flow.configuration.ProjectConfiguration.LOG_DIR
 import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static com.apphance.flow.detection.project.ProjectType.ANDROID
 import static com.apphance.flow.detection.project.ProjectType.IOS
-import static com.apphance.flow.di.ConfigurationModule.getVariantFactories
 import static com.apphance.flow.plugins.ios.parsers.XCodeOutputParserSpec.XCODE_LIST
 
 @Mixin(TestUtils)
@@ -176,7 +175,6 @@ class PluginMasterSpec extends Specification {
                         if (projectType == IOS) {
                             bind(IOSExecutor).toInstance(iosExecutorMock)
                         }
-                        variantFactories[projectType].each { install(it) }
                     }
                 })
     }
