@@ -18,6 +18,7 @@ import com.apphance.flow.configuration.reader.GradlePropertiesPersister
 import com.apphance.flow.configuration.reader.PropertyPersister
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.detection.project.ProjectTypeDetector
+import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import com.google.inject.AbstractModule
 import com.google.inject.assistedinject.FactoryModuleBuilder
 import com.google.inject.multibindings.MapBinder
@@ -58,7 +59,7 @@ class ConfigurationModule extends AbstractModule {
             ],
     ]
 
-    def static variantFactories = [
+    def variantFactories = [
             (ANDROID): [
                     new FactoryModuleBuilder().build(AndroidVariantFactory)
             ],
@@ -83,13 +84,8 @@ class ConfigurationModule extends AbstractModule {
         def pt = typeDetector.detectProjectType(project.rootDir)
         def index = 0
 
-        configurations[pt].each {
-            m.addBinding(index++).to(it)
-        }
-
-        interfaces[pt].each {
-            bind(it.key).to(it.value)
-        }
+        configurations[pt].each { m.addBinding(index++).to(it) }
+        interfaces[pt].each { bind(it.key).to(it.value) }
         variantFactories[pt].each { install(it) }
 
         bind(PropertyPersister).to(GradlePropertiesPersister)
