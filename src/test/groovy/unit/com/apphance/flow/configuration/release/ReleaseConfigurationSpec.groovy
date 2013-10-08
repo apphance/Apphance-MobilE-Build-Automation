@@ -111,7 +111,7 @@ class ReleaseConfigurationSpec extends Specification {
 
     def 'possible icons are found'() {
         given:
-        def projectDir = 'demo/android/android-basic'
+        def projectDir = 'projects/test/android/android-basic'
 
         and:
         def ac = new AndroidConfiguration()
@@ -129,7 +129,7 @@ class ReleaseConfigurationSpec extends Specification {
 
     def 'default icons are found'() {
         given:
-        def projectDir = 'demo/android/android-basic'
+        def projectDir = 'projects/test/android/android-basic'
 
         and:
         def ac = new AndroidConfiguration()
@@ -142,7 +142,7 @@ class ReleaseConfigurationSpec extends Specification {
         def arc = new AndroidReleaseConfiguration(androidConf: ac, manifestHelper: new AndroidManifestHelper())
 
         expect:
-        arc.defaultIcon().absolutePath.endsWith('drawable-hdpi/icon.png')
+        arc.possibleIcon().absolutePath.endsWith('drawable-hdpi/icon.png')
     }
 
     def 'fields from superclass are also accessible'() {

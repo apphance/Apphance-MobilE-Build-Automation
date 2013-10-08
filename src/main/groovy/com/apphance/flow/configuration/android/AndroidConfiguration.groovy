@@ -11,6 +11,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.detection.project.ProjectType.ANDROID
 import static com.google.common.base.Strings.isNullOrEmpty
+import static java.text.MessageFormat.format
 
 @Singleton
 class AndroidConfiguration extends ProjectConfiguration {
@@ -21,13 +22,10 @@ class AndroidConfiguration extends ProjectConfiguration {
     @Inject AndroidManifestHelper manifestHelper
     @Inject AndroidExecutor androidExecutor
 
-    private Properties androidProperties
-
-    @Override
     @Inject
+    @Override
     void init() {
         super.init()
-        readProperties()
     }
 
     @Override
@@ -37,7 +35,7 @@ class AndroidConfiguration extends ProjectConfiguration {
 
     StringProperty projectName = new StringProperty(
             name: 'android.project.name',
-            message: 'Project name',
+            message: "Project name. This property is used with command: 'android update project --name' before every build.",
             defaultValue: { defaultName() },
             possibleValues: { possibleNames() },
             required: { true }
@@ -67,7 +65,7 @@ class AndroidConfiguration extends ProjectConfiguration {
 
     def target = new StringProperty(
             name: 'android.target',
-            message: 'Android target',
+            message: "Android target. This property is used with command: 'android update project --target' before every build.",
             defaultValue: { androidProperties.getProperty('target') ?: '' },
             required: { true },
             possibleValues: { possibleTargets() },
@@ -80,23 +78,22 @@ class AndroidConfiguration extends ProjectConfiguration {
 
     Collection<String> sourceExcludes = super.sourceExcludes + ['**/*.class', '**/bin/**']
 
-    def readProperties() {
-        androidProperties = new Properties()
-        ['local', 'build', 'default', 'project'].each {
-            File propFile = project.file("${it}.properties")
-            if (propFile?.exists()) {
-                androidProperties.load(new FileInputStream(propFile))
-            }
-        }
-    }
+    @Lazy
+    Properties androidProperties = {
+        def p = new Properties()
+        ['local', 'build', 'default', 'project'].collect { project.file("${it}.properties") }.
+                findAll { it.exists() }.each { p.load(new FileInputStream(it)) }
+        p
+    }()
 
     @Override
     void checkProperties() {
-        check !isNullOrEmpty(reader.envVariable('ANDROID_HOME')), "Environment variable 'ANDROID_HOME' must be set!"
-        check !isNullOrEmpty(projectName.value), "Property ${projectName.name} must be set!"
-        check versionValidator.isNumber(versionCode), bundle.getString('exception.android.version.code')
-        check versionValidator.hasNoWhiteSpace(versionString), bundle.getString('exception.android.version.string')
+        check !isNullOrEmpty(reader.envVariable('ANDROID_HOME')), validationBundle.getString('exception.android.android.home')
+        check !isNullOrEmpty(projectName.value), format(validationBundle.getString('exception.android.project.name'), projectName.name)
+        check versionValidator.isNumber(versionCode), validationBundle.getString('exception.android.version.code')
+        check versionValidator.hasNoWhiteSpace(versionString), validationBundle.getString('exception.android.version.string')
         check target.validator(target.value), "Property ${target.name} is incorrect." +
                 (target.value ? " Probably target $target.value is not installed in your system" : '')
     }
+
 }

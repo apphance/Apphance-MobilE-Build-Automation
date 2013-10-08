@@ -16,7 +16,7 @@ class CopySourcesTask extends DefaultTask {
 
     static final NAME = COPY_SOURCES_TASK_NAME
     String group = FLOW_BUILD
-    String description = 'Copies all sources to tmp directories for build'
+    String description = 'Copies all sources to temporary directories, where the variants will be built.'
 
     @Inject IOSConfiguration conf
     @Inject IOSReleaseConfiguration releaseConf

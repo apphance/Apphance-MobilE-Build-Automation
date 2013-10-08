@@ -132,11 +132,12 @@ class IOSApphancePbxEnhancerSpec extends Specification {
                 'CoreLocation.framework',
                 'QuartzCore.framework',
                 'SystemConfiguration.framework',
-                'CoreTelephony.framework']
-        )
+                'CoreTelephony.framework',
+                'AssetsLibrary.framework',
+        ])
 
         and:
-        json.objects.findAll { it.key.length() > 24 }.size() == 14
+        json.objects.findAll { it.key.length() > 24 }.size() == 16
 
         cleanup:
         tmpDir.deleteDir()

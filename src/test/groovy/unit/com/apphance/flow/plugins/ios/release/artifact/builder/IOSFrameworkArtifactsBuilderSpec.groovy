@@ -1,12 +1,12 @@
 package com.apphance.flow.plugins.ios.release.artifact.builder
 
+import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.executor.command.CommandExecutor
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSFrameworkArtifactInfo
 import com.apphance.flow.plugins.release.FlowArtifact
-import com.apphance.flow.util.FlowUtils
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -14,7 +14,7 @@ import static java.nio.file.Files.isSymbolicLink
 import static java.nio.file.Files.readSymbolicLink
 import static java.nio.file.Paths.get
 
-@Mixin(FlowUtils)
+@Mixin(TestUtils)
 class IOSFrameworkArtifactsBuilderSpec extends Specification {
 
     @Shared
@@ -22,7 +22,8 @@ class IOSFrameworkArtifactsBuilderSpec extends Specification {
             id: 'SomeId',
             frameworkName: 'Some',
             simLib: GroovyMock(File) { getAbsolutePath() >> 'sim.lib' },
-            deviceLib: GroovyMock(File) { getAbsolutePath() >> 'device.lib' }
+            deviceLib: GroovyMock(File) { getAbsolutePath() >> 'device.lib' },
+            variantDir: temporaryDir
     )
 
     def 'framework dir structure is created'() {
@@ -61,7 +62,7 @@ class IOSFrameworkArtifactsBuilderSpec extends Specification {
         )
 
         when:
-        builder.linkLibraries(info)
+        builder.runLipo(info)
 
         then:
         1 * builder.executor.executeCommand({
@@ -69,6 +70,40 @@ class IOSFrameworkArtifactsBuilderSpec extends Specification {
             cmd.startsWith('lipo -create device.lib sim.lib -output') && cmd.endsWith('Some.framework/Versions/Current/Some')
         })
     }
+
+    def 'lib tool is executed when libs present'() {
+        given:
+        def builder = new IOSFrameworkArtifactsBuilder(
+                conf: GroovyMock(IOSConfiguration) { getRootDir() >> GroovyMock(File) },
+                executor: GroovyMock(CommandExecutor)
+        )
+        info.libs = ['a', 'b']
+
+        when:
+        builder.runLibtool(info)
+
+        then:
+        1 * builder.executor.executeCommand({
+            def cmd = "libtool -static -o $info.frameworkDir/Versions/Current/$info.frameworkName $info.frameworkDir/Versions/Current/$info.frameworkName $info.variantDir/a $info.variantDir/b".toString()
+            it.commandForExecution.join(' ') == cmd
+        })
+    }
+
+    def 'lib tool is not executed when empty libs'() {
+        given:
+        def builder = new IOSFrameworkArtifactsBuilder(
+                conf: GroovyMock(IOSConfiguration) { getRootDir() >> GroovyMock(File) },
+                executor: GroovyMock(CommandExecutor)
+        )
+        info.libs = []
+
+        when:
+        builder.runLibtool(info)
+
+        then:
+        0 * builder.executor.executeCommand(_)
+    }
+
 
     def 'framework zip is created'() {
         given:

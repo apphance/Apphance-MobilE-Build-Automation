@@ -6,6 +6,10 @@ import javax.inject.Inject
 
 import static com.apphance.flow.util.file.FileManager.relativeTo
 
+/**
+ * Variant configuration keeps all variant-related settings, used while building artifacts. Depending on the values set,
+ * various artifacts are created. See plugin reference for the details.
+ */
 class IOSSchemeVariant extends AbstractIOSVariant {
 
     @Inject
@@ -19,7 +23,7 @@ class IOSSchemeVariant extends AbstractIOSVariant {
     }()
 
     private File getXcodeprojFile() {
-        def xcodeproj = xcodeprojLocator.findXCodeproj(schemeParser.xcodeprojName(schemeFile), schemeParser.blueprintIdentifier(schemeFile))
+        def xcodeproj = xcodeprojLocator.findXCodeproj(schemeParser.xcodeprojName(schemeFile, action), schemeParser.blueprintIdentifier(schemeFile, action))
         def relative = relativeTo(conf.rootDir, xcodeproj)
         new File(tmpDir, relative)
     }

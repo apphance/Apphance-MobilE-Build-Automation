@@ -3,8 +3,8 @@ package com.apphance.flow.configuration.ios.variants
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.reader.PropertyPersister
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
-import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
-import com.apphance.flow.plugins.ios.workspace.IOSWorkspaceLocator
+import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
+import com.apphance.flow.plugins.ios.workspace.XCWorkspaceLocator
 import com.apphance.flow.util.FlowUtils
 import org.apache.commons.io.FileUtils
 import spock.lang.Specification
@@ -32,10 +32,10 @@ class IOSVariantsConfigurationSpec extends Specification {
 
     def 'list of scheme variants is created'() {
         given:
-        variantsConf.workspaceLocator = GroovyMock(IOSWorkspaceLocator) {
+        variantsConf.workspaceLocator = GroovyMock(XCWorkspaceLocator) {
             getHasWorkspaces() >> false
         }
-        variantsConf.schemeInfo = GroovyMock(IOSSchemeInfo) {
+        variantsConf.schemeInfo = GroovyMock(XCSchemeInfo) {
             getHasSchemes() >> true
         }
         variantsConf.variantsNames.value = ['v1', 'v2', 'v3']
@@ -47,10 +47,10 @@ class IOSVariantsConfigurationSpec extends Specification {
 
     def 'list of workspace variants is created'() {
         given:
-        variantsConf.workspaceLocator = GroovyMock(IOSWorkspaceLocator) {
+        variantsConf.workspaceLocator = GroovyMock(XCWorkspaceLocator) {
             getHasWorkspaces() >> true
         }
-        variantsConf.schemeInfo = GroovyMock(IOSSchemeInfo) {
+        variantsConf.schemeInfo = GroovyMock(XCSchemeInfo) {
             getHasSchemes() >> true
         }
         variantsConf.variantsNames.value = ['v1', 'v2', 'v3']
@@ -82,7 +82,7 @@ class IOSVariantsConfigurationSpec extends Specification {
     def 'possible scheme variants found'() {
         given:
         def tmpDir = temporaryDir
-        FileUtils.copyDirectory(new File(IOSSchemeInfo.getResource('iosProject').toURI()), tmpDir)
+        FileUtils.copyDirectory(new File(XCSchemeInfo.getResource('iosProject').toURI()), tmpDir)
 
         and:
         def conf = GroovyMock(IOSConfiguration) {
@@ -97,14 +97,14 @@ class IOSVariantsConfigurationSpec extends Specification {
         }
 
         and:
-        def schemeInfo = new IOSSchemeInfo(schemeParser: new XCSchemeParser(), conf: conf)
+        def schemeInfo = new XCSchemeInfo(schemeParser: new XCSchemeParser(), conf: conf)
 
         and:
         variantsConf.conf = conf
         variantsConf.schemeInfo = schemeInfo
 
         and:
-        variantsConf.workspaceLocator = GroovyMock(IOSWorkspaceLocator) {
+        variantsConf.workspaceLocator = GroovyMock(XCWorkspaceLocator) {
             getHasWorkspaces() >> false
         }
 
@@ -115,7 +115,7 @@ class IOSVariantsConfigurationSpec extends Specification {
     def 'possible workspace variants found'() {
         given:
         def tmpDir = temporaryDir
-        FileUtils.copyDirectory(new File(IOSSchemeInfo.getResource('iosProject').toURI()), tmpDir)
+        FileUtils.copyDirectory(new File(XCSchemeInfo.getResource('iosProject').toURI()), tmpDir)
 
         and:
         def conf = GroovyMock(IOSConfiguration) {
@@ -130,14 +130,14 @@ class IOSVariantsConfigurationSpec extends Specification {
         }
 
         and:
-        def schemeInfo = new IOSSchemeInfo(schemeParser: new XCSchemeParser(), conf: conf)
+        def schemeInfo = new XCSchemeInfo(schemeParser: new XCSchemeParser(), conf: conf)
 
         and:
         variantsConf.conf = conf
         variantsConf.schemeInfo = schemeInfo
 
         and:
-        variantsConf.workspaceLocator = GroovyMock(IOSWorkspaceLocator) {
+        variantsConf.workspaceLocator = GroovyMock(XCWorkspaceLocator) {
             getHasWorkspaces() >> true
             getWorkspaces() >> [new File('WS.xcworkspace')]
         }

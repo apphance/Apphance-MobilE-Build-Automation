@@ -2,6 +2,7 @@ package com.apphance.flow.configuration.ios
 
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
+import com.apphance.flow.configuration.reader.PropertyPersister
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PlistParser
 import com.apphance.flow.plugins.ios.parsers.PlistParserSpec
@@ -39,7 +40,7 @@ class IOSReleaseConfigurationSpec extends Specification {
 
     def 'test defaultIcon'() {
         expect:
-        iosReleaseConf.defaultIcon().path == 'icon.png'
+        iosReleaseConf.possibleIcon().path == 'icon.png'
     }
 
     def 'test possibleIcons'() {
@@ -88,7 +89,7 @@ class IOSReleaseConfigurationSpec extends Specification {
         })
 
         when:
-        releaseConf.defaultIcon()
+        releaseConf.possibleIcon()
         def value = releaseConf.releaseIcon.defaultValue()
 
         then:
@@ -97,5 +98,57 @@ class IOSReleaseConfigurationSpec extends Specification {
 
         cleanup:
         rootDir.deleteDir()
+    }
+
+    def 'default icon exists'() {
+        given:
+        def configuration = new IOSReleaseConfiguration()
+
+        when:
+        def icon = configuration.defaultIcon
+
+        then:
+        icon.exists()
+        icon.size() > 100
+        icon.name == 'ios-icon.svg'
+    }
+
+    def 'default icon exists where empty conf'() {
+        given:
+        def releaseConf = new IOSReleaseConfiguration()
+        releaseConf.propertyPersister = GroovyStub(PropertyPersister) {
+            get('release.icon') >> null
+        }
+        releaseConf.conf = GroovyStub(IOSConfiguration) {
+            getRootDir() >> new File('.')
+        }
+
+        and:
+        releaseConf.init()
+
+        when:
+        def icon = releaseConf.releaseIcon.value
+
+        then:
+        icon.exists()
+        icon.size() > 100
+        icon.name == 'ios-icon.svg'
+    }
+
+    def 'default icon exists when set'() {
+        given:
+        def conf = new IOSReleaseConfiguration()
+        conf.propertyPersister = GroovyStub(PropertyPersister) {
+            get('release.icon') >> 'src/test/resources/com/apphance/flow/plugins/release/tasks/Blank.jpg'
+        }
+
+        when:
+        conf.init()
+
+        then:
+        def icon = conf.releaseIcon.value
+        icon.exists()
+        icon.size() > 100
+        icon.name == 'Blank.jpg'
     }
 }

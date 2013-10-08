@@ -1,0 +1,51 @@
+<div style='text-align:justify'>
+  This reference provides a detailed description for all properties located in flow.properties file.
+</div>
+
+<br/>
+
+<div class="sites-codeblock sites-codesnippet-block" style="width:300px">
+
+    <% if(commonConfs && commonConfs.size() > 0) { %>
+        <br/>
+        <a href="#Common-Configurations">Common Configurations</a>
+        <br/>
+        <br/>
+        <% commonConfs.each { c -> %>
+            <a href="#${c.conf.replaceAll(' ', '-')}" style="margin-left: 20px">${c.conf}</a>
+            <br/>
+        <% } %>
+    <% } %>
+
+    <% if(androidConfs && androidConfs.size() > 0) { %>
+        <br/>
+        <a href="#Android-Configurations">Android Configurations</a>
+        <br/>
+        <br/>
+        <% androidConfs.each { c -> %>
+            <a href="#${c.conf.replaceAll(' ', '-')}" style="margin-left: 20px">${c.conf}</a>
+            <br/>
+        <% } %>
+    <% } %>
+
+    <% if(iosConfs && iosConfs.size() > 0) { %>
+        <br/>
+        <a href="#iOS-Configurations">iOS Configurations</a>
+        <br/>
+        <br/>
+        <% iosConfs.each { c -> %>
+            <a href="#${c.conf.replaceAll(' ', '-')}" style="margin-left: 20px">${c.conf}</a>
+            <br/>
+        <% } %>
+    <% } %>
+
+</div>
+<br/>
+<br/>
+You can find example projects for Android <a href='https://github.com/apphance/flow-demo-android'>at our github page</a>.
+<br/>
+You can find example projects for iOS <a href='https://github.com/apphance/flow-demo-ios'>at our github page</a>.
+<br/>
+<br/>
+
+${confs}

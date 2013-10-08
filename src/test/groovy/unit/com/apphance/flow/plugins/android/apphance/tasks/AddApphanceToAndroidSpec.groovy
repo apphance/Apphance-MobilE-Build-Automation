@@ -25,7 +25,7 @@ class AddApphanceToAndroidSpec extends Specification {
 
     def setup() {
         variantDir.deleteOnExit()
-        FileUtils.copyDirectory(new File('demo/android/android-basic'), variantDir)
+        FileUtils.copyDirectory(new File('projects/test/android/android-basic'), variantDir)
 
         androidVariantConf.apphanceMode.value = QA
         androidVariantConf.apphanceAppKey.value = 'TestKey'

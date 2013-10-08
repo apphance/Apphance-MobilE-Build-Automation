@@ -29,7 +29,7 @@ class ImageMontageTask extends DefaultTask {
 
     static String NAME = 'prepareImageMontage'
     String group = FLOW_RELEASE
-    String description = 'Builds montage of images found in the project'
+    String description = 'Builds montage of all images found in the project'
 
     @Inject ProjectConfiguration conf
     @Inject ReleaseConfiguration releaseConf

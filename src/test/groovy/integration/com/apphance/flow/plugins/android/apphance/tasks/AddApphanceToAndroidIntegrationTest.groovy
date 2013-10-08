@@ -18,7 +18,7 @@ class AddApphanceToAndroidIntegrationTest extends Specification {
 
     def setup() {
         variantDir = temporaryDir
-        FileUtils.copyDirectory(new File('demo/android/android-basic'), variantDir)
+        FileUtils.copyDirectory(new File('projects/test/android/android-basic'), variantDir)
 
         androidVariantConf = GroovySpy(AndroidVariantConfiguration, constructorArgs: ['test variant'])
         androidVariantConf.apphanceAppKey.value = 'TestKey'

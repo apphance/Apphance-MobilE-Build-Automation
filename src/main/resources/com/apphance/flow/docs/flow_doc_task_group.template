@@ -1,0 +1,37 @@
+<h3 id="${header.replaceAll(' ','-')}" style="border-bottom:dotted 1px #aaa">
+    <a name="${header.replaceAll(' ', '-')}"></a>
+    <font size="4">${header}</font>
+</h3>
+
+<div>
+    <br/>
+</div>
+
+<div>
+    Name: <span style="color:#bd4401;font-weight:bold">${groupName}</span>
+</div>
+
+<div>
+    <br/>
+</div>
+
+<div>${groupDescription}</div>
+
+<% if(tasks && !tasks.isEmpty()) { %>
+<h4>Tasks</h4>
+<div>
+    <ul>
+        <% tasks.each { task -> %>
+        <li>
+            <span style="background-color:transparent">
+                <b>${task.taskName}</b>
+                <br/>
+                ${task.taskDescription}
+                <br/>
+                <br/>
+            </span>
+        </li>
+        <% } %>
+    </ul>
+</div>
+<% } %>

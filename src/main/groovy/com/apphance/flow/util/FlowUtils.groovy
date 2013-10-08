@@ -1,16 +1,16 @@
 package com.apphance.flow.util
 
 import groovy.io.FileType
-import org.gradle.api.logging.Logging
 
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static com.google.common.base.Preconditions.checkNotNull
 import static com.google.common.io.Files.createTempDir
 import static java.io.File.createTempFile
+import static org.gradle.api.logging.Logging.getLogger
 
 class FlowUtils {
 
-    private def logger = Logging.getLogger(this.class)
+    private logger = getLogger(getClass())
 
     File copy(String resource, File file) {
         file.parentFile.mkdirs()

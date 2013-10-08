@@ -11,7 +11,7 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_SETUP
 class CleanFlowTask extends DefaultTask {
 
     static String NAME = 'cleanFlow'
-    String description = 'Cleans flow temporary folders before each build'
+    String description = 'Cleans flow temporary folders.'
     String group = FLOW_SETUP
 
     @Inject ProjectConfiguration conf

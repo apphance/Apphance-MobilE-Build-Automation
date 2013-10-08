@@ -15,7 +15,9 @@ class PrepareSetupTask extends DefaultTask {
 
     static final NAME = 'prepareSetup'
     String group = FLOW_SETUP
-    String description = "Prepares configuration (${FLOW_PROP_FILENAME}). Can be used in non-interactive mode '-Dnoninteractive' or '-Dni'"
+    String description = "Runs wizard which gathers all information necessary for builds configuration." +
+            " As a result (${FLOW_PROP_FILENAME}) is created - this file is necesarry for Apphance Flow to run. " +
+            "Can be used in non-interactive mode '-Dnoninteractive' or '-Dni'."
 
     @Inject Map<Integer, AbstractConfiguration> configurations
     @Inject PropertyPersister propertyPersister

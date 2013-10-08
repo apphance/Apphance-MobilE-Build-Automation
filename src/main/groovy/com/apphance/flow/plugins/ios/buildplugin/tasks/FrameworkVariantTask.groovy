@@ -24,20 +24,19 @@ class FrameworkVariantTask extends AbstractBuildVariantTask {
         iosExecutor.buildVariant(variant.tmpDir, cmdSim)
         iosExecutor.buildVariant(variant.tmpDir, cmdDevice)
 
-        if (releaseConf.isEnabled()) {
-            def info = artifactProvider.frameworkInfo(variant)
-            info.simLib = new File(simTmpDir, 'libsim.a')
-            info.deviceLib = new File(deviceTmpDir, 'libdevice.a')
-            info.headers = variant.frameworkHeaders.value
-            info.resources = variant.frameworkResources.value
-            frameworkArtifactsBuilder.buildArtifacts(info)
-        }
+        def info = artifactProvider.frameworkInfo(variant)
+        info.simLib = new File(simTmpDir, 'libsim.a')
+        info.deviceLib = new File(deviceTmpDir, 'libdevice.a')
+        info.headers = variant.frameworkHeaders.value
+        info.resources = variant.frameworkResources.value
+        info.libs = variant.frameworkLibs.value
+        frameworkArtifactsBuilder.buildArtifacts(info)
     }
 
     @Lazy
     List<String> cmdSim = {
         variant.xcodebuildExecutionPath + ['-scheme', variant.schemeName] +
-                ['-sdk', conf.simulatorSdk.value ?: 'iphonesimulator'] + ['-arch', 'i386'] +
+                ['-sdk', conf.simulatorSdk.value ?: 'iphonesimulator'] +
                 ['-configuration', variant.archiveConfiguration] +
                 ["CONFIGURATION_BUILD_DIR=${simTmpDir.absolutePath}".toString()] +
                 ['PRODUCT_NAME=sim'] +

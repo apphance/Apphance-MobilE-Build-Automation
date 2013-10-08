@@ -6,7 +6,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static com.apphance.flow.configuration.ios.IOSXCodeAction.*
+import static com.apphance.flow.configuration.ios.XCAction.*
 import static com.google.common.io.Files.copy
 
 @Mixin(FlowUtils)
@@ -30,6 +30,23 @@ class XCSchemeParserSpec extends Specification {
     def 'blueprintIdentifier for scheme is read correctly'() {
         expect:
         'D382B71014703FE500E9CC9B' == parser.blueprintIdentifier(scheme1)
+    }
+
+    def 'blueprintIdentifier for scheme and action is read correctly'() {
+        expect:
+        'D382B71014703FE500E9CC9B' == parser.blueprintIdentifier(scheme1, action)
+
+        where:
+        action << [LAUNCH_ACTION, BUILD_ACTION]
+    }
+
+    def 'exception while getting blueprintId for unsupported action'() {
+        when:
+        parser.blueprintIdentifier(scheme1, TEST_ACTION)
+
+        then:
+        def e = thrown(GradleException)
+        e.message == "Unsupported action: $TEST_ACTION"
     }
 
     def 'exception is thrown when no scheme file exists'() {
@@ -113,6 +130,18 @@ class XCSchemeParserSpec extends Specification {
 
     def 'xcodeproj name is returned'() {
         expect:
-        parser.xcodeprojName(scheme1) == 'GradleXCode.xcodeproj'
+        parser.xcodeprojName(scheme1, action) == 'GradleXCode.xcodeproj'
+
+        where:
+        action << [LAUNCH_ACTION, BUILD_ACTION]
+    }
+
+    def 'exception while getting xcodeproj for unsupported action'() {
+        when:
+        parser.xcodeprojName(scheme1, TEST_ACTION)
+
+        then:
+        def e = thrown(GradleException)
+        e.message == "Unsupported action: $TEST_ACTION"
     }
 }

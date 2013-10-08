@@ -1,10 +1,11 @@
 package com.apphance.flow.configuration.ios
 
-import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
+import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
+import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
 import com.apphance.flow.util.FlowUtils
 import spock.lang.Specification
 
@@ -18,7 +19,7 @@ class IOSTestConfigurationSpec extends Specification {
                     getxCodeVersion() >> xCodeVersion
                     getiOSSimVersion() >> iosSimVersion
                 },
-                schemeInfo: GroovyMock(IOSSchemeInfo) {
+                schemeInfo: GroovyMock(XCSchemeInfo) {
                     schemesHasEnabledTestTargets() >> hasTestTargets
                 }
         )
@@ -71,7 +72,7 @@ class IOSTestConfigurationSpec extends Specification {
 
     def 'no test targets explanation'() {
         given:
-        def tc = new IOSTestConfiguration(schemeInfo: GroovyMock(IOSSchemeInfo) {
+        def tc = new IOSTestConfiguration(schemeInfo: GroovyMock(XCSchemeInfo) {
             schemesHasEnabledTestTargets() >> enabled
         })
 
@@ -116,7 +117,7 @@ class IOSTestConfigurationSpec extends Specification {
 
     def 'possible test variants found'() {
         given:
-        def projectDir = new File(IOSSchemeInfo.class.getResource('iOSProject/xcshareddata/xcschemes').toURI())
+        def projectDir = new File(XCSchemeInfo.class.getResource('iOSProject/xcshareddata/xcschemes').toURI())
         def tc = new IOSTestConfiguration(
                 variantsConf: GroovyMock(IOSVariantsConfiguration) {
                     getVariants() >> projectDir.listFiles().collect { file ->
@@ -126,7 +127,7 @@ class IOSTestConfigurationSpec extends Specification {
                         }
                     }
                 },
-                schemeInfo: new IOSSchemeInfo(schemeParser: new XCSchemeParser())
+                schemeInfo: new XCSchemeInfo(schemeParser: new XCSchemeParser())
         )
 
         expect:

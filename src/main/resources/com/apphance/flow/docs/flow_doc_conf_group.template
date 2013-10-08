@@ -1,0 +1,31 @@
+<h3 id="${confName.replaceAll(' ', '-')}" style="border-bottom:dotted 1px #aaa">
+    <a name="${confName.replaceAll(' ', '-')}"></a>
+    <font size="4">${confName}</font>
+</h3>
+
+<br/>
+
+<div>
+    ${confDescription}
+</div>
+
+<% if(confProperties && !confProperties.isEmpty()) { %>
+<h4>Properties</h4>
+
+<% confProperties.each { p -> %>
+<div class="sites-codeblock sites-codesnippet-block">
+    <div>
+        <div style="font-family:courier new,monospace">
+            <code>
+                <font color="#6aa84f">${p.name}</font>
+            </code>
+        </div>
+    </div>
+</div>
+<div style="text-align:justify">
+    ${p.description}
+</div>
+<br/>
+<br/>
+<% } %>
+<% } %>

@@ -19,7 +19,7 @@ class UpdateProjectTaskSpec extends Specification {
 
     def 'all projects are updated'() {
         given:
-        def testProjectDir = new File('demo/android/android-basic')
+        def testProjectDir = new File('projects/test/android/android-basic')
 
         and:
         def props = [

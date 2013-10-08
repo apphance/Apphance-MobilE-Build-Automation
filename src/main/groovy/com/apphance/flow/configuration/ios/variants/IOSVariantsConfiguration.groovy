@@ -3,8 +3,8 @@ package com.apphance.flow.configuration.ios.variants
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
-import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
-import com.apphance.flow.plugins.ios.workspace.IOSWorkspaceLocator
+import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
+import com.apphance.flow.plugins.ios.workspace.XCWorkspaceLocator
 import com.apphance.flow.util.FlowUtils
 import com.google.inject.Singleton
 import groovy.transform.PackageScope
@@ -12,6 +12,9 @@ import org.gradle.api.GradleException
 
 import javax.inject.Inject
 
+/**
+ * Variants configuration holds the list of variants thar are configured for building.
+ */
 @Singleton
 @Mixin(FlowUtils)
 class IOSVariantsConfiguration extends AbstractConfiguration {
@@ -20,8 +23,8 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Inject IOSConfiguration conf
     @Inject IOSVariantFactory variantFactory
-    @Inject IOSSchemeInfo schemeInfo
-    @Inject IOSWorkspaceLocator workspaceLocator
+    @Inject XCSchemeInfo schemeInfo
+    @Inject XCWorkspaceLocator workspaceLocator
 
     @Inject
     @Override
@@ -32,6 +35,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     def variantsNames = new ListStringProperty(
             name: 'ios.variants',
             message: "Variants (first variant on the list will be considered as a 'main'",
+            doc: { docBundle.getString('ios.variants') },
             possibleValues: { possibleVariants },
             validator: {
                 def list = variantsNames.convert(it.toString())
@@ -90,6 +94,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }()
 
     private List<? extends AbstractIOSVariant> variantsInternal() {
+        variantsNames.makeUnique()
         if (hasWorkspaceAndSchemes)
             return variantsNames.value.collect(workspaceVariant)
         else if (hasSchemes)

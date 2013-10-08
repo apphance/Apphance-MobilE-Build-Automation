@@ -1,0 +1,57 @@
+<br/>
+
+<div style='text-align:justify'>
+  This reference provides description for all tasks accessible in Apphance Flow.
+  To use Apphance Flow build system only single plugin needs to be applied: 'apphance-flow', but under the hood,
+  for better clarity and organisation several plugins are implemented. Every task is assigned to a particular plugin
+  and for better understanding, the documentation below follows this scheme.
+</div>
+
+<br/>
+
+<div class="sites-codeblock sites-codesnippet-block" style="width:300px">
+
+    <% if(commonPlugins && commonPlugins.size() > 0) { %>
+        <br/>
+        <a href="#Common-Tasks">Common Tasks</a>
+        <br/>
+        <br/>
+        <% commonPlugins.each { p -> %>
+            <a href="#${p.plugin.replace(' ', '-')}" style="margin-left: 20px">${p.plugin}</a>
+            <br/>
+        <% } %>
+    <% } %>
+
+    <% if(androidPlugins && androidPlugins.size() > 0) { %>
+        <br/>
+        <a href="#Android-Tasks">Android Tasks</a>
+        <br/>
+        <br/>
+        <% androidPlugins.each { p -> %>
+            <a href="#${p.plugin.replace(' ', '-')}" style="margin-left: 20px">${p.plugin}</a>
+            <br/>
+        <% } %>
+    <% } %>
+
+    <% if(iosPlugins && iosPlugins.size() > 0) { %>
+        <br/>
+        <a href="#iOS-Tasks">iOS Tasks</a>
+        <br/>
+        <br/>
+        <% iosPlugins.each { p -> %>
+            <a href="#${p.plugin.replace(' ', '-')}" style="margin-left: 20px">${p.plugin}</a>
+            <br/>
+        <% } %>
+    <% } %>
+
+</div>
+<br/>
+<br/>
+You can find example projects for Android <a href='https://github.com/apphance/flow-demo-android'>at our github page</a>.
+<br/>
+You can find example projects for iOS <a href='https://github.com/apphance/flow-demo-ios'>at our github page</a>.
+<br/>
+<br/>
+
+${tasks}
+

@@ -13,7 +13,8 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_SETUP
 class VerifySetupTask extends DefaultTask {
 
     static String NAME = 'verifySetup'
-    String description = 'Run validation over all required properties from flow.properties'
+    String description = "Runs validation over all required properties in flow.properties. " +
+            "It's executed before every build."
     String group = FLOW_SETUP
 
     @Inject Map<Integer, AbstractConfiguration> configurations

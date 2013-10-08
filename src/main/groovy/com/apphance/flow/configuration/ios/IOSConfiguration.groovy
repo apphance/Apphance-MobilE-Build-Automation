@@ -10,6 +10,9 @@ import javax.inject.Inject
 
 import static com.apphance.flow.detection.project.ProjectType.IOS
 
+/**
+ * This configuration keeps the values that are passed as a parameters to 'xcodebuild' while building artifacts.
+ */
 @Singleton
 class IOSConfiguration extends ProjectConfiguration {
 
@@ -49,7 +52,8 @@ class IOSConfiguration extends ProjectConfiguration {
     def sdk = new StringProperty(
             name: 'ios.sdk',
             message: 'iOS SDK',
-            defaultValue: { 'iphones' },
+            doc: { docBundle.getString('ios.sdk') },
+            defaultValue: { 'iphoneos' },
             possibleValues: { executor.sdks as List },
             validator: { it in executor.sdks },
             required: { true }
@@ -58,6 +62,7 @@ class IOSConfiguration extends ProjectConfiguration {
     def simulatorSdk = new StringProperty(
             name: 'ios.sdk.simulator',
             message: 'iOS simulator SDK',
+            doc: { docBundle.getString('ios.sdk.simulator') },
             defaultValue: { 'iphonesimulator' },
             possibleValues: { executor.simulatorSdks as List },
             validator: { it in executor.simulatorSdks },

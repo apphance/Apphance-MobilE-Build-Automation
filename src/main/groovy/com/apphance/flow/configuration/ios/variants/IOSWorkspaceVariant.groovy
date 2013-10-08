@@ -1,6 +1,6 @@
 package com.apphance.flow.configuration.ios.variants
 
-import com.apphance.flow.plugins.ios.workspace.IOSWorkspaceLocator
+import com.apphance.flow.plugins.ios.workspace.XCWorkspaceLocator
 import com.google.inject.assistedinject.Assisted
 
 import javax.inject.Inject
@@ -12,7 +12,7 @@ import static java.text.MessageFormat.format
 class IOSWorkspaceVariant extends AbstractIOSVariant {
 
     @Inject IOSVariantsConfiguration variantsConf
-    @Inject IOSWorkspaceLocator workspaceLocator
+    @Inject XCWorkspaceLocator workspaceLocator
 
     private String workspaceName
     private String schemeName
@@ -27,7 +27,7 @@ class IOSWorkspaceVariant extends AbstractIOSVariant {
     void init() {
         super.init()
         def tuple = variantsConf.workspaceXscheme.find { w, s -> "$w$s".toString() == name }
-        checkNotNull(tuple, format(bundle.getString('exception.ios.variant.workspace.init'), name, variantsConf.workspaceXscheme.collect({ w, s -> "$w+$s" })))
+        checkNotNull(tuple, format(validationBundle.getString('exception.ios.variant.workspace.init'), name, variantsConf.workspaceXscheme.collect({ w, s -> "$w+$s" })))
         workspaceName = tuple[0]
         schemeName = tuple[1]
     }

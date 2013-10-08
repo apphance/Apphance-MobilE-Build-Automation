@@ -13,12 +13,6 @@ allprojects {
     }
 }
 
-configurations.all {
-    resolutionStrategy {
-        failOnVersionConflict()
-    }
-}
-
 apply {
     plugin 'maven'
     plugin 'signing'
@@ -158,6 +152,7 @@ dependencies {
     compile('com.google.android:android:4.1.1.4') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
+    compile 'com.google.gdata:core:1.47.1'
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
@@ -231,7 +226,7 @@ idea {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.7'
+    gradleVersion = '1.8'
 }
 
 file('demo').traverse(nameFilter: ~/flow-(log|ota|tmp)/) { File dir ->
@@ -262,4 +257,19 @@ artifacts {
         archives jar
         archives fatJar
     }
+}
+
+task buildPluginReference(dependsOn: classes, type: JavaExec) {
+    inputs.dir new File('src')
+    outputs.dir new File(buildDir, 'doc')
+    main = 'com.apphance.flow.docs.DocGenerator'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task sendDocToFlowSite(type: JavaExec, dependsOn: buildPluginReference ) {
+    inputs.dir new File(buildDir, 'doc')
+    outputs.upToDateWhen { true }
+    main = 'com.apphance.flow.docs.DocSender'
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperties = System.getProperties()
 }

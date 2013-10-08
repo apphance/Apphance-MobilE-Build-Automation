@@ -8,6 +8,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static java.nio.file.Files.isDirectory
+import static java.text.MessageFormat.format
 
 @Singleton
 class AndroidTestConfiguration extends AbstractConfiguration {
@@ -30,8 +31,7 @@ class AndroidTestConfiguration extends AbstractConfiguration {
 
     def testDir = new FileProperty(
             name: 'android.dir.test',
-            message: 'Directory where test sources are located. By convention this folder should have "robolectric" subfolder if project has ' +
-                    'robolectric tests',
+            message: 'Directory where test sources are located. By convention this folder should have "robolectric" subfolder if project has robolectric tests',
             defaultValue: { relativeTo(conf.rootDir.absolutePath, new File(conf.rootDir, 'test').absolutePath) },
             validator: {
                 if (!it) return true
@@ -43,12 +43,11 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     @Override
     void checkProperties() {
         File libs = new File(conf.rootDir, 'lib/test')
-        check libs.exists(), "Directory 'lib/test' does not exist"
+        check libs.exists(), validationBundle.getString('exception.android.test.dir.lib')
         ['junit', 'robolectric'].each { String lib ->
-            check libs.list().find { it.contains(lib) }, "Lib $lib is missing"
+            check libs.list().find { it.contains(lib) }, format(validationBundle.getString('exception.android.test.lib'), lib)
         }
-
         check testDir.validator(testDir.value),
-                "Incorrect value '${testDir.value}' of property ${testDir.name}. Check that directory exists and contains 'robolectric' subdirectory"
+                format(validationBundle.getString('exception.android.test.dir'), testDir.value, testDir.name)
     }
 }

@@ -26,17 +26,17 @@ class AndroidAnalysisConfiguration extends AbstractConfiguration {
 
     def pmdRules = new FileProperty(
             name: 'android.analysis.pmd.rules',
-            message: 'Path to pmd rules config file'
+            message: 'Path to custom pmd rules config file. If empty default file is used.'
     )
 
     def findbugsExclude = new FileProperty(
             name: 'android.analysis.findbugs.exclude',
-            message: 'Path to findbugs exclude file'
+            message: 'Path to findbugs exclude file. If empty default file is used.'
     )
 
     def checkstyleConfigFile = new FileProperty(
             name: 'android.analysis.checkstyle.config',
-            message: 'Path to checkstyle config file'
+            message: 'Path to checkstyle config file. If empty default file is used.'
     )
 
     @Override

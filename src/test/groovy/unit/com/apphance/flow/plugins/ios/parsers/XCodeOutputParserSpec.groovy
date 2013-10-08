@@ -5,7 +5,7 @@ import spock.lang.Specification
 
 class XCodeOutputParserSpec extends Specification {
 
-    @Shared parser = new XCodeOutputParser()
+    @Shared parser = new XCOutputParser()
 
     def static SCHEMES = """
             Schemes:

@@ -7,9 +7,9 @@ import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.configuration.reader.PropertyReader
-import com.apphance.flow.validation.ReleaseValidator
 import com.apphance.flow.env.Environment
 import com.apphance.flow.plugins.release.FlowArtifact
+import com.apphance.flow.validation.ReleaseValidator
 import groovy.transform.PackageScope
 
 import javax.imageio.ImageIO
@@ -19,12 +19,15 @@ import java.text.SimpleDateFormat
 import static com.apphance.flow.env.Environment.JENKINS
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static java.text.MessageFormat.format
-import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.isNotBlank
 
+/**
+ * This configuration holds values used while executing various release-related tasks. See the descriptions below for
+ * detailed information.
+ */
 abstract class ReleaseConfiguration extends AbstractConfiguration {
 
-    final String configurationName = 'Release configuration'
+    final String configurationName = 'Release Configuration'
 
     public static final String OTA_DIR = 'flow-ota'
     public static final ALL_EMAIL_FLAGS = [
@@ -37,7 +40,6 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     @Inject ReleaseValidator validator
 
     private boolean enabledInternal
-    protected bundle = getBundle('validation')
 
     FlowArtifact otaIndexFile
     FlowArtifact fileIndexFile
@@ -77,6 +79,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             name: 'release.url',
             message: 'Base project URL where the artifacts will be placed. This should be folder URL where last element (after last /) is used as ' +
                     'subdirectory of ota dir when artifacts are created locally.',
+            doc: { docBundle.getString('release.url') },
             required: { true },
             validator: {
                 try {
@@ -106,11 +109,12 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
         new File(conf.rootDir, OTA_DIR)
     }
 
-    def releaseIcon = new FileProperty(
+    private FileProperty releaseIcon = new FileProperty(
             name: 'release.icon',
             message: 'Path to project\'s icon file, must be relative to the root dir of project',
+            doc: { docBundle.getString('release.icon') },
             required: { false },
-            defaultValue: { defaultIcon() ? relativeTo(conf.rootDir.absolutePath, defaultIcon().absolutePath) : null },
+            defaultValue: { possibleIcon() ? relativeTo(conf.rootDir.absolutePath, possibleIcon().absolutePath) : null },
             possibleValues: { possibleIcons() },
             validator: {
                 if (!it) return true
@@ -119,13 +123,23 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
             }
     )
 
-    abstract File defaultIcon()
+    FileProperty getReleaseIcon() {
+        this.@releaseIcon.value ?
+            this.@releaseIcon
+        :
+            new FileProperty(value: relativeTo(conf.rootDir.absolutePath, defaultIcon.absolutePath))
+    }
 
-    abstract List<String> possibleIcons()
+    protected abstract File getDefaultIcon()
+
+    protected abstract File possibleIcon()
+
+    protected abstract List<String> possibleIcons()
 
     def language = new StringProperty(
             name: 'release.language',
             message: 'Language of the project',
+            doc: { docBundle.getString('release.language') },
             defaultValue: { 'en' },
             validator: { it ==~ /\p{Lower}{2}/ }
     )
@@ -133,6 +147,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     def country = new StringProperty(
             name: 'release.country',
             message: 'Project country',
+            doc: { docBundle.getString('release.country') },
             defaultValue: { 'US' },
             validator: { it ==~ /\p{Upper}{2}/ }
     )
@@ -140,18 +155,21 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     def releaseMailFrom = new StringProperty(
             name: 'release.mail.from',
             message: 'Sender email address',
+            doc: { docBundle.getString('release.mail.from') },
             validator: { (it = it?.trim()) ? it ==~ ReleaseValidator.MAIL_PATTERN_WITH_NAME : true }
     )
 
     def releaseMailTo = new ListStringProperty(
             name: 'release.mail.to',
             message: 'Recipients of release email',
+            doc: { docBundle.getString('release.mail.to') },
             validator: { it?.trim() ? it?.split(',')?.every { it?.trim() ==~ ReleaseValidator.MAIL_PATTERN_WITH_NAME } : true }
     )
 
     def releaseMailFlags = new ListStringProperty(
             name: 'release.mail.flags',
             message: 'Flags for release email',
+            doc: { docBundle.getString('release.mail.flags') },
             defaultValue: { ['qrCode', 'imageMontage'] as List<String> },
             validator: { it?.split(',')?.every { it?.trim() in ReleaseConfiguration.ALL_EMAIL_FLAGS } }
     )
@@ -167,12 +185,14 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     StringProperty mailPortInternal = new StringProperty(
             name: 'mail.port',
             message: 'Mail port',
+            doc: { docBundle.getString('mail.port') },
             validator: { it?.matches('[0-9]+') }
     )
 
     StringProperty mailServerInternal = new StringProperty(
             name: 'mail.server',
-            message: 'Mail server'
+            message: 'Mail server',
+            doc: { docBundle.getString('mail.server') },
     )
 
     boolean isEnabled() {
@@ -193,17 +213,17 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     @Override
     void checkProperties() {
-        check !checkException { releaseDirName }, bundle.getString('exception.release.url')
-        check language.validator(language.value), bundle.getString('exception.release.language')
-        check country.validator(country.value), bundle.getString('exception.release.country')
-        check releaseMailFrom.validator(releaseMailFrom.value), format(bundle.getString('exception.release.mail'), releaseMailFrom.name, releaseMailFrom.value)
-        check releaseMailTo.validator(releaseMailTo.persistentForm()), format(bundle.getString('exception.release.mail'), releaseMailTo.name, releaseMailTo.value)
-        check releaseMailFlags.validator(releaseMailFlags.persistentForm()), format(bundle.getString('exception.release.mail.flags'), ALL_EMAIL_FLAGS, releaseMailFlags.value)
-        check releaseIcon.validator(releaseIcon.value), format(bundle.getString('exception.release.icon'), releaseIcon.value)
+        check !checkException { releaseDirName }, validationBundle.getString('exception.release.url')
+        check language.validator(language.value), validationBundle.getString('exception.release.language')
+        check country.validator(country.value), validationBundle.getString('exception.release.country')
+        check releaseMailFrom.validator(releaseMailFrom.value), format(validationBundle.getString('exception.release.mail'), releaseMailFrom.name, releaseMailFrom.value)
+        check releaseMailTo.validator(releaseMailTo.persistentForm()), format(validationBundle.getString('exception.release.mail'), releaseMailTo.name, releaseMailTo.value)
+        check releaseMailFlags.validator(releaseMailFlags.persistentForm()), format(validationBundle.getString('exception.release.mail.flags'), ALL_EMAIL_FLAGS, releaseMailFlags.value)
+        check releaseIcon.validator(releaseIcon.value), format(validationBundle.getString('exception.release.icon'), releaseIcon.value)
 
         if (Environment.env() == JENKINS) {
-            check !checkException { validator.validateMailServer(mailServer) }, bundle.getString('exception.release.mail.server')
-            check !checkException { validator.validateMailPort(mailPort) }, bundle.getString('exception.release.mail.port')
+            check !checkException { validator.validateMailServer(mailServer) }, validationBundle.getString('exception.release.mail.server')
+            check !checkException { validator.validateMailPort(mailPort) }, validationBundle.getString('exception.release.mail.port')
         }
     }
 }

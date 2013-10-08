@@ -12,7 +12,7 @@ import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
 
-import static com.apphance.flow.configuration.ios.IOSXCodeAction.TEST_ACTION
+import static com.apphance.flow.configuration.ios.XCAction.TEST_ACTION
 
 @Mixin(TestUtils)
 class IOSTestTaskSpec extends Specification {

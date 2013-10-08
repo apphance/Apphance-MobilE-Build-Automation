@@ -6,10 +6,10 @@ import static java.security.MessageDigest.getInstance
 
 class PbxHashGenerator {
 
-    private AtomicInteger hash = new AtomicInteger()
+    private static final AtomicInteger ATOMIC_HASH_SEED = new AtomicInteger()
 
     String hash() {
-        md5(hash.incrementAndGet().toString()).toUpperCase()
+        md5(ATOMIC_HASH_SEED.incrementAndGet().toString()).toUpperCase()
     }
 
     private String md5(String s) {

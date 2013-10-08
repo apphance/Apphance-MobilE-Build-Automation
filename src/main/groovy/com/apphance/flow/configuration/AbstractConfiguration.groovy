@@ -6,12 +6,15 @@ import com.apphance.flow.configuration.reader.PropertyPersister
 import javax.inject.Inject
 import java.lang.reflect.Field
 
+import static java.util.ResourceBundle.getBundle
 import static org.apache.commons.lang.StringUtils.join
 import static org.gradle.api.logging.Logging.getLogger
 
 abstract class AbstractConfiguration {
 
     protected logger = getLogger(getClass())
+    protected docBundle = getBundle('doc')
+    protected validationBundle = getBundle('validation')
 
     @Inject PropertyPersister propertyPersister
 
@@ -24,7 +27,6 @@ abstract class AbstractConfiguration {
         propertyFields.each {
             logger.debug "Initializing property $it.name to value: ${propertyPersister.get(it.name)}"
             it.value = propertyPersister.get(it.name)
-            it.initialized = propertyPersister.get(it.name) != null
         }
 
         String enabled = propertyPersister.get(enabledPropKey)
@@ -45,7 +47,8 @@ abstract class AbstractConfiguration {
         findDeclaredFields(getClass())
         fields.findAll {
             it.accessible = true
-            it.get(this)?.class?.superclass == AbstractProperty
+            def fieldClass = it.get(this).getClass()
+            fieldClass.getClass() == Object ? false : fieldClass?.superclass == AbstractProperty
         }.collect {
             it.accessible = true
             it.get(this) as AbstractProperty

@@ -24,14 +24,12 @@ class SimulatorVariantTask extends AbstractBuildVariantTask {
         super.build()
         iosExecutor.buildVariant(variant.tmpDir, cmd)
 
-        if (releaseConf.isEnabled()) {
-            def info = artifactProvider.simInfo(variant)
-            info.productName = productName
-            info.appName = appName
-            info.simDir = simTmpDir
+        def info = artifactProvider.simInfo(variant)
+        info.productName = productName
+        info.appName = appName
+        info.simDir = simTmpDir
 
-            simulatorArtifactsBuilder.buildArtifacts(info)
-        }
+        simulatorArtifactsBuilder.buildArtifacts(info)
     }
 
     @Lazy

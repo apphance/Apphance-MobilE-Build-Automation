@@ -16,14 +16,14 @@ import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ios.IOSXCodeAction.TEST_ACTION
+import static com.apphance.flow.configuration.ios.XCAction.TEST_ACTION
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
 
 @Mixin(Preconditions)
 class IOSTestTask extends DefaultTask {
 
     String group = FLOW_TEST
-    String description = 'Build and executes iOS tests'
+    String description = 'Builds variant and runs test against it.'
 
     @Inject IOSExecutor executor
     @Inject IOSTestPbxEnhancer testPbxEnhancer

@@ -26,7 +26,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
     def apkDir = createTempDir()
     def tmpDir = createTempDir()
 
-    def p = builder().withProjectDir(new File('demo/android/android-basic')).build()
+    def p = builder().withProjectDir(new File('projects/test/android/android-basic')).build()
 
     def projectName = 'TestAndroidProject'
     def projectUrl = "http://ota.polidea.pl/$projectName".toURL()
@@ -59,7 +59,6 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
 
         releaseConf.conf = conf
         releaseConf.releaseUrl = new URLProperty(value: projectUrl)
-        releaseConf.releaseIcon = new FileProperty(value: 'res/drawable-hdpi/icon.png')
         releaseConf.reader = reader
 
         variantsConf = GroovyMock(AndroidVariantsConfiguration)
@@ -106,7 +105,6 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
                 'message_file.html',
         ]
         def png = [
-                'icon.png',
                 "$projectName-$fullVersionString-qrcode.png"
         ]
 

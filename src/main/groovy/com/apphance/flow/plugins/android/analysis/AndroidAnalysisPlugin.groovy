@@ -15,6 +15,13 @@ import javax.inject.Inject
 import static com.apphance.flow.util.file.FileManager.relativeTo
 import static org.gradle.api.logging.Logging.getLogger
 
+/**
+ * This plugin provides tasks for android project code analysis.
+ * <p/>
+ * When applied following analysis can be performed on project: PMD, Checkstyle, Findbugs, Lint and CPD.<br/>
+ * Every analysis task has predefined default configuration but custom configurations can be provided for pmd, checkstyle and findbugs.
+ * Every analysis task generates reports in 'build/report' directory.
+ */
 @Mixin(FlowUtils)
 class AndroidAnalysisPlugin implements Plugin<Project> {
 
@@ -68,7 +75,8 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                     findbugsTest.dependsOn androidVariantsConf.mainVariant.testTaskName
                 }
 
-                [compileJava, compileTestJava, processResources, processTestResources, test, classes, testClasses].each { it.enabled = false }
+                [assemble, build, clean, jar, buildDependents, buildNeeded, compileJava, compileTestJava, processResources, processTestResources, test,
+                        classes, testClasses].each { it.enabled = false }
                 [checkstyle, findbugs, pmd, cpd].each { it.ignoreFailures = true }
             }
 

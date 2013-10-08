@@ -10,7 +10,6 @@ import javax.inject.Inject
 
 import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
-import static java.util.ResourceBundle.getBundle
 
 abstract class ProjectConfiguration extends AbstractConfiguration {
 
@@ -22,8 +21,6 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
     @Inject PropertyReader reader
     @Inject ProjectTypeDetector projectTypeDetector
     @Inject VersionValidator versionValidator
-
-    protected bundle = getBundle('validation')
 
     abstract String getVersionCode()
 

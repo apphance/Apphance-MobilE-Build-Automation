@@ -57,12 +57,11 @@ class SingleVariantTaskSpec extends Specification {
     def projectUpdater = new AndroidProjectUpdater(executor: androidExecutor)
 
     def setup() {
-        copyDirectory new File('demo/android/android-basic'), rootDir
+        copyDirectory new File('projects/test/android/android-basic'), rootDir
         task.antExecutor = antExecutor
         task.projectUpdater = projectUpdater
         task.ant = project.ant
         task.conf = conf
-        task.releaseConf = Stub(AndroidReleaseConfiguration) { isEnabled() >> true }
         task.variant = GroovyMock(AndroidVariantConfiguration) {
             getTmpDir() >> new File(project.rootDir, variantTmpDir.toString())
             getOldPackage() >> new StringProperty()

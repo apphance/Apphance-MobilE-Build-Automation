@@ -14,7 +14,7 @@ import static org.gradle.testfixtures.ProjectBuilder.builder
 @Mixin(TestUtils)
 class UpdateVersionTaskSpec extends Specification {
 
-    def projectDir = new File('demo/android/android-basic')
+    def projectDir = new File('projects/test/android/android-basic')
     def p = builder().withProjectDir(projectDir).build()
     def uvt = p.task(UpdateVersionTask.NAME, type: UpdateVersionTask) as UpdateVersionTask
 

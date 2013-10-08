@@ -17,8 +17,9 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty
 class UnlockKeyChainTask extends DefaultTask {
 
     static final NAME = 'unlockKeyChain'
-    String description = "Unlocks key chain used during project building. Requires osx.keychain.password and " +
-            "osx.keychain.location properties or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION environment variable"
+    String description = "Unlocks key chain used while building projects. Requires osx.keychain.password and " +
+            "osx.keychain.location system (-D) properties or OSX_KEYCHAIN_PASSWORD and OSX_KEYCHAIN_LOCATION " +
+            "environment variables."
     String group = FLOW_BUILD
 
     @Inject ProjectConfiguration conf

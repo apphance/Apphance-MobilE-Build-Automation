@@ -21,18 +21,9 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
 
     Map<String, FlowArtifact> artifacts = [:]
 
-    File androidIcon = copy("/com/apphance/flow/configuration/android/Android_Robot_200.png", new File(temporaryDir, 'defaultIcon.png'))
-
     @Inject AndroidManifestHelper manifestHelper
+
     @Inject AndroidConfiguration androidConf
-
-    @Inject
-    void releaseIconDefault() {
-        if (!releaseIcon.value && releaseIcon.initialized) {
-            releaseIcon.setValue(relativeTo(androidConf.rootDir, androidIcon))
-        }
-    }
-
     static Closure ICON_ORDER = {
         ['ldpi', 'mdpi', 'hdpi', 'xhdpi'].findIndexOf { dpi -> it.contains(dpi) }
     }
@@ -40,8 +31,11 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
     @Lazy
     def files = super.&getFiles.curry(androidConf.resDir, DRAWABLE_DIR_PATTERN)
 
+    File defaultIcon = copy("/com/apphance/flow/configuration/android/android-icon.png",
+            new File(temporaryDir, 'android-icon.png'))
+
     @PackageScope
-    File defaultIcon() {
+    File possibleIcon() {
         def icon = manifestHelper.readIcon(androidConf.rootDir)?.trim()
         List<File> icons = files { File it -> removeExtension(it.name) == icon }
         icon ? icons.sort { ICON_ORDER(it.absolutePath) }.reverse().find() : null

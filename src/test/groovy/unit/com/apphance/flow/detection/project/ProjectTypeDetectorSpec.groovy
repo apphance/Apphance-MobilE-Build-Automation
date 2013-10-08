@@ -18,7 +18,7 @@ class ProjectTypeDetectorSpec extends Specification {
 
         where:
         expectedType | path
-        ANDROID      | new File("demo/android/android-basic")
+        ANDROID      | new File("projects/test/android/android-basic")
         IOS          | new File('demo/ios/GradleXCode')
     }
 

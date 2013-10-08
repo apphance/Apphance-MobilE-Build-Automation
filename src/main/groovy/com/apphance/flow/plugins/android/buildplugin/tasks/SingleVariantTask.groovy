@@ -3,12 +3,10 @@ package com.apphance.flow.plugins.android.buildplugin.tasks
 import com.android.manifmerger.ManifestMerger
 import com.android.utils.StdLogger
 import com.apphance.flow.configuration.android.AndroidConfiguration
-import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.executor.AntExecutor
 import com.apphance.flow.executor.command.CommandFailedException
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
-import com.apphance.flow.plugins.release.FlowArtifact
 import org.gradle.api.AntBuilder as AntBuilder
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -31,7 +29,6 @@ class SingleVariantTask extends DefaultTask {
 
     Logger logger = Logging.getLogger(getClass())
 
-    @Inject AndroidReleaseConfiguration releaseConf
     @Inject AntBuilder ant
     @Inject AndroidArtifactProvider artifactProvider
     @Inject AntExecutor antExecutor
@@ -39,7 +36,6 @@ class SingleVariantTask extends DefaultTask {
     @Inject AndroidConfiguration conf
 
     AndroidVariantConfiguration variant
-    private FlowArtifact artifact
 
     @TaskAction
     void singleVariant() {
@@ -67,11 +63,10 @@ class SingleVariantTask extends DefaultTask {
         if (builderInfo.originalFile.exists()) {
             logger.lifecycle("File created: ${builderInfo.originalFile}")
 
-            if (releaseConf.enabled) {
-                artifact = artifactProvider.artifact(builderInfo)
-                logger.lifecycle("Copying file ${builderInfo.originalFile.absolutePath} to ${artifact.location.absolutePath}")
-                ant.copy(file: builderInfo.originalFile, tofile: artifact.location)
-            }
+            def artifact = artifactProvider.artifact(builderInfo)
+            logger.lifecycle("Copying file ${builderInfo.originalFile.absolutePath} to ${artifact.location.absolutePath}")
+            ant.copy(file: builderInfo.originalFile, tofile: artifact.location)
+
         } else {
             logger.lifecycle("File ${builderInfo.originalFile} was not created. Probably due to bad signing configuration in ant.properties")
         }

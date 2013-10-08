@@ -13,6 +13,10 @@ import javax.inject.Inject
 
 import static org.gradle.api.logging.Logging.getLogger
 
+/**
+ * The plugin provides a set of release-related tasks. It enables creating image montage, zipped sources and sending
+ * release notification via email.
+ */
 class ReleasePlugin implements Plugin<Project> {
 
     def logger = getLogger(getClass())

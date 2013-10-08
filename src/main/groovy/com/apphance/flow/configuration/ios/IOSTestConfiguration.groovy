@@ -1,11 +1,12 @@
 package com.apphance.flow.configuration.ios
 
 import com.apphance.flow.configuration.AbstractConfiguration
-import com.apphance.flow.plugins.ios.scheme.IOSSchemeInfo
+import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
 import com.apphance.flow.util.FlowUtils
 import com.apphance.flow.util.Version
 import com.google.inject.Singleton
@@ -16,6 +17,9 @@ import javax.inject.Inject
 import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
+/**
+ * Test configuration keeps the list of variants configured to run tests against them.
+ */
 @Singleton
 @Mixin(FlowUtils)
 class IOSTestConfiguration extends AbstractConfiguration {
@@ -25,7 +29,7 @@ class IOSTestConfiguration extends AbstractConfiguration {
 
     @Inject IOSConfiguration conf
     @Inject IOSVariantsConfiguration variantsConf
-    @Inject IOSSchemeInfo schemeInfo
+    @Inject XCSchemeInfo schemeInfo
     @Inject IOSExecutor executor
     private final BORDER_VERSION = new Version('5')
 
@@ -48,6 +52,7 @@ class IOSTestConfiguration extends AbstractConfiguration {
     def testVariantsNames = new ListStringProperty(
             name: 'ios.test.variants',
             message: 'iOS test variants',
+            doc: { docBundle.getString('ios.test.variants') },
             possibleValues: { possibleTestVariants },
             validator: {
                 def list = testVariantsNames.convert(it.toString())

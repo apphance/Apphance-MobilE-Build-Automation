@@ -14,7 +14,7 @@ import static com.google.common.io.Files.copy
 class AndroidManifestHelperSpec extends Specification {
 
     @Shared
-    def basic = new File('demo/android/android-basic')
+    def basic = new File('projects/test/android/android-basic')
     @Shared
     def androidManifestHelper = new AndroidManifestHelper()
 
@@ -127,7 +127,7 @@ class AndroidManifestHelperSpec extends Specification {
 
     def 'main activity name is read correctly'() {
         expect:
-        androidManifestHelper.getMainActivitiesFromProject(new File('demo/android/android-basic/')) == ['com.apphance.flowTest.android.TestActivity'] as Set
+        androidManifestHelper.getMainActivitiesFromProject(new File('projects/test/android/android-basic/')) == ['com.apphance.flowTest.android.TestActivity'] as Set
     }
 
     def 'two main activities is read correctly'() {
