@@ -18,7 +18,6 @@ import com.apphance.flow.configuration.reader.GradlePropertiesPersister
 import com.apphance.flow.configuration.reader.PropertyPersister
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.detection.project.ProjectTypeDetector
-import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import com.google.inject.AbstractModule
 import com.google.inject.assistedinject.FactoryModuleBuilder
 import com.google.inject.multibindings.MapBinder

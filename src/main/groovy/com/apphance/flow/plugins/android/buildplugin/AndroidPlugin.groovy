@@ -6,8 +6,6 @@ import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.android.buildplugin.tasks.SingleVariantTask
 import com.apphance.flow.plugins.android.buildplugin.tasks.UpdateProjectTask
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
-import com.apphance.flow.plugins.project.tasks.PrepareSetupTask
-import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -66,12 +64,6 @@ class AndroidPlugin implements Plugin<Project> {
 
                 def buildAllMode = "buildAll${variant.mode.capitalize()}"
                 project.tasks[buildAllMode].dependsOn variant.buildTaskName
-            }
-
-            project.tasks.each {
-                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME])) {
-                    it.dependsOn VerifySetupTask.NAME
-                }
             }
         }
     }

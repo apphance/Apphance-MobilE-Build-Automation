@@ -191,16 +191,15 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         } else if (mode.value == FRAMEWORK) {
             return frameworkName.value
         }
-        return name
+        name
     }
 
-    @Lazy
-    File pbxFile = {
+    File getPbxFile() {
         def pbx = xcodeprojLocator.findXCodeproj(schemeParser.xcodeprojName(schemeFile, action), schemeParser.blueprintIdentifier(schemeFile, action))
         def relative = relativeTo(conf.rootDir, pbx)
         def tmpPbx = new File(tmpDir, relative)
         tmpPbx?.exists() ? new File(tmpPbx, PROJECT_PBXPROJ) : new File(conf.rootDir, "$relative/$PROJECT_PBXPROJ")
-    }()
+    }
 
     XCAction getAction() {
         mode.value == FRAMEWORK ? BUILD_ACTION : LAUNCH_ACTION
@@ -209,7 +208,8 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     File getPlist() {
         String confName = schemeParser.configuration(schemeFile, LAUNCH_ACTION)
         String blueprintId = schemeParser.blueprintIdentifier(schemeFile)
-        new File(tmpDir, pbxJsonParser.plistForScheme.call(pbxFile, confName, blueprintId))
+        def plist = pbxJsonParser.plistForScheme.call(pbxFile, confName, blueprintId)
+        tmpDir.exists() ? new File(tmpDir, plist) : new File(conf.rootDir, plist)
     }
 
     String getTarget() {

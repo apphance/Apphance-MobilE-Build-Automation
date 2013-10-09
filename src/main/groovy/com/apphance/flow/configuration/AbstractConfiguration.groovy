@@ -65,7 +65,7 @@ abstract class AbstractConfiguration {
         configurationName.replace(' ', '.').toLowerCase() + '.enabled'
     }
 
-    final def check(condition, String message) {
+    final check(condition, String message) {
         if (!condition) {
             this.@errors << message
         }

@@ -5,7 +5,7 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantsConfigura
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.plugins.android.apphance.tasks.AddApphanceToAndroid
 import com.apphance.flow.plugins.android.apphance.tasks.UploadAndroidArtifactTask
-import com.apphance.flow.plugins.project.tasks.VerifySetupTask
+import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -13,7 +13,6 @@ import javax.inject.Inject
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.DISABLED
 import static org.gradle.api.logging.Logging.getLogger
-
 
 /**
  * Plugin for enabling Apphance (<a href="http://www.apphance.com">apphance.com</a>) library in android project.<br/>
@@ -45,8 +44,8 @@ class AndroidApphancePlugin implements Plugin<Project> {
                     addApphanceTask.doFirst {
                         new AddApphanceToAndroid(variantConf, apphanceConf.enableShaking.value).addApphance()
                     }
+                    addApphanceTask.dependsOn CopySourcesTask.NAME
                     buildVariantTask.dependsOn addApphanceTask
-                    addApphanceTask.dependsOn project.tasks.getByName(VerifySetupTask.NAME)
                     project.task(variantConf.uploadTaskName, type: UploadAndroidArtifactTask, dependsOn: buildVariantTask?.name).variant = variantConf
                 } else {
                     logger.lifecycle("Not adding apphance to ${variantConf.name} because it is $DISABLED")

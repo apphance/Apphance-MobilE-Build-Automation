@@ -112,7 +112,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
         def signParams = ['key.store', 'key.store.password', 'key.alias', 'key.alias.password']
         def nonemptySigningProperties = signParams.collect { System.getProperty(it) }.grep()
 
-        def file = new File(tmpDir, 'ant.properties')
+        def file = tmpDir.exists() ? new File(tmpDir, 'ant.properties') : new File(conf.rootDir, 'ant.properties')
         check file.exists() || nonemptySigningProperties.size() == 4, "If release or apphance plugin is enabled ant.properties should be present in " +
                 "${tmpDir.absolutePath} or appropriate signing parameters ($signParams) passed to gradle as command line options"
 
@@ -122,7 +122,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
         }
         String keyStorePath = validate(antProperties, 'key.store')
         if (keyStorePath) {
-            def keyStore = Paths.get(tmpDir.absolutePath).resolve(keyStorePath).toFile()
+            def keyStore = Paths.get((tmpDir.exists() ? tmpDir : conf.rootDir).absolutePath).resolve(keyStorePath).toFile()
             check keyStore?.exists(), "Keystore path is not correctly configured: File ${keyStore?.absolutePath} doesn't exist."
         }
 

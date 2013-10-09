@@ -7,8 +7,6 @@ import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.buildplugin.tasks.*
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
-import com.apphance.flow.plugins.project.tasks.PrepareSetupTask
-import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -118,12 +116,6 @@ class IOSPlugin implements Plugin<Project> {
                         description: "Aggregate task, builds all 'FRAMEWORK' mode variants.")
 
                 frameworkVariants.each(this.&createFrameworkVariant)
-            }
-
-            project.tasks.each {
-                if (!(it.name in [VerifySetupTask.NAME, PrepareSetupTask.NAME, CopySourcesTask.NAME, CleanFlowTask.NAME])) {
-                    it.dependsOn VerifySetupTask.NAME
-                }
             }
         }
     }

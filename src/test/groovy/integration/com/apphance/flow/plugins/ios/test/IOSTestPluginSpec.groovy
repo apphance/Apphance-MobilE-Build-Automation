@@ -3,7 +3,6 @@ package com.apphance.flow.plugins.ios.test
 import com.apphance.flow.configuration.ios.IOSTestConfiguration
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
-import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import spock.lang.Specification
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
@@ -47,16 +46,11 @@ class IOSTestPluginSpec extends Specification {
         project.tasks['testV2'].dependsOn.flatten().containsAll(CopySourcesTask.NAME)
 
         and:
-        project.tasks['testV1'].getMustRunAfter().find { it.values.contains(VerifySetupTask.NAME) }
-        project.tasks['testV2'].getMustRunAfter().find { it.values.contains(VerifySetupTask.NAME) }
-
-        and:
         project.tasks['archiveV1'].dependsOn.flatten().containsAll('testV1')
         project.tasks['archiveV2'].dependsOn.flatten().containsAll('testV2')
 
         and:
         project.tasks[TEST_ALL_TASK_NAME].dependsOn.flatten().containsAll('testV1', 'testV2')
-        project.tasks[TEST_ALL_TASK_NAME].getMustRunAfter().find { it.values.contains(VerifySetupTask.NAME) }
     }
 
     def 'no tasks available when configuration is inactive'() {
