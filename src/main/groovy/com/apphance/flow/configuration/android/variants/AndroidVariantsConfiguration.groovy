@@ -72,12 +72,16 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     @Lazy
     private List<AndroidVariantConfiguration> variantsInternal = {
-        variantsNames.makeUnique()
         variantsNames.value.collect { variantFactory.create(it) }
     }()
 
     @Override
     boolean isEnabled() {
         conf.enabled
+    }
+
+    @Override
+    void checkProperties() {
+        defaultValidation variantsNames
     }
 }

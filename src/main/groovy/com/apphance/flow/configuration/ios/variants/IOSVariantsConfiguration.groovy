@@ -94,7 +94,6 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }()
 
     private List<? extends AbstractIOSVariant> variantsInternal() {
-        variantsNames.makeUnique()
         if (hasWorkspaceAndSchemes)
             return variantsNames.value.collect(workspaceVariant)
         else if (hasSchemes)
@@ -119,4 +118,9 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     private Closure<IOSWorkspaceVariant> workspaceVariant = { String name ->
         variantFactory.createWorkspaceVariant(name)
     }.memoize()
+
+    @Override
+    void checkProperties() {
+        defaultValidation variantsNames
+    }
 }
