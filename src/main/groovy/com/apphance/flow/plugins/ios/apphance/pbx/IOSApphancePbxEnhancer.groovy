@@ -198,6 +198,6 @@ class IOSApphancePbxEnhancer {
     ]
 
     private String getFrameworkName() {
-        "Apphance-${libForMode(variant.apphanceMode.value).groupName.replace('p', 'P')}"
+        "Apphance-${libForMode(variant.aphMode.value).groupName.replace('p', 'P')}"
     }
 }

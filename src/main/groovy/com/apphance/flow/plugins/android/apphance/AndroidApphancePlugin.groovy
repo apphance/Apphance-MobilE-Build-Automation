@@ -36,7 +36,7 @@ class AndroidApphancePlugin implements Plugin<Project> {
             logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
             variantsConf.variants.each { AndroidVariantConfiguration variantConf ->
-                if (variantConf.apphanceMode.value != DISABLED) {
+                if (variantConf.aphMode.value != DISABLED) {
                     logger.lifecycle("Adding apphance task for ${variantConf.name}")
 
                     def buildVariantTask = project.tasks.findByName(variantConf.buildTaskName)

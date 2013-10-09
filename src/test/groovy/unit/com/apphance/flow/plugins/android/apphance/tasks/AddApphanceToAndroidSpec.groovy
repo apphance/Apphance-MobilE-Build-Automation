@@ -27,9 +27,9 @@ class AddApphanceToAndroidSpec extends Specification {
         variantDir.deleteOnExit()
         FileUtils.copyDirectory(new File('projects/test/android/android-basic'), variantDir)
 
-        androidVariantConf.apphanceMode.value = QA
-        androidVariantConf.apphanceAppKey.value = 'TestKey'
-        androidVariantConf.apphanceLibVersion.value = '1.9-RC4'
+        androidVariantConf.aphMode.value = QA
+        androidVariantConf.aphAppKey.value = 'TestKey'
+        androidVariantConf.aphLib.value = '1.9-RC4'
         androidVariantConf.getTmpDir() >> variantDir
 
         addApphanceToAndroid = new AddApphanceToAndroid(androidVariantConf)
@@ -222,7 +222,7 @@ class AddApphanceToAndroidSpec extends Specification {
 
     def 'test addApphance in production mode'() {
         given:
-        androidVariantConf.apphanceMode.value = ApphanceMode.PROD
+        androidVariantConf.aphMode.value = ApphanceMode.PROD
         def addApphance = Spy(AddApphanceToAndroid, constructorArgs: [androidVariantConf])
         addApphance.addApphanceLib() >> null
         def manifest = new File(variantDir, 'AndroidManifest.xml')

@@ -44,7 +44,7 @@ class IOSApphancePlugin implements Plugin<Project> {
 
             variantsConf.variants.each { variant ->
 
-                if (variant.apphanceMode.value in [QA, PROD, SILENT] && variant.mode.value == DEVICE) {
+                if (variant.aphMode.value in [QA, PROD, SILENT] && variant.mode.value == DEVICE) {
                     def enhance = { iosApphanceEnhancerFactory.create(variant).enhanceApphance() }
 
                     project.tasks[variant.archiveTaskName].doFirst(enhance)

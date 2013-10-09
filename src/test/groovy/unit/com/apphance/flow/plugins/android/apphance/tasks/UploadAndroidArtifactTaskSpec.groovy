@@ -31,7 +31,7 @@ class UploadAndroidArtifactTaskSpec extends Specification {
         task.conf.getVersionCode() >> '20'
 
         task.variant = new AndroidVariantConfiguration('variant')
-        task.variant.apphanceAppKey.value = '123'
+        task.variant.aphAppKey.value = '123'
         task.action = Mock(UploadAndroidArtifactTaskAction)
 
         when:

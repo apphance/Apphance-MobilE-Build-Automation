@@ -8,6 +8,7 @@ import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.variants.AbstractVariant
+import com.apphance.flow.detection.project.ProjectType
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.apphance.flow.plugins.ios.parsers.PlistParser
@@ -57,12 +58,12 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         frameworkResources.name = "ios.variant.${name}.framework.resources"
         frameworkLibs.name = "ios.variant.${name}.framework.libs"
 
-        apphanceMode.doc = { docBundle.getString('ios.variant.apphance.mode') }
+        aphMode.doc = { docBundle.getString('ios.variant.apphance.mode') }
 
         super.init()
     }
 
-    final String prefix = 'ios'
+    final ProjectType projectType = ProjectType.IOS
 
     @Override
     String getConfigurationName() {
@@ -149,7 +150,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     @Lazy
     List<String> possibleApphanceLibVersions = {
-        apphanceArtifactory.iOSLibraries(apphanceMode.value)
+        apphanceArtifactory.iOSLibraries(aphMode.value)
     }()
 
     @Lazy

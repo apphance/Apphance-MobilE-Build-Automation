@@ -90,15 +90,15 @@ class IOSApphanceEnhancer {
     @Lazy
     @PackageScope
     String apphanceUrl = {
-        def suffix = "apphance-$variant.apphanceMode.value.repoSuffix"
-        def lib = variant.apphanceLibVersion.value
+        def suffix = "apphance-$variant.aphMode.value.repoSuffix"
+        def lib = variant.aphLib.value
         "$IOS_APPHANCE_REPO/com/utest/$suffix/$lib/$suffix-${lib}.zip"
     }()
 
     @Lazy
     @PackageScope
     String apphanceDependencyGroup = {
-        libForMode(variant.apphanceMode.value).groupName
+        libForMode(variant.aphMode.value).groupName
     }()
 
     private File downloadApphance(String apphanceURL) {
@@ -116,7 +116,7 @@ class IOSApphanceEnhancer {
         def libVariant = apphanceDependencyGroup.replace('p', 'P')
         def frameworkFolder = new File(variant.tmpDir, "Apphance-${libVariant}.framework")
         if (!frameworkFolder.exists() || !frameworkFolder.isDirectory() || !(frameworkFolder.length() > 0l)) {
-            throw new GradleException(format(bundle.getString('exception.apphance.ios.folders'), frameworkFolder.canonicalPath, variant.apphanceLibVersion))
+            throw new GradleException(format(bundle.getString('exception.apphance.ios.folders'), frameworkFolder.canonicalPath, variant.aphLib))
         }
     }
 }

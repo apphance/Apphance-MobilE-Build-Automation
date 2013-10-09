@@ -43,6 +43,7 @@ class ApphanceConfiguration extends AbstractConfiguration {
             doc: { docBundle.getString('apphance.pass') }
     )
 
+    //TODO it should be removed!!
     def enableShaking = new BooleanProperty(
             name: 'apphance.enableShaking',
             message: "Report bug to apphance by shaking device",

@@ -8,4 +8,6 @@ class BooleanProperty extends AbstractProperty<Boolean> {
             this.@value = value.trim().toBoolean()
         }
     }
+
+    public final static List<String> POSSIBLE_BOOLEAN = ['true', 'false']
 }

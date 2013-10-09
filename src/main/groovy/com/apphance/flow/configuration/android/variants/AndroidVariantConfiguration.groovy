@@ -6,6 +6,7 @@ import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.variants.AbstractVariant
+import com.apphance.flow.detection.project.ProjectType
 import com.apphance.flow.util.FlowUtils
 import com.google.inject.assistedinject.Assisted
 import com.google.inject.assistedinject.AssistedInject
@@ -15,13 +16,14 @@ import java.nio.file.Paths
 
 import static com.apphance.flow.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.flow.configuration.android.AndroidBuildMode.RELEASE
+import static com.apphance.flow.detection.project.ProjectType.ANDROID
 import static com.apphance.flow.util.file.FileManager.asProperties
 import static com.apphance.flow.util.file.FileManager.relativeTo
 
 @Mixin(FlowUtils)
 class AndroidVariantConfiguration extends AbstractVariant {
 
-    final String prefix = 'android'
+    final ProjectType projectType = ANDROID
 
     @Inject AndroidReleaseConfiguration androidReleaseConf
     private File vDir
@@ -41,11 +43,11 @@ class AndroidVariantConfiguration extends AbstractVariant {
     @Inject
     void init() {
         variantDir.name = "android.variant.${name}.dir"
-        oldPackage.name = "${prefix}.variant.${name}.replacePackage.oldPackage"
-        newPackage.name = "${prefix}.variant.${name}.replacePackage.newPackage"
-        newLabel.name = "${prefix}.variant.${name}.replacePackage.newLabel"
-        newName.name = "${prefix}.variant.${name}.replacePackage.newName"
-        mergeManifest.name = "${prefix}.variant.${name}.mergeManifest"
+        oldPackage.name = "android.variant.${name}.replacePackage.oldPackage"
+        newPackage.name = "android.variant.${name}.replacePackage.newPackage"
+        newLabel.name = "android.variant.${name}.replacePackage.newLabel"
+        newName.name = "android.variant.${name}.replacePackage.newName"
+        mergeManifest.name = "android.variant.${name}.mergeManifest"
 
         super.init()
 
@@ -88,7 +90,7 @@ class AndroidVariantConfiguration extends AbstractVariant {
 
     @Lazy
     List<String> possibleApphanceLibVersions = {
-        apphanceArtifactory.androidLibraries(apphanceMode.value)
+        apphanceArtifactory.androidLibraries(aphMode.value)
     }()
 
     String getBuildTaskName() {

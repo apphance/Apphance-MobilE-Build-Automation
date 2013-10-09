@@ -63,17 +63,16 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     Collection<AndroidVariantConfiguration> getSubConfigurations() {
-        variantsInternal
+        variantsInternal()
     }
 
     List<AndroidVariantConfiguration> getVariants() {
-        variantsInternal.findAll { it.enabled }
+        variantsInternal().findAll { it.enabled }
     }
 
-    @Lazy
-    private List<AndroidVariantConfiguration> variantsInternal = {
+    private List<AndroidVariantConfiguration> variantsInternal() {
         variantsNames.value.collect { variantFactory.create(it) }
-    }()
+    }
 
     @Override
     boolean isEnabled() {

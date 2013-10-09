@@ -67,34 +67,34 @@ class IOSApphanceEnhancerSpec extends Specification {
     def 'apphance dependency group resolved'() {
         given:
         def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
-            getApphanceMode() >> new ApphanceModeProperty(value: apphanceMode)
+            getAphMode() >> new ApphanceModeProperty(value: aphMode)
         })
 
         expect:
         enhancer.apphanceDependencyGroup == expectedDependency
 
         where:
-        apphanceMode | expectedDependency
-        QA           | 'pre-production'
-        SILENT       | 'pre-production'
-        PROD         | 'production'
+        aphMode | expectedDependency
+        QA      | 'pre-production'
+        SILENT  | 'pre-production'
+        PROD    | 'production'
     }
 
     def 'apphance zip url is constructed correctly'() {
         given:
         def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
-            getApphanceMode() >> new ApphanceModeProperty(value: apphanceMode)
-            getApphanceLibVersion() >> new StringProperty(value: '1.8.8')
+            getAphMode() >> new ApphanceModeProperty(value: aphMode)
+            getAphLib() >> new StringProperty(value: '1.8.8')
         })
 
         expect:
         enhancer.apphanceUrl == expectedUrl
 
         where:
-        apphanceMode | expectedUrl
-        QA           | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8.zip'
-        SILENT       | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8.zip'
-        PROD         | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-prod/1.8.8/apphance-prod-1.8.8.zip'
+        aphMode | expectedUrl
+        QA      | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8.zip'
+        SILENT  | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8.zip'
+        PROD    | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-prod/1.8.8/apphance-prod-1.8.8.zip'
     }
 
     def 'framework folders are checked when exist'() {
@@ -103,8 +103,8 @@ class IOSApphanceEnhancerSpec extends Specification {
 
         def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
             getTmpDir() >> tmpDir
-            getApphanceMode() >> new ApphanceModeProperty(value: mode)
-            getApphanceLibVersion() >> new StringProperty(value: '1.8.')
+            getAphMode() >> new ApphanceModeProperty(value: mode)
+            getAphLib() >> new StringProperty(value: '1.8.')
         })
 
         and:

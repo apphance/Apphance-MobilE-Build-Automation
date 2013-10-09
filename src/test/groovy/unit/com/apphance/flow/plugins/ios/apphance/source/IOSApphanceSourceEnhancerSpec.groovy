@@ -73,7 +73,7 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
         def sourceEnhancer = new IOSApphanceSourceEnhancer(
                 GroovyMock(AbstractIOSVariant) {
                     getTmpDir() >> tmpDir
-                    getApphanceMode() >> new ApphanceModeProperty(value: QA)
+                    getAphMode() >> new ApphanceModeProperty(value: QA)
                 },
                 GroovyMock(IOSApphancePbxEnhancer) {
                     getGCCPrefixFilePaths() >> ['GradleXCode/GradleXCode-Prefix.pch']
@@ -100,8 +100,8 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
         def sourceEnhancer = new IOSApphanceSourceEnhancer(
                 GroovyMock(AbstractIOSVariant) {
                     getTmpDir() >> tmpDir
-                    getApphanceMode() >> new ApphanceModeProperty(value: QA)
-                    getApphanceAppKey() >> '3145abcd'
+                    getAphMode() >> new ApphanceModeProperty(value: QA)
+                    getAphAppKey() >> '3145abcd'
                 },
                 null
         )
@@ -130,8 +130,8 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
         def sourceEnhancer = new IOSApphanceSourceEnhancer(
                 GroovyMock(AbstractIOSVariant) {
                     getTmpDir() >> tmpDir
-                    getApphanceMode() >> new ApphanceModeProperty(value: QA)
-                    getApphanceAppKey() >> '3145abcd'
+                    getAphMode() >> new ApphanceModeProperty(value: QA)
+                    getAphAppKey() >> '3145abcd'
                 },
                 null
         )

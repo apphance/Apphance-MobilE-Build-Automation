@@ -75,7 +75,7 @@ class AndroidApphancePluginSpec extends Specification {
 
     private AndroidVariantConfiguration createVariant(String name, ApphanceMode mode) {
         def avc = GroovySpy(AndroidVariantConfiguration, constructorArgs: [name])
-        avc.apphanceMode >> new ApphanceModeProperty(value: mode)
+        avc.aphMode >> new ApphanceModeProperty(value: mode)
         avc
     }
 }

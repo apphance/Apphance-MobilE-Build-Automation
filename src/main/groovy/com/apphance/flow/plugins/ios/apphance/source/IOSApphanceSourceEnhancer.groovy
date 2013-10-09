@@ -60,7 +60,7 @@ class IOSApphanceSourceEnhancer {
     }
 
     private String getApphanceFrameworkName() {
-        "Apphance-${libForMode(variant.apphanceMode.value).groupName.replace('p', 'P')}"
+        "Apphance-${libForMode(variant.aphMode.value).groupName.replace('p', 'P')}"
     }
 
     @PackageScope
@@ -89,7 +89,7 @@ class IOSApphanceSourceEnhancer {
     @PackageScope
     void addApphanceToFile(File delegate) {
         logger.info("Adding apphance init in file: $delegate.absolutePath")
-        def apphanceInit = """[APHLogger startNewSessionWithApplicationKey:@"$variant.apphanceAppKey.value"];"""
+        def apphanceInit = """[APHLogger startNewSessionWithApplicationKey:@"$variant.aphAppKey.value"];"""
         def apphanceExceptionHandler = 'NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);'
 
         def splitLines = delegate.inject([]) { list, line -> list << line.split('\\s+') } as List
@@ -99,13 +99,13 @@ class IOSApphanceSourceEnhancer {
         def bracketLine = splitLines[bracketLineIndex] as List
         def bracketIndex = bracketLine.findIndexOf { String token -> token.contains('{') }
         def bracketToken = bracketLine[bracketIndex] as String
-        bracketLine[bracketIndex] = bracketToken.replaceFirst('\\{', "\\{ \n $apphanceInit \n $apphanceMode \n $apphanceExceptionHandler ")
+        bracketLine[bracketIndex] = bracketToken.replaceFirst('\\{', "\\{ \n $apphanceMode \n $apphanceInit \n $apphanceExceptionHandler ")
         splitLines[bracketLineIndex] = bracketLine
         delegate.text = splitLines.collect { line -> line.join(' ') }.join('\n')
     }
 
     String getApphanceMode() {
-        switch (variant.apphanceMode.value) {
+        switch (variant.aphMode.value) {
             case QA:
                 return """[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeQA];"""
             case SILENT:
@@ -113,7 +113,7 @@ class IOSApphanceSourceEnhancer {
             case PROD:
                 return ''
             default:
-                throw new GradleException("Invalid apphance mode: '$variant.apphanceMode.value' for variant: '$variant.name'")
+                throw new GradleException("Invalid apphance mode: '$variant.aphMode.value' for variant: '$variant.name'")
         }
     }
 }
