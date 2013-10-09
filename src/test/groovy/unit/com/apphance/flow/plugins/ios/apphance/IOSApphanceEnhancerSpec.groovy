@@ -85,7 +85,6 @@ class IOSApphanceEnhancerSpec extends Specification {
         def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
             getApphanceMode() >> new ApphanceModeProperty(value: apphanceMode)
             getApphanceLibVersion() >> new StringProperty(value: '1.8.8')
-            getApphanceDependencyArch() >> 'armv7'
         })
 
         expect:
@@ -93,9 +92,9 @@ class IOSApphanceEnhancerSpec extends Specification {
 
         where:
         apphanceMode | expectedUrl
-        QA           | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8-armv7.zip'
-        SILENT       | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8-armv7.zip'
-        PROD         | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-prod/1.8.8/apphance-prod-1.8.8-armv7.zip'
+        QA           | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8.zip'
+        SILENT       | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8.zip'
+        PROD         | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-prod/1.8.8/apphance-prod-1.8.8.zip'
     }
 
     def 'framework folders are checked when exist'() {

@@ -92,7 +92,7 @@ class IOSApphanceEnhancer {
     String apphanceUrl = {
         def suffix = "apphance-$variant.apphanceMode.value.repoSuffix"
         def lib = variant.apphanceLibVersion.value
-        "$IOS_APPHANCE_REPO/com/utest/$suffix/$lib/$suffix-$lib-${variant.apphanceDependencyArch}.zip"
+        "$IOS_APPHANCE_REPO/com/utest/$suffix/$lib/$suffix-${lib}.zip"
     }()
 
     @Lazy
