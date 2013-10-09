@@ -42,8 +42,6 @@ class AbstractPropertySpec extends Specification {
         property << [new FileProperty(value: 'some file'), new StringProperty(value: 'some string')]
     }
 
-    //TODO: enable when all docs are written
-    @Ignore
     def 'exception thrown when doc not specified'() {
         given:
         def sp = new StringProperty(name: 'prop')
