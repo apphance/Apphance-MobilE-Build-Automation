@@ -43,8 +43,8 @@ abstract class AbstractVariant extends AbstractConfiguration {
         aphLib.message = "Apphance lib version for '$name'"
         aphWithUTest.name = "${projectType.prefix}.variant.${name}.apphance.withUTest"
         aphWithUTest.message = "Apphance withUTest property for '$name'"
-        aphReportOnShakeEnabled.name = "${projectType.prefix}.variant.${name}.apphance.reportOnShakeEnabled"
-        aphReportOnShakeEnabled.message = "Apphance reportOnShakeEnabled property for '$name'"
+        aphReportOnShake.name = "${projectType.prefix}.variant.${name}.apphance.reportOnShake"
+        aphReportOnShake.message = "Apphance reportOnShake property for '$name'"
         aphDefaultUser.name = "${projectType.prefix}.variant.${name}.apphance.defaultUser"
         aphDefaultUser.message = "Apphance defaultUser property for '$name'"
         aphWithScreenShotsFromGallery.name = "${projectType.prefix}.variant.${name}.apphance.withScreenShotsFromGallery"
@@ -100,7 +100,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
             validator: { it ? it in POSSIBLE_BOOLEAN : true }
     )
 
-    def aphReportOnShakeEnabled = new BooleanProperty(
+    def aphReportOnShake = new BooleanProperty(
             defaultValue: { true },
             interactive: { apphanceEnabled && !(DISABLED == aphMode.value) },
             possibleValues: { POSSIBLE_BOOLEAN },

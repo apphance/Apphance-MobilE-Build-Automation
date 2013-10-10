@@ -8,7 +8,7 @@ abstract class AbstractProperty<T> {
     String message
     String validationMessage = ''
 
-    protected T value
+    protected T value = null
 
     Closure<T> defaultValue = { null as T }
 
@@ -28,6 +28,10 @@ abstract class AbstractProperty<T> {
 
     T getValue() {
         value
+    }
+
+    boolean hasValue() {
+        value != null
     }
 
     void resetValue() {
