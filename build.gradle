@@ -1,22 +1,17 @@
 import org.gradle.api.artifacts.maven.MavenDeployment
 
-allprojects {
-    apply {
-        plugin 'java'
-        plugin 'groovy'
-        plugin 'eclipse'
-        plugin 'idea'
-    }
-
-    repositories {
-        mavenCentral()
-    }
-}
-
 apply {
+    plugin 'java'
+    plugin 'groovy'
+    plugin 'eclipse'
+    plugin 'idea'
     plugin 'maven'
     plugin 'signing'
     plugin 'codenarc'
+}
+
+repositories {
+    mavenCentral()
 }
 
 group = 'com.apphance.flow'
