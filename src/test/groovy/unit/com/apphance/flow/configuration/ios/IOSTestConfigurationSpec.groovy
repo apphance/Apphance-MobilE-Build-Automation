@@ -39,22 +39,6 @@ class IOSTestConfigurationSpec extends Specification {
         '7'          | ''            | false          || false
     }
 
-    def 'xCode version lower than the border'() {
-        given:
-        def tc = new IOSTestConfiguration(executor: GroovyMock(IOSExecutor) {
-            getxCodeVersion() >> xCodeVersion
-        })
-
-        expect:
-        tc.xCodeVersionLowerThanBorder == lower
-
-        where:
-        xCodeVersion || lower
-        '4.6.2'      || true
-        '5'          || false
-        '6.2.3'      || false
-    }
-
     def 'ios-sim is installed'() {
         given:
         def tc = new IOSTestConfiguration(executor: GroovyMock(IOSExecutor) {
@@ -83,21 +67,6 @@ class IOSTestConfigurationSpec extends Specification {
         enabled || explanation
         true    || ''
         false   || 'No schemes with test targets enabled detected. '
-    }
-
-    def 'wrong xcode version explanation'() {
-        given:
-        def tc = new IOSTestConfiguration(executor: GroovyMock(IOSExecutor) {
-            getxCodeVersion() >> version
-        })
-
-        expect:
-        explanation == tc.explainXCodeVersion()
-
-        where:
-        version || explanation
-        '4.6.2' || ''
-        '5'     || "Testing is supported for xCode version lower than 5. "
     }
 
     def 'no ios-sim explanation'() {

@@ -1,14 +1,12 @@
 package com.apphance.flow.configuration.ios
 
 import com.apphance.flow.configuration.AbstractConfiguration
-import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
 import com.apphance.flow.util.FlowUtils
-import com.apphance.flow.util.Version
 import com.google.inject.Singleton
 import groovy.transform.PackageScope
 
@@ -31,7 +29,6 @@ class IOSTestConfiguration extends AbstractConfiguration {
     @Inject IOSVariantsConfiguration variantsConf
     @Inject XCSchemeInfo schemeInfo
     @Inject IOSExecutor executor
-    private final BORDER_VERSION = new Version('5')
 
     @Inject
     @Override
@@ -77,14 +74,8 @@ class IOSTestConfiguration extends AbstractConfiguration {
 
     @Override
     boolean canBeEnabled() {
-        xCodeVersionLowerThanBorder && iosSimInstalled && hasEnabledTestTargets
+        iosSimInstalled && hasEnabledTestTargets
     }
-
-    @Lazy
-    @PackageScope
-    boolean xCodeVersionLowerThanBorder = {
-        new Version(executor.xCodeVersion).compareTo(BORDER_VERSION) < 0
-    }()
 
     @Lazy
     @PackageScope
@@ -101,12 +92,7 @@ class IOSTestConfiguration extends AbstractConfiguration {
 
     @Override
     String explainDisabled() {
-        "'${configurationName}' cannot be enabled. ${explainXCodeVersion()}${explainIOSSim()}${explainNoTestTargets()}"
-    }
-
-    @PackageScope
-    String explainXCodeVersion() {
-        xCodeVersionLowerThanBorder ? '' : "Testing is supported for xCode version lower than $BORDER_VERSION. "
+        "'${configurationName}' cannot be enabled. ${explainIOSSim()}${explainNoTestTargets()}"
     }
 
     @PackageScope
