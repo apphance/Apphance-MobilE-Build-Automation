@@ -1,16 +1,18 @@
 package com.apphance.flow.plugins.ios.parsers
 
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.util.FlowUtils
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
-import groovy.util.slurpersupport.GPathResult
-import groovy.xml.XmlUtil
 
 import javax.inject.Inject
 import java.util.regex.Pattern
 
+import static groovy.json.JsonOutput.toJson
 import static org.apache.commons.lang.StringUtils.isBlank
 
+@Mixin(FlowUtils)
 class PlistParser {
 
     static final PLACEHOLDER = Pattern.compile('\\$\\{([A-Z0-9a-z]+_)*([A-Z0-9a-z])+(:rfc1034identifier)?\\}')
@@ -50,22 +52,13 @@ class PlistParser {
     }.memoize()
 
     void replaceVersion(File plist, String versionCode, String versionString) {
-        def xml = new XmlSlurper().parse(plist)
+        def json = parsedJson.call(plist)
+        json.CFBundleVersion = versionCode
+        json.CFBundleShortVersionString = versionString
 
-        def versionCodeKey = xml.dict.key.find { it.text() == 'CFBundleVersion' }
-        def versionCodeValueNode = nextNode(versionCodeKey)
-        versionCodeValueNode.replaceBody(versionCode)
+        def tmpFile = getTempFile('json.plist') << toJson(json)
 
-        def versionStringKey = xml.dict.key.find { it.text() == 'CFBundleShortVersionString' }
-        def versionStringValueNode = nextNode(versionStringKey)
-        versionStringValueNode.replaceBody(versionString)
-
-        plist.text = XmlUtil.serialize(xml)
-    }
-
-    private GPathResult nextNode(GPathResult node) {
-        def siblings = node.parent().children()
-        siblings[siblings.findIndexOf { it == node } + 1]
+        plist.text = executor.plistToXML(tmpFile).join('\n')
     }
 
     String evaluate(String value, String target, String configuration) {

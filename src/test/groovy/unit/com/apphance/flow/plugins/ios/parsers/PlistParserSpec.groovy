@@ -1,10 +1,17 @@
 package com.apphance.flow.plugins.ios.parsers
 
+import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.executor.IOSExecutor
+import com.apphance.flow.executor.command.CommandExecutor
+import com.apphance.flow.executor.command.CommandLogFilesGenerator
+import com.apphance.flow.executor.linker.FileLinker
 import spock.lang.Specification
 
+import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
+import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
 import static com.google.common.io.Files.copy
 import static com.google.common.io.Files.createTempDir
+import static java.io.File.createTempFile
 
 class PlistParserSpec extends Specification {
 
@@ -18,6 +25,7 @@ class PlistParserSpec extends Specification {
                     VALUE2: 'value_2'
             ]
         }
+
     }
 
     def 'version code is read correctly'() {
@@ -37,16 +45,24 @@ class PlistParserSpec extends Specification {
 
     def 'versionCode and versionString are replaced correctly'() {
         given:
-        def plist = new File('demo/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist')
-
-        and:
         def tmpDir = createTempDir()
         def tmpPlist = new File(tmpDir, 'tmp.plist')
+        def plist = new File('demo/ios/GradleXCode/GradleXCode/GradleXCode-Info.plist')
+        def logFiles = [(STD): createTempFile('tmp', 'file-out'), (ERR): createTempFile('tmp', 'file-err')]
+        def executor = new CommandExecutor(Mock(FileLinker) {
+            fileLink(_) >> ['']
+        }, Mock(CommandLogFilesGenerator) {
+            commandLogFiles() >> logFiles
+        })
+        def iosExecutor = new IOSExecutor(executor: executor, conf: GroovyStub(IOSConfiguration) {
+            getRootDir() >> tmpPlist.parentFile
+        })
 
         and:
         copy(plist, tmpPlist)
 
         when:
+        parser.executor = iosExecutor
         parser.replaceVersion(tmpPlist, '46', '2.0')
 
         then:
@@ -59,6 +75,9 @@ class PlistParserSpec extends Specification {
 
         cleanup:
         tmpDir.deleteDir()
+        logFiles.each {
+            it.value.delete()
+        }
     }
 
     def 'get icon files'() {
