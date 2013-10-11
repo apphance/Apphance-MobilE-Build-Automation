@@ -176,7 +176,7 @@ class IOSExecutorSpec extends Specification {
         def cmd = ['xcodebuild', '-target', 't1', '-configuration', 'c1', '-sdk', 'iphonesimulator', 'clean', 'build']
 
         when:
-        iose.runTests(rootDir, cmd, 'somePath')
+        iose.runTestsLT5(rootDir, cmd, 'somePath')
 
         then:
         1 * ce.executeCommand(

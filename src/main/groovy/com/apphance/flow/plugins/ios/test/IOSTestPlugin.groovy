@@ -16,12 +16,13 @@ import static org.gradle.api.logging.Logging.getLogger
  * <br/><br/>
  * To enable this plugin following requirements must be fulfilled:
  * <ul>
- *     <li>xcode version must be between 4.6.2 and 5.0</li>
  *     <li>ios-sim must be installed</li>
  *     <li>test targets must be enabled</li>
  * </ul>
- * Running tests is done by adding special shell script to build phase in project.pbxproj configuration file and then
- * invoking 'build' action for particular target and configuration.
+ * For xcode version lower than 5.0 running tests is done by adding special shell script to build phase in
+ * project.pbxproj configuration file and then invoking 'build' action for particular target and configuration.
+ * <br/><br/>
+ * For xcode version higher or equal to 5.0 simply 'test' action is invoked for the specified variant.
  */
 class IOSTestPlugin implements Plugin<Project> {
 

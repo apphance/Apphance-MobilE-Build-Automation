@@ -48,6 +48,9 @@ class ExecuteIosBuildsSpec extends Specification {
         new File(projectScheme, "$path/manifest.plist").exists()
         new File(projectScheme, "$path/GradleXCode-1.0_32_ahSYM").exists()
         new File(projectScheme, "$path/GradleXCode-1.0_32_ahSYM").listFiles().size() > 0
+        def report = new File(projectScheme, 'flow-tmp/GradleXCode/test-GradleXCode.xml')
+        report.exists()
+        report.size() > 0
     }
 
     def 'single device scheme variant with apphance is archived'() {
@@ -98,8 +101,11 @@ class ExecuteIosBuildsSpec extends Specification {
         then:
         def e = thrown(Exception)
         def msg = e.cause.cause.cause.message
-        msg.startsWith("Error while executing tests for variant: GradleXCode With Space, target: GradleXCodeFailingTests, configuration Debug. For further details investigate test results:")
-        msg.endsWith("test-GradleXCode With Space-GradleXCodeFailingTests.xml")
+        msg.startsWith("Error while executing tests for variant: GradleXCode With Space, scheme: GradleXCode With Space. For further details investigate test results:")
+        msg.endsWith("test-GradleXCode With Space.xml")
+        def report = new File(projectScheme, 'flow-tmp/GradleXCode With Space/test-GradleXCode With Space.xml')
+        report.exists()
+        report.size() > 0
     }
 
     def 'single simulator variant is archived'() {

@@ -47,7 +47,7 @@ class SingleVariantTask extends DefaultTask {
         if (variant.variantDir?.value?.exists()) {
             overrideVariantFilesAndMergeManifest(variant.tmpDir, variant.variantDir?.value)
         } else {
-            logger.lifecycle("No files copied because variant directory ${variant.variantDir?.value} does not exists")
+            logger.lifecycle("No files copied because variant directory ${variant.variantDir?.value} does not exist")
         }
 
         def builderInfo = artifactProvider.builderInfo(variant)

@@ -2,7 +2,6 @@ package com.apphance.flow.plugins.android.builder
 
 import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.android.AndroidConfiguration
-import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.FileProperty

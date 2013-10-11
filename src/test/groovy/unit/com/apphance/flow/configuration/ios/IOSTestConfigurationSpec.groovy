@@ -16,7 +16,6 @@ class IOSTestConfigurationSpec extends Specification {
         given:
         def tc = new IOSTestConfiguration(
                 executor: GroovyMock(IOSExecutor) {
-                    getxCodeVersion() >> xCodeVersion
                     getiOSSimVersion() >> iosSimVersion
                 },
                 schemeInfo: GroovyMock(XCSchemeInfo) {
@@ -28,15 +27,11 @@ class IOSTestConfigurationSpec extends Specification {
         tc.canBeEnabled() == canBeEnabled
 
         where:
-        xCodeVersion | iosSimVersion | hasTestTargets || canBeEnabled
-        '4.6.2'      | '1.5.3'       | true           || true
-        '4'          | '1.5.4'       | false          || false
-        '3'          | ''            | true           || false
-        '4.5.7'      | ''            | false          || false
-        '5'          | '2.3.4'       | true           || false
-        '6.0.1'      | '1.5.2'       | false          || false
-        '5.0.1'      | ''            | true           || false
-        '7'          | ''            | false          || false
+        iosSimVersion | hasTestTargets || canBeEnabled
+        '1.5.3'       | true           || true
+        '1.5.4'       | false          || false
+        ''            | true           || false
+        ''            | false          || false
     }
 
     def 'ios-sim is installed'() {
