@@ -11,6 +11,7 @@ import groovy.transform.PackageScope
 import javax.inject.Inject
 
 import static com.google.common.base.Preconditions.checkState
+import static java.util.ResourceBundle.getBundle
 import static org.gradle.api.logging.Logging.getLogger
 
 abstract class AbstractIOSTestRunner {
@@ -20,6 +21,7 @@ abstract class AbstractIOSTestRunner {
     def logger = getLogger(getClass())
 
     protected AbstractIOSVariant variant
+    protected bundle = getBundle('validation')
 
     void runTests(AbstractIOSVariant variant) {
         this.variant = variant

@@ -10,6 +10,7 @@ import groovy.transform.PackageScope
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.ios.XCAction.TEST_ACTION
+import static java.text.MessageFormat.format
 
 class IOSTestLT5Runner extends AbstractIOSTestRunner {
 
@@ -30,7 +31,9 @@ class IOSTestLT5Runner extends AbstractIOSTestRunner {
         testTargets.each { String testTarget ->
 
             def testResultsLog = newFile('log', testTarget)
-            def cmd = variant.xcodebuildExecutionPath + ['-target', testTarget, '-configuration', testConf, '-sdk', 'iphonesimulator', 'clean', 'build'] as List<String>
+            def cmd = variant.xcodebuildExecutionPath + ['-target', testTarget, '-configuration', testConf, '-sdk',
+                    'iphonesimulator', 'clean', 'build'] as List<String>
+
             executor.runTestsLT5(variant.tmpDir, cmd, testResultsLog.absolutePath)
 
             Collection<OCUnitTestSuite> parsedResults = parseResults(testResultsLog.readLines())
@@ -43,9 +46,8 @@ class IOSTestLT5Runner extends AbstractIOSTestRunner {
     }
 
     @PackageScope
-    //TODO to validation properties
     String errorMessage(String target, String configuration, File parsedResults) {
-        "Error while executing tests for variant: $variant.name, target: $target, configuration $configuration. " +
-                "For further details investigate test results: ${fileLinker.fileLink(parsedResults)}"
+        format(bundle.getString('exception.ios.testLT5'), variant.name, target, configuration,
+                fileLinker.fileLink(parsedResults))
     }
 }

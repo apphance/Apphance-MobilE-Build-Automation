@@ -4,13 +4,16 @@ import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.plugins.ios.test.tasks.results.parser.OCUnitTestSuite
 import groovy.transform.PackageScope
 
+import static java.text.MessageFormat.format
+
 class IOSTest5Runner extends AbstractIOSTestRunner {
 
     @Override
     void runTests(AbstractIOSVariant variant) {
         super.runTests(variant)
 
-        def cmd = variant.xcodebuildExecutionPath + ['-scheme', variant.schemeName, '-sdk', 'iphonesimulator', 'test'] as List<String>
+        def cmd = variant.xcodebuildExecutionPath +
+                ['-scheme', variant.schemeName, '-sdk', 'iphonesimulator', 'test'] as List<String>
         def output = executor.runTests5(variant.tmpDir, cmd)
 
         Collection<OCUnitTestSuite> parsedResults = parseResults(output?.toList())
@@ -22,9 +25,8 @@ class IOSTest5Runner extends AbstractIOSTestRunner {
     }
 
     @PackageScope
-    //TODO to validation properties
     String errorMessage(File parsedResults) {
-        "Error while executing tests for variant: $variant.name, scheme: $variant.schemeName. " +
-                "For further details investigate test results: ${fileLinker.fileLink(parsedResults)}"
+        format(bundle.getString('exception.ios.test5'), variant.name, variant.schemeName,
+                fileLinker.fileLink(parsedResults))
     }
 }
