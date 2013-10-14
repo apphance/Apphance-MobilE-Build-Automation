@@ -7,7 +7,6 @@ import org.gradle.api.GradleException
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 import static org.gradle.api.logging.Logging.getLogger
 
-//TODO should be tested
 class ConfigurationValidator {
 
     private logger = getLogger(getClass())
