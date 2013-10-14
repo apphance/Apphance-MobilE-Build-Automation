@@ -9,7 +9,7 @@ class BooleanProperty extends AbstractProperty<Boolean> {
     void setValue(String value) {
         value = value?.trim()
         if (isNotEmpty(value)) {
-            checkArgument(value in POSSIBLE_BOOLEAN, "Invalid boolean value ($value) of property $name")
+            checkArgument(value in POSSIBLE_BOOLEAN, "Invalid boolean value ($value) of property $name!")
             this.@value = value.toBoolean()
         }
     }

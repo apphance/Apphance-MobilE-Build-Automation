@@ -1,16 +1,13 @@
 package com.apphance.flow.configuration.properties
 
 import org.gradle.api.GradleException
-import spock.lang.Ignore
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import static java.lang.System.getProperties
 
 class AbstractPropertySpec extends Specification {
 
-    @Unroll
-    def '#cls property is set correctly'() {
+    def 'property value is set correctly'() {
         when:
         AbstractProperty ap = cls.newInstance()
         ap.value = value
@@ -19,13 +16,9 @@ class AbstractPropertySpec extends Specification {
         ap.value == expectedValue
 
         where:
-        cls             | value                        | expectedValue
-        StringProperty  | 'sp'                         | 'sp'
-        FileProperty    | properties['java.io.tmpdir'] | new File(properties['java.io.tmpdir'].toString())
-        BooleanProperty | 'true'                       | true
-        BooleanProperty | 'false'                      | false
-        BooleanProperty | 'whatever'                   | false
-        BooleanProperty | null                         | null
+        cls            | value                        | expectedValue
+        StringProperty | 'sp'                         | 'sp'
+        FileProperty   | properties['java.io.tmpdir'] | new File(properties['java.io.tmpdir'].toString())
     }
 
     def 'resetValue() sets value to null'() {
