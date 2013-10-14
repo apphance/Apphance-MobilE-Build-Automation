@@ -16,8 +16,11 @@ import javax.imageio.ImageIO
 import javax.inject.Inject
 import java.awt.*
 import java.awt.image.BufferedImage
+import java.text.SimpleDateFormat
 import java.util.List
 
+import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
+import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
 import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
@@ -34,6 +37,34 @@ class ImageMontageTask extends DefaultTask {
     @Inject ProjectConfiguration conf
     @Inject ReleaseConfiguration releaseConf
 
+    String fullVersionString
+    String releaseUrl
+
+    String projectName = project.name
+    File rootDir = project.rootDir
+
+    File tmpDir = project.file(TMP_DIR)
+    File otaDir = project.file(OTA_DIR)
+
+    Closure<File> releaseDir = {
+        new File(otaDir, "${ReleaseConfiguration.getReleaseDirName releaseUrl}/$fullVersionString")
+    }
+    FlowArtifact imageMontafeArtifact = new FlowArtifact()
+    Closure<String> projectNameNoWhiteSpace = { projectName?.replaceAll('\\s', '_') }
+    String buildDate = new SimpleDateFormat("dd-MM-yyyy HH:mm zzz").format(new Date())
+
+    @Inject
+    void init() {
+        fullVersionString = conf.fullVersionString
+        projectName = conf.projectName.value
+        rootDir = conf.rootDir
+        releaseConf.imageMontageFile = imageMontafeArtifact
+        releaseDir = { releaseConf.releaseDir }
+        tmpDir = conf.tmpDir
+        otaDir = releaseConf.otaDir
+        releaseUrl = releaseConf.releaseUrl.value
+    }
+
     public static int TILE_PX_SIZE = 120
     public static int MAX_NUMBER_OF_TILES_IN_ROW = 10
     public static int DESCRIPTION_FONT_SIZE = 10
@@ -41,16 +72,17 @@ class ImageMontageTask extends DefaultTask {
     @TaskAction
     void imageMontage() {
         logger.lifecycle "Preparing image montage"
-        def filesToMontage = getFilesToMontage(conf.rootDir)
+        def filesToMontage = getFilesToMontage(rootDir)
         logger.lifecycle "Found ${filesToMontage.size()} files"
         File imageMontageFile = outputMontageFile()
         createMontage(imageMontageFile, filesToMontage)
-        addDescription(imageMontageFile, "${conf.projectName.value} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}")
+        addDescription(imageMontageFile, "${projectName} Version: ${fullVersionString} Generated: ${buildDate}")
 
-        releaseConf.imageMontageFile = new FlowArtifact(
-                name: 'Image Montage',
-                url: new URL("$releaseConf.releaseUrlVersioned/$imageMontageFile.name"),
-                location: imageMontageFile)
+        imageMontafeArtifact.with {
+            name = 'Image Montage'
+            url = new URL("${releaseUrl.toURL()}/$fullVersionString/$imageMontageFile.name")
+            location = imageMontageFile
+        }
 
         logger.lifecycle "Created image montage $imageMontageFile.absolutePath"
     }
@@ -70,8 +102,7 @@ class ImageMontageTask extends DefaultTask {
 
     @PackageScope
     File outputMontageFile() {
-        def imageMontageFile = new File(releaseConf.releaseDir,
-                "${conf.projectNameNoWhiteSpace}-${conf.fullVersionString}-image-montage.png")
+        def imageMontageFile = new File(releaseDir(), "${projectNameNoWhiteSpace()}-${fullVersionString}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
         imageMontageFile
@@ -82,7 +113,7 @@ class ImageMontageTask extends DefaultTask {
         List<File> filesToMontage = []
 
         rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL, excludeFilter: EXCLUDE_FILTER]) { File file ->
-            if (isValid(file) && [conf.tmpDir, releaseConf.otaDir]*.name.every { !file.absolutePath.contains(it) }) {
+            if (isValid(file) && [tmpDir, otaDir]*.name.every { !file.absolutePath.contains(it) }) {
                 filesToMontage << file
             }
         }
@@ -142,7 +173,7 @@ class ImageMontageTask extends DefaultTask {
 
     @PackageScope
     Collection<Image> resizeImages(List<File> inputs) {
-        Collection<Image> images = inputs.collect {
+        inputs.collect {
 
             def image = ImageUtil.getImageFrom(it)
 
@@ -153,9 +184,6 @@ class ImageMontageTask extends DefaultTask {
                 logger.error("Problem during converting ${it.absolutePath}")
                 null
             }
-        }
-
-        images.removeAll { it == null }
-        images
+        }.grep()
     }
 }

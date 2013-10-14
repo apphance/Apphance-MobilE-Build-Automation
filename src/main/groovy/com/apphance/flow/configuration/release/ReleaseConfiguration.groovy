@@ -96,7 +96,16 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
 
     @PackageScope
     String getReleaseDirName() {
-        def url = releaseUrl.value
+        getReleaseDirName releaseUrl.value
+    }
+
+    @PackageScope
+    static String getReleaseDirName(String url) {
+        getReleaseDirName url.toURL()
+    }
+
+    @PackageScope
+    static String getReleaseDirName(URL url) {
         def split = url.path.split('/')
         split[-1]
     }
