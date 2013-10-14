@@ -2,6 +2,7 @@ package com.apphance.flow.configuration
 
 import com.apphance.flow.configuration.properties.AbstractProperty
 import com.apphance.flow.configuration.reader.PropertyPersister
+import com.apphance.flow.validation.PropertyValidator
 
 import javax.inject.Inject
 import java.lang.reflect.Field
@@ -16,20 +17,19 @@ abstract class AbstractConfiguration {
     protected docBundle = getBundle('doc')
     protected validationBundle = getBundle('validation')
 
-    @Inject PropertyPersister propertyPersister
-
-    private List<String> errors = []
+    @Inject PropertyPersister propPersister
+    @Inject PropertyValidator propValidator
 
     abstract String getConfigurationName()
 
     @Inject
     void init() {
         propertyFields.each {
-            logger.debug "Initializing property $it.name to value: ${propertyPersister.get(it.name)}"
-            it.value = propertyPersister.get(it.name)
+            logger.debug "Initializing property $it.name to value: ${propPersister.get(it.name)}"
+            it.value = propPersister.get(it.name)
         }
 
-        String enabled = propertyPersister.get(enabledPropKey)
+        String enabled = propPersister.get(enabledPropKey)
         def enabledValue = Boolean.valueOf(enabled)
         if (enabled && enabledValue != this.enabled) {
             this.enabled = enabledValue
@@ -61,45 +61,13 @@ abstract class AbstractConfiguration {
 
     abstract boolean isEnabled()
 
-    String getEnabledPropKey() {
-        configurationName.replace(' ', '.').toLowerCase() + '.enabled'
-    }
+    String getEnabledPropKey() { configurationName.replace(' ', '.').toLowerCase() + '.enabled' }
 
-    final check(condition, String message) {
-        if (!condition) {
-            this.@errors << message
-        }
-    }
+    boolean canBeEnabled() { true }
 
-    final List<String> verify() {
-        checkProperties()
-        this.@errors
-    }
+    String explainDisabled() { '' }
 
-    void checkProperties() {}
-
-    protected String checkException(Closure cl) {
-        try {
-            cl.call()
-        } catch (e) {
-            return e.message
-        }
-        ''
-    }
-
-    def defaultValidation(AbstractProperty... properties) {
-        properties.each {
-            check it.validator(it.value), "Incorrect value $it.value of $it.name property"
-        }
-    }
-
-    boolean canBeEnabled() {
-        true
-    }
-
-    String explainDisabled() {
-        ''
-    }
+    void validate(List<String> errors) {}
 
     Collection<? extends AbstractConfiguration> getSubConfigurations() {
         []

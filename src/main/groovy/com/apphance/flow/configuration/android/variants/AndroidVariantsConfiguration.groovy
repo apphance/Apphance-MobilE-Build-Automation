@@ -80,7 +80,7 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    void checkProperties() {
-        defaultValidation variantsNames
+    void validate(List<String> errors) {
+        errors.addAll(propValidator.validateProperties(variantsNames))
     }
 }

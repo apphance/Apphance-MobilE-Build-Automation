@@ -120,7 +120,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }.memoize()
 
     @Override
-    void checkProperties() {
-        defaultValidation variantsNames
+    void validate(List<String> errors) {
+        errors.addAll(propValidator.validateProperties(variantsNames))
     }
 }

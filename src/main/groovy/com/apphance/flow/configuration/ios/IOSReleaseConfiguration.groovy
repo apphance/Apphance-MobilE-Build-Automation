@@ -11,6 +11,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.util.file.FileManager.*
 import static groovy.io.FileType.FILES
+import static java.text.MessageFormat.format
 
 @Singleton
 @Mixin(FlowUtils)
@@ -75,7 +76,6 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     @Override
     String explainDisabled() {
-        "'$configurationName' cannot be enabled. To enable configuration you need to provide mobile provision file" +
-                " somewhere in project directory. File must match *.mobileprovision and can be placed anywhere in project source."
+        format(validationBundle.getString('disabled.configuration.ios.release'), configurationName)
     }
 }

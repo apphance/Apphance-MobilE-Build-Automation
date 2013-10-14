@@ -212,18 +212,28 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    void checkProperties() {
-        check !checkException { releaseDirName }, validationBundle.getString('exception.release.url')
-        check language.validator(language.value), validationBundle.getString('exception.release.language')
-        check country.validator(country.value), validationBundle.getString('exception.release.country')
-        check releaseMailFrom.validator(releaseMailFrom.value), format(validationBundle.getString('exception.release.mail'), releaseMailFrom.name, releaseMailFrom.value)
-        check releaseMailTo.validator(releaseMailTo.persistentForm()), format(validationBundle.getString('exception.release.mail'), releaseMailTo.name, releaseMailTo.value)
-        check releaseMailFlags.validator(releaseMailFlags.persistentForm()), format(validationBundle.getString('exception.release.mail.flags'), ALL_EMAIL_FLAGS, releaseMailFlags.value)
-        check releaseIcon.validator(releaseIcon.value), format(validationBundle.getString('exception.release.icon'), releaseIcon.value)
-
-        if (Environment.env() == JENKINS) {
-            check !checkException { validator.validateMailServer(mailServer) }, validationBundle.getString('exception.release.mail.server')
-            check !checkException { validator.validateMailPort(mailPort) }, validationBundle.getString('exception.release.mail.port')
+    void validate(List<String> errors) {
+        propValidator.with {
+            errors << validateCondition(!throwsException { releaseDirName },
+                    validationBundle.getString('exception.release.url'))
+            errors << validateCondition(language.validator(language.value),
+                    validationBundle.getString('exception.release.language'))
+            errors << validateCondition(country.validator(country.value),
+                    validationBundle.getString('exception.release.country'))
+            errors << validateCondition(releaseMailFrom.validator(releaseMailFrom.value),
+                    format(validationBundle.getString('exception.release.mail'), releaseMailFrom.name, releaseMailFrom.value))
+            errors << validateCondition(releaseMailTo.validator(releaseMailTo.persistentForm()),
+                    format(validationBundle.getString('exception.release.mail'), releaseMailTo.name, releaseMailTo.value))
+            errors << validateCondition(releaseMailFlags.validator(releaseMailFlags.persistentForm()),
+                    format(validationBundle.getString('exception.release.mail.flags'), ALL_EMAIL_FLAGS, releaseMailFlags.value))
+            errors << validateCondition(releaseIcon.validator(releaseIcon.value),
+                    format(validationBundle.getString('exception.release.icon'), releaseIcon.value))
+            if (Environment.env() == JENKINS) {
+                errors << validateCondition(!throwsException { validator.validateMailServer(mailServer) },
+                        validationBundle.getString('exception.release.mail.server'))
+                errors << validateCondition(!throwsException { validator.validateMailPort(mailPort) },
+                        validationBundle.getString('exception.release.mail.port'))
+            }
         }
     }
 }

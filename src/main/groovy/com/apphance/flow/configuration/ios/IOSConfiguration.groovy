@@ -82,7 +82,7 @@ class IOSConfiguration extends ProjectConfiguration {
     }
 
     @Override
-    void checkProperties() {
-        defaultValidation sdk, simulatorSdk
+    void validate(List<String> errors) {
+        errors.addAll(propValidator.validateProperties(sdk, simulatorSdk))
     }
 }

@@ -8,6 +8,9 @@ import com.google.inject.Singleton
 
 import javax.inject.Inject
 
+import static com.apphance.flow.configuration.properties.BooleanProperty.POSSIBLE_BOOLEAN
+import static org.apache.commons.lang.StringUtils.isEmpty
+
 /**
  * This configuration keeps values used while uploading prepared artifacts to <a href="http://apphance.com">apphance.com
  * </a> service.
@@ -46,8 +49,9 @@ class ApphanceConfiguration extends AbstractConfiguration {
     //TODO it should be removed!!
     def enableShaking = new BooleanProperty(
             name: 'apphance.enableShaking',
-            message: "Report bug to apphance by shaking device",
-            possibleValues: { ['false', 'true'] as List<String> },
+            message: 'Report bug to apphance by shaking device',
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN },
+            possibleValues: { POSSIBLE_BOOLEAN },
             doc: { docBundle.getString('apphance.enableShaking') }
     )
 }

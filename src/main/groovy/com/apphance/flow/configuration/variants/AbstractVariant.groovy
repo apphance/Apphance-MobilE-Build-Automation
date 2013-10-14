@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.DISABLED
 import static com.apphance.flow.configuration.properties.BooleanProperty.POSSIBLE_BOOLEAN
+import static org.apache.commons.lang.StringUtils.isEmpty
 
 abstract class AbstractVariant extends AbstractConfiguration {
 
@@ -97,14 +98,14 @@ abstract class AbstractVariant extends AbstractConfiguration {
             defaultValue: { false },
             interactive: { apphanceEnabled && !(DISABLED == aphMode.value) },
             possibleValues: { POSSIBLE_BOOLEAN },
-            validator: { it ? it in POSSIBLE_BOOLEAN : true }
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN }
     )
 
     def aphReportOnShake = new BooleanProperty(
             defaultValue: { true },
             interactive: { apphanceEnabled && !(DISABLED == aphMode.value) },
             possibleValues: { POSSIBLE_BOOLEAN },
-            validator: { it ? it in POSSIBLE_BOOLEAN : true }
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN }
     )
 
     def aphDefaultUser = new StringProperty(
@@ -115,14 +116,14 @@ abstract class AbstractVariant extends AbstractConfiguration {
             defaultValue: { false },
             interactive: { apphanceEnabled && !(DISABLED == aphMode.value) },
             possibleValues: { POSSIBLE_BOOLEAN },
-            validator: { it ? it in POSSIBLE_BOOLEAN : true }
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN }
     )
 
     def aphReportOnDoubleSlide = new BooleanProperty(
             defaultValue: { false },
             interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
             possibleValues: { POSSIBLE_BOOLEAN },
-            validator: { it ? it in POSSIBLE_BOOLEAN : true }
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN }
     )
 
     def aphAppVersionName = new StringProperty(
@@ -137,7 +138,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
             defaultValue: { false },
             interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
             possibleValues: { POSSIBLE_BOOLEAN },
-            validator: { it ? it in POSSIBLE_BOOLEAN : true }
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN }
     )
 
     @Lazy
@@ -204,11 +205,11 @@ abstract class AbstractVariant extends AbstractConfiguration {
     abstract ProjectType getProjectType()
 
     @Override
-    void checkProperties() {
+    void validate(List<String> errors) {
         if (apphanceConf.enabled) {
-            defaultValidation aphMode
+            errors.addAll(propValidator.validateProperties(aphMode))
             if (aphMode.value != DISABLED) {
-                defaultValidation aphAppKey, aphLib
+                errors.addAll(propValidator.validateProperties(aphAppKey, aphLib))
             }
         }
     }

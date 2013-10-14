@@ -112,7 +112,8 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     }()
 
     FileProperty getMobileprovision() {
-        new FileProperty(value: new File(tmpDir, this.@mobileprovision.value.path))
+        new FileProperty(name: this.@mobileprovision.name,
+                value: new File(tmpDir.exists() ? tmpDir : conf.rootDir, this.@mobileprovision.value.path))
     }
 
     @Lazy
@@ -227,20 +228,26 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     abstract List<String> getXcodebuildExecutionPath()
 
     @Override
-    void checkProperties() {
-        super.checkProperties()
+    void validate(List<String> errors) {
+        super.validate(errors)
+        propValidator.with {
+            errors << validateCondition(versionValidator.isNumber(versionCode),
+                    validationBundle.getString('exception.ios.version.code'))
+            errors << validateCondition(versionValidator.hasNoWhiteSpace(versionString),
+                    validationBundle.getString('exception.ios.version.string'))
 
-        check versionValidator.isNumber(versionCode), validationBundle.getString('exception.ios.version.code')
-        check versionValidator.hasNoWhiteSpace(versionString), validationBundle.getString('exception.ios.version.string')
+            if (mobileprovisionEnabled)
+                errors.addAll(validateProperties(mobileprovision))
 
-        if (mobileprovisionEnabled)
-            defaultValidation mobileprovision
-
-        if (mode.value == FRAMEWORK) {
-            defaultValidation frameworkName
-            check(frameworkHeaders.value.every { new File(conf.rootDir, it).exists() }, validationBundle.getString('exception.ios.framework.invalid.headers'))
-            check(frameworkResources.value.every { new File(conf.rootDir, it).exists() }, validationBundle.getString('exception.ios.framework.invalid.resources'))
-            check(frameworkLibs.value.every { new File(conf.rootDir, it).exists() }, validationBundle.getString('exception.ios.framework.invalid.libs'))
+            if (mode.value == FRAMEWORK) {
+                errors.addAll(validateProperties(frameworkName))
+                errors << validateCondition(frameworkHeaders.value.every { new File(conf.rootDir, it).exists() },
+                        validationBundle.getString('exception.ios.framework.invalid.headers'))
+                errors << validateCondition(frameworkResources.value.every { new File(conf.rootDir, it).exists() },
+                        validationBundle.getString('exception.ios.framework.invalid.resources'))
+                errors << validateCondition(frameworkLibs.value.every { new File(conf.rootDir, it).exists() },
+                        validationBundle.getString('exception.ios.framework.invalid.libs'))
+            }
         }
     }
 }

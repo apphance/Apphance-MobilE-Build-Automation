@@ -16,9 +16,12 @@ import java.nio.file.Paths
 
 import static com.apphance.flow.configuration.android.AndroidBuildMode.DEBUG
 import static com.apphance.flow.configuration.android.AndroidBuildMode.RELEASE
+import static com.apphance.flow.configuration.properties.BooleanProperty.POSSIBLE_BOOLEAN
 import static com.apphance.flow.detection.project.ProjectType.ANDROID
 import static com.apphance.flow.util.file.FileManager.asProperties
 import static com.apphance.flow.util.file.FileManager.relativeTo
+import static java.text.MessageFormat.format
+import static org.apache.commons.lang.StringUtils.isEmpty
 
 @Mixin(FlowUtils)
 class AndroidVariantConfiguration extends AbstractVariant {
@@ -85,7 +88,9 @@ class AndroidVariantConfiguration extends AbstractVariant {
             doc: {
                 "If true then manifest file in variant directory will be merged with main project manifest. " +
                         "When false variant manifest will override main manifest. Default value: false"
-            }
+            },
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN },
+            possibleValues: { POSSIBLE_BOOLEAN }
     )
 
     @Lazy
@@ -103,39 +108,41 @@ class AndroidVariantConfiguration extends AbstractVariant {
     }
 
     @Override
-    void checkProperties() {
-        super.checkProperties()
+    void validate(List<String> errors) {
+        super.validate(errors)
         if (androidReleaseConf.enabled || apphanceConf.enabled) {
-            checkSigningConfiguration()
+            checkSigningConfiguration(errors)
         }
     }
 
-    void checkSigningConfiguration() {
+    void checkSigningConfiguration(List<String> errors) {
         def signParams = ['key.store', 'key.store.password', 'key.alias', 'key.alias.password']
         def nonemptySigningProperties = signParams.collect { System.getProperty(it) }.grep()
 
         def file = tmpDir.exists() ? new File(tmpDir, 'ant.properties') : new File(conf.rootDir, 'ant.properties')
-        check file.exists() || nonemptySigningProperties.size() == 4, "If release or apphance plugin is enabled ant.properties should be present in " +
-                "${tmpDir.absolutePath} or appropriate signing parameters ($signParams) passed to gradle as command line options"
+        errors << propValidator.validateCondition(file.exists() || nonemptySigningProperties.size() == 4,
+                format(validationBundle.getString('exception.android.ant.properties'), tmpDir.absolutePath, signParams))
+
 
         Properties antProperties = null
         if (file.exists()) {
             antProperties = asProperties(file)
         }
-        String keyStorePath = validate(antProperties, 'key.store')
+        String keyStorePath = validate(errors, antProperties, 'key.store')
         if (keyStorePath) {
             def keyStore = Paths.get((tmpDir.exists() ? tmpDir : conf.rootDir).absolutePath).resolve(keyStorePath).toFile()
-            check keyStore?.exists(), "Keystore path is not correctly configured: File ${keyStore?.absolutePath} doesn't exist."
+            errors << propValidator.validateCondition(keyStore?.exists(),
+                    format(validationBundle.getString('exception.android.ant.keystore'), keyStore?.absolutePath))
         }
 
-        validate(antProperties, 'key.store.password')
-        validate(antProperties, 'key.alias')
-        validate(antProperties, 'key.alias.password')
+        validate(errors, antProperties, 'key.store.password')
+        validate(errors, antProperties, 'key.alias')
+        validate(errors, antProperties, 'key.alias.password')
     }
 
-    String validate(Properties antProperties, String property) {
+    String validate(List<String> errors, Properties antProperties, String property) {
         String value = antProperties?.getProperty(property) ?: System.getProperty(property)
-        check value, "$property value is not correctly configured: ${value}"
+        errors << propValidator.validateCondition(value as boolean, "$property value is not correctly configured: ${value}")
         value
     }
 

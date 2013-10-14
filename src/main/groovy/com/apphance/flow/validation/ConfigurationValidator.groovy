@@ -4,6 +4,7 @@ import com.apphance.flow.configuration.AbstractConfiguration
 import groovy.transform.PackageScope
 import org.gradle.api.GradleException
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty
 import static org.gradle.api.logging.Logging.getLogger
 
 //TODO should be tested
@@ -12,21 +13,20 @@ class ConfigurationValidator {
     private logger = getLogger(getClass())
 
     void validate(Collection<? extends AbstractConfiguration> configurations) {
-        List errors = []
-        verifyConfigurations(configurations, errors)
+        List<String> errors = []
+        validateConfigurations(configurations, errors)
+        errors = errors.findAll { isNotEmpty(it) }
         if (errors) {
             errors.each { logger.error("ERROR: $it") }
-            throw new GradleException('Verification error')
+            throw new GradleException('Validation error')
         }
     }
 
     @PackageScope
-    void verifyConfigurations(Collection<? extends AbstractConfiguration> confs, List<String> errors) {
-        confs.each {
-            if (it.isEnabled()) {
-                errors.addAll(it.verify())
-                verifyConfigurations(it.subConfigurations, errors)
-            }
+    void validateConfigurations(Collection<? extends AbstractConfiguration> confs, List<String> errors) {
+        confs.findAll { it.isEnabled() }.each {
+            it.validate(errors)
+            validateConfigurations(it.subConfigurations, errors)
         }
     }
 }

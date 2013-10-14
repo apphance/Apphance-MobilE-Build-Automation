@@ -40,13 +40,11 @@ class AndroidAnalysisConfiguration extends AbstractConfiguration {
     )
 
     @Override
-    void checkProperties() {
-        existsOrNull pmdRules, findbugsExclude, checkstyleConfigFile
-    }
-
-    void existsOrNull(FileProperty... fileProperties) {
-        fileProperties.each {
-            check it.value == null || it.value.exists(), "Incorrect value of '$it.name' property"
+    void validate(List<String> errors) {
+        [pmdRules, findbugsExclude, checkstyleConfigFile].each { p ->
+            propValidator.with {
+                errors << validateCondition(p.value == null || p.value.exists(), "Incorrect value of '$p.name' property")
+            }
         }
     }
 }

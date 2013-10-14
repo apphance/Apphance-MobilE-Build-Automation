@@ -106,7 +106,7 @@ class IOSTestConfiguration extends AbstractConfiguration {
     }
 
     @Override
-    void checkProperties() {
-        defaultValidation testVariantsNames
+    void validate(List<String> errors) {
+        errors.addAll(propValidator.validateProperties(testVariantsNames))
     }
 }
