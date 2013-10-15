@@ -107,7 +107,7 @@ class AvailableArtifactsInfoTaskSpec extends Specification {
         task.releaseConf = releaseConf
         task.variantsConf = variantsConf
         task.artifactProvider = artifactProvider
-        task.flowUtils = new FlowUtils()
+        task.initTask()
     }
 
     def cleanup() {

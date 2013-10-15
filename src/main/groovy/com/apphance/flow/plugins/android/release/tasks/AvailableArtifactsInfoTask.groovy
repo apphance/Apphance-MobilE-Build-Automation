@@ -1,6 +1,5 @@
 package com.apphance.flow.plugins.android.release.tasks
 
-import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
@@ -15,12 +14,6 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
 
     @Inject AndroidVariantsConfiguration variantsConf
     @Inject AndroidArtifactProvider artifactBuilder
-
-    @PackageScope
-    AndroidConfiguration getConf() {
-        super.@releaseConf as AndroidConfiguration
-    }
-
 
     @PackageScope
     AndroidReleaseConfiguration getReleaseConf() {
@@ -42,38 +35,38 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     @PackageScope
     Map mailMsgBinding() {
         basicBinding + [
-                otaUrl: releaseConf.otaIndexFile?.url,
-                fileIndexUrl: releaseConf.fileIndexFile?.url,
-                releaseNotes: releaseConf.releaseNotes,
+                otaUrl: otaIndexFile?.url,
+                fileIndexUrl: fileIndexFile?.url,
+                releaseNotes: releaseNotes,
                 fileSize: fileSize(),
-                releaseMailFlags: releaseConf.releaseMailFlags,
+                releaseMailFlags: releaseMailFlags,
                 rb: bundle('mail_message')
         ]
     }
 
     private String fileSize() {
-        getHumanReadableSize((releaseConf as AndroidReleaseConfiguration).artifacts[variantsConf.mainVariant.name].location.size())
+        getHumanReadableSize(releaseConf.artifacts[variantsConf.mainVariant.name].location.size())
     }
 
     @PackageScope
     void prepareFileIndexFile() {
         def binding = [
-                baseUrl: releaseConf.fileIndexFile.url,
+                baseUrl: fileIndexFile.url,
                 variants: variantsConf.variants*.name,
                 variantsConf: variantsConf,
                 releaseConf: releaseConf,
                 rb: bundle('file_index')
         ] + basicBinding
         def result = fillTemplate(loadTemplate('file_index.html'), binding)
-        templateToFile(releaseConf.fileIndexFile.location, result)
-        logger.lifecycle("File index created: ${releaseConf.fileIndexFile.location}")
+        templateToFile(fileIndexFile.location, result)
+        logger.lifecycle("File index created: ${fileIndexFile.location}")
     }
 
     @Override
     @PackageScope
     Map plainFileIndexFileBinding() {
         basicBinding + [
-                baseUrl: releaseConf.plainFileIndexFile.url,
+                baseUrl: plainFileIndexFile.url,
                 variantsConf: variantsConf,
                 releaseConf: releaseConf,
                 rb: bundle('plain_file_index')
@@ -84,9 +77,9 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     @PackageScope
     Map otaIndexFileBinding() {
         basicBinding + [
-                baseUrl: releaseConf.otaIndexFile.url,
-                releaseNotes: releaseConf.releaseNotes,
-                iconFileName: releaseConf.releaseIcon.value.name,
+                baseUrl: otaIndexFile.url,
+                releaseNotes: releaseNotes,
+                iconFileName: releaseIcon.name,
                 variantsConf: variantsConf,
                 releaseConf: releaseConf,
                 rb: bundle('index')

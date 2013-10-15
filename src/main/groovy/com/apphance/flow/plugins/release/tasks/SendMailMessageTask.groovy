@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.release.tasks
 
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.validation.ReleaseValidator
+import groovy.text.SimpleTemplateEngine
 import org.apache.tools.ant.Project
 import org.gradle.api.AntBuilder
 import org.gradle.api.DefaultTask
@@ -10,6 +11,7 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
+import static java.util.ResourceBundle.getBundle
 
 /**
  * Requires mail.server, mail.port system (-D) properties or corresponding MAIL_SERVER, MAIL_PORT env variables
@@ -26,6 +28,8 @@ class SendMailMessageTask extends DefaultTask {
     @Inject AntBuilder ant
     @Inject ReleaseConfiguration releaseConf
     @Inject ReleaseValidator validator
+
+    def engine = new SimpleTemplateEngine()
 
     @TaskAction
     void sendMailMessage() {
