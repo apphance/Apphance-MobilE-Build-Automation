@@ -79,7 +79,7 @@ class XCSchemeInfo {
         logger.debug("Found following schemes for name: $name, schemes: $found")
         switch (found.size()) {
             case 0:
-                logger.warn("No scheme file found for name: $name")
+                logger.info("No scheme file found for name: $name")
                 return new File(conf.rootDir, "${name}.xcscheme")
             case 1:
                 logger.info("Found scheme file for name: $name, file: ${found[0].absolutePath}")
