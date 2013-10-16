@@ -12,6 +12,8 @@ import org.gradle.api.GradleException
 
 import javax.inject.Inject
 
+import static java.text.MessageFormat.format
+
 /**
  * Variants configuration holds the list of variants thar are configured for building.
  */
@@ -76,7 +78,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     String explainDisabled() {
-        "'$configurationName' cannot be enabled. No shared schemes detected."
+        format(validationBundle.getString('disabled.conf.ios.variants'), configurationName)
     }
 
     @Override

@@ -11,7 +11,9 @@ import com.google.inject.Singleton
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
+import java.text.MessageFormat
 
+import static java.text.MessageFormat.format
 import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 
@@ -92,17 +94,18 @@ class IOSTestConfiguration extends AbstractConfiguration {
 
     @Override
     String explainDisabled() {
-        "'${configurationName}' cannot be enabled. ${explainIOSSim()}${explainNoTestTargets()}"
+        format(validationBundle.getString('disabled.conf.ios.test'),
+                configurationName, "${explainIOSSim()}${explainDisabled()}")
     }
 
     @PackageScope
     String explainIOSSim() {
-        iosSimInstalled ? '' : 'Ios-sim is not installed. '
+        iosSimInstalled ? '' : validationBundle.getString('disabled.conf.ios.test.sim')
     }
 
     @PackageScope
     String explainNoTestTargets() {
-        hasEnabledTestTargets ? '' : 'No schemes with test targets enabled detected. '
+        hasEnabledTestTargets ? '' : validationBundle.getString('disabled.conf.ios.test.no-targets')
     }
 
     @Override

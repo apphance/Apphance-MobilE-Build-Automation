@@ -76,6 +76,6 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     @Override
     String explainDisabled() {
-        format(validationBundle.getString('disabled.configuration.ios.release'), configurationName)
+        format(validationBundle.getString('disabled.conf.ios.release'), configurationName)
     }
 }

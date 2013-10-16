@@ -5,6 +5,8 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty
 
 class BooleanProperty extends AbstractProperty<Boolean> {
 
+    public final static List<String> POSSIBLE_BOOLEAN = ['true', 'false']
+
     @Override
     void setValue(String value) {
         value = value?.trim()
@@ -13,6 +15,4 @@ class BooleanProperty extends AbstractProperty<Boolean> {
             this.@value = value.toBoolean()
         }
     }
-
-    public final static List<String> POSSIBLE_BOOLEAN = ['true', 'false']
 }
