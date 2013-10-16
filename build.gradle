@@ -255,14 +255,14 @@ artifacts {
 }
 
 task buildPluginReference(dependsOn: classes, type: JavaExec) {
-    inputs.dir new File('src')
+    inputs.files file('src'), file('projects/doc')
     outputs.dir new File(buildDir, 'doc')
     main = 'com.apphance.flow.docs.DocGenerator'
     classpath = sourceSets.main.runtimeClasspath
 }
 
 task sendDocToFlowSite(type: JavaExec, dependsOn: buildPluginReference ) {
-    inputs.dir new File(buildDir, 'doc')
+    inputs.file buildPluginReference
     outputs.upToDateWhen { true }
     main = 'com.apphance.flow.docs.DocSender'
     classpath = sourceSets.main.runtimeClasspath
