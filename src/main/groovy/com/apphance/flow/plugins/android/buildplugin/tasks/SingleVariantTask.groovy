@@ -50,14 +50,13 @@ class SingleVariantTask extends DefaultTask {
             logger.lifecycle("No files copied because variant directory ${variant.variantDir?.value} does not exist")
         }
 
-        def builderInfo = artifactProvider.builderInfo(variant)
-
         if (variant.oldPackage.value && variant.newPackage.value) {
             new PackageReplacer().replace(variant.tmpDir, variant.oldPackage.value, variant.newPackage.value, variant.newLabel.value, variant.newName.value)
         }
 
         new LibraryDependencyHandler().handleLibraryDependencies(variant.tmpDir)
 
+        def builderInfo = artifactProvider.builderInfo(variant)
         executeBuildTarget builderInfo.tmpDir, builderInfo.mode.lowerCase()
 
         if (builderInfo.originalFile.exists()) {

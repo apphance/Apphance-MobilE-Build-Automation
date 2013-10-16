@@ -148,6 +148,7 @@ dependencies {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
     compile 'com.google.gdata:core:1.47.1'
+    compile 'com.android.tools.build:gradle:0.6.1'
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'

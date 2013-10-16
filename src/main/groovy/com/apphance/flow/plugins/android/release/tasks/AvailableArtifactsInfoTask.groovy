@@ -1,5 +1,7 @@
 package com.apphance.flow.plugins.android.release.tasks
 
+import com.android.build.gradle.AppExtension
+import com.android.build.gradle.api.ApplicationVariant
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
@@ -24,20 +26,12 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
         super.@releaseConf as AndroidReleaseConfiguration
     }
 
-    private List<AndroidVariantConfiguration> generatedVariants = []
+    List<AndroidVariantConfiguration> generatedVariants = []
 
     Map<String, FlowArtifact> artifacts = [:]
 
     List<AndroidVariantConfiguration> getAndroidVariants() {
         variantsConf?.variants ?: generatedVariants
-    }
-
-    void variants(String... variantsToMake) {
-        generatedVariants = variantsToMake.collect { new AndroidVariantConfiguration(it) }
-        generatedVariants.each {
-            it.projectTmpDir = { project.file(TMP_DIR) }
-            it.projectNameNoWhiteSpace = projectNameNoWhiteSpace
-        }
     }
 
     @PackageScope
@@ -50,9 +44,30 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
                 releaseDir: releaseDir
         )
 
+        if (project.hasProperty('android') && project.android instanceof AppExtension) {
+            logger.lifecycle "Detected android gradle New Build System. Configuring variants taken from android configuration."
+            AppExtension android = project.android as AppExtension
+
+            android.applicationVariants.all { ApplicationVariant variant ->
+                logger.lifecycle "Configuring NBS variant: $variant.name, output file: $variant.outputFile "
+
+                def flowVariant = new AndroidVariantConfiguration(variant.name)
+                flowVariant.projectTmpDir = { project.file(TMP_DIR) }
+                flowVariant.projectNameNoWhiteSpace = projectNameNoWhiteSpace
+                flowVariant.outputFile = { variant.outputFile }
+                generatedVariants << flowVariant
+            }
+        }
+
         androidVariants.each {
-            def bi = artifactBuilder.builderInfo(it)
-            artifacts.put(bi.id, artifactBuilder.artifact(bi)) //FIXME: set nbs file location
+            def builderInfo = artifactBuilder.builderInfo(it)
+            def artifact = artifactBuilder.artifact(builderInfo)
+            artifacts.put(builderInfo.id, artifact)
+            if (builderInfo?.originalFile?.exists()) {
+                ant.copy(file: builderInfo?.originalFile, tofile: artifact.location)
+            } else {
+                logger.error "File does not exist: ${builderInfo?.originalFile?.absolutePath} "
+            }
         }
 
         prepareFileIndexFile()

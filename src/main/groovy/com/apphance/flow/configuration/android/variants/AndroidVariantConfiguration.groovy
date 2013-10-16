@@ -147,8 +147,10 @@ class AndroidVariantConfiguration extends AbstractVariant {
     }
 
     File getOriginalFile() {
-        new File(tmpDir, isLibrary() ? 'bin/classes.jar' : "bin/${projectNameNoWhiteSpace()}-${mode.lowerCase()}.apk")
+        outputFile()
     }
+
+    Closure<File> outputFile = { new File(tmpDir, isLibrary() ? 'bin/classes.jar' : "bin/${projectNameNoWhiteSpace()}-${mode.lowerCase()}.apk") }
 
     Closure<String> projectNameNoWhiteSpace = { conf.projectNameNoWhiteSpace }
 
