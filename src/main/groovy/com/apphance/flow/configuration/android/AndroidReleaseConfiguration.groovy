@@ -19,8 +19,6 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
     static final ANDROID_ICON_PATTERN = /icon.*\.(png|jpg|jpeg|bmp)/
     static final DRAWABLE_DIR_PATTERN = /drawable(-ldpi|-mdpi|-hdpi|-xhdpi|)/
 
-    Map<String, FlowArtifact> artifacts = [:]
-
     @Inject AndroidManifestHelper manifestHelper
 
     @Inject AndroidConfiguration androidConf

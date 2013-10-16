@@ -1,13 +1,17 @@
 package com.apphance.flow.plugins.android.release.tasks
 
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
+import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
+import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.plugins.release.tasks.AbstractAvailableArtifactsInfoTask
+import com.apphance.flow.plugins.release.tasks.ImageMontageTask
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
+import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.util.file.FileManager.getHumanReadableSize
 
 class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
@@ -20,12 +24,35 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
         super.@releaseConf as AndroidReleaseConfiguration
     }
 
+    private List<AndroidVariantConfiguration> generatedVariants = []
+
+    Map<String, FlowArtifact> artifacts = [:]
+
+    List<AndroidVariantConfiguration> getAndroidVariants() {
+        variantsConf?.variants ?: generatedVariants
+    }
+
+    void variants(String... variantsToMake) {
+        generatedVariants = variantsToMake.collect { new AndroidVariantConfiguration(it) }
+        generatedVariants.each {
+            it.projectTmpDir = { project.file(TMP_DIR) }
+            it.projectNameNoWiteSpace = projectNameNoWhiteSpace
+        }
+    }
+
     @PackageScope
     void prepareOtherArtifacts() {
 
-        variantsConf.variants.each {
+        artifactBuilder = artifactBuilder ?: new AndroidArtifactProvider(
+                fullVersionString: { fullVersionString },
+                projectNameNoWhiteSpace: projectNameNoWhiteSpace,
+                releaseUrlVersioned: releaseUrlVersioned,
+                releaseDir: releaseDir
+        )
+
+        androidVariants.each {
             def bi = artifactBuilder.builderInfo(it)
-            releaseConf.artifacts.put(bi.id, artifactBuilder.artifact(bi))
+            artifacts.put(bi.id, artifactBuilder.artifact(bi)) //FIXME: set nbs file location
         }
 
         prepareFileIndexFile()
@@ -45,21 +72,28 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     }
 
     private String fileSize() {
-        getHumanReadableSize(releaseConf.artifacts[variantsConf.mainVariant.name].location.size())
+        getHumanReadableSize(artifacts[androidVariants[0].name].location.size())
+    }
+
+    FlowArtifact imageMontageArtifact() {
+        (project.tasks.findByPath(ImageMontageTask.NAME) as ImageMontageTask)?.imageMontageArtifact
     }
 
     @PackageScope
     void prepareFileIndexFile() {
         def binding = [
                 baseUrl: fileIndexFile.url,
-                variants: variantsConf.variants*.name,
-                variantsConf: variantsConf,
-                releaseConf: releaseConf,
+                variants: androidVariants,
+                mailMessageFile: mailMessageFile,
+                imageMontageFile: imageMontageArtifact(),
+                QRCodeFile: QRCodeFile,
+                plainFileIndexFile: plainFileIndexFile,
+                artifacts: artifacts,
                 rb: bundle('file_index')
         ] + basicBinding
         def result = fillTemplate(loadTemplate('file_index.html'), binding)
         templateToFile(fileIndexFile.location, result)
-        logger.lifecycle("File index created: ${fileIndexFile.location}")
+        logger.lifecycle "File index created: ${fileIndexFile.location}"
     }
 
     @Override
@@ -67,8 +101,11 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     Map plainFileIndexFileBinding() {
         basicBinding + [
                 baseUrl: plainFileIndexFile.url,
-                variantsConf: variantsConf,
-                releaseConf: releaseConf,
+                variants: androidVariants,
+                artifacts: artifacts,
+                mailMessageFile: mailMessageFile,
+                imageMontageFile: imageMontageArtifact(),
+                QRCodeFile: QRCodeFile,
                 rb: bundle('plain_file_index')
         ]
     }
@@ -80,8 +117,9 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
                 baseUrl: otaIndexFile.url,
                 releaseNotes: releaseNotes,
                 iconFileName: releaseIcon.name,
-                variantsConf: variantsConf,
-                releaseConf: releaseConf,
+                variants: androidVariants,
+                mainVariant: androidVariants[0],
+                artifacts: artifacts,
                 rb: bundle('index')
         ]
     }

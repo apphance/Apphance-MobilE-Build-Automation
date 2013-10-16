@@ -26,10 +26,10 @@
                             </div>
                         </header>
                         <ul data-role="listview" data-inset="true" data-theme="a">
-                            <% variantsConf.variants.each { variant -> %>
-                            <% if (releaseConf.artifacts[variant.name] != null) { %>
+                            <% variants.each { variant -> %>
+                            <% if (artifacts[variant.name] != null) { %>
                             <li>
-                                <a href="${releaseConf.artifacts[variant.name].getRelativeUrl(baseUrl)}" rel="external">
+                                <a href="${artifacts[variant.name].getRelativeUrl(baseUrl)}" rel="external">
                                     <h3>${rb.getString('Apk_file')}: ${variant.displayName.value}</h3>
                                 </a>
                             </li>
@@ -46,30 +46,30 @@
                             </h3>
                         </header>
                         <ul data-role="listview" data-inset="true" data-theme="a">
-                            <% if (releaseConf.mailMessageFile != null) { %>
+                            <% if (mailMessageFile != null) { %>
                             <li>
-                                <a href="${releaseConf.mailMessageFile.getRelativeUrl(baseUrl)}" rel="external">
+                                <a href="${mailMessageFile.getRelativeUrl(baseUrl)}" rel="external">
                                     <h3>${rb.getString('Mail_message')}</h3>
                                 </a>
                             </li>
                             <% } %>
-                            <% if (releaseConf.imageMontageFile != null) { %>
+                            <% if (imageMontageFile != null) { %>
                             <li>
-                                <a href="${releaseConf.imageMontageFile.getRelativeUrl(baseUrl)}" rel="external">
+                                <a href="${imageMontageFile.getRelativeUrl(baseUrl)}" rel="external">
                                     <h3>${rb.getString('Image_montage_file')}</h3>
                                 </a>
                             </li>
                             <% } %>
-                            <% if (releaseConf.QRCodeFile != null) { %>
+                            <% if (QRCodeFile != null) { %>
                                 <li>
-                                    <a href="${releaseConf.QRCodeFile.getRelativeUrl(baseUrl)}" rel="external">
+                                    <a href="${QRCodeFile.getRelativeUrl(baseUrl)}" rel="external">
                                         <h3>${rb.getString('QR_Code')}</h3>
                                     </a>
                                 </li>
                             <% } %>
-                            <% if (releaseConf.plainFileIndexFile != null) { %>
+                            <% if (plainFileIndexFile != null) { %>
                                 <li>
-                                    <a href="${releaseConf.plainFileIndexFile.getRelativeUrl(baseUrl)}" rel="external">
+                                    <a href="${plainFileIndexFile.getRelativeUrl(baseUrl)}" rel="external">
                                         <h3>${rb.getString('Plain_file_index')}</h3>
                                     </a>
                                 </li>

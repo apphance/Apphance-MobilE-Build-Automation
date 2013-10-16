@@ -199,8 +199,10 @@ abstract class AbstractVariant extends AbstractConfiguration {
     }
 
     File getTmpDir() {
-        new File(conf.tmpDir, name)
+        new File(projectTmpDir(), name)
     }
+
+    Closure<File> projectTmpDir = { conf.tmpDir }
 
     abstract ProjectType getProjectType()
 

@@ -49,7 +49,7 @@ class ImageMontageTask extends DefaultTask {
     Closure<File> releaseDir = {
         new File(otaDir, "${ReleaseConfiguration.getReleaseDirName releaseUrl}/$fullVersionString")
     }
-    FlowArtifact imageMontafeArtifact = new FlowArtifact()
+    FlowArtifact imageMontageArtifact = new FlowArtifact()
     Closure<String> projectNameNoWhiteSpace = { projectName?.replaceAll('\\s', '_') }
     String buildDate = new SimpleDateFormat("dd-MM-yyyy HH:mm zzz").format(new Date())
 
@@ -58,7 +58,7 @@ class ImageMontageTask extends DefaultTask {
         fullVersionString = conf.fullVersionString
         projectName = conf.projectName.value
         rootDir = conf.rootDir
-        releaseConf.imageMontageFile = imageMontafeArtifact
+        releaseConf.imageMontageFile = imageMontageArtifact
         releaseDir = { releaseConf.releaseDir }
         tmpDir = conf.tmpDir
         otaDir = releaseConf.otaDir
@@ -78,7 +78,7 @@ class ImageMontageTask extends DefaultTask {
         createMontage(imageMontageFile, filesToMontage)
         addDescription(imageMontageFile, "${projectName} Version: ${fullVersionString} Generated: ${buildDate}")
 
-        imageMontafeArtifact.with {
+        imageMontageArtifact.with {
             name = 'Image Montage'
             url = new URL("${releaseUrl.toURL()}/$fullVersionString/$imageMontageFile.name")
             location = imageMontageFile

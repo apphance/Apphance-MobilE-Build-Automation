@@ -15,6 +15,11 @@ class AndroidArtifactProvider {
     @Inject AndroidConfiguration conf
     @Inject AndroidReleaseConfiguration releaseConf
 
+    Closure<String> fullVersionString = { conf.fullVersionString }
+    Closure<String> projectNameNoWhiteSpace = { conf.projectNameNoWhiteSpace }
+    Closure<URL> releaseUrlVersioned = { releaseConf.releaseUrlVersioned }
+    Closure<File> releaseDir = { releaseConf.releaseDir }
+
     AndroidBuilderInfo builderInfo(AndroidVariantConfiguration avc) {
         new AndroidBuilderInfo(
                 variant: avc.name,
@@ -22,7 +27,7 @@ class AndroidArtifactProvider {
                 tmpDir: avc.tmpDir,
                 buildDir: avc.buildDir,
                 variantDir: avc.variantDir?.value,
-                filePrefix: "${conf.projectNameNoWhiteSpace}-${avc.mode.lowerCase()}-${avc.name}-${conf.fullVersionString}",
+                filePrefix: "${projectNameNoWhiteSpace()}-${avc.mode.lowerCase()}-${avc.name}-${fullVersionString()}",
                 originalFile: avc.originalFile,
                 type: avc.isLibrary() ? JAR : APK
         )
@@ -32,8 +37,8 @@ class AndroidArtifactProvider {
         def name = "${abi.filePrefix}.${abi.type.lowerCase()}"
         new FlowArtifact(
                 name: "${abi.type.name()} ${abi.mode} file for ${abi.variant}",
-                url: new URL("$releaseConf.releaseUrlVersioned/$name"),
-                location: new File(releaseConf.releaseDir, name)
+                url: new URL("${releaseUrlVersioned()}/$name"),
+                location: new File(releaseDir(), name)
         )
     }
 }

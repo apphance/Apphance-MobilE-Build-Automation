@@ -43,7 +43,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     Closure<URL> releaseUrlVersioned = { new URL("$releaseUrl/$fullVersionString") }
     String projectName = project.name
     Closure<String> projectNameNoWhiteSpace = { projectName?.replaceAll('\\s', '_') }
-    Closure<File> releaseDir = { new File(project.rootDir, OTA_DIR + "${getReleaseDirName(releaseUrl)}/$fullVersionString") }
+    Closure<File> releaseDir = { new File(project.rootDir, OTA_DIR + "/${getReleaseDirName(releaseUrl)}/$fullVersionString") }
     String buildDate = new SimpleDateFormat("dd-MM-yyyy HH:mm zzz").format(new Date())
 
     @Inject
@@ -64,7 +64,6 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
         releaseNotes = releaseConf.releaseNotes
         releaseMailFlags = releaseConf.releaseMailFlags
         rootDir = conf.rootDir
-
     }
 
     def engine = new SimpleTemplateEngine()
@@ -112,7 +111,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     }
 
     void prepareIconFile() {
-        ant.copy(file: new File(rootDir, releaseIcon.path),
+        ant.copy(file: releaseIcon.exists() ? releaseIcon : new File(rootDir, releaseIcon.path),
                 tofile: new File(releaseDir(), releaseIcon.name))
     }
 
@@ -164,5 +163,9 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     void templateToFile(File f, Writable tmpl) {
         f.write(tmpl.toString(), 'UTF-8')
+    }
+
+    void setReleaseNotes(String releaseNotes) {
+        this.releaseNotes = [releaseNotes]
     }
 }

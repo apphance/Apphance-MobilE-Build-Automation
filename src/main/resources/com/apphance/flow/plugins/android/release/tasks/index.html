@@ -44,10 +44,10 @@
                         <li>
                             <div class="ui-grid-a">
                                 <div class="ui-block-a">
-                                    <div style="font-size:1.5em">${variantsConf.mainVariant.name.replaceAll('_',' ')}</div>
+                                    <div style="font-size:1.5em">${mainVariant.name.replaceAll('_',' ')}</div>
                                 </div>
                                 <div class="ui-block-b" style="text-align:right"><a
-                                    href="${releaseConf.artifacts[variantsConf.mainVariant.name].url}"
+                                    href="${artifacts[mainVariant.name].url}"
                                     data-role="button" data-inline="true" rel="external" data-theme="a">${rb.getString('Install')}</a>
                                 </div>
                             </div>
@@ -69,8 +69,8 @@
                     </p>
                 <% } %>
                 <% def other_installs = [] %>
-                <% variantsConf.variants.each { variant -> %>
-                    <% if (variantsConf.mainVariant != variant.name) { other_installs << variant.name } %>
+                <% variants.each { variant -> %>
+                    <% if (mainVariant != variant.name) { other_installs << variant.name } %>
                 <% } %>
                 <% if (other_installs.size > 0) { %>
                     <div>
@@ -91,7 +91,7 @@
                                         <div style="font-size:1.5em">${variant.replaceAll('_',' ')}</div>
                                     </div>
                                     <div class="ui-block-b" style="text-align:right">
-                                        <a href="${releaseConf.artifacts[variant].url}" data-role="button" data-inline="true"
+                                        <a href="${artifacts[variant].url}" data-role="button" data-inline="true"
                                         rel="external" data-theme="a">${rb.getString('Install')}</a>
                                     </div>
                                 </div>

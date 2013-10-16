@@ -13,9 +13,9 @@
         <h2>${rb.getString('Application_files')}</h2>
         
         <ul>
-            <% variantsConf.variants.each { variant -> %>
-            <% if (releaseConf.artifacts[variant.name] != null) { %>
-            <li><b>${variant.displayName.value}</b> : <a href="${releaseConf.artifacts[variant.name].getRelativeUrl(baseUrl)}" rel="external">${releaseConf.artifacts[variant.name].url}</a>
+            <% variants.each { variant -> %>
+            <% if (artifacts[variant.name] != null) { %>
+            <li><b>${variant.displayName.value}</b> : <a href="${artifacts[variant.name].getRelativeUrl(baseUrl)}" rel="external">${artifacts[variant.name].url}</a>
             </li>
             <% } %>
             <% } %>
@@ -24,16 +24,16 @@
         <h2>${rb.getString('Other')}</h2>
         
         <ul>
-            <% if (releaseConf.mailMessageFile != null) { %>
-            <li>${rb.getString('Mail_message')} <a href="${releaseConf.mailMessageFile.getRelativeUrl(baseUrl)}" rel="external">${releaseConf.mailMessageFile.url}</a>
+            <% if (mailMessageFile != null) { %>
+            <li>${rb.getString('Mail_message')} <a href="${mailMessageFile.getRelativeUrl(baseUrl)}" rel="external">${mailMessageFile.url}</a>
             </li>
             <% } %>
-            <% if (releaseConf.imageMontageFile != null) { %>
-            <li>${rb.getString('Image_montage')} <a href="${releaseConf.imageMontageFile.getRelativeUrl(baseUrl)}"
-                                                    rel="external">${releaseConf.imageMontageFile.url}</a></li>
+            <% if (imageMontageFile != null) { %>
+            <li>${rb.getString('Image_montage')} <a href="${imageMontageFile.getRelativeUrl(baseUrl)}"
+                                                    rel="external">${imageMontageFile.url}</a></li>
             <% } %>
-            <% if (releaseConf.QRCodeFile != null) { %>
-            <li>${rb.getString('QR_code')} <a href="${releaseConf.QRCodeFile.getRelativeUrl(baseUrl)}" rel="external">${releaseConf.QRCodeFile.url}</a>
+            <% if (QRCodeFile != null) { %>
+            <li>${rb.getString('QR_code')} <a href="${QRCodeFile.getRelativeUrl(baseUrl)}" rel="external">${QRCodeFile.url}</a>
             </li>
             <% } %>
         </ul>
