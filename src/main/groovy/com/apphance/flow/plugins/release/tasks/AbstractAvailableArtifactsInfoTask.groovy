@@ -162,8 +162,4 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     void templateToFile(File f, Writable tmpl) {
         f.write(tmpl.toString(), 'UTF-8')
     }
-
-    void setReleaseNotes(String releaseNotes) {
-        this.releaseNotes = [releaseNotes]
-    }
 }

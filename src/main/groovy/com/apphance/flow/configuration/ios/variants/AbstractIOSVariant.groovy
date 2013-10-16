@@ -99,7 +99,11 @@ abstract class AbstractIOSVariant extends AbstractVariant {
             interactive: { mobileprovisionEnabled },
             required: { mobileprovisionEnabled },
             possibleValues: { possibleMobileProvisionPaths },
-            validator: { isNotEmpty(it?.path) ? it.path in (possibleMobileProvisionPaths) : false }
+            validator: {
+                if (!it) return false
+                def file = new File(conf.rootDir, it as String)
+                relativeTo(conf.rootDir.absolutePath, file.absolutePath).path in (possibleMobileProvisionPaths) ?: false
+            }
     )
 
     @Lazy
@@ -113,7 +117,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     FileProperty getMobileprovision() {
         new FileProperty(name: this.@mobileprovision.name,
-                value: new File(tmpDir.exists() ? tmpDir : conf.rootDir, this.@mobileprovision.value.path))
+                value: new File((tmpDir.exists() ? tmpDir : conf.rootDir), this.@mobileprovision.value.path))
     }
 
     @Lazy

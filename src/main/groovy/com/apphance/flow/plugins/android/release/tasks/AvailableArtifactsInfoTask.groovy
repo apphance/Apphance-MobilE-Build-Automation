@@ -36,7 +36,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
         generatedVariants = variantsToMake.collect { new AndroidVariantConfiguration(it) }
         generatedVariants.each {
             it.projectTmpDir = { project.file(TMP_DIR) }
-            it.projectNameNoWiteSpace = projectNameNoWhiteSpace
+            it.projectNameNoWhiteSpace = projectNameNoWhiteSpace
         }
     }
 

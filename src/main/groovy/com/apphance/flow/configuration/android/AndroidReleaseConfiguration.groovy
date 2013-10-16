@@ -2,7 +2,6 @@ package com.apphance.flow.configuration.android
 
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
-import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.util.FlowUtils
 import com.google.inject.Singleton
 import groovy.transform.PackageScope

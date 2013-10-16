@@ -147,10 +147,10 @@ class AndroidVariantConfiguration extends AbstractVariant {
     }
 
     File getOriginalFile() {
-        new File(tmpDir, isLibrary() ? 'bin/classes.jar' : "bin/${projectNameNoWiteSpace()}-${mode.lowerCase()}.apk")
+        new File(tmpDir, isLibrary() ? 'bin/classes.jar' : "bin/${projectNameNoWhiteSpace()}-${mode.lowerCase()}.apk")
     }
 
-    Closure<String> projectNameNoWiteSpace = { conf.projectNameNoWhiteSpace }
+    Closure<String> projectNameNoWhiteSpace = { conf.projectNameNoWhiteSpace }
 
     Boolean isLibrary() {
         def props = new File(tmpDir, 'project.properties')
