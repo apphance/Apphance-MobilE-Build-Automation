@@ -116,12 +116,10 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     }
 
     void prepareMailMsg() {
-        if (releaseConf) {
-            releaseConf.releaseMailSubject = fillMailSubject()
-            def result = fillTemplate(loadTemplate('mail_message.html'), mailMsgBinding())
-            mailMessageFile.location.write(result.toString(), 'UTF-8')
-            logger.lifecycle("Mail message file created: ${mailMessageFile.location}")
-        }
+        if (releaseConf) releaseConf.releaseMailSubject = fillMailSubject()
+        def result = fillTemplate(loadTemplate('mail_message.html'), mailMsgBinding())
+        mailMessageFile.location.write(result.toString(), 'UTF-8')
+        logger.lifecycle("Mail message file created: ${mailMessageFile.location}")
     }
 
     String fillMailSubject() {
