@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.ios.release.artifact.builder
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
+import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.ios.release.IOSReleasePlugin
 import com.apphance.flow.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask
@@ -30,6 +31,9 @@ class IOSReleasePluginSpec extends Specification {
         then:
         project.tasks[AbstractUpdateVersionTask.NAME].group == FLOW_RELEASE.name()
         project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.name()
+
+        then:
+        project.tasks[AbstractUpdateVersionTask.NAME].dependsOn.contains(CopySourcesTask.NAME)
     }
 
     def 'no tasks available when configuration is inactive'() {

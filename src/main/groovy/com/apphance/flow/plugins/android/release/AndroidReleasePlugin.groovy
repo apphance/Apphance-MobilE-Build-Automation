@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.android.release
 
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
+import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.android.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.flow.plugins.android.release.tasks.UpdateVersionTask
 import org.gradle.api.Plugin
@@ -30,7 +31,8 @@ class AndroidReleasePlugin implements Plugin<Project> {
 
             project.task(
                     UpdateVersionTask.NAME,
-                    type: UpdateVersionTask)
+                    type: UpdateVersionTask,
+                    dependsOn: CopySourcesTask.NAME)
 
             project.task(
                     AvailableArtifactsInfoTask.NAME,

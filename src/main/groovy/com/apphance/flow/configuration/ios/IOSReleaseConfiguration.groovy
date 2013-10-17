@@ -41,7 +41,6 @@ class IOSReleaseConfiguration extends ReleaseConfiguration {
 
     @Override
     List<String> possibleIcons() {
-        //TODO plist parser
         iconFiles.collect { relativeTo(conf.rootDir.absolutePath, it.absolutePath).path }
     }
 

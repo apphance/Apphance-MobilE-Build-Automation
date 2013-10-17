@@ -1,7 +1,6 @@
 package com.apphance.flow.util
 
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import static com.apphance.flow.util.ImageUtil.getImageFrom
 
@@ -15,8 +14,7 @@ class ImageUtilSpec extends Specification {
         getImageFrom(ihdrBadLength) == null
     }
 
-    @Unroll
-    def '#file conversion'() {
+    def 'iamge file is converted'() {
         given:
         def dir = 'src/test/resources/com/apphance/flow/plugins/release/tasks/montageFiles/montageFilesSubdir/'
         def source = new File(dir + '1.' + file)

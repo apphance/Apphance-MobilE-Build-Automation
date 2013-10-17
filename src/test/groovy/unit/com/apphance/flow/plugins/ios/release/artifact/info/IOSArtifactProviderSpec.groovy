@@ -7,7 +7,6 @@ import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import spock.lang.Shared
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import static com.google.common.io.Files.createTempDir
 
@@ -105,8 +104,7 @@ class IOSArtifactProviderSpec extends Specification {
         aa.location == new File(tmpDir, "$projectName/$fullVersionString/$variantName/${filePrefix}.mobileprovision")
     }
 
-    @Unroll
-    def 'simulator a for family #family is built well'() {
+    def 'builds simulator for family'() {
         given:
         def info = provider.simInfo(variant)
         def aa = provider.simulator(info, family)

@@ -7,7 +7,6 @@ import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.detection.project.ProjectType
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.PROD
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
@@ -24,8 +23,7 @@ class AbstractVariantSpec extends Specification {
         correct << ['1.8', '1.8.2', '1.9-RC1', '2.0.1.1.1']
     }
 
-    @Unroll
-    def 'test apphanceLibVersion validator #incorrect value'() {
+    def 'apphance lib version validator handles incorrect value'() {
         expect:
         !variant.aphLib.validator(incorrect)
 

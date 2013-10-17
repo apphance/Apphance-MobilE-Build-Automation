@@ -1,6 +1,7 @@
 package com.apphance.flow.plugins.ios.release
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
+import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.flow.plugins.ios.release.tasks.UpdateVersionTask
 import org.gradle.api.Plugin
@@ -30,7 +31,8 @@ class IOSReleasePlugin implements Plugin<Project> {
             logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
             project.task(UpdateVersionTask.NAME,
-                    type: UpdateVersionTask)
+                    type: UpdateVersionTask,
+                    dependsOn: CopySourcesTask.NAME)
 
             project.task(AvailableArtifactsInfoTask.NAME,
                     type: AvailableArtifactsInfoTask)

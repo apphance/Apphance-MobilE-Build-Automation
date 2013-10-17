@@ -27,7 +27,6 @@ class UpdateVersionTaskSpec extends Specification {
         task.conf = GroovySpy(IOSConfiguration) {
             getVersionCode() >> '3145'
             getVersionString() >> '3.1.45'
-            getRootDir() >> tmpDir
         }
         and:
         task.variantsConf = GroovySpy(IOSVariantsConfiguration) {
@@ -35,10 +34,13 @@ class UpdateVersionTaskSpec extends Specification {
                     GroovyMock(AbstractIOSVariant) {
                         getPlist() >> GroovyMock(File)
                         getMode() >> new IOSBuildModeProperty(value: mode)
+                        getTmpDir() >> tmpDir
+
                     },
                     GroovyMock(AbstractIOSVariant) {
                         getPlist() >> GroovyMock(File)
                         getMode() >> new IOSBuildModeProperty(value: mode)
+                        getTmpDir() >> tmpDir
                     }
             ]
         }
@@ -57,7 +59,7 @@ class UpdateVersionTaskSpec extends Specification {
         task.updateVersion()
 
         then:
-        count * parser.replaceVersion(_, '3145', '3.1.45')//TODO
+        count * parser.replaceVersion(_, '3145', '3.1.45')
 
         cleanup:
         tmpDir.deleteDir()

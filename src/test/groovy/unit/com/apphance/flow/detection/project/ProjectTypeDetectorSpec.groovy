@@ -1,7 +1,6 @@
 package com.apphance.flow.detection.project
 
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import static com.apphance.flow.detection.project.ProjectType.ANDROID
 import static com.apphance.flow.detection.project.ProjectType.IOS
@@ -10,8 +9,7 @@ class ProjectTypeDetectorSpec extends Specification {
 
     def detector = new ProjectTypeDetector()
 
-    @Unroll
-    def 'detects #expectedType project type'() {
+    def 'detects expected project type'() {
 
         expect:
         detector.detectProjectType(path) == expectedType

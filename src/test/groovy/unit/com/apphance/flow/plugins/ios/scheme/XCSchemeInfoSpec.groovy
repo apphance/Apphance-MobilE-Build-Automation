@@ -7,7 +7,6 @@ import org.apache.commons.io.FileUtils
 import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
-import spock.lang.Unroll
 
 @Mixin(FlowUtils)
 class XCSchemeInfoSpec extends Specification {
@@ -54,8 +53,7 @@ class XCSchemeInfoSpec extends Specification {
         !schemeInfo.schemesHasEnabledTestTargets()
     }
 
-    @Unroll
-    def 'scheme #scheme is buildable #buildable'() {
+    def 'buildable scheme found'() {
         expect:
         schemeInfo.schemeBuildable(schemeInfo.schemeFile.call(scheme)) == buildable
 
@@ -64,8 +62,7 @@ class XCSchemeInfoSpec extends Specification {
         buildable << [true, true, false, true, true, false]
     }
 
-    @Unroll
-    def 'scheme #scheme is shared #shared'() {
+    def 'shared scheme found'() {
         expect:
         schemeInfo.schemeShared(schemeInfo.schemeFile.call(scheme)) == shared
 
@@ -74,8 +71,7 @@ class XCSchemeInfoSpec extends Specification {
         shared << [true, true, true, true, true, false]
     }
 
-    @Unroll
-    def 'scheme #scheme has enabled test targets #enabled'() {
+    def 'scheme #scheme has enabled test targets'() {
         expect:
         schemeInfo.schemeHasEnabledTestTargets(schemeInfo.schemeFile.call(scheme)) == enabled
 
@@ -84,8 +80,7 @@ class XCSchemeInfoSpec extends Specification {
         enabled << [true, false, false, true, false, false]
     }
 
-    @Unroll
-    def 'scheme file is found for #scheme'() {
+    def 'scheme file is found'() {
         given:
         schemeInfo.conf = GroovyMock(IOSConfiguration) {
             getRootDir() >> new File('demo/ios/GradleXCode')
