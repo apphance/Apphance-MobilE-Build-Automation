@@ -33,17 +33,18 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     FlowArtifact QRCodeFile = new FlowArtifact()
 
     String versionString
-    String fullVersionString
+    String versionCode
     String releaseUrl
     File releaseIcon
     Collection<String> releaseNotes = ['']
     String releaseMailFlags = 'qrCode,imageMontage'
     File rootDir = project.rootDir
 
-    Closure<URL> releaseUrlVersioned = { new URL("$releaseUrl/$fullVersionString") }
+    Closure<URL> releaseUrlVersioned = { new URL("$releaseUrl/${projectFullVersion.call()}") }
     String projectName = project.name
     Closure<String> projectNameNoWhiteSpace = { projectName?.replaceAll('\\s', '_') }
-    Closure<File> releaseDir = { new File(project.rootDir, OTA_DIR + "/${getReleaseDirName(releaseUrl)}/$fullVersionString") }
+    Closure<String> projectFullVersion = { (versionString + '_' + versionCode) }
+    Closure<File> releaseDir = { new File(project.rootDir, OTA_DIR + "/${getReleaseDirName(releaseUrl)}/${projectFullVersion.call()}") }
     String buildDate = new SimpleDateFormat("dd-MM-yyyy HH:mm zzz").format(new Date())
 
     @Inject
@@ -56,14 +57,15 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
         projectName = conf.projectName.value
         versionString = conf.versionString
+        versionCode = conf.versionCode
         buildDate = releaseConf.buildDate
-        fullVersionString = conf.fullVersionString
         releaseUrlVersioned = { releaseConf.releaseUrlVersioned }
         releaseDir = { releaseConf.releaseDir }
         releaseIcon = releaseConf.releaseIcon?.value
         releaseNotes = releaseConf.releaseNotes
         releaseMailFlags = releaseConf.releaseMailFlags
         rootDir = conf.rootDir
+        projectFullVersion = { conf.fullVersionString }
     }
 
     def engine = new SimpleTemplateEngine()
@@ -76,12 +78,11 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     @TaskAction
     void availableArtifactsInfo() {
-
         createArtifactFile mailMessageFile, 'Mail message file', 'message_file.html'
         createArtifactFile fileIndexFile, "The file index file: ${projectName}", 'file_index.html'
         createArtifactFile plainFileIndexFile, "The plain file index file: ${projectName}", 'plain_file_index.html'
         createArtifactFile otaIndexFile, "The ota index file: ${projectName}", 'index.html'
-        createArtifactFile QRCodeFile, 'QR Code', "${projectNameNoWhiteSpace()}-$fullVersionString-qrcode.png"
+        createArtifactFile QRCodeFile, 'QR Code', "${projectNameNoWhiteSpace()}-${projectFullVersion.call()}-qrcode.png"
 
         prepareOtherArtifacts()
 
@@ -95,7 +96,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     void createArtifactFile(FlowArtifact artifact, artifactName, artifactFileName) {
         artifact.name = artifactName
         artifact.url = new URL("${releaseUrlVersioned()}/$artifactFileName")
-        artifact.location = new File(releaseDir(), artifactFileName)
+        artifact.location = new File(releaseDir.call(), artifactFileName)
         artifact.location.parentFile.mkdirs()
         artifact.location.delete()
     }
@@ -112,7 +113,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     void prepareIconFile() {
         ant.copy(file: releaseIcon.exists() ? releaseIcon : new File(rootDir, releaseIcon.path),
-                tofile: new File(releaseDir(), releaseIcon.name))
+                tofile: new File(releaseDir.call(), releaseIcon.name))
     }
 
     void prepareMailMsg() {
@@ -125,7 +126,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     String fillMailSubject() {
         ResourceBundle rb = bundle('mail_message')
         String subject = rb.getString('Subject')
-        engine.createTemplate(subject).make projectName: projectName, fullVersionString: fullVersionString
+        engine.createTemplate(subject).make projectName: projectName, fullVersionString: projectFullVersion.call()
     }
 
     abstract Map mailMsgBinding()

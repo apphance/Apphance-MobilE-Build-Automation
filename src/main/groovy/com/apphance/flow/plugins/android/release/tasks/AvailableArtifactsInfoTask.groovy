@@ -2,10 +2,13 @@ package com.apphance.flow.plugins.android.release.tasks
 
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.api.ApplicationVariant
+import com.android.builder.DefaultManifestParser
+import com.android.builder.ManifestParser
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
+import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.plugins.release.tasks.AbstractAvailableArtifactsInfoTask
 import com.apphance.flow.plugins.release.tasks.ImageMontageTask
@@ -34,21 +37,26 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
         variantsConf?.variants ?: generatedVariants
     }
 
+    AppExtension getAndroidNBS() {
+        project.hasProperty('android') && project.android instanceof AppExtension ? project.android as AppExtension : null
+    }
+
     @PackageScope
     void prepareOtherArtifacts() {
 
         artifactBuilder = artifactBuilder ?: new AndroidArtifactProvider(
-                fullVersionString: { fullVersionString },
+                fullVersionString: projectFullVersion,
                 projectNameNoWhiteSpace: projectNameNoWhiteSpace,
                 releaseUrlVersioned: releaseUrlVersioned,
                 releaseDir: releaseDir
         )
 
-        if (project.hasProperty('android') && project.android instanceof AppExtension) {
+        if (androidNBS) {
             logger.lifecycle "Detected android gradle New Build System. Configuring variants taken from android configuration."
-            AppExtension android = project.android as AppExtension
 
-            android.applicationVariants.all { ApplicationVariant variant ->
+            androidNBS.defaultConfig.versionName
+
+            androidNBS.applicationVariants.all { ApplicationVariant variant ->
                 logger.lifecycle "Configuring NBS variant: $variant.name, output file: $variant.outputFile "
 
                 def flowVariant = new AndroidVariantConfiguration(variant.name)
@@ -137,5 +145,26 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
                 artifacts: artifacts,
                 rb: bundle('index')
         ]
+    }
+
+    String getVersionString() {
+        if (super.@versionString) return super.@versionString
+
+        if (androidNBS) {
+            ManifestParser manifestParser = new DefaultManifestParser()
+            return androidNBS.defaultConfig.versionName ?: manifestParser.getVersionName(androidNBS.sourceSets.main.manifest.srcFile)
+        }
+        ''
+    }
+
+    String getVersionCode() {
+        if (super.@versionCode) return super.@versionCode
+
+        if (androidNBS) {
+            def helper = new AndroidManifestHelper()
+            def versions = helper.readVersion(androidNBS.sourceSets.main.manifest.srcFile.parentFile)
+            return androidNBS.defaultConfig.versionCode ?: versions.versionCode
+        }
+        ''
     }
 }
