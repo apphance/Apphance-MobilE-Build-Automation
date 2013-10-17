@@ -81,21 +81,46 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
                     getGCCPrefixFilePaths() >> ['GradleXCode/GradleXCode-Prefix.pch']
                 },
         )
-
+        def tmpPch = new File(tmpDir, 'GradleXCode/GradleXCode-Prefix.pch')
+        new File(tmpDir, 'GradleXCode').mkdirs()
         and:
-        new AntBuilder().copy(toDir: tmpDir.absolutePath) {
-            fileset(dir: projectDir.absolutePath) {
-                include(name: 'GradleXCode/GradleXCode-Prefix.pch')
-            }
-        }
+        copy(new File(projectDir, 'GradleXCode/GradleXCode-Prefix.pch'), tmpPch)
 
         when:
         sourceEnhancer.addApphanceToPch()
 
         then:
-        def pch = new File(tmpDir, 'GradleXCode/GradleXCode-Prefix.pch')
-        pch.text.contains('#import <Apphance-Pre-Production/APHLogger.h>')
+        tmpPch.text.contains('#import <Apphance-Pre-Production/APHLogger.h>')
     }
+
+    def 'exception while adding apphance to PCH file'() {
+        given:
+        def sourceEnhancer = new IOSApphanceSourceEnhancer(
+                GroovyMock(AbstractIOSVariant) {
+                    getTmpDir() >> tmpDir
+                    getAphMode() >> new ApphanceModeProperty(value: QA)
+                },
+                GroovyMock(IOSApphancePbxEnhancer) {
+                    getGCCPrefixFilePaths() >> ['GradleXCode/GradleXCode-Prefix.pch']
+                },
+        )
+
+        def tmpPch = new File(tmpDir, 'GradleXCode/GradleXCode-Prefix.pch')
+        new File(tmpDir, 'GradleXCode').mkdirs()
+        and:
+        copy(new File(projectDir, 'GradleXCode/GradleXCode-Prefix.pch'), tmpPch)
+
+        and:
+        tmpPch.text = tmpPch.text.replace('__OBJC__', "\n__OBJC__")
+
+        when:
+        sourceEnhancer.addApphanceToPch()
+
+        then:
+        def e = thrown(IllegalStateException)
+        e.message == "Unable to add APHLogger to pch file: $tmpPch.absolutePath"
+    }
+
 
     def 'apphance init section is added'() {
         given:

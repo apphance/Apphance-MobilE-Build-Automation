@@ -14,8 +14,7 @@ import javax.inject.Inject
 import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
 import static com.apphance.flow.configuration.apphance.ApphanceMode.*
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
-import static com.google.common.base.Preconditions.checkArgument
-import static com.google.common.base.Preconditions.checkNotNull
+import static com.google.common.base.Preconditions.*
 import static groovy.io.FileType.FILES
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 import static org.gradle.api.logging.Logging.getLogger
@@ -37,9 +36,24 @@ class IOSApphanceSourceEnhancer {
     }
 
     void addApphanceToSource() {
-        replaceLogs()
         addApphanceToPch()
+        replaceLogs()
         addApphanceInit()
+    }
+
+    @PackageScope
+    void addApphanceToPch() {
+        apphancePbxEnhancer.GCCPrefixFilePaths.each {
+            def pch = new File(variant.tmpDir, it)
+            logger.info("Adding apphance to PCH file : $pch.absolutePath")
+            def old = pch.text
+            pch.text = pch.text.replaceFirst("[\\t ]*#ifdef[\\t ]+__OBJC__", "\n#ifdef __OBJC__\n#import <$apphanceFrameworkName/APHLogger.h>")
+            checkState(old != pch.text, "Unable to add APHLogger to pch file: $pch.absolutePath")
+        }
+    }
+
+    private String getApphanceFrameworkName() {
+        "Apphance-${libForMode(variant.aphMode.value).groupName.replace('p', 'P')}"
     }
 
     @PackageScope
@@ -53,19 +67,6 @@ class IOSApphanceSourceEnhancer {
                 }
             }
         }
-    }
-
-    @PackageScope
-    void addApphanceToPch() {
-        apphancePbxEnhancer.GCCPrefixFilePaths.each {
-            def pch = new File(variant.tmpDir, it)
-            logger.info("Adding apphance to PCH file : $pch.absolutePath")
-            pch.text = pch.text.replace("#ifdef __OBJC__", "#ifdef __OBJC__\n#import <$apphanceFrameworkName/APHLogger.h>")
-        }
-    }
-
-    private String getApphanceFrameworkName() {
-        "Apphance-${libForMode(variant.aphMode.value).groupName.replace('p', 'P')}"
     }
 
     @PackageScope
