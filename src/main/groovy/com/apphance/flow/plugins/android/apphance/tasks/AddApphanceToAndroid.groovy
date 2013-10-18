@@ -32,6 +32,7 @@ class AddApphanceToAndroid {
     final String apphanceAppKey
     final ApphanceMode apphanceMode
     final boolean shakeEnabled
+    String libVersion
 
     private static final String IMPORT_APPHANCE = 'com.apphance.android.Apphance'
     private static final String ON_START = 'onStart'
@@ -50,6 +51,7 @@ class AddApphanceToAndroid {
         this.apphanceAppKey = apphanceAppKey
         this.apphanceMode = apphanceMode
         this.shakeEnabled = shakeEnabled
+        this.libVersion = libVersion
 
         checkArgument variantDir.exists()
         checkNotNull apphanceAppKey
@@ -298,5 +300,19 @@ class AddApphanceToAndroid {
         file.delete()
         file << temp.text
         temp.delete()
+    }
+
+    Boolean libVerLowerThan(String compare) {
+        if (!(libVersion ==~ /\d+(\.(\d+))*/ && compare ==~ /\d+(\.(\d+))*/)) return false
+
+        def current = libVersion.split(/\./).collect { it as Integer }
+        def comp = compare.split(/\./).collect { it as Integer }
+        def max = [current.size(), comp.size()].max()
+
+        comp += [0] * (max - comp.size())
+        current += [0] * (max - current.size())
+
+        def diffIndex = (0..max).find {current[it] != comp[it]} as Integer
+        diffIndex != null && (current[diffIndex] < comp[diffIndex])
     }
 }

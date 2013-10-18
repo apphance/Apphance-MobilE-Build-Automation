@@ -8,6 +8,7 @@ import com.google.common.io.Files
 import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.io.FileUtils
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static android.Manifest.permission.*
 import static com.apphance.flow.configuration.apphance.ApphanceMode.QA
@@ -279,5 +280,28 @@ class AddApphanceToAndroidSpec extends Specification {
         then:
         !new File(variantDir, 'src/com/apphance/flowTest/android/SomeClass.java').text.contains('android.util.Log')
         new File(variantDir, 'src/com/apphance/flowTest/android/SomeClass.java').text.contains 'import com.apphance.android.Log;'
+    }
+
+    @Unroll
+    def 'test lib version #ver, #compare #result'() {
+        given:
+        addApphanceToAndroid.libVersion = ver
+
+        expect:
+        addApphanceToAndroid.libVerLowerThan(compare) == result
+
+        where:
+        ver       | compare     | result
+        '1.9.5'   | '1.9.5'     | false
+        '1.9.5'   | '1.9.6'     | true
+        '1.9'     | '1.9.6'     | true
+        '1'       | '1.9.6'     | true
+        '2'       | '1.9.6'     | false
+        '2.1'     | '1.9.6'     | false
+        '2.1.1'   | '1.9.6'     | false
+        '2.1.1'   | '1.9.6'     | false
+        '2.0-RC1' | '1.9.9.9.9' | false
+        '2.1-M2'  | '1.9.9.9.9' | false
+        '2'       | '1-RC2'     | false
     }
 }
