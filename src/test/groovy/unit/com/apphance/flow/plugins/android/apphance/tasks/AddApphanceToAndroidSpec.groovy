@@ -12,6 +12,8 @@ import spock.lang.Unroll
 
 import static android.Manifest.permission.*
 import static com.apphance.flow.configuration.apphance.ApphanceMode.QA
+import static com.apphance.flow.plugins.android.apphance.tasks.AddApphanceToAndroid.IMPORT_CONFIGURATION
+import static com.apphance.flow.plugins.android.apphance.tasks.AddApphanceToAndroid.getIMPORT_APPHANCE_MODE
 import static org.apache.commons.io.FileUtils.copyFile
 
 @Mixin([FlowUtils, TestUtils])
@@ -164,17 +166,24 @@ class AddApphanceToAndroidSpec extends Specification {
         addApphanceToAndroid.getActivity(file).name == 'TestActivityManyClasses'
     }
 
-    def 'test aphance import added'() {
+    @Unroll
+    def 'test aphance import added. #libVersion'() {
         given:
         def testActivity = tempFile << TEST_ACTIVITY.text
         def before = testActivity.readLines().findAll { it.contains('import') }.size()
+        addApphanceToAndroid.libVersion = libVersion
 
         when:
         addApphanceToAndroid.addApphanceImportTo(testActivity)
 
         then:
-        contains(testActivity, APPHANCE_IMPORT)
-        testActivity.readLines().findAll { it.contains('import') }.size() == before + 1
+        testActivity.readLines().findAll { it.contains('import') }.size() == before + additionImports.size()
+        testActivity.readLines().findAll { it.contains('import com.apphance') }*.trim().sort() == additionImports.sort()
+
+        where:
+        libVersion | additionImports
+        '1.9.5'    | [APPHANCE_IMPORT]
+        '1.9.6'    | [APPHANCE_IMPORT, "import $IMPORT_APPHANCE_MODE;", "import $IMPORT_CONFIGURATION;"]
     }
 
     def 'test apphance log'() {

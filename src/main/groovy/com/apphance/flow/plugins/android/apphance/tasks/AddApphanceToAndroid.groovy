@@ -35,8 +35,11 @@ class AddApphanceToAndroid {
     String libVersion
 
     private static final String IMPORT_APPHANCE = 'com.apphance.android.Apphance'
+    static final String IMPORT_APPHANCE_MODE = 'com.apphance.android.Apphance.Mode'
+    static final String IMPORT_CONFIGURATION = 'com.apphance.android.common.Configuration'
     private static final String ON_START = 'onStart'
     private static final String ON_STOP = 'onStop'
+    private static final String APPHANCE_LIB_WITH_CONFIGURATION_BUILDER = '1.9.6'
 
     def androidHelper = new AndroidManifestHelper()
 
@@ -181,6 +184,10 @@ class AddApphanceToAndroid {
             int firstImportLine = lines.findIndexOf { it.trim().startsWith('import') }
             assert firstImportLine >= 0
             lines.add(firstImportLine, "import $IMPORT_APPHANCE;")
+            if (!libVerLowerThan(APPHANCE_LIB_WITH_CONFIGURATION_BUILDER)) {
+                lines.add(firstImportLine, "import $IMPORT_APPHANCE_MODE;")
+                lines.add(firstImportLine, "import $IMPORT_CONFIGURATION;")
+            }
 
             file.setText lines.join('\n')
         }
@@ -312,7 +319,7 @@ class AddApphanceToAndroid {
         comp += [0] * (max - comp.size())
         current += [0] * (max - current.size())
 
-        def diffIndex = (0..max).find {current[it] != comp[it]} as Integer
+        def diffIndex = (0..max).find { current[it] != comp[it] } as Integer
         diffIndex != null && (current[diffIndex] < comp[diffIndex])
     }
 }
