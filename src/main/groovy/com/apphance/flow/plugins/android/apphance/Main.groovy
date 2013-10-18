@@ -9,26 +9,32 @@ class Main {
 
     public static void main(String[] args) {
         println "Standalone apphance adding tool"
-        if (args.size() != 2) usage("Bad number of argument. Got: ${args.size()}, should be: 2")
+        if (args.size() != 5) usage("Bad number of argument. Got: ${args.size()}, should be: 5")
         String mode = args[0]
         if (!(mode in ['prod', 'pre'])) usage('Incorrect mode. Should be one of: pre, prod')
 
         def apphanceKey = args[1]
+
+        def version = args[2]
+        if (!(version ==~ /\d+(\.(\d+))*/)) usage("Incorrect apphance version. Shound match: " + /\d+(\.(\d+))*/)
+
+        def uTestEnabled = args[3] as Boolean
+        def reportOnShakeEnabled = args[3] as Boolean
+
+        def foundManifest = false
         File currentDir = new File('.')
-        File manifest = new File(currentDir, 'AndroidManifest.xml')
-        if (!manifest.exists()) {
-            usage("It is not an Android project. Run this application inside root directory of your app")
-        }
+        currentDir.traverse { if (it.name == 'AndroidManifest.xml') foundManifest = true }
+        if (!foundManifest) usage("It is not an Android project. Run this application inside root directory of your app")
 
         println "Adding apphance in mode: $mode, key: $apphanceKey"
 
-        def apphance = new AddApphanceToAndroid(currentDir, apphanceKey, mode == 'prod' ? PROD : QA, '1.9.6', false, false)
+        def apphance = new AddApphanceToAndroid(currentDir, apphanceKey, mode == 'prod' ? PROD : QA, version, reportOnShakeEnabled, uTestEnabled)
         apphance.addApphance()
     }
 
     def static usage(String message = null) {
         if (message) println "ERROR: $message"
-        println "Usage: java -jar path-to-flow.jar [prod|pre] <APPHANCE_KEY> "
+        println "Usage: java -jar path-to-flow.jar [prod|pre] <ApphanceKey> <ApphanceVersion> <UTestEnabled> <ReportOnShakeEnabled>"
         System.exit(1)
     }
 }
