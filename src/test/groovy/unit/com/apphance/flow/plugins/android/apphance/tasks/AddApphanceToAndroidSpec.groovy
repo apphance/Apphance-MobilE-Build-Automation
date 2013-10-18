@@ -102,6 +102,8 @@ class AddApphanceToAndroidSpec extends Specification {
         given:
         File mainActivity = new File(variantDir, 'src/com/apphance/flowTest/android/TestActivity.java')
         def startSession = 'Apphance.startNewSession(this, "TestKey", Apphance.Mode.QA);'
+        addApphanceToAndroid.apphanceVersion = '1.9'
+
         expect:
         mainActivity.exists()
         !mainActivity.text.contains(startSession)
@@ -128,6 +130,47 @@ class AddApphanceToAndroidSpec extends Specification {
 
         then:
         mainActivity.text.contains startSession
+    }
+
+    def 'test startNewSession with apphance 1.9.6'() {
+        given:
+        File mainActivity = tempFile << new File('src/test/resources/com/apphance/flow/android/TestActivityWithoutOnCreate.java').text
+        addApphanceToAndroid.apphanceVersion = '1.9.6'
+
+        expect:
+        mainActivity.exists()
+        !mainActivity.text.contains("com.apphance.android.common.Configuration configuration = new com.apphance.android.common.Configuration.Builder(this)")
+
+        when:
+        addApphanceToAndroid.addApphanceInitVer196(mainActivity, "TestKey", QA, false, true)
+        println mainActivity.text
+
+        then:
+        mainActivity.text.contains "public void onCreate(Bundle savedInstanceState) {"
+        mainActivity.text.contains "super.onCreate(savedInstanceState);"
+        mainActivity.text.contains "com.apphance.android.common.Configuration configuration = new com.apphance.android.common.Configuration.Builder(this)"
+        mainActivity.text.contains ".withMode(Apphance.Mode.QA)"
+        mainActivity.text.contains "Apphance.startNewSession(this, configuration);"
+    }
+
+    @Unroll
+    def 'test use appropriate init method according to lib version. #version'() {
+        given:
+        def addApphance = GroovySpy(AddApphanceToAndroid)
+        addApphance.apphanceVersion = ver
+        def file = tempFile
+
+        when:
+        addApphance.addStartNewSession(file)
+
+        then:
+        1 * addApphance."$method"(* _)
+
+        where:
+        ver     | method
+        '1.9'   | 'addApphanceInit'
+        '1.9.6' | 'addApphanceInitVer196'
+        '2.0'   | 'addApphanceInitVer196'
     }
 
     def 'test addStartStopInvocations'() {
@@ -167,23 +210,21 @@ class AddApphanceToAndroidSpec extends Specification {
     }
 
     @Unroll
-    def 'test aphance import added. #libVersion'() {
+    def 'test apphance import added. #libVersion'() {
         given:
         def testActivity = tempFile << TEST_ACTIVITY.text
         def before = testActivity.readLines().findAll { it.contains('import') }.size()
-        addApphanceToAndroid.libVersion = libVersion
+        addApphanceToAndroid.apphanceVersion = apphanceVersion
 
         when:
         addApphanceToAndroid.addApphanceImportTo(testActivity)
 
         then:
-        testActivity.readLines().findAll { it.contains('import') }.size() == before + additionImports.size()
-        testActivity.readLines().findAll { it.contains('import com.apphance') }*.trim().sort() == additionImports.sort()
+        testActivity.readLines().findAll { it.contains('import') }.size() == before + 1
+        testActivity.readLines().findAll { it.contains('import com.apphance') }*.trim().sort() == [APPHANCE_IMPORT].sort()
 
         where:
-        libVersion | additionImports
-        '1.9.5'    | [APPHANCE_IMPORT]
-        '1.9.6'    | [APPHANCE_IMPORT, "import $IMPORT_APPHANCE_MODE;", "import $IMPORT_CONFIGURATION;"]
+        apphanceVersion << ['1.9.5', '1.9.6']
     }
 
     def 'test apphance log'() {
@@ -226,7 +267,7 @@ class AddApphanceToAndroidSpec extends Specification {
         1 * addApphance.addProblemActivityToManifest() >> null
         1 * addApphance.addPermissions() >> null
         1 * addApphance.addApphanceLib()
-        1 * addApphance.downloadZipAndUnzip(*_) >> null
+        1 * addApphance.downloadZipAndUnzip(* _) >> null
         1 * addApphance.addApphanceLibraryReferenceToProjectProperties() >> null
     }
 
@@ -294,7 +335,7 @@ class AddApphanceToAndroidSpec extends Specification {
     @Unroll
     def 'test lib version #ver, #compare #result'() {
         given:
-        addApphanceToAndroid.libVersion = ver
+        addApphanceToAndroid.apphanceVersion = ver
 
         expect:
         addApphanceToAndroid.libVerLowerThan(compare) == result
