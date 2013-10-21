@@ -12,8 +12,6 @@ import spock.lang.Unroll
 
 import static android.Manifest.permission.*
 import static com.apphance.flow.configuration.apphance.ApphanceMode.QA
-import static com.apphance.flow.plugins.android.apphance.tasks.AddApphanceToAndroid.IMPORT_CONFIGURATION
-import static com.apphance.flow.plugins.android.apphance.tasks.AddApphanceToAndroid.getIMPORT_APPHANCE_MODE
 import static org.apache.commons.io.FileUtils.copyFile
 
 @Mixin([FlowUtils, TestUtils])
@@ -132,6 +130,7 @@ class AddApphanceToAndroidSpec extends Specification {
         mainActivity.text.contains startSession
     }
 
+    @Unroll
     def 'test startNewSession with apphance 1.9.6'() {
         given:
         File mainActivity = tempFile << new File('src/test/resources/com/apphance/flow/android/TestActivityWithoutOnCreate.java').text
@@ -142,7 +141,7 @@ class AddApphanceToAndroidSpec extends Specification {
         !mainActivity.text.contains("com.apphance.android.common.Configuration configuration = new com.apphance.android.common.Configuration.Builder(this)")
 
         when:
-        addApphanceToAndroid.addApphanceInitVer196(mainActivity, "TestKey", QA, false, true)
+        addApphanceToAndroid.addApphanceInitVer196(mainActivity, "TestKey", QA, false, true, defaultUser, screenshotFromGallery)
         println mainActivity.text
 
         then:
@@ -151,6 +150,15 @@ class AddApphanceToAndroidSpec extends Specification {
         mainActivity.text.contains "com.apphance.android.common.Configuration configuration = new com.apphance.android.common.Configuration.Builder(this)"
         mainActivity.text.contains ".withMode(Apphance.Mode.QA)"
         mainActivity.text.contains "Apphance.startNewSession(this, configuration);"
+        mainActivity.text.split('\n').toList()*.trim().containsAll lines
+        !dontExists.any { String it -> mainActivity.text.contains it }
+
+        where:
+        defaultUser        | screenshotFromGallery | lines                                                                                | dontExists
+        'user@example.com' | true                  | ['.withDefaultUser("user@example.com")', '.withScreenshotFromGalleryEnabled(true)']  | []
+        'user@example.com' | false                 | ['.withDefaultUser("user@example.com")', '.withScreenshotFromGalleryEnabled(false)'] | []
+        null               | false                 | ['.withScreenshotFromGalleryEnabled(false)']                                         | ['withDefaultUser']
+        null               | true                  | ['.withScreenshotFromGalleryEnabled(true)']                                          | ['withDefaultUser']
     }
 
     @Unroll
@@ -252,7 +260,7 @@ class AddApphanceToAndroidSpec extends Specification {
 
     def 'test adding problem activity after addStartStopInvocations'() {
         given:
-        def addApphance = Spy(AddApphanceToAndroid, constructorArgs: [temporaryDir, 'KEY', QA, '1.9', false])
+        def addApphance = Spy(AddApphanceToAndroid, constructorArgs: [temporaryDir, 'KEY', QA, '1.9', false, null, false])
 
         when:
         addApphance.addApphance()

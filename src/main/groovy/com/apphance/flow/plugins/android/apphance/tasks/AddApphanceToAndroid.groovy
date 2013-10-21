@@ -33,6 +33,8 @@ class AddApphanceToAndroid {
     final ApphanceMode apphanceMode
     final boolean shakeEnabled
     final boolean uTestEnabled
+    final String defaultUser
+    final boolean screenshotFromGallery
 
     private static final String IMPORT_APPHANCE = 'com.apphance.android.Apphance'
     static final String IMPORT_CONFIGURATION = 'com.apphance.android.common.Configuration'
@@ -46,7 +48,7 @@ class AddApphanceToAndroid {
     }
 
     AddApphanceToAndroid(File variantDir, String apphanceAppKey, ApphanceMode apphanceMode, String libVersion, reportOnShakeEnabled = false,
-                         boolean uTestEnabled) {
+                         boolean uTestEnabled, String defaultUser, boolean screenshotFromGallery) {
         apphanceVersion = libVersion ?: '1.9'
         APPHANCE_PROD_URL = "${ANDROID_APPHANCE_REPO}apphance-prod/${apphanceVersion}/apphance-prod-${apphanceVersion}.jar"
         APPHANCE_PREPROD_URL = "${ANDROID_APPHANCE_REPO}apphance-preprod/${apphanceVersion}/apphance-preprod-${apphanceVersion}.zip"
@@ -55,6 +57,8 @@ class AddApphanceToAndroid {
         this.apphanceMode = apphanceMode
         this.shakeEnabled = reportOnShakeEnabled
         this.uTestEnabled = uTestEnabled
+        this.screenshotFromGallery = screenshotFromGallery
+        this.defaultUser = defaultUser
 
         checkArgument variantDir.exists()
         checkNotNull apphanceAppKey
@@ -64,7 +68,8 @@ class AddApphanceToAndroid {
 
     AddApphanceToAndroid(AndroidVariantConfiguration androidVariantConf) {
         this(androidVariantConf.tmpDir, androidVariantConf.aphAppKey.value, androidVariantConf.aphMode.value,
-                androidVariantConf.aphLib.value, androidVariantConf.aphReportOnShake.value, androidVariantConf.aphWithUTest.value)
+                androidVariantConf.aphLib.value, androidVariantConf.aphReportOnShake.value, androidVariantConf.aphWithUTest.value,
+                androidVariantConf.aphDefaultUser.value, androidVariantConf.aphWithScreenShotsFromGallery.value)
     }
 
     public void addApphance() {
@@ -139,7 +144,7 @@ class AddApphanceToAndroid {
         if (libVerLowerThan(APPHANCE_LIB_WITH_CONFIGURATION_BUILDER)) {
             addApphanceInit(file, apphanceAppKey, apphanceMode)
         } else {
-            addApphanceInitVer196(file, apphanceAppKey, apphanceMode, shakeEnabled, uTestEnabled)
+            addApphanceInitVer196(file, apphanceAppKey, apphanceMode, shakeEnabled, uTestEnabled, defaultUser, screenshotFromGallery)
         }
     }
 
@@ -246,7 +251,8 @@ class AddApphanceToAndroid {
         }
     }
 
-    def addApphanceInitVer196(File mainFile, String appKey, ApphanceMode apphanceMode, boolean reportOnShakeEnabled, boolean uTestEnabled) {
+    def addApphanceInitVer196(File mainFile, String appKey, ApphanceMode apphanceMode, boolean reportOnShakeEnabled, boolean uTestEnabled,
+                              String defaultUser = null, boolean screenshotFromGallery = false) {
         logger.info "Adding apphance init to file: $mainFile.absolutePath"
         logger.info "Using new Configuration builder"
 
@@ -256,6 +262,8 @@ class AddApphanceToAndroid {
                 |   .withMode(${mapApphanceMode(apphanceMode)})
                 |   .withUTestEnabled($uTestEnabled)
                 |   .withReportOnShakeEnabled($reportOnShakeEnabled)
+                |   .withScreenshotFromGalleryEnabled($screenshotFromGallery)
+                |   ${defaultUser ? ".withDefaultUser(\"$defaultUser\")" : ''}
                 |   .build();
                 |
                 |Apphance.startNewSession(this, configuration);
