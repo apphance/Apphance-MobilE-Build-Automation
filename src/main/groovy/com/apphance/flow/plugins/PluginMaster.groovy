@@ -71,8 +71,6 @@ class PluginMaster {
             logger.lifecycle "'docMode' enabled - generating documentation"
 
         def installPlugin = {
-            logger.info("Applying plugin $it")
-
             Plugin<Project> plugin = (Plugin<Project>) injector.getInstance(it)
 
             Set<Task> tasksBefore = null

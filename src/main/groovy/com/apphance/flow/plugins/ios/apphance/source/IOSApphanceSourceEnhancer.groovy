@@ -16,12 +16,14 @@ import static com.apphance.flow.configuration.apphance.ApphanceMode.*
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static com.google.common.base.Preconditions.*
 import static groovy.io.FileType.FILES
+import static java.util.regex.Pattern.compile
 import static org.apache.commons.lang.StringUtils.isNotEmpty
 import static org.gradle.api.logging.Logging.getLogger
 
 class IOSApphanceSourceEnhancer {
 
-    private final static DELEGATE_PATTERN = /.*<.*UIApplicationDelegate.*>.*/
+    private final static DELEGATE_PATTERN = compile(".*<.*UIApplicationDelegate.*>.*")
+
     private logger = getLogger(getClass())
 
     @Inject AntBuilder ant
@@ -84,9 +86,12 @@ class IOSApphanceSourceEnhancer {
     @PackageScope
     String findAppDelegateFile() {
         def appFilename = null
-        variant.tmpDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL]) {
-            if (it.name.endsWith('.h') && it.readLines().find { it =~ DELEGATE_PATTERN }) {
-                appFilename = it.canonicalPath
+        variant.tmpDir.traverse([
+                type: FILES,
+                maxDepth: MAX_RECURSION_LEVEL,
+                excludeFilter: ~/.*Pods.*/]) { f ->
+            if (f.name.endsWith('.h') && f.readLines().find { l -> DELEGATE_PATTERN.matcher(l).matches() }) {
+                appFilename = f.canonicalPath
             }
         }
         appFilename

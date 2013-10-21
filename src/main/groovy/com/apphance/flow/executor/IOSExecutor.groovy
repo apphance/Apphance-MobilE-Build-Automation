@@ -7,15 +7,12 @@ import com.apphance.flow.plugins.ios.parsers.XCOutputParser
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
-import java.util.regex.Pattern
 
 import static org.gradle.api.logging.Logging.getLogger
 
 class IOSExecutor {
 
     private logger = getLogger(getClass())
-    private final VERSION_PATTERN = Pattern.compile('(\\d+\\.)+\\d+')
-
 
     @Inject IOSConfiguration conf
     @Inject XCOutputParser parser

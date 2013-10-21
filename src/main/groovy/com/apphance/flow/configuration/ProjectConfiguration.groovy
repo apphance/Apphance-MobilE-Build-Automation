@@ -68,6 +68,7 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
                 FLOW_PROP_FILENAME,
                 BUILD_DIR,
                 '.hgcheck',
+                '.hg',
                 '.git',
                 '.gradle',
                 'userHome'
