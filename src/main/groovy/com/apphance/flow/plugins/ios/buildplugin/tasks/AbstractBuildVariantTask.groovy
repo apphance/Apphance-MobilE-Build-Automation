@@ -4,7 +4,6 @@ import com.apphance.flow.configuration.ios.IOSBuildMode
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
-import com.apphance.flow.plugins.ios.cocoapods.PodLocator
 import com.apphance.flow.plugins.ios.release.artifact.info.IOSArtifactProvider
 import com.apphance.flow.util.FlowUtils
 import com.google.common.base.Preconditions
@@ -24,7 +23,6 @@ abstract class AbstractBuildVariantTask extends DefaultTask {
     @Inject IOSConfiguration conf
     @Inject IOSExecutor iosExecutor
     @Inject IOSArtifactProvider artifactProvider
-    @Inject PodLocator podLocator
     @Inject FlowUtils fu
 
     AbstractIOSVariant variant
@@ -32,8 +30,6 @@ abstract class AbstractBuildVariantTask extends DefaultTask {
     @TaskAction
     void build() {
         validate()
-        def pod = podLocator.findPodfile(variant.tmpDir)
-        if (pod) iosExecutor.podInstall(pod.parentFile)
     }
 
     protected List<String> getArchCmd() {

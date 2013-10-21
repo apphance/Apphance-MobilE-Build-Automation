@@ -158,28 +158,4 @@ class IOSExecutor {
             ''
         }
     }()
-
-    @Lazy
-    String podVersion = {
-        try {
-            def output = executor.executeCommand(new Command(
-                    runDir: conf.rootDir,
-                    cmd: ['gem', 'list', '--local']
-            ))
-            def line = output.find { it.matches('cocoapods \\((\\d+\\.)+\\d+\\)') }
-            line = line ? line.trim() : ''
-            def matcher = VERSION_PATTERN.matcher(line)
-            matcher.find() ? matcher.group(0) : ''
-        } catch (Exception e) {
-            logger.error("Error while getting pod version: {}", e.message)
-            ''
-        }
-    }()
-
-    def podInstall(File dir) {
-        executor.executeCommand(new Command(
-                runDir: dir,
-                cmd: ['pod', 'install']
-        ))
-    }
 }
