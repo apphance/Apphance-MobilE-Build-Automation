@@ -104,7 +104,7 @@ class ImageMontageTask extends DefaultTask {
 
     @PackageScope
     File outputMontageFile() {
-        def imageMontageFile = new File(releaseDir(), "${projectNameNoWhiteSpace()}-${fullVersionString.call()}-image-montage.png")
+        def imageMontageFile = new File(releaseDir.call(), "${projectNameNoWhiteSpace()}-${fullVersionString.call()}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
         imageMontageFile
