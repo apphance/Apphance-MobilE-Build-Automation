@@ -22,6 +22,8 @@ import java.util.List
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
+import static com.apphance.flow.util.NBSModelUtil.getVersionCode
+import static com.apphance.flow.util.NBSModelUtil.getVersionName
 import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
@@ -37,7 +39,7 @@ class ImageMontageTask extends DefaultTask {
     @Inject ProjectConfiguration conf
     @Inject ReleaseConfiguration releaseConf
 
-    String fullVersionString
+    Closure<String> fullVersionString = { getVersionName(project) + '_' + getVersionCode(project) }
     String releaseUrl
 
     String projectName = project.name
@@ -47,7 +49,7 @@ class ImageMontageTask extends DefaultTask {
     File otaDir = project.file(OTA_DIR)
 
     Closure<File> releaseDir = {
-        new File(otaDir, "${ReleaseConfiguration.getReleaseDirName releaseUrl}/$fullVersionString")
+        new File(otaDir, "${ReleaseConfiguration.getReleaseDirName releaseUrl}/${fullVersionString.call()}")
     }
     FlowArtifact imageMontageArtifact = new FlowArtifact()
     Closure<String> projectNameNoWhiteSpace = { projectName?.replaceAll('\\s', '_') }
@@ -55,7 +57,7 @@ class ImageMontageTask extends DefaultTask {
 
     @Inject
     void init() {
-        fullVersionString = conf.fullVersionString
+        fullVersionString = { conf.fullVersionString }
         projectName = conf.projectName.value
         rootDir = conf.rootDir
         releaseConf.imageMontageFile = imageMontageArtifact
@@ -76,11 +78,11 @@ class ImageMontageTask extends DefaultTask {
         logger.lifecycle "Found ${filesToMontage.size()} files"
         File imageMontageFile = outputMontageFile()
         createMontage(imageMontageFile, filesToMontage)
-        addDescription(imageMontageFile, "${projectName} Version: ${fullVersionString} Generated: ${buildDate}")
+        addDescription(imageMontageFile, "${projectName} Version: ${fullVersionString.call()} Generated: ${buildDate}")
 
         imageMontageArtifact.with {
             name = 'Image Montage'
-            url = new URL("${releaseUrl.toURL()}/$fullVersionString/$imageMontageFile.name")
+            url = new URL("${releaseUrl.toURL()}/${fullVersionString.call()}/$imageMontageFile.name")
             location = imageMontageFile
         }
 
@@ -102,7 +104,7 @@ class ImageMontageTask extends DefaultTask {
 
     @PackageScope
     File outputMontageFile() {
-        def imageMontageFile = new File(releaseDir(), "${projectNameNoWhiteSpace()}-${fullVersionString}-image-montage.png")
+        def imageMontageFile = new File(releaseDir(), "${projectNameNoWhiteSpace()}-${fullVersionString.call()}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
         imageMontageFile

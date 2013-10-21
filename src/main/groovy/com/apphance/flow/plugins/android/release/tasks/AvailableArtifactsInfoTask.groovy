@@ -2,13 +2,10 @@ package com.apphance.flow.plugins.android.release.tasks
 
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.api.ApplicationVariant
-import com.android.builder.DefaultManifestParser
-import com.android.builder.ManifestParser
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
-import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.plugins.release.tasks.AbstractAvailableArtifactsInfoTask
 import com.apphance.flow.plugins.release.tasks.ImageMontageTask
@@ -17,6 +14,7 @@ import groovy.transform.PackageScope
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
+import static com.apphance.flow.util.NBSModelUtil.*
 import static com.apphance.flow.util.file.FileManager.getHumanReadableSize
 
 class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
@@ -37,9 +35,10 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
         variantsConf?.variants ?: generatedVariants
     }
 
-    AppExtension getAndroidNBS() {
-        project.hasProperty('android') && project.android instanceof AppExtension ? project.android as AppExtension : null
-    }
+    @Lazy
+    AppExtension androidNBS = {
+        getAndroidNBS(project)
+    }()
 
     @PackageScope
     void prepareOtherArtifacts() {
@@ -53,8 +52,6 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
 
         if (androidNBS) {
             logger.lifecycle "Detected android gradle New Build System. Configuring variants taken from android configuration."
-
-            androidNBS.defaultConfig.versionName
 
             androidNBS.applicationVariants.all { ApplicationVariant variant ->
                 logger.lifecycle "Configuring NBS variant: $variant.name, output file: $variant.outputFile "
@@ -148,23 +145,10 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     }
 
     String getVersionString() {
-        if (super.@versionString) return super.@versionString
-
-        if (androidNBS) {
-            ManifestParser manifestParser = new DefaultManifestParser()
-            return androidNBS.defaultConfig.versionName ?: manifestParser.getVersionName(androidNBS.sourceSets.main.manifest.srcFile)
-        }
-        ''
+        super.@versionString ?: getVersionName(project)
     }
 
     String getVersionCode() {
-        if (super.@versionCode) return super.@versionCode
-
-        if (androidNBS) {
-            def helper = new AndroidManifestHelper()
-            def versions = helper.readVersion(androidNBS.sourceSets.main.manifest.srcFile.parentFile)
-            return androidNBS.defaultConfig.versionCode ?: versions.versionCode
-        }
-        ''
+        super.@versionCode ?: getVersionCode(project)
     }
 }
