@@ -70,11 +70,13 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     def engine = new SimpleTemplateEngine()
 
-    @Lazy Map basicBinding = [
-            title: projectName,
-            version: versionString,
-            currentDate: buildDate
-    ]
+    @Lazy Map basicBinding = {
+        [
+                title: projectName,
+                version: versionString,
+                currentDate: buildDate
+        ]
+    }()
 
     @TaskAction
     void availableArtifactsInfo() {
@@ -82,7 +84,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
         createArtifactFile fileIndexFile, "The file index file: ${projectName}", 'file_index.html'
         createArtifactFile plainFileIndexFile, "The plain file index file: ${projectName}", 'plain_file_index.html'
         createArtifactFile otaIndexFile, "The ota index file: ${projectName}", 'index.html'
-        createArtifactFile QRCodeFile, 'QR Code', "${projectNameNoWhiteSpace()}-${projectFullVersion.call()}-qrcode.png"
+        createArtifactFile QRCodeFile, 'QR Code', "${projectNameNoWhiteSpace.call()}-${projectFullVersion.call()}-qrcode.png"
 
         prepareOtherArtifacts()
 
@@ -95,7 +97,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     void createArtifactFile(FlowArtifact artifact, artifactName, artifactFileName) {
         artifact.name = artifactName
-        artifact.url = new URL("${releaseUrlVersioned()}/$artifactFileName")
+        artifact.url = new URL("${releaseUrlVersioned.call()}/$artifactFileName")
         artifact.location = new File(releaseDir.call(), artifactFileName)
         artifact.location.parentFile.mkdirs()
         artifact.location.delete()
@@ -162,5 +164,9 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     void templateToFile(File f, Writable tmpl) {
         f.write(tmpl.toString(), 'UTF-8')
+    }
+
+    void setReleaseNotes(String releaseNotes) {
+        this.releaseNotes = [releaseNotes]
     }
 }
