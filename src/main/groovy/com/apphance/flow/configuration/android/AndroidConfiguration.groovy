@@ -9,6 +9,7 @@ import com.google.inject.Singleton
 
 import javax.inject.Inject
 
+import static com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration.VARIANTS_DIR
 import static com.apphance.flow.detection.project.ProjectType.ANDROID
 import static com.google.common.base.Strings.isNullOrEmpty
 import static java.text.MessageFormat.format
@@ -76,7 +77,7 @@ class AndroidConfiguration extends ProjectConfiguration {
         androidExecutor.targets
     }
 
-    Collection<String> sourceExcludes = super.sourceExcludes + ['**/*.class', '**/bin/**']
+    Collection<String> sourceExcludes = super.sourceExcludes + ['*class', 'bin', VARIANTS_DIR]
 
     @Lazy
     Properties androidProperties = {

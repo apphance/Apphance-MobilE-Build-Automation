@@ -3,6 +3,7 @@ package com.apphance.flow.configuration.ios.variants
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
+import com.apphance.flow.configuration.variants.VariantsConfiguration
 import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
 import com.apphance.flow.plugins.ios.workspace.XCWorkspaceLocator
 import com.apphance.flow.util.FlowUtils
@@ -19,7 +20,7 @@ import static java.text.MessageFormat.format
  */
 @Singleton
 @Mixin(FlowUtils)
-class IOSVariantsConfiguration extends AbstractConfiguration {
+class IOSVariantsConfiguration extends AbstractConfiguration implements VariantsConfiguration {
 
     String configurationName = 'iOS Variants Configuration'
 
@@ -86,7 +87,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         variantsInternal()
     }
 
-    Collection<? extends AbstractIOSVariant> getVariants() {
+    List<? extends AbstractIOSVariant> getVariants() {
         variantsInternal().findAll { it.isEnabled() }
     }
 

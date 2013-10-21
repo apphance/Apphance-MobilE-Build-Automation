@@ -2,10 +2,9 @@ package com.apphance.flow.plugins.android.buildplugin
 
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
-import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.android.buildplugin.tasks.SingleVariantTask
 import com.apphance.flow.plugins.android.buildplugin.tasks.UpdateProjectTask
-import com.apphance.flow.plugins.project.tasks.CleanFlowTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -40,9 +39,6 @@ class AndroidPlugin implements Plugin<Project> {
 
             project.task(UpdateProjectTask.NAME,
                     type: UpdateProjectTask)
-
-            project.task(CopySourcesTask.NAME,
-                    type: CopySourcesTask).mustRunAfter(CleanFlowTask.NAME)
 
             project.task(BUILD_ALL_DEBUG_TASK_NAME,
                     group: FLOW_BUILD,

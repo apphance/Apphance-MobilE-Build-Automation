@@ -4,9 +4,9 @@ import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
-import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.android.buildplugin.tasks.UpdateProjectTask
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import org.gradle.api.plugins.JavaPlugin
 import spock.lang.Specification
 
@@ -24,6 +24,7 @@ class AndroidPluginSpec extends Specification {
 
         and:
         project.task(CleanFlowTask.NAME)
+        project.task(CopySourcesTask.NAME)
 
         and:
         def ap = new AndroidPlugin()
@@ -42,7 +43,6 @@ class AndroidPluginSpec extends Specification {
         ap.apply(project)
 
         then:
-        project.tasks[CopySourcesTask.NAME].group == FLOW_BUILD.name()
         project.tasks[UpdateProjectTask.NAME].group == FLOW_BUILD.name()
         project.tasks[BUILD_ALL_TASK_NAME].group == FLOW_BUILD.name()
         project.tasks[BUILD_ALL_DEBUG_TASK_NAME].group == FLOW_BUILD.name()
@@ -81,6 +81,7 @@ class AndroidPluginSpec extends Specification {
 
         and:
         project.task(CleanFlowTask.NAME)
+        project.task(CopySourcesTask.NAME)
 
         and:
         def ap = new AndroidPlugin()
@@ -102,7 +103,6 @@ class AndroidPluginSpec extends Specification {
         ap.apply(project)
 
         then:
-        project.tasks[CopySourcesTask.NAME].group == FLOW_BUILD.name()
         project.tasks[UpdateProjectTask.NAME].group == FLOW_BUILD.name()
 
         and:

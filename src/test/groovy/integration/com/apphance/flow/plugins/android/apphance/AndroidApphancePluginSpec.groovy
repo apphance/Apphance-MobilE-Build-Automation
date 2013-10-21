@@ -5,7 +5,7 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantsConfigura
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceMode
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
-import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.*

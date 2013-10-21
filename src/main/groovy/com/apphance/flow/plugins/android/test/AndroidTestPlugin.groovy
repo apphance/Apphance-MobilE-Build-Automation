@@ -3,8 +3,8 @@ package com.apphance.flow.plugins.android.test
 import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
-import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.android.test.tasks.RunRobolectricTestsTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

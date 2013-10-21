@@ -2,7 +2,7 @@ package com.apphance.flow.plugins.ios.test
 
 import com.apphance.flow.configuration.ios.IOSTestConfiguration
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
-import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import spock.lang.Specification
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST

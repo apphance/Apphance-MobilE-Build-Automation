@@ -1,15 +1,20 @@
-package com.apphance.flow.plugins.ios.buildplugin.tasks
+package com.apphance.flow.plugins.project.tasks
 
 import com.apphance.flow.configuration.ios.IOSConfiguration
-import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
+import com.apphance.flow.executor.command.CommandExecutor
+import com.apphance.flow.executor.command.CommandLogFilesGenerator
+import com.apphance.flow.executor.linker.FileLinker
 import com.google.common.io.Files
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 import static com.apphance.flow.configuration.ios.IOSBuildMode.SIMULATOR
+import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.ERR
+import static com.apphance.flow.executor.command.CommandLogFilesGenerator.LogFile.STD
+import static java.io.File.createTempFile
 import static org.gradle.testfixtures.ProjectBuilder.builder
 
 class CopySourcesTaskSpec extends Specification {
@@ -34,20 +39,24 @@ class CopySourcesTaskSpec extends Specification {
                 })
         ]
 
-        and:
-        def conf = GroovySpy(IOSConfiguration)
-        conf.project = p
-        conf.sourceExcludes >> []
+        def fileLinker = Mock(FileLinker) {
+            fileLink(_) >> ''
+        }
+        def logFiles = [(STD): createTempFile('tmp', 'file-out'), (ERR): createTempFile('tmp', 'file-err')]
+        def logFileGenerator = Mock(CommandLogFilesGenerator) {
+            commandLogFiles() >> logFiles
+        }
 
-        and:
-        def releaseConf = GroovySpy(IOSReleaseConfiguration)
-        releaseConf.getOtaDir() >> p.file('flow-ota')
+        def executor = new CommandExecutor(fileLinker, logFileGenerator)
+
+        def conf = new IOSConfiguration()
+        conf.project = p
 
         and:
         def task = p.task(CopySourcesTask.NAME, type: CopySourcesTask) as CopySourcesTask
         task.conf = conf
-        task.releaseConf = releaseConf
         task.variantsConf = variantsConf
+        task.executor = executor
 
         when:
         task.copySources()
@@ -58,7 +67,6 @@ class CopySourcesTaskSpec extends Specification {
         v1dir.isDirectory()
         v1dir.list().size() > 0
         v1dir.listFiles().contains(new File(v1dir, 'GradleXCode'))
-        !(new File(v1dir, 'log').exists())
         !(new File(v1dir, 'flow-log').exists())
         !(new File(v1dir, 'flow-ota').exists())
         !(new File(v1dir, 'flow-tmp').exists())
@@ -67,7 +75,6 @@ class CopySourcesTaskSpec extends Specification {
         v2dir.isDirectory()
         v2dir.list().size() > 0
         v2dir.listFiles().contains(new File(v2dir, 'GradleXCode'))
-        !(new File(v2dir, 'log').exists())
         !(new File(v2dir, 'flow-log').exists())
         !(new File(v2dir, 'flow-ota').exists())
         !(new File(v2dir, 'flow-tmp').exists())

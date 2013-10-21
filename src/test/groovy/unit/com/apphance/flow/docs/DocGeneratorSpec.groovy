@@ -23,7 +23,7 @@ class DocGeneratorSpec extends Specification {
 
         reference.tasks*.name().sort() == ['AbstractAvailableArtifactsInfoTask', 'AbstractBuildVariantTask', 'AbstractUpdateVersionTask',
                 'AvailableArtifactsInfoTask', 'AvailableArtifactsInfoTask', 'BuildSourcesZipTask', 'CPDTask', 'CleanFlowTask', 'CopyMobileProvisionTask',
-                'CopySourcesTask', 'CopySourcesTask', 'DeviceVariantTask', 'FrameworkVariantTask', 'IOSApphanceUploadTask', 'IOSTestTask', 'ImageMontageTask',
+                'CopySourcesTask', 'DeviceVariantTask', 'FrameworkVariantTask', 'IOSApphanceUploadTask', 'IOSTestTask', 'ImageMontageTask',
                 'LintTask', 'PrepareSetupTask', 'RunRobolectricTestsTask', 'SendMailMessageTask', 'SimulatorVariantTask', 'SingleVariantTask',
                 'UnlockKeyChainTask', 'UpdateProjectTask', 'UpdateVersionTask', 'UpdateVersionTask', 'UploadAndroidArtifactTask']
     }

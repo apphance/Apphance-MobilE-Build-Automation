@@ -9,7 +9,6 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
-import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 
 abstract class ProjectConfiguration extends AbstractConfiguration {
 
@@ -63,17 +62,15 @@ abstract class ProjectConfiguration extends AbstractConfiguration {
 
     Collection<String> getSourceExcludes() {
         [
-                "**/${BUILD_DIR}/**/*",
-                "**/${OTA_DIR}/**/*",
-                "**/${TMP_DIR}/**/*",
-                '**/buildSrc/build/**',
-                '**/build.gradle',
-                "**/gradle.properties",
-                "**/${FLOW_PROP_FILENAME}",
-                '**/build/**',
-                "**/${LOG_DIR}/**/*",
-                '.hgcheck/**',
-                '**/.gradle/**',
+                'flow-*',
+                'buildSrc',
+                'build.gradle',
+                FLOW_PROP_FILENAME,
+                BUILD_DIR,
+                '.hgcheck',
+                '.git',
+                '.gradle',
+                'userHome'
         ]
     }
 }

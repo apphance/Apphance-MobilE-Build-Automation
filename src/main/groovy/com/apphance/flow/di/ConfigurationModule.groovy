@@ -17,6 +17,7 @@ import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.reader.GradlePropertiesPersister
 import com.apphance.flow.configuration.reader.PropertyPersister
 import com.apphance.flow.configuration.release.ReleaseConfiguration
+import com.apphance.flow.configuration.variants.VariantsConfiguration
 import com.apphance.flow.detection.project.ProjectTypeDetector
 import com.google.inject.AbstractModule
 import com.google.inject.assistedinject.FactoryModuleBuilder
@@ -47,17 +48,6 @@ class ConfigurationModule extends AbstractModule {
             ],
     ]
 
-    def interfaces = [
-            (ANDROID): [
-                    (ProjectConfiguration): AndroidConfiguration,
-                    (ReleaseConfiguration): AndroidReleaseConfiguration
-            ],
-            (IOS): [
-                    (ProjectConfiguration): IOSConfiguration,
-                    (ReleaseConfiguration): IOSReleaseConfiguration
-            ],
-    ]
-
     def variantFactories = [
             (ANDROID): [
                     new FactoryModuleBuilder().build(AndroidVariantFactory)
@@ -71,6 +61,19 @@ class ConfigurationModule extends AbstractModule {
 
     @PackageScope
     ProjectTypeDetector typeDetector = new ProjectTypeDetector()
+
+    def interfaces = [
+            (ANDROID): [
+                    (ProjectConfiguration): AndroidConfiguration,
+                    (ReleaseConfiguration): AndroidReleaseConfiguration,
+                    (VariantsConfiguration): AndroidVariantsConfiguration
+            ],
+            (IOS): [
+                    (ProjectConfiguration): IOSConfiguration,
+                    (ReleaseConfiguration): IOSReleaseConfiguration,
+                    (VariantsConfiguration): IOSVariantsConfiguration
+            ],
+    ]
 
     ConfigurationModule(Project project) {
         this.project = project

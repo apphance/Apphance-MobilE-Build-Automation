@@ -74,7 +74,7 @@ class IOSConfiguration extends ProjectConfiguration {
     }
 
     @Lazy
-    Collection<String> sourceExcludes = { super.sourceExcludes + ["**/xcuserdata/**"] }()
+    Collection<String> sourceExcludes = { super.sourceExcludes + ['xcuserdata'] }()
 
     @Override
     boolean isEnabled() {

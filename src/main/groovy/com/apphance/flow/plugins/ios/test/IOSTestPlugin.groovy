@@ -1,8 +1,8 @@
 package com.apphance.flow.plugins.ios.test
 
 import com.apphance.flow.configuration.ios.IOSTestConfiguration
-import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.ios.test.tasks.IOSTestTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

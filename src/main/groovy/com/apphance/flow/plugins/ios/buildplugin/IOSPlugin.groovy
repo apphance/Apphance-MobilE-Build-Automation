@@ -7,6 +7,7 @@ import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.buildplugin.tasks.*
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -76,9 +77,6 @@ class IOSPlugin implements Plugin<Project> {
             project.tasks.findByName(CleanFlowTask.NAME) << {
                 executor.clean()
             }
-
-            project.task(CopySourcesTask.NAME,
-                    type: CopySourcesTask).mustRunAfter(CleanFlowTask.NAME)
 
             project.task(CopyMobileProvisionTask.NAME,
                     type: CopyMobileProvisionTask,

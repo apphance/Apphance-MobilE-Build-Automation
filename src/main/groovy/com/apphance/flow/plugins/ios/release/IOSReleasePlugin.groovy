@@ -1,9 +1,9 @@
 package com.apphance.flow.plugins.ios.release
 
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
-import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.ios.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.flow.plugins.ios.release.tasks.UpdateVersionTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
