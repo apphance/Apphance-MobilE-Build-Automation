@@ -7,6 +7,7 @@ import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.util.FlowUtils
 import groovy.text.SimpleTemplateEngine
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
@@ -44,10 +45,11 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
     String buildDate = new SimpleDateFormat("dd-MM-yyyy HH:mm zzz").format(new Date())
 
     Closure<String> releaseUrl = { project.hasProperty(FLOW_EXTENSION) ? (project.flow as FlowExtension).releaseUrl : '' }
-    Closure<URL> releaseUrlVersioned = { new URL("${releaseUrl.call()}/${projectFullVersion.call()}") }
     Closure<File> releaseDir = { new File(project.rootDir, OTA_DIR + "/${getReleaseDirName(releaseUrl.call())}/${projectFullVersion.call()}") }
-    Closure<String> projectNameNoWhiteSpace = { projectName?.replaceAll('\\s', '_') }
     Closure<String> projectFullVersion = { (versionString + '_' + versionCode) }
+
+    Closure<URL> releaseUrlVersioned = { new URL("${releaseUrl.call()}/${projectFullVersion.call()}") }
+    Closure<String> projectNameNoWhiteSpace = { projectName?.replaceAll('\\s', '_') }
 
     @Inject
     void initTask() {
@@ -66,7 +68,7 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
         projectName = conf.projectName.value
         buildDate = releaseConf.buildDate
 
-        releaseUrlVersioned = { releaseConf.releaseUrlVersioned }
+        releaseUrl = { releaseConf.releaseUrl.value.toString() }
         releaseDir = { releaseConf.releaseDir }
         projectFullVersion = { conf.fullVersionString }
     }
@@ -83,6 +85,9 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     @TaskAction
     void availableArtifactsInfo() {
+        if (!releaseUrl.call()) throw new GradleException("'releaseUrl' property not configured.")
+        if (!releaseIcon) throw new GradleException("'releaseIcon' property not configured.")
+
         createArtifactFile mailMessageFile, 'Mail message file', 'message_file.html'
         createArtifactFile fileIndexFile, "The file index file: ${projectName}", 'file_index.html'
         createArtifactFile plainFileIndexFile, "The plain file index file: ${projectName}", 'plain_file_index.html'

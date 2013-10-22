@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.android.nbs
 import com.apphance.flow.plugins.android.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.flow.plugins.release.tasks.ImageMontageTask
 import com.apphance.flow.plugins.release.tasks.SendMail
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -18,6 +19,8 @@ class NbsPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
+
+        if (!project.plugins.findPlugin('android')) throw new GradleException("Plugin 'flow-nbs' depends on plugin 'android'. Apply plugin 'android' first.")
 
         project.configurations.create('mail')
         project.dependencies {

@@ -11,6 +11,7 @@ import ij.ImageStack
 import ij.plugin.MontageMaker
 import ij.process.ColorProcessor
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 import javax.imageio.ImageIO
@@ -77,6 +78,7 @@ class ImageMontageTask extends DefaultTask {
     @TaskAction
     void imageMontage() {
         logger.lifecycle "Preparing image montage"
+        if (!releaseUrl.call()) throw new GradleException("'releaseUrl' property not configured in 'flow' extension.")
         def filesToMontage = getFilesToMontage(rootDir)
         logger.lifecycle "Found ${filesToMontage.size()} files"
         File imageMontageFile = outputMontageFile()

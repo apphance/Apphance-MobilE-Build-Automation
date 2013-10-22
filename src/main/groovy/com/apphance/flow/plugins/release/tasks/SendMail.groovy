@@ -3,9 +3,11 @@ package com.apphance.flow.plugins.release.tasks
 import com.apphance.flow.plugins.android.release.tasks.AvailableArtifactsInfoTask
 import org.apache.tools.ant.Project
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.flow.plugins.android.nbs.NbsPlugin.IMAGE_TASK
+import static com.apphance.flow.plugins.android.nbs.NbsPlugin.MAIL_TASK
 import static com.apphance.flow.plugins.android.nbs.NbsPlugin.RELEASE_TASK
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
 
@@ -24,6 +26,9 @@ class SendMail extends DefaultTask {
 
     @TaskAction
     void sendMailMessage() {
+        if(!to) throw new GradleException("Configure email recipient! Property 'to' in $MAIL_TASK task.")
+        if(!from) throw new GradleException("Configure email sender! Property 'from' in $MAIL_TASK task.")
+
         def release = project.tasks.findByName(RELEASE_TASK) as AvailableArtifactsInfoTask
         def image = project.tasks.findByName(IMAGE_TASK) as ImageMontageTask
 
