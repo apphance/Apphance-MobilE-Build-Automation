@@ -39,11 +39,4 @@ class IOSTestTaskSpec extends Specification {
         '5.0'   | 0      | 1
         '5.1'   | 0      | 1
     }
-
-//    def setupSpec() {
-//        task.fileLinker = new SimpleFileLinker()
-//        task.variant = GroovyMock(AbstractIOSVariant) {
-//            getName() >> 'v1'
-//        }
-//    }
 }

@@ -48,7 +48,10 @@ class IOSTest5RunnerSpec extends Specification {
         runner.runTests(variant)
 
         then:
-        1 * executor.runTests5(tmpDir, ['xcodebuild', '-scheme', 's1', '-sdk', 'iphonesimulator', 'test']) >> []
+        1 * executor.runTests5(tmpDir, {
+            def joined =  it.join(' ')
+            joined.startsWith('script -q -t 0') && joined.endsWith('xcodebuild -scheme s1 -sdk iphonesimulator test')
+        }) >> []
 
         cleanup:
         tmpDir.deleteDir()

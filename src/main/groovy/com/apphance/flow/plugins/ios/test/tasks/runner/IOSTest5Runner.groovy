@@ -2,21 +2,24 @@ package com.apphance.flow.plugins.ios.test.tasks.runner
 
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.plugins.ios.test.tasks.results.parser.OCUnitTestSuite
+import com.apphance.flow.util.FlowUtils
 import groovy.transform.PackageScope
 
 import static java.text.MessageFormat.format
 
+@Mixin(FlowUtils)
 class IOSTest5Runner extends AbstractIOSTestRunner {
 
     @Override
     void runTests(AbstractIOSVariant variant) {
         super.runTests(variant)
 
-        def cmd = variant.xcodebuildExecutionPath +
+        def output = tempFile
+        def cmd = ['script', '-q', '-t', '0', output] + variant.xcodebuildExecutionPath +
                 ['-scheme', variant.schemeName, '-sdk', 'iphonesimulator', 'test'] as List<String>
-        def output = executor.runTests5(variant.tmpDir, cmd)
+        executor.runTests5(variant.tmpDir, cmd)
 
-        Collection<OCUnitTestSuite> parsedResults = parseResults(output?.toList())
+        Collection<OCUnitTestSuite> parsedResults = parseResults(output?.readLines())
 
         def testResultsXml = newFile('xml')
         parseAndExport(parsedResults, testResultsXml)
