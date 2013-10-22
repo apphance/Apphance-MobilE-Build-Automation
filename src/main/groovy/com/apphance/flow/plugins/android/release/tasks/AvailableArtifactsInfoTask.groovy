@@ -36,9 +36,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     }
 
     @Lazy
-    AppExtension androidNBS = {
-        getAndroidNBS(project)
-    }()
+    AppExtension androidNBS = { getAndroidNBS(project) }()
 
     @PackageScope
     void prepareOtherArtifacts() {

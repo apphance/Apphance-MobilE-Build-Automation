@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.release.tasks
 
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
+import com.apphance.flow.plugins.android.nbs.FlowExtension
 import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.util.FlowUtils
 import groovy.text.SimpleTemplateEngine
@@ -14,6 +15,7 @@ import java.text.SimpleDateFormat
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.getReleaseDirName
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
+import static com.apphance.flow.plugins.android.nbs.NbsPlugin.FLOW_EXTENSION
 import static java.net.URLEncoder.encode
 import static java.util.ResourceBundle.getBundle
 
@@ -34,18 +36,18 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
 
     String versionString
     String versionCode
-    String releaseUrl
     File releaseIcon
     Collection<String> releaseNotes = ['']
     String releaseMailFlags = 'qrCode,imageMontage'
     File rootDir = project.rootDir
-
-    Closure<URL> releaseUrlVersioned = { new URL("$releaseUrl/${projectFullVersion.call()}") }
     String projectName = project.name
+    String buildDate = new SimpleDateFormat("dd-MM-yyyy HH:mm zzz").format(new Date())
+
+    Closure<String> releaseUrl = { project.hasProperty(FLOW_EXTENSION) ? (project.flow as FlowExtension).releaseUrl : '' }
+    Closure<URL> releaseUrlVersioned = { new URL("${releaseUrl.call()}/${projectFullVersion.call()}") }
+    Closure<File> releaseDir = { new File(project.rootDir, OTA_DIR + "/${getReleaseDirName(releaseUrl.call())}/${projectFullVersion.call()}") }
     Closure<String> projectNameNoWhiteSpace = { projectName?.replaceAll('\\s', '_') }
     Closure<String> projectFullVersion = { (versionString + '_' + versionCode) }
-    Closure<File> releaseDir = { new File(project.rootDir, OTA_DIR + "/${getReleaseDirName(releaseUrl)}/${projectFullVersion.call()}") }
-    String buildDate = new SimpleDateFormat("dd-MM-yyyy HH:mm zzz").format(new Date())
 
     @Inject
     void initTask() {
@@ -55,16 +57,17 @@ abstract class AbstractAvailableArtifactsInfoTask extends DefaultTask {
         releaseConf.otaIndexFile = otaIndexFile
         releaseConf.QRCodeFile = QRCodeFile
 
-        projectName = conf.projectName.value
         versionString = conf.versionString
         versionCode = conf.versionCode
-        buildDate = releaseConf.buildDate
-        releaseUrlVersioned = { releaseConf.releaseUrlVersioned }
-        releaseDir = { releaseConf.releaseDir }
         releaseIcon = releaseConf.releaseIcon?.value
         releaseNotes = releaseConf.releaseNotes
         releaseMailFlags = releaseConf.releaseMailFlags
         rootDir = conf.rootDir
+        projectName = conf.projectName.value
+        buildDate = releaseConf.buildDate
+
+        releaseUrlVersioned = { releaseConf.releaseUrlVersioned }
+        releaseDir = { releaseConf.releaseDir }
         projectFullVersion = { conf.fullVersionString }
     }
 

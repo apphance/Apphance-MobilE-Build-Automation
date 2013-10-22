@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.release.tasks
 
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
+import com.apphance.flow.plugins.android.nbs.FlowExtension
 import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.util.ImageUtil
 import groovy.transform.PackageScope
@@ -22,6 +23,7 @@ import java.util.List
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
+import static com.apphance.flow.plugins.android.nbs.NbsPlugin.FLOW_EXTENSION
 import static com.apphance.flow.util.NBSModelUtil.getVersionCode
 import static com.apphance.flow.util.NBSModelUtil.getVersionName
 import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
@@ -39,8 +41,7 @@ class ImageMontageTask extends DefaultTask {
     @Inject ProjectConfiguration conf
     @Inject ReleaseConfiguration releaseConf
 
-    Closure<String> fullVersionString = { getVersionName(project) + '_' + getVersionCode(project) }
-    String releaseUrl
+    FlowArtifact imageMontageArtifact = new FlowArtifact()
 
     String projectName = project.name
     File rootDir = project.rootDir
@@ -48,23 +49,25 @@ class ImageMontageTask extends DefaultTask {
     File tmpDir = project.file(TMP_DIR)
     File otaDir = project.file(OTA_DIR)
 
-    Closure<File> releaseDir = {
-        new File(otaDir, "${ReleaseConfiguration.getReleaseDirName releaseUrl}/${fullVersionString.call()}")
-    }
-    FlowArtifact imageMontageArtifact = new FlowArtifact()
+    Closure<String> fullVersionString = { getVersionName(project) + '_' + getVersionCode(project) }
+    Closure<String> releaseUrl = { project.hasProperty(FLOW_EXTENSION) ? (project.flow as FlowExtension).releaseUrl : '' }
+    Closure<File> releaseDir = { new File(otaDir, "${ReleaseConfiguration.getReleaseDirName releaseUrl.call()}/${fullVersionString.call()}") }
+
     Closure<String> projectNameNoWhiteSpace = { projectName?.replaceAll('\\s', '_') }
     String buildDate = new SimpleDateFormat("dd-MM-yyyy HH:mm zzz").format(new Date())
 
     @Inject
     void init() {
-        fullVersionString = { conf.fullVersionString }
+        releaseConf.imageMontageFile = imageMontageArtifact
+
         projectName = conf.projectName.value
         rootDir = conf.rootDir
-        releaseConf.imageMontageFile = imageMontageArtifact
-        releaseDir = { releaseConf.releaseDir }
         tmpDir = conf.tmpDir
         otaDir = releaseConf.otaDir
-        releaseUrl = releaseConf.releaseUrl.value
+
+        fullVersionString = { conf.fullVersionString }
+        releaseUrl = { releaseConf.releaseUrl.value.toString() }
+        releaseDir = { releaseConf.releaseDir }
     }
 
     public static int TILE_PX_SIZE = 120
@@ -82,7 +85,7 @@ class ImageMontageTask extends DefaultTask {
 
         imageMontageArtifact.with {
             name = 'Image Montage'
-            url = new URL("${releaseUrl.toURL()}/${fullVersionString.call()}/$imageMontageFile.name")
+            url = new URL("${releaseUrl.call().toURL()}/${fullVersionString.call()}/$imageMontageFile.name")
             location = imageMontageFile
         }
 
