@@ -6,11 +6,14 @@ import com.apphance.flow.plugins.release.tasks.SendMail
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+/**
+ * Flow integration with Android New Build System based on gradle.
+ */
 class NbsPlugin implements Plugin<Project> {
 
-    public static String IMAGE_TASK = 'image'
-    public static String RELEASE_TASK = 'release'
-    public static String MAIL_TASK = 'mail'
+    public static String IMAGE_TASK = 'imageMontage'
+    public static String RELEASE_TASK = 'flowRelease'
+    public static String MAIL_TASK = 'flowMail'
     public static String FLOW_EXTENSION = 'flow'
 
     @Override

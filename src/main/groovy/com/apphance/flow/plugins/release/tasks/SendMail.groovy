@@ -7,8 +7,15 @@ import org.gradle.api.tasks.TaskAction
 
 import static com.apphance.flow.plugins.android.nbs.NbsPlugin.IMAGE_TASK
 import static com.apphance.flow.plugins.android.nbs.NbsPlugin.RELEASE_TASK
+import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
 
+/**
+ * Send mail task for Android New Build System.
+ */
 class SendMail extends DefaultTask {
+
+    String group = FLOW_RELEASE
+    String description = 'Send mail with release info'
 
     String to
     String from
