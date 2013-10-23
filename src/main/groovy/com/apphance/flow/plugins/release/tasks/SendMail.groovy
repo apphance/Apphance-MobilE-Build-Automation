@@ -23,6 +23,10 @@ class SendMail extends DefaultTask {
     String from
     String subject
     String mailhost = 'localhost'
+    String mailport = '25'
+    String smtpUser
+    String smtpPassword
+    String ssl = 'false'
 
     @TaskAction
     void sendMailMessage() {
@@ -49,6 +53,10 @@ class SendMail extends DefaultTask {
                 from: from,
                 message: release.mailMessageFile?.location?.text,
                 mailhost: mailhost,
+                mailport: mailport,
+                user: smtpUser,
+                password: smtpPassword,
+                ssl: ssl,
                 messageMimeType: 'text/html',
                 files: attachments*.absolutePath.join(',')
         )
