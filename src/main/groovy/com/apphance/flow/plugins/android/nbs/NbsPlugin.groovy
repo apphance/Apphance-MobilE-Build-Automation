@@ -32,7 +32,7 @@ class NbsPlugin implements Plugin<Project> {
         project.extensions.create(FLOW_EXTENSION, FlowExtension)
 
         project.task(IMAGE_TASK, type: ImageMontageTask)
-        project.task(RELEASE_TASK, type: AvailableArtifactsInfoTask)
+        project.task(RELEASE_TASK, type: AvailableArtifactsInfoTask, dependsOn: 'build')
         project.task(MAIL_TASK, type: SendMail, dependsOn: RELEASE_TASK)
     }
 }
