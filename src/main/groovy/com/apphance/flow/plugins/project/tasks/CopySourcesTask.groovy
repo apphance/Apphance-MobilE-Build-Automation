@@ -31,7 +31,7 @@ class CopySourcesTask extends DefaultTask {
             logger.lifecycle("Copying sources from : $conf.rootDir.absolutePath to $v.tmpDir.absolutePath")
             executor.executeCommand(new Command(
                     runDir: conf.rootDir,
-                    cmd: ['rsync', '-zvalp', '--executability', '.'] + excludes + [v.tmpDir.absolutePath]
+                    cmd: ['rsync', '-rvalp', '--executability', '.'] + excludes + [v.tmpDir.absolutePath]
             ))
         }
     }
