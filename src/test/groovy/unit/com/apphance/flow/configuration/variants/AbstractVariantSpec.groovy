@@ -6,6 +6,7 @@ import com.apphance.flow.configuration.ios.variants.IOSSchemeVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.detection.project.ProjectType
+import com.apphance.flow.validation.PropertyValidator
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.PROD
@@ -13,9 +14,10 @@ import static com.apphance.flow.configuration.ios.IOSBuildMode.DEVICE
 
 class AbstractVariantSpec extends Specification {
 
-    def variant = new AndroidVariantConfiguration('name')
-
     def 'test apphanceLibVersion validator'() {
+        given:
+        def variant = new AndroidVariantConfiguration('name')
+
         expect:
         variant.aphLib.validator(correct)
 
@@ -24,6 +26,9 @@ class AbstractVariantSpec extends Specification {
     }
 
     def 'apphance lib version validator handles incorrect value'() {
+        given:
+        def variant = new AndroidVariantConfiguration('name')
+
         expect:
         !variant.aphLib.validator(incorrect)
 
@@ -47,5 +52,27 @@ class AbstractVariantSpec extends Specification {
 
         where:
         variant << [new AndroidVariantConfiguration(''), new IOSSchemeVariant('')]
+    }
+
+    def 'aph lib url is validated well'() {
+        given:
+        def variant = new IOSSchemeVariant('')
+        variant.apphanceConf = GroovyStub(ApphanceConfiguration) { isEnabled() >> true }
+        variant.aphMode = new ApphanceModeProperty(value: PROD)
+        if (variant.projectType == ProjectType.IOS) {
+            variant.mode = new IOSBuildModeProperty(value: DEVICE)
+        }
+        variant.propValidator = new PropertyValidator()
+
+        expect:
+        variant.aphLibUrl.validator(url) == expected
+
+        where:
+        url               | expected
+        null              | true
+        ''                | true
+        'bolo'            | false
+        'http://some.com' | true
+
     }
 }

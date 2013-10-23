@@ -8,6 +8,7 @@ import com.apphance.flow.configuration.apphance.ApphanceMode
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.StringProperty
+import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.detection.project.ProjectType
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
@@ -40,6 +41,8 @@ abstract class AbstractVariant extends AbstractConfiguration {
         aphMode.message = "Apphance mode for '$name'"
         aphAppKey.name = "${projectType.prefix}.variant.${name}.apphance.appKey"
         aphAppKey.message = "Apphance key for '$name'"
+        aphLibUrl.name = "${projectType.prefix}.variant.${name}.apphance.libUrl"
+        aphLibUrl.message = "Apphance lib url for '$name'"
         aphLib.name = "${projectType.prefix}.variant.${name}.apphance.lib"
         aphLib.message = "Apphance lib version for '$name'"
         aphWithUTest.name = "${projectType.prefix}.variant.${name}.apphance.withUTest"
@@ -86,8 +89,18 @@ abstract class AbstractVariant extends AbstractConfiguration {
             validationMessage: "Key should match '[a-z0-9]+'"
     )
 
+    def aphLibUrl = new URLProperty(
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
+            required: { false },
+            validator: { val ->
+                if (!val) return true
+                !propValidator.throwsException { (val as String).toURL() }
+            },
+            validationMessage: 'Should be a valid URL'
+    )
+
     def aphLib = new StringProperty(
-            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) },
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && !aphLibUrl.hasValue() },
             possibleValues: { possibleApphanceLibVersions },
             validator: { it?.matches('([0-9]+\\.)*[0-9]+(-[^-]*)?') }
     )
@@ -211,7 +224,11 @@ abstract class AbstractVariant extends AbstractConfiguration {
         if (apphanceConf.enabled) {
             errors.addAll(propValidator.validateProperties(aphMode))
             if (aphMode.value != DISABLED) {
-                errors.addAll(propValidator.validateProperties(aphAppKey, aphLib))
+                errors.addAll(propValidator.validateProperties(aphAppKey))
+                if (aphLibUrl.hasValue())
+                    errors.addAll(propValidator.validateProperties(aphLibUrl))
+                else
+                    errors.addAll(propValidator.validateProperties(aphLib))
             }
         }
     }

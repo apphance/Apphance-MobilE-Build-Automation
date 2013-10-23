@@ -118,6 +118,7 @@ class IOSReleaseConfigurationSpec extends Specification {
         def releaseConf = new IOSReleaseConfiguration()
         releaseConf.propPersister = GroovyStub(PropertyPersister) {
             get('release.icon') >> null
+            get('release.url') >> null
         }
         releaseConf.conf = GroovyStub(IOSConfiguration) {
             getRootDir() >> new File('.')
@@ -140,6 +141,7 @@ class IOSReleaseConfigurationSpec extends Specification {
         def conf = new IOSReleaseConfiguration()
         conf.propPersister = GroovyStub(PropertyPersister) {
             get('release.icon') >> 'src/test/resources/com/apphance/flow/plugins/release/tasks/Blank.jpg'
+            get('release.url') >> null
         }
 
         when:

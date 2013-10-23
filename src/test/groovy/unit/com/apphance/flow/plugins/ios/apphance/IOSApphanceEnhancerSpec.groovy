@@ -3,7 +3,9 @@ package com.apphance.flow.plugins.ios.apphance
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
+import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -85,6 +87,7 @@ class IOSApphanceEnhancerSpec extends Specification {
         def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
             getAphMode() >> new ApphanceModeProperty(value: aphMode)
             getAphLib() >> new StringProperty(value: '1.8.8')
+            getAphLibUrl() >> new URLProperty()
         })
 
         expect:
@@ -95,6 +98,23 @@ class IOSApphanceEnhancerSpec extends Specification {
         QA      | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8.zip'
         SILENT  | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8.zip'
         PROD    | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-prod/1.8.8/apphance-prod-1.8.8.zip'
+    }
+
+    def 'apphance url is set correctly'() {
+        given:
+        def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
+            getAphMode() >> new ApphanceModeProperty(value: aphMode)
+            getAphLib() >> new StringProperty(value: '1.8.8')
+            getAphLibUrl() >> new URLProperty(value: url)
+        })
+
+        expect:
+        enhancer.apphanceUrl == expectedUrl
+
+        where:
+        url               | aphMode | expectedUrl
+        null              | QA      | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8.zip'
+        'http://some.url' | QA      | 'http://some.url'
     }
 
     def 'framework folders are checked when exist'() {

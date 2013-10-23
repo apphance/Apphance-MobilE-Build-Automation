@@ -81,13 +81,8 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
                     'subdirectory of ota dir when artifacts are created locally.',
             doc: { docBundle.getString('release.url') },
             required: { true },
-            validator: {
-                try {
-                    (it as String).toURL()
-                    return true
-                } catch (Exception e) { return false }
-            },
-            validationMessage: "Should be a valid URL"
+            validator: { val -> !propValidator.throwsException { (val as String).toURL() } },
+            validationMessage: 'Should be a valid URL'
     )
 
     URL getReleaseUrlVersioned() {
