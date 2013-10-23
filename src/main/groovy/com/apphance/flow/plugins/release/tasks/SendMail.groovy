@@ -30,8 +30,8 @@ class SendMail extends DefaultTask {
 
     @TaskAction
     void sendMailMessage() {
-        if(!to) throw new GradleException("Configure email recipient! Property 'to' in $MAIL_TASK task.")
-        if(!from) throw new GradleException("Configure email sender! Property 'from' in $MAIL_TASK task.")
+        if (!to) throw new GradleException("Configure email recipient! Property 'to' in $MAIL_TASK task.")
+        if (!from) throw new GradleException("Configure email sender! Property 'from' in $MAIL_TASK task.")
 
         def release = project.tasks.findByName(RELEASE_TASK) as AvailableArtifactsInfoTask
         def image = project.tasks.findByName(IMAGE_TASK) as ImageMontageTask
