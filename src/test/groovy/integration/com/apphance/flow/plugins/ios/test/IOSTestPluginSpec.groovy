@@ -37,9 +37,9 @@ class IOSTestPluginSpec extends Specification {
         plugin.apply(project)
 
         then:
-        project.tasks['testV1'].group == FLOW_TEST.name()
-        project.tasks['testV2'].group == FLOW_TEST.name()
-        project.tasks[TEST_ALL_TASK_NAME].group == FLOW_TEST.name()
+        project.tasks['testV1'].group == FLOW_TEST.toString()
+        project.tasks['testV2'].group == FLOW_TEST.toString()
+        project.tasks[TEST_ALL_TASK_NAME].group == FLOW_TEST.toString()
 
         and:
         project.tasks['testV1'].dependsOn.flatten().containsAll(CopySourcesTask.NAME)

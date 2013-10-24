@@ -43,10 +43,10 @@ class AndroidPluginSpec extends Specification {
         ap.apply(project)
 
         then:
-        project.tasks[UpdateProjectTask.NAME].group == FLOW_BUILD.name()
-        project.tasks[BUILD_ALL_TASK_NAME].group == FLOW_BUILD.name()
-        project.tasks[BUILD_ALL_DEBUG_TASK_NAME].group == FLOW_BUILD.name()
-        project.tasks[BUILD_ALL_RELEASE_TASK_NAME].group == FLOW_BUILD.name()
+        project.tasks[UpdateProjectTask.NAME].group == FLOW_BUILD.toString()
+        project.tasks[BUILD_ALL_TASK_NAME].group == FLOW_BUILD.toString()
+        project.tasks[BUILD_ALL_DEBUG_TASK_NAME].group == FLOW_BUILD.toString()
+        project.tasks[BUILD_ALL_RELEASE_TASK_NAME].group == FLOW_BUILD.toString()
 
         and:
         project.tasks[BUILD_ALL_TASK_NAME].dependsOn.flatten().containsAll(BUILD_ALL_RELEASE_TASK_NAME, BUILD_ALL_DEBUG_TASK_NAME)
@@ -103,7 +103,7 @@ class AndroidPluginSpec extends Specification {
         ap.apply(project)
 
         then:
-        project.tasks[UpdateProjectTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[UpdateProjectTask.NAME].group == FLOW_BUILD.toString()
 
         and:
         project.tasks['buildv1']

@@ -43,9 +43,9 @@ class ReleasePluginSpec extends Specification {
         project.dependencies.configurationContainer.mail.allDependencies.size() == 3
 
         then: 'every task exists and is in correct group'
-        project.tasks[ImageMontageTask.NAME].group == FLOW_RELEASE.name()
-        project.tasks[SendMailMessageTask.NAME].group == FLOW_RELEASE.name()
-        project.tasks[BuildSourcesZipTask.NAME].group == FLOW_RELEASE.name()
+        project.tasks[ImageMontageTask.NAME].group == FLOW_RELEASE.toString()
+        project.tasks[SendMailMessageTask.NAME].group == FLOW_RELEASE.toString()
+        project.tasks[BuildSourcesZipTask.NAME].group == FLOW_RELEASE.toString()
 
         then:
         project.tasks[SendMailMessageTask.NAME].dependsOn.flatten().contains('prepareAvailableArtifactsInfo')

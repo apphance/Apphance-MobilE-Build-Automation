@@ -56,19 +56,19 @@ class IOSPluginSpec extends Specification {
         plugin.apply(project)
 
         then:
-        project.tasks[CopyMobileProvisionTask.NAME].group == FLOW_BUILD.name()
-        project.tasks[UnlockKeyChainTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[CopyMobileProvisionTask.NAME].group == FLOW_BUILD.toString()
+        project.tasks[UnlockKeyChainTask.NAME].group == FLOW_BUILD.toString()
 
         and:
-        project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].group == FLOW_BUILD.name()
-        project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].group == FLOW_BUILD.name()
-        project.tasks[ARCHIVE_ALL_TASK_NAME].group == FLOW_BUILD.name()
-        project.tasks['archiveV1'].group == FLOW_BUILD.name()
-        project.tasks['archiveV2'].group == FLOW_BUILD.name()
+        project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].group == FLOW_BUILD.toString()
+        project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].group == FLOW_BUILD.toString()
+        project.tasks[ARCHIVE_ALL_TASK_NAME].group == FLOW_BUILD.toString()
+        project.tasks['archiveV1'].group == FLOW_BUILD.toString()
+        project.tasks['archiveV2'].group == FLOW_BUILD.toString()
 
         and:
-        project.tasks[FRAMEWORK_ALL].group == FLOW_BUILD.name()
-        project.tasks['frameworkV3'].group == FLOW_BUILD.name()
+        project.tasks[FRAMEWORK_ALL].group == FLOW_BUILD.toString()
+        project.tasks['frameworkV3'].group == FLOW_BUILD.toString()
 
         and:
         project.tasks[ARCHIVE_ALL_TASK_NAME].dependsOn.flatten().containsAll(ARCHIVE_ALL_SIMULATOR_TASK_NAME, ARCHIVE_ALL_DEVICE_TASK_NAME)

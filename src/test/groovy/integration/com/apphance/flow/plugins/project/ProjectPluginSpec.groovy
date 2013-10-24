@@ -27,7 +27,7 @@ class ProjectPluginSpec extends Specification {
         project.repositories.mavenCentral()
 
         and:
-        project.tasks[PrepareSetupTask.NAME].group == FLOW_SETUP.name()
+        project.tasks[PrepareSetupTask.NAME].group == FLOW_SETUP.toString()
         !project.tasks.findByName(CleanFlowTask.NAME)
         !project.tasks.findByName(CopySourcesTask.NAME)
     }
@@ -40,11 +40,11 @@ class ProjectPluginSpec extends Specification {
         project.plugins.apply(ProjectPlugin)
 
         then:
-        project.tasks[PrepareSetupTask.NAME].group == FLOW_SETUP.name()
+        project.tasks[PrepareSetupTask.NAME].group == FLOW_SETUP.toString()
         def clean = project.tasks[CleanFlowTask.NAME]
-        clean.group == FLOW_SETUP.name()
+        clean.group == FLOW_SETUP.toString()
         def copy = project.tasks[CopySourcesTask.NAME]
-        copy.group == FLOW_BUILD.name()
+        copy.group == FLOW_BUILD.toString()
         copy.mustRunAfter.getDependencies(copy).contains(clean)
     }
 }

@@ -28,8 +28,8 @@ class AndroidReleasePluginSpec extends Specification {
         arp.apply(project)
 
         then: 'every single task is in correct group'
-        project.tasks[UpdateVersionTask.NAME].group == FLOW_RELEASE.name()
-        project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.name()
+        project.tasks[UpdateVersionTask.NAME].group == FLOW_RELEASE.toString()
+        project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.toString()
 
         then:
         project.tasks[UpdateVersionTask.NAME].dependsOn.contains(CopySourcesTask.NAME)

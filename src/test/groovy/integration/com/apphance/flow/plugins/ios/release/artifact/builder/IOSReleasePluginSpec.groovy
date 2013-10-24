@@ -29,8 +29,8 @@ class IOSReleasePluginSpec extends Specification {
         irp.apply(project)
 
         then:
-        project.tasks[AbstractUpdateVersionTask.NAME].group == FLOW_RELEASE.name()
-        project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.name()
+        project.tasks[AbstractUpdateVersionTask.NAME].group == FLOW_RELEASE.toString()
+        project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.toString()
 
         then:
         project.tasks[AbstractUpdateVersionTask.NAME].dependsOn.contains(CopySourcesTask.NAME)
