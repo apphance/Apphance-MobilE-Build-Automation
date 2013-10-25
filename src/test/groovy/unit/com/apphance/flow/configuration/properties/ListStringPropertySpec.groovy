@@ -41,22 +41,4 @@ class ListStringPropertySpec extends Specification {
         '[a,b,c]' | 'a,b,c'
         'a,b,c'   | 'a,b,c'
     }
-
-    def 'list is made unique'() {
-        given:
-        def list = new ListStringProperty(name: 'name of the list', value: value)
-
-        when:
-        list.makeUnique()
-
-        then:
-        expected == list.value
-
-        where:
-        value | expected
-        '1,1' | ['1']
-        '1,2' | ['1', '2']
-        null  | null
-        ''    | null
-    }
 }

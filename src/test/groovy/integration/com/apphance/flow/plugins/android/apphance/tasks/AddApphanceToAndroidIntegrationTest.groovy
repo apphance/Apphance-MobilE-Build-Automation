@@ -21,14 +21,14 @@ class AddApphanceToAndroidIntegrationTest extends Specification {
         FileUtils.copyDirectory(new File('projects/test/android/android-basic'), variantDir)
 
         androidVariantConf = GroovySpy(AndroidVariantConfiguration, constructorArgs: ['test variant'])
-        androidVariantConf.apphanceAppKey.value = 'TestKey'
-        androidVariantConf.apphanceLibVersion.value = '1.9'
+        androidVariantConf.aphAppKey.value = 'TestKey'
+        androidVariantConf.aphLib.value = '1.9'
         androidVariantConf.getTmpDir() >> variantDir
     }
 
     def 'test add apphance lib'() {
         given:
-        androidVariantConf.apphanceMode.value = mode
+        androidVariantConf.aphMode.value = mode
         addApphanceToAndroid = new AddApphanceToAndroid(androidVariantConf)
 
         expect:

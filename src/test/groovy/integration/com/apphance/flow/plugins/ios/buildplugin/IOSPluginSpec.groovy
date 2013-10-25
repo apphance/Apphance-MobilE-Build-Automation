@@ -5,9 +5,9 @@ import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.plugins.ios.buildplugin.tasks.CopyMobileProvisionTask
-import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.ios.buildplugin.tasks.UnlockKeyChainTask
 import com.apphance.flow.plugins.project.tasks.CleanFlowTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.*
@@ -23,6 +23,7 @@ class IOSPluginSpec extends Specification {
 
         and:
         project.task(CleanFlowTask.NAME)
+        project.task(CopySourcesTask.NAME)
 
         and:
         def conf = GroovyMock(IOSConfiguration)
@@ -55,20 +56,19 @@ class IOSPluginSpec extends Specification {
         plugin.apply(project)
 
         then:
-        project.tasks[CopySourcesTask.NAME].group == FLOW_BUILD.name()
-        project.tasks[CopyMobileProvisionTask.NAME].group == FLOW_BUILD.name()
-        project.tasks[UnlockKeyChainTask.NAME].group == FLOW_BUILD.name()
+        project.tasks[CopyMobileProvisionTask.NAME].group == FLOW_BUILD.toString()
+        project.tasks[UnlockKeyChainTask.NAME].group == FLOW_BUILD.toString()
 
         and:
-        project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].group == FLOW_BUILD.name()
-        project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].group == FLOW_BUILD.name()
-        project.tasks[ARCHIVE_ALL_TASK_NAME].group == FLOW_BUILD.name()
-        project.tasks['archiveV1'].group == FLOW_BUILD.name()
-        project.tasks['archiveV2'].group == FLOW_BUILD.name()
+        project.tasks[ARCHIVE_ALL_DEVICE_TASK_NAME].group == FLOW_BUILD.toString()
+        project.tasks[ARCHIVE_ALL_SIMULATOR_TASK_NAME].group == FLOW_BUILD.toString()
+        project.tasks[ARCHIVE_ALL_TASK_NAME].group == FLOW_BUILD.toString()
+        project.tasks['archiveV1'].group == FLOW_BUILD.toString()
+        project.tasks['archiveV2'].group == FLOW_BUILD.toString()
 
         and:
-        project.tasks[FRAMEWORK_ALL].group == FLOW_BUILD.name()
-        project.tasks['frameworkV3'].group == FLOW_BUILD.name()
+        project.tasks[FRAMEWORK_ALL].group == FLOW_BUILD.toString()
+        project.tasks['frameworkV3'].group == FLOW_BUILD.toString()
 
         and:
         project.tasks[ARCHIVE_ALL_TASK_NAME].dependsOn.flatten().containsAll(ARCHIVE_ALL_SIMULATOR_TASK_NAME, ARCHIVE_ALL_DEVICE_TASK_NAME)

@@ -1,9 +1,12 @@
 package com.apphance.flow.plugins
 
+import com.apphance.flow.util.FlowUtils
+import com.apphance.flow.validation.ConfigurationValidator
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import spock.lang.Specification
 
+@Mixin(FlowUtils)
 class FlowPluginSpec extends Specification {
 
     def 'exception is thrown when JRE version is too low'() {
@@ -27,8 +30,11 @@ class FlowPluginSpec extends Specification {
     }
 
     def 'version from filename'() {
+        given:
+        def plugin = new FlowPlugin()
+
         expect:
-        version == FlowPlugin.getVersion(fileName)
+        version == plugin.extractVersionFromFilename(fileName)
 
         where:
         fileName                         | version
@@ -41,5 +47,28 @@ class FlowPluginSpec extends Specification {
         'flow-.jar'                      | ''
         ''                               | ''
         null                             | ''
+    }
+
+    def 'configuration validation is run depending on flow.properties existence'() {
+        given:
+        def plugin = new FlowPlugin()
+
+        and:
+        plugin.configurations = [:]
+
+        and:
+        plugin.configurationValidator = GroovyMock(ConfigurationValidator)
+
+        when:
+        plugin.validateConfiguration(props)
+
+        then:
+        count * plugin.configurationValidator.validate(plugin.configurations.values())
+
+        where:
+        props              | count
+        null               | 0
+        tempFile           | 0
+        tempFile << 'text' | 1
     }
 }

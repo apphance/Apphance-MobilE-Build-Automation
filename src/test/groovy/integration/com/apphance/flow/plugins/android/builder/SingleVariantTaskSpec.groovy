@@ -2,7 +2,6 @@ package com.apphance.flow.plugins.android.builder
 
 import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.android.AndroidConfiguration
-import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.FileProperty
@@ -16,7 +15,6 @@ import com.apphance.flow.plugins.android.buildplugin.tasks.AndroidProjectUpdater
 import com.apphance.flow.plugins.android.buildplugin.tasks.SingleVariantTask
 import com.apphance.flow.plugins.release.FlowArtifact
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
 import static com.apphance.flow.configuration.android.AndroidBuildMode.DEBUG
@@ -81,8 +79,7 @@ class SingleVariantTaskSpec extends Specification {
         project.file(OTA_DIR).deleteDir()
     }
 
-    @Unroll
-    def 'artifacts are built according to passed config and copied to ota dir. Library = #library'() {
+    def 'artifacts are built according to passed config and copied to ota dir'() {
         given:
         def releaseFile = new File(project.rootDir, "${OTA_DIR}/TestAndroidProject/1.0.1_42/TestAndroidProject-debug-TestDebug-1.0.1_42.$releaseFileExtension")
         task.artifactProvider = GroovyStub(AndroidArtifactProvider)

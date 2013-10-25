@@ -6,7 +6,6 @@ import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.reader.ConfigurationWizard
 import com.apphance.flow.configuration.reader.PropertyPersister
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import static org.apache.commons.collections.CollectionUtils.isEqualCollection
 
@@ -24,8 +23,7 @@ class PrepareSetupTaskSpec extends Specification {
         task.propertyPersister = Mock(PropertyPersister)
     }
 
-    @Unroll
-    def 'interactive mode is correctly determined from system properties. #props, #mode'() {
+    def 'interactive mode is correctly determined from system properties'() {
         when:
         System.clearProperty('ni')
         System.clearProperty('noninteractive')

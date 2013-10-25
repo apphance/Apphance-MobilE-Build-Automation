@@ -1,12 +1,14 @@
 package com.apphance.flow.configuration.properties
 
+import org.gradle.api.GradleException
+
 abstract class AbstractProperty<T> {
 
     String name
     String message
     String validationMessage = ''
 
-    protected T value
+    protected T value = null
 
     Closure<T> defaultValue = { null as T }
 
@@ -20,12 +22,16 @@ abstract class AbstractProperty<T> {
 
     Closure<Boolean> required = { false }
 
-    Closure<String> doc = { message ?: 'default doc' } //TODO: (Closure<String>) { throw new GradleException("Property $name has empty doc field!") }
+    Closure<String> doc = { message ?: { throw new GradleException("Property $name has empty doc field!") }() }
 
     abstract void setValue(String value)
 
     T getValue() {
         value
+    }
+
+    boolean hasValue() {
+        value != null
     }
 
     void resetValue() {

@@ -8,6 +8,7 @@ import com.google.common.io.Files
 import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.io.FileUtils
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static android.Manifest.permission.*
 import static com.apphance.flow.configuration.apphance.ApphanceMode.QA
@@ -27,9 +28,9 @@ class AddApphanceToAndroidSpec extends Specification {
         variantDir.deleteOnExit()
         FileUtils.copyDirectory(new File('projects/test/android/android-basic'), variantDir)
 
-        androidVariantConf.apphanceMode.value = QA
-        androidVariantConf.apphanceAppKey.value = 'TestKey'
-        androidVariantConf.apphanceLibVersion.value = '1.9-RC4'
+        androidVariantConf.aphMode.value = QA
+        androidVariantConf.aphAppKey.value = 'TestKey'
+        androidVariantConf.aphLib.value = '1.9-RC4'
         androidVariantConf.getTmpDir() >> variantDir
 
         addApphanceToAndroid = new AddApphanceToAndroid(androidVariantConf)
@@ -99,6 +100,8 @@ class AddApphanceToAndroidSpec extends Specification {
         given:
         File mainActivity = new File(variantDir, 'src/com/apphance/flowTest/android/TestActivity.java')
         def startSession = 'Apphance.startNewSession(this, "TestKey", Apphance.Mode.QA);'
+        addApphanceToAndroid.apphanceVersion = '1.9'
+
         expect:
         mainActivity.exists()
         !mainActivity.text.contains(startSession)
@@ -125,6 +128,57 @@ class AddApphanceToAndroidSpec extends Specification {
 
         then:
         mainActivity.text.contains startSession
+    }
+
+    @Unroll
+    def 'test startNewSession with apphance 1.9.6'() {
+        given:
+        File mainActivity = tempFile << new File('src/test/resources/com/apphance/flow/android/TestActivityWithoutOnCreate.java').text
+        addApphanceToAndroid.apphanceVersion = '1.9.6'
+
+        expect:
+        mainActivity.exists()
+        !mainActivity.text.contains("com.apphance.android.common.Configuration configuration = new com.apphance.android.common.Configuration.Builder(this)")
+
+        when:
+        addApphanceToAndroid.addApphanceInitVer196(mainActivity, "TestKey", QA, false, true, defaultUser, screenshotFromGallery)
+        println mainActivity.text
+
+        then:
+        mainActivity.text.contains "public void onCreate(Bundle savedInstanceState) {"
+        mainActivity.text.contains "super.onCreate(savedInstanceState);"
+        mainActivity.text.contains "com.apphance.android.common.Configuration configuration = new com.apphance.android.common.Configuration.Builder(this)"
+        mainActivity.text.contains ".withMode(Apphance.Mode.QA)"
+        mainActivity.text.contains "Apphance.startNewSession(this, configuration);"
+        mainActivity.text.split('\n').toList()*.trim().containsAll lines
+        !dontExists.any { String it -> mainActivity.text.contains it }
+
+        where:
+        defaultUser        | screenshotFromGallery | lines                                                                                | dontExists
+        'user@example.com' | true                  | ['.withDefaultUser("user@example.com")', '.withScreenshotFromGalleryEnabled(true)']  | []
+        'user@example.com' | false                 | ['.withDefaultUser("user@example.com")', '.withScreenshotFromGalleryEnabled(false)'] | []
+        null               | false                 | ['.withScreenshotFromGalleryEnabled(false)']                                         | ['withDefaultUser']
+        null               | true                  | ['.withScreenshotFromGalleryEnabled(true)']                                          | ['withDefaultUser']
+    }
+
+    @Unroll
+    def 'test use appropriate init method according to lib version. #version'() {
+        given:
+        def addApphance = GroovySpy(AddApphanceToAndroid)
+        addApphance.apphanceVersion = ver
+        def file = tempFile
+
+        when:
+        addApphance.addStartNewSession(file)
+
+        then:
+        1 * addApphance."$method"(* _)
+
+        where:
+        ver     | method
+        '1.9'   | 'addApphanceInit'
+        '1.9.6' | 'addApphanceInitVer196'
+        '2.0'   | 'addApphanceInitVer196'
     }
 
     def 'test addStartStopInvocations'() {
@@ -163,17 +217,22 @@ class AddApphanceToAndroidSpec extends Specification {
         addApphanceToAndroid.getActivity(file).name == 'TestActivityManyClasses'
     }
 
-    def 'test aphance import added'() {
+    @Unroll
+    def 'test apphance import added. #libVersion'() {
         given:
         def testActivity = tempFile << TEST_ACTIVITY.text
         def before = testActivity.readLines().findAll { it.contains('import') }.size()
+        addApphanceToAndroid.apphanceVersion = apphanceVersion
 
         when:
         addApphanceToAndroid.addApphanceImportTo(testActivity)
 
         then:
-        contains(testActivity, APPHANCE_IMPORT)
         testActivity.readLines().findAll { it.contains('import') }.size() == before + 1
+        testActivity.readLines().findAll { it.contains('import com.apphance') }*.trim().sort() == [APPHANCE_IMPORT].sort()
+
+        where:
+        apphanceVersion << ['1.9.5', '1.9.6']
     }
 
     def 'test apphance log'() {
@@ -201,7 +260,7 @@ class AddApphanceToAndroidSpec extends Specification {
 
     def 'test adding problem activity after addStartStopInvocations'() {
         given:
-        def addApphance = Spy(AddApphanceToAndroid, constructorArgs: [temporaryDir, 'KEY', QA, '1.9', false])
+        def addApphance = Spy(AddApphanceToAndroid, constructorArgs: [temporaryDir, 'KEY', QA, '1.9', false, null, false])
 
         when:
         addApphance.addApphance()
@@ -216,13 +275,13 @@ class AddApphanceToAndroidSpec extends Specification {
         1 * addApphance.addProblemActivityToManifest() >> null
         1 * addApphance.addPermissions() >> null
         1 * addApphance.addApphanceLib()
-        1 * addApphance.downloadZipAndUnzip(*_) >> null
+        1 * addApphance.downloadZipAndUnzip(* _) >> null
         1 * addApphance.addApphanceLibraryReferenceToProjectProperties() >> null
     }
 
     def 'test addApphance in production mode'() {
         given:
-        androidVariantConf.apphanceMode.value = ApphanceMode.PROD
+        androidVariantConf.aphMode.value = ApphanceMode.PROD
         def addApphance = Spy(AddApphanceToAndroid, constructorArgs: [androidVariantConf])
         addApphance.addApphanceLib() >> null
         def manifest = new File(variantDir, 'AndroidManifest.xml')
@@ -279,5 +338,28 @@ class AddApphanceToAndroidSpec extends Specification {
         then:
         !new File(variantDir, 'src/com/apphance/flowTest/android/SomeClass.java').text.contains('android.util.Log')
         new File(variantDir, 'src/com/apphance/flowTest/android/SomeClass.java').text.contains 'import com.apphance.android.Log;'
+    }
+
+    @Unroll
+    def 'test lib version #ver, #compare #result'() {
+        given:
+        addApphanceToAndroid.apphanceVersion = ver
+
+        expect:
+        addApphanceToAndroid.libVerLowerThan(compare) == result
+
+        where:
+        ver       | compare     | result
+        '1.9.5'   | '1.9.5'     | false
+        '1.9.5'   | '1.9.6'     | true
+        '1.9'     | '1.9.6'     | true
+        '1'       | '1.9.6'     | true
+        '2'       | '1.9.6'     | false
+        '2.1'     | '1.9.6'     | false
+        '2.1.1'   | '1.9.6'     | false
+        '2.1.1'   | '1.9.6'     | false
+        '2.0-RC1' | '1.9.9.9.9' | false
+        '2.1-M2'  | '1.9.9.9.9' | false
+        '2'       | '1-RC2'     | false
     }
 }

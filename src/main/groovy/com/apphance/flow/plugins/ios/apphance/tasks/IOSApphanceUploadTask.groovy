@@ -115,6 +115,6 @@ class IOSApphanceUploadTask extends DefaultTask {
     @Lazy
     @PackageScope
     String apphanceKey = {
-        variant.apphanceAppKey.value
+        variant.aphAppKey.value
     }()
 }

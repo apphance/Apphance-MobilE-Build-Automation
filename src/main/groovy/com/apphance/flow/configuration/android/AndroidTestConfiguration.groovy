@@ -41,13 +41,16 @@ class AndroidTestConfiguration extends AbstractConfiguration {
     )
 
     @Override
-    void checkProperties() {
+    void validate(List<String> errors) {
         File libs = new File(conf.rootDir, 'lib/test')
-        check libs.exists(), validationBundle.getString('exception.android.test.dir.lib')
-        ['junit', 'robolectric'].each { String lib ->
-            check libs.list().find { it.contains(lib) }, format(validationBundle.getString('exception.android.test.lib'), lib)
+        propValidator.with {
+            errors << validateCondition(libs.exists(), validationBundle.getString('exception.android.test.dir.lib'))
+            ['junit', 'robolectric'].each { String lib ->
+                errors << validateCondition(libs.list().find { l -> l.contains(lib) } as boolean,
+                        format(validationBundle.getString('exception.android.test.lib'), lib))
+            }
+            errors << validateCondition(testDir.validator(testDir.value),
+                    format(validationBundle.getString('exception.android.test.dir'), testDir.value, testDir.name))
         }
-        check testDir.validator(testDir.value),
-                format(validationBundle.getString('exception.android.test.dir'), testDir.value, testDir.name)
     }
 }

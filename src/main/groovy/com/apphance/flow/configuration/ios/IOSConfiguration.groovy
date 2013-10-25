@@ -74,7 +74,7 @@ class IOSConfiguration extends ProjectConfiguration {
     }
 
     @Lazy
-    Collection<String> sourceExcludes = { super.sourceExcludes + ["**/xcuserdata/**"] }()
+    Collection<String> sourceExcludes = { super.sourceExcludes + ['xcuserdata'] }()
 
     @Override
     boolean isEnabled() {
@@ -82,7 +82,7 @@ class IOSConfiguration extends ProjectConfiguration {
     }
 
     @Override
-    void checkProperties() {
-        defaultValidation sdk, simulatorSdk
+    void validate(List<String> errors) {
+        errors.addAll(propValidator.validateProperties(sdk, simulatorSdk))
     }
 }

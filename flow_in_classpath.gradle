@@ -36,5 +36,6 @@ rootProject.buildscript {
         classpath 'org.imgscalr:imgscalr-lib:4.2'
         classpath 'com.google.android:android:4.1.1.4'
         classpath 'com.thoughtworks.qdox:qdox:1.12.1'
+        classpath 'com.android.tools.build:gradle:0.6.1'
     }
 }

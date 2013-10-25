@@ -4,6 +4,7 @@ import com.apphance.flow.TestUtils
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.configuration.properties.StringProperty
+import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.executor.command.CommandLogFilesGenerator
 import com.apphance.flow.util.FlowUtils
 import com.google.common.io.Files
@@ -39,6 +40,7 @@ class ImageMontageTaskSpec extends Specification {
         testDir.deleteOnExit()
         releaseConf.getReleaseDir() >> testDir
         releaseConf.otaDir >> new File(OTA_DIR)
+        releaseConf.releaseUrl >> new URLProperty(value: 'http://someurl.com/path')
         conf.getProjectName() >> new StringProperty(value: 'testProjectName')
         conf.getVersionString() >> 'vs'
         conf.getVersionCode() >> 'vc'
@@ -49,6 +51,7 @@ class ImageMontageTaskSpec extends Specification {
         imageMontageTask.project >> project
         imageMontageTask.conf = conf
         imageMontageTask.releaseConf = releaseConf
+        imageMontageTask.init()
     }
 
     def "test outputMontageFile"() {

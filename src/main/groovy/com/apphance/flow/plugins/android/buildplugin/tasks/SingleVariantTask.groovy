@@ -47,10 +47,8 @@ class SingleVariantTask extends DefaultTask {
         if (variant.variantDir?.value?.exists()) {
             overrideVariantFilesAndMergeManifest(variant.tmpDir, variant.variantDir?.value)
         } else {
-            logger.lifecycle("No files copied because variant directory ${variant.variantDir?.value} does not exists")
+            logger.lifecycle("No files copied because variant directory ${variant.variantDir?.value} does not exist")
         }
-
-        def builderInfo = artifactProvider.builderInfo(variant)
 
         if (variant.oldPackage.value && variant.newPackage.value) {
             new PackageReplacer().replace(variant.tmpDir, variant.oldPackage.value, variant.newPackage.value, variant.newLabel.value, variant.newName.value)
@@ -58,6 +56,7 @@ class SingleVariantTask extends DefaultTask {
 
         new LibraryDependencyHandler().handleLibraryDependencies(variant.tmpDir)
 
+        def builderInfo = artifactProvider.builderInfo(variant)
         executeBuildTarget builderInfo.tmpDir, builderInfo.mode.lowerCase()
 
         if (builderInfo.originalFile.exists()) {

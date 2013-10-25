@@ -5,7 +5,6 @@ import groovy.json.JsonSlurper
 import org.gradle.tooling.BuildLauncher
 import org.gradle.tooling.ProjectConnection
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import static org.apache.commons.io.FileUtils.copyDirectory
 import static org.gradle.tooling.GradleConnector.newConnector
@@ -34,7 +33,6 @@ class BuildDocSpec extends Specification {
         connection.close()
     }
 
-    @Unroll
     def 'test build without documentation'() {
         when:
         buildLauncher.withArguments([additionalArgs, "-PflowProjectPath=${new File('.').absolutePath}"].flatten() as String[]).run()

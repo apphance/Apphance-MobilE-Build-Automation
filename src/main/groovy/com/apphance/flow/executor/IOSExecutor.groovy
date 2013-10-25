@@ -7,15 +7,12 @@ import com.apphance.flow.plugins.ios.parsers.XCOutputParser
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
-import java.util.regex.Pattern
 
 import static org.gradle.api.logging.Logging.getLogger
 
 class IOSExecutor {
 
     private logger = getLogger(getClass())
-    private final VERSION_PATTERN = Pattern.compile('(\\d+\\.)+\\d+')
-
 
     @Inject IOSConfiguration conf
     @Inject XCOutputParser parser
@@ -107,11 +104,16 @@ class IOSExecutor {
         executor.executeCommand(new Command(runDir: dir, cmd: buildCmd))
     }
 
-    def runTests(File runDir, List<String> cmd, String testResultPath) {
+    def runTestsLT5(File runDir, List<String> cmd, String testResultPath) {
         executor.executeCommand new Command(runDir: runDir, cmd: cmd, failOnError: false,
                 environment: [RUN_UNIT_TEST_WITH_IOS_SIM: 'YES', UNIT_TEST_OUTPUT_FILE: testResultPath]
         )
     }
+
+    def runTests5(File runDir, List<String> cmd) {
+        executor.executeCommand new Command(runDir: runDir, cmd: cmd, failOnError: false)
+    }
+
 
     Iterator<String> dwarfdumpArch(File dSYM, String arch) {
         executor.executeCommand(new Command(
@@ -153,28 +155,4 @@ class IOSExecutor {
             ''
         }
     }()
-
-    @Lazy
-    String podVersion = {
-        try {
-            def output = executor.executeCommand(new Command(
-                    runDir: conf.rootDir,
-                    cmd: ['gem', 'list', '--local']
-            ))
-            def line = output.find { it.matches('cocoapods \\((\\d+\\.)+\\d+\\)') }
-            line = line ? line.trim() : ''
-            def matcher = VERSION_PATTERN.matcher(line)
-            matcher.find() ? matcher.group(0) : ''
-        } catch (Exception e) {
-            logger.error("Error while getting pod version: {}", e.message)
-            ''
-        }
-    }()
-
-    def podInstall(File dir) {
-        executor.executeCommand(new Command(
-                runDir: dir,
-                cmd: ['pod', 'istall']
-        ))
-    }
 }

@@ -5,7 +5,7 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantsConfigura
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.plugins.android.apphance.tasks.AddApphanceToAndroid
 import com.apphance.flow.plugins.android.apphance.tasks.UploadAndroidArtifactTask
-import com.apphance.flow.plugins.project.tasks.VerifySetupTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -13,7 +13,6 @@ import javax.inject.Inject
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.DISABLED
 import static org.gradle.api.logging.Logging.getLogger
-
 
 /**
  * Plugin for enabling Apphance (<a href="http://www.apphance.com">apphance.com</a>) library in android project.<br/>
@@ -37,16 +36,16 @@ class AndroidApphancePlugin implements Plugin<Project> {
             logger.lifecycle("Applying plugin ${this.class.simpleName}")
 
             variantsConf.variants.each { AndroidVariantConfiguration variantConf ->
-                if (variantConf.apphanceMode.value != DISABLED) {
+                if (variantConf.aphMode.value != DISABLED) {
                     logger.lifecycle("Adding apphance task for ${variantConf.name}")
 
                     def buildVariantTask = project.tasks.findByName(variantConf.buildTaskName)
                     def addApphanceTask = project.task("addApphance$variantConf.name", description: "adding Apphance on-the-fly to $variantConf.name variant")
                     addApphanceTask.doFirst {
-                        new AddApphanceToAndroid(variantConf, apphanceConf.enableShaking.value).addApphance()
+                        new AddApphanceToAndroid(variantConf).addApphance()
                     }
+                    addApphanceTask.dependsOn CopySourcesTask.NAME
                     buildVariantTask.dependsOn addApphanceTask
-                    addApphanceTask.dependsOn project.tasks.getByName(VerifySetupTask.NAME)
                     project.task(variantConf.uploadTaskName, type: UploadAndroidArtifactTask, dependsOn: buildVariantTask?.name).variant = variantConf
                 } else {
                     logger.lifecycle("Not adding apphance to ${variantConf.name} because it is $DISABLED")

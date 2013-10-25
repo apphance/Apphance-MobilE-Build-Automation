@@ -2,6 +2,7 @@ package com.apphance.flow.plugins.release.tasks
 
 import com.apphance.flow.configuration.ProjectConfiguration
 import com.apphance.flow.configuration.release.ReleaseConfiguration
+import com.apphance.flow.plugins.android.nbs.FlowExtension
 import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.util.ImageUtil
 import groovy.transform.PackageScope
@@ -10,15 +11,22 @@ import ij.ImageStack
 import ij.plugin.MontageMaker
 import ij.process.ColorProcessor
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 import javax.imageio.ImageIO
 import javax.inject.Inject
 import java.awt.*
 import java.awt.image.BufferedImage
+import java.text.SimpleDateFormat
 import java.util.List
 
+import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
+import static com.apphance.flow.configuration.release.ReleaseConfiguration.OTA_DIR
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
+import static com.apphance.flow.plugins.android.nbs.NbsPlugin.FLOW_EXTENSION
+import static com.apphance.flow.util.NBSModelUtil.getVersionCode
+import static com.apphance.flow.util.NBSModelUtil.getVersionName
 import static com.apphance.flow.util.file.FileManager.EXCLUDE_FILTER
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static groovy.io.FileType.FILES
@@ -34,6 +42,35 @@ class ImageMontageTask extends DefaultTask {
     @Inject ProjectConfiguration conf
     @Inject ReleaseConfiguration releaseConf
 
+    FlowArtifact imageMontageArtifact = new FlowArtifact()
+
+    String projectName = project.name
+    File rootDir = project.rootDir
+
+    File tmpDir = project.file(TMP_DIR)
+    File otaDir = project.file(OTA_DIR)
+
+    Closure<String> fullVersionString = { getVersionName(project) + '_' + getVersionCode(project) }
+    Closure<String> releaseUrl = { project.hasProperty(FLOW_EXTENSION) ? (project.flow as FlowExtension).releaseUrl : '' }
+    Closure<File> releaseDir = { new File(otaDir, "${ReleaseConfiguration.getReleaseDirName releaseUrl.call()}/${fullVersionString.call()}") }
+
+    Closure<String> projectNameNoWhiteSpace = { projectName?.replaceAll('\\s', '_') }
+    String buildDate = new SimpleDateFormat("dd-MM-yyyy HH:mm zzz").format(new Date())
+
+    @Inject
+    void init() {
+        releaseConf.imageMontageFile = imageMontageArtifact
+
+        projectName = conf.projectName.value
+        rootDir = conf.rootDir
+        tmpDir = conf.tmpDir
+        otaDir = releaseConf.otaDir
+
+        fullVersionString = { conf.fullVersionString }
+        releaseUrl = { releaseConf.releaseUrl.value.toString() }
+        releaseDir = { releaseConf.releaseDir }
+    }
+
     public static int TILE_PX_SIZE = 120
     public static int MAX_NUMBER_OF_TILES_IN_ROW = 10
     public static int DESCRIPTION_FONT_SIZE = 10
@@ -41,16 +78,18 @@ class ImageMontageTask extends DefaultTask {
     @TaskAction
     void imageMontage() {
         logger.lifecycle "Preparing image montage"
-        def filesToMontage = getFilesToMontage(conf.rootDir)
+        if (!releaseUrl.call()) throw new GradleException("'releaseUrl' property not configured in 'flow' extension.")
+        def filesToMontage = getFilesToMontage(rootDir)
         logger.lifecycle "Found ${filesToMontage.size()} files"
         File imageMontageFile = outputMontageFile()
         createMontage(imageMontageFile, filesToMontage)
-        addDescription(imageMontageFile, "${conf.projectName.value} Version: ${conf.fullVersionString} Generated: ${releaseConf.buildDate}")
+        addDescription(imageMontageFile, "${projectName} Version: ${fullVersionString.call()} Generated: ${buildDate}")
 
-        releaseConf.imageMontageFile = new FlowArtifact(
-                name: 'Image Montage',
-                url: new URL("$releaseConf.releaseUrlVersioned/$imageMontageFile.name"),
-                location: imageMontageFile)
+        imageMontageArtifact.with {
+            name = 'Image Montage'
+            url = new URL("${releaseUrl.call().toURL()}/${fullVersionString.call()}/$imageMontageFile.name")
+            location = imageMontageFile
+        }
 
         logger.lifecycle "Created image montage $imageMontageFile.absolutePath"
     }
@@ -70,8 +109,7 @@ class ImageMontageTask extends DefaultTask {
 
     @PackageScope
     File outputMontageFile() {
-        def imageMontageFile = new File(releaseConf.releaseDir,
-                "${conf.projectNameNoWhiteSpace}-${conf.fullVersionString}-image-montage.png")
+        def imageMontageFile = new File(releaseDir.call(), "${projectNameNoWhiteSpace()}-${fullVersionString.call()}-image-montage.png")
         imageMontageFile.parentFile.mkdirs()
         imageMontageFile.delete()
         imageMontageFile
@@ -82,7 +120,7 @@ class ImageMontageTask extends DefaultTask {
         List<File> filesToMontage = []
 
         rootDir.traverse([type: FILES, maxDepth: MAX_RECURSION_LEVEL, excludeFilter: EXCLUDE_FILTER]) { File file ->
-            if (isValid(file) && [conf.tmpDir, releaseConf.otaDir]*.name.every { !file.absolutePath.contains(it) }) {
+            if (isValid(file) && [tmpDir, otaDir]*.name.every { !file.absolutePath.contains(it) }) {
                 filesToMontage << file
             }
         }
@@ -142,7 +180,7 @@ class ImageMontageTask extends DefaultTask {
 
     @PackageScope
     Collection<Image> resizeImages(List<File> inputs) {
-        Collection<Image> images = inputs.collect {
+        inputs.collect {
 
             def image = ImageUtil.getImageFrom(it)
 
@@ -153,9 +191,6 @@ class ImageMontageTask extends DefaultTask {
                 logger.error("Problem during converting ${it.absolutePath}")
                 null
             }
-        }
-
-        images.removeAll { it == null }
-        images
+        }.grep()
     }
 }

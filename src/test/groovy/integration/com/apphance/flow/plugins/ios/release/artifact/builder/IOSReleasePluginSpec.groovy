@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.ios.release.artifact.builder
 import com.apphance.flow.configuration.ios.IOSReleaseConfiguration
 import com.apphance.flow.plugins.ios.release.IOSReleasePlugin
 import com.apphance.flow.plugins.ios.release.tasks.AvailableArtifactsInfoTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import com.apphance.flow.plugins.release.tasks.AbstractUpdateVersionTask
 import spock.lang.Specification
 
@@ -28,8 +29,11 @@ class IOSReleasePluginSpec extends Specification {
         irp.apply(project)
 
         then:
-        project.tasks[AbstractUpdateVersionTask.NAME].group == FLOW_RELEASE.name()
-        project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.name()
+        project.tasks[AbstractUpdateVersionTask.NAME].group == FLOW_RELEASE.toString()
+        project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.toString()
+
+        then:
+        project.tasks[AbstractUpdateVersionTask.NAME].dependsOn.contains(CopySourcesTask.NAME)
     }
 
     def 'no tasks available when configuration is inactive'() {

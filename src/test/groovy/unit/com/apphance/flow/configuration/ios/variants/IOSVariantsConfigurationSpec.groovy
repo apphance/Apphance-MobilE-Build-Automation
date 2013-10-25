@@ -19,7 +19,7 @@ class IOSVariantsConfigurationSpec extends Specification {
         conf = GroovyMock(IOSConfiguration)
         variantsConf = new IOSVariantsConfiguration()
         variantsConf.conf = conf
-        variantsConf.propertyPersister = Stub(PropertyPersister, { get(_) >> '' })
+        variantsConf.propPersister = Stub(PropertyPersister, { get(_) >> '' })
         variantsConf.variantFactory = GroovyMock(IOSVariantFactory) {
             createSchemeVariant(_) >> GroovyMock(IOSSchemeVariant) {
                 isEnabled() >> true

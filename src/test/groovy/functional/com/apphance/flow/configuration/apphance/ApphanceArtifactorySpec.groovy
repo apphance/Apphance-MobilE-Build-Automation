@@ -41,7 +41,7 @@ class ApphanceArtifactorySpec extends Specification {
 
     def 'iOS lib versions are filled'() {
         expect:
-        apphanceArtifactory.iOSLibraries(mode, 'armv7') == ['1.8.17']
+        apphanceArtifactory.iOSLibraries(mode).containsAll('1.8.17')
 
         where:
         mode << [QA, SILENT, PROD]
@@ -49,39 +49,10 @@ class ApphanceArtifactorySpec extends Specification {
 
     def 'exception thrown when bad mode passed for iOS libs'() {
         when:
-        apphanceArtifactory.iOSLibraries(DISABLED, null)
+        apphanceArtifactory.iOSLibraries(DISABLED)
 
         then:
         def e = thrown(IllegalArgumentException)
         e.message == 'Invalid apphance mode: DISABLED'
-    }
-
-    def 'exception thrown when empty arch passed for iOS libs'() {
-        when:
-        apphanceArtifactory.iOSLibraries(QA, null)
-
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.message == 'Invalid arch: null'
-    }
-
-    def 'exception thrown when bad arch passed for iOS libs'() {
-        when:
-        def libs = apphanceArtifactory.iOSLibraries(QA, 'armv3145')
-
-        then:
-        noExceptionThrown()
-        libs == []
-    }
-
-    def 'iOS architectures downloaded correctly for mode'() {
-        expect:
-        archs == apphanceArtifactory.iOSArchs(mode)
-
-        where:
-        mode   | archs
-        QA     | ['armv7']
-        SILENT | ['armv7']
-        PROD   | ['armv7']
     }
 }

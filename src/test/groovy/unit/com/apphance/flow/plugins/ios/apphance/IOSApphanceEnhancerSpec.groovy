@@ -3,7 +3,9 @@ package com.apphance.flow.plugins.ios.apphance
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
+import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -67,35 +69,52 @@ class IOSApphanceEnhancerSpec extends Specification {
     def 'apphance dependency group resolved'() {
         given:
         def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
-            getApphanceMode() >> new ApphanceModeProperty(value: apphanceMode)
+            getAphMode() >> new ApphanceModeProperty(value: aphMode)
         })
 
         expect:
         enhancer.apphanceDependencyGroup == expectedDependency
 
         where:
-        apphanceMode | expectedDependency
-        QA           | 'pre-production'
-        SILENT       | 'pre-production'
-        PROD         | 'production'
+        aphMode | expectedDependency
+        QA      | 'pre-production'
+        SILENT  | 'pre-production'
+        PROD    | 'production'
     }
 
     def 'apphance zip url is constructed correctly'() {
         given:
         def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
-            getApphanceMode() >> new ApphanceModeProperty(value: apphanceMode)
-            getApphanceLibVersion() >> new StringProperty(value: '1.8.8')
-            getApphanceDependencyArch() >> 'armv7'
+            getAphMode() >> new ApphanceModeProperty(value: aphMode)
+            getAphLib() >> new StringProperty(value: '1.8.8')
+            getAphLibUrl() >> new URLProperty()
         })
 
         expect:
         enhancer.apphanceUrl == expectedUrl
 
         where:
-        apphanceMode | expectedUrl
-        QA           | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8-armv7.zip'
-        SILENT       | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8-armv7.zip'
-        PROD         | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-prod/1.8.8/apphance-prod-1.8.8-armv7.zip'
+        aphMode | expectedUrl
+        QA      | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8.zip'
+        SILENT  | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8.zip'
+        PROD    | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-prod/1.8.8/apphance-prod-1.8.8.zip'
+    }
+
+    def 'apphance url is set correctly'() {
+        given:
+        def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
+            getAphMode() >> new ApphanceModeProperty(value: aphMode)
+            getAphLib() >> new StringProperty(value: '1.8.8')
+            getAphLibUrl() >> new URLProperty(value: url)
+        })
+
+        expect:
+        enhancer.apphanceUrl == expectedUrl
+
+        where:
+        url               | aphMode | expectedUrl
+        null              | QA      | 'https://dev.polidea.pl/artifactory/libs-releases-local/com/utest/apphance-preprod/1.8.8/apphance-preprod-1.8.8.zip'
+        'http://some.url' | QA      | 'http://some.url'
     }
 
     def 'framework folders are checked when exist'() {
@@ -104,8 +123,8 @@ class IOSApphanceEnhancerSpec extends Specification {
 
         def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
             getTmpDir() >> tmpDir
-            getApphanceMode() >> new ApphanceModeProperty(value: mode)
-            getApphanceLibVersion() >> new StringProperty(value: '1.8.')
+            getAphMode() >> new ApphanceModeProperty(value: mode)
+            getAphLib() >> new StringProperty(value: '1.8.')
         })
 
         and:

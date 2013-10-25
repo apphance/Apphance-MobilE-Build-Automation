@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.android.release
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
 import com.apphance.flow.plugins.android.release.tasks.AvailableArtifactsInfoTask
 import com.apphance.flow.plugins.android.release.tasks.UpdateVersionTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import spock.lang.Specification
 
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_RELEASE
@@ -27,8 +28,11 @@ class AndroidReleasePluginSpec extends Specification {
         arp.apply(project)
 
         then: 'every single task is in correct group'
-        project.tasks[UpdateVersionTask.NAME].group == FLOW_RELEASE.name()
-        project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.name()
+        project.tasks[UpdateVersionTask.NAME].group == FLOW_RELEASE.toString()
+        project.tasks[AvailableArtifactsInfoTask.NAME].group == FLOW_RELEASE.toString()
+
+        then:
+        project.tasks[UpdateVersionTask.NAME].dependsOn.contains(CopySourcesTask.NAME)
     }
 
     def 'no tasks available when configuration is inactive'() {

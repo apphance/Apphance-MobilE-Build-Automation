@@ -5,7 +5,6 @@ import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.analysis.tasks.CPDTask
 import com.apphance.flow.plugins.android.analysis.tasks.LintTask
-import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import com.apphance.flow.util.FlowUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -79,8 +78,6 @@ class AndroidAnalysisPlugin implements Plugin<Project> {
                         classes, testClasses].each { it.enabled = false }
                 [checkstyle, findbugs, pmd, cpd].each { it.ignoreFailures = true }
             }
-
-            analysisTasks.each { project.tasks.findByName(it)?.dependsOn(VerifySetupTask.NAME) }
         }
     }
 

@@ -1,22 +1,16 @@
 import org.gradle.api.artifacts.maven.MavenDeployment
 
-allprojects {
-    apply {
-        plugin 'java'
-        plugin 'groovy'
-        plugin 'eclipse'
-        plugin 'idea'
-    }
-
-    repositories {
-        mavenCentral()
-    }
-}
-
 apply {
+    plugin 'java'
+    plugin 'groovy'
+    plugin 'eclipse'
+    plugin 'idea'
     plugin 'maven'
     plugin 'signing'
-    plugin 'codenarc'
+}
+
+repositories {
+    mavenCentral()
 }
 
 group = 'com.apphance.flow'
@@ -33,10 +27,6 @@ task javadocJar(type: Jar, dependsOn: groovydoc, description: 'Prepares .jar fil
 }
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
-
-codenarc {
-    configFile = file('codenarc.groovy')
-}
 
 signing {
     if (isReleaseVersion) {
@@ -153,6 +143,7 @@ dependencies {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
     compile 'com.google.gdata:core:1.47.1'
+    compile 'com.android.tools.build:gradle:0.6.1'
 
     testCompile('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
@@ -260,14 +251,14 @@ artifacts {
 }
 
 task buildPluginReference(dependsOn: classes, type: JavaExec) {
-    inputs.dir new File('src')
+    inputs.files file('src'), file('projects/doc')
     outputs.dir new File(buildDir, 'doc')
     main = 'com.apphance.flow.docs.DocGenerator'
     classpath = sourceSets.main.runtimeClasspath
 }
 
-task sendDocToFlowSite(type: JavaExec, dependsOn: buildPluginReference ) {
-    inputs.dir new File(buildDir, 'doc')
+task sendDocToFlowSite(type: JavaExec, dependsOn: buildPluginReference) {
+    inputs.file buildPluginReference
     outputs.upToDateWhen { true }
     main = 'com.apphance.flow.docs.DocSender'
     classpath = sourceSets.main.runtimeClasspath

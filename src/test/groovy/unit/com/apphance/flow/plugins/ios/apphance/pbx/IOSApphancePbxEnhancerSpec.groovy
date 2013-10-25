@@ -78,7 +78,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         def variant = GroovyMock(AbstractIOSVariant) {
             getTarget() >> 'GradleXCode'
             getArchiveConfiguration() >> 'Release'
-            getApphanceMode() >> new ApphanceModeProperty(value: QA)
+            getAphMode() >> new ApphanceModeProperty(value: QA)
             getTmpDir() >> tmpDir
             getPbxFile() >> new File(tmpDir, 'GradleXCode/GradleXCode.xcodeproj/project.pbxproj')
         }

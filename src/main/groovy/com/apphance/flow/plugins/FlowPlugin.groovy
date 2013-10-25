@@ -1,20 +1,26 @@
 package com.apphance.flow.plugins
 
+import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.di.*
 import com.apphance.flow.util.Version
+import com.apphance.flow.validation.ConfigurationValidator
 import com.google.inject.Guice
 import groovy.transform.PackageScope
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+import javax.inject.Inject
+
+import static com.apphance.flow.configuration.reader.GradlePropertiesPersister.FLOW_PROP_FILENAME
 import static org.gradle.api.logging.Logging.getLogger
 
 class FlowPlugin implements Plugin<Project> {
 
-    static final Version BORDER_VERSION = new Version('1.7')
-
-    def logger = getLogger(getClass())
+    private final static Version BORDER_VERSION = new Version('1.7')
+    private logger = getLogger(getClass())
+    @Inject Map<Integer, AbstractConfiguration> configurations
+    @Inject ConfigurationValidator configurationValidator
 
     @Override
     void apply(Project project) {
@@ -33,6 +39,10 @@ class FlowPlugin implements Plugin<Project> {
                 new EnvironmentModule(),
                 new CommandExecutorModule(project),
         )
+
+        injector.injectMembers(this)
+        validateConfiguration(project.file(FLOW_PROP_FILENAME))
+
         injector.getInstance(PluginMaster).enhanceProject(project)
 
         project.tasks.each { injector.injectMembers(it) }
@@ -40,7 +50,7 @@ class FlowPlugin implements Plugin<Project> {
 
     String flowVersion(Project project) {
         File flowJar = project.buildscript.configurations.classpath.find { it.name.contains('apphance-flow') } as File
-        getVersion(flowJar?.name)
+        extractVersionFromFilename(flowJar?.name)
     }
 
     @PackageScope
@@ -58,10 +68,21 @@ class FlowPlugin implements Plugin<Project> {
         version.substring(0, underscore >= 0 ? underscore : version.length()).trim()
     }
 
-    static String getVersion(String fileName) {
+    @PackageScope
+    String extractVersionFromFilename(String fileName) {
         def regex = /.*-(\d.*).jar/
         def matcher = (fileName =~ regex)
-        matcher.matches() ? (matcher.getAt(0) as List)?.get(1) : ''
+        matcher.matches() ? (matcher[0])?.get(1) : ''
+    }
+
+    @PackageScope
+    void validateConfiguration(File properties) {
+        if (properties?.exists() && properties?.isFile() && properties?.size() > 0) {
+            logger.info("Running configuration validation")
+            configurationValidator.validate(configurations.values())
+        } else {
+            logger.debug("Skipping configuration validation - ${properties?.absolutePath} does not exist")
+        }
     }
 
     static String FLOW_ASCII_ART = """

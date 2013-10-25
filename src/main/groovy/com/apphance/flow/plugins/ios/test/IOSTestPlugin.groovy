@@ -1,9 +1,8 @@
 package com.apphance.flow.plugins.ios.test
 
 import com.apphance.flow.configuration.ios.IOSTestConfiguration
-import com.apphance.flow.plugins.ios.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.ios.test.tasks.IOSTestTask
-import com.apphance.flow.plugins.project.tasks.VerifySetupTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -17,12 +16,13 @@ import static org.gradle.api.logging.Logging.getLogger
  * <br/><br/>
  * To enable this plugin following requirements must be fulfilled:
  * <ul>
- *     <li>xcode version must be between 4.6.2 and 5.0</li>
  *     <li>ios-sim must be installed</li>
  *     <li>test targets must be enabled</li>
  * </ul>
- * Running tests is done by adding special shell script to build phase in project.pbxproj configuration file and then
- * invoking 'build' action for particular target and configuration.
+ * For xcode version lower than 5.0 running tests is done by adding special shell script to build phase in
+ * project.pbxproj configuration file and then invoking 'build' action for particular target and configuration.
+ * <br/><br/>
+ * For xcode version higher or equal to 5.0 simply 'test' action is invoked for the specified variant.
  */
 class IOSTestPlugin implements Plugin<Project> {
 
@@ -42,7 +42,6 @@ class IOSTestPlugin implements Plugin<Project> {
                 project.task(TEST_ALL_TASK_NAME,
                         group: FLOW_TEST,
                         description: "Aggregate task, runs tests for all variants configured in 'ios.test.variants'.")
-                project.tasks[TEST_ALL_TASK_NAME].mustRunAfter VerifySetupTask.NAME
 
                 testConf.testVariants.each { variant ->
 
@@ -56,8 +55,6 @@ class IOSTestPlugin implements Plugin<Project> {
                     project.tasks[TEST_ALL_TASK_NAME].dependsOn variant.testTaskName
 
                     project.tasks.findByName(variant.archiveTaskName)?.dependsOn variant.testTaskName
-
-                    project.tasks.findByName(variant.testTaskName).mustRunAfter VerifySetupTask.NAME
                 }
             }
         }

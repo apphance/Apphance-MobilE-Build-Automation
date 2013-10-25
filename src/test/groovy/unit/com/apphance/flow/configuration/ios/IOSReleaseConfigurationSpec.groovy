@@ -116,8 +116,9 @@ class IOSReleaseConfigurationSpec extends Specification {
     def 'default icon exists where empty conf'() {
         given:
         def releaseConf = new IOSReleaseConfiguration()
-        releaseConf.propertyPersister = GroovyStub(PropertyPersister) {
+        releaseConf.propPersister = GroovyStub(PropertyPersister) {
             get('release.icon') >> null
+            get('release.url') >> null
         }
         releaseConf.conf = GroovyStub(IOSConfiguration) {
             getRootDir() >> new File('.')
@@ -138,8 +139,9 @@ class IOSReleaseConfigurationSpec extends Specification {
     def 'default icon exists when set'() {
         given:
         def conf = new IOSReleaseConfiguration()
-        conf.propertyPersister = GroovyStub(PropertyPersister) {
+        conf.propPersister = GroovyStub(PropertyPersister) {
             get('release.icon') >> 'src/test/resources/com/apphance/flow/plugins/release/tasks/Blank.jpg'
+            get('release.url') >> null
         }
 
         when:

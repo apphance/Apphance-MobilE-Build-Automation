@@ -10,7 +10,7 @@ import java.util.zip.ZipOutputStream
 
 import static com.google.common.base.Preconditions.checkArgument
 import static groovy.json.JsonOutput.toJson
-import static java.lang.Integer.decode
+import static java.lang.Long.decode
 import static org.apache.commons.lang.StringUtils.*
 import static org.gradle.api.logging.Logging.getLogger
 

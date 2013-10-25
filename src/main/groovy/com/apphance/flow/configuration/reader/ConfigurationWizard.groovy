@@ -122,6 +122,6 @@ class ConfigurationWizard {
     }
 
     String effectiveDefaultValue(AbstractProperty ap) {
-        ap.getValue() ?: ap.defaultValue() ?: ap.possibleValues() ? ap.possibleValues().get(0) : ''
+        ap.getValue() ?: (ap.defaultValue() != null) ? ap.defaultValue() : ap.possibleValues() ? ap.possibleValues().get(0) : ''
     }
 }

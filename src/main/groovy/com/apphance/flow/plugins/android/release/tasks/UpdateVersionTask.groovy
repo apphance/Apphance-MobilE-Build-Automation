@@ -18,6 +18,8 @@ class UpdateVersionTask extends AbstractUpdateVersionTask {
 
     @Override
     void updateDescriptor(String versionCode, String versionString) {
-        manifestHelper.updateVersion(conf.rootDir, versionString, versionCode)
+        variantsConf.variants.each { v ->
+            manifestHelper.updateVersion(v.tmpDir, versionString, versionCode)
+        }
     }
 }

@@ -1,14 +1,20 @@
 package com.apphance.flow.plugins.android.release.tasks
 
-import com.apphance.flow.configuration.android.AndroidConfiguration
+import com.android.build.gradle.AppExtension
+import com.android.build.gradle.api.ApplicationVariant
 import com.apphance.flow.configuration.android.AndroidReleaseConfiguration
+import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
 import com.apphance.flow.plugins.android.builder.AndroidArtifactProvider
+import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.plugins.release.tasks.AbstractAvailableArtifactsInfoTask
+import com.apphance.flow.plugins.release.tasks.ImageMontageTask
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
+import static com.apphance.flow.configuration.ProjectConfiguration.TMP_DIR
+import static com.apphance.flow.util.NBSModelUtil.*
 import static com.apphance.flow.util.file.FileManager.getHumanReadableSize
 
 class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
@@ -17,22 +23,54 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     @Inject AndroidArtifactProvider artifactBuilder
 
     @PackageScope
-    AndroidConfiguration getConf() {
-        super.@releaseConf as AndroidConfiguration
-    }
-
-
-    @PackageScope
     AndroidReleaseConfiguration getReleaseConf() {
         super.@releaseConf as AndroidReleaseConfiguration
     }
 
+    List<AndroidVariantConfiguration> generatedVariants = []
+
+    Map<String, FlowArtifact> artifacts = [:]
+
+    List<AndroidVariantConfiguration> getAndroidVariants() {
+        variantsConf?.variants ?: generatedVariants
+    }
+
+    @Lazy
+    AppExtension androidNBS = { getAndroidNBS(project) }()
+
     @PackageScope
     void prepareOtherArtifacts() {
 
-        variantsConf.variants.each {
-            def bi = artifactBuilder.builderInfo(it)
-            releaseConf.artifacts.put(bi.id, artifactBuilder.artifact(bi))
+        artifactBuilder = artifactBuilder ?: new AndroidArtifactProvider(
+                fullVersionString: projectFullVersion,
+                projectNameNoWhiteSpace: projectNameNoWhiteSpace,
+                releaseUrlVersioned: releaseUrlVersioned,
+                releaseDir: releaseDir
+        )
+
+        if (androidNBS) {
+            logger.lifecycle "Detected android gradle New Build System. Configuring variants taken from android configuration."
+
+            androidNBS.applicationVariants.all { ApplicationVariant variant ->
+                logger.lifecycle "Configuring NBS variant: $variant.name, output file: $variant.outputFile "
+
+                def flowVariant = new AndroidVariantConfiguration(variant.name)
+                flowVariant.projectTmpDir = { project.file(TMP_DIR) }
+                flowVariant.projectNameNoWhiteSpace = projectNameNoWhiteSpace
+                flowVariant.outputFile = { variant.outputFile }
+                generatedVariants << flowVariant
+            }
+        }
+
+        androidVariants.each {
+            def builderInfo = artifactBuilder.builderInfo(it)
+            def artifact = artifactBuilder.artifact(builderInfo)
+            artifacts.put(builderInfo.id, artifact)
+            if (builderInfo?.originalFile?.exists()) {
+                ant.copy(file: builderInfo?.originalFile, tofile: artifact.location)
+            } else {
+                logger.error "File does not exist: ${builderInfo?.originalFile?.absolutePath} "
+            }
         }
 
         prepareFileIndexFile()
@@ -42,40 +80,50 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     @PackageScope
     Map mailMsgBinding() {
         basicBinding + [
-                otaUrl: releaseConf.otaIndexFile?.url,
-                fileIndexUrl: releaseConf.fileIndexFile?.url,
-                releaseNotes: releaseConf.releaseNotes,
+                otaUrl: otaIndexFile?.url,
+                fileIndexUrl: fileIndexFile?.url,
+                releaseNotes: releaseNotes,
                 fileSize: fileSize(),
-                releaseMailFlags: releaseConf.releaseMailFlags,
+                releaseMailFlags: releaseMailFlags,
                 rb: bundle('mail_message')
         ]
     }
 
     private String fileSize() {
-        getHumanReadableSize((releaseConf as AndroidReleaseConfiguration).artifacts[variantsConf.mainVariant.name].location.size())
+        getHumanReadableSize(artifacts[androidVariants[0].name].location.size())
+    }
+
+    FlowArtifact imageMontageArtifact() {
+        (project.tasks.findByPath(ImageMontageTask.NAME) as ImageMontageTask)?.imageMontageArtifact
     }
 
     @PackageScope
     void prepareFileIndexFile() {
         def binding = [
-                baseUrl: releaseConf.fileIndexFile.url,
-                variants: variantsConf.variants*.name,
-                variantsConf: variantsConf,
-                releaseConf: releaseConf,
+                baseUrl: fileIndexFile.url,
+                variants: androidVariants,
+                mailMessageFile: mailMessageFile,
+                imageMontageFile: imageMontageArtifact(),
+                QRCodeFile: QRCodeFile,
+                plainFileIndexFile: plainFileIndexFile,
+                artifacts: artifacts,
                 rb: bundle('file_index')
         ] + basicBinding
         def result = fillTemplate(loadTemplate('file_index.html'), binding)
-        templateToFile(releaseConf.fileIndexFile.location, result)
-        logger.lifecycle("File index created: ${releaseConf.fileIndexFile.location}")
+        templateToFile(fileIndexFile.location, result)
+        logger.lifecycle "File index created: ${fileIndexFile.location}"
     }
 
     @Override
     @PackageScope
     Map plainFileIndexFileBinding() {
         basicBinding + [
-                baseUrl: releaseConf.plainFileIndexFile.url,
-                variantsConf: variantsConf,
-                releaseConf: releaseConf,
+                baseUrl: plainFileIndexFile.url,
+                variants: androidVariants,
+                artifacts: artifacts,
+                mailMessageFile: mailMessageFile,
+                imageMontageFile: imageMontageArtifact(),
+                QRCodeFile: QRCodeFile,
                 rb: bundle('plain_file_index')
         ]
     }
@@ -84,12 +132,21 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     @PackageScope
     Map otaIndexFileBinding() {
         basicBinding + [
-                baseUrl: releaseConf.otaIndexFile.url,
-                releaseNotes: releaseConf.releaseNotes,
-                iconFileName: releaseConf.releaseIcon.value.name,
-                variantsConf: variantsConf,
-                releaseConf: releaseConf,
+                baseUrl: otaIndexFile.url,
+                releaseNotes: releaseNotes,
+                iconFileName: releaseIcon.name,
+                variants: androidVariants,
+                mainVariant: androidVariants[0],
+                artifacts: artifacts,
                 rb: bundle('index')
         ]
+    }
+
+    String getVersionString() {
+        super.@versionString ?: getVersionName(project)
+    }
+
+    String getVersionCode() {
+        super.@versionCode ?: getVersionCode(project)
     }
 }

@@ -6,13 +6,18 @@ import com.apphance.flow.configuration.apphance.ApphanceArtifactory
 import com.apphance.flow.configuration.apphance.ApphanceConfiguration
 import com.apphance.flow.configuration.apphance.ApphanceMode
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
+import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.StringProperty
+import com.apphance.flow.configuration.properties.URLProperty
+import com.apphance.flow.detection.project.ProjectType
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
 
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.apphance.ApphanceMode.DISABLED
+import static com.apphance.flow.configuration.properties.BooleanProperty.POSSIBLE_BOOLEAN
+import static org.apache.commons.lang.StringUtils.isEmpty
 
 abstract class AbstractVariant extends AbstractConfiguration {
 
@@ -32,22 +37,40 @@ abstract class AbstractVariant extends AbstractConfiguration {
     @Override
     void init() {
 
-        apphanceAppKey.name = "${prefix}.variant.${name}.apphance.appKey"
-        apphanceAppKey.message = "Apphance key for '$name'"
-        apphanceMode.name = "${prefix}.variant.${name}.apphance.mode"
-        apphanceMode.message = "Apphance mode for '$name'"
-        apphanceLibVersion.name = "${prefix}.variant.${name}.apphance.lib"
-        apphanceLibVersion.message = "Apphance lib version for '$name'"
+        aphMode.name = "${projectType.prefix}.variant.${name}.apphance.mode"
+        aphMode.message = "Apphance mode for '$name'"
+        aphAppKey.name = "${projectType.prefix}.variant.${name}.apphance.appKey"
+        aphAppKey.message = "Apphance key for '$name'"
+        aphLibUrl.name = "${projectType.prefix}.variant.${name}.apphance.libUrl"
+        aphLibUrl.message = "Apphance lib url for '$name'"
+        aphLib.name = "${projectType.prefix}.variant.${name}.apphance.lib"
+        aphLib.message = "Apphance lib version for '$name'"
+        aphWithUTest.name = "${projectType.prefix}.variant.${name}.apphance.withUTest"
+        aphWithUTest.message = "Apphance withUTest property for '$name'"
+        aphReportOnShake.name = "${projectType.prefix}.variant.${name}.apphance.reportOnShake"
+        aphReportOnShake.message = "Apphance reportOnShake property for '$name'"
+        aphDefaultUser.name = "${projectType.prefix}.variant.${name}.apphance.defaultUser"
+        aphDefaultUser.message = "Apphance defaultUser property for '$name'"
+        aphWithScreenShotsFromGallery.name = "${projectType.prefix}.variant.${name}.apphance.withScreenShotsFromGallery"
+        aphWithScreenShotsFromGallery.message = "Apphance withScreenShotsFromGallery property for '$name'"
+        aphReportOnDoubleSlide.name = "${projectType.prefix}.variant.${name}.apphance.reportOnDoubleSlide"
+        aphReportOnDoubleSlide.message = "Apphance reportOnDoubleSlide property for '$name'"
+        aphAppVersionName.name = "${projectType.prefix}.variant.${name}.apphance.appVersionName"
+        aphAppVersionName.message = "Apphance appVersionName property for '$name'"
+        aphAppVersionCode.name = "${projectType.prefix}.variant.${name}.apphance.appVersionCode"
+        aphAppVersionCode.message = "Apphance appVersionCode property for '$name'"
+        aphMachException.name = "${projectType.prefix}.variant.${name}.apphance.machException"
+        aphMachException.message = "Apphance machException property for '$name'"
 
-        displayName.name = "${prefix}.variant.${name}.display.name"
+        displayName.name = "${projectType.prefix}.variant.${name}.display.name"
 
-        apphanceAppKey.doc = { docBundle.getString('variant.apphance.appKey') }
-        apphanceLibVersion.doc = { docBundle.getString('variant.apphance.lib') }
+        aphAppKey.doc = { docBundle.getString('variant.apphance.appKey') }
+        aphLib.doc = { docBundle.getString('variant.apphance.lib') }
 
         super.init()
     }
 
-    def apphanceMode = new ApphanceModeProperty(
+    def aphMode = new ApphanceModeProperty(
             interactive: { apphanceEnabled },
             required: { apphanceConf.enabled },
             possibleValues: { possibleApphanceModes },
@@ -59,34 +82,97 @@ abstract class AbstractVariant extends AbstractConfiguration {
         ApphanceMode.values()*.name() as List<String>
     }()
 
-    def apphanceAppKey = new StringProperty(
-            interactive: { apphanceEnabled && !(DISABLED == apphanceMode.value) },
+    def aphAppKey = new StringProperty(
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) },
             required: { apphanceConf.enabled },
             validator: { it?.matches('[a-z0-9]+') },
             validationMessage: "Key should match '[a-z0-9]+'"
     )
 
-    def apphanceLibVersion = new StringProperty(
-            interactive: { apphanceEnabled && !(DISABLED == apphanceMode.value) },
+    def aphLibUrl = new URLProperty(
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
+            required: { false },
+            validator: { val ->
+                if (!val) return true
+                !propValidator.throwsException { (val as String).toURL() }
+            },
+            validationMessage: 'Should be a valid URL'
+    )
+
+    def aphLib = new StringProperty(
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && !aphLibUrl.hasValue() },
             possibleValues: { possibleApphanceLibVersions },
             validator: { it?.matches('([0-9]+\\.)*[0-9]+(-[^-]*)?') }
     )
 
     abstract List<String> getPossibleApphanceLibVersions()
 
+    def aphWithUTest = new BooleanProperty(
+            defaultValue: { false },
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) },
+            possibleValues: { POSSIBLE_BOOLEAN },
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN }
+    )
+
+    def aphReportOnShake = new BooleanProperty(
+            defaultValue: { true },
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) },
+            possibleValues: { POSSIBLE_BOOLEAN },
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN }
+    )
+
+    def aphDefaultUser = new StringProperty(
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) },
+    )
+
+    def aphWithScreenShotsFromGallery = new BooleanProperty(
+            defaultValue: { false },
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) },
+            possibleValues: { POSSIBLE_BOOLEAN },
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN }
+    )
+
+    def aphReportOnDoubleSlide = new BooleanProperty(
+            defaultValue: { false },
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
+            possibleValues: { POSSIBLE_BOOLEAN },
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN }
+    )
+
+    def aphAppVersionName = new StringProperty(
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() }
+    )
+
+    def aphAppVersionCode = new StringProperty(
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
+    )
+
+    def aphMachException = new BooleanProperty(
+            defaultValue: { false },
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
+            possibleValues: { POSSIBLE_BOOLEAN },
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN }
+    )
+
     @Lazy
     @PackageScope
     boolean apphanceEnabled = {
         def enabled = apphanceConf.enabled && apphanceEnabledForVariant
         if (!enabled)
-            apphanceMode.value = DISABLED
+            aphMode.value = DISABLED
         enabled
     }()
 
     @Lazy
+    @PackageScope
     boolean apphanceEnabledForVariant = {
         true
     }()
+
+    @PackageScope
+    boolean isIOS() {
+        projectType == ProjectType.IOS
+    }
 
     private displayName = new StringProperty(
             doc: { docBundle.getString('variant.display.name') },
@@ -122,21 +208,27 @@ abstract class AbstractVariant extends AbstractConfiguration {
 
     @Override
     String getEnabledPropKey() {
-        "${prefix}.variant.${name}.enabled"
+        "${projectType.prefix}.variant.${name}.enabled"
     }
 
     File getTmpDir() {
-        new File(conf.tmpDir, name)
+        new File(projectTmpDir(), name)
     }
 
-    abstract String getPrefix()
+    Closure<File> projectTmpDir = { conf.tmpDir }
+
+    abstract ProjectType getProjectType()
 
     @Override
-    void checkProperties() {
+    void validate(List<String> errors) {
         if (apphanceConf.enabled) {
-            defaultValidation apphanceMode
-            if (apphanceMode.value != DISABLED) {
-                defaultValidation apphanceAppKey, apphanceLibVersion
+            errors.addAll(propValidator.validateProperties(aphMode))
+            if (aphMode.value != DISABLED) {
+                errors.addAll(propValidator.validateProperties(aphAppKey))
+                if (aphLibUrl.hasValue())
+                    errors.addAll(propValidator.validateProperties(aphLibUrl))
+                else
+                    errors.addAll(propValidator.validateProperties(aphLib))
             }
         }
     }

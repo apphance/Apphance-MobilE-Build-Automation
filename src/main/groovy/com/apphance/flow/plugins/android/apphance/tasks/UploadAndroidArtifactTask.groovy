@@ -41,7 +41,7 @@ class UploadAndroidArtifactTask extends DefaultTask {
 
         String user = apphanceConf.user.value ?: reader.systemProperty('apphance.user') ?: reader.envVariable('APPHANCE_USER')
         String pass = apphanceConf.pass.value ?: reader.systemProperty('apphance.pass') ?: reader.envVariable('APPHANCE_PASS')
-        String key = variant.apphanceAppKey.value
+        String key = variant.aphAppKey.value
 
         validate(isNotEmpty(user), { throw new GradleException(bundle.getString('exception.apphance.empty.user')) })
         validate(isNotEmpty(pass), { throw new GradleException(bundle.getString('exception.apphance.empty.pass')) })

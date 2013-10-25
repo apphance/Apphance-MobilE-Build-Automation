@@ -2,6 +2,8 @@ package com.apphance.flow.plugins.ios.apphance.source
 
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
+import com.apphance.flow.configuration.properties.BooleanProperty
+import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancer
 import org.gradle.api.GradleException
 import org.gradle.testfixtures.ProjectBuilder
@@ -73,35 +75,68 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
         def sourceEnhancer = new IOSApphanceSourceEnhancer(
                 GroovyMock(AbstractIOSVariant) {
                     getTmpDir() >> tmpDir
-                    getApphanceMode() >> new ApphanceModeProperty(value: QA)
+                    getAphMode() >> new ApphanceModeProperty(value: QA)
+                },
+                GroovyMock(IOSApphancePbxEnhancer) {
+                    getGCCPrefixFilePaths() >> ['GradleXCode/GradleXCode-Prefix.pch']
+                },
+        )
+        def tmpPch = new File(tmpDir, 'GradleXCode/GradleXCode-Prefix.pch')
+        new File(tmpDir, 'GradleXCode').mkdirs()
+        and:
+        copy(new File(projectDir, 'GradleXCode/GradleXCode-Prefix.pch'), tmpPch)
+
+        when:
+        sourceEnhancer.addApphanceToPch()
+
+        then:
+        tmpPch.text.contains('#import <Apphance-Pre-Production/APHLogger.h>')
+    }
+
+    def 'exception while adding apphance to PCH file'() {
+        given:
+        def sourceEnhancer = new IOSApphanceSourceEnhancer(
+                GroovyMock(AbstractIOSVariant) {
+                    getTmpDir() >> tmpDir
+                    getAphMode() >> new ApphanceModeProperty(value: QA)
                 },
                 GroovyMock(IOSApphancePbxEnhancer) {
                     getGCCPrefixFilePaths() >> ['GradleXCode/GradleXCode-Prefix.pch']
                 },
         )
 
+        def tmpPch = new File(tmpDir, 'GradleXCode/GradleXCode-Prefix.pch')
+        new File(tmpDir, 'GradleXCode').mkdirs()
         and:
-        new AntBuilder().copy(toDir: tmpDir.absolutePath) {
-            fileset(dir: projectDir.absolutePath) {
-                include(name: 'GradleXCode/GradleXCode-Prefix.pch')
-            }
-        }
+        copy(new File(projectDir, 'GradleXCode/GradleXCode-Prefix.pch'), tmpPch)
+
+        and:
+        tmpPch.text = tmpPch.text.replace('__OBJC__', "\n__OBJC__")
 
         when:
         sourceEnhancer.addApphanceToPch()
 
         then:
-        def pch = new File(tmpDir, 'GradleXCode/GradleXCode-Prefix.pch')
-        pch.text.contains('#import <Apphance-Pre-Production/APHLogger.h>')
+        def e = thrown(IllegalStateException)
+        e.message == "Unable to add APHLogger to pch file: $tmpPch.absolutePath"
     }
+
 
     def 'apphance init section is added'() {
         given:
         def sourceEnhancer = new IOSApphanceSourceEnhancer(
                 GroovyMock(AbstractIOSVariant) {
                     getTmpDir() >> tmpDir
-                    getApphanceMode() >> new ApphanceModeProperty(value: QA)
-                    getApphanceAppKey() >> '3145abcd'
+                    getAphMode() >> new ApphanceModeProperty(value: QA)
+                    getAphAppKey() >> '3145abcd'
+                    getAphReportOnShake() >> new BooleanProperty(value: true)
+                    getAphWithUTest() >> new BooleanProperty()
+                    getAphWithScreenShotsFromGallery() >> new BooleanProperty()
+                    getAphReportOnDoubleSlide() >> new BooleanProperty()
+                    getAphMachException() >> new BooleanProperty()
+                    getAphAppVersionCode() >> new StringProperty(value: '3145')
+                    getAphAppVersionName() >> new StringProperty(value: '3.1.45')
+                    getAphDefaultUser() >> new StringProperty()
                 },
                 null
         )
@@ -130,8 +165,8 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
         def sourceEnhancer = new IOSApphanceSourceEnhancer(
                 GroovyMock(AbstractIOSVariant) {
                     getTmpDir() >> tmpDir
-                    getApphanceMode() >> new ApphanceModeProperty(value: QA)
-                    getApphanceAppKey() >> '3145abcd'
+                    getAphMode() >> new ApphanceModeProperty(value: QA)
+                    getAphAppKey() >> '3145abcd'
                 },
                 null
         )
@@ -142,5 +177,82 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
         then:
         def e = thrown(GradleException)
         e.message == "Can not find UIApplicationDelegate file in dir: $tmpDir.absolutePath"
+    }
+
+    def 'correct aph settings block is returned'() {
+        given:
+        def sourceEnhancer = new IOSApphanceSourceEnhancer(GroovyStub(AbstractIOSVariant) {
+            getAphMode() >> new ApphanceModeProperty(value: QA)
+            getAphReportOnShake() >> new BooleanProperty(value: true)
+            getAphWithUTest() >> new BooleanProperty()
+            getAphWithScreenShotsFromGallery() >> new BooleanProperty()
+            getAphReportOnDoubleSlide() >> new BooleanProperty()
+            getAphMachException() >> new BooleanProperty()
+            getAphAppVersionCode() >> new StringProperty(value: '3145')
+            getAphAppVersionName() >> new StringProperty(value: '3.1.45')
+            getAphDefaultUser() >> new StringProperty()
+        }, null)
+
+        expect:
+        sourceEnhancer.aphSettings ==
+                '[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeQA];\n' +
+                '[[APHLogger defaultSettings] setReportOnShakeEnabled:YES];\n' +
+                '[[APHLogger defaultSettings] setApplicationVersionCode:@"3145"];\n' +
+                '[[APHLogger defaultSettings] setApplicationVersionName:@"3.1.45"];'
+    }
+
+    def 'boolean property is mapped to APHSettings'() {
+        given:
+        def sourceEnhancer = new IOSApphanceSourceEnhancer(null, null)
+
+        expect:
+        expected == sourceEnhancer.mapBooleanPropToAPHSettings(new BooleanProperty(value: val), method)
+
+        where:
+        expected                               | val   | method
+        ''                                     | null  | 'm'
+        '[[APHLogger defaultSettings] m:NO];'  | false | 'm'
+        '[[APHLogger defaultSettings] m:YES];' | true  | 'm'
+    }
+
+    def 'exception thrown when null property passed to mapBooleanPropToAPHSettings'() {
+        given:
+        def sourceEnhancer = new IOSApphanceSourceEnhancer(null, null)
+
+        when:
+        sourceEnhancer.mapBooleanPropToAPHSettings(null, null)
+
+        then:
+        def e = thrown(NullPointerException)
+        e.message == 'Null property passed'
+    }
+
+    def 'exception thrown when empty method passed to mapBooleanPropToAPHSettings'() {
+        given:
+        def sourceEnhancer = new IOSApphanceSourceEnhancer(null, null)
+
+        when:
+        sourceEnhancer.mapBooleanPropToAPHSettings(new BooleanProperty(), method)
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == 'Empty method passed'
+
+        where:
+        method << [null, '']
+    }
+
+    def 'string property is mapped to APHSettings'() {
+        given:
+        def sourceEnhancer = new IOSApphanceSourceEnhancer(null, null)
+
+        expect:
+        expected == sourceEnhancer.mapStringPropertyToAPHSettings(new StringProperty(value: val), method)
+
+        where:
+        expected                                 | val  | method
+        ''                                       | null | 'm'
+        ''                                       | ''   | 'm'
+        '[[APHLogger defaultSettings] m:@"mm"];' | 'mm' | 'm'
     }
 }

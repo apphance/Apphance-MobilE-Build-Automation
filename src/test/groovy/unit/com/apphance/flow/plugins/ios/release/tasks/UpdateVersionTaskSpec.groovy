@@ -33,13 +33,14 @@ class UpdateVersionTaskSpec extends Specification {
             getVariants() >> [
                     GroovyMock(AbstractIOSVariant) {
                         getPlist() >> GroovyMock(File)
-                        getTmpDir() >> tmpDir
                         getMode() >> new IOSBuildModeProperty(value: mode)
+                        getTmpDir() >> tmpDir
+
                     },
                     GroovyMock(AbstractIOSVariant) {
                         getPlist() >> GroovyMock(File)
-                        getTmpDir() >> tmpDir
                         getMode() >> new IOSBuildModeProperty(value: mode)
+                        getTmpDir() >> tmpDir
                     }
             ]
         }

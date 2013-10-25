@@ -19,12 +19,12 @@ class DocGeneratorSpec extends Specification {
                 'IOSWorkspaceVariant', 'ProjectConfiguration', 'ReleaseConfiguration']
 
         reference.plugins*.name().sort() == ['AndroidAnalysisPlugin', 'AndroidApphancePlugin', 'AndroidPlugin', 'AndroidReleasePlugin', 'AndroidTestPlugin',
-                'FlowPlugin', 'IOSApphancePlugin', 'IOSPlugin', 'IOSReleasePlugin', 'IOSTestPlugin', 'ProjectPlugin', 'ReleasePlugin']
+                'FlowPlugin', 'IOSApphancePlugin', 'IOSPlugin', 'IOSReleasePlugin', 'IOSTestPlugin', 'NbsPlugin', 'ProjectPlugin', 'ReleasePlugin']
 
         reference.tasks*.name().sort() == ['AbstractAvailableArtifactsInfoTask', 'AbstractBuildVariantTask', 'AbstractUpdateVersionTask',
                 'AvailableArtifactsInfoTask', 'AvailableArtifactsInfoTask', 'BuildSourcesZipTask', 'CPDTask', 'CleanFlowTask', 'CopyMobileProvisionTask',
-                'CopySourcesTask', 'CopySourcesTask', 'DeviceVariantTask', 'FrameworkVariantTask', 'IOSApphanceUploadTask', 'IOSTestTask', 'ImageMontageTask',
-                'LintTask', 'PrepareSetupTask', 'RunRobolectricTestsTask', 'SendMailMessageTask', 'SimulatorVariantTask', 'SingleVariantTask',
-                'UnlockKeyChainTask', 'UpdateProjectTask', 'UpdateVersionTask', 'UpdateVersionTask', 'UploadAndroidArtifactTask', 'VerifySetupTask']
+                'CopySourcesTask', 'DeviceVariantTask', 'FrameworkVariantTask', 'IOSApphanceUploadTask', 'IOSTestTask', 'ImageMontageTask',
+                'LintTask', 'PrepareSetupTask', 'RunRobolectricTestsTask', 'SendMail', 'SendMailMessageTask', 'SimulatorVariantTask', 'SingleVariantTask',
+                'UnlockKeyChainTask', 'UpdateProjectTask', 'UpdateVersionTask', 'UpdateVersionTask', 'UploadAndroidArtifactTask']
     }
 }

@@ -3,11 +3,13 @@ package com.apphance.flow.configuration.android
 import com.apphance.flow.TestUtils
 import com.apphance.flow.detection.project.ProjectTypeDetector
 import com.apphance.flow.util.FlowUtils
+import com.apphance.flow.validation.PropertyValidator
 import org.gradle.api.Project
 import spock.lang.Specification
 
 import static com.apphance.flow.detection.project.ProjectType.ANDROID
 import static com.apphance.flow.detection.project.ProjectType.IOS
+import static org.apache.commons.lang.StringUtils.isNotEmpty
 
 @Mixin([TestUtils, FlowUtils])
 class AndroidAnalysisConfigurationSpec extends Specification {
@@ -44,15 +46,17 @@ class AndroidAnalysisConfigurationSpec extends Specification {
     def 'configuration is verified properly'() {
         given:
         def aac = new AndroidAnalysisConfiguration()
+        aac.propValidator = new PropertyValidator()
 
         when:
         aac.findbugsExclude.value = findbugs
         aac.pmdRules.value = pmd
         aac.checkstyleConfigFile.value = checkstyle
-        def errors = aac.verify()
+        def errors = []
+        aac.validate(errors)
 
         then:
-        errors.sort() == expectedErrors.sort()
+        errors.findAll { isNotEmpty(it) }.sort() == expectedErrors.sort()
 
         where:
         checkstyle | pmd    | findbugs | expectedErrors

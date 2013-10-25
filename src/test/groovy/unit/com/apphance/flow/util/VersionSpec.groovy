@@ -1,12 +1,10 @@
 package com.apphance.flow.util
 
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class VersionSpec extends Specification {
 
-    @Unroll
-    def "exception is thrown for blank version: '#version'"() {
+    def 'exception is thrown for blank version'() {
         when:
         new Version(version)
 
@@ -18,8 +16,7 @@ class VersionSpec extends Specification {
         version << [null, ' ', '\t', '  ']
     }
 
-    @Unroll
-    def "exception is thrown for invalid version format: '#version'"() {
+    def 'exception is thrown for invalid version format'() {
         when:
         new Version(version)
 

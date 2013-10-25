@@ -1,10 +1,7 @@
 package com.apphance.flow.configuration.apphance
 
-import groovy.json.JsonSlurper
-
 import static com.apphance.flow.configuration.apphance.ApphanceMode.DISABLED
 import static com.google.common.base.Preconditions.checkArgument
-import static org.apache.commons.lang.StringUtils.isNotBlank
 import static org.gradle.api.logging.Logging.getLogger
 
 class ApphanceArtifactory {
@@ -33,32 +30,14 @@ class ApphanceArtifactory {
         }
     }.memoize()
 
-    List<String> iOSLibraries(ApphanceMode mode, String arch) {
+    List<String> iOSLibraries(ApphanceMode mode) {
         checkArgument(mode && mode != DISABLED, "Invalid apphance mode: $mode")
-        checkArgument(isNotBlank(arch), "Invalid arch: $arch")
-        iosLibs.call(mode, arch)
+        iosLibs.call(mode)
     }
 
     @Lazy
-    private Closure<List<String>> iosLibs = { ApphanceMode mode, String arch ->
-        def url = "${POLIDEA_ARTIFACTORY}/api/search/artifact?name=apphance-$mode.repoSuffix*${arch}*.zip&repos=$POLIDEA_REPO_NAME".toURL()
-        def response = new JsonSlurper().parseText(url.text) as Map
-        response.results.uri.collect {
-            def hyphenIndexes = it.findIndexValues { it2 -> it2 == '-' }
-            it.substring((hyphenIndexes[-2] as int) + 1, hyphenIndexes[-1] as int)
-        }.unique().sort() as List<String>
+    private Closure<List<String>> iosLibs = { ApphanceMode mode ->
+        def url = "${POLIDEA_ARTIFACTORY}/${POLIDEA_REPO_NAME}/com/utest/apphance-${mode.repoSuffix}/maven-metadata.xml".toURL()
+        new XmlSlurper().parseText(url.text).versioning.versions.version*.text().unique().sort() as List<String>
     }.memoize()
-
-    List<String> iOSArchs(ApphanceMode mode) {
-        checkArgument(mode && mode != DISABLED, "Invalid apphance mode: $mode")
-        archs.call(mode)
-    }
-
-    @Lazy
-    private Closure<List<String>> archs = { ApphanceMode mode ->
-        def url = "${POLIDEA_ARTIFACTORY}/api/search/artifact?name=apphance-$mode.repoSuffix*.zip&repos=$POLIDEA_REPO_NAME".toURL()
-        def response = new JsonSlurper().parseText(url.text) as Map
-        response.results.uri.collect { it.substring(it.lastIndexOf('-') + 1, it.lastIndexOf('.')) }.unique() as List<String>
-    }.memoize()
-
 }

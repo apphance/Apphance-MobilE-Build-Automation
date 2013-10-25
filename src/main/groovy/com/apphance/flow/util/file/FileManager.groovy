@@ -14,7 +14,7 @@ import static java.lang.String.format
 import static java.nio.charset.StandardCharsets.UTF_8
 
 class FileManager {
-    public static final EXCLUDE_FILTER = ~/.*(${TMP_DIR}|${OTA_DIR}|${BUILD_DIR}|\.git|\.hg).*/
+    public static final EXCLUDE_FILTER = ~/.*(${TMP_DIR}|${OTA_DIR}|\b${BUILD_DIR}\b|\.git|\.hg|Pods).*/
     public static final int MAX_RECURSION_LEVEL = 7
     private static final long MEGABYTE = 1048576L
 

@@ -3,9 +3,8 @@ package com.apphance.flow.plugins.android.test
 import com.apphance.flow.configuration.android.AndroidTestConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantConfiguration
 import com.apphance.flow.configuration.android.variants.AndroidVariantsConfiguration
-import com.apphance.flow.plugins.android.buildplugin.tasks.CopySourcesTask
 import com.apphance.flow.plugins.android.test.tasks.RunRobolectricTestsTask
-import com.apphance.flow.plugins.project.tasks.VerifySetupTask
+import com.apphance.flow.plugins.project.tasks.CopySourcesTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -44,7 +43,6 @@ class AndroidTestPlugin implements Plugin<Project> {
 
                 project.tasks.findByName(TEST_ALL_TASK_NAME).dependsOn testTaskName
                 project.tasks.findByName(testTaskName)?.dependsOn variantConf.buildTaskName
-                project.tasks.findByName(testTaskName).mustRunAfter VerifySetupTask.NAME
             }
         }
     }

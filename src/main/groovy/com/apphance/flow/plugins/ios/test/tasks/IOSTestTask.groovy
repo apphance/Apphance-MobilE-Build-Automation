@@ -2,95 +2,45 @@ package com.apphance.flow.plugins.ios.test.tasks
 
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.executor.IOSExecutor
-import com.apphance.flow.executor.linker.FileLinker
-import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
-import com.apphance.flow.plugins.ios.parsers.XCSchemeParser
-import com.apphance.flow.plugins.ios.test.tasks.pbx.IOSTestPbxEnhancer
-import com.apphance.flow.plugins.ios.test.tasks.results.exporter.XMLJunitExporter
-import com.apphance.flow.plugins.ios.test.tasks.results.parser.OCUnitParser
-import com.apphance.flow.plugins.ios.test.tasks.results.parser.OCUnitTestSuite
-import com.apphance.flow.util.Preconditions
+import com.apphance.flow.plugins.ios.test.tasks.runner.IOSTest5Runner
+import com.apphance.flow.plugins.ios.test.tasks.runner.IOSTestLT5Runner
+import com.apphance.flow.util.Version
 import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
 
-import static com.apphance.flow.configuration.ios.XCAction.TEST_ACTION
 import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_TEST
+import static com.google.common.base.Preconditions.checkArgument
+import static org.apache.commons.lang.StringUtils.isNotEmpty
 
-@Mixin(Preconditions)
 class IOSTestTask extends DefaultTask {
 
     String group = FLOW_TEST
     String description = 'Builds variant and runs test against it.'
 
     @Inject IOSExecutor executor
-    @Inject IOSTestPbxEnhancer testPbxEnhancer
-    @Inject XCSchemeParser schemeParser
-    @Inject PbxJsonParser pbxJsonParser
-    @Inject FileLinker fileLinker
+    @Inject IOSTestLT5Runner testLT5Runner
+    @Inject IOSTest5Runner test5Runner
 
     AbstractIOSVariant variant
+
+    private final static Version BORDER_VERSION = new Version('5')
 
     @TaskAction
     void test() {
         logger.info("Running unit tests with variant: $variant.name")
-
-        def testBlueprintIds = schemeParser.findActiveTestableBlueprintIds(variant.schemeFile)
-        testPbxEnhancer.addShellScriptToBuildPhase(variant, testBlueprintIds)
-
-        def testTargets = testBlueprintIds.collect { pbxJsonParser.targetForBlueprintId.call(variant.pbxFile, it) }
-        def testConf = schemeParser.configuration(variant.schemeFile, TEST_ACTION)
-
-        testTargets.each { String testTarget ->
-
-            def testResultsLog = newFile(testTarget, 'log')
-            def cmd = variant.xcodebuildExecutionPath + ['-target', testTarget, '-configuration', testConf, '-sdk', 'iphonesimulator', 'clean', 'build']
-            executor.runTests(variant.tmpDir, cmd, testResultsLog.absolutePath)
-
-            Collection<OCUnitTestSuite> parsedResults = parseResults(testResultsLog)
-
-            def testResultsXml = newFile(testTarget, 'xml')
-            parseAndExport(parsedResults, testResultsXml)
-
-            verifyTestResults(parsedResults, errorMessage(testTarget, testConf, testResultsXml))
-        }
+        if (BORDER_VERSION > xcodeVersion())
+            testLT5Runner.runTests(variant)
+        else
+            test5Runner.runTests(variant)
     }
 
     @PackageScope
-    File newFile(String target, String extension) {
-        def results = new File(variant.tmpDir, "${filename(target)}.$extension")
-        results.delete()
-        results.createNewFile()
-        results
-    }
-
-    @PackageScope
-    String filename(String target) {
-        "test-$variant.name-$target"
-    }
-
-    @PackageScope
-    Collection<OCUnitTestSuite> parseResults(File testResults) {
-        OCUnitParser parser = new OCUnitParser()
-        parser.parse testResults.readLines()
-        parser.testSuites
-    }
-
-    @PackageScope
-    void parseAndExport(Collection<OCUnitTestSuite> testSuites, File outputFile) {
-        new XMLJunitExporter(outputFile, testSuites).export()
-    }
-
-    @PackageScope
-    void verifyTestResults(Collection<OCUnitTestSuite> ocUnitTestSuites, String errorMessage) {
-        throwIfConditionTrue(ocUnitTestSuites.any { it.failureCount > 0 }, errorMessage)
-    }
-
-    @PackageScope
-    String errorMessage(String target, String configuration, File parsedResults) {
-        "Error while executing tests for variant: $variant.name, target: $target, configuration $configuration. " +
-                "For further details investigate test results: ${fileLinker.fileLink(parsedResults)}"
+    Version xcodeVersion() {
+        def version = executor.xCodeVersion
+        checkArgument(isNotEmpty(version))
+        new Version(version)
     }
 }

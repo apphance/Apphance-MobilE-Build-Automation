@@ -32,24 +32,33 @@ class AddApphanceToAndroid {
     final String apphanceAppKey
     final ApphanceMode apphanceMode
     final boolean shakeEnabled
+    final boolean uTestEnabled
+    final String defaultUser
+    final boolean screenshotFromGallery
 
     private static final String IMPORT_APPHANCE = 'com.apphance.android.Apphance'
+    static final String IMPORT_CONFIGURATION = 'com.apphance.android.common.Configuration'
     private static final String ON_START = 'onStart'
     private static final String ON_STOP = 'onStop'
+    private static final String APPHANCE_LIB_WITH_CONFIGURATION_BUILDER = '1.9.6'
 
     def androidHelper = new AndroidManifestHelper()
 
     AddApphanceToAndroid() {
     }
 
-    AddApphanceToAndroid(File variantDir, String apphanceAppKey, ApphanceMode apphanceMode, String libVersion, boolean shakeEnabled = false) {
+    AddApphanceToAndroid(File variantDir, String apphanceAppKey, ApphanceMode apphanceMode, String libVersion, reportOnShakeEnabled = false,
+                         boolean uTestEnabled, String defaultUser, boolean screenshotFromGallery) {
         apphanceVersion = libVersion ?: '1.9'
         APPHANCE_PROD_URL = "${ANDROID_APPHANCE_REPO}apphance-prod/${apphanceVersion}/apphance-prod-${apphanceVersion}.jar"
         APPHANCE_PREPROD_URL = "${ANDROID_APPHANCE_REPO}apphance-preprod/${apphanceVersion}/apphance-preprod-${apphanceVersion}.zip"
         this.variantDir = variantDir
         this.apphanceAppKey = apphanceAppKey
         this.apphanceMode = apphanceMode
-        this.shakeEnabled = shakeEnabled
+        this.shakeEnabled = reportOnShakeEnabled
+        this.uTestEnabled = uTestEnabled
+        this.screenshotFromGallery = screenshotFromGallery
+        this.defaultUser = defaultUser
 
         checkArgument variantDir.exists()
         checkNotNull apphanceAppKey
@@ -57,9 +66,10 @@ class AddApphanceToAndroid {
         checkNotNull apphanceVersion
     }
 
-    AddApphanceToAndroid(AndroidVariantConfiguration androidVariantConf, Boolean shakeEnabled = false) {
-        this(androidVariantConf.tmpDir, androidVariantConf.apphanceAppKey.value, androidVariantConf.apphanceMode.value,
-                androidVariantConf.apphanceLibVersion.value, shakeEnabled)
+    AddApphanceToAndroid(AndroidVariantConfiguration androidVariantConf) {
+        this(androidVariantConf.tmpDir, androidVariantConf.aphAppKey.value, androidVariantConf.aphMode.value,
+                androidVariantConf.aphLib.value, androidVariantConf.aphReportOnShake.value, androidVariantConf.aphWithUTest.value,
+                androidVariantConf.aphDefaultUser.value, androidVariantConf.aphWithScreenShotsFromGallery.value)
     }
 
     public void addApphance() {
@@ -123,10 +133,18 @@ class AddApphanceToAndroid {
         Collection<String> classes = getMainActivitiesFromProject(variantDir)
         List<File> sourceFiles = getSourcesOf(variantDir, classes)
 
-        sourceFiles.each {
-            logger.info "Adding startNewSession invocation to ${it.name}"
+        sourceFiles.each { File file ->
+            logger.info "Adding startNewSession invocation to ${file.name}"
+            addStartNewSession(file)
+        }
+    }
 
-            addApphanceInit(it, apphanceAppKey, apphanceMode)
+    @PackageScope
+    void addStartNewSession(File file) {
+        if (libVerLowerThan(APPHANCE_LIB_WITH_CONFIGURATION_BUILDER)) {
+            addApphanceInit(file, apphanceAppKey, apphanceMode)
+        } else {
+            addApphanceInitVer196(file, apphanceAppKey, apphanceMode, shakeEnabled, uTestEnabled, defaultUser, screenshotFromGallery)
         }
     }
 
@@ -179,7 +197,6 @@ class AddApphanceToAndroid {
             int firstImportLine = lines.findIndexOf { it.trim().startsWith('import') }
             assert firstImportLine >= 0
             lines.add(firstImportLine, "import $IMPORT_APPHANCE;")
-
             file.setText lines.join('\n')
         }
     }
@@ -231,6 +248,38 @@ class AddApphanceToAndroid {
                     "    $startSession\n" +
                     "    $shakeEnablingLine}\n"
             addMethodToClassFile(body, mainFile)
+        }
+    }
+
+    def addApphanceInitVer196(File mainFile, String appKey, ApphanceMode apphanceMode, boolean reportOnShakeEnabled, boolean uTestEnabled,
+                              String defaultUser = null, boolean screenshotFromGallery = false) {
+        logger.info "Adding apphance init to file: $mainFile.absolutePath"
+        logger.info "Using new Configuration builder"
+
+        String body = """
+                |com.apphance.android.common.Configuration configuration = new com.apphance.android.common.Configuration.Builder(this)
+                |   .withAPIKey("$appKey")
+                |   .withMode(${mapApphanceMode(apphanceMode)})
+                |   .withUTestEnabled($uTestEnabled)
+                |   .withReportOnShakeEnabled($reportOnShakeEnabled)
+                |   .withScreenshotFromGalleryEnabled($screenshotFromGallery)
+                |   ${defaultUser ? ".withDefaultUser(\"$defaultUser\")" : ''}
+                |   .build();
+                |
+                |Apphance.startNewSession(this, configuration);
+                |""".stripMargin()
+
+        if (isMethodPresent(mainFile, 'onCreate')) {
+            addCodeToMethod(mainFile, 'onCreate', body)
+        } else {
+            String method = """
+                |public void onCreate(Bundle savedInstanceState) {
+                |    super.onCreate(savedInstanceState);
+                |    $body
+                |}
+                |
+                |""".stripMargin()
+            addMethodToClassFile(method, mainFile)
         }
     }
 
@@ -299,4 +348,19 @@ class AddApphanceToAndroid {
         file << temp.text
         temp.delete()
     }
+
+    Boolean libVerLowerThan(String compare) {
+        if (!(apphanceVersion ==~ /\d+(\.(\d+))*/ && compare ==~ /\d+(\.(\d+))*/)) return false
+
+        def current = apphanceVersion.split(/\./).collect { it as Integer }
+        def comp = compare.split(/\./).collect { it as Integer }
+        def max = [current.size(), comp.size()].max()
+
+        comp += [0] * (max - comp.size())
+        current += [0] * (max - current.size())
+
+        def diffIndex = (0..max).find { current[it] != comp[it] } as Integer
+        diffIndex != null && (current[diffIndex] < comp[diffIndex])
+    }
+
 }

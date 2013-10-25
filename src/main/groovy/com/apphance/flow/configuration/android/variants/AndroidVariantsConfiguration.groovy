@@ -4,12 +4,15 @@ import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.android.AndroidBuildMode
 import com.apphance.flow.configuration.android.AndroidConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
+import com.apphance.flow.configuration.variants.VariantsConfiguration
 import com.google.inject.Singleton
 
 import javax.inject.Inject
 
 @Singleton
-class AndroidVariantsConfiguration extends AbstractConfiguration {
+class AndroidVariantsConfiguration extends AbstractConfiguration implements VariantsConfiguration {
+
+    public static final String VARIANTS_DIR = 'variants'
 
     String configurationName = 'Android Variants Configuration'
 
@@ -56,28 +59,31 @@ class AndroidVariantsConfiguration extends AbstractConfiguration {
     }()
 
     @Lazy
-    File variantsDir = { new File(conf.rootDir, 'variants') }()
+    File variantsDir = { new File(conf.rootDir, VARIANTS_DIR) }()
 
     @Lazy
     AndroidVariantConfiguration mainVariant = { variants[0] }()
 
     @Override
     Collection<AndroidVariantConfiguration> getSubConfigurations() {
-        variantsInternal
+        variantsInternal()
     }
 
     List<AndroidVariantConfiguration> getVariants() {
-        variantsInternal.findAll { it.enabled }
+        variantsInternal().findAll { it.enabled }
     }
 
-    @Lazy
-    private List<AndroidVariantConfiguration> variantsInternal = {
-        variantsNames.makeUnique()
+    private List<AndroidVariantConfiguration> variantsInternal() {
         variantsNames.value.collect { variantFactory.create(it) }
-    }()
+    }
 
     @Override
     boolean isEnabled() {
         conf.enabled
+    }
+
+    @Override
+    void validate(List<String> errors) {
+        errors.addAll(propValidator.validateProperties(variantsNames))
     }
 }

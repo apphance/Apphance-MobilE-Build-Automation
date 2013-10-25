@@ -24,7 +24,7 @@ class IOSApphanceUploadTaskSpec extends Specification {
     def 'exception is thrown when user, pass or key empty'() {
         given:
         task.variant = GroovyMock(AbstractIOSVariant) {
-            getApphanceAppKey() >> new StringProperty(value: null)
+            getAphAppKey() >> new StringProperty(value: null)
             getName() >> 'Variant1'
         }
         task.apphanceConf = GroovyMock(ApphanceConfiguration) {
@@ -55,7 +55,7 @@ class IOSApphanceUploadTaskSpec extends Specification {
     def 'artifacts are uploaded'() {
         given:
         def variant = GroovyMock(AbstractIOSVariant) {
-            getApphanceAppKey() >> new StringProperty(value: '3145')
+            getAphAppKey() >> new StringProperty(value: '3145')
             getVersionCode() >> '3145'
             getVersionString() >> '31.4.5'
             getName() >> 'Variant1'
@@ -66,7 +66,7 @@ class IOSApphanceUploadTaskSpec extends Specification {
             getPass() >> new StringProperty(value: 'pass')
         }
         task.networkHelper = GroovyMock(ApphanceNetworkHelper) {
-            updateArtifactQuery(variant.apphanceAppKey.value, variant.versionString, variant.versionCode, false, ['ipa', 'dsym']) >> GroovyMock(HttpResponse) {
+            updateArtifactQuery(variant.aphAppKey.value, variant.versionString, variant.versionCode, false, ['ipa', 'dsym']) >> GroovyMock(HttpResponse) {
                 getEntity() >> new StringEntity('{\n' +
                         '    "status": "OK",\n' +
                         '    "update_urls": {\n' +
@@ -107,7 +107,7 @@ class IOSApphanceUploadTaskSpec extends Specification {
     def 'error handled while ipa uploading'() {
         given:
         def variant = GroovyMock(AbstractIOSVariant) {
-            getApphanceAppKey() >> new StringProperty(value: '3145')
+            getAphAppKey() >> new StringProperty(value: '3145')
             getVersionCode() >> '3145'
             getVersionString() >> '31.4.5'
             getName() >> 'Variant1'
@@ -118,7 +118,7 @@ class IOSApphanceUploadTaskSpec extends Specification {
             getPass() >> new StringProperty(value: 'pass')
         }
         task.networkHelper = GroovyMock(ApphanceNetworkHelper) {
-            updateArtifactQuery(variant.apphanceAppKey.value, variant.versionString, variant.versionCode, false, ['ipa', 'dsym']) >> GroovyMock(HttpResponse) {
+            updateArtifactQuery(variant.aphAppKey.value, variant.versionString, variant.versionCode, false, ['ipa', 'dsym']) >> GroovyMock(HttpResponse) {
                 getEntity() >> new StringEntity('{\n' +
                         '    "status": "OK",\n' +
                         '    "update_urls": {\n' +
@@ -149,7 +149,7 @@ class IOSApphanceUploadTaskSpec extends Specification {
     def 'error handled while ahSYM uploaded'() {
         given:
         def variant = GroovyMock(AbstractIOSVariant) {
-            getApphanceAppKey() >> new StringProperty(value: '3145')
+            getAphAppKey() >> new StringProperty(value: '3145')
             getVersionCode() >> '3145'
             getVersionString() >> '31.4.5'
             getName() >> 'Variant1'
@@ -160,7 +160,7 @@ class IOSApphanceUploadTaskSpec extends Specification {
             getPass() >> new StringProperty(value: 'pass')
         }
         task.networkHelper = GroovyMock(ApphanceNetworkHelper) {
-            updateArtifactQuery(variant.apphanceAppKey.value, variant.versionString, variant.versionCode, false, ['ipa', 'dsym']) >> GroovyMock(HttpResponse) {
+            updateArtifactQuery(variant.aphAppKey.value, variant.versionString, variant.versionCode, false, ['ipa', 'dsym']) >> GroovyMock(HttpResponse) {
                 getEntity() >> new StringEntity('{\n' +
                         '    "status": "OK",\n' +
                         '    "update_urls": {\n' +

@@ -4,7 +4,6 @@ import com.apphance.flow.util.FlowUtils
 import org.gradle.api.GradleException
 import spock.lang.Shared
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import static com.apphance.flow.configuration.ios.XCAction.*
 import static com.google.common.io.Files.copy
@@ -61,8 +60,7 @@ class XCSchemeParserSpec extends Specification {
         e.message == "Schemes must be shared! Invalid scheme file: ${schemeFile.absolutePath}"
     }
 
-    @Unroll
-    def 'buildable scheme is recognized for scheme #scheme'() {
+    def 'buildable scheme is recognized'() {
         expect:
         parser.isBuildable(scheme) == buildable
 
@@ -72,8 +70,7 @@ class XCSchemeParserSpec extends Specification {
         scheme2 | false
     }
 
-    @Unroll
-    def 'archive post action is added in file: #filename'() {
+    def 'archive post action is added to file'() {
         given:
         def tmpDir = temporaryDir
         copy(new File(getClass().getResource("${filename}.xcscheme").toURI()), new File(tmpDir, "${filename}.xcscheme"))
@@ -96,8 +93,7 @@ class XCSchemeParserSpec extends Specification {
         'GradleXCode2' | 2
     }
 
-    @Unroll
-    def 'scheme (#scheme) is recognized as having single target'() {
+    def 'scheme is recognized as having single target'() {
         expect:
         parser.hasSingleBuildableTarget(scheme) == hasSingleBuildableTarget
 
@@ -107,8 +103,7 @@ class XCSchemeParserSpec extends Specification {
         scheme2 | false
     }
 
-    @Unroll
-    def 'scheme (#scheme) has test targets as expected'() {
+    def 'scheme has test targets as expected'() {
         expect:
         parser.hasEnabledTestTargets(scheme) == hasSingleBuildableTarget
 

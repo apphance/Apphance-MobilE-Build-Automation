@@ -2,7 +2,6 @@ package com.apphance.flow.configuration.android
 
 import com.apphance.flow.configuration.release.ReleaseConfiguration
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
-import com.apphance.flow.plugins.release.FlowArtifact
 import com.apphance.flow.util.FlowUtils
 import com.google.inject.Singleton
 import groovy.transform.PackageScope
@@ -18,8 +17,6 @@ class AndroidReleaseConfiguration extends ReleaseConfiguration {
 
     static final ANDROID_ICON_PATTERN = /icon.*\.(png|jpg|jpeg|bmp)/
     static final DRAWABLE_DIR_PATTERN = /drawable(-ldpi|-mdpi|-hdpi|-xhdpi|)/
-
-    Map<String, FlowArtifact> artifacts = [:]
 
     @Inject AndroidManifestHelper manifestHelper
 

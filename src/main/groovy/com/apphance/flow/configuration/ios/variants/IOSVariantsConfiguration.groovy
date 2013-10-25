@@ -3,6 +3,7 @@ package com.apphance.flow.configuration.ios.variants
 import com.apphance.flow.configuration.AbstractConfiguration
 import com.apphance.flow.configuration.ios.IOSConfiguration
 import com.apphance.flow.configuration.properties.ListStringProperty
+import com.apphance.flow.configuration.variants.VariantsConfiguration
 import com.apphance.flow.plugins.ios.scheme.XCSchemeInfo
 import com.apphance.flow.plugins.ios.workspace.XCWorkspaceLocator
 import com.apphance.flow.util.FlowUtils
@@ -12,12 +13,14 @@ import org.gradle.api.GradleException
 
 import javax.inject.Inject
 
+import static java.text.MessageFormat.format
+
 /**
  * Variants configuration holds the list of variants thar are configured for building.
  */
 @Singleton
 @Mixin(FlowUtils)
-class IOSVariantsConfiguration extends AbstractConfiguration {
+class IOSVariantsConfiguration extends AbstractConfiguration implements VariantsConfiguration {
 
     String configurationName = 'iOS Variants Configuration'
 
@@ -76,7 +79,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
 
     @Override
     String explainDisabled() {
-        "'$configurationName' cannot be enabled. No shared schemes detected."
+        format(validationBundle.getString('disabled.conf.ios.variants'), configurationName)
     }
 
     @Override
@@ -84,7 +87,7 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
         variantsInternal()
     }
 
-    Collection<? extends AbstractIOSVariant> getVariants() {
+    List<? extends AbstractIOSVariant> getVariants() {
         variantsInternal().findAll { it.isEnabled() }
     }
 
@@ -94,7 +97,6 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     }()
 
     private List<? extends AbstractIOSVariant> variantsInternal() {
-        variantsNames.makeUnique()
         if (hasWorkspaceAndSchemes)
             return variantsNames.value.collect(workspaceVariant)
         else if (hasSchemes)
@@ -119,4 +121,9 @@ class IOSVariantsConfiguration extends AbstractConfiguration {
     private Closure<IOSWorkspaceVariant> workspaceVariant = { String name ->
         variantFactory.createWorkspaceVariant(name)
     }.memoize()
+
+    @Override
+    void validate(List<String> errors) {
+        errors.addAll(propValidator.validateProperties(variantsNames))
+    }
 }

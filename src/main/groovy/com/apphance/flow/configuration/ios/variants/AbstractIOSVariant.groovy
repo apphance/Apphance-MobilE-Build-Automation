@@ -8,6 +8,7 @@ import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.configuration.properties.ListStringProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.variants.AbstractVariant
+import com.apphance.flow.detection.project.ProjectType
 import com.apphance.flow.executor.IOSExecutor
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
 import com.apphance.flow.plugins.ios.parsers.PlistParser
@@ -57,12 +58,12 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         frameworkResources.name = "ios.variant.${name}.framework.resources"
         frameworkLibs.name = "ios.variant.${name}.framework.libs"
 
-        apphanceMode.doc = { docBundle.getString('ios.variant.apphance.mode') }
+        aphMode.doc = { docBundle.getString('ios.variant.apphance.mode') }
 
         super.init()
     }
 
-    final String prefix = 'ios'
+    final ProjectType projectType = ProjectType.IOS
 
     @Override
     String getConfigurationName() {
@@ -98,7 +99,11 @@ abstract class AbstractIOSVariant extends AbstractVariant {
             interactive: { mobileprovisionEnabled },
             required: { mobileprovisionEnabled },
             possibleValues: { possibleMobileProvisionPaths },
-            validator: { isNotEmpty(it?.path) ? it.path in (possibleMobileProvisionPaths) : false }
+            validator: {
+                if (!it) return false
+                def file = new File(conf.rootDir, it as String)
+                relativeTo(conf.rootDir.absolutePath, file.absolutePath).path in (possibleMobileProvisionPaths) ?: false
+            }
     )
 
     @Lazy
@@ -111,7 +116,8 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     }()
 
     FileProperty getMobileprovision() {
-        new FileProperty(value: new File(tmpDir, this.@mobileprovision.value.path))
+        new FileProperty(name: this.@mobileprovision.name,
+                value: new File((tmpDir.exists() ? tmpDir : conf.rootDir), this.@mobileprovision.value.path))
     }
 
     @Lazy
@@ -149,21 +155,7 @@ abstract class AbstractIOSVariant extends AbstractVariant {
 
     @Lazy
     List<String> possibleApphanceLibVersions = {
-        apphanceArtifactory.iOSLibraries(apphanceMode.value, apphanceDependencyArch)
-    }()
-
-    @Lazy
-    @PackageScope
-    String apphanceDependencyArch = {
-        def af = apphanceArtifactory.iOSArchs(apphanceMode.value)
-        af.retainAll(availableXCodeArchitectures)
-        af.unique().sort()[-1]
-    }()
-
-    @Lazy
-    @PackageScope
-    Collection<String> availableXCodeArchitectures = {
-        executor.buildSettings(target, archiveConfiguration)['ARCHS'].split(' ').toList()*.trim()
+        apphanceArtifactory.iOSLibraries(aphMode.value)
     }()
 
     @Lazy
@@ -191,16 +183,15 @@ abstract class AbstractIOSVariant extends AbstractVariant {
         } else if (mode.value == FRAMEWORK) {
             return frameworkName.value
         }
-        return name
+        name
     }
 
-    @Lazy
-    File pbxFile = {
+    File getPbxFile() {
         def pbx = xcodeprojLocator.findXCodeproj(schemeParser.xcodeprojName(schemeFile, action), schemeParser.blueprintIdentifier(schemeFile, action))
         def relative = relativeTo(conf.rootDir, pbx)
         def tmpPbx = new File(tmpDir, relative)
         tmpPbx?.exists() ? new File(tmpPbx, PROJECT_PBXPROJ) : new File(conf.rootDir, "$relative/$PROJECT_PBXPROJ")
-    }()
+    }
 
     XCAction getAction() {
         mode.value == FRAMEWORK ? BUILD_ACTION : LAUNCH_ACTION
@@ -209,7 +200,8 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     File getPlist() {
         String confName = schemeParser.configuration(schemeFile, LAUNCH_ACTION)
         String blueprintId = schemeParser.blueprintIdentifier(schemeFile)
-        new File(tmpDir, pbxJsonParser.plistForScheme.call(pbxFile, confName, blueprintId))
+        def plist = pbxJsonParser.plistForScheme.call(pbxFile, confName, blueprintId)
+        tmpDir.exists() ? new File(tmpDir, plist) : new File(conf.rootDir, plist)
     }
 
     String getTarget() {
@@ -240,20 +232,26 @@ abstract class AbstractIOSVariant extends AbstractVariant {
     abstract List<String> getXcodebuildExecutionPath()
 
     @Override
-    void checkProperties() {
-        super.checkProperties()
+    void validate(List<String> errors) {
+        super.validate(errors)
+        propValidator.with {
+            errors << validateCondition(versionValidator.isNumber(versionCode),
+                    validationBundle.getString('exception.ios.version.code'))
+            errors << validateCondition(versionValidator.hasNoWhiteSpace(versionString),
+                    validationBundle.getString('exception.ios.version.string'))
 
-        check versionValidator.isNumber(versionCode), validationBundle.getString('exception.ios.version.code')
-        check versionValidator.hasNoWhiteSpace(versionString), validationBundle.getString('exception.ios.version.string')
+            if (mobileprovisionEnabled)
+                errors.addAll(validateProperties(mobileprovision))
 
-        if (mobileprovisionEnabled)
-            defaultValidation mobileprovision
-
-        if (mode.value == FRAMEWORK) {
-            defaultValidation frameworkName
-            check(frameworkHeaders.value.every { new File(conf.rootDir, it).exists() }, validationBundle.getString('exception.ios.framework.invalid.headers'))
-            check(frameworkResources.value.every { new File(conf.rootDir, it).exists() }, validationBundle.getString('exception.ios.framework.invalid.resources'))
-            check(frameworkLibs.value.every { new File(conf.rootDir, it).exists() }, validationBundle.getString('exception.ios.framework.invalid.libs'))
+            if (mode.value == FRAMEWORK) {
+                errors.addAll(validateProperties(frameworkName))
+                errors << validateCondition(frameworkHeaders.value.every { new File(conf.rootDir, it).exists() },
+                        validationBundle.getString('exception.ios.framework.invalid.headers'))
+                errors << validateCondition(frameworkResources.value.every { new File(conf.rootDir, it).exists() },
+                        validationBundle.getString('exception.ios.framework.invalid.resources'))
+                errors << validateCondition(frameworkLibs.value.every { new File(conf.rootDir, it).exists() },
+                        validationBundle.getString('exception.ios.framework.invalid.libs'))
+            }
         }
     }
 }

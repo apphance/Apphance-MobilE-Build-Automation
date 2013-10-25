@@ -8,7 +8,6 @@ import com.apphance.flow.configuration.android.variants.AndroidVariantsConfigura
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.plugins.android.analysis.tasks.CPDTask
 import com.apphance.flow.plugins.android.analysis.tasks.LintTask
-import com.apphance.flow.plugins.project.tasks.VerifySetupTask
 import org.gradle.api.file.FileCollection
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -41,7 +40,6 @@ class AndroidAnalysisPluginSpec extends Specification {
         plugin.analysisConf = conf
         plugin.androidTestConf = GroovyStub(AndroidTestConfiguration)
         plugin.androidTestConf.enabled >> testConfEnabled
-        project.task(VerifySetupTask.NAME)
 
         when:
         plugin.apply(project)
@@ -85,7 +83,6 @@ class AndroidAnalysisPluginSpec extends Specification {
         mainVariant.buildTaskName in project.tasks[LintTask.NAME].dependsOn
         mainVariant.buildTaskName in project.tasks['findbugsMain'].dependsOn
         !(testConfEnabled <=> mainVariant.testTaskName in project.tasks['findbugsTest'].dependsOn)
-        analysisTasks.each { assert VerifySetupTask.NAME in project.tasks[it].dependsOn }
 
         project.findbugsTest.enabled == testConfEnabled
 
