@@ -7,7 +7,6 @@ apply {
     plugin 'idea'
     plugin 'maven'
     plugin 'signing'
-    plugin 'codenarc'
 }
 
 repositories {
@@ -28,10 +27,6 @@ task javadocJar(type: Jar, dependsOn: groovydoc, description: 'Prepares .jar fil
 }
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
-
-codenarc {
-    configFile = file('codenarc.groovy')
-}
 
 signing {
     if (isReleaseVersion) {
@@ -262,7 +257,7 @@ task buildPluginReference(dependsOn: classes, type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
-task sendDocToFlowSite(type: JavaExec, dependsOn: buildPluginReference ) {
+task sendDocToFlowSite(type: JavaExec, dependsOn: buildPluginReference) {
     inputs.file buildPluginReference
     outputs.upToDateWhen { true }
     main = 'com.apphance.flow.docs.DocSender'
