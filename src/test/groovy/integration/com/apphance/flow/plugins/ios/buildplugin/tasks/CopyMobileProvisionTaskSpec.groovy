@@ -5,7 +5,6 @@ import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.configuration.properties.FileProperty
 import com.apphance.flow.configuration.properties.IOSBuildModeProperty
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
-import org.gradle.api.GradleException
 import spock.lang.Specification
 
 import static com.apphance.flow.configuration.ios.IOSBuildMode.*
@@ -79,10 +78,31 @@ class CopyMobileProvisionTaskSpec extends Specification {
         task.copyMobileProvision()
 
         then:
-        def e = thrown(GradleException)
+        def e = thrown(IllegalStateException)
         e.message.startsWith('Bundle Id from variant: SampleVariant (MT2B94Q7N6.com.apphance.flowa)')
         e.message.contains('(MT2B94Q7N6.com.apphance.flowa)')
         e.message.contains('(MT2B94Q7N6.com.apphance.flow)')
         e.message.contains('GradleXCode.mobileprovision')
+    }
+
+    def 'bundle ids are equal'() {
+        expect:
+        task.bundleIDsAreEqual(plist, mb) == expected
+
+        where:
+        plist | mb  | expected
+        'a'   | 'a' | true
+        'b'   | 'a' | false
+    }
+
+
+    def 'wildcard provisioning is matched'() {
+        expect:
+        task.wildcardBundleIDsMatch(plist, mb) == expected
+
+        where:
+        plist             | mb         | expected
+        'com.pi'          | 'com.pi.*' | false
+        'com.pi.whatever' | 'com.pi.*' | true
     }
 }
