@@ -41,7 +41,7 @@ class ApphanceArtifactorySpec extends Specification {
 
     def 'iOS lib versions are filled'() {
         expect:
-        apphanceArtifactory.iOSLibraries(mode).containsAll('1.8.17')
+        apphanceArtifactory.iOSLibraries(mode).containsAll('1.8.18')
 
         where:
         mode << [QA, SILENT, PROD]
