@@ -52,7 +52,7 @@ abstract class ReleaseConfiguration extends AbstractConfiguration {
     String releaseMailSubject
 
     Collection<String> getReleaseNotes() {
-        (reader.envVariable('RELEASE_NOTES') ?: '').split('**').findAll {
+        (reader.envVariable('RELEASE_NOTES') ?: '').split('\\*\\*').findAll {
             isNotBlank(it)
         }
     }
