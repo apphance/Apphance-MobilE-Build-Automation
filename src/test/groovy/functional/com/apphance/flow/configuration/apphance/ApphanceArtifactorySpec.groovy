@@ -40,8 +40,12 @@ class ApphanceArtifactorySpec extends Specification {
     }
 
     def 'iOS lib versions are filled'() {
-        expect:
-        apphanceArtifactory.iOSLibraries(mode).containsAll('1.8.18')
+        when:
+        def versions = apphanceArtifactory.iOSLibraries(mode)
+
+        then:
+        versions.size() > 0
+        versions.every { it.matches("\\d+\\.\\d+\\.\\d+") }
 
         where:
         mode << [QA, SILENT, PROD]
