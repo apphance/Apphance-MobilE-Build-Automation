@@ -21,10 +21,13 @@ class IOSApphancePbxEnhancer {
 
     private logger = getLogger(getClass())
 
-    @Inject IOSExecutor executor
-    @Inject PbxJsonParser pbxJsonParser
+    @Inject
+    IOSExecutor executor
+    @Inject
+    PbxJsonParser pbxJsonParser
 
-    @PackageScope AbstractIOSVariant variant
+    @PackageScope
+    AbstractIOSVariant variant
 
     @Inject
     IOSApphancePbxEnhancer(@Assisted AbstractIOSVariant variant) {
@@ -39,7 +42,9 @@ class IOSApphancePbxEnhancer {
 
     @PackageScope
     void addFrameworks() {
-        frameworksToAdd.findAll { !pbxJsonParser.isFrameworkDeclared(variant.pbxFile, ~/${it.name}/) }.each(this.&addFramework)
+        frameworksToAdd.findAll {
+            !pbxJsonParser.isFrameworkDeclared(variant.pbxFile, ~/${it.name}/)
+        }.each(this.&addFramework)
     }
 
     @PackageScope
@@ -89,13 +94,14 @@ class IOSApphancePbxEnhancer {
         }
     }
 
+    @Lazy
     @PackageScope
-    List<String> getFilesToReplaceLogs() {
+    List<String> filesToReplaceLogs = {
         def allSourceFiles = [:]
         findAllSourceFiles(mainGroup, allSourceFiles, '')
         def sourceFilesForPhase = fileNamesForSourceBuildPhase
         allSourceFiles.findAll { it.key in sourceFilesForPhase }.values() as List<String>
-    }
+    }()
 
     private void findAllSourceFiles(Map group, Map sourceFiles, String actualPath) {
         String path = group.path ? "$actualPath${group.path}/" : actualPath
@@ -130,20 +136,23 @@ class IOSApphancePbxEnhancer {
     }()
 
     @Lazy
-    @PackageScope Map target = {
+    @PackageScope
+    Map target = {
         json.objects.find {
             it.key in rootObject.targets && it.value.isa == PBX_NATIVE_TARGET && it.value.name == variant.target
         }.value as Map
     }()
 
     @Lazy
-    @PackageScope Map rootObject = {
+    @PackageScope
+    Map rootObject = {
         def rootObjectHash = json.rootObject
         json.objects[rootObjectHash] as Map
     }()
 
     @Lazy
-    @PackageScope List<Map> configurations = {
+    @PackageScope
+    List<Map> configurations = {
         def buildConfListHash = target.buildConfigurationList
         def confHashes = json.objects[buildConfListHash].buildConfigurations
         def variantConfigurations = [variant.archiveConfiguration]
@@ -155,20 +164,23 @@ class IOSApphancePbxEnhancer {
     }()
 
     @Lazy
-    @PackageScope Map frameworksBuildPhase = {
+    @PackageScope
+    Map frameworksBuildPhase = {
         json.objects.find {
             it.key in target.buildPhases && it.value.isa == PBX_FRAMEWORKS_BUILD_PHASE
         }.value as Map
     }()
 
     @Lazy
-    @PackageScope Map mainGroup = {
+    @PackageScope
+    Map mainGroup = {
         rootObject.mainGroup
         json.objects[rootObject.mainGroup] as Map
     }()
 
     @Lazy
-    @PackageScope Map mainGroupFrameworks = {
+    @PackageScope
+    Map mainGroupFrameworks = {
         def mainGroupHash = rootObject.mainGroup
         def mainGroupChildrenHashes = json.objects[mainGroupHash].children
         json.objects.find {

@@ -33,12 +33,14 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
                 'GradleXCode/gradleXCodeAppDelegate.m',
                 'GradleXCode/gradleXCodeViewController.m',
                 'GradleXCode/main.m',
-                'GradleXCode/subdir/NonEmptyPathView.m']
+                'GradleXCode/subdir/NonEmptyPathView.m'
+        ]
 
         new AntBuilder().copy(toDir: tmpDir.absolutePath) {
             fileset(dir: projectDir.absolutePath) {
                 filesToReplace.each {
                     include(name: it)
+                    include(name: it.replace('.m', '.h'))
                 }
             }
         }

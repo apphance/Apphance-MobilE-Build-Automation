@@ -60,11 +60,31 @@ class IOSApphanceSourceEnhancer {
 
     @PackageScope
     void replaceLogs() {
+        replaceMLogs()
+        replaceHLogs()
+    }
+
+    private void replaceMLogs() {
         logger.info("Replacing apphance logger in dir: $variant.tmpDir.absolutePath")
         apphancePbxEnhancer.filesToReplaceLogs.each { logger.info("Replacing NSLog with APHLog in: $it") }
         ant.replaceregexp(match: '\\bNSLog\\b', replace: 'APHLog', byline: true) {
             fileset(dir: variant.tmpDir) {
                 apphancePbxEnhancer.filesToReplaceLogs.each {
+                    include(name: it)
+                }
+            }
+        }
+    }
+
+    private void replaceHLogs() {
+        def hFilesToReplaceLogs = apphancePbxEnhancer.filesToReplaceLogs.collect { it.replace('.m', '.h') }.findAll {
+            new File(variant.tmpDir, it).exists()
+        }
+        logger.info("Attempt to replace apphance logger for *.h files in dir: $variant.tmpDir.absolutePath")
+        hFilesToReplaceLogs.each { logger.info("Replacing NSLog with APHLog in: $it") }
+        ant.replaceregexp(match: '\\bNSLog\\b', replace: 'APHLog', byline: true) {
+            fileset(dir: variant.tmpDir) {
+                hFilesToReplaceLogs.each {
                     include(name: it)
                 }
             }
