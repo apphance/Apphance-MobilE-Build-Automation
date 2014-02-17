@@ -95,7 +95,7 @@ class IOSTestConfiguration extends AbstractConfiguration {
     @Override
     String explainDisabled() {
         format(validationBundle.getString('disabled.conf.ios.test'),
-                configurationName, "${explainIOSSim()}${explainDisabled()}")
+                configurationName, "${explainIOSSim()}${explainNoTestTargets()}")
     }
 
     @PackageScope

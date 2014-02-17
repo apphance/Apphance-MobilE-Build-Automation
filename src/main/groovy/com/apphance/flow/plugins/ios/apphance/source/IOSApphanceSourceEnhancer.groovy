@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.ios.apphance.source
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.StringProperty
+import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancer
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
@@ -60,11 +61,31 @@ class IOSApphanceSourceEnhancer {
 
     @PackageScope
     void replaceLogs() {
+        replaceMLogs()
+        replaceHLogs()
+    }
+
+    private void replaceMLogs() {
         logger.info("Replacing apphance logger in dir: $variant.tmpDir.absolutePath")
         apphancePbxEnhancer.filesToReplaceLogs.each { logger.info("Replacing NSLog with APHLog in: $it") }
         ant.replaceregexp(match: '\\bNSLog\\b', replace: 'APHLog', byline: true) {
             fileset(dir: variant.tmpDir) {
                 apphancePbxEnhancer.filesToReplaceLogs.each {
+                    include(name: it)
+                }
+            }
+        }
+    }
+
+    private void replaceHLogs() {
+        def hFilesToReplaceLogs = apphancePbxEnhancer.filesToReplaceLogs.collect { it.replace('.m', '.h') }.findAll {
+            new File(variant.tmpDir, it).exists()
+        }
+        logger.info("Attempt to replace apphance logger for *.h files in dir: $variant.tmpDir.absolutePath")
+        hFilesToReplaceLogs.each { logger.info("Replacing NSLog with APHLog in: $it") }
+        ant.replaceregexp(match: '\\bNSLog\\b', replace: 'APHLog', byline: true) {
+            fileset(dir: variant.tmpDir) {
+                hFilesToReplaceLogs.each {
                     include(name: it)
                 }
             }
@@ -118,7 +139,6 @@ class IOSApphanceSourceEnhancer {
     @PackageScope
     String getAphSettings() {
         [
-                apphanceMode,
                 mapBooleanPropToAPHSettings(variant.aphReportOnShake, 'setReportOnShakeEnabled'),
                 mapBooleanPropToAPHSettings(variant.aphWithUTest, 'setWithUTest'),
                 mapBooleanPropToAPHSettings(variant.aphWithScreenShotsFromGallery, 'setScreenShotsFromGallery'),
@@ -127,22 +147,10 @@ class IOSApphanceSourceEnhancer {
                 mapStringPropertyToAPHSettings(variant.aphAppVersionCode, 'setApplicationVersionCode'),
                 mapStringPropertyToAPHSettings(variant.aphAppVersionName, 'setApplicationVersionName'),
                 mapStringPropertyToAPHSettings(variant.aphDefaultUser, 'setDefaultUser'),
+                mapURLPropertyToAPHSettings(variant.aphServerURL, 'setServerURL'),
+                mapBooleanPropToAPHSettings(variant.aphSendAllNSLogToApphance, 'setSendAllNSLogToApphance'),
 
         ].findAll { isNotEmpty(it) }.join('\n')
-    }
-
-    @PackageScope
-    String getApphanceMode() {
-        switch (variant.aphMode.value) {
-            case QA:
-                return """[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeQA];"""
-            case SILENT:
-                return """[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeSilent];"""
-            case PROD:
-                return ''
-            default:
-                throw new GradleException("Invalid apphance mode: '$variant.aphMode.value' for variant: '$variant.name'")
-        }
     }
 
     String mapBooleanPropToAPHSettings(BooleanProperty property, String method) {
@@ -158,4 +166,12 @@ class IOSApphanceSourceEnhancer {
         def value = property.value
         isNotEmpty(value) ? """[[APHLogger defaultSettings] $method:@"$value"];""" : ''
     }
+
+    String mapURLPropertyToAPHSettings(URLProperty property, String method) {
+        checkNotNull(property, 'Null property passed')
+        checkArgument(isNotEmpty(method), 'Empty method passed')
+        def value = property.value
+        isNotEmpty(value?.toString()) ? """[[APHLogger defaultSettings] $method:@"${value.toString()}"];""" : ''
+    }
+
 }

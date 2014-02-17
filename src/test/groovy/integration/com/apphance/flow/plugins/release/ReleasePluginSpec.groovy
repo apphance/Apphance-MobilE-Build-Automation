@@ -40,7 +40,7 @@ class ReleasePluginSpec extends Specification {
         project.configurations.mail
 
         then: 'mail configuration dependencies are present'
-        project.dependencies.configurationContainer.mail.allDependencies.size() == 3
+        project.configurations.mail.allDependencies.size() == 3
 
         then: 'every task exists and is in correct group'
         project.tasks[ImageMontageTask.NAME].group == FLOW_RELEASE.toString()

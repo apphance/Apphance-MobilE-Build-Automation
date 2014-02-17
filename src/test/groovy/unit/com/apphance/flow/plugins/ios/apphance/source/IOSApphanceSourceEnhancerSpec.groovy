@@ -4,6 +4,7 @@ import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.StringProperty
+import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancer
 import org.gradle.api.GradleException
 import org.gradle.testfixtures.ProjectBuilder
@@ -33,12 +34,14 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
                 'GradleXCode/gradleXCodeAppDelegate.m',
                 'GradleXCode/gradleXCodeViewController.m',
                 'GradleXCode/main.m',
-                'GradleXCode/subdir/NonEmptyPathView.m']
+                'GradleXCode/subdir/NonEmptyPathView.m'
+        ]
 
         new AntBuilder().copy(toDir: tmpDir.absolutePath) {
             fileset(dir: projectDir.absolutePath) {
                 filesToReplace.each {
                     include(name: it)
+                    include(name: it.replace('.m', '.h'))
                 }
             }
         }
@@ -137,6 +140,8 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
                     getAphAppVersionCode() >> new StringProperty(value: '3145')
                     getAphAppVersionName() >> new StringProperty(value: '3.1.45')
                     getAphDefaultUser() >> new StringProperty()
+                    getAphServerURL() >> new URLProperty(value: 'http://lol.com'.toURL())
+                    getAphSendAllNSLogToApphance() >> new BooleanProperty()
                 },
                 null
         )
@@ -151,7 +156,6 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
         then:
         def mFileContent = new File(tmpDir, mFile).text
         mFileContent.contains('[APHLogger startNewSessionWithApplicationKey:@"3145abcd"')
-        mFileContent.contains('[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeQA];')
         mFileContent.contains('NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);')
 
         where:
@@ -191,14 +195,17 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
             getAphAppVersionCode() >> new StringProperty(value: '3145')
             getAphAppVersionName() >> new StringProperty(value: '3.1.45')
             getAphDefaultUser() >> new StringProperty()
+            getAphSendAllNSLogToApphance() >> new BooleanProperty(value: false)
+            getAphServerURL() >> new URLProperty(value: 'http://lol.com'.toURL())
         }, null)
 
         expect:
         sourceEnhancer.aphSettings ==
-                '[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeQA];\n' +
                 '[[APHLogger defaultSettings] setReportOnShakeEnabled:YES];\n' +
                 '[[APHLogger defaultSettings] setApplicationVersionCode:@"3145"];\n' +
-                '[[APHLogger defaultSettings] setApplicationVersionName:@"3.1.45"];'
+                '[[APHLogger defaultSettings] setApplicationVersionName:@"3.1.45"];\n' +
+                '[[APHLogger defaultSettings] setServerURL:@"http://lol.com"];\n' +
+                '[[APHLogger defaultSettings] setSendAllNSLogToApphance:NO];'
     }
 
     def 'boolean property is mapped to APHSettings'() {

@@ -5,7 +5,6 @@ import com.apphance.flow.configuration.properties.ApphanceModeProperty
 import com.apphance.flow.configuration.properties.StringProperty
 import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.plugins.ios.parsers.PbxJsonParser
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -87,7 +86,7 @@ class IOSApphanceEnhancerSpec extends Specification {
         def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
             getAphMode() >> new ApphanceModeProperty(value: aphMode)
             getAphLib() >> new StringProperty(value: '1.8.8')
-            getAphLibUrl() >> new URLProperty()
+            getAphLibURL() >> new URLProperty()
         })
 
         expect:
@@ -105,7 +104,7 @@ class IOSApphanceEnhancerSpec extends Specification {
         def enhancer = new IOSApphanceEnhancer(GroovyMock(AbstractIOSVariant) {
             getAphMode() >> new ApphanceModeProperty(value: aphMode)
             getAphLib() >> new StringProperty(value: '1.8.8')
-            getAphLibUrl() >> new URLProperty(value: url)
+            getAphLibURL() >> new URLProperty(value: url)
         })
 
         expect:

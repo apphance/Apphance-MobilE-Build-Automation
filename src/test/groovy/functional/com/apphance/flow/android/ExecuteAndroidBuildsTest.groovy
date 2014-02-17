@@ -37,7 +37,6 @@ class ExecuteAndroidBuildsTest extends Specification {
         runGradle('updateProject', 'check')
 
         then:
-        true
         new File(testTmpDir, "build/reports/pmd/main.xml").exists()
         new File(testTmpDir, "build/reports/findbugs/main.xml").exists()
         new File(testTmpDir, 'build/reports/lint/report.html').exists()

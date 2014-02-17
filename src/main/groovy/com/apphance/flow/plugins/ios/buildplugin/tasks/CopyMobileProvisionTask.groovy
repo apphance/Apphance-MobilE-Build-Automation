@@ -3,9 +3,9 @@ package com.apphance.flow.plugins.ios.buildplugin.tasks
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.ios.variants.IOSVariantsConfiguration
 import com.apphance.flow.plugins.ios.parsers.MobileProvisionParser
-import com.apphance.flow.util.Preconditions
+import com.google.common.base.Preconditions
+import groovy.transform.PackageScope
 import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
 
 import javax.inject.Inject
@@ -15,7 +15,6 @@ import static com.apphance.flow.plugins.FlowTasksGroups.FLOW_BUILD
 import static java.text.MessageFormat.format
 import static java.util.ResourceBundle.getBundle
 
-@Mixin(Preconditions)
 class CopyMobileProvisionTask extends DefaultTask {
 
     static final NAME = 'copyMobileProvision'
@@ -39,9 +38,26 @@ class CopyMobileProvisionTask extends DefaultTask {
         }
     }
 
+    @PackageScope
     void validateBundleId(AbstractIOSVariant v, File mobileprovision) {
-        validate(v.bundleId == mpParser.bundleId(mobileprovision), {
-            throw new GradleException(format(bundle.getString('exception.ios.bundleId'), v.name, v.bundleId, mobileprovision.absolutePath, mpParser.bundleId(mobileprovision)))
-        })
+        def plistBID = v.bundleId
+        def mobileprovisionBID = mpParser.bundleId(mobileprovision)
+        Preconditions.checkState(
+                bundleIDsAreEqual(plistBID, mobileprovisionBID) || wildcardBundleIDsMatch(plistBID, mobileprovisionBID),
+                format(bundle.getString('exception.ios.bundleId'), v.name, plistBID, mobileprovision.absolutePath, mobileprovisionBID))
+    }
+
+    @PackageScope
+    boolean bundleIDsAreEqual(String plistBID, String mobileprovisionBID) {
+        Preconditions.checkNotNull(plistBID, 'Bundle ID from plist is null')
+        Preconditions.checkNotNull(mobileprovisionBID, 'Bundle ID from mobileprovision is null')
+        plistBID == mobileprovisionBID
+    }
+
+    @PackageScope
+    boolean wildcardBundleIDsMatch(String plistBID, String mobileprovisionBID) {
+        Preconditions.checkNotNull(plistBID, 'Bundle ID from plist is null')
+        Preconditions.checkNotNull(mobileprovisionBID, 'Bundle ID from mobileprovision is null')
+        mobileprovisionBID.endsWith('*') && plistBID.startsWith(mobileprovisionBID - '*')
     }
 }

@@ -23,9 +23,12 @@ abstract class AbstractVariant extends AbstractConfiguration {
 
     final String name
 
-    @Inject ProjectConfiguration conf
-    @Inject ApphanceConfiguration apphanceConf
-    @Inject ApphanceArtifactory apphanceArtifactory
+    @Inject
+    ProjectConfiguration conf
+    @Inject
+    ApphanceConfiguration apphanceConf
+    @Inject
+    ApphanceArtifactory apphanceArtifactory
     private boolean enabledInternal = true
 
     @Inject
@@ -41,8 +44,8 @@ abstract class AbstractVariant extends AbstractConfiguration {
         aphMode.message = "Apphance mode for '$name'"
         aphAppKey.name = "${projectType.prefix}.variant.${name}.apphance.appKey"
         aphAppKey.message = "Apphance key for '$name'"
-        aphLibUrl.name = "${projectType.prefix}.variant.${name}.apphance.libUrl"
-        aphLibUrl.message = "Apphance lib url for '$name'"
+        aphLibURL.name = "${projectType.prefix}.variant.${name}.apphance.libUrl"
+        aphLibURL.message = "Apphance lib url for '$name'"
         aphLib.name = "${projectType.prefix}.variant.${name}.apphance.lib"
         aphLib.message = "Apphance lib version for '$name'"
         aphWithUTest.name = "${projectType.prefix}.variant.${name}.apphance.withUTest"
@@ -61,6 +64,10 @@ abstract class AbstractVariant extends AbstractConfiguration {
         aphAppVersionCode.message = "Apphance appVersionCode property for '$name'"
         aphMachException.name = "${projectType.prefix}.variant.${name}.apphance.machException"
         aphMachException.message = "Apphance machException property for '$name'"
+        aphServerURL.name = "${projectType.prefix}.variant.${name}.apphance.serverURL"
+        aphServerURL.message = "Apphance serverURL property for '$name'"
+        aphSendAllNSLogToApphance.name = "${projectType.prefix}.variant.${name}.apphance.sendAllNSLogToApphance"
+        aphSendAllNSLogToApphance.message = "Apphance sendAllNSLogToApphance property for '$name'"
 
         displayName.name = "${projectType.prefix}.variant.${name}.display.name"
 
@@ -89,7 +96,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
             validationMessage: "Key should match '[a-z0-9]+'"
     )
 
-    def aphLibUrl = new URLProperty(
+    def aphLibURL = new URLProperty(
             interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
             required: { false },
             validator: { val ->
@@ -100,7 +107,7 @@ abstract class AbstractVariant extends AbstractConfiguration {
     )
 
     def aphLib = new StringProperty(
-            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && !aphLibUrl.hasValue() },
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && !aphLibURL.hasValue() },
             possibleValues: { possibleApphanceLibVersions },
             validator: { it?.matches('([0-9]+\\.)*[0-9]+(-[^-]*)?') }
     )
@@ -148,6 +155,23 @@ abstract class AbstractVariant extends AbstractConfiguration {
     )
 
     def aphMachException = new BooleanProperty(
+            defaultValue: { false },
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
+            possibleValues: { POSSIBLE_BOOLEAN },
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN }
+    )
+
+    def aphServerURL = new URLProperty(
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
+            required: { false },
+            validator: { val ->
+                if (!val) return true
+                !propValidator.throwsException { (val as String).toURL() }
+            },
+            validationMessage: 'Should be a valid URL'
+    )
+
+    def aphSendAllNSLogToApphance = new BooleanProperty(
             defaultValue: { false },
             interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
             possibleValues: { POSSIBLE_BOOLEAN },
@@ -225,8 +249,8 @@ abstract class AbstractVariant extends AbstractConfiguration {
             errors.addAll(propValidator.validateProperties(aphMode))
             if (aphMode.value != DISABLED) {
                 errors.addAll(propValidator.validateProperties(aphAppKey))
-                if (aphLibUrl.hasValue())
-                    errors.addAll(propValidator.validateProperties(aphLibUrl))
+                if (aphLibURL.hasValue())
+                    errors.addAll(propValidator.validateProperties(aphLibURL))
                 else
                     errors.addAll(propValidator.validateProperties(aphLib))
             }
