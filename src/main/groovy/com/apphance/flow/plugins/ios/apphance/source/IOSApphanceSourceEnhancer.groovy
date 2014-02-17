@@ -3,6 +3,7 @@ package com.apphance.flow.plugins.ios.apphance.source
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
 import com.apphance.flow.configuration.properties.BooleanProperty
 import com.apphance.flow.configuration.properties.StringProperty
+import com.apphance.flow.configuration.properties.URLProperty
 import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancer
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
@@ -147,6 +148,8 @@ class IOSApphanceSourceEnhancer {
                 mapStringPropertyToAPHSettings(variant.aphAppVersionCode, 'setApplicationVersionCode'),
                 mapStringPropertyToAPHSettings(variant.aphAppVersionName, 'setApplicationVersionName'),
                 mapStringPropertyToAPHSettings(variant.aphDefaultUser, 'setDefaultUser'),
+                mapURLPropertyToAPHSettings(variant.aphServerURL, 'setServerURL'),
+                mapBooleanPropToAPHSettings(variant.aphSendAllNSLogToApphance, 'setSendAllNSLogToApphance'),
 
         ].findAll { isNotEmpty(it) }.join('\n')
     }
@@ -178,4 +181,12 @@ class IOSApphanceSourceEnhancer {
         def value = property.value
         isNotEmpty(value) ? """[[APHLogger defaultSettings] $method:@"$value"];""" : ''
     }
+
+    String mapURLPropertyToAPHSettings(URLProperty property, String method) {
+        checkNotNull(property, 'Null property passed')
+        checkArgument(isNotEmpty(method), 'Empty method passed')
+        def value = property.value
+        isNotEmpty(value?.toString()) ? """[[APHLogger defaultSettings] $method:@"${value.toString()}"];""" : ''
+    }
+
 }

@@ -23,9 +23,12 @@ abstract class AbstractVariant extends AbstractConfiguration {
 
     final String name
 
-    @Inject ProjectConfiguration conf
-    @Inject ApphanceConfiguration apphanceConf
-    @Inject ApphanceArtifactory apphanceArtifactory
+    @Inject
+    ProjectConfiguration conf
+    @Inject
+    ApphanceConfiguration apphanceConf
+    @Inject
+    ApphanceArtifactory apphanceArtifactory
     private boolean enabledInternal = true
 
     @Inject
@@ -61,6 +64,10 @@ abstract class AbstractVariant extends AbstractConfiguration {
         aphAppVersionCode.message = "Apphance appVersionCode property for '$name'"
         aphMachException.name = "${projectType.prefix}.variant.${name}.apphance.machException"
         aphMachException.message = "Apphance machException property for '$name'"
+        aphServerURL.name = "${projectType.prefix}.variant.${name}.apphance.serverURL"
+        aphServerURL.message = "Apphance serverURL property for '$name'"
+        aphSendAllNSLogToApphance.name = "${projectType.prefix}.variant.${name}.apphance.sendAllNSLogToApphance"
+        aphSendAllNSLogToApphance.message = "Apphance sendAllNSLogToApphance property for '$name'"
 
         displayName.name = "${projectType.prefix}.variant.${name}.display.name"
 
@@ -148,6 +155,23 @@ abstract class AbstractVariant extends AbstractConfiguration {
     )
 
     def aphMachException = new BooleanProperty(
+            defaultValue: { false },
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
+            possibleValues: { POSSIBLE_BOOLEAN },
+            validator: { isEmpty(it) ? true : it in POSSIBLE_BOOLEAN }
+    )
+
+    def aphServerURL = new URLProperty(
+            interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
+            required: { false },
+            validator: { val ->
+                if (!val) return true
+                !propValidator.throwsException { (val as String).toURL() }
+            },
+            validationMessage: 'Should be a valid URL'
+    )
+
+    def aphSendAllNSLogToApphance = new BooleanProperty(
             defaultValue: { false },
             interactive: { apphanceEnabled && !(DISABLED == aphMode.value) && isIOS() },
             possibleValues: { POSSIBLE_BOOLEAN },
