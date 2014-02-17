@@ -65,7 +65,7 @@ class AbstractVariantSpec extends Specification {
         variant.propValidator = new PropertyValidator()
 
         expect:
-        variant.aphLibUrl.validator(url) == expected
+        variant.aphLibURL.validator(url) == expected
 
         where:
         url               | expected
