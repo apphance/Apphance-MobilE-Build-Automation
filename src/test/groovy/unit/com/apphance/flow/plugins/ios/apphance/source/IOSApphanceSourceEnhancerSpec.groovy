@@ -156,7 +156,6 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
         then:
         def mFileContent = new File(tmpDir, mFile).text
         mFileContent.contains('[APHLogger startNewSessionWithApplicationKey:@"3145abcd"')
-        mFileContent.contains('[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeQA];')
         mFileContent.contains('NSSetUncaughtExceptionHandler(&APHUncaughtExceptionHandler);')
 
         where:
@@ -202,7 +201,6 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
 
         expect:
         sourceEnhancer.aphSettings ==
-                '[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeQA];\n' +
                 '[[APHLogger defaultSettings] setReportOnShakeEnabled:YES];\n' +
                 '[[APHLogger defaultSettings] setApplicationVersionCode:@"3145"];\n' +
                 '[[APHLogger defaultSettings] setApplicationVersionName:@"3.1.45"];\n' +

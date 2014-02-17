@@ -139,7 +139,6 @@ class IOSApphanceSourceEnhancer {
     @PackageScope
     String getAphSettings() {
         [
-                apphanceMode,
                 mapBooleanPropToAPHSettings(variant.aphReportOnShake, 'setReportOnShakeEnabled'),
                 mapBooleanPropToAPHSettings(variant.aphWithUTest, 'setWithUTest'),
                 mapBooleanPropToAPHSettings(variant.aphWithScreenShotsFromGallery, 'setScreenShotsFromGallery'),
@@ -152,20 +151,6 @@ class IOSApphanceSourceEnhancer {
                 mapBooleanPropToAPHSettings(variant.aphSendAllNSLogToApphance, 'setSendAllNSLogToApphance'),
 
         ].findAll { isNotEmpty(it) }.join('\n')
-    }
-
-    @PackageScope
-    String getApphanceMode() {
-        switch (variant.aphMode.value) {
-            case QA:
-                return """[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeQA];"""
-            case SILENT:
-                return """[[APHLogger defaultSettings] setApphanceMode:APHSettingsModeSilent];"""
-            case PROD:
-                return ''
-            default:
-                throw new GradleException("Invalid apphance mode: '$variant.aphMode.value' for variant: '$variant.name'")
-        }
     }
 
     String mapBooleanPropToAPHSettings(BooleanProperty property, String method) {
