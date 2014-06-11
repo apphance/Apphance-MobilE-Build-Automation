@@ -1,8 +1,8 @@
 package com.apphance.flow.util
 
 import com.android.build.gradle.AppExtension
-import com.android.builder.DefaultManifestParser
-import com.android.builder.ManifestParser
+import com.android.builder.core.DefaultManifestParser
+import com.android.builder.core.ManifestParser
 import com.apphance.flow.plugins.android.parsers.AndroidManifestHelper
 import org.gradle.api.Project
 
