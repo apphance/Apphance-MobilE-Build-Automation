@@ -51,7 +51,6 @@ import static org.gradle.api.logging.Logging.getLogger
  *      </ul>
  *  </li>
  * </ul>
- * That's all greetings for the whole family!
  */
 class IOSPlugin implements Plugin<Project> {
 

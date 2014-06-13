@@ -9,26 +9,26 @@
 		<string>MT2B94Q7N6</string>
 	</array>
 	<key>CreationDate</key>
-	<date>2013-08-08T11:16:20Z</date>
+	<date>2014-05-06T09:43:41Z</date>
 	<key>DeveloperCertificates</key>
 	<array>
 		<data>
-		MIIFkTCCBHmgAwIBAgIIKRAfXlFfMiowDQYJKoZIhvcNAQEFBQAwgZYxCzAJ
+		MIIFkTCCBHmgAwIBAgIIOnqmgCoF4M4wDQYJKoZIhvcNAQEFBQAwgZYxCzAJ
 		BgNVBAYTAlVTMRMwEQYDVQQKDApBcHBsZSBJbmMuMSwwKgYDVQQLDCNBcHBs
 		ZSBXb3JsZHdpZGUgRGV2ZWxvcGVyIFJlbGF0aW9uczFEMEIGA1UEAww7QXBw
 		bGUgV29ybGR3aWRlIERldmVsb3BlciBSZWxhdGlvbnMgQ2VydGlmaWNhdGlv
-		biBBdXRob3JpdHkwHhcNMTMwNTA2MDgzMTIxWhcNMTQwNTA2MDgzMTIxWjCB
+		biBBdXRob3JpdHkwHhcNMTQwNDA4MTQwNjMwWhcNMTUwNDA4MTQwNjMwWjCB
 		hDEaMBgGCgmSJomT8ixkAQEMCk1UMkI5NFE3TjYxMjAwBgNVBAMMKWlQaG9u
 		ZSBEaXN0cmlidXRpb246IFBvbGlkZWEgKE1UMkI5NFE3TjYpMRMwEQYDVQQL
 		DApNVDJCOTRRN042MRAwDgYDVQQKDAdQb2xpZGVhMQswCQYDVQQGEwJQTDCC
-		ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAK/81z27CqNwbLtI/kv3
-		q7H2VmZkKXVNKr5sYQ6p5Bf1uV2q/6tFk8t21iOGuvf8ItZgoAZbWW26WqIf
-		spHMrb1XL3gPqSWUDj81tTAAYfzAIdLDaaUlDcaBFVErbg9jABc0GpNDUYsv
-		ymI9SOxOKtOWiz6uruZwBmsZDAx1ZIL24VWovAyW+QqntlQudMhRG7i3iE5x
-		0N7onFzJBiNg7iSQ9N3xhKUAiyWFItlWoO5CJs3NeUn5MRnmqrcZ3U8p1ta1
-		sPQOjHTIb9LrCnzUct2/jGqY5Fb8sU2FAmCmpK0bP4uOg8DEBQ2dUu9hhyjp
-		nSRVNMgt+z3qyQROfxk35/0CAwEAAaOCAfEwggHtMB0GA1UdDgQWBBSEwfjk
-		sfbGfFexz7jgV+3vHkU+nDAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFIgn
+		ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKyyiqs1nhi/StwLS8ir
+		w55umRFat5Us6CnGzQoPBNVfwC5EgVUGbeUmoKhx3NAWWsqy6gekJUIpEPlZ
+		s6PAavWg52DMWsnF5VK+NsOPKxM6c7XHIJ727xg9/OZMYil8tLq4vtpa4sDx
+		79x0NB+SjjDlqhkaLFzEnLLRj6nfJbxuKAquedOXgVbMBB0OVOXQ5OpoWNdc
+		VJgidteybPqBzZNbpWr3ARG5b+UwsCvinpjc8ZmkDOirZw5K+B38hEq1qQRc
+		HJhiO1FM+J09XoqGlYrUoJPhbnqSVtvV3pfiiIBHqNywOL9IXFuqyeDqo7DO
+		uLBbPetIIBhe9pZRe9e4rIUCAwEAAaOCAfEwggHtMB0GA1UdDgQWBBQ1+ZrE
+		/9Z0JsgrN6Aj3izez5nKyTAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFIgn
 		Fwmpthhgi+zruvZHWcVSVKO3MIIBDwYDVR0gBIIBBjCCAQIwgf8GCSqGSIb3
 		Y2QFATCB8TCBwwYIKwYBBQUHAgIwgbYMgbNSZWxpYW5jZSBvbiB0aGlzIGNl
 		cnRpZmljYXRlIGJ5IGFueSBwYXJ0eSBhc3N1bWVzIGFjY2VwdGFuY2Ugb2Yg
@@ -39,12 +39,12 @@
 		cDovL2RldmVsb3Blci5hcHBsZS5jb20vY2VydGlmaWNhdGlvbmF1dGhvcml0
 		eS93d2RyY2EuY3JsMA4GA1UdDwEB/wQEAwIHgDAWBgNVHSUBAf8EDDAKBggr
 		BgEFBQcDAzATBgoqhkiG92NkBgEEAQH/BAIFADANBgkqhkiG9w0BAQUFAAOC
-		AQEAKgQRHdhwfoTspUFNGDW7oQQLG5/Vjmik/XyQzPdhhuVsWthvkCNUwa7L
-		z3Z7Y0bgFcgJRZQJVdk+/XLQQTatqfljxhSTMY4p7U/JcMsXLsAlPnSdEftD
-		ONceS9hmkOCe6BtNq201pZqN6wV8MbfNkaPkYCkwlDrCn8FblJ8S3rDQ0x9u
-		ps4dPzp1gEmitFrA12J71TDAsGAsDWYus1v9RRAY2yIxQICq3eE1c49XFpDr
-		+ZAOP9DHUTzxtBadGdCzNm0/aWlr1Gbd4/f+wHbV5elRhZ+582RWV04f10Lo
-		xeYrYXMIpQsDZZXeCXSyd+9WhXhUyzXfFbVf+Nrn7ZJpbQ==
+		AQEARQMfGYFJhf5eiQRQng7YU8uT9WY93IeY/N11+pkvGdhyWDp3nWo2K1MG
+		CN3yLSg6o9fXFHZN8FNccGbYZnfTTANQstuHRlNgOjRZv7Md4ZrmEnLG+IUp
+		NsQ/D6wOX1PZTbLxcmysgzU4AGEK6v/I0zXYi9fru8VbbaizrxQlFotVFJoz
+		gB9KDahPhhX/CgH1mA0glk8DisxSP1ZhdVA8SySTibY8pfda+xI1ej8/gEIl
+		I964i6VzBU0XnIM/3SA5C29M/Yh365JsxNpPph20R5kJkQhwpaJEvy0hMQLF
+		xWaVVQPjPe/gGJsN+sq2D7H1/a99buGQdxuk+HPWsmvllQ==
 		</data>
 	</array>
 	<key>Entitlements</key>
@@ -59,7 +59,7 @@
 		</array>
 	</dict>
 	<key>ExpirationDate</key>
-	<date>2014-05-05T11:16:20Z</date>
+	<date>2015-04-08T09:43:41Z</date>
 	<key>Name</key>
 	<string>Apphance Flow AdHoc</string>
 	<key>ProvisionedDevices</key>
@@ -101,9 +101,9 @@
 	<key>TeamName</key>
 	<string>Polidea</string>
 	<key>TimeToLive</key>
-	<integer>270</integer>
+	<integer>337</integer>
 	<key>UUID</key>
-	<string>C04ADEC5-A96C-47A1-8E77-269460C3716D</string>
+	<string>2EF92774-C13D-42CE-BDDF-4E2FF233D3B5</string>
 	<key>Version</key>
 	<integer>1</integer>
 </dict>

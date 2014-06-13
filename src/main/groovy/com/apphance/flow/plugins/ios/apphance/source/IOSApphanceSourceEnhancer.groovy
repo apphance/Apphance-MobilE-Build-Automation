@@ -1,9 +1,7 @@
 package com.apphance.flow.plugins.ios.apphance.source
 
 import com.apphance.flow.configuration.ios.variants.AbstractIOSVariant
-import com.apphance.flow.configuration.properties.BooleanProperty
-import com.apphance.flow.configuration.properties.StringProperty
-import com.apphance.flow.configuration.properties.URLProperty
+import com.apphance.flow.configuration.properties.AbstractProperty
 import com.apphance.flow.plugins.ios.apphance.pbx.IOSApphancePbxEnhancer
 import com.google.inject.assistedinject.Assisted
 import groovy.transform.PackageScope
@@ -13,7 +11,6 @@ import org.gradle.api.GradleException
 import javax.inject.Inject
 
 import static com.apphance.flow.configuration.apphance.ApphanceLibType.libForMode
-import static com.apphance.flow.configuration.apphance.ApphanceMode.*
 import static com.apphance.flow.util.file.FileManager.MAX_RECURSION_LEVEL
 import static com.google.common.base.Preconditions.*
 import static groovy.io.FileType.FILES
@@ -139,39 +136,34 @@ class IOSApphanceSourceEnhancer {
     @PackageScope
     String getAphSettings() {
         [
-                mapBooleanPropToAPHSettings(variant.aphReportOnShake, 'setReportOnShakeEnabled'),
-                mapBooleanPropToAPHSettings(variant.aphWithUTest, 'setWithUTest'),
-                mapBooleanPropToAPHSettings(variant.aphWithScreenShotsFromGallery, 'setScreenShotsFromGallery'),
-                mapBooleanPropToAPHSettings(variant.aphReportOnDoubleSlide, 'setReportOnDoubleSlideEnabled'),
-                mapBooleanPropToAPHSettings(variant.aphMachException, 'setMachExceptionEnabled'),
-                mapStringPropertyToAPHSettings(variant.aphAppVersionCode, 'setApplicationVersionCode'),
-                mapStringPropertyToAPHSettings(variant.aphAppVersionName, 'setApplicationVersionName'),
-                mapStringPropertyToAPHSettings(variant.aphDefaultUser, 'setDefaultUser'),
-                mapURLPropertyToAPHSettings(variant.aphServerURL, 'setServerURL'),
-                mapBooleanPropToAPHSettings(variant.aphSendAllNSLogToApphance, 'setSendAllNSLogToApphance'),
+                mapPropertyToAPHSettings(variant.aphReportOnShake, 'setReportOnShakeEnabled', boolCl),
+                mapPropertyToAPHSettings(variant.aphWithUTest, 'setWithUTest', boolCl),
+                mapPropertyToAPHSettings(variant.aphWithScreenShotsFromGallery, 'setScreenShotsFromGallery', boolCl),
+                mapPropertyToAPHSettings(variant.aphReportOnDoubleSlide, 'setReportOnDoubleSlideEnabled', boolCl),
+                mapPropertyToAPHSettings(variant.aphMachException, 'setMachExceptionEnabled', boolCl),
+                mapPropertyToAPHSettings(variant.aphAppVersionCode, 'setApplicationVersionCode', stdCl),
+                mapPropertyToAPHSettings(variant.aphAppVersionName, 'setApplicationVersionName', stdCl),
+                mapPropertyToAPHSettings(variant.aphDefaultUser, 'setDefaultUser', stdCl),
+                mapPropertyToAPHSettings(variant.aphServerURL, 'setServerURL', stdCl),
+                mapPropertyToAPHSettings(variant.aphSendAllNSLogToApphance, 'setSendAllNSLogToApphance', boolCl),
 
         ].findAll { isNotEmpty(it) }.join('\n')
     }
 
-    String mapBooleanPropToAPHSettings(BooleanProperty property, String method) {
-        checkNotNull(property, 'Null property passed')
-        checkArgument(isNotEmpty(method), 'Empty method passed')
-        def value = property.value
-        property.hasValue() ? """[[APHLogger defaultSettings] $method:${value ? 'YES' : 'NO'}];""" : ''
+    @PackageScope
+    def boolCl = { AbstractProperty p, String method ->
+        p.hasValue() ? """[[APHLogger defaultSettings] $method:${p.value ? 'YES' : 'NO'}];""" : ''
     }
 
-    String mapStringPropertyToAPHSettings(StringProperty property, String method) {
-        checkNotNull(property, 'Null property passed')
-        checkArgument(isNotEmpty(method), 'Empty method passed')
-        def value = property.value
-        isNotEmpty(value) ? """[[APHLogger defaultSettings] $method:@"$value"];""" : ''
+    @PackageScope
+    def stdCl = { AbstractProperty p, String method ->
+        isNotEmpty(p.value?.toString()) ? """[[APHLogger defaultSettings] $method:@"${p.value.toString()}"];""" : ''
     }
 
-    String mapURLPropertyToAPHSettings(URLProperty property, String method) {
-        checkNotNull(property, 'Null property passed')
+    @PackageScope
+    String mapPropertyToAPHSettings(AbstractProperty ap, String method, Closure c) {
+        checkNotNull(ap, 'Null property passed')
         checkArgument(isNotEmpty(method), 'Empty method passed')
-        def value = property.value
-        isNotEmpty(value?.toString()) ? """[[APHLogger defaultSettings] $method:@"${value.toString()}"];""" : ''
+        c.call(ap, method)
     }
-
 }

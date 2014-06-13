@@ -208,38 +208,18 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
                 '[[APHLogger defaultSettings] setSendAllNSLogToApphance:NO];'
     }
 
-    def 'boolean property is mapped to APHSettings'() {
-        given:
-        def sourceEnhancer = new IOSApphanceSourceEnhancer(null, null)
-
-        expect:
-        expected == sourceEnhancer.mapBooleanPropToAPHSettings(new BooleanProperty(value: val), method)
-
-        where:
-        expected                               | val   | method
-        ''                                     | null  | 'm'
-        '[[APHLogger defaultSettings] m:NO];'  | false | 'm'
-        '[[APHLogger defaultSettings] m:YES];' | true  | 'm'
-    }
-
-    def 'exception thrown when null property passed to mapBooleanPropToAPHSettings'() {
-        given:
-        def sourceEnhancer = new IOSApphanceSourceEnhancer(null, null)
-
+    def 'exception thrown when null property passed to property mapper'() {
         when:
-        sourceEnhancer.mapBooleanPropToAPHSettings(null, null)
+        new IOSApphanceSourceEnhancer(null, null).mapPropertyToAPHSettings(null, null, null)
 
         then:
         def e = thrown(NullPointerException)
         e.message == 'Null property passed'
     }
 
-    def 'exception thrown when empty method passed to mapBooleanPropToAPHSettings'() {
-        given:
-        def sourceEnhancer = new IOSApphanceSourceEnhancer(null, null)
-
+    def 'exception thrown when empty method passed to property mapper'() {
         when:
-        sourceEnhancer.mapBooleanPropToAPHSettings(new BooleanProperty(), method)
+        new IOSApphanceSourceEnhancer(null, null).mapPropertyToAPHSettings(new BooleanProperty(), method, null)
 
         then:
         def e = thrown(IllegalArgumentException)
@@ -249,17 +229,21 @@ class IOSApphanceSourceEnhancerSpec extends Specification {
         method << [null, '']
     }
 
-    def 'string property is mapped to APHSettings'() {
+    def 'property is mapped to APHSettings'() {
         given:
         def sourceEnhancer = new IOSApphanceSourceEnhancer(null, null)
 
         expect:
-        expected == sourceEnhancer.mapStringPropertyToAPHSettings(new StringProperty(value: val), method)
+        expected == sourceEnhancer.mapPropertyToAPHSettings(val, method, sourceEnhancer."$cl")
 
         where:
-        expected                                 | val  | method
-        ''                                       | null | 'm'
-        ''                                       | ''   | 'm'
-        '[[APHLogger defaultSettings] m:@"mm"];' | 'mm' | 'm'
+        expected                                             | val                                      | method | cl
+        ''                                                   | new StringProperty(value: null)          | 'm'    | 'stdCl'
+        ''                                                   | new StringProperty(value: '')            | 'm'    | 'stdCl'
+        '[[APHLogger defaultSettings] m:@"mm"];'             | new StringProperty(value: 'mm')          | 'm'    | 'stdCl'
+        ''                                                   | new BooleanProperty(value: null)         | 'm'    | 'boolCl'
+        '[[APHLogger defaultSettings] m:NO];'                | new BooleanProperty(value: false)        | 'm'    | 'boolCl'
+        '[[APHLogger defaultSettings] m:YES];'               | new BooleanProperty(value: true)         | 'm'    | 'boolCl'
+        '[[APHLogger defaultSettings] m:@"http://lol.com"];' | new URLProperty(value: 'http://lol.com') | 'm'    | 'stdCl'
     }
 }
