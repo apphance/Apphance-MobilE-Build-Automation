@@ -38,6 +38,8 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
     @Lazy
     AppExtension androidNBS = { getAndroidNBS(project) }()
 
+    Comparator<ApplicationVariant> variantComparator = { 0 } as Comparator<ApplicationVariant>
+
     @PackageScope
     void prepareOtherArtifacts() {
 
@@ -51,7 +53,7 @@ class AvailableArtifactsInfoTask extends AbstractAvailableArtifactsInfoTask {
         if (androidNBS) {
             logger.lifecycle "Detected android gradle New Build System. Configuring variants taken from android configuration."
 
-            androidNBS.applicationVariants.all { ApplicationVariant variant ->
+            androidNBS.applicationVariants.sort(variantComparator).each { ApplicationVariant variant ->
                 logger.lifecycle "Configuring NBS variant: $variant.name, output file: $variant.outputFile "
 
                 def flowVariant = new AndroidVariantConfiguration(variant.name)
