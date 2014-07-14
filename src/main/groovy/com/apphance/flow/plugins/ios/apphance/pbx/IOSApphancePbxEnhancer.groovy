@@ -52,16 +52,16 @@ class IOSApphancePbxEnhancer {
         logger.info("Adding framework '$frameworkDetails.name' to file $variant.pbxFile.absolutePath")
         def frameworkHash = hash()
         json.objects[frameworkHash] = [
-                isa: PBX_FILE_REFERENCE,
+                isa              : PBX_FILE_REFERENCE,
                 lastKnownFileType: 'wrapper.framework',
-                name: frameworkDetails.name,
-                path: frameworkDetails.path,
-                sourceTree: frameworkDetails.group,
+                name             : frameworkDetails.name,
+                path             : frameworkDetails.path,
+                sourceTree       : frameworkDetails.group,
         ]
 
         def frameworkFileHash = hash()
         json.objects[frameworkFileHash] = [
-                isa: PBX_BUILD_FILE,
+                isa    : PBX_BUILD_FILE,
                 fileRef: frameworkHash,
         ]
         frameworksBuildPhase.files << frameworkFileHash
@@ -108,6 +108,10 @@ class IOSApphancePbxEnhancer {
 
         group.children.each { hash ->
             def child = json.objects[hash] as Map
+            if (!child) {
+                logger.info("Empty object for hash: $hash. Should be removed from: $variant.pbxFile.absolutePath")
+                return
+            }
             if (child.isa == PBX_FILE_REFERENCE) {
                 sourceFiles.put(child.path, path + child.path)
             } else if (child.isa == PBX_GROUP) {

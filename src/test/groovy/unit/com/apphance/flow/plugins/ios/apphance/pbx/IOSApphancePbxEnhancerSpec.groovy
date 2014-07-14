@@ -30,6 +30,7 @@ class IOSApphancePbxEnhancerSpec extends Specification {
         def enhancer = new IOSApphancePbxEnhancer(GroovyMock(AbstractIOSVariant) {
             getTarget() >> 'GradleXCode'
             getArchiveConfiguration() >> 'Release'
+            getPbxFile() >> pbxJSON
         })
         enhancer.executor = GroovyMock(IOSExecutor) {
             pbxProjToJSON(_) >> pbxJSON.text.split('\n')
